@@ -176,9 +176,9 @@ For all other contention scenarios, `FOR UPDATE` extends the lock-hold duration 
               └── No → [Send Email Alert]
 ```
 
-**Why it happens:** The LLM applies a generic "transient failure → retry with backoff" pattern from distributed-systems training data. It does not know that Salesforce already does this transparently for DML lock failures. The LLM also does not know that Flow Wait elements end the transaction and resume in a new one — so each "retry" is a fresh transaction acquiring locks from scratch, not a reattempt within the same lock-acquisition window.
+**Why it happens:** The LLM applies a generic "transient failure → retry with backoff" pattern from distributed-systems training data. (It often also asserts, wrongly, that Salesforce already retries transparently — see the dedicated anti-pattern on the invented 10-retry below.) The LLM also does not know that Flow Wait elements end the transaction and resume in a new one — so each "retry" is a fresh transaction acquiring locks from scratch, not a reattempt within the same lock-acquisition window.
 
-**Correct pattern:** Trust Salesforce's automatic retries (10 attempts with exponential backoff). When they're not enough, the contention is severe and requires architectural decoupling, not more retries. Wire the fault path to a central log entry so the contention is visible:
+**Correct pattern:** Accept the platform's single 10-second lock wait as the whole retry budget. When it is not enough, the contention is severe and requires architectural decoupling, not more attempts. Wire the fault path to a central log entry so the contention is visible:
 
 ```
 [Update Records: Account]
@@ -239,3 +239,20 @@ public static void incrementOpenCases(List<Id> acctIds) {
 The `FOR UPDATE` clause is the only way in Apex to prevent the lost-update race. Flow alone cannot achieve it.
 
 **Detection hint:** Search for any pattern of `Get Records X` → `Assignment X.field = X.field + ...` → `Update Records X`. Counter increments, balance adjustments, sequence number generation are the canonical examples. Flag every one for FOR UPDATE refactor or Roll-Up Summary replacement.
+
+
+---
+
+## Anti-Pattern: The invented "automatic 10-retry with exponential backoff" for row locks
+
+**What the LLM generates:**
+
+> "Salesforce automatically retries the failing DML up to 10 times with exponential backoff before surfacing `UNABLE_TO_LOCK_ROW`. Your fault email represents the 11th attempt — by the time you see one fault, hundreds of retries have already happened and system load is severely elevated."
+
+**Why it happens:** This is a **number transposed onto the wrong dimension**, then elaborated into a whole mechanism. The real documented figure is a **10-second wait**: a transaction waits a maximum of 10 seconds for a row lock to be released, then throws. "10 seconds" becomes "10 retries," and because retry-with-exponential-backoff is the universal distributed-systems idiom, the model fills in a backoff curve that was never there. Two real Salesforce retry mechanisms lend it false plausibility and are almost certainly the contaminating source: **Bulk API** batch retries, and **platform-event trigger** retries — the latter capped around ten, but *opt-in* (the Apex trigger must throw `EventBus.RetryableException`) and living in a different transaction entirely. Neither applies to synchronous DML lock acquisition.
+
+The dangerous part is not the number, it is the **diagnostic inference** built on it. "One fault email = the 11th attempt = hundreds of invisible retries = severe systemic contention" tells an engineer to go hunting for a platform-wide load problem when the actual finding is narrower and far more actionable: *one specific transaction held one specific row lock for more than ten seconds.* Triage goes to the wrong place.
+
+**Correct version:** A transaction waits a maximum of **10 seconds** to acquire a record lock (the same wait applies to `SELECT ... FOR UPDATE`); if the lock is not released, `UNABLE_TO_LOCK_ROW` is thrown. There is no automatic platform-level retry loop for synchronous DML. A single fault means one transaction waited the full ten seconds and gave up. Severity should be judged from fault frequency and from what held the lock — not from a retry count. Retry semantics that *do* exist: Bulk API batches, and platform-event subscribers via `EventBus.RetryableException` (opt-in; Salesforce recommends staying under nine retries).
+
+**Detection hint:** grep locking/contention guidance for `10 retries`, `10-retry`, `retries ... 10 times`, or `exponential backoff` near `UNABLE_TO_LOCK_ROW`. Structural hint that generalises: when a claim pairs a plausible integer with a mechanism, check whether the integer belongs to a **different unit** in the source — seconds relabelled as attempts, records relabelled as batches, characters relabelled as fields. Second hint: "your fault email represents the Nth attempt" — no Salesforce documentation attaches an attempt ordinal to a DML fault email, so any sentence of that shape is reconstructed rather than cited.

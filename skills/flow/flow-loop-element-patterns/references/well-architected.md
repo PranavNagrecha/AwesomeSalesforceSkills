@@ -6,7 +6,7 @@ How correct (and incorrect) Loop usage maps to the Salesforce Well-Architected p
 
 - **Reliability** — A flow that handles 1 record but fails at 200 is unreliable by definition. The Loop element is the single most common cause of "works in sandbox, fails in production under data load." Bulk-safe loop patterns (collect-then-DML, no SOQL inside) are the primary mechanism for keeping a flow reliable across all entry points: UI single-record edit, Bulk API insert, integration push, Data Loader, scheduled batch. A reliable loop is one whose behavior at N=1 and N=200 differ only in element count, not in success/failure.
 
-- **Performance** — Loop body algorithmic complexity directly determines flow runtime. A Loop with O(n) body running over 200 records is fast; the same body wrapped in a nested loop becomes O(n²) and burns the 2,000-element budget on input sizes that should be trivial. Performance also touches transaction-level cost: every in-loop DML adds to the per-transaction DML budget shared with every other automation, so an O(n)-DML loop steals headroom from siblings even when it does not itself fail.
+- **Performance** — Loop body algorithmic complexity directly determines flow runtime. A Loop with O(n) body running over 200 records is fast; the same body wrapped in a nested loop becomes O(n²) and burns the transaction's CPU-time budget on input sizes that should be trivial. Performance also touches transaction-level cost: every in-loop DML adds to the per-transaction DML budget shared with every other automation, so an O(n)-DML loop steals headroom from siblings even when it does not itself fail.
 
 - **Operational Excellence** — Predictable element counts make a flow operationally observable. A loop whose worst-case element-execution count is `body × max_iterations + post_work` is something an operator can monitor (Setup → Flow runtime debug, paid Flow Analytics, custom CMDT thresholds). A nested or unbounded loop has no useful upper bound and fails non-deterministically as data shapes shift.
 
@@ -42,3 +42,4 @@ How correct (and incorrect) Loop usage maps to the Salesforce Well-Architected p
 - Salesforce Well-Architected Framework — https://architect.salesforce.com/well-architected/overview
 - Collection Filter element — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_collection_filter.htm&type=5
 - Transform element — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_transform.htm&type=5
+- Salesforce KB: Flow Error 'Number of Iterations Exceeded' ("In API version 57.0, the limit of 2000 Flow elements was removed") — https://help.salesforce.com/s/articleView?id=000382258&language=en_US&type=1

@@ -132,3 +132,39 @@ The design artifacts are not optional documentation — they are the specificati
 ```
 
 **Detection hint:** If the output jumps directly to "Go to Setup > Entitlements" without producing a tier definition table or escalation matrix first, prompt for the design artifact phase before configuration.
+
+---
+
+## Anti-Pattern 7: Rounding Entitlement Limits Up, and Borrowing Entry Counts Across Rule Types
+
+**What the LLM generates:** A limits paragraph that reads with total confidence and is subtly inflated:
+
+> "An org can have a maximum of **2,000** entitlement processes. Each entitlement process supports up to 10 milestones. Each milestone can have up to 40 milestone actions. Escalation rules have a single active rule per org with up to **3,000** entries."
+
+**Why it happens:** Two distinct mechanisms, and it is worth separating them because they need different defences.
+
+1. **Magnitude rounding on the odd-looking figure.** The real number is 1,000. Salesforce limits cluster on 1,000 / 2,000 / 5,000, so once the model has the right *order of magnitude* the specific bucket is reconstructed rather than recalled — and it drifts upward, because a bigger stated headroom rarely triggers a reader's objection. The tell is that the *adjacent* figure in the same sentence (ten milestones) is correct. Mixed accuracy inside one sentence is the signature of partial recall, not of a wholesale invention, and it is more dangerous than a fully invented passage because the correct neighbour lends credibility to the wrong one.
+
+2. **Cross-rule-type borrowing.** "Up to 3,000 entries" is a real Salesforce number — it is the documented entry ceiling for **assignment rules**. Escalation rules and assignment rules share a shape (one active rule per org, ordered entries with criteria, a Business Hours field), so a figure belonging to one gets attached to the other. This is number-*relabelling*: the value is genuine, the dimension is wrong. Deleting it would be as wrong as keeping it — it needs re-attaching to the rule type that actually owns it.
+
+**Correct pattern:**
+
+```text
+Verified against "Entitlement Management Limits and Limitations":
+
+  "You can create up to 1000 entitlement processes and include up to ten
+   milestones in each entitlement process."
+
+  Entitlement processes per org : 1,000   (NOT 2,000)
+  Milestones per process        : 10      (correct as commonly stated)
+
+Unverified — re-read the current limits page before designing against them:
+  Milestone actions per milestone     : ~40 (commonly quoted, unconfirmed)
+  Escalation rule entries per rule    : "3,000" is the ASSIGNMENT-rule
+                                         ceiling; do not assume it transfers
+
+Real and separate: only one escalation rule can be active per org at a time.
+That property is not in doubt; the entry count attached to it is.
+```
+
+**Detection hint:** Two checks. (1) When a generated sentence packs several limits together, verify them **individually** — accuracy does not propagate across a sentence, and the correct figures are what make the wrong ones survive review. (2) Before accepting an entry-count limit for a rule type, confirm the source page is about *that* rule type. Grep the corpus for the same number attached to a different feature (`grep -rn "3,000 entries" skills/`); if it appears under another rule type with a real citation and under this one without, the uncited instance is the borrowed one. In general, a limit quoted with no page reference and a suspiciously round magnitude should be re-fetched, not repeated.

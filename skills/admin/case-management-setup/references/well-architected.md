@@ -27,6 +27,8 @@
 - Salesforce Help: Set Up Email-to-Case — https://help.salesforce.com/s/articleView?id=sf.setting_up_email_to_case.htm
 - Salesforce Help: Email-to-Case Limits — https://help.salesforce.com/s/articleView?id=sf.cases_email_limitations.htm
 - Salesforce Help: Set Up Web-to-Case — https://help.salesforce.com/s/articleView?id=sf.setting_up_web-to-case.htm
+- Salesforce Help: Web Request Limits — https://help.salesforce.com/s/articleView?id=sf.admin_web_limits.htm&type=5 — over the 24-hour limit, requests enter a pending queue shared by Web-to-Case and Web-to-Lead capped at 50,000 combined; "additional requests are rejected and not queued, and your administrator receives email notifications for the first five rejected submissions"; Support can raise the pending limit
+- SOQL and SOSL Reference — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm — SOSL is a text-search language with no create/update/delete capability; record creation from an external form requires the REST or SOAP API
 - Salesforce Help: Assignment Rule Limits — https://help.salesforce.com/s/articleView?id=sf.creating_assignment_rules.htm
 - Salesforce Help: Auto-Response Rules — https://help.salesforce.com/s/articleView?id=sf.creating_auto-response_rules.htm
 - Salesforce Help: Escalation Rules — https://help.salesforce.com/s/articleView?id=sf.creating_escalation_rules.htm

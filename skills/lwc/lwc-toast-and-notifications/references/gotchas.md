@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Toast Events Are Silent in Experience Cloud
+## Gotcha 1: Toast Events Are Silent in LWR Sites and Standalone Apps
 
 **What happens:** A component dispatches `ShowToastEvent` and no toast appears on screen. No JavaScript error is thrown. The event fires and disappears without any visible feedback to the user.
 
-**When it occurs:** When the LWC component is deployed inside an Experience Cloud (formerly Community Cloud) site. The toast event propagates up the DOM looking for the Lightning page host that renders toast notifications. That host is not present in Experience Cloud, so the event is consumed silently.
+**When it occurs:** Salesforce documents that `lightning/platformShowToastEvent` "isn't supported on login pages in Aura sites, LWR sites for Experience Cloud, and standalone apps." The toast event propagates up the DOM looking for the Lightning page host that renders toast notifications; that host is not present in those contexts, so the event is consumed silently.
 
-**How to avoid:** For components that must run in Experience Cloud, use the `NotificationsLibrary` or `ShowNotification` from `lightning/platformNotificationService`. If the same component must work in both Lightning Experience and Experience Cloud, detect the deployment context at runtime using `@salesforce/client/formFactor` or check the URL origin, and dispatch the appropriate notification primitive. Document the deployment target constraint in the component's header comment.
+**How to avoid:** Use the `lightning/toast` module instead — `import Toast from 'lightning/toast';` then `Toast.show({ label, message, variant, mode }, this)`. It is an imperative call, not a bubbling event, so it does not depend on a host listener, and Salesforce recommends it over `platformShowToastEvent` in all contexts. No runtime context detection is needed: use `Toast.show()` unconditionally. In LWR sites add a `lightning-toast-container` (module `lightning/toastContainer`) to control placement. Document the deployment target constraint in the component's header comment.
 
 ---
 

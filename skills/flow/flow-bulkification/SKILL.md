@@ -233,7 +233,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 4. **Invocable Apex called from Flow still shares the transaction** — wrapping heavy work in Apex helps only if the Apex code is genuinely bulk-safe (method signature accepts `List<T>`, not a single instance).
 5. **Collection variables consume heap memory** — a collection with 10,000 items that each hold 20 fields ≈ ~2 MB of heap. Two such collections + variable assignments may exceed the 6 MB synchronous heap limit. Heap exhaustion is a silent failure mode.
 6. **Before-save on certain standard objects has restrictions** — e.g. OpportunityLineItem triggers behave specially around ActivatedDate; check the release notes for your target object before relying on before-save.
-7. **Platform Events in a Flow still count against the publish limit** — 6,000 events per hour org-wide. A before-save that publishes one event per save will exhaust this during a 10k-record data load.
+7. **Platform Events in a Flow still count against the org-wide publish allocation** — Standard-Volume is 100,000 events/hour org-wide on Enterprise / Performance / Unlimited, but only 1,000/hour on Developer and Professional-with-API-Add-On. A before-save that publishes one event per save will exhaust the Developer-edition allocation during a 1k-record load and the Enterprise allocation during a 100k-record load, and the bucket is shared with every other Standard-Volume publisher in the org.
 8. **Recursion controls on Flow are weaker than on Apex** — a flow that updates its own triggering object in after-save re-fires; use Field History + Decision to check "did this field change" guards as canonical recursion mitigation.
 
 ## Proactive Triggers

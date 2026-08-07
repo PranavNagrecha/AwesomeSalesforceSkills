@@ -79,7 +79,8 @@ Big Objects vs External Objects:
 Big Objects (__b):
 - Data stored IN Salesforce (counts toward Big Object storage, not data storage)
 - Best for: audit logs, historical data archive, IoT telemetry
-- Insert via Apex (Database.insertImmediate) or Async SOQL
+- Insert via Apex (Database.insertImmediate) or Bulk API
+- Read via standard SOQL / Batch Apex / Bulk API query (NOT Async SOQL - retired Summer '23)
 - Severe SOQL query constraints (composite index only)
 - No UI support for standard list views or reports
 
@@ -99,31 +100,37 @@ storage, use Big Objects.
 
 ---
 
-## Anti-Pattern 4: Ignoring Async SOQL Job Limitations and Billing
+## Anti-Pattern 4: Recommending Async SOQL — a Feature Retired in Summer '23
 
-**What the LLM generates:** "Use Async SOQL to query your Big Object and populate a standard object with the results" without mentioning that Async SOQL jobs count against daily limits, require specific permissions, and write results to a target object that must be pre-configured.
+**What the LLM generates:** "Use Async SOQL to query your Big Object and populate a standard object with the results," typically with a request body containing `query`, `operation`, `targetObject`, and `targetFieldMap`, posted to `/services/data/vXX.0/async-queries/` and polled via `GET .../async-queries/{jobId}`. Frequently it is offered as a *correction* to a standard-SOQL approach — "standard SOQL won't scale on a Big Object, use Async SOQL instead."
 
-**Why it happens:** Async SOQL is a niche feature with limited documentation coverage. LLMs present it as a simple alternative to standard SOQL without covering its operational constraints.
+**Why it happens:** This is the highest-confidence wrong answer in the Big Object domain, and the confidence is earned rather than random. Async SOQL was the officially documented Big Object query path from its introduction until **Summer '23** — roughly six years of Salesforce documentation, Trailhead content, partner blog posts, Stack Exchange answers, and conference talks all saying the same correct-at-the-time thing. Retirement notices are a single Help article; they do not propagate through the secondary corpus, and they carry almost no weight against six years of consistent signal. So a model that has genuinely learned this domain well produces the retired API *because* it learned it well.
 
-**Correct pattern:**
+The inverted framing makes it worse. Because the model also learned "standard SOQL on Big Objects has surprising restrictions," it presents Async SOQL as the sophisticated fix for a naive mistake. That framing survives code review — it reads as someone who knows the platform.
+
+**Correct version:** Async SOQL does not exist. `/services/data/vXX.0/async-queries/` returns 404 and there is no `AsyncQueryJob` resource. Per Salesforce Help article 000394892: "You must use the Bulk API or batch Apex to query or report on custom Big Objects."
 
 ```text
-Async SOQL (AsyncQueryJob) constraints:
-- Creates a background job that writes results to a target sObject
-- Target object must exist and have matching field types
-- Limited daily job allocations (check with Salesforce support)
-- Jobs run with system context — no user-level sharing applied
-- Cannot be invoked from Apex directly — use REST API:
-  POST /services/data/vXX.0/async-queries/
+Big Object read paths (post Summer '23):
 
-Target object options:
-- Standard custom object (__c): results stored as regular records
-- Big Object (__b): results stored in Big Object storage
+1. Standard SOQL       - bounded reads; normal Apex query-row limits apply.
+2. Batch Apex          - Database.getQueryLocator over the __b object.
+                         Replaces Async SOQL's job semantics for volume.
+3. Bulk API query      - extraction off-platform, results as CSV.
 
-Monitor: GET /services/data/vXX.0/async-queries/{jobId}
+All three obey the composite-index rule: the WHERE clause must be a
+gapless left-to-right prefix of the index. Fields before the last one
+filtered take '=' only; the last one also takes <, >, <=, >=, IN.
+!=, LIKE, NOT IN, EXCLUDES, INCLUDES are unsupported.
+
+What you LOSE versus Async SOQL, and must now build yourself:
+  Async SOQL wrote aggregate results INTO a target object as a side
+  effect of the job (targetObject + targetFieldMap). Nothing does that
+  now. Use Database.Stateful, accumulate in execute(), and insert the
+  summary records explicitly in finish().
 ```
 
-**Detection hint:** Flag Async SOQL recommendations that do not mention daily job limits, target object requirements, or the REST API invocation method. Look for attempts to call Async SOQL from Apex code directly.
+**Detection hint:** `grep -rn 'async-queries\|AsyncQueryJob\|asyncQuery' .` — every hit is a dead endpoint, in prose or in code. Two softer signals worth flagging in review: (a) any Big Object design that names a `targetObject` or `targetFieldMap` for query *results* — that is the Async SOQL request shape and no current API has an equivalent; (b) any Big Object query plan containing `GROUP BY` or an aggregate function, since the aggregation Async SOQL performed server-side is now the caller's job.
 
 ---
 

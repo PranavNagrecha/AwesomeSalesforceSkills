@@ -33,3 +33,4 @@
 - Salesforce Metadata API Developer Guide: ConnectedApp — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_connectedapp.htm
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
 - Salesforce Well-Architected: Security — https://architect.salesforce.com/well-architected/secure/overview
+- Salesforce Help — OAuth 2.0 JWT Bearer Flow for Server-to-Server Integration (required claims iss/sub/aud/exp; "Salesforce allows a 3-minute buffer for clock skew") — https://help.salesforce.com/apex/HTViewHelpDoc?id=remoteaccess_oauth_jwt_flow.htm

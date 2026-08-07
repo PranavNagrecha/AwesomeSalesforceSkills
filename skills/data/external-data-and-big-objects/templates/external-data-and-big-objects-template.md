@@ -1,6 +1,8 @@
 # External Data and Big Objects — Work Template
 
-Use this template when designing or reviewing Big Object schemas, Async SOQL jobs, or External Object integrations.
+Use this template when designing or reviewing Big Object schemas, Big Object read paths, or External Object integrations.
+
+> **Async SOQL was retired in Summer '23.** If the design you are reviewing routes Big Object reads through `POST /async-queries/` or `AsyncQueryJob`, that is the defect — the endpoint does not exist. Read via standard SOQL, Batch Apex, or Bulk API query.
 
 ## Scope
 
@@ -52,12 +54,14 @@ List index fields in left-to-right order. This order determines query filter ord
 
 ### Query Patterns Supported by This Index
 
-Document every planned Async SOQL query and verify each one uses a continuous left-to-right prefix of the index:
+Document every planned query and verify each one filters on a gapless left-to-right prefix of the index. Index fields *before* the last one you filter on accept `=` only; the last filtered field also accepts `<`, `>`, `<=`, `>=`, `IN`. `!=`, `LIKE`, `NOT IN`, `EXCLUDES`, and `INCLUDES` are unsupported anywhere.
 
 | Query Pattern | Leading Index Columns Used | Valid? |
 |---|---|---|
-| `WHERE Field1 = :x AND Field2 >= :y` | Field1, Field2 | Yes |
-| `WHERE Field2 = :y` (skips Field1) | Field2 only | **NO — returns zero results** |
+| `WHERE Field1 = :x AND Field2 >= :y` | Field1, Field2 | Yes — range on the last filtered field |
+| `WHERE Field2 = :y` (skips Field1) | Field2 only | **NO — gap in the index prefix** |
+| `WHERE Field1 >= :x AND Field2 = :y` | Field1, Field2 | **NO — range on a non-final index field** |
+| `WHERE Field1 LIKE :x` | Field1 | **NO — `LIKE` unsupported on big objects** |
 
 ---
 
@@ -83,31 +87,42 @@ if (!sr.isSuccess()) {
 
 ---
 
-## Async SOQL Job Template (if applicable)
+## Big Object Read Path
 
-```http
-POST /services/data/v62.0/async-queries/
-Authorization: Bearer <token>
-Content-Type: application/json
+Pick one and record why. Async SOQL is not on the list — it was retired in Summer '23.
 
-{
-  "query": "SELECT <fields> FROM <ObjectName>__b WHERE <IndexField1>__c = '<value>' AND <IndexField2>__c >= <value>",
-  "operation": "insert",
-  "targetObject": "<TargetObject__c>",
-  "targetFieldMap": {
-    "<sourceField>": "<targetField__c>"
-  }
+- [ ] **Standard SOQL** — result set fits inside the Apex query-row limit. Record the expected max row count: ______
+- [ ] **Batch Apex** over `Database.getQueryLocator` — result set exceeds one transaction. This is the replacement for Async SOQL at volume.
+- [ ] **Bulk API query** — rows are being extracted off-platform.
+
+```apex
+// Batch Apex skeleton. Note what Async SOQL used to do and no longer does:
+// it wrote aggregate results into a targetObject as a side effect of the job.
+// Nothing does that now — accumulate state and write the summary yourself.
+public class <Name>Rollup implements Database.Batchable<SObject>, Database.Stateful {
+
+    private Map<String, Integer> accumulator = new Map<String, Integer>();
+
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        // WHERE must be a gapless left-to-right prefix of the composite index.
+        return Database.getQueryLocator([
+            SELECT <fields>
+            FROM <ObjectName>__b
+            WHERE <IndexField1>__c = :value1 AND <IndexField2>__c >= :value2
+        ]);
+    }
+
+    public void execute(Database.BatchableContext bc, List<<ObjectName>__b> scope) {
+        // accumulate into instance state
+    }
+
+    public void finish(Database.BatchableContext bc) {
+        // insert <TargetObject__c> summary rows here
+    }
 }
 ```
 
-**Poll for completion:**
-
-```http
-GET /services/data/v62.0/async-queries/<jobId>
-Authorization: Bearer <token>
-```
-
-Expected terminal statuses: `Completed`, `Failed`, `Aborted`
+**Monitoring:** track the job via `AsyncApexJob` (`Status`, `NumberOfErrors`, `ExtendedStatus`) — the same way as any other Batch Apex job. There is no separate Big Object job API.
 
 ---
 
@@ -134,9 +149,10 @@ Confirm the External Object is not queried inside a loop:
 
 ## Review Checklist
 
-- [ ] All Async SOQL query patterns use a continuous left-to-right prefix of the composite index
+- [ ] All query patterns filter on a gapless left-to-right prefix of the composite index, with ranges only on the last filtered field
 - [ ] `Database.insertImmediate()` return values are checked and failures are logged
-- [ ] Async SOQL job polling logic is implemented (no inline result assumption)
+- [ ] No reference anywhere to `async-queries` / `AsyncQueryJob` (retired Summer '23)
+- [ ] If the design produces aggregates, the write into the summary object is implemented explicitly in `finish()` — nothing materialises it for you
 - [ ] External Object queries are not inside loops
 - [ ] Big Object storage growth projection reviewed against org storage allocation
 - [ ] No triggers, reports, or roll-up summaries are placed on the Big Object

@@ -34,13 +34,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: The 10-Retry Exponential Backoff Is Invisible
+## Gotcha 4: The 10-Second Lock Wait Is Invisible — And There Is No Retry Behind It
 
-**What happens:** When DML fails to acquire a lock, Salesforce automatically retries up to **10 times** with exponential backoff before surfacing the failure to the application (Flow fault path or Apex exception). The retries happen transparently — there is no log entry, no event, no fault email until the 11th attempt fails.
+**What happens:** When DML cannot immediately acquire a row lock, the transaction **waits up to 10 seconds** for the lock to be released. If it is still not available, `UNABLE_TO_LOCK_ROW` surfaces to the application (Flow fault path or Apex exception). Salesforce documents no automatic platform-level retry loop for this — no exponential backoff, no silent reattempt. One wait, then the fault.
 
-**When it occurs:** Every UNABLE_TO_LOCK_ROW that surfaces in a fault path has been preceded by 10 silent retries. By the time you see one fault email, the system has been under contention for ~10–30 seconds. Across all concurrent transactions, hundreds or thousands of retries may have happened invisibly.
+The wait itself is what is invisible: the blocked transaction logs no element activity while it sits, so a debug log shows an unexplained multi-second gap that gets misattributed to whatever element happens to straddle it.
 
-**How to avoid:** Treat any UNABLE_TO_LOCK_ROW fault as a serious signal — not a transient blip. The platform has already exhausted its retry budget. Adding application-level retries on top will not help (it just compounds the contention). The fix is architectural decoupling. Monitor `EventLogFile` for `UNABLE_TO_LOCK_ROW` to detect contention building up before it surfaces as a user-visible fault.
+**When it occurs:** Any time a concurrent transaction holds the same row lock for more than 10 seconds — typically a parent Account or a queue Group row locked by a slow trigger, a callout, or a large loop upstream.
+
+**How to avoid:** Treat any UNABLE_TO_LOCK_ROW fault as a serious signal — a full 10 seconds of contention is not a transient blip. But size the problem from fault *frequency* and from what held the lock, not from an imagined retry count: one fault email means one transaction gave up, not eleven attempts. Adding application-level retries does not help (it compounds contention and, in Flow, each Wait-based "retry" is a fresh transaction re-acquiring the lock from scratch). The fix is architectural decoupling. Monitor `EventLogFile` for `UNABLE_TO_LOCK_ROW` to detect contention building before it surfaces as a user-visible fault.
 
 ---
 

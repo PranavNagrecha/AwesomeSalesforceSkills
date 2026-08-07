@@ -26,6 +26,12 @@
 
 - Platform Events Developer Guide — event bus, allocations, replay, High-Volume Platform Events, transaction behavior
   URL: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm
+- Platform Event Allocations — high-volume publish allocation 250,000/hour (EE/Perf/Unlimited), 50,000/hour (Developer), +25,000/hour add-on; retention 72 hours high-volume / 24 hours standard-volume; no retention field exists
+  URL: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Salesforce Help 002280033: Standard-Volume Platform Events Retirement — "After Spring '19, you can't define new standard-volume platform events"; publish/subscribe retired in Winter '27
+  URL: https://help.salesforce.com/s/articleView?id=002280033&language=en_US&type=1
+- Streaming API Message Durability — replayId `-1` (default) new events only; `-2` all events within the retention window
+  URL: https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm
 
 - Change Data Capture Developer Guide — CDC entity selection, allocations, gap events, supported objects, ChangeEventHeader structure
   URL: https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm

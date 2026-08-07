@@ -66,8 +66,11 @@ Gather this context before working on anything in this domain:
 Self-signed certificates are generated directly in Salesforce Setup under Certificate and Key Management. Salesforce creates the certificate and private key internally; the private key never leaves Salesforce storage.
 
 Key facts:
-- Default validity: **1 year** from creation date. Custom validity (up to 10 years) can be set at creation time using the "Expiration" field.
-- Key size: 2048-bit RSA (Salesforce-managed).
+- **Validity is derived from the key size and is not user-selectable.** There is no "Expiration" field on the Create Self-Signed Certificate screen and no 10-year option:
+  - 2048-bit and 3072-bit → **1 year**
+  - 4096-bit → **2 years** (recommended for Shield Platform Encryption)
+  If you need a longer lifetime, that is a reason to use a CA-signed certificate, not a setting to hunt for. Plan the rotation cadence around 1 or 2 years accordingly — and note that industry-wide certificate lifespans are shortening, so treat these as ceilings that may fall rather than as stable numbers.
+- Key size: RSA, chosen at creation from 2048-bit / 3072-bit / 4096-bit. The choice is not just a performance knob — it *is* the validity period, as above.
 - Common use cases: JWT-based OAuth flows (the certificate's public key is uploaded to the connected app and the corresponding private key — held by Salesforce — signs the JWT assertion), SAML assertion signing for identity provider setups, and any scenario where a third party needs to verify a Salesforce-generated signature using the public certificate.
 - Self-signed certificates are not trusted by external systems by default for mTLS server validation. For mTLS, a CA-signed certificate is typically required unless the external system is configured to trust the specific self-signed certificate explicitly.
 - These certificates do not appear in Salesforce-managed backups or metadata deploys. If you delete a self-signed certificate that is actively in use, the integration it supports will fail immediately.
@@ -107,7 +110,7 @@ Certificates expire. Rotating them without downtime requires:
 2. **Update all references** — find every connected app, Named Credential, Apex callout configuration, or external system that uses the old certificate. Update them to point to the new certificate. For JWT flows: update the connected app's consumer key/secret and upload the new public certificate to the connected app.
 3. **Coordinate with the external system** — if the external system trusts your certificate explicitly (common with mTLS), they must add trust for the new certificate before you switch. Request this in advance with enough lead time.
 4. **Deactivate the old certificate** — after confirming the new certificate is working in production, delete or archive the old certificate. Do not delete it immediately after cutover; wait at least 24–48 hours to catch any missed references.
-5. **Set a calendar reminder** for the new certificate's expiry date. Salesforce does not send expiry notifications for certificates.
+5. **Confirm the platform's own expiry notifications are reaching a monitored inbox.** Salesforce *does* email certificate-expiration warnings — at 60 days, 30 days and 10 days before expiry, and on the day of expiry. Configure who receives them via the expired-certificate notification permission (Setup > Certificate and Key Management → "Set Expired Certificate Notification Permission"). The common failure is not that the platform is silent; it is that the notifications land on a departed admin's address or in an unmonitored alias. A calendar reminder is a useful belt-and-braces addition on top of a working notification channel, not a substitute for one you wrongly believe is missing.
 
 ---
 

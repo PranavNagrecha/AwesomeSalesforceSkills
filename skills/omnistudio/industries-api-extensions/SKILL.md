@@ -63,12 +63,23 @@ Gather this context before working on anything in this domain:
 
 The Insurance Policy Business Connect API exposes atomic lifecycle transaction endpoints for the Insurance Cloud. Each endpoint performs a combined, consistency-guaranteed operation across `InsurancePolicy`, `InsurancePolicyCoverage`, `InsurancePolicyParticipant`, and related objects in a single transaction. The available operations are:
 
-- **Issuance** (`POST /connect/insurance/policy-issuances`) — creates a new policy with all associated coverages.
-- **Endorsement** (`POST /connect/insurance/policy-endorsements`) — modifies an in-force policy mid-term, updating coverages atomically.
-- **Renewal** (`POST /connect/insurance/policy-renewals`) — creates a successor term policy linked to the original.
-- **Cancellation** (`POST /connect/insurance/policy-cancellations`) — terminates an in-force policy and sets cancellation reason fields.
+The resource family is rooted at a single **`policies`** collection, with lifecycle operations expressed as **verb sub-resources on an individual policy** — not as separate pluralised transaction collections:
 
-All endpoints are versioned Connect APIs accessed via `/services/data/vXX.X/connect/insurance/...`. They are not available in non-Insurance-Cloud orgs. The body is a JSON representation of the policy transaction, not a raw sObject payload.
+- **Issuance** — `POST /connect/insurance/policies`. "Use the context ID provided in the request body to generate a new insurance policy."
+- **Retrieve** — `GET /connect/insurance/policies/{policyId}?_qs=contextOnly=true`
+- **Endorsement** — `POST /connect/insurance/policies/{policyId}/endorse` — modifies an in-force policy mid-term.
+- **Out-of-sequence endorsement** — `POST /connect/insurance/policies/{policyId}/out-of-sequence-endorsement` — applies retroactive changes.
+- **Renewal** — `POST /connect/insurance/policies/{policyId}/renew` — extends the coverage period.
+- **Cancellation** — `POST /connect/insurance/policies/{policyId}/cancel`
+- **Reinstatement** — `POST /connect/insurance/policies/{policyId}/reinstate` — restores a cancelled policy.
+
+For a parent policy with children of different product types there is a separate multi-root family, which is **asynchronous**:
+
+- `POST /connect/insurance/policies/multi-root` — "Asynchronously create a multi-root insurance policy along with its child policies. A multi-root policy includes multiple child policies of different product types under a single parent policy."
+- `POST /connect/insurance/policies/multi-root/endorse`
+- `POST /connect/insurance/policies/multi-root/renew`
+
+All endpoints are versioned Connect APIs accessed via `/services/data/vXX.0/connect/insurance/...`. They are not available in non-Insurance-Cloud orgs. The body is a JSON representation of the policy transaction keyed by a **context ID**, not a raw sObject payload and not a flat policy document. Read the *Requests* section of the Insurance Policy Business API reference for the exact body field names before writing a client — do not infer them from the object model.
 
 ### Communications Cloud TM Forum Open APIs
 
@@ -109,10 +120,11 @@ The body carries input parameters defined in the Service Process definition. Ser
 **How it works:**
 
 1. Authenticate with a Connected App using OAuth 2.0 (JWT or web-server flow).
-2. POST to `/services/data/v62.0/connect/insurance/policy-issuances` with the JSON policy issuance payload. Key fields: `policyName`, `effectiveDate`, `expirationDate`, `productId` (Salesforce ID of the InsuranceProduct record), and a `coverages` array containing `coverageType` and `coverageAmount` per coverage.
-3. The API creates `InsurancePolicy` and `InsurancePolicyCoverage` records atomically. On success it returns the newly created `InsurancePolicy` ID and a `201 Created` response.
-4. Handle the `409 Conflict` status code, which the API returns when a duplicate policy is detected (same product + holder + effective date).
-5. On failure, no partial records are committed — the transaction rolls back entirely.
+2. POST to `/services/data/v67.0/connect/insurance/policies` (**not** `policy-issuances` — that resource does not exist). Salesforce describes the operation as "use the context ID provided in the request body to generate a new insurance policy", so the payload is context-driven. Take the exact request body field names from the *Requests* section of the Insurance Policy Business API reference for your API version rather than reconstructing them from `InsurancePolicy` field names.
+3. The API creates `InsurancePolicy` and `InsurancePolicyCoverage` records atomically.
+4. Handle non-2xx responses from the reference's documented error list; do not assume a particular status code for duplicate detection without confirming it.
+5. On failure, no partial records are committed — the transaction rolls back entirely. This atomicity is the reason to use the API over DML.
+6. If the policy is a parent with children of different product types, use `POST /connect/insurance/policies/multi-root` instead. It is **asynchronous**, so the client must handle a deferred completion rather than reading the policy back immediately.
 
 **Why not the alternative:** A direct `insert InsurancePolicy` DML followed by separate `insert InsurancePolicyCoverage` DML allows a partial commit if the coverage insert fails. This leaves orphaned policy records and violates Insurance Cloud referential integrity rules.
 
@@ -147,8 +159,9 @@ The body carries input parameters defined in the Service Process definition. Ser
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Creating a new insurance policy with coverages | Insurance Policy Business Connect API (`/connect/insurance/policy-issuances`) | Guarantees atomic creation across InsurancePolicy and InsurancePolicyCoverage; standard DML does not |
-| Modifying an in-force insurance policy mid-term | Connect API endorsement endpoint | Ensures endorsement audit trail and coverage consistency are maintained |
+| Creating a new insurance policy with coverages | Insurance Policy Business Connect API — `POST /connect/insurance/policies` | Guarantees atomic creation across InsurancePolicy and InsurancePolicyCoverage; standard DML does not |
+| Creating a parent policy with child policies of different product types | `POST /connect/insurance/policies/multi-root` | The only resource that models a multi-root policy; note it is asynchronous, so design for deferred completion |
+| Modifying an in-force insurance policy mid-term | `POST /connect/insurance/policies/{policyId}/endorse` (or `/out-of-sequence-endorsement` for retroactive changes) | Ensures endorsement audit trail and coverage consistency are maintained |
 | Submitting a product order from a BSS system to Comms Cloud | TMF622 via Direct Access | MuleSoft gateway is deprecated Winter '27; Direct Access is the only supported path |
 | Querying product offering availability for an address | TMF679 via Direct Access (ID-driven) | Pass Salesforce record IDs, not product names; name-based lookups are not supported |
 | Changing a ServicePoint's operational status | E&U Update Asset Status Connect API | Bypassing via direct DML skips Integration Procedure validation and business rules |

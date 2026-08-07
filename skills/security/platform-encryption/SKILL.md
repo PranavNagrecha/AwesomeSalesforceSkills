@@ -83,11 +83,12 @@ Destroying a tenant secret permanently destroys access to all data encrypted wit
 ### Field Eligibility
 
 **Fields that CAN be encrypted:**
-- Custom fields of type: Text, Long Text Area, Text Area, Phone, URL, Email, Date, Date/Time, Number (limited), Checkbox
+- Custom fields of type: Email, Phone, Text, Text Area, Text Area (Long), Text Area (Rich), URL, Date, Date/Time. That is the whole list — see "Which Custom Fields Can I Encrypt?" in the Shield Platform Encryption docs.
 - Selected standard fields: Contact and Lead Email, Phone, Mobile, Home Phone, Fax; Account Phone, Fax; Case Subject, Description; and others listed in the official Standard Fields reference
 
 **Fields that CANNOT be encrypted:**
-- Formula fields (calculated at read time — encryption cannot be applied)
+- **Number, Checkbox, Currency and Percent custom fields.** There is no "limited" Number encryption — numeric and boolean custom types are simply absent from the encryptable list. Plan around this: an SSN or account number that must be encrypted has to be modelled as Text, not Number.
+- Formula fields and Reference (lookup) fields — the Setup UI states "Formula & Reference fields cannot be encrypted"
 - Lookup relationship fields and external lookup fields
 - Auto-Number fields, Roll-Up Summary fields
 - Fields used in unique validation or duplicate-matching rules (in some configurations)
@@ -111,7 +112,7 @@ Enabling encryption on the Name field of an object automatically switches lookup
 3. For fields used in patient matching or lookup (e.g., Email, Phone): assign deterministic encryption so equality SOQL filters still work.
 4. Generate or upload a tenant secret in Setup > Platform Encryption > Key Management.
 5. Enable encryption for each field in Setup > Platform Encryption > Encryption Policy.
-6. Verify all integration users and connected apps have the View Encrypted Data permission or a field-level decrypt permission granted.
+6. Verify all integration users and connected apps have **field-level read access (FLS)** to the encrypted fields. Shield decryption is transparent — there is no separate "View Encrypted Data" permission for Shield, so FLS is the only lever that decides who sees plaintext.
 7. Run the re-encryption job if existing data must be encrypted retroactively.
 
 **Why not probabilistic for all fields:** Audit logs, deduplication workflows, and many integrations depend on being able to query by Email or Phone. Using probabilistic on those fields would require full table scans or application-side decryption, neither of which is scalable.
@@ -168,7 +169,7 @@ Run through these before marking encryption rollout complete:
 - [ ] All fields requiring encryption are classified as probabilistic (display-only) or deterministic (filterable)
 - [ ] Formula fields, lookup fields, and roll-up summaries are excluded from the encryption policy
 - [ ] Tenant secret has been generated or customer key material has been uploaded and verified
-- [ ] View Encrypted Data permission is granted to all users and integration profiles that need plaintext access
+- [ ] Field-level security on each encrypted field is reviewed — every profile/permission set with Read on the field will see plaintext, and every one without it sees nothing at all (no asterisk mask). Shield does not use the "View Encrypted Data" permission.
 - [ ] All SOQL queries filtering on newly encrypted fields are tested — probabilistic fields must be removed from WHERE clauses
 - [ ] Report and dashboard filters on encrypted fields are reviewed and updated
 - [ ] Flows and Process Builder criteria that reference encrypted fields are audited (automation cannot filter on encrypted values)

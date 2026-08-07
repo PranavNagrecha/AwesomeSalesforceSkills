@@ -37,7 +37,7 @@ updated: 2026-04-27
 
 # Flow Record Locking And Contention
 
-Activate when a record-triggered flow on a child object updates its parent under load, when fault emails surface `UNABLE_TO_LOCK_ROW`, or when migrating a serial Process Builder / Workflow Rule to Flow exposes contention the legacy serial engine had hidden. This skill maps the implicit lock chain Salesforce takes during DML, explains why Salesforce's automatic 10-retry exponential backoff sometimes still surfaces a fault, and prescribes the three decouple patterns that move work off the locked transaction.
+Activate when a record-triggered flow on a child object updates its parent under load, when fault emails surface `UNABLE_TO_LOCK_ROW`, or when migrating a serial Process Builder / Workflow Rule to Flow exposes contention the legacy serial engine had hidden. This skill maps the implicit lock chain Salesforce takes during DML, explains the documented 10-second lock-wait timeout that produces the fault, and prescribes the three decouple patterns that move work off the locked transaction.
 
 ---
 
@@ -50,7 +50,7 @@ Gather this context before refactoring anything:
 - **Are children processed in bulk or one-at-a-time?** A single Update of 200 Opportunities locks the parent Account exactly once. A Loop iterating 200 times and calling Update inside the loop locks it 200 times — each iteration is its own contention window.
 - **Is the relationship Master-Detail or Lookup?** Master-Detail propagates the lock to the master automatically. Lookup with `Reparent = true` also locks the new and old parent. Lookup without reparenting only locks if the field is on the update payload.
 - **Does the flow change ownership?** Owner change locks the User row of both old and new owner — and for queue-owned records, the Group row of both queues. Mass reassignment is the #1 hidden contention source.
-- **Has Salesforce already retried?** The platform retries DML up to 10 times with exponential backoff before surfacing the fault. If the fault is firing, contention is already severe.
+- **How long was the lock held?** A transaction waits a maximum of **10 seconds** to acquire a record lock before `UNABLE_TO_LOCK_ROW` is thrown. There is no automatic platform retry for synchronous DML — the fault is the first and only attempt's outcome. So the question to ask is what held the lock for a full 10 seconds, not how many retries were burned.
 
 ---
 
@@ -74,14 +74,15 @@ The lock is held **for the entire transaction**, not just the duration of the DM
 
 **Master-Detail vs Lookup is the single biggest contention lever.** Master-Detail always propagates; Lookup only propagates if the parent field is on the update payload OR the lookup is reparented.
 
-### Concept 2 — UNABLE_TO_LOCK_ROW and the invisible 10-retry
+### Concept 2 — UNABLE_TO_LOCK_ROW and the 10-second lock wait
 
-When two transactions try to take the same row lock, the second one waits. If it waits longer than ~10 seconds, the platform raises `UNABLE_TO_LOCK_ROW: unable to obtain exclusive access to this record or 1 records: <Id>`.
+When two transactions try to take the same row lock, the second one waits. Salesforce documents a maximum wait of **10 seconds**; if the lock is not released in that window the platform raises `UNABLE_TO_LOCK_ROW: unable to obtain exclusive access to this record or 1 records: <Id>`.
 
 What practitioners often miss:
 
-- Salesforce **automatically retries** the failing DML up to **10 times with exponential backoff** before surfacing the error to the flow's fault path. By the time you see one fault email, dozens of retries already happened invisibly.
-- The retry budget is per-transaction, not per-flow. A single contention burst can exhaust it for a whole batch.
+- The 10 seconds is a **wait**, not a retry loop. There is no documented automatic platform-level retry for synchronous DML lock acquisition — no exponential backoff, no silent second attempt. The fault you see is the outcome of the one attempt that waited and gave up. (Bulk API and platform-event subscribers *do* have their own documented retry semantics, which is where the "automatic retry" folklore comes from — but those are different mechanisms, in different transactions, and the platform-event one is opt-in via `EventBus.RetryableException`.)
+- Because there is no retry, a single fault email is evidence of **one** transaction that waited 10 seconds — not evidence of a system-wide retry storm. Judge severity from fault *frequency* and from how long the blocking transaction held the lock, not from an imagined retry count.
+- Ten seconds is a long time. If a lock is held that long, something in the blocking transaction — a callout, a slow trigger, a large loop — is the real target of the fix.
 - Flow surfaces the failure as a **fault** — and unlike Apex, Flow's default behavior is to **rollback the entire flow's DML** on an unhandled fault. Half-applied state is rare in Flow but the whole transaction is lost.
 - If your flow has a fault path connector, control passes there. If not, the user sees a generic error, the admin gets a fault email, and the data change is lost.
 
@@ -236,7 +237,7 @@ public class EnqueueRecalcAction {
 1. **Child Update locks the parent automatically** — Updating a single Opportunity locks the parent Account row for the entire transaction. There is no flag to disable this, no `WITHOUT_PARENT_LOCK` keyword. The only escape is to decouple via Platform Event, Queueable, or Scheduled Path.
 2. **Queue-owned records lock the Group row on every insert/update** — If a Case record-triggered flow inserts a Task into a queue, the queue's Group row is locked. With many concurrent Cases routing into the same support queue, contention concentrates on that single Group row, not on the Cases themselves.
 3. **Master-Detail reparenting locks both old and new master** — Reassigning a Master-Detail child takes write locks on both the old parent, the new parent, and the child itself. With deep hierarchies (LineItem → Opportunity → Account), reparenting can lock 4+ rows simultaneously across two object trees.
-4. **The 10-retry exponential backoff is invisible** — Salesforce silently retries the failing DML up to 10 times. Your fault email represents the 11th attempt. By the time you see one fault, hundreds of retries may have happened across other concurrent transactions; system load is already significantly elevated.
+4. **The 10-second lock wait is invisible in the debug log** — the waiting transaction shows no element activity while it blocks, so the CPU-time profile looks fine and the pause is easy to attribute to the wrong element. Your fault email represents one attempt that waited the full 10 seconds and gave up; there is no automatic retry behind it. Correlate the fault timestamp against what else was writing to the same parent row at that moment.
 5. **Flow's automatic rollback masks partial state** — Unlike Apex (where DML between savepoints can persist), an unhandled flow fault rolls back **the entire flow's DML** to the start of the trigger. This makes contention failures invisible: there's no "half-committed" record to spot — just a missing record that should exist. Always log to a fault path.
 6. **`Get Records` does not take a lock** — Practitioners assume reading a record before updating it pre-locks it. It doesn't. The lock is only acquired at the moment of the Update DML. A race between Get and Update is possible; only `FOR UPDATE` (via invocable Apex) closes it.
 7. **Platform Event subscriber flows still take locks** — Decoupling via Platform Event moves the work to a separate transaction, but that transaction still takes parent locks when it updates. The benefit is the publisher transaction completes fast; the subscriber's contention is independent and self-throttling (events batch).

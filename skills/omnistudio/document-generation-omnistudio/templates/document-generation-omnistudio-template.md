@@ -46,8 +46,10 @@ Copy from SKILL.md and tick items as you complete them.
 - [ ] All tokens in template have corresponding Data Mapper mappings
 - [ ] OmniDataTransform output JSON matches template token paths (case-sensitive)
 - [ ] Document Generation Setting links correct template, Data Mapper, and mode
-- [ ] Image tokens used only in client-side mode and images under 2.5 MB
-- [ ] Rich text tokens used only in client-side mode
+- [ ] Token prefixes are the documented ones (`IMG_`, `HYP_`, `RTB_`, `IF_`, `DT_`) — no `{{%`, `{{&`, or Handlebars `{{#if `
+- [ ] Image tokens (if any) have both a Data Mapper Extract (ContentDocument / Attachment / Contract Document) and a Data Mapper Transform mapping
+- [ ] Image rendered size within 350 px × 400 px on A4 portrait, or both height and width defined to reach the 600 px × 800 px ceiling
+- [ ] Only one of height/width defined where original aspect ratio must be preserved
 - [ ] Repeating sections work with 0, 1, and many items
 - [ ] Conditional sections render correctly for true and false conditions
 - [ ] PDF conversion step included if PDF output required

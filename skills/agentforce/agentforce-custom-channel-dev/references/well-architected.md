@@ -2,7 +2,7 @@
 
 ## Relevant Pillars
 
-- **Security** — Agent API and BYOC integrations require OAuth 2.0 with specific scopes (`api` + `chatbot_api`). The `externalSessionKey` UUID acts as a session handle and must be treated as sensitive — exposure allows replay or hijacking of session idempotency. Context variables injected at session start may carry PII (authenticated user IDs, phone numbers, account identifiers) — ensure they are transmitted over TLS and not logged in plain text. BYOC CCaaS integrations handling `MessagingEndUser` records store end-user PII in Salesforce — data residency and retention policies apply.
+- **Security** — Agent API and BYOC integrations require OAuth 2.0 with four specific scopes (`api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`). The `externalSessionKey` UUID acts as a session handle and must be treated as sensitive — exposure allows replay or hijacking of session idempotency. Context variables injected at session start may carry PII (authenticated user IDs, phone numbers, account identifiers) — ensure they are transmitted over TLS and not logged in plain text. BYOC CCaaS integrations handling `MessagingEndUser` records store end-user PII in Salesforce — data residency and retention policies apply.
 
 - **Reliability** — The 409 idempotency pattern on session POST is the primary reliability mechanism for session creation under unreliable networks. The `sequenceId` monotonic ordering guarantee makes message delivery order deterministic but requires careful retry logic — sending the same sequenceId on retry rather than incrementing is essential for reliability. Session cleanup (DELETE) must be implemented in error and timeout paths, not only the happy path, to prevent resource exhaustion under failure conditions.
 
@@ -32,7 +32,7 @@ The raw Agent API does not persist conversation history in Salesforce — all st
 
 2. **Sharing a Single Session Across Multiple End Users** — Some integrations attempt to reuse a single Agent API session across multiple users to reduce API call overhead (e.g., a server-side session pool). This is architecturally unsound: context variables are user-specific, the session carries conversation history that spans multiple users, and session termination by one user breaks all others. Each logical conversation (one end user, one session lifetime) must have its own `externalSessionKey` and `sessionId`.
 
-3. **Missing the chatbot_api OAuth Scope** — The `api` OAuth scope alone is insufficient for Agent API calls. The `chatbot_api` scope is required and must be explicitly added to the Connected App configuration. This is the most common initial auth failure during integration setup. Alert on 401/403 responses and check scopes before debugging other configuration.
+3. **Missing the sfap_api or chatbot_api OAuth Scope** — The `api` OAuth scope alone is insufficient for Agent API calls. The `chatbot_api` scope is required and must be explicitly added to the Connected App configuration. This is the most common initial auth failure during integration setup. Alert on 401/403 responses and check scopes before debugging other configuration.
 
 ## Official Sources Used
 
@@ -41,3 +41,5 @@ The raw Agent API does not persist conversation history in Salesforce — all st
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Einstein Platform Services — https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Agentforce Developer Guide — Agent API Get Started (host api.salesforce.com, /einstein/ai-agent/v1, four required OAuth scopes incl. sfap_api) — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-get-started.html
+- Agentforce Developer Guide — Agent API Examples (exact session / message / stream / DELETE URLs and x-session-end-reason header) — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-examples.html

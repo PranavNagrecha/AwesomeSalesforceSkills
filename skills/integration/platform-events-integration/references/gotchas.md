@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: RetainUntilDate Is Only Available on High-Volume Platform Events
+## Gotcha 1: Event Retention Is Fixed — No Field or Setting Extends It
 
-**What happens:** Teams design an integration that needs event replay windows longer than 72 hours — for example, a weekend batch job that must replay Friday through Sunday events. They add `RetainUntilDate` to a standard Platform Event definition expecting it to extend retention. The field is silently ignored or unavailable, and events expire after 72 hours regardless.
+**What happens:** Teams design an integration that needs a replay window longer than 72 hours — for example, a weekend batch job that must replay Friday through Sunday events. They look for a per-event retention field to set at publish time, find advice describing one (`RetainUntilDate` is the name that circulates most), write it into the payload, and ship. Salesforce ignores the unknown field, events expire on the platform schedule, and the Sunday job replays only the last three days. The gap is silent: the subscriber receives a valid, shorter stream and has no signal that anything is missing.
 
-**When it occurs:** Any integration that relies on replay windows beyond 72 hours using a standard (non-high-volume) Platform Event. The field `RetainUntilDate` only appears and functions on High-Volume Platform Events (`HighVolumeEventBus` channel).
+**When it occurs:** Any integration whose worst-case replay need exceeds the platform window. Retention is a fixed platform property, not a publishable attribute: **72 hours for high-volume platform events, 24 hours for legacy standard-volume events.** No API — Apex `EventBus.publish`, REST, or Pub/Sub — accepts a retention override. There is no `RetainUntilDate` field on any Platform Event object.
 
-**How to avoid:** Check the event's channel type before designing the retention strategy. If the replay window exceeds 72 hours, the event must be High-Volume from the start. Migrating from standard to High-Volume later requires creating a new event object, which is a breaking change for all existing publishers and subscribers.
+**How to avoid:** Treat 72 hours as a hard ceiling and design past it explicitly. The supported pattern is a durable ledger: the publisher writes a copy of each event payload (Big Object, external queue, or custom object with an archival policy) in the same unit of work as the publish, and a subscriber returning from a long outage backfills from that ledger before resuming live subscription at its stored `replayId`. Second, since Spring '19 every newly defined event is high-volume, so "make it high-volume to get more retention" is not an available move — new events already are. Detection: grep the integration for a retention field name on an `__e` object; if one is present, it is doing nothing.
 
 ---
 

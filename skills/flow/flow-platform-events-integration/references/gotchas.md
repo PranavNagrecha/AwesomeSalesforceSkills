@@ -10,7 +10,7 @@ Avoid it:
 
 ## 2. Standard-Volume Publish Limit Is Org-Wide And Shared
 
-The 6,000/hour Standard-Volume publish limit is ONE shared bucket across all Standard-Volume events in the org. Two separate event types each publishing 4,000 events/hour together exceed the limit, even if individually each looks safe.
+The Standard-Volume hourly publish allocation is ONE shared bucket across all Standard-Volume events in the org — and so is the High-Volume one. Splitting a workload across two event types buys no extra headroom: on a Developer org (1,000 Standard-Volume publishes/hour) two event types each publishing 600/hour together exceed the allocation even though each looks safe alone. Size against the org's actual edition allocation (Enterprise / Performance / Unlimited: 100,000/hour Standard-Volume, 250,000/hour High-Volume), not against a remembered number.
 
 Avoid it:
 - Move higher-rate events to High-Volume.

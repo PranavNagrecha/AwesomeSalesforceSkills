@@ -27,10 +27,10 @@
 **When it bites you:** Requests for historical trend reports on objects where Historical Trending wasn't set up in advance.
 
 **What Historical Trending supports:**
-- Objects: Opportunities, Cases, Leads, Forecasts, up to 3 custom objects
-- Field types: Date, Date/Time, Number, Currency, Percent, Checkbox, Picklist
-- Lookback: Up to 3 months of data (rolling window)
-- Maximum 8 date snapshots per record
+- Objects: Opportunities, Cases, Forecasting Items, up to 3 custom objects. **Leads are not supported** — there is no Lead entry in the Historical Trending setup list.
+- Field types: Number, Currency, Date, Picklist, Lookup. Date/Time, Percent and Checkbox are **not** trackable.
+- Lookback: the previous 3 months plus the current month (rolling window). Opportunity history extends to 12 months when Historical Trending is enabled in Pipeline Inspection.
+- Up to **5 historical snapshot dates** per historical trend report, and up to 4 historical filters per report. Each report can contain up to 100 fields, and up to 5 million rows of trending data are stored per object.
 
 **How to avoid it:**
 - Enable Historical Trending proactively on any object where trend data may be needed

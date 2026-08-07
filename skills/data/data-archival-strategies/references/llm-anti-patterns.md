@@ -50,7 +50,8 @@ Error handling strategy:
 1. Validate data before insertion (all index fields non-null)
 2. Log the batch ID and record count for reconciliation
 3. Query the Big Object after insertion to verify record count
-4. Use Async SOQL to bulk-verify archived data completeness
+4. Verify archived data completeness with Batch Apex over the Big Object
+   (Async SOQL was retired in Summer '23 — do not use async-queries)
 ```
 
 **Detection hint:** Flag `Database.insertImmediate()` calls without subsequent verification or logging. Look for missing error handling after Big Object DML.
@@ -146,3 +147,34 @@ Field Audit Trail (Shield) is required for long-term retention.
 ```
 
 **Detection hint:** Flag compliance-driven archival recommendations that reference "Field History Tracking" without mentioning its 18-month limit. Check whether Shield Field Audit Trail is evaluated.
+
+---
+
+## Anti-Pattern: Quoting a "1 GB Base" Storage Allocation, or Counting the Recycle Bin
+
+**What the LLM generates:** A storage-capacity paragraph of the shape "Essentials and Professional get 1 GB base; Enterprise and Unlimited get 10 GB base plus 20 MB per user licence," or "Enterprise gets 1 GB base plus 2 GB per user licence for file storage." Usually paired with "deleted records keep consuming storage in the Recycle Bin, so empty it to reclaim space."
+
+**Why it happens:** Every number in those sentences is a real Salesforce figure attached to the wrong dimension. **1 GB** is the *file* storage allocation for Essentials and Starter — it gets promoted into a data-storage base and spread across editions that do not have it. **20 MB** is the per-user data-storage increment, correct for Enterprise but not for Performance/Unlimited (120 MB). The Recycle Bin claim is a plausible inference from how most databases behave, reinforced by the genuine observation that Setup > Storage Usage often does not move right after a mass delete.
+
+**Correct version:**
+
+```text
+Data storage base: 10 GB for Contact Manager, Group, Essentials, Professional,
+                   Enterprise, Performance, Unlimited, Starter.
+Per-user data:     20 MB/licence  (Enterprise, Professional, Contact Manager, Group)
+                   120 MB/licence (Performance, Unlimited)
+                   none           (Essentials, Starter)
+File storage:      10 GB/org (Contact Manager, Group, Professional, Enterprise,
+                   Performance, Unlimited); 1 GB (Essentials, Starter);
+                   20 MB (Developer, Personal). Per-user file increments depend
+                   on the USER LICENCE type - read the table, do not quote one number.
+
+Recycle Bin: records in it do NOT count against storage, and the bin has no
+             record-count cap. 15 days is the RESTORE window.
+Why storage looks unchanged after a big delete: both pools are recalculated
+             ASYNCHRONOUSLY. Wait and re-check.
+```
+
+**Why it matters for archival specifically:** the whole business case for an archival project is a storage number. Sizing against a fabricated 1 GB base under-states headroom by an order of magnitude and can justify a project the org did not need; budgeting reclaimed storage against "emptying the Recycle Bin" books a saving that will never appear, and the operation destroying the 15-day restore window is irreversible.
+
+**Detection hint:** `grep -niE '1 ?GB base|2 ?GB per user' <files>` — neither shape is a real data-storage figure. And flag any storage allocation quoted without naming both the edition *and* whether the number is per-org or per-user-licence; a correct citation of this table cannot be a bare number.

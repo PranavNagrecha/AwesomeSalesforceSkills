@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Missing `lightningCommunity__RelaxedCSP` Causes Page-Specific Rendering Failures
+## Gotcha 2: Missing `lightningCommunity__RelaxedCSP` Disables Managed-Package Components in the Components Panel
 
 **What happens:** A custom component renders correctly on the product list page and product detail page but fails to render on the cart page or checkout page. There is no JavaScript error in the browser console. The component simply does not appear in the page DOM.
 
-**When it occurs:** When the `.js-meta.xml` file does not include `lightningCommunity__RelaxedCSP` in the `<capabilities>` element. Cart and checkout page templates have stricter rendering constraints than product pages. The LWR runtime enforces the capability check differently per page type, so a missing declaration produces inconsistent behavior rather than a consistent failure across all pages.
+**When it occurs:** When a **managed-package** LWC's `.js-meta.xml` does not include `lightningCommunity__RelaxedCSP` in the `<capabilities>` element and the target site has Lightning Locker disabled — which every B2B/D2C store template does. Salesforce documents the effect as the component being *disabled in the Components panel in Experience Builder*: it never reaches a page, so there is nothing to render. Components in the org's own namespace are not covered by this documented rule.
 
-**How to avoid:** Always declare `<capability>lightningCommunity__RelaxedCSP</capability>` in the component's `.js-meta.xml` for any LWC deployed to a Commerce store. This is not optional even if the component code does not use any browser APIs restricted by LWS or Locker. The capability is a runtime contract, not a permission grant.
+**How to avoid:** Declare `<capability>lightningCommunity__RelaxedCSP</capability>` in the `.js-meta.xml` of any LWC distributed in a managed package for Commerce stores — there it is mandatory. For org-local components it is a harmless house convention rather than a documented requirement, so declare it for consistency but do not treat its absence as the explanation for a runtime failure. The capability is a design-time registration signal, not a permission grant.
 
 ---
 
@@ -49,5 +49,3 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When the developer uses a Change Set deployment workflow instead of SFDX metadata deployment. Commerce LWR storefront component registration requires the full SFDX metadata deployment pipeline (`sf project deploy start`) to correctly process the `.js-meta.xml` targets and update the component registry for the store.
 
 **How to avoid:** Deploy Commerce storefront components using SFDX CLI (`sf project deploy start`) targeting the store org. Verify the deployment output confirms the LightningComponentBundle was processed. After deployment, open Experience Builder and check the Custom Components section — if the component is still absent, verify that `isExposed: true` is set and the `<targets>` include `lightningCommunity__Page` or the specific store page target.
-</content>
-</invoke>

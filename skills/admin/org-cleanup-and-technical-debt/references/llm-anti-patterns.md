@@ -133,3 +133,53 @@ Apex CAN be deleted via Setup in sandbox orgs, but not in production.
 ```
 
 **Detection hint:** Any instruction to delete Apex via Setup in a production org is incorrect. Look for "Setup > Apex Classes > Delete" targeting a production environment.
+
+---
+
+## Anti-Pattern: Splitting the Per-Object Field Allocation Across Data Types
+
+**What the LLM generates:** "Each object has a limit on custom fields per data
+type — 500 custom fields for most Enterprise Edition objects, 800 for
+Unlimited", or the more explicit variant, "custom fields per object varies by
+type (800 for standard Text)".
+
+**Why it happens:** The numbers are correct; the *dimension* is invented. 500
+(Enterprise) and 800 (Performance/Unlimited) are the genuine per-object
+allocations, and Salesforce does enforce several genuinely type-scoped limits
+elsewhere — roll-up summary fields per object, long text area fields per
+object, relationship fields per object. Having seen "per object" limits that
+are type-scoped, the model generalises the qualifier onto the headline field
+count. Because the number stays right, the claim survives casual checking; only
+the planning conclusion drawn from it is wrong.
+
+The failure is a cleanup that is scoped too narrowly. An admin who believes
+each data type has its own 500-field budget concludes an object at 480 text
+fields has plenty of room, deletes nothing, and hits the real ceiling from a
+different direction.
+
+**Correct pattern:**
+
+```
+Custom fields ALLOWED PER OBJECT — one pool, all data types together:
+  Professional              100
+  Enterprise                500
+  Performance / Unlimited   800
+  Developer                 500
+  Enterprise orgs may install a further 400 fields from an AppExchange
+  certified managed package.
+
+Hard ceiling: "An org can't have more than 900 custom fields on most
+object types, regardless of the edition or source of those fields."
+
+Fields in the deleted-fields queue still consume the allocation until
+they are erased.
+
+Genuinely type-scoped limits (do not confuse with the above):
+  roll-up summary fields per object, long text area fields per object,
+  relationship fields per object.
+```
+
+**Detection hint:** Grep for `per data type`, `by type`, or `for standard Text`
+anywhere near a custom-field count. The headline field allocation is never
+type-scoped. Conversely, a claim that roll-up summary or long text area fields
+share the main 500/800 pool is the same error running in reverse.

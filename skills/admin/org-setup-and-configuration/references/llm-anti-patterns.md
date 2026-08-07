@@ -141,3 +141,49 @@ CSP Trusted Sites configuration:
 ```
 
 **Detection hint:** If the output references loading external resources on a Lightning page without mentioning CSP Trusted Sites, the resource will be blocked. Search for `CSP Trusted Sites` or `Content Security Policy` when external domains are referenced.
+
+---
+
+## Anti-Pattern: Inventing a Setup Navigation Path That Reads Like a Feature Name
+
+**What the LLM generates:** "Configure MFA at **Setup > Identity > MFA
+Management and Setup**." Other instances of the same shape: "Setup > Security >
+MFA Settings", "Setup > Identity > Multi-Factor Authentication".
+
+**Why it happens:** Setup paths are the most confabulation-prone thing in
+Salesforce admin guidance, because a plausible-sounding path is easy to
+generate and the real one is arbitrary. Two specific pressures apply here.
+First, MFA *is* under a Setup area conceptually associated with identity, and
+Setup genuinely does contain a **Multi-Factor Authentication Assistant** node,
+so "Identity" and "MFA ... " are both individually correct fragments — they
+are just not a path. Second, the real destination is named after the *mechanism*
+(Identity Verification) rather than the *feature* (MFA), and models
+systematically prefer the feature name when generating a menu label. The result
+is an admin clicking around Setup for a node that does not exist, in a security
+control where the natural fallback is to give up or grant a permission instead.
+
+**Correct pattern:**
+
+```
+Org-wide MFA enforcement:
+  From Setup, Quick Find -> Identity Verification
+  -> "Require multi-factor authentication (MFA) for all direct UI
+      logins to your Salesforce org"
+
+Related but DIFFERENT Setup nodes:
+  Multi-Factor Authentication Assistant  — rollout guidance, not the switch
+  Session Settings                       — session security level, timeouts
+  Identity Verification History          — audit of verification attempts
+
+Per-user / per-profile MFA (e.g. external Experience Cloud users):
+  the "Multi-Factor Authentication for User Interface Logins"
+  user permission, via permission set or profile.
+```
+
+**Detection hint:** Prefer Quick Find terms over `A > B > C` breadcrumbs when
+writing admin instructions — Quick Find labels are stable across releases and
+Setup tree groupings are not, so a breadcrumb has more surface to fabricate.
+When a breadcrumb is unavoidable, check it against Salesforce Help before
+publishing. Mechanically: grep instructions for `Setup >` and verify the *last*
+segment is a real Quick Find term. For MFA specifically, the string
+`MFA Management` does not exist anywhere in Salesforce Setup.

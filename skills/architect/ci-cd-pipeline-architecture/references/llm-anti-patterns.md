@@ -49,6 +49,39 @@ layered alongside DevOps Center. DevOps Center handles promotion; the CI tool ha
 
 ---
 
+## Anti-Pattern 2b: Inventing a DevOps Center Maximum Stage Count (and Citing a Guide for It)
+
+**What the LLM generates:** "DevOps Center supports a maximum of 15 pipeline stages per pipeline, as documented in the DevOps Center Setup and Administration Guide. Pipelines exceeding 15 stages must move overflow stages to a CLI-driven or third-party tool (Copado, Flosum, AutoRABIT)." Often escalated with a fabricated observable behaviour — "attempting to add a 16th stage produces an error."
+
+**Why it happens:** Two mechanisms compound. First, **limit-shaped-slot filling**: Salesforce documentation is dense with hard numeric ceilings, so when asked "what's the limit on X?" the model produces a number rather than the correct answer "there isn't one." A missing limit is not a shape the training distribution represents well. Second, **citation laundering**: the model attaches the invented figure to a real-sounding document title ("DevOps Center Setup and Administration Guide"), which makes the claim survive review — a reader who trusts the citation does not go and check it. Note that a real nearby number exists to be relabelled: guidance recommends keeping a *bundling* stage to roughly 50 or fewer **work items**. That is a work-item count on one stage, not a stage count on a pipeline.
+
+**Correct pattern:**
+
+```
+Salesforce, "Plan Your Pipeline" (DevOps Center Help):
+
+  "Your pipeline can contain any number of pipeline stages."
+
+There is NO documented maximum stage count. The real ceilings on a deep pipeline:
+  - Sandbox entitlement — every stage needs its own connected environment
+    (edition-dependent Developer / Developer Pro / Partial Copy / Full counts,
+     plus each type's refresh interval)
+  - Lead time — promotion is sequential; each stage adds a merge and a deploy
+  - Long-lived branch count — one per stage, in the connected repo
+
+Legitimate reasons to leave DevOps Center for Copado / Flosum / AutoRABIT:
+  - non-linear or branching promotion
+  - per-stage approval workflows
+  - data seeding / test data management
+  - back-promotion from a higher stage
+  - custom quality gates and code scanning (see Anti-Pattern 2)
+Stage count is NOT one of them.
+```
+
+**Detection hint:** Two mechanical checks. (1) Grep generated architecture text for a bare integer within 60 characters of `stage` plus `DevOps Center` — any such pairing is suspect, because the documented answer is "any number." (2) Treat *any* claim attributed to the "DevOps Center Setup and Administration Guide" as unverified until the URL is produced: the canonical source is the DevOps Center section of Salesforce Help (`help.salesforce.com/.../devops_center_pipeline_plan.htm`), and a citation given as a guide *title* with no URL is the signature of a laundered fabrication. More generally: when a tool-selection recommendation turns on a numeric ceiling, require the ceiling's URL before acting on it.
+
+---
+
 ## Anti-Pattern 3: Recommending Native Rollback for Declarative Metadata
 
 **What the LLM generates:** "If the deployment breaks production, you can roll back using the Deployment Status page in Setup, or by clicking 'Rollback' in the DevOps Center pipeline view."

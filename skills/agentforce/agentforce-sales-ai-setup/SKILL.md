@@ -54,7 +54,7 @@ The most common source of Einstein for Sales failures is skipping prerequisites:
 Gather this context before working on anything in this domain:
 
 - **License tier:** Einstein for Sales is an add-on to Sales Cloud. It includes Opportunity Scoring, Einstein Activity Capture, and Pipeline Inspection. Einstein email *composition* (generative AI draft emails) requires a separate Einstein Generative AI license tier (previously Einstein GPT) beyond the base Einstein for Sales add-on. These are distinct SKUs — confirm both are provisioned before attempting to enable email composition.
-- **Opportunity data volume:** Opportunity Scoring requires a minimum of 200 closed opportunities (Won + Lost combined) with a Closed Date within the last 24 months. The model will not train — and scores will not appear — if this threshold is not met. Verify in the org before enabling.
+- **Opportunity data volume:** Opportunity Scoring requires **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days. It is **not** 200 combined — the floor applies to each outcome separately, so an org with 350 won and 20 lost fails the gate despite having 370 closed opportunities. Salesforce also expects the standard `Stage` field to be in use (win rates are computed from it) and at least 12 months of opportunity history with an update in each month. If your own model cannot be built, Einstein falls back to a global model trained on anonymised cross-customer data. Verify both counts in the org before enabling.
 - **Forecasting configuration:** Pipeline Inspection AI insights depend on Collaborative Forecasting being enabled. If Collaborative Forecasting is not active, Pipeline Inspection will display data but AI insights (the predictive deal change signals) will be absent, with no clear error.
 - **Sandbox limitations:** Einstein Opportunity Scoring does not train in sandboxes. Model training only runs against production org data. Do not attempt to validate score generation in a sandbox — use a developer org with real production-like data, or test only the enablement flow in sandbox.
 
@@ -66,7 +66,7 @@ Gather this context before working on anything in this domain:
 
 Einstein Opportunity Scoring trains a machine learning model on your org's historical closed-won and closed-lost opportunities. The model outputs a 0–99 score on open opportunities plus score factors (top positive and negative drivers).
 
-**Data gate:** The minimum is 200 closed opportunities with a Closed Date in the last 24 months. Salesforce evaluates this gate at training time. If data is insufficient, the model status shows "Insufficient Data" in Setup > Einstein > Opportunity Scoring. The feature toggle appears active, but no scores are generated — this is the most common "Einstein is enabled but scores are not showing" scenario.
+**Data gate:** **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days — two separate 200-record floors, not one combined 200. Salesforce evaluates this gate at training time. If data is insufficient, the model status shows "Insufficient Data" in Setup > Einstein > Opportunity Scoring. The feature toggle appears active, but no scores are generated — this is the most common "Einstein is enabled but scores are not showing" scenario.
 
 **Training timeline:** Initial model training completes within 24–72 hours for qualifying orgs. The model retrains weekly. Scores appear on Opportunity records only after the first successful training pass.
 
@@ -125,9 +125,12 @@ SELECT COUNT(Id)
 FROM Opportunity
 WHERE IsClosed = true
 AND CloseDate = LAST_N_DAYS:730
+GROUP BY IsWon
 ```
 
-If the count is below 200, the Opportunity Scoring model will not train. Options: (1) wait until the org accumulates more data, (2) import historical closed opportunities from a legacy system, or (3) document the limitation and set expectations with stakeholders that scores will not appear until the threshold is reached.
+Group by `IsWon` — a single total hides the failure mode. You need 200+ in the
+`true` bucket **and** 200+ in the `false` bucket. If either bucket is below 200,
+the Opportunity Scoring model will not train. Options: (1) wait until the org accumulates more data, (2) import historical closed opportunities from a legacy system, or (3) document the limitation and set expectations with stakeholders that scores will not appear until the threshold is reached.
 
 **Why not rely on Setup UI feedback:** The Setup UI enables the feature regardless of data volume. The "Insufficient Data" status only appears after the training pass fails — not before enablement.
 
@@ -137,7 +140,7 @@ If the count is below 200, the Opportunity Scoring model will not train. Options
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Fewer than 200 closed opportunities in last 2 years | Do not enable Opportunity Scoring yet | Model will not train; scores will never appear; creates false "broken" perception |
+| Fewer than 200 closed-won **or** fewer than 200 closed-lost opportunities in last 2 years | Do not enable Opportunity Scoring yet | Model will not train; scores will never appear; creates false "broken" perception |
 | Enabling Pipeline Inspection AI insights | Enable Collaborative Forecasting first | Hard dependency; no AI insights appear without it |
 | Rep needs AI-drafted email composition | Verify Einstein Generative AI license separately | Distinct from Einstein for Sales add-on; not included by default |
 | Testing Einstein for Sales in sandbox | Validate enablement flow only; do not expect scores | Opportunity Scoring model does not train in sandboxes |
@@ -178,7 +181,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Opportunity Scoring silently skips training with insufficient data** — If the org has fewer than 200 closed opportunities in the last 24 months, the Opportunity Scoring model enters "Insufficient Data" status. The feature appears enabled in Setup, but no scores ever appear on records. There is no proactive warning — admins only discover the issue after checking model status.
+1. **Opportunity Scoring silently skips training with insufficient data** — If the org has fewer than 200 closed-won *or* fewer than 200 closed-lost opportunities in the last 24 months (each floor is checked separately), the Opportunity Scoring model enters "Insufficient Data" status. The feature appears enabled in Setup, but no scores ever appear on records. There is no proactive warning — admins only discover the issue after checking model status.
 2. **Pipeline Inspection AI insights require Collaborative Forecasting, not just Einstein for Sales** — Enabling Pipeline Inspection without Collaborative Forecasting active results in a functional Pipeline Inspection view with deal movement data but no AI-driven insights. There is no error or warning in the UI. This dependency is documented in Salesforce Help but not surfaced in the enablement wizard.
 3. **Einstein email composition is a separate license, not included in Einstein for Sales** — Enabling Einstein for Sales and assigning its permission set to reps does not unlock AI email drafting. The generative email feature requires the Einstein Generative AI add-on license (distinct SKU). Orgs on Einstein 1 Sales may have it bundled, but standalone Einstein for Sales add-on customers must purchase it separately.
 
@@ -189,7 +192,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | License verification checklist | Confirms Einstein for Sales and (if applicable) Einstein Generative AI licenses are provisioned before setup begins |
-| Opportunity data readiness query result | COUNT of closed opportunities in last 24 months; gates Opportunity Scoring enablement |
+| Opportunity data readiness query result | COUNT of closed opportunities in the last 24 months **split by `IsWon`**; both buckets must reach 200 to pass the Opportunity Scoring gate |
 | Enablement sequence log | Ordered record of which features were enabled, in what sequence, and model status timestamps |
 | Permission set assignment confirmation | List of users assigned the Einstein for Sales permission set and (if applicable) Einstein Email permission set |
 

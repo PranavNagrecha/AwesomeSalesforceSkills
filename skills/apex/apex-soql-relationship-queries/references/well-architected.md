@@ -34,4 +34,6 @@
 - SOQL and SOSL Reference — TYPEOF: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_typeof.htm
 - Apex Developer Guide — Polymorphic Relationships: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm
 - Apex Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
+- Bulk API 2.0 and Bulk API Developer Guide — Query Jobs: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/queries.htm — unsupported SOQL in bulk query jobs includes "Parent-to-child relationship queries" (child-to-parent is supported), `GROUP BY`, `OFFSET`, `TYPEOF`, aggregate functions such as `COUNT()`, and compound address/geolocation fields; no dedicated status code is published for the rejection
+- SOAP API Developer Guide — StatusCode enumeration: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm — used to confirm no `QUERY_WITH_SELECTIVITY_HINT_ONLY_ALLOWED_IN_SUBQUERY` code exists
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

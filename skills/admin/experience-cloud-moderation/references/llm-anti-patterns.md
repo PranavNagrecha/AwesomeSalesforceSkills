@@ -126,3 +126,59 @@ If the moderation team includes external users:
 ```
 
 **Detection hint:** Any recommendation to assign moderation queue access to a partner or customer community user without noting the internal license requirement should be flagged.
+
+---
+
+## Anti-Pattern: Deriving the Permission's API Name from Its Setup Label
+
+**What the LLM generates:** Deployment metadata, a permission-set XML snippet,
+or a validation script that looks for the feed-moderation permission under a
+camel-cased version of its Setup label:
+
+```xml
+<!-- WRONG — this permission name does not exist -->
+<userPermissions>
+    <enabled>true</enabled>
+    <name>ModerateExperiencesFeeds</name>
+</userPermissions>
+```
+
+```python
+# WRONG — never matches a real .permissionset file
+if "ModerateExperiencesFeeds" in permission_set_xml:
+    ...
+```
+
+**Why it happens:** For most Salesforce user permissions, stripping the spaces
+out of the Setup label does produce the API name — `ManageUsers`,
+`ViewAllData`, `ModifyAllData`. That heuristic is right often enough to become
+a default. Feed moderation is one of the cases where it fails, because the
+label was renamed across releases (Chatter → Communities → Experiences) while
+the API name was frozen at its original `Network`-era spelling for backward
+compatibility. The label the admin sees and the string the metadata carries
+have drifted apart.
+
+**Correct pattern:**
+
+```
+Setup label:        Moderate Experiences Feeds
+Metadata API name:  ModerateNetworkFeeds
+
+<userPermissions>
+    <enabled>true</enabled>
+    <name>ModerateNetworkFeeds</name>
+</userPermissions>
+```
+
+The same label-vs-API drift affects the neighbouring site permissions, so
+resolve each one against the metadata rather than transliterating the label.
+
+**Detection hint:** `grep -rn "ModerateExperiences" .` over any metadata,
+manifest, or checker script — the token `ModerateExperiences` does not exist in
+the Salesforce metadata vocabulary at all, so every hit is a fabrication. The
+converse check is just as mechanical: a deployment that claims to grant feed
+moderation must contain the literal string `ModerateNetworkFeeds`.
+
+More generally: when a permission's label mentions "Experiences" or
+"Experience Cloud Site", suspect a renamed label and look up the API name
+instead of deriving it — the underlying object family is `Network`.

@@ -54,23 +54,25 @@ sf project deploy start --dry-run \
 
 ## Example 3: Diagnosing an API Version Mismatch
 
-**Context:** A team develops on a sandbox that was upgraded to Summer '25 (API v62.0). They set `sourceApiVersion` to `62.0` in `sfdx-project.json`. When deploying to production, which is still on Spring '25 (API v61.0), the deployment fails with `UNSUPPORTED_API_VERSION`.
+**Context:** A team develops on a sandbox that was upgraded to Summer '25 (API v64.0). They set `sourceApiVersion` to `64.0` in `sfdx-project.json`. When deploying to production, which is still on Spring '25 (API v63.0), the deployment fails with `UNSUPPORTED_API_VERSION`.
+
+> Release-to-version anchors, because getting these wrong is how the mismatch is misdiagnosed: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0.
 
 **Problem:** The error message is terse and does not explain that the issue is the gap between the source metadata API version and the target org's release version.
 
 **Solution:**
 
 1. Check the target org's current API version: Setup > Company Information, or run `sf org display --target-org production --json` and check the `apiVersion` field.
-2. Update `sfdx-project.json` to set `sourceApiVersion` to the target org's version (e.g., `61.0`).
-3. Scan all `-meta.xml` files for `<apiVersion>62.0</apiVersion>` and downgrade to `61.0`.
+2. Update `sfdx-project.json` to set `sourceApiVersion` to the target org's version (e.g., `63.0`).
+3. Scan all `-meta.xml` files for `<apiVersion>64.0</apiVersion>` and downgrade to `63.0`.
 4. Re-deploy.
 
 ```bash
 # Find all meta files with the wrong API version
-grep -rl "<apiVersion>62.0</apiVersion>" force-app/ --include="*-meta.xml"
+grep -rl "<apiVersion>64.0</apiVersion>" force-app/ --include="*-meta.xml"
 
 # Bulk-replace (after confirming the list)
-find force-app -name "*-meta.xml" -exec sed -i '' 's/<apiVersion>62.0</<apiVersion>61.0</g' {} +
+find force-app -name "*-meta.xml" -exec sed -i '' 's/<apiVersion>64.0</<apiVersion>63.0</g' {} +
 ```
 
 **Why it works:** The metadata XML schema is versioned. Downgrading to the target org's supported version ensures all XML elements are recognized by the deployment engine.

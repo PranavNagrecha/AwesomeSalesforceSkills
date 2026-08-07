@@ -27,9 +27,14 @@ from pathlib import Path
 # Salesforce metadata XML namespace
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
 
-# On-Demand Email-to-Case total and per-attachment limits (bytes)
-ON_DEMAND_TOTAL_EMAIL_LIMIT_MB = 25
-ON_DEMAND_ATTACHMENT_LIMIT_MB = 10
+# On-Demand Email-to-Case inbound size limits.
+# Salesforce enforces ONE limit: the total redirected message size
+# (body + attachments + HTML). There is no documented per-attachment cap.
+# https://help.salesforce.com/s/articleView?id=000386265&type=1
+ON_DEMAND_TOTAL_MESSAGE_LIMIT_MB = 35
+# MIME transfer encoding inflates a message by up to 33% in transit, so the
+# usable attachment payload inside the 35 MB total is roughly 25 MB.
+ON_DEMAND_EFFECTIVE_ATTACHMENT_MB = 25
 
 
 def parse_args() -> argparse.Namespace:

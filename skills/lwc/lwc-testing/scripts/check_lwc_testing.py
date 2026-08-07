@@ -78,7 +78,17 @@ def check_lwc_testing(manifest_dir: Path) -> list[str]:
                 issues.append(f"{test_file}: test file does not appear to render an LWC with `createElement()`.")
             if "document.body.appendChild" in text and "afterEach" not in text:
                 issues.append(f"{test_file}: appends elements to `document.body` without an `afterEach` cleanup block.")
-            if APEX_IMPORT_RE.search(text) and "jest.mock(" not in text and "registerApexTestWireAdapter(" not in text:
+            # `jest.mock(...)` returning a `create*TestWireAdapter` is the current
+            # Salesforce-prescribed shape. `register*TestWireAdapter` was the
+            # wire-service-jest-util 2.x API, removed in 3.x; it is still accepted
+            # here so legacy suites are not falsely flagged, but it must not be
+            # presented as the recommended form.
+            if (
+                APEX_IMPORT_RE.search(text)
+                and "jest.mock(" not in text
+                and "createApexTestWireAdapter(" not in text
+                and "registerApexTestWireAdapter(" not in text
+            ):
                 issues.append(
                     f"{test_file}: imports Apex but has no obvious imperative mock or Apex wire adapter registration."
                 )

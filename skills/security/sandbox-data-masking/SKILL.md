@@ -66,11 +66,16 @@ Data Mask is configured through a declarative UI (the Data Mask app installed fr
 
 ### Masking Types
 
-Data Mask provides three masking strategies per field:
+Data Mask provides **four** masking types per field. Not every type is supported on every field type — the Help topic carries a compatibility table.
 
-1. **Pseudonymous (Pattern-based replacement)**: Replaces values with realistic but fake values using Salesforce's internal data library. For example, a real name "Jane Smith" becomes "Carlos Rivera." This preserves referential integrity for testing workflows that validate name formats or email delivery.
-2. **Deterministic**: The same input always produces the same output within a single masking run, preserving uniqueness constraints and enabling consistent cross-object join testing. Useful when you need masked data to be consistent across related records (e.g., Contact email matches the User login email for the same person).
-3. **Null/Delete**: Replaces field values with null or blank. The simplest option; use when the field value is irrelevant to testing. Cannot be used on required fields — the job will error on required fields configured for null masking.
+1. **Replace with Random Characters** — substitutes randomly generated characters. Fastest replacement option; the result is not realistic-looking.
+2. **Replace from Library** — substitutes a similarly mapped word drawn from a Salesforce-supplied library (names, addresses, company names). Produces realistic-looking values, so format-sensitive tests and email-shape validation still exercise their logic. Slowest of the four.
+3. **Replace Using Pattern** — substitutes a value assembled from a pattern you define, for fields that must keep a specific shape (an account number, a policy reference).
+4. **Delete** — blanks the field. Simplest and fastest option; use when the value is irrelevant to testing. Do not point it at a required field or a field covered by a non-blank validation rule — the job aborts mid-run.
+
+Rough speed order, fastest to slowest: **Delete → Random Characters → Pattern → Library.**
+
+There is **no "Deterministic" and no "Pseudonymous" masking type.** "Deterministic" is Shield Platform Encryption vocabulary and does not belong to Data Mask at all; the property it describes — the same input always yielding the same output — is precisely the property Data Mask *avoids*, because masking is deliberately irreversible ("When you mask sandbox data, you can't unmask it"). If you need a value to match across two objects after masking, Data Mask will not do it for you: mask both fields, then reconcile them with your own post-mask job (see Example 2).
 
 ### Compliance Scope
 
@@ -122,8 +127,8 @@ global class MaskAfterRefresh implements SandboxPostCopy {
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Real customer emails must not appear in sandbox | Pseudonymous masking on Email fields | Preserves valid email format for workflow testing without exposing real addresses |
-| Cross-object FK integrity needed after masking | Deterministic masking on shared key fields | Same input always yields same output, so joins still resolve correctly |
+| Real customer emails must not appear in sandbox | **Replace from Library** masking on Email fields | Preserves valid email format for workflow testing without exposing real addresses |
+| Cross-object value consistency needed after masking | Mask both fields, then reconcile them with your own post-mask Apex/data job — Data Mask has no setting for this | Masking is irreversible by design and gives no same-input-same-output guarantee. Budget for the reconciliation step in the refresh runbook rather than expecting a masking type to deliver it |
 | Field value is irrelevant to any test scenario | Null/Delete masking | Simplest, fastest; eliminates all residual data risk |
 | Field is encrypted with Shield Platform Encryption | No Data Mask option; plan alternative | Data Mask cannot access encrypted field values; must use a separate anonymization strategy or deprovision encrypted data before copy |
 | PII exists in a Big Object | Out of scope for Data Mask | Big Objects are not supported; document as compliance exception with manual remediation plan |

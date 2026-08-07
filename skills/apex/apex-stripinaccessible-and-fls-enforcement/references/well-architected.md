@@ -26,6 +26,7 @@ The deepest tradeoff is per-entry-point: choose strip-and-log for end-user opera
 ## Official Sources Used
 
 - Apex Developer Guide — Strip Fields That Are Inaccessible to the Current User — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_security_stripinaccessible.htm
+- Apex Developer Guide — `Security.stripInaccessible` — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_stripInaccessible.htm — the method "checks the source records for lookup or master-detail relationship fields to which the current user doesn't have access", and its worked example strips a child `Contact.Phone` field from subquery results, so child records inside the passed collection **are** evaluated. The ID field is never stripped. Supported traversal depth is not stated in the documentation.
 - Apex Developer Guide — Filter SOQL Queries Using WITH SECURITY_ENFORCED — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm
 - Apex Developer Guide — Enforce User Mode for Database Operations — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_user_mode.htm
 - Apex Reference Guide — Security Class — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm

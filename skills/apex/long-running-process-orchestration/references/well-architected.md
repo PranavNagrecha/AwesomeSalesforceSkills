@@ -40,5 +40,7 @@
 - Apex Developer Guide — Continuation Class (Async Callouts): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm
 - Platform Events Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
+- Apex Developer Guide — Callout Timeouts: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm — "The default timeout is 10 seconds"; "the maximum is 120,000 milliseconds"; "The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds"
+- Apex Developer Guide — Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm — 120-second cumulative callout timeout, 100 callouts per transaction, and "50 in queueable context" for `@future` methods (so `@future` may be called from a Queueable)
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

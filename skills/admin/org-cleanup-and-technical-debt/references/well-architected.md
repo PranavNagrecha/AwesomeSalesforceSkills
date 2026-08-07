@@ -28,4 +28,5 @@
 - Metadata API Developer Guide — destructive deploy mechanics (destructiveChanges.xml, package.xml requirements)
 - Salesforce Well-Architected Overview — operational excellence and reliability framing for metadata hygiene
 - Salesforce Help: Manage Deleted Custom Fields — field recycle queue behavior and permanent erasure
+- Salesforce Help: Custom Fields Allowed Per Object + Edition Allocations — https://help.salesforce.com/s/articleView?id=platform.custom_field_allocations.htm&type=5 — the allocation is per object, not per data type: Professional 100, Enterprise 500, Performance/Unlimited 800, Developer 500; "An org can't have more than 900 custom fields on most object types, regardless of the edition or source of those fields."
 - Salesforce Admins Blog: Tech Debt — admin-focused technical debt awareness and cleanup guidance

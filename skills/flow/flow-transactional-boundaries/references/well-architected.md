@@ -57,6 +57,8 @@ Recommendation: pair every new-transaction boundary with a durable log record (c
 - Salesforce Help — "Flow Triggers: Before Save vs. After Save": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_types.htm
 - Salesforce Help — "Scheduled Paths in Record-Triggered Flows": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_scheduled_path.htm
 - Salesforce Developer Documentation — "Execution Governors and Limits": https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_gov_limits.htm
+- Salesforce Developer Documentation — "Platform Event Allocations" (per-edition publish/delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Salesforce Developer Documentation — "Configure the User and Batch Size for Your Platform Event Trigger" (2,000-message maximum and default): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm
 - Salesforce Help — "Pause Element" (Flow Builder reference): https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_pause.htm
 - Salesforce Help — "Flow Orchestration Overview": https://help.salesforce.com/s/articleView?id=sf.orchestrator_overview.htm
 - Salesforce Architects — "Well-Architected: Resilient": https://architect.salesforce.com/well-architected/trusted/resilient

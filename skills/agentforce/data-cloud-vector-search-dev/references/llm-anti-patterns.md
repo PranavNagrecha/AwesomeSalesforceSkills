@@ -41,12 +41,12 @@ const results = await fetch(`${instanceUrl}/api/v1/vector-search/${indexName}/qu
 });
 ```
 
-**Why it happens:** LLMs generalize from the Salesforce CRM REST API pattern where a single OAuth token obtained from `/services/oauth2/token` authenticates all CRM API calls. They are not trained on the Data Cloud authentication documentation that describes the separate `/services/a360/token` endpoint and the `cdpapi` scope requirement.
+**Why it happens:** LLMs generalize from the Salesforce CRM REST API pattern where a single OAuth token obtained from `/services/oauth2/token` authenticates all CRM API calls. They are not trained on the Data Cloud authentication documentation that describes the separate `/services/a360/token` exchange endpoint and the `cdp_query_api` scope requirement.
 
 **Correct pattern:**
 
 ```javascript
-// Correct: use the Data Cloud token endpoint with cdpapi-scoped Connected App
+// Correct: two-step exchange at /services/a360/token, cdp_query_api-scoped Connected App
 const dcTokenResponse = await fetch(`${crmInstanceUrl}/services/a360/token`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -201,3 +201,56 @@ To package for scratch org or ISV distribution:
 Two preconditions: Data Cloud must be provisioned, and generative AI audit and feedback data collection and storage must be turned on in Einstein Setup — otherwise the DMOs are simply empty, and a QA step reads that as "no masking occurred."
 
 **Detection hint:** any `/services/data/v\d+\.\d+/sobjects/\w*(Trust|Grndng|Grounding|GenAI)\w*` path; any SOQL `FROM` clause naming an object matching `AIGrndng.*` or `.*EinsteinTrustLog.*`; any reference to Trust Layer audit data that does not mention Data Cloud, a `__dlm` suffix, or the Query Editor. Mechanically: every real DMO name in this domain ends in `__dlm` and is queried in SQL, never SOQL — a Trust Layer audit identifier without that suffix is a fabrication until proven otherwise against the Data Cloud object reference.
+
+---
+
+## Anti-Pattern 8: Inventing the OAuth Scope Name `cdpapi` for Data Cloud
+
+**What the LLM generates:** "Create a Connected App with the `cdpapi` scope." Variants: `cdp_api`, `datacloud_api`, `c360_api`, "the Data Cloud API scope." The surrounding explanation is usually *correct* — a separate Data Cloud token really is required, `/services/a360/token` really is the exchange endpoint, the tenant `instance_url` really does end `.c360a.salesforce.com` — which is exactly why the invented scope name gets trusted.
+
+**Why it happens:** The model knows there is a Data-Cloud-specific scope and compresses the real family name to its most guessable form. Salesforce also renamed the product line (CDP → Customer Data Platform → Data Cloud → Data 360) while keeping the original `cdp_` scope prefix, so the training signal contains many product names but only one scope prefix, and the model interpolates between them.
+
+**Correct pattern:**
+```
+The Data 360 / Data Cloud OAuth scope family — the complete list:
+  cdp_ingest_api                Access and manage your Data 360 Ingestion API data
+  cdp_query_api                 Perform ANSI SQL queries on Data 360 data
+  cdp_profile_api
+  cdp_segment_api
+  cdp_identityresolution_api
+  cdp_calculated_insight_api
+
+Vector Search Query API needs: cdp_query_api + api + refresh_token, offline_access
+There is NO scope named 'cdpapi'.
+```
+
+**Detection hint:** the token `cdpapi` (no underscore between `cdp` and `api`) is always wrong — every real scope in this family has the form `cdp_<surface>_api`. Mechanically: in a `.connectedApp-meta.xml`, a `<scopes>` value that normalises (lowercase, strip non-alphanumerics) to `cdpapi` rather than `cdpqueryapi` / `cdpingestapi` / etc. will not deploy. `scripts/check_data_cloud_vector_search_dev.py` enforces exactly this.
+
+---
+
+## Anti-Pattern 9: Describing the Data Cloud Token as a One-Step `client_credentials` Grant
+
+**What the LLM generates:** "POST to `<org-instance>/services/a360/token` with `grant_type=client_credentials` and the Data Cloud Connected App's client id and secret."
+
+**Why it happens:** `client_credentials` is the default machine-to-machine grant across the whole OAuth ecosystem, and the endpoint path in the sentence is right, so the grant type slides in unchallenged. The model also has no strong signal that `/services/a360/token` is a *token-exchange* endpoint rather than a token-issuance endpoint.
+
+**Correct pattern:**
+```
+Two steps, not one.
+
+1. Get an ordinary Salesforce access token.
+   POST https://login.salesforce.com/services/oauth2/token
+   grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer   (JWT Bearer flow)
+   from a Connected App scoped cdp_query_api + api + refresh_token,offline_access
+
+2. Exchange it for the Data Cloud token.
+   POST <instance_url>/services/a360/token
+   grant_type=urn:salesforce:grant-type:external:cdp
+   subject_token=<the token from step 1>
+   subject_token_type=urn:ietf:params:oauth:token-type:access_token
+
+   The response carries the Data Cloud access token AND the tenant instance_url
+   (…​.c360a.salesforce.com). Use THAT host for all Query API calls.
+```
+
+**Detection hint:** `services/a360/token` co-occurring with `client_credentials` in the same request is always wrong. The correct request always carries a `subject_token` parameter — its absence in an a360 call is the mechanical tell.

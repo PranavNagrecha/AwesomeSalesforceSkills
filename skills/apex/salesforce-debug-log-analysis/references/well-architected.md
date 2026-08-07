@@ -43,5 +43,7 @@ Tag findings as Reliability when:
 
 - Apex Developer Guide — [Debug Log](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_debugging_debug_log.htm), [Log Event Reference](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_log_events_reference.htm)
 - Apex Reference Guide — [System.Limits](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_limits.htm)
+- Apex Reference Guide — [Exception Class and Built-In Exceptions](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm) — used to confirm the exception class names quoted in log signatures; there is no `MixedDmlException` type, so mixed-DML log lines read `System.DmlException: … MIXED_DML_OPERATION`
+- SOAP API Developer Guide — [StatusCode enumeration](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm) — used to verify status-code strings quoted in the error-code reference
 - Salesforce Developer Guide — [Order of Execution](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm)
 - Salesforce Architects — [Well-Architected: Trusted > Resilient](https://architect.salesforce.com/well-architected/trusted/resilient), [Well-Architected: Adaptable > Composable](https://architect.salesforce.com/well-architected/adaptable/composable)

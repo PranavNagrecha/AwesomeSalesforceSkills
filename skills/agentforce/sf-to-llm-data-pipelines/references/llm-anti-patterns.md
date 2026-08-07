@@ -15,7 +15,7 @@ These patterns help the consuming agent self-check its own output.
 For any extraction exceeding ~10,000 records, use Bulk API v2 query jobs:
 1. POST to /services/data/vXX.0/jobs/query with the SOQL and contentType=CSV
 2. Poll job status until state == "JobComplete"
-3. GET /services/data/vXX.0/jobs/query/{jobId}/results with Sfdclocator cursor
+3. GET /services/data/vXX.0/jobs/query/{jobId}/results?locator={Sforce-Locator value}
 4. Follow cursor until response body is empty
 
 Bulk API v2 uses a separate daily byte quota from the standard API call limit,
@@ -165,3 +165,104 @@ auth_payload = {
 ```
 
 **Detection hint:** Look for `grant_type: password` or `grant_type=password` in authentication code. Any occurrence is the anti-pattern for production pipeline use.
+
+---
+
+## Anti-Pattern: Reading Bulk API 2.0 Pagination From a Fabricated `Sfdclocator` Header
+
+**What the LLM generates:**
+```python
+locator = result.headers.get("Sfdclocator")     # WRONG — always None
+while True:
+    ...
+    if not batch:            # WRONG termination condition
+        break
+```
+Variants: `Sfdc-Locator`, `SForceLocator`, `X-Sforce-Locator`, and stopping when the response body is empty rather than when the header reads `null`.
+
+**Why it happens:** Salesforce uses `Sfdc` as a namespace prefix in dozens of places (`sfdc`, `sfdcinternal`, the `Sfdc_` metadata prefixes), so the model reaches for the more familiar token. The header is also read once at the bottom of a loop, far from any documentation the model would have anchored on.
+
+**Why this one is dangerous:** it is a **silent data-loss** bug. `headers.get()` on a wrong name returns `None`, the loop breaks after the first page, and the pipeline reports success. A 4-million-record extract quietly becomes whatever fitted in page one, and every downstream artefact — embeddings, vector index, evaluation set — is built on the truncated data with no error anywhere in the run.
+
+**Correct pattern:**
+```python
+locator = None
+while True:
+    params = {"maxRecords": 50000}          # explicit; there is NO published default
+    if locator:
+        params["locator"] = locator
+    r = requests.get(results_url, headers=hdrs, params=params)
+    rows.extend(csv.DictReader(io.StringIO(r.text)))
+    locator = r.headers.get("Sforce-Locator")       # canonical name
+    if not locator or locator == "null":            # literal string "null"
+        break
+```
+`Sforce-NumberOfRecords` carries the count for the current set and is a cheap assertion target.
+
+**Detection hint:** grep the pipeline for `Sforce-Locator`; any *other* casing or spelling of a locator header is wrong. Two mechanical smells accompany it: a `headers.get(...)` result used as a loop condition without a `None` check, and a loop that terminates on an empty body instead of the literal string `"null"`. A cheap runtime assertion is to fail the job when the row count equals `maxRecords` exactly and the locator was falsy — that combination means the header name was wrong, not that the data ended.
+
+---
+
+## Anti-Pattern: Quoting a Published Default for Bulk API 2.0 `maxRecords`
+
+**What the LLM generates:** "Each call returns up to `maxRecords` rows (default 50,000)." Also seen as 10,000 and 100,000.
+
+**Why it happens:** 50,000 is a real, very familiar Salesforce number — it is the SOQL rows-per-transaction governor limit — so it is available and plausible. The documentation's actual wording ("the server uses a default value based on the service") is a non-answer, and models rarely reproduce a non-answer when a confident number is available.
+
+**Correct pattern:**
+```
+maxRecords has NO published default. Salesforce reserves discretion.
+Always pass maxRecords explicitly if page size matters to your consumer,
+and never size memory, checkpoint intervals or progress estimates around
+an assumed default.
+```
+
+**Detection hint:** any sentence pairing `maxRecords` with the word "default" and a number is unsupported by the documentation. In code, a consumer that pre-allocates or checkpoints on a hardcoded page size *without* also sending `maxRecords` in the request is relying on the invented default.
+
+---
+
+## Anti-Pattern: Claiming Bulk API 2.0 Query Jobs Cannot Traverse to Parent Fields
+
+**What the LLM generates:** "`SELECT Account.Name FROM Contact` is not supported in Bulk API v2 — denormalise the parent value into a formula field, or join client-side."
+
+**Why it happens:** Bulk API 2.0 genuinely does restrict SOQL, and *parent-to-child subqueries* are on the unsupported list. The model recalls "relationship queries are restricted" and inverts which direction is blocked, because the child-to-parent direction is the one it sees written most often.
+
+**Why it matters:** the remedy is expensive and irreversible-ish. Teams add denormalising formula fields to production schema (which carry their own per-object limits and recalculation cost) to route around a restriction that was never there, and they slow every extract by issuing a second parent query and joining in the client.
+
+**Correct pattern:**
+```
+SUPPORTED:   child-to-parent traversal — SELECT Id, Account.Name FROM Contact
+UNSUPPORTED: GROUP BY, OFFSET, TYPEOF
+             aggregate functions (COUNT(), etc.)
+             date functions inside GROUP BY
+             compound address / compound geolocation fields
+             parent-to-child subqueries — SELECT Id, (SELECT Id FROM Contacts) FROM Account
+
+Also: LIMIT and ORDER BY disable PKChunking, which can push a large
+extract past the retrieval timeout. Avoid both on extraction queries.
+```
+
+**Detection hint:** a proposal to create a formula field whose only purpose is to expose a parent value to a Bulk API extract is the tell — the dotted path works directly. Conversely, a Bulk query string containing `(SELECT` is a real, checkable violation.
+
+---
+
+## Anti-Pattern: Stating the Bulk API 2.0 Record Ceiling as 100 Million Per Connected App
+
+**What the LLM generates:** "Bulk API v2 supports up to 100 million records per 24-hour rolling window per connected app" — often paired with the architectural suggestion to shard work across several connected apps for more headroom.
+
+**Why it happens:** 100 million is a rounder, more memorable number than 150,000,000, and "per connected app" is the scoping unit for API-request limits in several other Salesforce contexts, so the model transplants it.
+
+**Why it matters:** the per-connected-app half is the damaging part. It licenses a capacity plan built on horizontal sharding that delivers exactly zero additional throughput, and the team discovers this only when the org-level allocation is exhausted mid-migration.
+
+**Correct pattern:**
+```
+Ingest:  150,000,000 records per rolling 24 hours — ORG-LEVEL, not per app
+         150 MB max file per job; keep uploads under 100 MB (base64 inflation)
+Query:   10,000 query jobs per rolling 24 hours
+         1 TB total query results per rolling 24 hours
+         1 GB max retrieved file size per batch
+         20-minute retrieval timeout
+```
+Note the 100 MB figure belongs to the *ingest* upload side. Attaching it to query result batches (whose ceiling is 1 GB) conflates two different limits.
+
+**Detection hint:** the phrase `per connected app` adjacent to a Bulk API record volume is always wrong. `100 million` / `100,000,000` as a Bulk record ceiling is always wrong — the number is 150,000,000. `100 MB` described as a *query result* batch limit is the relabelled ingest figure.

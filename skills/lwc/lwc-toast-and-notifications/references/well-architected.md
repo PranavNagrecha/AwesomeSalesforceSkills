@@ -28,3 +28,5 @@
 - LWC Salesforce modules reference — https://developer.salesforce.com/docs/atlas.en-us.lwc.meta/lwc/reference_salesforce_modules.htm
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide
+- Toast Notifications (`lightning/toast`, and the unsupported contexts for `lightning/platformShowToastEvent`) — https://developer.salesforce.com/docs/platform/lwc/guide/use-toast.html
+- lightning-toast component documentation — https://developer.salesforce.com/docs/component-library/bundle/lightning-toast/documentation

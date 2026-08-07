@@ -61,7 +61,7 @@ price;
 </LightningComponentBundle>
 ```
 
-**Detection hint:** Check every `.js-meta.xml` for a `<capabilities>` block containing `lightningCommunity__RelaxedCSP`. Its absence in any component deployed to a Commerce store is a defect.
+**Detection hint:** Check every `.js-meta.xml` for a `<capabilities>` block containing `lightningCommunity__RelaxedCSP`. Its absence is a **defect for managed-package components** (Salesforce documents that those are disabled in the Experience Builder Components panel on any site with Locker disabled) and a **style finding for org-local components** — do not report the latter as a runtime failure, and do not attribute a component that renders incorrectly to this capability, since the documented symptom is the component being unavailable to place at all.
 
 ---
 
@@ -180,5 +180,17 @@ async handleAddToCart() {
 ```
 
 **Detection hint:** Any Apex import in a Commerce storefront component that handles cart operations (`addItem`, `removeItem`, `updateQuantity`) or wishlist operations (`addToWishlist`, `removeFromWishlist`) should be replaced with the equivalent `commerce/cartApi` or `commerce/wishlistApi` function. Custom Apex is only appropriate for operations with no Commerce API equivalent.
-</content>
-</invoke>
+
+---
+
+## Anti-Pattern: Over-scoping `lightningCommunity__RelaxedCSP` and inventing its failure mode
+
+**What the LLM generates:**
+
+> "Every custom LWC deployed to a Commerce store must declare `lightningCommunity__RelaxedCSP`. This is not optional. Without it the component may render inconsistently across store pages or fail silently on cart and checkout pages — the LWR runtime enforces the capability check differently per page type."
+
+**Why it happens:** The capability is real, the LWS/Locker framing around it is right, and only the **scope** and the **symptom** are invented — which is why it reads so convincingly. Two pressures produce it. First, safety inflation: "required for managed packages" is weaker and more conditional than "required, not optional," and guidance drifts toward the stronger form because the stronger form is never *wrong* to follow. Second, symptom invention: a rule needs a consequence to be memorable, and "renders inconsistently on cart and checkout pages" is a far more vivid consequence than the real one, so it gets filled in. The per-page-type enforcement mechanism is pure confabulation — there is no such thing.
+
+**Correct version:** Salesforce documents exactly one effect: *"Lightning web components in a managed package that aren't configured with the `lightningCommunity__RelaxedCSP` tag are disabled in the Components panel in Experience Builder for any site with Lightning Locker disabled."* Managed-package components only; the symptom is **unavailability at design time**, not misbehaviour at runtime. Declaring it on org-local components is harmless and fine as a house convention — just do not call it mandatory, and never diagnose a rendering bug as a missing `RelaxedCSP`, because a component missing this tag never gets onto the page to render badly.
+
+**Detection hint:** grep for `RelaxedCSP` near `render`, `runtime`, `checkout`, or `silently` — the documented symptom is about the **Components panel**, so any runtime symptom attached to it is invented. Generalisable pair: (1) **"this is not optional" without a quoted source** usually marks a conditional requirement that has been hardened; (2) when guidance names a failure mode that varies by page type, environment, or record type without citing the rule that varies, treat the variation as fabricated — invented symptoms are more often *specific* than vague, because specificity is what makes them feel remembered.

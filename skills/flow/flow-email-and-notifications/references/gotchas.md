@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: The 1,000 Custom Notifications Per Hour Org Limit Applies Across All Flows
+## Gotcha 2: Exceeding the 10,000 Notification Actions Per Hour Org Limit Drops Notifications Silently — It Does Not Fault
 
-**What happens:** Salesforce enforces a limit of 1,000 custom notifications per hour at the org level. This is not a per-flow or per-user limit. When the limit is crossed, the Send Custom Notification action faults for every subsequent invocation in that hour, regardless of which flow triggered it.
+**What happens:** An org can run 10,000 notification actions per hour. This is not a per-flow or per-user limit. The important part is the failure mode, which is the opposite of what practitioners expect: Salesforce documents that once the limit is crossed, "no more notifications are sent in that hour, and all unsent notifications are lost. Notification actions resume in the next hour." The action does **not** throw a fault, so a fault connector never fires and a record-triggered flow is never rolled back. If 10,250 notification actions fire between 4:00 and 4:59, the first 10,000 run and the remaining 250 are silently discarded; processing resumes at 5:00.
 
-**When it occurs:** High-volume record-triggered flows (e.g., triggered on every order or support ticket) can exceed this limit quickly during peak hours or after a bulk data load. The failure shows up as a fault on the action element.
+**When it occurs:** High-volume record-triggered flows (e.g., triggered on every order or support ticket) can exceed this limit during peak hours or after a bulk data load. Each notification can target up to 10,000 recipients, so the cap is on *actions*, not on delivered notifications — one action fanned out to 5,000 users costs 1, not 5,000.
 
-**How to avoid:** Calculate worst-case notification volume before activating a flow against high-volume objects. Add a fault connector to every Send Custom Notification action. Consider batching notifications through a scheduled flow or using email for high-volume scenarios where the hourly cap cannot be avoided.
+**How to avoid:** Calculate worst-case notification-action volume before activating a flow against high-volume objects. Do **not** rely on a fault connector to detect exhaustion — there is no exception to catch. If loss is unacceptable, write your own counter (a Custom Metadata threshold plus a custom object tally, or Event Monitoring) or route high-volume scenarios through email or a queued/scheduled flow that spreads the actions across hours. Note separately that an org retains the most recent 1,000,000 custom notifications for the notification tray (trimmed back to 1,000,000 once 1,200,000 accumulate).
 
 ---
 

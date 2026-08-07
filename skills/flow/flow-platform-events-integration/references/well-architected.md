@@ -21,7 +21,7 @@ Well-Architected Performant asks that work run at the lowest cost and at the cor
 - **High-Volume PEs scale horizontally.** Multiple external Pub/Sub API consumers can subscribe independently; adding consumers does not add load to Salesforce write-paths.
 - **Publish cost is DML + per-hour.** Each publish is 1 DML statement in the originating transaction. 200 events = 1 DML if published as a collection; 200 DML if published in a loop. Bulk-safe publishing is a direct performance multiplier.
 - **Subscriber batching reduces overhead.** High-Volume subscribers receive up to 2,000 events per flow invocation. A bulk-safe subscriber (collection SOQL + collection DML) processes an entire batch for 1 SOQL + 1 DML.
-- **Publish limits are a performance ceiling.** Standard-Volume's 6,000/hour org-wide cap is easy to hit during an import. Monitor the Platform Event Usage page. Route high-rate use cases to High-Volume early; retrofitting later requires consumer changes.
+- **Publish limits are a performance ceiling.** Standard-Volume is allocated 100,000 publishes/hour org-wide on Enterprise / Performance / Unlimited — but only 1,000/hour on Developer and Professional-with-API-Add-On, which is why designs that pass in a Developer sandbox can be sized wrong for production, and vice versa. High-Volume raises the ceiling to 250,000/hour but is still an org-wide bucket, and its **delivery** allocation is the tighter one: 50,000 (Performance / Unlimited) / 25,000 (Enterprise) / 10,000 (Developer) event deliveries per 24 hours, shared with Change Data Capture. Monitor the Platform Event Usage page. Route high-rate use cases to High-Volume early; retrofitting later requires consumer changes.
 - **Pause is NOT a PE substitute.** A Pause-and-wait design holds a flow interview in storage. PE publish-and-subscribe is stateless per subscriber invocation. For long-running waits on external events, PEs with a PE-triggered resumption flow are usually cheaper than Pause.
 
 ## Security
@@ -56,6 +56,8 @@ Well-Architected Trusted / Secure emphasizes correct running-user context and le
 - Salesforce Developer Documentation — "Platform Events Developer Guide": https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm
 - Salesforce Help — "Platform Event–Triggered Flow": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_platform_event.htm
 - Salesforce Developer Documentation — "High-Volume Platform Events Allocations": https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Salesforce Developer Documentation — "Platform Event Allocations" (per-edition publish + delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Salesforce Developer Documentation — "Configure the User and Batch Size for Your Platform Event Trigger" (2,000-message maximum and default batch size): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm
 - Salesforce Developer Documentation — "Pub/Sub API": https://developer.salesforce.com/docs/platform/pub-sub-api/overview
 - Salesforce Architects — "Well-Architected: Resilient": https://architect.salesforce.com/well-architected/trusted/resilient
 - Salesforce Architects — "Well-Architected: Performant": https://architect.salesforce.com/well-architected/trusted/performant

@@ -176,3 +176,22 @@ the remedy for a bad release is a new version, not the removal of the old one.
 install check above has passed. Keep the version id, the git commit and the release notes
 recorded together — when a subscriber reports a defect against a version, the id is the only
 thing that identifies which source built it.
+
+
+---
+
+## Anti-Pattern: Guessing the `sf` CLI **topic** for a command whose verb you remember
+
+**What the LLM generates:** `sf package dependencies list --package <id>`, `sf project list metadata --metadata-type ReportFolder`, `sf org deploy start`, `sf package version dependencies`.
+
+**Why it happens:** The `sfdx force:*:*` → `sf <topic> <verb>` rewrite reshuffled which *topic* owns which noun, and the model reconstructs the command from the noun it needs (`dependencies`, `metadata`) rather than from the topic tree. `sf project …` handles local source and deployments, so "list the metadata" feels like it belongs there; in fact anything that queries a live org lives under `sf org …`. Likewise `dependencies` is a property of a package **version**, not of a package, so the verb hangs off `package version`, not `package`. These fail with a plain command-not-found, which is cheap — but they are usually step 1 of a workflow, so the whole procedure stalls at the first line, and they most often appear in "correct pattern" or "how to avoid" positions where a reader has been told to trust them.
+
+**Correct version:**
+
+| Wrong | Right |
+|---|---|
+| `sf package dependencies list --package <id>` | `sf package version displaydependencies --package <packageVersionId>` |
+| `sf project list metadata --metadata-type X` | `sf org list metadata --metadata-type X --target-org <alias>` |
+| (listing available types) | `sf org list metadata-types --target-org <alias>` |
+
+**Detection hint:** two mechanical rules that need no memorisation. (1) **If the command talks to an org, the topic is `org`.** `sf project` is for local source, manifests, and deploy/retrieve; the only `sf project list` subcommand is `list ignored`. (2) **`package` vs `package version`:** anything about the contents, ancestry, or dependencies of a built artifact hangs off `package version`; only lifecycle operations on the container (`create`, `list`, `update`, `delete`, `install`, `uninstall`) hang off `package`. Anything else, check the CLI reference — and note that "this command is fake" is itself a claim needing a source, since `sf project deploy validate` and `sf project deploy preview` are real and are frequently mis-flagged.

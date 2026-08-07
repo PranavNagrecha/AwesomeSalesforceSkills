@@ -29,34 +29,24 @@ When the coverage insert fails (for example, due to a missing required coverage 
 Call the Insurance Policy Business Connect API instead. The request is a single HTTP POST that creates the policy and all coverages atomically:
 
 ```http
-POST /services/data/v62.0/connect/insurance/policy-issuances
+POST /services/data/v67.0/connect/insurance/policies
 Content-Type: application/json
 Authorization: Bearer {access_token}
 
 {
-  "policyName": "POL-2026-00123",
-  "effectiveDate": "2026-04-15",
-  "expirationDate": "2027-04-15",
-  "productId": "01tXXXXXXXXXXXXX",
-  "policyHolderId": "001XXXXXXXXXXXXXXX",
-  "coverages": [
-    {
-      "coverageType": "Liability",
-      "coverageAmount": 100000,
-      "deductibleAmount": 500
-    },
-    {
-      "coverageType": "Collision",
-      "coverageAmount": 50000,
-      "deductibleAmount": 1000
-    },
-    {
-      "coverageType": "Comprehensive",
-      "coverageAmount": 50000,
-      "deductibleAmount": 500
-    }
-  ]
+  "<contextIdField>": "<context record Id>"
 }
+```
+
+Two things about that request are worth stating precisely, because both are commonly got wrong:
+
+- **The resource is `policies`, not `policy-issuances`.** The Insurance Policy Business API roots everything at a single `policies` collection and expresses lifecycle operations as verb sub-resources on an individual policy — `/policies/{policyId}/endorse`, `/renew`, `/cancel`, `/reinstate`, `/out-of-sequence-endorsement`. There is no pluralised transaction collection for any of them.
+- **The body is context-driven, not a flat policy document.** Salesforce describes the operation as "use the context ID provided in the request body to generate a new insurance policy." The placeholder above is deliberately not filled in: take the exact field name and any accompanying members from the *Requests* section of the Insurance Policy Business API reference for your API version. Reconstructing the body from `InsurancePolicy` / `InsurancePolicyCoverage` field names produces a payload that looks plausible and is rejected.
+
+For a parent policy carrying children of different product types, use the multi-root resource instead — and note it completes **asynchronously**, so the caller cannot read the policy back on the response:
+
+```http
+POST /services/data/v67.0/connect/insurance/policies/multi-root
 ```
 
 A successful response returns HTTP `201 Created` with the new `InsurancePolicy` ID:

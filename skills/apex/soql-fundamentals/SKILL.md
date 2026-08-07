@@ -221,13 +221,25 @@ WHERE Id NOT IN (
 
 **When to use:** Discover all fields on an object without knowing field names. Available since API v51.0.
 
-```sql
-SELECT FIELDS(ALL) FROM Account LIMIT 200
-SELECT FIELDS(STANDARD) FROM Contact
-SELECT FIELDS(CUSTOM) FROM Account LIMIT 200
+**In Apex, only `FIELDS(STANDARD)` is available.** The documentation splits the keyword into *bounded* and *unbounded* forms and supports them in different places:
+
+| Form | Apex (inline and dynamic) | REST / SOAP / CLI | Bulk API 2.0 |
+|---|---|---|---|
+| Bounded — `FIELDS(STANDARD)` | Supported | Supported | Supported |
+| Unbounded — `FIELDS(ALL)`, `FIELDS(CUSTOM)` | **Not supported** | Supported only if the result rows are limited | **Not supported** |
+
+```apex
+// Legal in Apex — bounded, no LIMIT required
+List<Contact> cons = [SELECT FIELDS(STANDARD) FROM Contact];
+
+// NOT legal in Apex at any LIMIT — unbounded forms are unsupported here,
+// so this fails to compile / fails at Database.query() time regardless of LIMIT
+// List<Account> accts = [SELECT FIELDS(ALL) FROM Account LIMIT 200];
 ```
 
-`FIELDS(ALL)` respects FLS — it only returns fields the running user can read. Always pair with `LIMIT` when using `FIELDS(ALL)` or `FIELDS(CUSTOM)` to avoid hitting governor limits.
+Adding `LIMIT 200` does **not** make `FIELDS(ALL)` work in Apex. The `LIMIT n where n <= 200` rule is what unlocks the unbounded forms in the REST/SOAP APIs and the CLI — contexts where they are supported in the first place. Apex is simply not one of those contexts. If you need every field of a record in Apex, enumerate the fields explicitly, or build the field list at run time from `Schema` describes and use `Database.query()` (see the `apex/dynamic-apex` skill, and note that a describe-built field list does *not* inherit FIELDS()'s automatic FLS filtering — you must enforce FLS yourself with `WITH USER_MODE` or `Security.stripInaccessible`).
+
+`FIELDS()` respects field-level security in every context where it is supported: the docs state it "only shows the fields that you have permission to access."
 
 ---
 
@@ -282,7 +294,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 3. **Aggregate functions cannot use LIMIT without GROUP BY** — `SELECT MAX(CreatedDate) FROM Account LIMIT 1` is invalid. The pattern that looks like "get the most recent record" does not work this way in SOQL — use `ORDER BY CreatedDate DESC LIMIT 1` on a full query instead.
 
-4. **FIELDS(ALL) without LIMIT causes row-count failures** — `SELECT FIELDS(ALL) FROM Account` returns all fields for every record. Without LIMIT, this easily blows the 50,000-row limit or produces a QUERY_TOO_LARGE error. Always pair FIELDS() with LIMIT.
+4. **Writing `FIELDS(ALL)` or `FIELDS(CUSTOM)` in Apex at all** — the unbounded forms are documented as "Not supported" for Apex, inline and dynamic. No `LIMIT` value rescues them; `LIMIT 200` is the rule for REST/SOAP/CLI, which are separate contexts. In Apex use `FIELDS(STANDARD)` (which needs no `LIMIT`) or enumerate fields explicitly. Where the unbounded forms *are* supported, violating the row-limit rule returns `MALFORMED_QUERY` — there is no `QUERY_TOO_LARGE` status code in the API's `StatusCode` enumeration.
 
 5. **Custom relationship names use __r not __c** — Traversing a custom lookup field `Parent__c` in a query uses `Parent__r.FieldName__c`, not `Parent__c.FieldName__c`. Using `__c` in dot notation causes a MALFORMED_QUERY error that is easy to misread.
 

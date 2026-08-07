@@ -70,11 +70,11 @@ Set on event metadata (`PublishBehavior: PublishAfterCommit` | `PublishImmediate
 
 ### ReplayId and durability
 
-Standard Platform Events are stored with a ReplayId; subscribers can replay from a specific Id (up to 72 hours). High-Volume events have different durability.
+Every published event is stored with a `ReplayId`; a subscriber can resume from a stored `ReplayId`, or use `-1` (default — new events only) or `-2` (replay everything still retained). Retention is **72 hours** for high-volume events — which is every event definable since Spring '19 — and **24 hours** for legacy standard-volume events, retiring in Winter '27. Retention is fixed: no field or setting extends it, so a replay window longer than 72 hours must be served by a durable copy the publisher writes alongside the event.
 
 ### Event allocation
 
-Events are counted against an org's monthly Platform Event allocation (license-dependent). Bulk publishes consume one allocation unit per event published.
+Publishing is metered **per hour, org-wide**: 250,000/hour for high-volume events on Enterprise, Performance, and Unlimited; 50,000/hour on Developer; add-on capacity in +25,000/hour increments. Bulk publishes consume one unit per event published, so a 10,000-record batch that publishes one event per record spends 10,000 of the hourly allocation — batching domain changes into coarser events is the lever when a design approaches the ceiling. (Event *delivery* to CometD/empApi subscribers is metered separately on a 24-hour basis; do not conflate the two.)
 
 ### Publishing from async contexts
 

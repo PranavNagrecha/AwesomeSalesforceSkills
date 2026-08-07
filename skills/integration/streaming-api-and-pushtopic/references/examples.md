@@ -47,7 +47,9 @@ public class OpportunityStreamingClient {
 
     public OpportunityStreamingClient(ReplayStore store) {
         this.replayStore = store;
-        // Load persisted replay ID; default to -2 (new events only) on first run
+        // Load persisted replay ID; default to -2 (replay everything still
+        // retained) on first run so an initial deploy does not skip in-flight events.
+        // -1 would be tip-only and is the wrong first-run default here.
         this.lastReplayId = new AtomicLong(store.load(TOPIC, -2L));
     }
 
@@ -168,6 +170,6 @@ export default class WarehouseStatusPanel extends LightningElement {
 
 **What practitioners do:** Some integrations call the CometD `/connect` endpoint on a timer (e.g., every 10 seconds via a cron job) instead of immediately re-issuing `connect` after each server response.
 
-**What goes wrong:** The Salesforce CometD server interprets any gap in the long-poll loop as a disconnection. After the timeout elapses (typically 40 seconds on Salesforce), it invalidates the `clientId`. The next `connect` attempt returns `402::Unknown client`. The client must re-handshake, re-subscribe, and loses all events that arrived during the gap if no replay ID was stored.
+**What goes wrong:** The Salesforce CometD server interprets any gap in the long-poll loop as a disconnection. After the timeout elapses (typically 40 seconds on Salesforce), it invalidates the `clientId`. The next `connect` attempt returns `403::Unknown client` (there is no 402 code in Streaming API). The client must re-handshake, re-subscribe, and loses all events that arrived during the gap if no replay ID was stored.
 
 **Correct approach:** After receiving any response from the `/connect` poll (whether it contains events or is an empty heartbeat), immediately re-issue the `/connect` request. The EMP Connector handles this automatically. When building a custom CometD client, implement the re-connect as a callback triggered on every response, not on a timer.

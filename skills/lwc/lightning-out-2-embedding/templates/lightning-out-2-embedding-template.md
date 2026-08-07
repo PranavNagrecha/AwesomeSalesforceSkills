@@ -118,4 +118,3 @@ bootstrapLightningOut();
 - Channels/browsers tested (with third-party cookies enabled **and** blocked):
 - Token/frontdoor exchange endpoint owner:
 - App-Manager app-id and My Domain of record:
-</content>

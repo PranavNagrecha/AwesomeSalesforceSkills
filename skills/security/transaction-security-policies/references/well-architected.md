@@ -35,3 +35,5 @@
 - Platform Events Developer Guide — RTEM event types, policy-support flags, field references for LoginEvent, ReportEvent, ApiEvent: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro_emp.htm
 - Salesforce Well-Architected Overview — Security pillar framing, behavioral enforcement patterns: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Metadata API Developer Guide — TransactionSecurityPolicy metadata type reference: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Platform Events Object Reference — LoginEventStream (supported call: describeSObjects() only; consumed via Pub/Sub API or CometD on /event/LoginEventStream) — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_logineventstream.htm
+- Platform Events Object Reference — LoginEvent (big object storing LoginEventStream data; supported calls describeSObjects(), query()) — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_loginevent.htm

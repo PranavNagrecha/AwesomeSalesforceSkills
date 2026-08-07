@@ -32,7 +32,7 @@ Answer these before proceeding:
   - Auto-response From address (must NOT be a routing address): ___________________
 
 - **Known constraints:**
-  - High attachment volume? (On-Demand 10 MB per-attachment limit risk): ___________________
+  - High attachment volume? (On-Demand 35 MB total inbound message limit; ~25 MB effective attachments after MIME overhead): ___________________
   - Email security gateway in use? (threading token stripping risk): ___________________
 
 ---
@@ -75,7 +75,7 @@ Track each step as you complete it:
 - [ ] Threading tested end-to-end: reply adds Email Message to original case (not new case)
 - [ ] Active assignment rule with entries matching Email-to-Case cases; catch-all to queue
 - [ ] Auto-response rule (if used): valid template, From address is not the routing address
-- [ ] Attachment limits communicated: 25 MB total, 10 MB per attachment (On-Demand)
+- [ ] Attachment limits communicated: On-Demand 35 MB total inbound message (~25 MB effective attachments after MIME encoding); no per-attachment cap
 - [ ] Checker script output reviewed
 
 ---

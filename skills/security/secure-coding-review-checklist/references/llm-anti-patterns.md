@@ -145,3 +145,52 @@ req.setEndpoint('callout:My_Named_Credential/api/endpoint');
 Use Named Credentials for all external callout authentication. Never store secrets in code, Custom Labels, or Custom Settings (use Custom Metadata with protected visibility if Named Credentials are not feasible).
 
 **Detection hint:** String literals matching token patterns in `setHeader` calls — regex: `setHeader\(.*['"]Authorization['"].*['"]Bearer\s+\w+`
+
+---
+
+## Anti-Pattern 7: Asserting That Bind Variables Do Not Work in Dynamic SOQL
+
+**What the LLM generates:** A review rule or decision table row reading "Dynamic SOQL via `Database.query()` → use `String.escapeSingleQuotes()`; bind variables are unavailable in dynamic strings." Variants: "you can only bind in inline `[SELECT ...]` queries," "escapeSingleQuotes is the standard defence for `Database.query`," "parameterisation isn't possible once the query is a String."
+
+**Why it happens:** Two reinforcing sources. (1) In most languages a query assembled as a string genuinely *is* unparameterised, so the model transfers the JDBC intuition. (2) Salesforce's own pre-2015 secure-coding material leaned heavily on `escapeSingleQuotes()`, and that vintage advice is over-represented in training data relative to the `queryWithBinds` documentation from Spring '23.
+
+**Why this one is dangerous:** it fails in the *exposure* direction and it is stated by a security artefact. A reviewer who accepts it will pass code that escapes quotes and still splices attacker-controlled text into `LIMIT`, `ORDER BY`, a field name, or an unquoted numeric comparison — none of which `escapeSingleQuotes()` touches. The reviewer will also *reject* correctly-bound code as non-conforming.
+
+**Correct pattern:**
+```apex
+// In-scope binding — works in Database.query(), available long before v57
+String userInput = req.name;
+List<Account> a = Database.query('SELECT Id FROM Account WHERE Name = :userInput');
+
+// Map-based binding — Spring '23 / API v57 onward, no scoping constraint
+Map<String, Object> binds = new Map<String, Object>{ 'nm' => req.name };
+List<Account> b = Database.queryWithBinds(
+    'SELECT Id FROM Account WHERE Name = :nm',
+    binds,
+    AccessLevel.USER_MODE
+);
+```
+A bind variable substitutes a **literal value** only. If the user supplies a field name, object name, sort direction or `LIMIT`, no bind can help — allowlist that token against `Schema.getGlobalDescribe()` or a hardcoded set. `String.escapeSingleQuotes()` remains a defence-in-depth fallback, never the primary control.
+
+**Detection hint:** flag any document where `escapeSingleQuotes` appears without `queryWithBinds` or `:` binding also appearing; flag the literal phrases `bind variables unavailable`, `bind variables are not supported in dynamic`, `cannot bind in Database.query`. In code, `Database.query(` whose argument contains `escapeSingleQuotes(` **and** no `:` token is the executable form.
+
+---
+
+## Anti-Pattern 8: Misdating `WITH USER_MODE` to Spring '20
+
+**What the LLM generates:** "In Spring '20+, the platform introduced `WITH USER_MODE` for SOQL and `Security.stripInaccessible()` for DML results." Also seen as "`queryWithBinds` is unavailable pre-Spring '21."
+
+**Why it happens:** `Security.stripInaccessible()` really did go GA in Spring '20, and the model attaches the nearest remembered release date to the whole cluster of CRUD/FLS features it recalls together. Release-version claims are unusually prone to this because the model has a plausible date in context and no signal that it belongs to a sibling feature.
+
+**Correct pattern:**
+```
+Security.stripInaccessible()                  GA Spring '20  (API v48)
+WITH SECURITY_ENFORCED                        earlier still
+WITH USER_MODE / WITH SYSTEM_MODE             Spring '23     (API v57)
+AccessLevel on Database.* methods             Spring '23     (API v57)
+Database.queryWithBinds / getQueryLocatorWithBinds
+  / countQueryWithBinds                       Spring '23     (API v57)
+```
+Below v57, use in-scope `:var` binding plus `WITH SECURITY_ENFORCED` and `stripInaccessible()`.
+
+**Detection hint:** any sentence pairing `USER_MODE` with a release earlier than Spring '23 or an API version below 57 is wrong. Mechanically: in a class's `*.cls-meta.xml`, `<apiVersion>` below `57.0` in a class body containing `USER_MODE`, `SYSTEM_MODE`, `queryWithBinds` or `AccessLevel.` will not compile — that pairing is a hard, checkable contradiction.

@@ -78,7 +78,7 @@ Guest users have a dedicated profile per site. Permissions must be explicitly gr
 - Grant only the minimum required object permissions (typically Read only on specific objects).
 - Never grant Modify All, View All, Create, Edit, or Delete to the guest profile.
 - Check field permissions: even Read access to sensitive fields (SSN, birthdate, email) on public-facing records is a data exposure risk.
-- Permission sets CAN be assigned to guest users since Spring '22 — this is a new attack surface. Audit permission set assignments to the guest user.
+- Permission sets can be assigned to guest users, and always could — this predates Spring '22. The Spring '21 / Spring '22 / Winter '23 releases each *narrowed* what those assignments may carry, they did not create the capability. Audit permission set assignments to the guest user regardless: the residual risk is a permission set that grants read or create on an object nobody intended to expose.
 
 ### WITH USER_MODE in SOQL
 
@@ -185,7 +185,7 @@ public with sharing class GuestCaseController {
 1. **`with sharing` alone does not prevent field exposure** — it controls which RECORDS a guest sees, not which FIELDS. A `with sharing` class can still return all fields on every accessible record. Always combine with `WITH USER_MODE` or explicit FLS checks.
 2. **Apex without sharing executed by a guest is a full-org data read** — a single `without sharing` class called from a guest LWC component will return any record matching the SOQL filter, regardless of OWD. This is the most common guest data leak pattern.
 3. **Guest user sharing rules grant Read Only, full stop** — since Winter '21 no sharing mechanism can give a guest write access to an existing record, and guests can no longer be reached through public groups, queues, manual sharing, or Apex managed sharing at all. Orgs that depended on any of those broke on upgrade, and the fix is a guest user sharing rule (for reads) or Create-only profile permission (for submissions) — not an OWD change.
-4. **Guest users can be assigned permission sets since Spring '22** — this means elevated permissions can be granted to the guest user indirectly. Always audit the full effective permission set of the guest user, not just the profile.
+4. **Guest users can be assigned permission sets — and always could** — so elevated permissions can reach the guest user indirectly. Note the release history runs the opposite way to how it is usually reported: Spring '21 removed Edit, Delete, View All Records and Modify All Records for guests even via permission set or permission set group; Spring '22 began restricting assignment to permission sets tied to permission set *licences* carrying those restricted object permissions; Winter '23 enforced that update and auto-removed the offending assignments. Only read and create standard-object permissions survive for guests. Always audit the full effective permission set of the guest user, not just the profile.
 5. **Each site has its own guest user** — changing the guest profile on Site A does not affect Site B. If you have 3 sites, you must audit 3 guest profiles independently.
 
 ---

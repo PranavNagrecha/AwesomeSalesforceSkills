@@ -19,7 +19,7 @@ Use this template when planning or executing a custom Agentforce channel integra
 - **Target surface / channel:** (mobile iOS, Android, IVR, CCaaS vendor name, custom web app)
 - **Agent ID:** (from `SELECT Id, DeveloperName FROM BotDefinition WHERE DeveloperName = '...'`)
 - **Connected App name:** _______________
-- **OAuth scopes confirmed:** `api` + `chatbot_api` — Yes / No
+- **OAuth scopes confirmed (all four):** `api` + `refresh_token, offline_access` + `chatbot_api` + `sfap_api` — Yes / No
 - **externalSessionKey strategy:** (UUIDv4 generated per conversation — confirm library used: _______)
 - **Context variables to inject at session start:**
 
@@ -38,7 +38,7 @@ Use this template when planning or executing a custom Agentforce channel integra
 
 ### Raw Agent API
 
-- [ ] 1. Connected App created with OAuth scopes: `api`, `chatbot_api`
+- [ ] 1. Connected App created with OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`
 - [ ] 2. Agent ID confirmed: _______________
 - [ ] 3. UUIDv4 generator implemented for `externalSessionKey`
 - [ ] 4. Per-session `sequenceId` counter initialized at 0, increments on successful send only
@@ -113,7 +113,7 @@ Use this template when planning or executing a custom Agentforce channel integra
 
 - [ ] `externalSessionKey` is a UUIDv4 (not a user ID, timestamp, or arbitrary string)
 - [ ] `sequenceId` starts at 1 per session, increments monotonically, no gaps, retries use same ID
-- [ ] Connected App has both `api` and `chatbot_api` OAuth scopes
+- [ ] Connected App has all four OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`
 - [ ] Context variables are injected at session creation only; mid-session updates are only for `Context.EndUserLanguage`
 - [ ] DELETE is called on session end in all code paths (success, error, timeout, user drop)
 - [ ] Integration pattern is consistent — raw Agent API OR BYOC CCaaS, not mixed

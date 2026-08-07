@@ -4,7 +4,7 @@
 
 **Context:** A Sales Cloud org has just enabled Einstein Opportunity Scoring via Setup. The permission sets are assigned, the `Opportunity Score` field is on the page layout, and 48 hours have passed. Reps open opportunity records and the score field is blank. The admin opens Setup > Einstein > Opportunity Scoring and sees the status "Insufficient Data."
 
-**Problem:** The org has only 140 closed opportunities with a Closed Date in the last two years — below the 200-record minimum. The feature is enabled but the model will not train, so no scores are generated. The UI gives no inline warning on the opportunity record; reps just see a blank field.
+**Problem:** The org has only 140 closed-LOST opportunities with a Closed Date in the last two years — below the 200-closed-lost floor. (It has plenty of closed-won, which is why the combined count looked fine; the two floors are evaluated separately.) The feature is enabled but the model will not train, so no scores are generated. The UI gives no inline warning on the opportunity record; reps just see a blank field.
 
 **Solution:**
 
@@ -13,7 +13,7 @@ There is no code fix for this — the underlying requirement is data volume. The
 1. Run an Opportunity report filtered to `IsClosed = true` and `CloseDate >= LAST_N_DAYS:730` to get the exact count.
 2. If count < 200, do not expect scores. Communicate to stakeholders that scoring will become available once the pipeline history meets the threshold.
 3. If the org is migrating from another CRM, consider importing historical opportunity data (Won and Lost) via Data Loader to meet the threshold faster.
-4. Once 200+ closed opportunities exist, return to Setup > Einstein > Opportunity Scoring and click "Retrain Model." Training completes within 24–72 hours.
+4. Once 200+ closed-WON **and** 200+ closed-LOST opportunities exist in the trailing 24 months, return to Setup > Einstein > Opportunity Scoring and click "Retrain Model." Training completes within 24–72 hours.
 
 ```text
 // SOQL to verify closed opp count for the training window

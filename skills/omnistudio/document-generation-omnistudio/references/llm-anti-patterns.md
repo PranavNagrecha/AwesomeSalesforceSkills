@@ -7,37 +7,72 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** The AI suggests token syntax like `${AccountName}`, `<<AccountName>>`, `{!AccountName}`, or `[[AccountName]]` in Document Templates, borrowing from other templating engines or Visualforce merge field syntax.
 
-**Why it happens:** LLMs trained on diverse codebases default to whichever templating syntax appears most frequently in training data (e.g., JSP `${}`, Visualforce `{! }`, or Mustache `{{}}`). The OmniStudio-specific double-curly-brace `{{ }}` syntax with specific prefixes for images (`%`) and rich text (`&`) is less represented.
+**Why it happens:** LLMs trained on diverse codebases default to whichever templating syntax appears most frequently in training data (e.g., JSP `${}`, Visualforce `{! }`, or Mustache/Handlebars `{{}}`). Getting to `{{ }}` is only half the job, and the second half is where the failures cluster: because the outer syntax *looks* like Mustache, the model completes the pattern with **Mustache/Handlebars sigils** — `{{%img}}`, `{{&raw}}`, `{{#if cond}}` — all of which are real syntax in *those* engines and none of which OmniStudio recognises. OmniStudio instead uses **named prefixes inside the braces**.
 
 **Correct pattern:**
 
 ```text
-Simple:     {{FieldName}}
-Repeating:  {{#ArrayName}}...{{/ArrayName}}
-Conditional: {{#if BooleanField}}...{{/if}}
-Image:      {{%ImageField}}
-Rich text:  {{&RichTextField}}
+Documented in "Tokens in Microsoft Word or Microsoft PowerPoint Documents":
+
+  Variable            {{FieldName}}
+  Repeating content   {{#ArrayName}}...{{/ArrayName}}
+                      {{^ArrayName}}...{{/ArrayName}}   (inverted / empty case)
+  Condition           {{#IF_BooleanField}}...{{/IF_BooleanField}}
+                      {{^IF_BooleanField}}...{{/IF_BooleanField}}
+  Image               {{IMG_imagetokenname}}
+  Hyperlink           {{HYP_hyperlinktokenname}}
+  Rich text           {{RTB_richtexttokenname}}
+  Data true-up        {{DT_FieldName}}
+  Bypass              bypass_tokens  (comma-separated list)
+
+The prefix is part of the TOKEN NAME, inside the braces.
+There is no %, &, or ! sigil anywhere in OmniStudio DocGen.
+{{#if cond}} is Handlebars, NOT OmniStudio — it must be {{#IF_cond}}.
 ```
 
-**Detection hint:** Any token syntax in a template file that does not use `{{ }}` double curly braces is wrong for OmniStudio DocGen.
+**Detection hint:** Reaching `{{ }}` is not sufficient — grep the template XML for `\{\{[%&!]` and for `\{\{#\s*if\s` (lowercase `if` followed by whitespace). All are Mustache/Handlebars carry-over and all are wrong. Then confirm every non-variable token name starts with one of `IMG_`, `HYP_`, `RTB_`, `DT_`, or `IF_`. `scripts/check_document_generation_omnistudio.py` implements exactly these checks. The failure is silent — an unrecognised token raises no error and leaves the raw string or a blank in the generated document — so a mechanical check is the only reliable guard.
 
 ---
 
-## Anti-Pattern 2: Claiming Server-Side DocGen Supports Image Tokens
+## Anti-Pattern 2: Claiming Server-Side DocGen Does Not Support Image or Rich Text Tokens
 
-**What the LLM generates:** The AI recommends using `{{%CompanyLogo}}` image tokens in a server-side Document Generation flow via Integration Procedure, or fails to mention the client-side-only restriction when advising on image-bearing templates.
+**What the LLM generates:** "Image tokens and rich text tokens are client-side only. Server-side DocGen does not support them — if the template needs dynamic images you must switch to client-side generation, or pre-render the images into the payload as base64." Frequently paired with an invented byte cap ("dynamic images are capped at approximately 2.5 MB per image").
 
-**Why it happens:** The LLM treats all DocGen features as universally available across both modes, not distinguishing the client-side-only limitations for image and rich text tokens.
+**Why it happens:** Two mechanisms. First, **plausible-asymmetry filling**: headless/server-side renderers genuinely are more limited than browser renderers in many products, so "server-side can't do the rich stuff" is a strong prior that the model applies without evidence. Second, **wrong-dimension limits**: asked for an image constraint, the model produces a *file size* in MB, because that is how image limits are usually expressed elsewhere on the platform (attachment ceilings, ContentVersion sizes). Salesforce's actual DocGen image constraints are **pixel dimensions**. The number and the unit are both invented, but the invention is disciplined enough — "approximately", a plausible magnitude — to survive review.
+
+This one is expensive when wrong: it forces an architecture decision (abandon batch/headless generation, or bolt on an external image service) on a false premise.
 
 **Correct pattern:**
 
 ```text
-Image tokens ({{%...}}) -> client-side only (OmniScript)
-Rich text tokens ({{&...}}) -> client-side only (OmniScript)
-Simple/repeating/conditional tokens -> both modes
+Salesforce publishes a dedicated topic:
+  "Map Image Tokens in the Omnistudio Data Mapper for Server-Side
+   Omnistudio Document Generation"
+
+  "Use image tokens in a Microsoft Word or Microsoft PowerPoint document
+   template to insert dynamic images in generated DOCX and PDF files.
+   The image token must start with IMG_, such as {{IMG_header}}."
+
+Server-side image wiring = TWO Data Mapper bundles:
+  1. Data Mapper Extract   -> retrieves the image ID from
+                              Files (ContentDocument),
+                              Notes & Attachments (Attachment), or
+                              Documents (Contract Document)
+  2. Data Mapper Transform -> maps extracted data to the document token,
+                              optionally defines height/width formulas
+
+Image constraints are DIMENSIONAL, not byte-based:
+  default              : max 350 px (w) x 400 px (h) on an A4 portrait page
+  both dims defined    : max 600 px x 800 px on an A4 portrait page
+  aspect ratio         : "define either the height or the width, but not both"
+  megabyte cap         : none documented
+
+Rich text {{RTB_...}} and hyperlink {{HYP_...}} tokens are listed in the
+token reference without a mode restriction. Do not assert a client-side-only
+limitation for them either.
 ```
 
-**Detection hint:** Any recommendation that includes `{{%` or `{{&` tokens alongside "Integration Procedure" or "server-side" is incorrect.
+**Detection hint:** Two greps on generated guidance. (1) `client-side only` within the same paragraph as `image token` or `rich text token` — the claim is unsupported; require the URL of a page that states the restriction before accepting it. (2) Any image constraint expressed in `MB`/`KB` — DocGen image limits are documented in pixels, so a byte figure is the signature of this fabrication. More generally: when a stated limit's *unit* differs from the unit the official page uses, treat the whole claim as reconstructed rather than recalled.
 
 ---
 

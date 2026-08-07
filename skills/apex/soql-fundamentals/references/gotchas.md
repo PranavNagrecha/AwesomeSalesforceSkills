@@ -75,19 +75,30 @@ WHERE Parent_Account__r.Industry = 'Technology'
 
 ---
 
-## Gotcha 5: FIELDS(ALL) Without LIMIT Causes Errors
+## Gotcha 5: FIELDS(ALL) and FIELDS(CUSTOM) Are Not Available in Apex — Adding LIMIT Does Not Help
 
-**What happens:** `SELECT FIELDS(ALL) FROM Account` without a LIMIT clause causes either a `QUERY_TOO_LARGE` error (result set too many rows) or a `QUERY_TOO_COMPLICATED` error (too many fields expanded internally). The error is not a syntax error — it only appears at runtime when the org has enough records or fields.
+**What happens:** `SELECT FIELDS(ALL) FROM Account` is rejected in Apex, with or without a `LIMIT`. The keyword's *unbounded* forms — `FIELDS(ALL)` and `FIELDS(CUSTOM)` — are documented as "Not supported" for Apex (inline and dynamic) and for Bulk API 2.0. They are supported in REST, SOAP, and the CLI, but only when the result rows are limited: `LIMIT n where n <= 200`, or a `WHERE Id IN` list of up to 200 IDs. The *bounded* form `FIELDS(STANDARD)` is supported everywhere, including Apex, and needs no `LIMIT`.
 
-**When it occurs:** Exploratory queries in Developer Console or Apex using `FIELDS(ALL)` or `FIELDS(CUSTOM)` without limiting row count. FIELDS(ALL) on objects with many fields (e.g., Account with 200+ fields) can also trigger `QUERY_TOO_COMPLICATED` because currency fields double the internal query length.
+The near-universal misreading is to treat the 200-row rule as the whole story and conclude that `FIELDS(ALL) ... LIMIT 200` is therefore legal in Apex. It is not: the row rule governs the contexts where the unbounded forms exist at all, and Apex is not one of them. A second, unrelated 200 in the same sentence makes this especially easy to garble — `LIMIT n <= 200` is a row cap, not a field cap.
 
-**How to avoid:** Always pair `FIELDS(ALL)` and `FIELDS(CUSTOM)` with LIMIT. Use `FIELDS(STANDARD)` (which does not require LIMIT) for objects where custom field count is low:
+**When it occurs:** Exploratory Apex ported from a Developer Console REST query or a `sf data query` CLI invocation, where the same query string genuinely worked. It also occurs when moving an Apex query into a Bulk API 2.0 job, which shares the Apex restriction.
+
+Separately, and for a different reason: `QUERY_TOO_COMPLICATED` is a real `StatusCode` and can be returned when a query selects too many fields or has too many filter conditions — currency fields expand the internal query length. `QUERY_TOO_LARGE` is **not** a Salesforce status code; it does not appear in the API `StatusCode` enumeration. Violating the FIELDS() row rule where the unbounded forms *are* supported returns `MALFORMED_QUERY`.
+
+**How to avoid:** In Apex, use `FIELDS(STANDARD)` (no `LIMIT` needed) or enumerate the fields you actually need. Reserve `FIELDS(ALL)` / `FIELDS(CUSTOM)` for REST, SOAP, and CLI exploration, and bound them there:
 
 ```sql
--- Safe: always add LIMIT with FIELDS(ALL) or FIELDS(CUSTOM)
+-- REST / SOAP / CLI only. Unbounded forms require LIMIT n where n <= 200
+-- (or WHERE Id IN <list of up to 200 IDs>). Not available from Apex.
 SELECT FIELDS(ALL) FROM Account LIMIT 200
 SELECT FIELDS(CUSTOM) FROM Account LIMIT 200
 
--- FIELDS(STANDARD) does not require LIMIT (standard field count is fixed)
+-- Bounded form: supported everywhere including Apex, no LIMIT required
 SELECT FIELDS(STANDARD) FROM Contact
+```
+
+```apex
+// The Apex-safe equivalents
+List<Contact> cons = [SELECT FIELDS(STANDARD) FROM Contact];
+List<Account> accts = [SELECT Id, Name, Industry, AnnualRevenue FROM Account LIMIT 200];
 ```

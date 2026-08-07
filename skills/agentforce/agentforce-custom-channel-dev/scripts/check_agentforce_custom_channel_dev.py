@@ -76,9 +76,18 @@ _MESSAGES_VARIABLES_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 
-# Detects BYOC and raw Agent API mixed in same file
+# Detects BYOC and raw Agent API mixed in same file.
+# The optional `v1/` keeps this matching legacy code written against the
+# fabricated /services/data/vXX.0/einstein/ai-agent/agents/... shape too.
 _RAW_AGENT_SESSIONS_RE = re.compile(
-    r'/einstein/ai-agent/agents/.+?/sessions',
+    r'/einstein/ai-agent/(?:v1/)?agents/.+?/sessions',
+    re.IGNORECASE,
+)
+
+# The Agent API is NOT served from the org's versioned REST surface. Any
+# /services/data/vXX.0/ prefix in front of /einstein/ai-agent/ is a 404.
+_AGENT_API_ON_DATA_SURFACE_RE = re.compile(
+    r'/services/data/v[0-9X]+\.0/einstein/ai-agent/',
     re.IGNORECASE,
 )
 _BYOC_CONVERSATIONS_RE = re.compile(
@@ -148,6 +157,20 @@ def check_source_file(path: Path) -> list[str]:
             "in a single conversation lifecycle."
         )
 
+    # Check 6: Agent API addressed through the org's versioned REST surface
+    for match in _AGENT_API_ON_DATA_SURFACE_RE.finditer(content):
+        line_num = content[: match.start()].count("\n") + 1
+        issues.append(
+            f"{path}:{line_num}: Agent API called through /services/data/vXX.0/. "
+            "The Agent API is not part of the org's versioned REST surface — it is a "
+            "separate host with its own version segment: "
+            "https://api.salesforce.com/einstein/ai-agent/v1/... "
+            "(api.gov.salesforce.com for Government Cloud). Every request built on the "
+            "/services/data/ prefix returns 404. Note also that after session creation the "
+            "agentId drops out of the path: messages and DELETE are addressed as "
+            "/einstein/ai-agent/v1/sessions/{{sessionId}}."
+        )
+
     return issues
 
 
@@ -163,11 +186,22 @@ def check_connected_app_xml(path: Path) -> list[str]:
     if not _CONNECTED_APP_RE.search(content):
         return issues  # Not a Connected App file
 
-    if not _CHATBOT_SCOPE_RE.search(content):
+    # Compare on the alphanumeric-only form: metadata enums, the Setup picker and
+    # the OAuth request all spell these scopes differently.
+    flat = "".join(ch for ch in content.lower() if ch.isalnum())
+
+    if "chatbotapi" not in flat:
         issues.append(
-            f"{path}: Connected App definition does not include 'chatbot_api' OAuth scope. "
-            "The Agent API requires both 'api' and 'chatbot_api' scopes. "
-            "Add 'chatbot_api' to the oauthScopes section of the Connected App."
+            f"{path}: Connected App definition does not include the 'chatbot_api' OAuth scope "
+            "(\"Access chatbot services\"). Add it to the oauthScopes section."
+        )
+
+    if "sfapapi" not in flat:
+        issues.append(
+            f"{path}: Connected App definition does not include the 'sfap_api' OAuth scope "
+            "(\"Access the Salesforce API Platform\"). The Agent API requires all four of "
+            "api, refresh_token/offline_access, chatbot_api and sfap_api. sfap_api is the "
+            "most commonly omitted, and the auth failure it causes does not name it."
         )
 
     return issues

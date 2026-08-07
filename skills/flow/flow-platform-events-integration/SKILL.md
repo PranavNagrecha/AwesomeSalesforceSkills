@@ -69,7 +69,7 @@ Gather if not available:
 
 | Attribute | Standard-Volume | High-Volume |
 |---|---|---|
-| Publish rate (per hour) | ~6,000 org-wide default shared with other PE | Much higher; separate per-event-type allocation |
+| Publish rate (per hour) | 100,000 org-wide (Enterprise / Performance / Unlimited); 1,000 (Developer, and Professional with API Add-On) | 250,000 org-wide (Enterprise / Performance / Unlimited / Professional with API Add-On); 50,000 (Developer) |
 | Publish-after-commit semantics | Yes — only delivers on successful commit | Event is delivered on publish, not tied to DML commit ordering in the same way |
 | Replay / durability | Short-lived buffer | Durable 72-hour event bus with replay via replayId |
 | External consumption | Limited | Designed for Pub/Sub API external consumers |
@@ -147,7 +147,7 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
 
 **Why it works:** The Create Records on the event object is the publish action. Because the flow is After-Save and the event supports publish-after-commit, the event is buffered until the current DML commits. If the save rolls back, the event is discarded. No phantom notifications.
 
-**Caveat:** Standard-Volume events count against the 6,000/hour org-wide publish limit. A 100,000-record bulk import that triggers this flow on each record would exceed the limit by 17x. For that cardinality, switch to High-Volume or batch the publish.
+**Caveat:** Standard-Volume publishing is allocated 100,000 events per hour org-wide on Enterprise / Performance / Unlimited (1,000 on Developer and Professional-with-API-Add-On), and that bucket is shared across every Standard-Volume event type in the org. A 100,000-record bulk import that publishes one event per record consumes the entire hourly allocation on its own, leaving nothing for any other Standard-Volume publisher — and on Developer or Professional it fails almost immediately. For that cardinality, switch to High-Volume (250,000/hour) or batch the publish. Note that High-Volume publishing is also **org-wide**, not a fresh allocation per event type.
 
 ### Pattern 2: Subscribe to an Event With a Platform-Event-Triggered Flow
 
@@ -284,7 +284,7 @@ Both publish and subscribe have bulk semantics.
 
 ## Salesforce-Specific Gotchas (short list)
 
-1. Standard-Volume events share the 6,000/hour publish limit ORG-WIDE, not per-event-type.
+1. Both Standard-Volume and High-Volume publish allocations are ORG-WIDE, not per-event-type — adding a new event type buys no fresh headroom. Standard-Volume: 100,000/hour (Enterprise / Performance / Unlimited), 1,000/hour (Developer, Professional with API Add-On). High-Volume: 250,000/hour (50,000 on Developer).
 2. `Publish Immediately` can deliver events that should have rolled back; always prefer after-commit for record-change triggers.
 3. Subscriber flows run as Automated Process user unless explicitly configured.
 4. At-least-once delivery means idempotency is mandatory.

@@ -48,3 +48,4 @@ LoginAnomaly provides automated detection of suspicious login patterns using ML,
   Used for: forensic investigation methodology, containment sequence ordering, eradication checklist
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
   Used for: Trusted pillar framing, operational excellence posture for IR readiness
+- Trailhead — Event Monitoring: Get Started with Event Monitoring ("Apex Unexpected Exception, CORS Violation Record, CSP Violation, Hostname Redirects, Login, Logout and API Total Usage event log files with 1-day data retention" free for EE/UE/PE; Developer Edition gets all types at 1-day retention) — https://trailhead.salesforce.com/content/learn/modules/event_monitoring/event_monitoring_intro

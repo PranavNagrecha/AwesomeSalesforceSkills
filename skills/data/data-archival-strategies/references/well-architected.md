@@ -41,6 +41,9 @@ Disabling Field History Tracking on high-churn fields is the most effective way 
 ## Official Sources Used
 
 - Big Objects Implementation Guide — https://developer.salesforce.com/docs/atlas.en-us.bigobjects.meta/bigobjects/big_object_overview.htm
+- Salesforce Help 000394892: Big Objects Async SOQL Retirement — retired with Summer '23; "You must use the Bulk API or batch Apex to query or report on custom Big Objects" — https://help.salesforce.com/s/articleView?id=000394892&language=en_US&type=1
+- Salesforce Help: Data and File Storage Allocations — 10 GB data-storage base across editions; per-user increment 20 MB (EE/Prof/Contact Manager/Group) and 120 MB (Perf/Unlimited); file storage 10 GB per org (1 GB Essentials/Starter); storage recalculated asynchronously — https://help.salesforce.com/s/articleView?id=xcloud.overview_storage.htm&language=en_US&type=5
+- Salesforce Help: Manage the Recycle Bin — "Records in the Recycle Bin don't count against your Salesforce org's storage usage"; 15-day restore window; no record-count cap — https://help.salesforce.com/s/articleView?id=xcloud.recycle_bin_manage.htm&language=en_US&type=5
 - Salesforce Large Data Volumes Best Practices — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/
 - Field History Tracking — https://help.salesforce.com/s/articleView?id=sf.field_history.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/well-architected/overview

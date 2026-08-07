@@ -92,3 +92,36 @@ The closest available options are: (1) freeze individual user accounts (Setup > 
 **Why it is wrong:** `LoginAnomaly` is a Real-Time Event Monitoring (RTEM) object that is only available with Salesforce Shield. Without Shield, the object either does not exist or returns no records. Attempting to query it in a non-Shield org returns an error or empty results, not a graceful indication that the feature is unavailable.
 
 **Correct guidance:** Confirm Shield availability before referencing LoginAnomaly. Without Shield, anomalous login detection requires manual analysis of LoginHistory — specifically looking for unusual source IPs, unusual countries, logins outside normal business hours, new browser/platform fingerprints, and impossible travel (two successful logins from different countries within a timeframe that precludes physical travel). This manual analysis is more time-consuming but is the only forensic option in non-Shield orgs.
+
+---
+
+## Anti-Pattern: Listing the Free EventLogFile Tier as "Login, Logout, URI, API, LightningPageView"
+
+**What the LLM generates:** "Free tier: 5 event types (Login, Logout, URI, API, LightningPageView), 1-day retention." The retention half is right; the event list is not.
+
+**Why it happens:** The model reaches for the *most commonly discussed* event types rather than the *freely licensed* ones. `URI` and `LightningPageView` dominate Event Monitoring blog posts and dashboard tutorials precisely because they are the interesting ones — which is also why they are behind the paywall. `Apex Unexpected Exception`, `CORS Violation Record`, `CSP Violation` and `Hostname Redirects` are dull, rarely written about, and therefore invisible to the model despite being free.
+
+**Why it matters specifically in incident response:** free-tier evidence lives for 24 hours. A responder who plans the investigation around page-view and report-export evidence spends that entire non-renewable window issuing queries that return nothing, then has to rebuild the plan from scratch with the evidence already expired. The error costs the one resource the incident cannot replace.
+
+**Correct pattern:**
+```
+FREE (Enterprise / Unlimited / Performance), 1-day retention — seven types:
+    Apex Unexpected Exception
+    CORS Violation Record
+    CSP Violation
+    Hostname Redirects
+    Login
+    Logout
+    API Total Usage
+
+Developer Edition: all log types, still 1-day retention.
+
+ADD-ON ONLY (30-day retention): URI, LightningPageView, Report, ReportExport,
+DataExport, MetadataApiOperation, and ~60 more.
+
+So on a free-tier org, blast-radius assessment cannot come from EventLogFile.
+Fall back to LoginHistory (6 months), SetupAuditTrail (180 days) and AuthSession,
+and say so explicitly in the incident report as a coverage gap.
+```
+
+**Detection hint:** `URI` or `LightningPageView` described as free-tier is always wrong; so is any free-tier count other than seven. The reverse tell is just as useful — a free-tier list that omits `CSP Violation` and `Hostname Redirects` was assembled from what is interesting rather than from what is licensed. Mechanically: an incident runbook whose evidence-collection step names `ReportExport` or `DataExport` without first branching on the org's Event Monitoring tier will fail silently on a free-tier org.

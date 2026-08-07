@@ -28,7 +28,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Reports, Dashboards, EmailTemplates, Documents.
 
-**How to avoid:** First retrieve folder lists, then retrieve items in each folder. Use `sf project list metadata` to enumerate before manifest-building.
+**How to avoid:** First retrieve folder lists, then retrieve items in each folder. Use `sf org list metadata --metadata-type ReportFolder --target-org <alias>` to enumerate before manifest-building (the topic is `org`, not `project`).
 
 ---
 

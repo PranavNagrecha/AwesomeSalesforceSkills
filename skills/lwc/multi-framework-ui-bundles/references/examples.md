@@ -1,11 +1,11 @@
 # Examples — Multi-Framework UI Bundles
 
 All code below is illustrative scaffolding authored from the official Metadata API reference
-and the Salesforce Multi-Framework announcement. Multi-Framework is **open beta** (scratch
-orgs and sandboxes, English default language, no production deploys). API version target:
-`66.0`+ (`67.0`+ for the `CustomApplication` target). Where the beta docs are the only source
-of an exact API signature, the snippet says so — verify against the Multi-Framework Beta
-documentation before shipping.
+and the Salesforce Multi-Framework GA announcement (July 2026). Multi-Framework is **GA** —
+production, sandbox, Developer Edition, and scratch orgs on **Summer '26 (API 67.0)** or
+later. The GA SDK package is `@salesforce/platform-sdk`; the beta-era `@salesforce/sdk-data`
+no longer ships. API version target: `66.0`+ for `UIBundle` itself, `67.0`+ for the
+`CustomApplication` target.
 
 ## Example 1: Scaffold and describe a UI bundle
 
@@ -65,24 +65,31 @@ target is deprecated in 67.0.
 UI bundle runs inside the platform's session, and hand-rolled token management is both
 unnecessary and a security smell.
 
-**Solution:** use `@salesforce/sdk-data`. The `createDataSDK()` utility handles
-authentication automatically, so no token management appears in application code. Records are
-queried via GraphQL and Apex methods are invoked through the SDK's `fetch()` method.
+**Solution:** use `@salesforce/platform-sdk` (the GA name; `@salesforce/sdk-data` was the
+beta package and no longer ships). The `createDataSDK()` factory handles authentication
+automatically, so no token management appears in application code. Records are queried via
+GraphQL and Apex methods are invoked through the SDK's `fetch()` method.
 
 ```javascript
-// data.js — illustrative; confirm exact signatures in the Multi-Framework Beta docs
-import { createDataSDK } from '@salesforce/sdk-data';
+// data.js
+import { createDataSDK, gql } from '@salesforce/platform-sdk';
 
-const sdk = createDataSDK(); // auth handled by the platform — no tokens in app code
+const sdk = await createDataSDK(); // awaited at GA; auth handled by the platform
 
-// GraphQL record read (query shape per your schema)
-export async function loadAccounts(graphqlQuery) {
-    return sdk.graphql(graphqlQuery);
+// GraphQL read — note `.query()` with a `query` key, and optional chaining on the result
+export async function loadAccounts(MY_QUERY) {
+    const result = await sdk.graphql?.query({ query: MY_QUERY });
+    return result?.data?.uiapi?.query?.Account?.edges;
+}
+
+// GraphQL write — `.mutate()` with a `mutation` key
+export async function saveAccount(MY_MUTATION, input) {
+    return sdk.graphql?.mutate({ mutation: MY_MUTATION, variables: { input } });
 }
 
 // Server-side logic via Apex, invoked through the SDK's fetch()
 export async function loadRollup() {
-    return sdk.fetch(/* Apex method reference + params per the beta SDK docs */);
+    return sdk.fetch(/* Apex method reference + params */);
 }
 ```
 

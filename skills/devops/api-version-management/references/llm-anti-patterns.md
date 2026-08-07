@@ -24,9 +24,9 @@ own -meta.xml file. Both must be updated for a true version upgrade.
 
 ## Anti-Pattern 2: Using a Hardcoded Retired API Version in Code Examples
 
-**What the LLM generates:** Apex class examples with `<apiVersion>28.0</apiVersion>` or REST endpoint examples targeting `/services/data/v28.0/`, where version 28.0 has been retired since Summer '22.
+**What the LLM generates:** Apex class examples with `<apiVersion>28.0</apiVersion>` or REST endpoint examples targeting `/services/data/v28.0/`. Version 28.0 was deprecated in Summer '22 and retired in Summer '25 (it was not retired in Summer '22 — that wave covered 7.0–20.0).
 
-**Why it happens:** LLMs are trained on older documentation, blog posts, and Stack Exchange answers that used API versions current at the time of writing. Versions 7.0-30.0 are well-represented in training data but are now retired.
+**Why it happens:** LLMs are trained on older documentation, blog posts, and Stack Exchange answers that used API versions current at the time of writing. Versions 7.0–30.0 are well-represented in training data and are now all retired — 7.0–20.0 since Summer '22, 21.0–30.0 since Summer '25.
 
 **Correct pattern:**
 
@@ -138,3 +138,25 @@ Query ApiTotalUsage event logs to detect deprecated version usage:
 ```
 
 **Detection hint:** REST or SOAP endpoint URLs in generated code where the version is more than 3 major releases behind the current release.
+
+
+---
+
+## Anti-Pattern: Merging the two API-retirement waves into one, and freezing the timeline at Summer '22
+
+**What the LLM generates:**
+
+> "Versions 7.0–30.0 were retired in Summer '22. The next retirement wave will follow the same 3-year notice pattern."
+
+**Why it happens:** Summer '22 was a single loud event in which *both* things happened — 7.0–20.0 were retired **and** 21.0–30.0 were deprecated. Because deprecation and retirement announcements arrive together in the same notice, the model collapses them into one verb and one date. The forward-looking sentence then makes the staleness invisible: it *sounds* like current-state planning advice while actually describing a wave that already completed. Note that the derived floor (31.0) happens to be correct, which is why this survives review and why a checker built on it still behaves sanely — the number is right, the mechanism and timeline are not.
+
+**Correct version:**
+
+| Versions | Deprecated | Retired |
+|---|---|---|
+| 7.0 – 20.0 | pre Summer '22 | Summer '22 |
+| 21.0 – 30.0 | Summer '22 | Summer '25 |
+
+The 3-year notice is the gap in the second row. Deprecated ≠ retired: a deprecated version still serves traffic. On retirement, REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, Bulk returns `400 InvalidVersion` — note these differ by protocol, so a client that only string-matches `UNSUPPORTED_API_VERSION` will silently mishandle the REST case.
+
+**Detection hint:** grep for a version *range* spanning both waves (`7.0-30.0`, `7.0–30.0`) attached to a single date — the range itself is the tell, because Salesforce never retired 7.0 through 30.0 in one action. Second, structural and more generalisable: **any sentence of the form "the next X will follow the same pattern" in a dated reference document is a staleness trap** — it converts a snapshot into a forecast, and the forecast keeps reading as current long after the event it predicted has happened. Check such sentences against today's date before trusting them.

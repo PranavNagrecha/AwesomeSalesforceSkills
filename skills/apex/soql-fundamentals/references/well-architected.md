@@ -32,5 +32,9 @@
   - Used for: SELECT syntax, all clause definitions, relationship query rules, aggregate function behavior, LIMIT/OFFSET limits, FIELDS() keyword behavior, date literal reference
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
   - Used for: inline SOQL syntax in Apex, Database.query() dynamic SOQL, FOR UPDATE locking, governor limits, WITH USER_MODE vs WITH SECURITY_ENFORCED guidance
+- SOQL and SOSL Reference — FIELDS() — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_fields.htm
+  - Used for: the bounded/unbounded split and the support matrix. `FIELDS(ALL)` and `FIELDS(CUSTOM)` are "Not supported" in Apex (inline and dynamic) and in Bulk API 2.0; in REST/SOAP/CLI they are "Supported only if the result rows are limited" — `LIMIT n where n <= 200` or `WHERE Id IN` a list of up to 200 IDs. `FIELDS(STANDARD)` is bounded and supported everywhere. "FIELDS() respects field-level security so it only shows the fields that you have permission to access."
+- SOAP API Developer Guide — StatusCode enumeration — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm
+  - Used for: confirming `MALFORMED_QUERY` and `QUERY_TOO_COMPLICATED` exist and that there is no `QUERY_TOO_LARGE` status code
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
   - Used for: framing scalability and security pillars

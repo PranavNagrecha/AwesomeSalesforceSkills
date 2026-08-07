@@ -58,7 +58,7 @@ Use this skill when OmniStudio components — OmniScripts, Integration Procedure
 
 ## Before Starting
 
-- **What is the peak concurrent user count?** Concurrent long-running Apex requests are capped at 25 org-wide for requests lasting more than 20 seconds. Portal deployments exceeding this threshold will queue or error without proper async design.
+- **What is the peak concurrent user count?** Concurrent *synchronous* long-running Apex transactions are capped org-wide at a licence-scaled number (100 applicable licences : 1 slot, minimum 10, maximum 50) for transactions lasting longer than **5 seconds**. Portal deployments exceeding this threshold will error without proper async design. Look up the org's actual ceiling — do not assume a flat number.
 - **Which async execution mode is the Integration Procedure using?** Fire-and-forget (`useFuture: true`) removes UI blocking but does NOT escape governor limits. Queueable Chainable runs the next IP step as async Apex with the full 60-second CPU and 12MB heap limits. These solve different problems.
 - **Is Spring '25+ Direct Platform Access enabled?** This mode bypasses Apex CPU governors entirely for read-heavy Integration Procedures using native Salesforce data access. It is not yet available for write operations or external callouts.
 - **Is the Experience Cloud site running on LWR (Lightning Web Runtime)?** LWR with CDN caching is required for high-volume portals; Aura-based sites do not benefit from CDN page caching and will not scale to thousands of concurrent users.
@@ -87,12 +87,17 @@ Queueable Chainable is the correct mechanism when an IP step would breach govern
 
 ### Concurrent Long-Running Apex Limit — The Org-Wide Ceiling
 
-Salesforce enforces a hard limit of **25 concurrent long-running Apex requests** across the entire org. A request is "long-running" if it takes more than 20 seconds to complete. This limit is shared across all Apex execution contexts: triggers, future methods, Queueable jobs, Integration Procedures running via Apex, and more.
+Salesforce caps the **number of synchronous concurrent transactions for long-running transactions that last longer than 5 seconds for each org**. The ceiling is not a fixed number: it is calculated "as a ratio of 100 licenses to one concurrent long-running Apex transaction", with a **minimum of 10** and a **maximum of 50**. A 2,000-licence org therefore gets 20 slots; a 10,000-licence org is capped at the maximum of 50.
 
-At a busy Experience Cloud portal with hundreds of simultaneous users submitting OmniScripts that invoke complex Integration Procedures, this ceiling is reached faster than many architects expect. When the 25-request ceiling is hit, additional requests queue or return errors — not timeout errors, but capacity errors that surface as OmniScript failures to users.
+Two scope facts matter as much as the number:
+
+- The threshold is **5 seconds**, not 20. An Integration Procedure that "only" takes 8 seconds is already long-running.
+- The limit governs **synchronous** transactions. Asynchronous Apex — `@future`, Queueable, Batch, Scheduled — does **not** consume these slots; async has its own separate limits (for example, 250,000 async method executions per 24-hour period, or licences × 200, whichever is greater). Do not attribute a nightly Batch job's load to this ceiling.
+
+At a busy Experience Cloud portal with hundreds of simultaneous users submitting OmniScripts that invoke complex Integration Procedures, this ceiling is reached faster than many architects expect, because the 5-second bar is low. When it is hit, additional synchronous requests are rejected — not timeout errors, but capacity errors that surface as OmniScript failures to users. `ConcurLongRunApexErrEvent` is the platform event that reports the breach (see `architect/org-limits-monitoring`).
 
 Mitigation strategies:
-- Ensure IPs complete well under 20 seconds for the common case; only route genuinely long operations to Queueable Chainable
+- Ensure IPs complete well under 5 seconds for the common case; move genuinely long operations to Queueable Chainable, which takes them out of this pool entirely
 - Use caching (see below) to reduce redundant IP executions that all hit the same data
 - Use Direct Platform Access mode for read-heavy IPs to reduce CPU time consumption
 
@@ -161,12 +166,12 @@ OmniStudio Integration Procedures are the right tool for most Salesforce-native 
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. **Establish the concurrency baseline** — determine peak concurrent user count, typical IP execution time, and whether any IP has been observed to exceed 20 seconds. Cross-reference against the 25-concurrent-long-running-Apex org-wide limit.
+1. **Establish the concurrency baseline** — determine peak concurrent user count, typical IP execution time, and whether any IP has been observed to exceed **5 seconds** (the long-running threshold). Compute the org's actual concurrent-long-running ceiling from its licence count (100 licences : 1 slot, floor 10, cap 50) and cross-reference synchronous IP load against it. Exclude async (Queueable/Batch/future) work from this count.
 2. **Audit async execution modes** — review every Integration Procedure for its current execution mode (synchronous, fire-and-forget, IP Chainable, Queueable Chainable). Identify any IPs that are using fire-and-forget as a workaround for governor limit errors — these require Queueable Chainable, not fire-and-forget.
 3. **Enable Direct Platform Access for eligible IPs** — identify read-heavy IPs on a Spring '25+ org with LWR. Enable DPA in execution settings. Verify that no write operations are present in the same IP path (write steps still require Apex execution).
 4. **Validate LWR + CDN configuration** — confirm the Experience Cloud site is on LWR runtime. Confirm CDN caching is configured for static assets. Measure page load under simulated concurrent load before and after CDN enablement.
 5. **Implement IP-level and DataRaptor caching** — identify reference data and low-churn queries within IPs. Configure IP output caching and DataRaptor Extract caching with TTLs appropriate to data freshness requirements.
-6. **Load test and monitor** — simulate peak concurrent user load in a full-copy sandbox. Monitor Apex Flex Queue depth, Queueable job completion times, and the concurrent long-running Apex metric in Setup > Apex Jobs. Flag any sustained pressure on the 25-request ceiling.
+6. **Load test and monitor** — simulate peak concurrent user load in a full-copy sandbox. Monitor Apex Flex Queue depth, Queueable job completion times, and subscribe to `ConcurLongRunApexErrEvent` (its `CurrentValue` / `LimitValue` fields report the org's real ceiling). Flag any sustained pressure on that ceiling.
 7. **Document escalation criteria** — record the thresholds (concurrent users, IP complexity, external API count) at which MuleSoft middleware should be evaluated. Include this in the architecture decision log.
 
 ---
@@ -175,7 +180,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking work in this area complete:
 
-- [ ] Peak concurrent user count is documented and cross-referenced against the 25-concurrent-long-running-Apex limit
+- [ ] Peak concurrent user count is documented and cross-referenced against the org's computed concurrent long-running Apex ceiling (synchronous, >5s; 100 licences : 1 slot, floor 10, cap 50)
 - [ ] Every Integration Procedure's async execution mode (fire-and-forget vs. Queueable Chainable) matches its actual need (UI unblocking vs. governor limit escape)
 - [ ] Direct Platform Access is enabled for read-heavy IPs on Spring '25+ orgs with LWR
 - [ ] The Experience Cloud site is confirmed on LWR runtime with CDN caching active
@@ -189,7 +194,7 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Fire-and-forget does NOT escape governor limits** — `useFuture: true` on an Integration Procedure removes the UI blocking wait but the IP still executes within a future Apex context with the same SOQL and DML limits (100 SOQL, 150 DML). Practitioners who see "limit errors in production" and add fire-and-forget to "fix" it are solving the wrong problem. Queueable Chainable is required to escape limits.
-2. **The 25-concurrent-long-running-Apex limit is org-wide, not portal-specific** — this ceiling is shared with all Apex running in the org: batch jobs, triggers, other Queueable processes. A heavy nightly batch job scheduled at the same time as portal peak hours will consume capacity from the portal's concurrent session budget.
+2. **The concurrent long-running Apex ceiling is org-wide, synchronous-only, and licence-scaled** — the threshold is transactions lasting longer than **5 seconds** (not 20), and the ceiling is a ratio of 100 applicable licences to one slot with a floor of 10 and a cap of 50 (not a flat 25). It is shared with every *synchronous* Apex entry point in the org: portal IPs, internal Lightning/Visualforce actions, synchronous inbound API calls, managed-package Apex. Asynchronous Apex — batch, Queueable, `@future`, Scheduled — does **not** consume slots. A heavy nightly batch job scheduled during portal peak hours still hurts, but indirectly: it contends for CPU and row locks and pushes synchronous transactions past the 5-second bar.
 3. **Direct Platform Access does not cover write operations** — DPA bypasses Apex CPU governors for read paths only. An Integration Procedure that reads via DPA but also performs an insert or update will still consume Apex CPU for the write steps. Mixed read/write IPs do not fully escape CPU governors.
 4. **LWR + CDN is a required prerequisite, not an optional enhancement** — standard Aura-based Experience Cloud sites cannot leverage CDN page caching. Deploying a high-volume portal on Aura and adding caching at the IP level will not compensate for the per-request server rendering cost. LWR must be the site runtime.
 

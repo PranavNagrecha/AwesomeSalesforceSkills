@@ -40,7 +40,7 @@ Activate when an LWC's `@wire`-provisioned data becomes stale after an imperativ
 ## Before Starting
 
 - **Identify the wire adapter.** Custom Apex wire? Use `refreshApex`. Standard `getRecord`? Use `RefreshView` (or legacy `notifyRecordUpdateAvailable`).
-- **Know about RefreshView.** Introduced Summer '24, replacing `getRecordNotifyChange` for standard UI API refreshes across the view.
+- **Know about RefreshView.** The `lightning/refresh` module shipped in Spring '23 (beta at launch, GA thereafter). It replaces Aura's `force:refreshView` and is the view-scoped alternative to `getRecordNotifyChange` for standard UI API refreshes.
 - **Avoid forced re-render hacks** like nulling params then restoring — tends to break and confuses framework caching.
 
 ## Core Concepts
@@ -58,14 +58,40 @@ handleRefresh() { return refreshApex(this.wiredAccounts); }
 
 ### RefreshView API
 
-Declarative refresh signal across the page/view:
+Refresh signal across the page/view. The *publisher* side is an event dispatch:
 
-```
+```javascript
 import { RefreshEvent } from 'lightning/refresh';
 this.dispatchEvent(new RefreshEvent());
 ```
 
-Components in the view listen via `@wire(RefreshView)` or by implementing `refresh()`. Replaces `getRecordNotifyChange` for view-scoped refresh.
+The *subscriber* side is imperative registration, not a wire. `RefreshView` is not a wire adapter and cannot be used with `@wire`. The `lightning/refresh` module exports four functions plus the event: `registerRefreshContainer()`, `registerRefreshHandler()`, `unregisterRefreshContainer()`, `unregisterRefreshHandler()`, and `RefreshEvent` (plus the `REFRESH_COMPLETE`, `REFRESH_COMPLETE_WITH_ERRORS`, `REFRESH_ERROR` status constants).
+
+A leaf component participates by registering a handler in `connectedCallback()` and tearing it down in `disconnectedCallback()`:
+
+```javascript
+import { LightningElement } from 'lwc';
+import { registerRefreshHandler, unregisterRefreshHandler } from 'lightning/refresh';
+
+export default class RefreshHandler extends LightningElement {
+    refreshHandlerID;
+
+    connectedCallback() {
+        this.refreshHandlerID = registerRefreshHandler(this, this.refreshHandler);
+    }
+
+    disconnectedCallback() {
+        unregisterRefreshHandler(this.refreshHandlerID);
+    }
+
+    refreshHandler() {
+        // must return a Promise so the container can await completion
+        return refreshApex(this.wiredResult);
+    }
+}
+```
+
+A container component uses `registerRefreshContainer(this, this.refreshContainer)` and receives a promise it can inspect against `REFRESH_COMPLETE` / `REFRESH_COMPLETE_WITH_ERRORS` / `REFRESH_ERROR`. Registered handlers are invoked from the container node outward. Note that `registerRefreshHandler` returns an **ID**, and it is that ID — not the component — that you pass to `unregisterRefreshHandler`.
 
 ### notifyRecordUpdateAvailable (legacy)
 

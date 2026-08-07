@@ -72,9 +72,13 @@ PKCE (Proof Key for Code Exchange) prevents authorization code interception atta
 
 PKCE is recommended for all public clients (mobile, SPA) regardless of whether a client secret is technically available.
 
-### JWT Bearer Flow — 60-Second Clock Drift Window
+### JWT Bearer Flow — the `exp` Claim and the 3-Minute Skew Buffer
 
-The JWT Bearer flow authenticates without user interaction using a signed JWT. The assertion's `iat` and `exp` claims must satisfy `exp - iat <= 3 minutes` and the JWT must reach Salesforce within 60 seconds of `iat`. Any clock skew on the signing server beyond 60 seconds produces an `invalid_grant` error with no other indication of the cause. Resolution: synchronize server clocks with NTP, keep JWT TTL short (≤ 3 minutes), and log the `iat` timestamp on every issued assertion for debugging.
+The JWT Bearer flow authenticates without user interaction using a signed JWT. The required claims are `iss` (the OAuth `client_id`), `sub` (the username), `aud` (the authorization server URL, e.g. `https://login.salesforce.com`) and `exp` (expiry, in seconds since epoch). **`iat` is not a required claim for this flow**, and there is no documented "must arrive within 60 seconds of `iat`" rule — do not chase a sub-minute NTP threshold that the platform does not define.
+
+What is documented is the treatment of `exp`: *"Salesforce allows a 3-minute buffer for clock skew. For example, if the expiration time is set to 1,735,743,600 seconds or January 1, 2025 at 15:00:00 UTC, the token is still valid until 15:03:00 UTC on this date."* So set `exp` to a near-future time — roughly three minutes out is the conventional TTL — and rely on the buffer to absorb ordinary skew.
+
+The underlying operational advice is still sound: keep the signing host on NTP and keep the assertion short-lived. Clock drift large enough to push `exp` outside the 3-minute buffer produces `invalid_grant` with no other indication of the cause, so log the `exp` you signed (and `iat` too, if you include it) to make skew debuggable.
 
 ### High-Assurance Sessions — Three States
 
@@ -131,7 +135,7 @@ In the External Client Apps (ECA) credential model (default from API v65 / Sprin
 | Public client (SPA, mobile) | PKCE + disable Require Secret | No safe place to store a client secret; PKCE is the correct substitute |
 | Sensitive data API, MFA-mandatory org | High Assurance = Blocked | Ensures only MFA-verified sessions can access the Connected App |
 | Credential rotation in ECA model | Coordinated same-deployment swap | No grace period exists; old secret is immediately invalid after rotation |
-| JWT Bearer `invalid_grant` with no obvious cause | Check clock drift on signing server | 60-second window; NTP sync resolves most cases |
+| JWT Bearer `invalid_grant` with no obvious cause | Check clock drift on signing server against the signed `exp` | Salesforce allows a documented 3-minute skew buffer on `exp`; drift beyond it fails. NTP sync resolves most cases |
 
 ---
 
@@ -167,7 +171,7 @@ Non-obvious platform behaviors that cause real production problems:
 1. **PKCE and Require Secret are mutually exclusive** — Enabling both causes token exchange failures with a cryptic `invalid_client_credentials` error. Salesforce does not warn you at save time; the error only appears at runtime.
 2. **ECA rotation has zero grace period** — In the ECA model (v65+), rotating the consumer secret via the API promotes the new value instantly. Any active integrations using the old secret break immediately, with no overlap window. Legacy tooling that assumed a rotation buffer will cause outages.
 3. **High Assurance "Switch to High Assurance" does not enforce immediately** — The "Switch" state prompts but does not block. If the intent is enforcement, it must be changed to **Blocked** after the migration window. Orgs have left integrations in "Switch" indefinitely, thinking they are enforcing MFA.
-4. **JWT Bearer 60-second clock drift silently produces invalid_grant** — The error message `invalid_grant` is shared with many other JWT validation failures. Clock drift is the most common and least obvious cause. Log the JWT `iat` claim on every request to isolate this.
+4. **JWT Bearer clock drift silently produces invalid_grant** — The error message `invalid_grant` is shared with many other JWT validation failures. Clock drift is the most common and least obvious cause. The threshold is the documented **3-minute buffer on `exp`**, not a 60-second `iat` window (`iat` is not even a required claim here). Log the `exp` you signed on every request to isolate this.
 5. **IP Relaxation applies to the Connected App, not the user** — Setting `relaxIpRanges` on a Connected App overrides the user's profile IP range restrictions for that app's token requests. Practitioners often assume profile IP ranges are always enforced regardless of Connected App settings.
 
 ---

@@ -37,8 +37,8 @@ the REST API, where manual auth is genuinely required.
 **Correct pattern:**
 
 ```javascript
-import { createDataSDK } from '@salesforce/sdk-data';
-const sdk = createDataSDK(); // authentication handled automatically — no token code
+import { createDataSDK } from '@salesforce/platform-sdk';
+const sdk = await createDataSDK(); // authentication handled automatically — no token code
 ```
 
 **Detection hint:** `client_id`, `refresh_token`, `jsforce`, or Bearer-header construction in
@@ -46,18 +46,25 @@ a UI-bundle codebase.
 
 ---
 
-## Anti-Pattern 3: Claiming GA / production availability
+## Anti-Pattern 3: Repeating the retired Multi-Framework beta restrictions
 
-**What the LLM generates:** "Multi-Framework is generally available — deploy your React app
-to production," or omitting the org restrictions entirely.
+**What the LLM generates:** "Multi-Framework is in open beta — scratch orgs and sandboxes
+only, English default language only, no production deploys."
 
-**Why it happens:** models pattern-fill maturity labels and default to the happy path;
-"introducing X" blog language reads like a GA launch.
+**Why it happens:** the April 2026 "Introducing Salesforce Multi-Framework" announcement is
+the most-quoted source on the topic and describes the beta accurately. GA followed in July
+2026, and GA announcements carry far less of the constraint language that made the beta post
+so quotable — so the beta framing dominates. Note the inversion relative to the usual failure
+mode: here the model is being *too conservative*, and conservative errors get challenged less.
+The damage is real, though: a team is told a production deploy is impossible when it is
+supported, and either rewrites in LWC unnecessarily or delays a release.
 
-**Correct pattern:** state explicitly that Multi-Framework is in **open beta** for **scratch
-orgs and sandboxes with English as the org default language**, that **beta apps cannot be
-deployed to production orgs**, and that the ACC Web SDK carries its own **Beta** label while
-Lightning-page micro-frontend embedding is only a **closed pilot** (Spring 2026).
+**Correct pattern:** Multi-Framework is **GA as of July 2026** — production-ready, supported
+for business-critical workloads, and deployable to **production, scratch, Developer Edition,
+and sandbox** orgs on **Summer '26 (API 67.0) or later**. Keep the narrower qualifiers that
+are still true: the ACC Web SDK carries its own **Beta** label, and Lightning-page
+micro-frontend embedding remains a pilot. Scope maturity claims to the component, not the
+platform capability.
 
 **Detection hint:** any answer recommending a production deploy, or missing the words
 "beta" / "scratch org" / "sandbox" when scoping this capability.
@@ -118,3 +125,45 @@ via `agentforce/agentforce-custom-lightning-types`, not by hardcoding components
 
 **Detection hint:** custom message-bubble components plus direct REST calls where an
 Agentforce Employee Agent conversation was requested, with no mention of ACC.
+
+
+---
+
+## Anti-Pattern: `@salesforce/sdk-data` and the beta-era SDK surface
+
+**What the LLM generates:**
+
+```javascript
+import { createDataSDK } from '@salesforce/sdk-data';
+const sdk = createDataSDK();
+const accounts = await sdk.graphql(MY_QUERY);
+```
+
+**Why it happens:** this was correct during the beta and is what the widely-cited April 2026
+announcement shows. At GA (July 2026) three things changed at once, and each is small enough
+to be missed independently: the package was renamed **`@salesforce/sdk-data` →
+`@salesforce/platform-sdk`**, `createDataSDK()` became **awaited**, and the unified
+`.graphql(query)` call was **split by operation**. `createDataSDK` kept its name, which is the
+trap — the familiar factory makes the stale import look verified.
+
+**Correct version:**
+
+```javascript
+import { createDataSDK, gql } from '@salesforce/platform-sdk';
+
+const sdk = await createDataSDK();
+
+const result = await sdk.graphql?.query({ query: MY_QUERY });          // reads
+const saved  = await sdk.graphql?.mutate({ mutation: MY_MUTATION, variables: { input } }); // writes
+
+// result.data may be undefined at GA — chain optionally
+const edges = result?.data?.uiapi?.query?.Account?.edges;
+```
+
+**Detection hint:** grep for `@salesforce/sdk-data` (retired package — `npm i` fails), for
+`createDataSDK()` **not** preceded by `await`, and for `sdk.graphql(` called directly as a
+function rather than as the `sdk.graphql?.query` / `sdk.graphql?.mutate` namespace.
+Generalisable rule for fast-moving platform SDKs: **the package name and the maturity claim
+go stale together** — if a snippet still says "open beta," assume its import path is the
+beta path too, and check both. Conversely, a corrected maturity claim with an unchanged
+import path is a half-applied fix.

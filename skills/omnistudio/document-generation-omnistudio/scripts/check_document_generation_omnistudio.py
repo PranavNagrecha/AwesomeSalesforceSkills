@@ -48,12 +48,9 @@ def extract_tokens_from_docx_xml(xml_content: str) -> set[str]:
     # Match repeating section names: {{#Items}} / {{/Items}}
     for match in re.finditer(r"\{\{#(\w+)\}\}", xml_content):
         tokens.add(f"#{match.group(1)}")
-    # Match image tokens: {{%ImageField}}
-    for match in re.finditer(r"\{\{%(\w+)\}\}", xml_content):
-        tokens.add(f"%{match.group(1)}")
-    # Match rich text tokens: {{&RichField}}
-    for match in re.finditer(r"\{\{&(\w+)\}\}", xml_content):
-        tokens.add(f"&{match.group(1)}")
+    # Prefixed tokens carry the prefix INSIDE the braces: {{IMG_header}},
+    # {{HYP_link}}, {{RTB_Header}}, {{DT_FieldName}}. These are matched by the
+    # simple-token pattern above and are intentionally not special-cased here.
     return tokens
 
 
@@ -83,8 +80,36 @@ def find_document_templates(manifest_dir: Path) -> list[Path]:
     return [f for f in files if f.is_file()]
 
 
-def check_image_tokens_in_server_side(manifest_dir: Path) -> list[str]:
-    """Check for image or rich text tokens that may be used with server-side generation."""
+# OmniStudio DocGen token prefixes live INSIDE the braces and are documented in
+# "Tokens in Microsoft Word or Microsoft PowerPoint Documents":
+#   {{name}}                       variable
+#   {{#name}}...{{/name}}          repeating content ({{^name}} = inverted)
+#   {{#IF_name}}...{{/IF_name}}    condition evaluation
+#   {{IMG_name}}                   dynamic image  (client-side AND server-side)
+#   {{HYP_name}}                   hyperlink
+#   {{RTB_name}}                   rich text
+#   {{DT_FieldName}}               data true-up
+#
+# Sigil syntax such as {{%Image}} / {{&RichText}} and Handlebars-style
+# {{#if cond}} are NOT OmniStudio syntax. They render as literal text or blanks
+# with no error raised, which is why this needs a mechanical check.
+INVALID_TOKEN_PATTERNS: list[tuple[str, str]] = [
+    (r"\{\{%\s*\w+\s*\}\}", "{{%Name}} sigil syntax — use {{IMG_Name}} for images"),
+    (r"\{\{&\s*\w+\s*\}\}", "{{&Name}} sigil syntax — use {{RTB_Name}} for rich text"),
+    (
+        r"\{\{#\s*if\s+\w+\s*\}\}",
+        "Handlebars {{#if cond}} — use {{#IF_cond}}...{{/IF_cond}}",
+    ),
+]
+
+
+def check_invalid_token_syntax(manifest_dir: Path) -> list[str]:
+    """Flag token syntax that OmniStudio DocGen does not recognise.
+
+    The failure mode this guards is silent: an unrecognised token is not an
+    error, it simply leaves the raw string or a blank in the generated
+    document. Generation "succeeds" and the defect surfaces to the reader.
+    """
     issues: list[str] = []
     for xml_file in manifest_dir.rglob("*.xml"):
         try:
@@ -92,23 +117,14 @@ def check_image_tokens_in_server_side(manifest_dir: Path) -> list[str]:
         except OSError:
             continue
 
-        has_image_token = bool(re.search(r"\{\{%\w+\}\}", content))
-        has_richtext_token = bool(re.search(r"\{\{&\w+\}\}", content))
-        has_server_side_ref = bool(
-            re.search(r"(?i)server.?side|integrationprocedure", content)
-        )
-
-        if (has_image_token or has_richtext_token) and has_server_side_ref:
-            token_types = []
-            if has_image_token:
-                token_types.append("image ({{%...}})")
-            if has_richtext_token:
-                token_types.append("rich text ({{&...}})")
-            issues.append(
-                f"{xml_file.name}: Contains {', '.join(token_types)} tokens "
-                f"alongside server-side generation references. "
-                f"Image and rich text tokens are only supported in client-side mode."
-            )
+        for pattern, advice in INVALID_TOKEN_PATTERNS:
+            if re.search(pattern, content):
+                issues.append(
+                    f"{xml_file.name}: Unrecognised DocGen token syntax — {advice}. "
+                    f"OmniStudio prefixes go inside the braces (IMG_, HYP_, RTB_, "
+                    f"IF_, DT_). Unrecognised tokens do not raise an error; they "
+                    f"render as literal text or blank space."
+                )
     return issues
 
 
@@ -151,8 +167,8 @@ def check_document_generation_omnistudio(manifest_dir: Path) -> list[str]:
         issues.append(f"Manifest directory not found: {manifest_dir}")
         return issues
 
-    # Check for image/rich text tokens in server-side contexts
-    issues.extend(check_image_tokens_in_server_side(manifest_dir))
+    # Check for token syntax OmniStudio DocGen does not recognise
+    issues.extend(check_invalid_token_syntax(manifest_dir))
 
     # Check for token case consistency
     issues.extend(check_token_case_consistency(manifest_dir))

@@ -79,5 +79,3 @@ Reason for pattern choice:
 ## Notes
 
 Record any deviations from the standard pattern and why:
-</content>
-</invoke>

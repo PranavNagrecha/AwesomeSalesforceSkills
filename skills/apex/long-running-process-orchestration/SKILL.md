@@ -62,7 +62,9 @@ Gather this context before working on anything in this domain:
 
 ### Why Single Transactions Are Insufficient
 
-Salesforce imposes hard transaction limits per execution context: 60 000 ms CPU, 100 SOQL queries, 150 DML statements, 12 MB heap, and a 10-second total callout timeout. A process that must send 20 batched callouts, process thousands of records in sequential dependency steps, or wait for external system responses cannot fit in one transaction. Multi-step orchestration is the platform-endorsed pattern for these cases: each step runs in its own transaction with a full allocation of governor limits, and state advances through controlled async handoffs.
+Salesforce imposes hard transaction limits per execution context: 60 000 ms CPU (asynchronous), 100 SOQL queries, 150 DML statements, 12 MB heap (asynchronous), a maximum of 100 callouts, and a **cumulative callout timeout of 120 seconds per transaction**.
+
+That 120-second figure is the one to design against, and it is routinely mis-stated as 10 seconds. Ten seconds is the *default* timeout for a **single** callout, and it is not a ceiling: `HttpRequest.setTimeout()` accepts 1–120,000 ms, in both synchronous and asynchronous Apex. So one callout may legitimately run for the full two minutes, or twelve callouts may run for ten seconds each — what you cannot do is exceed 120 seconds *summed across every callout in the transaction*. A process that must send 20 batched callouts against a slow service, process thousands of records in sequential dependency steps, or wait for external system responses cannot fit in one transaction. Multi-step orchestration is the platform-endorsed pattern for these cases: each step runs in its own transaction with a full allocation of governor limits, and state advances through controlled async handoffs.
 
 ### Queueable Chaining As A Step Sequencer
 

@@ -126,9 +126,11 @@ Losing record ID malformed.
 ## Mixed DML
 
 ### MIXED_DML_OPERATION
-`System.MixedDMLException: DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa)`
+`System.DmlException: Insert failed. First exception on row 0; first error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa): []`
 
-Setup objects include: User, Group, GroupMember, PermissionSet, PermissionSetAssignment, Profile, and similar. Resolution: do one operation sync, the other via `@future` or queueable.
+The exception class is `System.DmlException`. Apex has no `MixedDmlException` type — grep for the status code `MIXED_DML_OPERATION`, not for an exception name.
+
+Setup objects include: User, Group, GroupMember, PermissionSet, PermissionSetAssignment, ObjectPermissions, FieldPermissions, QueueSObject, UserRole, Territory2, and similar. Resolution: do one operation sync, the other via `@future` or queueable.
 
 ## Callouts
 

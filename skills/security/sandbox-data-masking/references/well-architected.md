@@ -6,13 +6,14 @@
 
 - **Operational Excellence** — Data Mask configured with SandboxPostCopy automation removes the human-in-the-loop dependency from the post-refresh compliance gate. This reduces the probability of an engineer accessing real data during the window between refresh completion and manual masking. Automation also reduces mean time to sandbox readiness by eliminating the manual coordination step.
 
-- **Reliability** — Correctly configured masking policies prevent test failures caused by data format assumptions breaking when test data changes. Deterministic masking in particular ensures cross-object FK relationships remain consistent, avoiding intermittent test failures that look like code bugs.
+- **Reliability** — Correctly configured masking policies prevent test failures caused by data format assumptions breaking when test data changes. Cross-object FK relationships, however, are **not** preserved by any masking type — Data Mask is irreversible by design and offers no same-input-same-output guarantee. Where tests join on a denormalised value, add a post-mask reconciliation job to the runbook; without it you get intermittent failures that look like code bugs and are actually a missing refresh step.
 
 ## Architectural Tradeoffs
 
 | Decision | Tradeoff |
 |---|---|
-| Pseudonymous vs. Deterministic masking | Pseudonymous is simpler and produces more varied test data. Deterministic is required when the same value must be consistent across related objects. Use Deterministic only where referential integrity is validated by tests; otherwise Pseudonymous is preferred. |
+| Library vs. Random Characters vs. Pattern masking | Replace-from-Library produces realistic values so format-sensitive tests still exercise their logic, but it is the slowest of the four types on large objects. Random Characters is much faster and adequate wherever the test does not care about shape. Pattern sits between them and is the right choice for fields with a required structure (account numbers, policy references). Choose per field against what the test actually asserts, not as a blanket policy. |
+| Cross-object value consistency | Data Mask offers no masking type that preserves it — the four types are Random Characters, Library, Pattern and Delete, and masking is irreversible by design. If tests join on a denormalised value, budget for a post-mask reconciliation job in the refresh runbook, or exclude the denormalised copy from masking and repopulate it from the masked source. |
 | Null/Delete vs. replacement masking | Null is the simplest and leaves no residual data. However it fails on required fields and eliminates test coverage for format-sensitive logic. Prefer replacement masking for fields that drive workflow or validation logic. |
 | SandboxPostCopy automation vs. manual run | SandboxPostCopy eliminates the human window of exposure. It adds Apex maintenance overhead and requires the Data Mask package to be stable at refresh time. For infrequently refreshed sandboxes, manual is acceptable with a documented runbook and access gate. |
 | Data Mask vs. synthetic data seeding | Data Mask is faster to set up for existing production-refresh workflows. Synthetic seeding (no production data in the sandbox at all) is architecturally cleaner and eliminates the masking problem entirely, but requires significant upfront investment in data factories. For orgs with complex data models, Data Mask is a pragmatic bridge. |
@@ -32,3 +33,5 @@
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
 - Shield Platform Encryption Implementation Guide — https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5
 - SandboxPostCopy Interface (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_interface_System_SandboxPostCopy.htm
+- Salesforce Help — Data Mask Overview (four masking types; "When you mask sandbox data, you can't unmask it"; full and partial copy sandboxes) — https://help.salesforce.com/s/articleView?id=data_mask_overview.htm&language=en_US&type=5
+- Salesforce Help — Data Mask Masking Types (Random, Library, Pattern, Delete + field-type compatibility table) — https://help.salesforce.com/s/articleView?id=data_mask_masking_types.htm&language=en_US&type=5

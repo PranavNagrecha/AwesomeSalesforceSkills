@@ -12,13 +12,20 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: ConfigurableSelfRegHandler vs Legacy RegistrationHandler Interface Mismatch
+## Gotcha 2: Two Auth Registration Interfaces That Are Not Versions of Each Other
 
-**What happens:** Salesforce has two Apex interfaces for customising self-registration. The legacy interface is `Auth.RegistrationHandler` (requires implementing `createUser` and `updateUser` methods). The current interface is `Auth.ConfigurableSelfRegHandler` (requires implementing a single `registerUser(Auth.SelfRegistrationContext context)` method). If you implement the wrong interface and reference the class in the Registration settings, the platform either ignores the class silently or throws a runtime error during registration. The two interfaces are not interchangeable.
+**What happens:** Salesforce has two Apex registration interfaces with confusingly similar names, and they are routinely described — including by LLMs and by a good deal of blog content — as an old one and a new one. They are not. They serve different entry points and have unrelated signatures:
 
-**When it occurs:** When an Apex developer writes a handler based on older documentation, Trailhead content, or LLM-generated code that references the legacy signature. The Registration settings panel in Setup will accept either class name, so the mismatch is not caught at configuration time — it only surfaces when a user attempts to register.
+| Interface | Entry point | Signature |
+|---|---|---|
+| `Auth.ConfigurableSelfRegHandler` | The site's own self-registration page (Experience Builder > Login & Registration) | `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)` — returns the new User's Id |
+| `Auth.RegistrationHandler` | Just-in-time provisioning behind an Auth. Provider (SSO, social sign-on) | `User createUser(Id portalId, Auth.UserData userData)` and `void updateUser(Id userId, Id portalId, Auth.UserData userData)` |
 
-**How to avoid:** When building a new self-registration handler, always implement `Auth.ConfigurableSelfRegHandler`. Check the Apex Reference Guide to confirm the current method signatures. If maintaining a legacy org that already uses `Auth.RegistrationHandler`, leave it in place — both interfaces are still supported — but do not mix the two on the same site.
+Self-registration never produces an `Auth.UserData`, so an `Auth.RegistrationHandler` class named in the Registration settings cannot do the job, and vice versa. The Registration settings panel accepts a class name without validating the interface, so the mismatch surfaces only when a real visitor tries to register.
+
+**When it occurs:** When a developer — or a code generator — treats the two names as synonyms, or emits the third, entirely fictional shape `registerUser(Auth.SelfRegistrationContext)`.
+
+**How to avoid:** Pick by entry point, not by recency. Self-registration page → `Auth.ConfigurableSelfRegHandler`. Auth. Provider → `Auth.RegistrationHandler`. Before deploying either, compile-check the signature against the Apex Reference Guide; both interfaces are current and supported, and an org can legitimately have one of each.
 
 ---
 

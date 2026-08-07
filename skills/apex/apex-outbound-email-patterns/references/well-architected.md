@@ -34,7 +34,10 @@ Specifically:
   Flow.
 - **Confirmation emails with PDFs generated at runtime**: Apex
   SingleEmailMessage.
-- **Bulk personalized sends > 100 recipients**: Apex with chunking.
+- **Bulk personalized sends > 150 recipients**: Apex with chunking.
+  150 is the documented per-message cap on `toAddresses` + `ccAddresses`
+  + `bccAddresses` combined; chunk at or below it, and stay under the
+  4,000-byte cap on each address field.
 - **Marketing campaigns**: Marketing Cloud, not Apex.
 
 ## Anti-Patterns
@@ -50,6 +53,8 @@ Specifically:
 ## Official Sources Used
 
 - Messaging.SingleEmailMessage Class — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Messaging_SingleEmailMessage.htm
+- Apex Developer Guide — Outbound Email (SingleEmailMessage) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_email_outbound_single.htm — "The maximum total of toAddresses, ccAddresses, and bccAddresses per email is 150"; each address field "maximum size for this field is 4,000 bytes"
+- Apex Reference Guide — Exception Class and Built-In Exceptions — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm — `EmailException` is "Any problem with email, such as failure to deliver"; `HandledException` is "A generic handled exception" and is not the email-send exception
 - Messaging.sendEmail() — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_messaging.htm
 - OrgWideEmailAddress (Object Reference) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_orgwideemailaddress.htm
 - Email Limits in Salesforce — https://help.salesforce.com/s/articleView?id=sf.limits_email.htm

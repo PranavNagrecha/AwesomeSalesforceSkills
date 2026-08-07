@@ -20,7 +20,9 @@ import re
 import sys
 from pathlib import Path
 
-# Versions 7.0-30.0 retired in Summer '22. 31.0 is the absolute floor.
+# Two completed retirement waves: 7.0-20.0 retired in Summer '22;
+# 21.0-30.0 deprecated in Summer '22 and retired in Summer '25.
+# 31.0 is therefore the absolute floor as of Summer '26.
 ABSOLUTE_MIN_VERSION = 31
 
 # Default "current" version — Spring '25

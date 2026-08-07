@@ -71,12 +71,13 @@ Auth model for callback:
 Governor limit assessment:
   Volume: 2,000 new Cases/day = 2,000 CDC events + 2,000 REST PATCH calls = 4,000 calls/day
   Org API limit: within budget.
-  Risk: CDC events have a 24-hour retention window. If the pipeline is down for > 24hr,
-    events are lost. Design a recovery job (scheduled Apex or batch) to re-classify
-    Cases created in the last 24hr that have no AI classification.
+  Risk: CDC events are stored in the event bus for three days (72 hours). If the
+    pipeline is down for > 72hr, events are lost and ReplayId-based catch-up no
+    longer works. Design a recovery job (scheduled Apex or batch) to re-classify
+    Cases created since the last successful run that have no AI classification.
 ```
 
-**Why it works:** CDC eliminates polling latency. The recovery job design addresses the 24-hour CDC retention limit — a gotcha that catches most event-driven architectures.
+**Why it works:** CDC eliminates polling latency. The recovery job design addresses the 72-hour CDC retention limit — a gotcha that catches most event-driven architectures. Note the recovery job is keyed off *last successful run*, not a fixed lookback constant: hard-coding "last 24hr" (or even "last 72hr") into the requery silently drops records once an outage exceeds the constant.
 
 ---
 

@@ -30,7 +30,7 @@ outputs:
   - "Identified loop anti-patterns (DML-in-loop, SOQL-in-loop, subflow-in-loop, nested loop) with concrete refactor"
   - "Collect-then-DML refactor instructions per loop"
   - "Recommendation to keep, replace with Collection Filter / Transform / Get-with-criteria, or escalate to invocable Apex"
-  - "Element-count estimate against the 2,000-element interview limit"
+  - "Worst-case element-execution and CPU-time estimate for the loop"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
@@ -111,7 +111,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 
 **How it works:** Replace `Loop → Decision → Assignment(Add) → end loop` with a single **Collection Filter** element. The output is a new collection containing only the matching rows.
 
-**Why not the alternative:** Loop+Decision+Assignment uses 3+ elements per iteration (counted against the 2,000-element interview limit), is harder to read, and is one of the most common LLM-generated anti-patterns.
+**Why not the alternative:** Loop+Decision+Assignment executes 3+ elements per iteration, so it burns roughly triple the CPU time of a single Collection Filter, is harder to read, and is one of the most common LLM-generated anti-patterns.
 
 ### Pattern: Transform Element Instead of Loop+Build
 
@@ -133,7 +133,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 | Need a sorted or top-N subset | Get Records with Sort Order + Number of Records to Store | Push work to the database; avoids any loop |
 | Need to look up B-rows by key while iterating A | One Get Records of all B + Loop A + Decision against in-memory B | Avoids SOQL-in-loop; single query regardless of A size |
 | Genuinely complex per-row logic with branching DML | Invocable Apex receiving `List<SObject>` | Apex map/set primitives, full bulkification, real unit tests |
-| Two input collections joined many-to-many | Pre-loaded map collection + single outer Loop | Nested Loops are O(n*m) elements counted against the 2,000-element interview limit |
+| Two input collections joined many-to-many | Pre-loaded map collection + single outer Loop | Nested Loops are O(n*m) element-executions; the CPU-time limit (10,000 ms sync) is what stops them |
 
 ---
 
@@ -143,7 +143,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 2. **Classify each loop's body** by what elements it contains: Pure (Assignment / Decision only), DML-in-loop (Create / Update / Delete), SOQL-in-loop (Get Records), Action-in-loop (Apex invocable), Subflow-in-loop (recurse and re-classify).
 3. **Refactor every DML-in-loop and SOQL-in-loop** using Collect-Then-DML or Map-Lookup. Subflow-in-loop is refactored by either inlining the subflow logic or re-shaping the subflow to accept and operate on a collection.
 4. **Consider replacing the loop entirely** — could a Collection Filter, Transform, or sharper Get Records eliminate the loop? If yes, prefer the loop-free version.
-5. **Validate against `flow-bulkification`** — verify the redesigned flow respects the 200-record save-trigger contract and stays inside the 2,000-element interview limit. For high-volume scenarios also consult `flow-large-data-volume-patterns` and `flow-governor-limits-deep-dive`.
+5. **Validate against `flow-bulkification`** — verify the redesigned flow respects the 200-record save-trigger contract and stays inside the transaction's CPU-time, SOQL, and DML budgets. For high-volume scenarios also consult `flow-large-data-volume-patterns` and `flow-governor-limits-deep-dive`.
 
 ---
 
@@ -164,7 +164,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 
 1. **Iteration variable for SObject collections is a reference, not a copy** — modifying `loopItem.Field__c` inside an Assignment changes the in-memory source collection, but does NOT persist to the database. Practitioners assume the change is saved and skip the post-loop Update Records. Result: silent data loss until QA notices.
 2. **Iteration variable retains the last item after the loop ends** — the variable is flow-scoped, not loop-scoped. Downstream elements that reference it get the last record processed (or null if the input collection was empty). Convenient for "last item" logic, but a bug if accidentally referenced.
-3. **Per-interview 2,000-element execution limit** — every element executed counts. A loop body of 4 elements iterating 200 records consumes 800 element-executions just from the body, before any pre/post work. Nested loops at 200×200 = 40,000+ element-executions, which Flow halts with `Number of executed elements has exceeded the maximum`.
+3. **Element count is a CPU-time proxy, not a limit of its own (on API 57.0+)** — the old per-interview ceiling of 2,000 executed elements applied to **API version 56.0 and earlier only**; Salesforce removed it in API 57.0 (Spring '23). Flows pinned to an older API version still hit it and fail with `Number of iterations exceeded`. On a current flow, high element counts are still the problem — they just surface as the 10,000 ms synchronous CPU-time limit instead. A loop body of 4 elements iterating 200 records is 800 element-executions; nested loops at 200×200 are 40,000+, which will exhaust CPU time long before anything else. Estimate element-executions for the same reason you always did; just do not quote a 2,000 ceiling.
 4. **DML budget is per-transaction, shared across the whole call stack** — the 150-DML cap is shared with every other trigger, flow, and Apex class in the same transaction. A loop with one DML inside, called from a record-triggered context already running 50 other automations, busts the limit much earlier than 150 iterations.
 5. **Subflow-in-loop hides the anti-pattern from a casual review** — `LoopOverContacts → Subflow_RefreshAccountSummary` looks innocuous. Open the subflow and it does Get Records + Update Records — congratulations, you have SOQL-in-loop AND DML-in-loop, just two screens away.
 6. **Collection variables are NOT auto-deduped** — `Add` on Assignment appends every time, including duplicates. If a loop with branching paths can `Add` the same record from two branches, your post-loop Update Records will issue duplicate writes (one DML, but the same row updated twice in memory) — and worse, can hit the "duplicate id in collection" runtime error on Update.
@@ -178,7 +178,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 |---|---|
 | Loop inventory table | One row per Loop element with input collection, body classification (pure / DML / SOQL / subflow / action), expected iteration count, and pass/fail verdict |
 | Refactor diff per anti-pattern loop | Before/after element list showing the collect-then-DML conversion, plus the new collection variable to declare |
-| Element-count estimate | Worst-case element-executions per interview, compared to the 2,000-element ceiling |
+| Element-count estimate | Worst-case element-executions per interview, as the leading indicator of CPU-time exhaustion (10,000 ms sync / 60,000 ms async). Flag any flow pinned to API <= 56.0 separately, since those still carry the retired 2,000-element ceiling |
 | Loop-free alternative recommendation | Per loop, a yes/no on whether Collection Filter / Transform / Get-with-criteria could eliminate it, with reason |
 | Subflow inspection report | For every subflow called inside a loop body, a verdict on whether it contains hidden DML / SOQL |
 
@@ -190,7 +190,7 @@ For pure filtering, the **Collection Filter** element (GA since Winter '23) repl
 - `flow-collection-processing` — full reference for Loop, Assignment-with-Add, Collection Filter, Collection Sort, and Transform semantics. Read this first for collection element selection.
 - `flow-cross-object-updates` — when the loop body reaches into related records, the cross-object update patterns describe how to batch parent / child writes.
 - `flow-get-records-optimization` — most SOQL-in-loop refactors collapse into a single optimized Get Records; this skill shows how to write that query.
-- `flow-governor-limits-deep-dive` — exhaustive treatment of the 2,000-element / 150-DML / 100-SOQL ceilings the loop must respect.
+- `flow-governor-limits-deep-dive` — exhaustive treatment of the CPU-time / 150-DML / 100-SOQL ceilings the loop must respect.
 - `flow-large-data-volume-patterns` — when the input collection itself is too big for a single transaction (move to scheduled-paths or invocable Apex).
 - `fault-handling` — fault paths around the post-loop DML so a single bad row does not silently roll back the whole interview.
 - `subflows-and-reusability` — when refactoring subflow-in-loop, the contract for bulk-safe subflow inputs.

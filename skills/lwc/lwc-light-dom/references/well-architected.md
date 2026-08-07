@@ -19,7 +19,7 @@ Secondary tradeoffs referenced in `SKILL.md` → Decision Guidance:
 ## Anti-Patterns
 
 1. **"Every component should be light DOM so CSS debugging is easier"** — this throws away encapsulation for an entire app. Debugging CSS specificity is a temporary pain; losing isolation is a permanent property of the component. Use styling hooks (CSS custom properties through the shadow boundary) before reaching for light DOM.
-2. **Shipping a light-DOM component inside a managed package** — explicitly called out by Salesforce. Consumer orgs cannot scope the package's styles after install, so the leak is permanent and cross-org.
+2. **Shipping a light-DOM component inside a managed package** — Salesforce states plainly that distributing light-DOM components isn't supported, because component references in a managed package use the `c` namespace and would produce a namespace conflict. Style leakage is a second, independent problem (consumer orgs cannot scope the package's styles after install, so the leak is permanent and cross-org) — but do not offer it as *the* reason, or a reviewer will conclude that `*.scoped.css` resolves the packaging question. It does not.
 3. **Switching render mode to "fix" a functional bug** — render mode is not a bug-fix tool. If `querySelector` returns `null`, first check whether the component should expose a public API or custom event. Reaching for light DOM to paper over a design gap creates a larger problem than it solves.
 
 ## Official Sources Used
@@ -29,3 +29,4 @@ Secondary tradeoffs referenced in `SKILL.md` → Decision Guidance:
 - Migrate Shadow DOM Components to Light DOM — https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom-migration.html
 - Lightning Web Security Introduction — https://developer.salesforce.com/docs/platform/lwc/guide/security-lwsec-intro.html
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
+- LWC Developer Guide — Light DOM ("Distributing components rendered in light DOM isn't supported… would result in a namespace conflict"; verified 2026-08-01) — https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html

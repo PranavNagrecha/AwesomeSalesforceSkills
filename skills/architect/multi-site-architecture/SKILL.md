@@ -56,7 +56,7 @@ Use this skill when designing or reviewing a strategy for deploying multiple Exp
 
 Gather this context before working on anything in this domain:
 
-- **Current site inventory:** Run `Setup > Digital Experiences > All Sites` and count active, preview, and inactive sites. All three statuses count toward the 100-site org limit.
+- **Current site inventory:** Run `Setup > Digital Experiences > All Sites` and count active, preview, and inactive sites, plus any Visualforce sites. All of those count toward the 100-site org limit. **Archived sites do not** — count them separately, and note that archiving is the reversible way to reclaim a slot.
 - **Org edition:** Custom domain configuration on Experience Cloud requires Enterprise edition or higher. Professional edition orgs are limited to the default `MyDomainName.my.site.com` URL pattern.
 - **License types purchased:** Experience Cloud licensing is per user and per site type (Customer Community, Partner Community, Employee Apps, etc.). A user with a Customer Community license cannot access a Partner Community site.
 - **Is this actually a multi-org question?** If the requirement is data residency, regulatory isolation, or M&A integration, use `architect/multi-org-strategy` instead. Multi-site within one org assumes a shared data model.
@@ -72,10 +72,13 @@ Every Salesforce org supports a maximum of 100 Experience Cloud sites. This limi
 - **Active sites** (published and accessible to users) count toward the limit.
 - **Preview sites** (published to admins only, not yet public) count toward the limit.
 - **Inactive sites** (deactivated but not deleted) count toward the limit.
+- **Visualforce sites** count toward the limit too — the quota is not Experience-Builder-only.
 
-A site is only removed from the quota count when it is permanently **deleted**, not when it is deactivated. Orgs that have used the site builder repeatedly — including demos, proofs of concept, and abandoned prototypes — can accumulate inactive sites that silently consume quota.
+Salesforce's wording is: "You can have up to 100 Experience Cloud sites in your org. Active, inactive, and preview sites, including Visualforce sites, count against this limit. **Archived sites don't count against this limit.**"
 
-Practical implication: treat the 100-site limit as a capacity constraint that must be actively monitored. Build a site inventory process. Delete obsolete sites rather than deactivating them indefinitely.
+That last sentence is the one that matters operationally. **Deactivating does not free a slot, but archiving does** — and archiving is reversible, whereas deletion is not. Orgs that have used the site builder repeatedly for demos, proofs of concept and abandoned prototypes accumulate inactive sites that silently consume quota, and the fix is to archive them, not to destroy them.
+
+Practical implication: treat the 100-site limit as a capacity constraint that must be actively monitored. Build a site inventory process. When a site is no longer needed, **archive it** — that reclaims the quota slot while preserving the site should it be needed again. Reserve permanent deletion for sites you are certain will never be revived.
 
 ### Domain Strategy and Custom Domains
 
@@ -167,7 +170,7 @@ Without SSO, cross-site navigation drops the user to the target site's login pag
 |---|---|---|
 | Two audiences (customers and partners) in the same org | Two separate Experience Cloud sites, one per audience type | Clean URL separation, distinct guest profiles, independent release cadence |
 | Multiple regional variants of the same site | One site per region with shared LWC components and Translation Workbench | Avoid code duplication; externalize regional content via component properties |
-| Org approaching 100-site limit | Audit and delete inactive/unused sites; assess whether preview sites can be merged | Inactive and preview sites consume quota; deletion is the only way to reclaim it |
+| Org approaching 100-site limit | Audit and **archive** inactive/unused sites; assess whether preview sites can be merged | Active, inactive, preview and Visualforce sites all consume quota. Archiving frees the slot and is reversible; deletion is not required |
 | Custom-branded URL required (e.g., portal.company.com) | Enterprise+ org; configure custom domain in production only | Custom domain config is not available in sandbox; requires Enterprise edition |
 | Cross-site navigation needed | Explicit hyperlinks between site URLs; SSO via external IdP for seamless auth | No native cross-portal session sharing; SSO is the only transparent auth hand-off |
 | Requirement appears to need multiple orgs for portal isolation | Stay in single org with multiple sites unless data residency or regulatory isolation is required | Multi-org for portal isolation introduces cross-org sync complexity with no benefit |
@@ -179,7 +182,7 @@ Without SSO, cross-site navigation drops the user to the target site's login pag
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. **Inventory the current org.** Count active, preview, and inactive sites in `Setup > Digital Experiences > All Sites`. Confirm the org edition. Determine how many of the 100-site quota remain. Identify any obsolete or prototype sites that should be deleted before the project begins.
+1. **Inventory the current org.** Count active, preview, and inactive sites in `Setup > Digital Experiences > All Sites`. Confirm the org edition. Determine how many of the 100-site quota remain. Identify any obsolete or prototype sites that should be **archived** before the project begins — archiving frees the slot without destroying the configuration.
 2. **Define audience segments and site boundaries.** For each distinct audience (customers, partners, employees, public), determine whether a separate site is required or whether a single site with permission-based access can serve the need. Document the site topology with audience, license type, URL pattern, and guest vs authenticated access model.
 3. **Design the domain strategy.** Decide between default `my.site.com` URLs and custom domains. If custom domains are required, confirm Enterprise+ edition and note that configuration happens in production only. Define the URL path segment naming convention for all planned sites.
 4. **Design the shared component library.** Identify which LWC components will be reused across sites. Ensure components use `@api` properties to externalize configurable content. Confirm `isExposed: true` in each component's `.js-meta.xml`. Review guest user profile permissions per site — shared components must handle the widest permission set safely.
@@ -192,7 +195,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking work in this area complete:
 
-- [ ] Site inventory completed: active + preview + inactive count is below 100. Unused sites are deleted, not just deactivated.
+- [ ] Site inventory completed: active + preview + inactive count (including Visualforce sites) is below 100. Archived sites are correctly excluded from the count. Unused sites are **archived** — deactivation does not free a slot, and deletion is not required to free one.
 - [ ] Org edition confirmed: if custom domains are required, org is Enterprise edition or higher.
 - [ ] Custom domain configuration is documented as production-only. Sandbox testing uses default `.sandbox.my.site.com` URL.
 - [ ] Each site has a documented audience type with the corresponding license type (Customer Community, Partner Community, Employee Community, etc.).
@@ -209,9 +212,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Preview sites consume the 100-site quota.** Teams routinely create preview versions of upcoming site refreshes, accumulate them across multiple projects, and then discover the org is approaching 100 sites. A preview site that is never published and never deleted still counts. Establish a practice of deleting preview sites when the associated project is closed.
+1. **Preview sites consume the 100-site quota.** Teams routinely create preview versions of upcoming site refreshes, accumulate them across multiple projects, and then discover the org is approaching 100 sites. A preview site that is never published still counts until it is archived or deleted. Establish a practice of archiving preview sites when the associated project is closed.
 
-2. **Deactivating a site does not free the quota.** An inactive (deactivated) site still counts toward the 100-site limit. The only way to reclaim that slot is to delete the site permanently. Orgs that have been running Experience Cloud since the Community Cloud era frequently have double-digit counts of inactive sites that silently consume quota.
+2. **Deactivating a site does not free the quota — archiving does.** An inactive (deactivated) site still counts toward the 100-site limit, alongside active and preview sites and Visualforce sites. Archived sites do *not* count. So the slot-reclaiming action is **archive**, not delete: it is reversible and it costs nothing. Orgs running Experience Cloud since the Community Cloud era frequently carry double-digit counts of inactive sites that silently consume quota, and the remedy is an archive sweep, not a deletion sweep.
 
 3. **Custom domain configuration cannot be done in sandbox.** Teams that try to configure custom domains (Setup > Custom URLs) in a sandbox org will find the option either missing or non-functional. Custom domain configuration must be performed in the production org. Sandbox sites use the default `.sandbox.my.site.com` URL pattern. Plan UAT and pre-production testing around this constraint.
 
@@ -231,7 +234,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Domain strategy document | Defines custom vs default URL pattern per site, environment-specific rules (prod vs sandbox), and DNS/SSL requirements |
 | Shared component inventory | List of LWC components targeted for multi-site reuse with `@api` property definitions and per-site configuration notes |
 | Cross-site navigation map | User journeys that cross site boundaries with source URL, target URL, auth state, and SSO dependency |
-| Site quota tracker | Running count of active + preview + inactive sites with owner, purpose, and planned deletion date for obsolete sites |
+| Site quota tracker | Running count of active + preview + inactive + Visualforce sites (archived listed separately, excluded from the quota) with owner, purpose, and planned **archive** date for obsolete sites |
 | License allocation plan | License type per site audience with user count estimate and cost implications |
 
 ---

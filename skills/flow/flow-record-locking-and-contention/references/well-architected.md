@@ -32,7 +32,7 @@ The right tradeoff depends on:
 
 ## Anti-Patterns
 
-1. **Adding application-level retry on top of platform retry** — Salesforce already retries DML 10 times with exponential backoff. Layering a Flow-level retry loop with Wait elements multiplies the contention window without resolving the underlying problem. The fix is architectural decoupling, not more retries.
+1. **Building a Flow-level retry loop for lock contention** — the platform gives each DML attempt a single 10-second lock wait and no automatic retry. A Flow Wait element does not pause the transaction; it ends it and resumes in a new one, so every "retry" restarts the 10-second wait from scratch and multiplies the contention window without resolving the underlying problem. The fix is architectural decoupling, not more attempts.
 
 2. **Using `FOR UPDATE` as a generic contention fix** — `FOR UPDATE` is correct only for read-modify-write race conditions (counter increments, sequence number generation). Used for generic contention, it makes the problem worse by extending the lock-hold duration. Practitioners reach for it because it sounds like a "stronger lock" — it's actually a longer lock.
 
@@ -50,6 +50,8 @@ The right tradeoff depends on:
 - Salesforce Help — What Records Are Locked by an Update: https://help.salesforce.com/s/articleView?id=platform.record_locking_locks.htm
 - Apex Developer Guide — Locking Statements: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_statements.htm
 - Apex Developer Guide — Locking Records: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_records.htm
+- Salesforce KB 000387767 — Error 'Unable to lock row - Record currently unavailable' (documents the maximum 10-SECOND lock wait; no automatic retry loop): https://help.salesforce.com/s/articleView?id=000387767&language=en_US&type=1
+- Platform Events Developer Guide — Retry Event Triggers with EventBus.RetryableException (the opt-in subscriber retry that is often mistaken for a DML lock retry): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_apex_refire.htm
 - Salesforce Help — Flow Considerations and Limits: https://help.salesforce.com/s/articleView?id=sf.flow_considerations.htm
 - Salesforce Knowledge — Resolving UNABLE_TO_LOCK_ROW Errors: https://help.salesforce.com/s/articleView?id=000385621&type=1
 - Salesforce Architects — Asynchronous Processing Decision Guide: https://architect.salesforce.com/decision-guides/async/

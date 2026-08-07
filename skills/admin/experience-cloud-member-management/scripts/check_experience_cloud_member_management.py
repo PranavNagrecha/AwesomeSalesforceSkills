@@ -4,8 +4,8 @@
 Validates Salesforce metadata related to Experience Cloud member management:
 - Detects external profiles with missing or mismatched license type markers
 - Identifies Network (Experience Cloud site) metadata without member profiles
-- Flags RegistrationHandler Apex classes that implement the legacy interface
-  instead of Auth.ConfigurableSelfRegHandler
+- Flags Apex classes that implement a fabricated self-registration handler
+  shape (registerUser / Auth.SelfRegistrationContext), which will not compile
 - Warns when Network metadata has self-registration enabled but no default account
 
 Uses stdlib only — no pip dependencies.
@@ -35,15 +35,26 @@ EXTERNAL_LICENSE_NAMES = {
     "Communities",  # legacy label sometimes present in older orgs
 }
 
-# Regex to detect the legacy RegistrationHandler interface (not the current one)
-LEGACY_HANDLER_PATTERN = re.compile(
-    r"implements\s+Auth\s*\.\s*RegistrationHandler\b",
+# Auth.RegistrationHandler and Auth.ConfigurableSelfRegHandler are BOTH current
+# and serve different entry points (Auth. Provider JIT vs the site's own
+# self-registration page), so implementing either one is legitimate and is not
+# flagged. What is never legitimate is the fabricated shape LLMs emit:
+# a `registerUser` method taking an `Auth.SelfRegistrationContext`. Neither
+# identifier exists in the Auth namespace.
+# https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfigurableSelfRegHandler.htm
+CONFIG_SELF_REG_PATTERN = re.compile(
+    r"implements\s+Auth\s*\.\s*ConfigurableSelfRegHandler\b",
     re.IGNORECASE,
 )
 
-CURRENT_HANDLER_PATTERN = re.compile(
-    r"implements\s+Auth\s*\.\s*ConfigurableSelfRegHandler\b",
-    re.IGNORECASE,
+# Identifiers that do not exist on any Salesforce Auth interface.
+FABRICATED_HANDLER_PATTERNS = (
+    (re.compile(r"Auth\s*\.\s*SelfRegistrationContext\b"),
+     "references 'Auth.SelfRegistrationContext', which is not a Salesforce "
+     "class"),
+    (re.compile(r"\bregisterUser\s*\("),
+     "declares or calls 'registerUser(...)', which is not a method on any "
+     "Auth registration interface"),
 )
 
 # XML namespace used by Salesforce metadata
@@ -148,8 +159,17 @@ def check_networks(manifest_dir: Path) -> list[str]:
     return issues
 
 
+# Auth.ConfigurableSelfRegHandler declares exactly one method:
+#   global Id createUser(Id accountId, Id profileId,
+#                        Map<SObjectField, String> registrationAttributes,
+#                        String password)
+CONFIG_SELF_REG_CREATE_USER = re.compile(
+    r"\bId\s+createUser\s*\(", re.IGNORECASE
+)
+
+
 def check_apex_handlers(manifest_dir: Path) -> list[str]:
-    """Detect Apex classes that implement the legacy Auth.RegistrationHandler interface."""
+    """Detect Apex registration handlers with impossible (non-compiling) signatures."""
     issues: list[str] = []
     classes_dir = manifest_dir / "classes"
     if not classes_dir.exists():
@@ -161,15 +181,25 @@ def check_apex_handlers(manifest_dir: Path) -> list[str]:
         except OSError:
             continue
 
-        if LEGACY_HANDLER_PATTERN.search(source):
-            # Only flag if it also doesn't implement the current interface
-            if not CURRENT_HANDLER_PATTERN.search(source):
+        for pattern, description in FABRICATED_HANDLER_PATTERNS:
+            if pattern.search(source):
                 issues.append(
-                    f"Apex class '{apex_path.name}' implements the legacy "
-                    "'Auth.RegistrationHandler' interface. "
-                    "New self-registration handlers should implement "
-                    "'Auth.ConfigurableSelfRegHandler' instead."
+                    f"Apex class '{apex_path.name}' {description}. "
+                    "Auth.ConfigurableSelfRegHandler declares only "
+                    "'global Id createUser(Id accountId, Id profileId, "
+                    "Map<SObjectField, String> registrationAttributes, "
+                    "String password)'."
                 )
+
+        if CONFIG_SELF_REG_PATTERN.search(source) and not CONFIG_SELF_REG_CREATE_USER.search(source):
+            issues.append(
+                f"Apex class '{apex_path.name}' implements "
+                "'Auth.ConfigurableSelfRegHandler' but does not declare a "
+                "createUser method returning Id. The interface requires "
+                "'global Id createUser(Id accountId, Id profileId, "
+                "Map<SObjectField, String> registrationAttributes, "
+                "String password)'."
+            )
 
     return issues
 

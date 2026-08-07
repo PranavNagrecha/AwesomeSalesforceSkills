@@ -159,9 +159,23 @@ def check_grounding_metadata_filter_merge_fields(manifest_dir: Path, verbose: bo
     return issues
 
 
-def check_connected_app_cdpapi_scope(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Warn when a Connected App XML lacks the cdpapi scope required for Data Cloud Query API."""
+def check_connected_app_query_api_scope(manifest_dir: Path, verbose: bool) -> list[str]:
+    """Check a Data Cloud Connected App carries cdp_query_api (NOT the fabricated 'cdpapi').
+
+    The Data Cloud / Data 360 OAuth scope family is cdp_ingest_api, cdp_query_api,
+    cdp_profile_api, cdp_segment_api, cdp_identityresolution_api and
+    cdp_calculated_insight_api. There is no scope named plain 'cdpapi'.
+    Reference: Data 360 (Data Cloud) API get-started guide.
+
+    Scope names appear in different casings/separators across the OAuth consent
+    screen and the ConnectedApp metadata enum, so match on a normalised form
+    rather than one literal spelling.
+    """
     issues: list[str] = []
+
+    def normalise(text: str) -> str:
+        # 'cdp_query_api', 'CdpQueryApi' and 'CDP Query API' all collapse to 'cdpqueryapi'
+        return "".join(ch for ch in text.lower() if ch.isalnum())
 
     # Connected Apps in SFDX are stored as .connectedApp-meta.xml
     app_files = find_files(manifest_dir, "*.connectedApp-meta.xml")
@@ -173,27 +187,40 @@ def check_connected_app_cdpapi_scope(manifest_dir: Path, verbose: bool) -> list[
         if not content:
             continue
 
+        flat = normalise(content)
+        lowered = content.lower()
+
+        # The fabricated scope is worth calling out wherever it appears, on any app.
+        # A practitioner who typed it will not find it in the scope picker.
+        if "cdpapi" in lowered:
+            issues.append(
+                f"[FABRICATED-SCOPE] {path.name}: references an OAuth scope named 'cdpapi'. "
+                "No such scope exists. Use 'cdp_query_api' for the Data 360 Query API "
+                "(also 'cdp_ingest_api', 'cdp_profile_api', 'cdp_segment_api', "
+                "'cdp_identityresolution_api', 'cdp_calculated_insight_api' for the other "
+                "Data Cloud surfaces). (Gotcha 2 in references/gotchas.md)"
+            )
+
         # Only inspect apps that appear to be intended for Data Cloud integration
         is_dc_app = (
-            "cdpapi" in content.lower()
-            or "data_cloud" in content.lower()
-            or "datacloud" in content.lower()
-            or "c360" in content.lower()
+            "cdp" in flat
+            or "datacloud" in flat
+            or "data360" in flat
+            or "c360" in flat
         )
         if not is_dc_app:
             continue
 
-        # Check that cdpapi is in the OAuth scopes
-        has_cdpapi = "cdpapi" in content.lower()
-        if not has_cdpapi:
+        if "cdpqueryapi" not in flat:
             issues.append(
-                f"[MISSING-CDPAPI-SCOPE] {path.name}: Connected App appears intended for Data Cloud "
-                "but does not include the 'cdpapi' OAuth scope. The Data Cloud Vector Search Query API "
-                "requires a token from a Connected App with cdpapi scope. A standard CRM token will "
-                "produce a 401 Unauthorized response. (Gotcha 2 in references/gotchas.md)"
+                f"[MISSING-QUERY-API-SCOPE] {path.name}: Connected App appears intended for Data "
+                "Cloud but does not include the 'cdp_query_api' OAuth scope. The Data Cloud Vector "
+                "Search Query API requires a Data Cloud token obtained by exchanging a Salesforce "
+                "token from a cdp_query_api-scoped app at /services/a360/token. A standard CRM "
+                "token produces a 401 Unauthorized. (Gotcha 2 in references/gotchas.md)"
             )
         elif verbose:
-            print(f"  OK  {path.name}: includes cdpapi scope.")
+            print(f"  OK  {path.name}: includes cdp_query_api scope.")
 
     return issues
 
@@ -376,7 +403,7 @@ def run_all_checks(manifest_dir: Path, verbose: bool) -> list[str]:
     checks = [
         ("Grounding top-K values", check_grounding_topk),
         ("Grounding metadata filter merge fields", check_grounding_metadata_filter_merge_fields),
-        ("Connected App cdpapi scope", check_connected_app_cdpapi_scope),
+        ("Connected App cdp_query_api scope", check_connected_app_query_api_scope),
         ("Data Kit vector index inclusion", check_data_kit_includes_vector_index),
         ("Data Stream refresh mode", check_data_stream_refresh_mode),
         ("Prompt template grounding placement", check_prompt_template_grounding_placement),

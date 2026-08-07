@@ -153,12 +153,22 @@ No single metric is sufficient. Containment without CSAT can mask an agent that 
 1. Build a coverage matrix: list every topic and define at least 5 utterances per topic — 2 happy-path, 2 edge-case, 1 boundary utterance near an adjacent topic.
 2. Create one `AiEvaluationDefinition` file per topic group (or one combined file). Each test case sets `expectTopicName` to the intended topic.
 3. Deploy the `AiEvaluationDefinition` to the sandbox via `sf project deploy start`.
-4. Execute via Testing API Connect endpoint:
+4. Execute via the Testing API. Note the shape of these paths: the resource sits
+   **directly** under `/services/data/vXX.0/einstein/` — there is no `connect/`
+   segment — and every operation goes through the `/runs` collection. Detailed
+   per-test-case output lives on a further `/results` sub-resource:
+
+   | Operation | Method and path |
+   |---|---|
+   | Start a run | `POST /services/data/v63.0/einstein/ai-evaluations/runs` |
+   | Poll status | `GET /services/data/v63.0/einstein/ai-evaluations/runs/{runId}` |
+   | Retrieve results | `GET /services/data/v63.0/einstein/ai-evaluations/runs/{runId}/results` |
+
 
 ```bash
 # Start the evaluation run
 curl -X POST \
-  https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations \
+  https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs \
   -H "Authorization: Bearer SESSION_ID" \
   -H "Content-Type: application/json" \
   -d '{
@@ -175,7 +185,7 @@ curl -X POST \
 5. Poll the returned job ID until `status: Completed`:
 
 ```bash
-curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations/0Xx000000000001AAA \
+curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs/0Xx000000000001AAA \
   -H "Authorization: Bearer SESSION_ID"
 # Response when complete:
 # {
@@ -203,6 +213,15 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 #     }
 #   ]
 # }
+```
+
+6. Retrieve the per-test-case detail from the `/results` sub-resource. The status
+   poll returns the run summary; it is `/results` that carries the full test-case
+   report, so a pipeline that never calls it cannot explain *why* a run failed:
+
+```bash
+curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs/0Xx000000000001AAA/results \
+  -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
 6. Review results: any `FAIL` on a topic test means the utterance routed elsewhere. Inspect the `actualTopicName` in the result payload and tune the classification description of either the intended or the competing topic.

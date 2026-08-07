@@ -27,6 +27,7 @@
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
+- Salesforce KB 000389618 — "Salesforce Platform API Versions 21.0 through 30.0 Retirement" (deprecated Summer '22, retired Summer '25; REST 410 GONE / SOAP 500 UNSUPPORTED_API_VERSION / Bulk 400 InvalidVersion; verified 2026-08-01) — https://help.salesforce.com/s/articleView?id=000389618&language=en_US&type=1
 - Salesforce API End-of-Life Policy — https://help.salesforce.com/s/articleView?id=000381744&type=1
 - Salesforce Developer Blog: API Retirement Tools (Oct 2024) — https://developer.salesforce.com/blogs
 - LWC Component Versioning (Spring '25) — https://developer.salesforce.com/docs/platform/lwc/guide

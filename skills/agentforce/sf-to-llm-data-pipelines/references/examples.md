@@ -49,7 +49,7 @@ while True:
         raise RuntimeError(f"Bulk job failed: {status}")
     time.sleep(30)
 
-# 4. Download all result batches following the Sfdclocator cursor
+# 4. Download all result batches by following the Sforce-Locator response header
 locator = None
 all_rows = []
 while True:
@@ -64,7 +64,9 @@ while True:
     reader = csv.DictReader(io.StringIO(result.text))
     batch = list(reader)
     all_rows.extend(batch)
-    locator = result.headers.get("Sfdclocator")
+    # Header name is Sforce-Locator. Anything else returns None on every page,
+    # which silently truncates the extract to page 1 with no error raised.
+    locator = result.headers.get("Sforce-Locator")
     if not locator or locator == "null":
         break
 

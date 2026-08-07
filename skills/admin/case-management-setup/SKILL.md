@@ -73,7 +73,7 @@ Gather this context before working on case management configuration:
 
 **Web-to-Case** converts form submissions from a website into cases. Key limits:
 
-- **50,000 pending Web-to-Case requests** is a hard org-level limit. If this queue is full, new submissions are silently dropped — Salesforce does not queue them or send an error to the submitter. Monitor the pending count in Setup and clear it regularly.
+- Web-to-Case has a **24-hour submission limit** (5,000 by default; the exact allocation depends on edition and can be raised by Support). Requests beyond it are not lost immediately — they go into a **pending request queue shared with Web-to-Lead, capped at 50,000 combined requests**. Only once *that* queue is full are further requests rejected outright and not queued. When rejection starts, **Salesforce emails the administrator for the first five rejected submissions** — a real but easily missed signal, since it stops after five no matter how long the outage lasts. The submitter still sees the form's success page either way. Monitor the pending count in Setup; Support can raise the pending limit.
 - Web-to-Case has no native field validation. All validation must be done in the HTML form (JavaScript) or via Apex triggers / Flow after the case is created.
 - If the submitter's email matches an existing Contact record, Salesforce automatically populates the Contact lookup. If no match is found, the contact field is blank — no new Contact is created automatically.
 
@@ -162,7 +162,7 @@ Entitlements represent the level of support a customer is entitled to (e.g., res
 |---|---|---|
 | Auto-response emails not sending | Verify an active assignment rule exists and is matching the case | Auto-response only fires when assignment rule fires — no assignment rule, no auto-response |
 | Duplicate cases from customer email replies | Fix thread ID handling in Email-to-Case routing address; test end-to-end | Misconfigured routing strips thread tokens, causing new cases per reply |
-| Web-to-Case submissions being lost | Check pending request count in Setup; clear the queue | 50,000 limit is a hard drop — no error surfaced to submitter |
+| Web-to-Case submissions being lost | Check the admin's mailbox for the rejection notifications Salesforce sends for the first five rejected requests, then check the pending request count in Setup | Over the 24-hour limit, requests queue (50,000 combined Web-to-Case + Web-to-Lead); once that queue is full they are rejected. Nothing is surfaced to the submitter |
 | Escalation not firing on time | Attach a business hours record to escalation rule entries | Without business hours, clock runs 24/7; engine cadence is hourly |
 | Case team members cannot access case | Verify case team roles are created; user is on the case team (not just the predefined team) | Roles must exist before teams; adding predefined team to case grants access, not just defining the predefined team |
 | Entitlements not visible in Setup | Enable Entitlement Management feature flag | Feature must be enabled before any configuration is available |
@@ -189,7 +189,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 Run through these before marking case management configuration complete:
 
 - [ ] Email-to-Case routing address is verified and thread ID handling tested end-to-end (reply threads into parent case, not new case)
-- [ ] Web-to-Case pending request count is below 50,000; monitoring alert exists if available
+- [ ] Web-to-Case pending request count is below the 50,000 combined Web-to-Case + Web-to-Lead cap; the address receiving Salesforce's first-five-rejection notifications is a monitored mailbox, not an unread admin inbox
 - [ ] Active case assignment rule exists with at least one catch-all entry; no cases are falling to the default case owner unintentionally
 - [ ] Auto-response rule entries have a valid email template; confirmed that assignment rule fires for the same creation events
 - [ ] Escalation rule entries each have a business hours record explicitly attached; deactivation/reactivation risk communicated to stakeholders

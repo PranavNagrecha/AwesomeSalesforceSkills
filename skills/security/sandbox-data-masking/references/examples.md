@@ -8,12 +8,12 @@
 
 **Solution:**
 
-Configure a Data Mask policy covering all five fields with pseudonymous masking to preserve realistic format for email deliverability testing:
+Configure a Data Mask policy covering all five fields using **Replace from Library** masking, which draws similarly mapped words from a Salesforce-supplied library and so preserves realistic format for email deliverability testing:
 
 1. Open the Data Mask app in the sandbox.
 2. Create a new Configuration named "GDPR-QA-Baseline".
-3. Add the `Contact` object. Set `Email` to Pseudonymous, `Phone` to Pseudonymous, `MailingStreet` to Null/Delete.
-4. Add the `Lead` object. Set `Email` to Pseudonymous, `Phone` to Pseudonymous.
+3. Add the `Contact` object. Set `Email` to Replace from Library, `Phone` to Replace from Library, `MailingStreet` to Delete/Delete.
+4. Add the `Lead` object. Set `Email` to Replace from Library, `Phone` to Replace from Library.
 5. Save the configuration.
 6. Run the configuration manually for the first cycle. Verify completion in the job log.
 7. Wire the configuration to a `SandboxPostCopy` Apex class for future automated runs.
@@ -27,25 +27,28 @@ SELECT Email, Phone FROM Lead LIMIT 5
 
 Confirm that Email values end in a Salesforce-generated fake domain (not your production domain), Phone values are replaced with generated numbers, and MailingStreet is blank.
 
-**Why it works:** Pseudonymous masking replaces values with realistic fake data from Salesforce's internal library. The format (valid email structure, valid phone format) is preserved so email validation and phone formatting logic in tests still executes correctly. Real customer data is not accessible to sandbox users, satisfying the GDPR requirement.
+**Why it works:** Replace-from-Library masking substitutes similarly mapped words drawn from a Salesforce-supplied library, so the result is realistic fake data rather than random characters. The format (valid email structure, valid phone format) is preserved so email validation and phone formatting logic in tests still executes correctly. Real customer data is not accessible to sandbox users, satisfying the GDPR requirement.
 
 ---
 
-## Example 2: Deterministic Masking for Cross-Object Consistency in a CPQ Environment
+## Example 2: Restoring Cross-Object Value Consistency After Masking in a CPQ Environment
 
 **Context:** An org uses Salesforce CPQ. Quotes reference Contacts, and the Contact email address is also stored on the Quote record as `Quote.BillingContactEmail__c` (a custom field). A data migration test requires the email on the Quote to match the email on the Contact after masking so foreign-key validation logic does not produce false failures.
 
-**Problem:** If pseudonymous masking is applied independently to `Contact.Email` and `Quote.BillingContactEmail__c`, each field receives a different randomly generated value. The migration test's join query fails because the two fields no longer match. This looks like a data integrity bug but is actually a masking configuration issue.
+**Problem:** Data Mask replaces each field independently, so `Contact.Email` and `Quote.BillingContactEmail__c` receive different values and the migration test's join query fails.
 
-**Solution:**
+**There is no masking type that fixes this.** Data Mask offers exactly four types — Random Characters, Library, Pattern, Delete — and none of them guarantee that the same input yields the same output. That guarantee is deliberately absent: masking is irreversible by design, and a stable input-to-output mapping is exactly what would make it reversible by frequency analysis. Do not go looking for a "Deterministic" or "Consistent" option in the Data Mask UI; it does not exist.
 
-Use deterministic masking on both fields within the same Data Mask configuration. Deterministic masking ensures that the same input value always produces the same output value within a single masking run.
+**Solution:** mask both fields, then repair the relationship yourself as a step in the post-refresh runbook.
 
 Configuration steps:
 1. In the Data Mask app, open the "CPQ-Migration-Test" configuration.
-2. Set `Contact.Email` masking type to **Deterministic**.
-3. Set `Quote.BillingContactEmail__c` masking type to **Deterministic**.
+2. Set `Contact.Email` masking type to **Replace from Library** (keeps a valid email shape).
+3. Set `Quote.BillingContactEmail__c` to the same type — its value will differ, and that is expected.
 4. Run the configuration.
+5. Run a post-mask reconciliation job that copies the now-masked `Contact.Email` onto the related `Quote.BillingContactEmail__c`. A Batch Apex class invoked from the same `SandboxPostCopy` implementation, immediately after the masking job reports complete, is the usual home for this. Treat it as part of the masking deliverable, not as an afterthought — if it is skipped, the join failures look like migration bugs.
+
+Alternatively, drop `Quote.BillingContactEmail__c` from the masking configuration entirely and have the reconciliation job overwrite it from the masked Contact. The denormalised copy then carries no unmasked production data at any point.
 
 Post-run verification query:
 ```sql
@@ -57,7 +60,7 @@ LIMIT 10
 
 Confirm that `c.Email` and `q.BillingContactEmail__c` match for each row.
 
-**Why it works:** Deterministic masking applies a consistent transformation function. Given the same input "jane@realcompany.com", the same output "xkq7@datamask.example.com" is produced wherever that value appears in the run — across both the Contact and the Quote — preserving the cross-object relationship needed for join-based tests.
+**Why it works:** The consistency requirement is met by an explicit reconciliation step rather than by a masking property. This is the honest architecture: Data Mask guarantees only that production values are gone and unrecoverable, and any relationship you need preserved across objects is your job to re-establish after the fact.
 
 ---
 

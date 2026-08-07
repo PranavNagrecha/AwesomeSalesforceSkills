@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Opportunity Scoring Requires 200+ Closed Opportunities in the Last 2 Years — or It Silently Does Nothing
 
-**What happens:** When an org enables Opportunity Scoring with fewer than 200 closed opportunities (IsClosed = true, CloseDate within the last 730 days), the feature appears active in Setup and the `Opportunity Score` field is present on layouts — but no scores are ever generated. The Setup screen shows "Insufficient Data" as the model training status. Opportunity records display blank score fields with no inline error message to the rep.
+**What happens:** When an org enables Opportunity Scoring with fewer than 200 closed-won *or* fewer than 200 closed-lost opportunities (IsClosed = true, CloseDate within the last 730 days, each opportunity open for at least 2 days) — the floors are checked separately, so a lopsided pipeline fails even with a large combined total — the feature appears active in Setup and the `Opportunity Score` field is present on layouts — but no scores are ever generated. The Setup screen shows "Insufficient Data" as the model training status. Opportunity records display blank score fields with no inline error message to the rep.
 
 **When it occurs:** Any org that is relatively new, has migrated from another CRM without importing historical closed opportunities, or has had low pipeline volume. The two-year window is also a trap for orgs that have been on Salesforce for years but only started closing deals recently.
 

@@ -22,7 +22,7 @@ component. Document the per-component license cost up front.
 
 ---
 
-## Gotcha 2: Probabilistic encryption blocks SOQL `WHERE =` and ORDER BY
+## Gotcha 2: Probabilistic blocks `WHERE =`; deterministic restores exact match only — **not sorting**
 
 **What happens.** Field encrypted probabilistically: SOQL queries that
 filter on it (`WHERE EncryptedSSN__c = '123-45-6789'`) return nothing
@@ -33,13 +33,31 @@ nothing.
 field assuming filterability survives encryption.
 
 **How to avoid.** **Deterministic** encryption (case-sensitive or
-case-insensitive) supports equality filter and sort. Decision criteria:
-*if any business process needs to filter, sort, or group-by on the
-field, it must be deterministic*. Probabilistic for fields that are
-read-only-once (display, audit, archival).
+case-insensitive) restores **exact-match** filtering — `=` and `IN` — so
+users can filter records in reports and list views on the encrypted field.
+Probabilistic for fields that are read-only-once (display, audit,
+archival).
 
-You cannot change scheme on a populated field without re-encrypting
-every row — a maintenance event for large objects.
+**The trap inside the fix: deterministic does *not* give you sorting.**
+Salesforce states you can't sort records in list views by fields that
+contain encrypted data, and encrypted fields can't be referenced in
+filtering or sorting contexts in flows, orchestrations and processes.
+There is no encryption scheme that restores ordering, and the reason is
+structural rather than a product gap: determinism guarantees *equal
+plaintext → equal ciphertext*, which is exactly what exact-match needs and
+says nothing whatsoever about relative order. Ciphertext sorts in an order
+unrelated to plaintext, so even a permitted lexicographic sort on
+ciphertext would return rows in a business-meaningless sequence. The same
+argument rules out ranges (`<`, `>`, `BETWEEN`) and `LIKE`/wildcard.
+
+Corrected decision criteria: *if a business process needs **exact-match
+filtering** on the field, it must be deterministic. If it needs sorting,
+ranges, or wildcard search, no scheme delivers that* — keep an unencrypted
+sortable surrogate alongside (a bucket, a masked prefix, a derived
+sort-key), or accept that the field cannot be encrypted. Discovering this
+after go-live is expensive, because you cannot change scheme on a
+populated field without re-encrypting every row — a maintenance event for
+large objects — and here re-encrypting does not even solve the problem.
 
 ---
 

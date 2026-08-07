@@ -74,7 +74,7 @@ Feature Branch
         → Production
 ```
 
-DevOps Center supports a maximum of **15 pipeline stages per pipeline** (as documented in the DevOps Center Setup and Administration Guide). Pipelines with more than 15 stages must use a CLI-driven or third-party tool (Copado, Flosum, AutoRABIT) for the overflow stages.
+DevOps Center imposes **no maximum on stage count** — Salesforce's pipeline planning documentation states plainly that "your pipeline can contain any number of pipeline stages." Do not design around, or reject DevOps Center because of, a stage ceiling; there isn't one. The real constraints on stage topology are operational rather than numeric: each stage needs its own environment and its own long-lived branch, promotion is sequential from the current stage branch to the next, and every extra stage adds a merge and a deploy to the promotion path. Choose stage count from the sign-off topology you actually need, not from a limit.
 
 Unlocked package pipelines replace environment promotion with version-controlled package versions; the stage sequence shifts to: `scratch org build → CI package version build → QA package install → staging package install → production package install`. The quality gate logic is identical; only the promotion artifact changes.
 
@@ -239,7 +239,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 2. **Apex test 10-minute timeout causes misleading pipeline failures** — A single Apex test class that runs longer than 10 minutes causes the deployment (or validation-only deploy) to fail with a timeout error, not a test failure assertion. CI scripts that parse test results looking for `<testsuites>` failures will miss this and may incorrectly mark the gate as passed. Add explicit timeout monitoring in pipeline scripts and split large test classes before the pipeline matures.
 
-3. **DevOps Center max 15 pipeline stages** — DevOps Center enforces a hard limit of 15 stages per pipeline (per the DevOps Center Setup and Administration Guide). Orgs that grow beyond this (e.g., regulated orgs with 4+ UAT sandboxes, regional staging environments, a shared services stage) must either consolidate stages or move overflow stages to a CLI-based pipeline. Plan the stage topology within this limit from the start; retrofitting is costly.
+3. **There is no DevOps Center stage-count limit — do not let an invented one drive tool selection** — Salesforce documents that "your pipeline can contain any number of pipeline stages." Regulated orgs with 4+ UAT sandboxes, regional staging environments, and a shared services stage can model all of them in DevOps Center. The genuine reasons to reach for a CLI-driven or third-party pipeline (Copado, Flosum, AutoRABIT) are capability gaps — branching/non-linear promotion, per-stage approval workflows, data seeding, back-promotion — not stage count. Justify that decision against a capability the tool lacks, and be able to name it.
 
 4. **Quick deploy window expires after 4 days** — A validation-only deployment produces a deployment ID that can be used for a quick deploy (skipping test re-execution), but this ID expires after **96 hours**. If a CAB approval or release window falls outside that window, the full validation must be re-run. Pipeline runbooks must account for this when scheduling change windows relative to the last validation job.
 

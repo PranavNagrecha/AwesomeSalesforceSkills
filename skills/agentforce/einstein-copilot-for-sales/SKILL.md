@@ -49,7 +49,7 @@ This skill activates when a practitioner needs to enable, configure, review, or 
 Gather this context before working on anything in this domain:
 
 - **License type:** Confirm whether the org has Einstein for Sales (add-on), Einstein 1 Sales edition, or only core Sales Cloud. Different features require different licenses — Opportunity Scoring and EAC are included in Einstein for Sales; Pipeline Inspection requires Sales Cloud Einstein specifically; Einstein email generation requires the Einstein Generative AI (Einstein GPT) license layer on top of Einstein for Sales.
-- **Data readiness:** Opportunity Scoring requires a minimum of 200 closed opportunities (Won + Lost) with a Closed Date within the last two years. EAC requires a connected Microsoft Exchange/Office 365 or Google Workspace account.
+- **Data readiness:** Opportunity Scoring requires **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days — two separate floors, not 200 combined. EAC requires a connected Microsoft Exchange/Office 365 or Google Workspace account.
 - **Sandbox limitations:** Einstein Opportunity Scoring does not train in sandboxes. The model trains on production data only. Scores may not appear in sandboxes even when the feature is enabled.
 
 ---
@@ -62,7 +62,7 @@ Einstein Opportunity Scoring uses a machine learning model trained on your org's
 
 **Setup path:** Setup > Einstein > Sales > Opportunity Scoring > Enable. Salesforce automatically starts model training; initial training completes within 24–72 hours for orgs that meet data requirements. The model retrains weekly. Scores appear on records once the model completes its first training pass.
 
-**Data requirements:** A minimum of 200 closed opportunities (any mix of Won and Lost) with a Closed Date in the last 24 months. If fewer than 200 exist, the feature activates but the model defers training and no scores are generated. The scoring model uses standard and custom fields on Opportunity and related objects; adding high-signal custom fields to the model is supported via the Opportunity Scoring configuration screen.
+**Data requirements:** **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days. "Any mix" is wrong — an org with 350 won and 20 lost fails. Salesforce additionally expects the standard `Stage` field to be in use and at least 12 months of opportunity history with an update in each month. If either floor is unmet, the feature activates but the model defers training and no scores are generated. The scoring model uses standard and custom fields on Opportunity and related objects; adding high-signal custom fields to the model is supported via the Opportunity Scoring configuration screen.
 
 **Score fields:** `Opportunity_Score__c` (numeric 0–99), `Opportunity_Score_Change__c` (direction of change since last scoring run), and score factor fields that surface top positive/negative drivers. These are standard Einstein fields added to page layouts by the admin.
 
@@ -143,7 +143,7 @@ Einstein Relationship Insights mines email content and news sources to surface p
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Org has fewer than 200 closed opps | Do not enable Opportunity Scoring yet; focus on pipeline growth | Model will not train; feature activates but returns no scores, creating confusion |
+| Org has fewer than 200 closed-won **or** fewer than 200 closed-lost opps | Do not enable Opportunity Scoring yet; focus on pipeline growth | Model will not train; feature activates but returns no scores, creating confusion |
 | Reps need AI-drafted emails | Verify Einstein Generative AI license before enabling; do not assume Einstein for Sales covers it | Email composition is a separate SKU (Einstein 1 Sales or Einstein GPT add-on) |
 | Pipeline Inspection shows no AI insights | Confirm Opportunity Scoring model is trained and returning scores first | Pipeline Inspection AI insights depend entirely on Opportunity Scoring data |
 | EAC emails not relating to opportunities | Check that the configuration profile object scope includes Opportunities and that contact email addresses match | EAC relates by email address match only |

@@ -24,13 +24,15 @@ Non-obvious Salesforce platform behaviors around the Loop element that cause rea
 
 ---
 
-## Gotcha 3: 2,000-element execution limit per interview, counted per element executed
+## Gotcha 3: The 2,000-element execution limit was removed in API 57.0 — CPU time is the real ceiling
 
-**What happens:** Flow halts with `Number of executed elements has exceeded the maximum number of 2000`. A loop body of 4 elements iterating 600 records consumes 2,400 element-executions and trips this limit, even though the DML / SOQL budgets are nowhere near exhausted.
+**What happens:** Salesforce's KB for this condition states plainly: "In Salesforce Flow API version 56.0 and earlier, a maximum of 2000 Flow elements can be executed at runtime" and "In API version 57.0, the limit of 2000 Flow elements was removed." API 57.0 shipped in Spring '23. So on any current flow, a 4-element body iterating 600 records (2,400 element-executions) does **not** halt.
 
-**When it occurs:** Loops over large collections, especially nested loops (e.g., 200 × 50 = 10,000 element-executions just from the loop body). Also occurs when a sub-200-record loop calls a chunky subflow whose own elements get counted in the same interview.
+What it does instead is consume CPU. The binding constraint on element-heavy loops today is the 10,000 ms synchronous / 60,000 ms asynchronous CPU-time limit, which produces a much less legible failure than the old element error did.
 
-**How to avoid:** Estimate `body_elements * expected_iterations` before designing. If the product is in the high hundreds or above, escalate the inner work to invocable Apex (Apex code does NOT consume Flow's 2,000-element budget; Apex has its own separate limits).
+**When it occurs:** The retired limit still bites in exactly one place — a flow whose **Flow API version** (not the org's version) is 56.0 or earlier. Those fail with the documented error `Number of iterations exceeded`. Check Flow Builder → Version Properties → API Version before concluding this limit is or is not in play; the fix there is to bump the flow's API version, not to redesign the loop.
+
+**How to avoid:** Estimate `body_elements * expected_iterations` before designing — the estimate is still the right instinct, it is now a CPU-time proxy rather than a check against a hard ceiling. If the product is in the high thousands, escalate the inner work to invocable Apex (Apex runs on its own governor budget, though CPU time is shared across the whole transaction).
 
 ---
 

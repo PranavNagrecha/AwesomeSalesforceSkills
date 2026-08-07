@@ -7,25 +7,35 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Add a custom index on the Status field to improve query performance" without assessing whether the filter on Status is selective. A custom index on a field where 90% of records share the same value (e.g., Status = 'Active') will not be used by the query optimizer.
 
-**Why it happens:** In traditional databases, indexes generally improve query performance. LLMs apply this generic principle without understanding Salesforce's selectivity threshold: an indexed filter must match fewer than 10% of records (or 333,333 records for standard indexes, 100,000 for custom indexes) to be considered selective.
+**Why it happens:** In traditional databases, indexes generally improve query performance. LLMs apply this generic principle without understanding that Salesforce's query optimizer will decline to use an index it considers non-selective.
+
+When a model does reproduce the thresholds, the characteristic error is **swapping which cap belongs to which index type** — e.g. "333,333 records for standard indexes, 100,000 for custom indexes." Both are real numbers in this neighbourhood (333,333 is the *custom* cap; 100,000 is 10% of the first million, an intermediate value from the custom calculation), and neither belongs where it is placed. There is no version of this rule in which the standard index has the *tighter* cap.
 
 **Correct pattern:**
 
 ```text
-Salesforce query selectivity rules:
+Salesforce query selectivity rules (Help 000386864, LDV Indexes):
 
 Standard index selectivity threshold:
-- Filter must match < 30% of total records for the first 1M records
-- AND < 1,000,000 total matching records
+- < 30% of the first million targeted records
+- AND < 15% of records beyond the first million
+- capped at 1,000,000 total targeted records
 
 Custom index selectivity threshold:
-- Filter must match < 10% of total records
-- AND < 333,333 total matching records (varies)
+- < 10% of the first million targeted records
+- AND < 5% of records beyond the first million
+- capped at 333,333 total targeted records
+
+Worked example, 5M-record object, custom index:
+  10% x 1,000,000 = 100,000
++  5% x 4,000,000 = 200,000
+=                   300,000 targeted records (under the 333,333 ceiling,
+                              so 300,000 is the threshold that applies)
 
 Before requesting a custom index:
 1. Determine the cardinality of the field (number of distinct values)
 2. Calculate the selectivity: matching records / total records
-3. If > 10%, the index will likely not be used
+3. If above the threshold above, the index will not be used
 4. Consider compound filters: Status = 'New' AND CreatedDate = TODAY
    (multiple selective filters can combine for selectivity)
 

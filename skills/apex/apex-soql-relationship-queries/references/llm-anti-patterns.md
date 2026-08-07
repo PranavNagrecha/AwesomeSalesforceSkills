@@ -169,3 +169,28 @@ SELECT count() FROM Inventory__c inv, inv.Product__r p WHERE p.Name = 'Widget'
 ```
 
 **Detection hint:** Any FROM-clause alias token that matches a SOQL reserved word — AND, ASC, DESC, EXCLUDES, FIRST, FROM, GROUP, HAVING, IN, INCLUDES, LAST, LIKE, LIMIT, NOT, NULL, NULLS, OR, SELECT, USING, WHERE, or WITH. Prefer a three-letter alias (`inv`, `ord`) to stay clear of the list.
+
+---
+
+## Anti-Pattern: Inventing a Named Status Code for the Bulk API Subquery Rejection
+
+**What the LLM generates:**
+
+```apex
+try {
+    submitBulkQuery(soql);
+} catch (Exception e) {
+    // catches nothing, because this string never appears
+    if (e.getMessage().contains('QUERY_WITH_SELECTIVITY_HINT_ONLY_ALLOWED_IN_SUBQUERY')) {
+        soql = stripSubqueries(soql);
+    }
+}
+```
+
+…and prose: "the same query executed through the Bulk API throws `QUERY_WITH_SELECTIVITY_HINT_ONLY_ALLOWED_IN_SUBQUERY`".
+
+**Why it happens:** The *mechanism* is correct and well known — Bulk API query jobs do not support parent-to-child subqueries. What the documentation does not give is a memorable named error code for it, and the model resolves that gap by generating one. Salesforce's `StatusCode` enumeration is full of long SCREAMING_SNAKE_CASE names of exactly this shape, so a synthesised member is indistinguishable from a real one on inspection, and the fabricated name even sounds authoritative by borrowing real vocabulary (`selectivity hint` is a genuine Salesforce concept — it is just unrelated to parent-to-child subqueries, which is the tell). This is the general failure signature to watch for: a *correct explanation* wrapped around a *confabulated identifier*. Nothing catches it, because the surrounding paragraph is accurate and the string only ever appears in prose or in a `contains()` check that silently never fires.
+
+**Correct pattern:** State the restriction, not an invented code. Bulk API 2.0 query jobs reject `GROUP BY`, `OFFSET`, `TYPEOF`, aggregate functions such as `COUNT()`, compound address and geolocation fields, and **parent-to-child relationship queries**; child-to-parent traversal is supported. Restructure into separate queries and join in code. If you must branch on the failure, inspect the job's returned error message and state code at run time rather than hardcoding a name — and never write a `catch` whose only recovery path depends on an unverified string, because it degrades to a silent no-op.
+
+**Detection hint:** grep the corpus for `QUERY_WITH_SELECTIVITY_HINT_ONLY_ALLOWED_IN_SUBQUERY` — zero legitimate hits. More generally: for any SCREAMING_SNAKE_CASE identifier asserted as a Salesforce status code, confirm it appears in the `StatusCode` enumeration; a web search returning zero results anywhere on the public internet is conclusive, since a real status code of any age generates StackExchange traffic. Flag hedging phrases like "throws `SOME_CODE` **or similar**" — the hedge is where an author who could not verify the identifier signals it.

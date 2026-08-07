@@ -22,5 +22,7 @@
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide
 - LWC Data Guidelines — https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html
+- LWC Guide — Apex Result Caching / `refreshApex` (imported from `@salesforce/apex`) — https://developer.salesforce.com/docs/platform/lwc/guide/apex-result-caching.html
+- LWC Reference — `lightning/uiRecordApi` module exports (`notifyRecordUpdateAvailable`) — https://developer.salesforce.com/docs/platform/lwc/guide/reference-lightning-ui-api-record.html
 - Lightning Web Security — https://developer.salesforce.com/docs/platform/lightning-components-security/guide/intro-lws.html
 - MDN BroadcastChannel — https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel

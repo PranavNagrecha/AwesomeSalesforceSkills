@@ -35,7 +35,7 @@ separate anonymization strategy or deprovision them before sandbox copy.
 Never configure Null/Delete masking on a field that has a Required field-level
 setting. The Data Mask batch job will abort mid-run with a DML error, leaving
 some records masked and others with original values — a partial-mask state that
-is worse than no masking at all. Use Pseudonymous masking for required fields
+is worse than no masking at all. Use Library or Pattern masking for required fields
 to replace values with realistic fakes while satisfying the required constraint.
 ```
 
@@ -120,3 +120,34 @@ Do not grant sandbox access until spot-checks confirm masking.
 ```
 
 **Detection hint:** If the advice considers the masking job log as sufficient verification without data-level spot-checks, it misses silent failures.
+
+---
+
+## Anti-Pattern: Inventing "Pseudonymous" and "Deterministic" Data Mask Masking Types
+
+**What the LLM generates:** "Data Mask provides three masking strategies per field: Pseudonymous, Deterministic, and Null/Delete" — usually with a fluent, plausible description of each, and often an example configuring "Deterministic" masking so a value stays consistent across two objects.
+
+**Why it happens:** Two distinct pressures. (1) *Pseudonymisation* and *deterministic masking* are real, standard data-privacy vocabulary (GDPR Article 4 defines pseudonymisation; deterministic masking is a genuine category in Informatica, Delphix and other masking tools), so the model reaches for the industry term instead of the product's own label. (2) "Deterministic" is *Salesforce* vocabulary — it is one of the two Shield Platform Encryption schemes — so it feels in-family, and the model imports it from the neighbouring product. Both wrong names sound more technical than the real ones, which is why they read as authoritative.
+
+**Why the "Deterministic" one is worse than a naming error:** the capability it describes does not exist and cannot exist. Data Mask is irreversible by design — Salesforce Help: "When you mask sandbox data, you can't unmask it." A stable input-to-output mapping is exactly what would make masking reversible by frequency analysis, so it is a property the product deliberately does not offer. A team that plans its sandbox test strategy around cross-object masking consistency has planned around a guarantee no configuration can deliver, and will discover this only when the join-based tests fail after the first refresh.
+
+**Correct pattern:**
+```
+Salesforce Data Mask masking types — all four, and there are only four:
+
+  Replace with Random Characters   fast; result is not realistic-looking
+  Replace from Library             realistic values from a Salesforce-supplied
+                                   library; slowest of the four
+  Replace Using Pattern            for fields that must keep a specific shape
+  Delete                           fastest; not for required fields or fields
+                                   under a non-blank validation rule
+
+Speed, fastest to slowest: Delete → Random Characters → Pattern → Library.
+
+Masking is IRREVERSIBLE. There is no same-input-same-output guarantee and no
+setting that provides one. If two objects must carry a matching value after
+masking, mask both and reconcile them with your own post-mask Apex/data job,
+wired into the same SandboxPostCopy implementation.
+```
+
+**Detection hint:** the tokens `Pseudonymous` or `Deterministic` in any Data Mask context are always wrong — as is any count other than four. `Deterministic` is legitimate Salesforce vocabulary *only* alongside Shield Platform Encryption (`probabilistic` will normally be nearby); if it appears near `sandbox`, `Data Mask`, `SandboxPostCopy` or `partial copy`, it has been imported from the wrong product. A second, sharper tell: any claim that a masking setting preserves cross-object joins contradicts the documented irreversibility and is unsupportable on its face.

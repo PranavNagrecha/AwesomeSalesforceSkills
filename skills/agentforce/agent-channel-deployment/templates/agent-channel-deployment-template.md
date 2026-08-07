@@ -46,7 +46,7 @@ Complete all items before starting channel configuration.
 
 ### Channel Prerequisites — Agent REST API
 - [ ] Connected App name:
-- [ ] OAuth scopes confirmed: `api`, `chatbot_api`
+- [ ] OAuth scopes confirmed (all four): `api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`
 - [ ] Authentication method: OAuth 2.0 / Session ID
 - [ ] Named Credential configured: Yes / No
 - [ ] Calling application platform: (Mobile / Web / Backend)
@@ -89,7 +89,7 @@ Complete all items before starting channel configuration.
 
 ### Agent REST API
 
-- [ ] 1. Create Connected App with OAuth scopes: `api`, `chatbot_api`
+- [ ] 1. Create Connected App with OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`
 - [ ] 2. Note Consumer Key: _________________ (store securely)
 - [ ] 3. Retrieve agent ID:
   ```
@@ -98,17 +98,17 @@ Complete all items before starting channel configuration.
   Agent ID: _________________
 - [ ] 4. Test session creation:
   ```
-  POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
+  POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
   Body: {"externalSessionKey": "<unique-id>", "instanceConfig": {"endpoint": "<instanceUrl>"}}
   ```
 - [ ] 5. Test message send:
   ```
-  POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
+  POST https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages
   Body: {"message": {"text": "test message", "sequenceId": 1, "type": "StaticContent"}}
   ```
 - [ ] 6. Test session close:
   ```
-  DELETE /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+  DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}
   ```
 - [ ] 7. Confirm response format matches calling application's expectations
 

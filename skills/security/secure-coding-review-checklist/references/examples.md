@@ -72,7 +72,7 @@ public with sharing class SearchController {
 }
 ```
 
-**Why it works:** `Database.queryWithBinds()` with `AccessLevel.USER_MODE` combines injection prevention (bind variables) with CRUD/FLS enforcement in a single call. The bind variable prevents the user input from being interpreted as SOQL syntax. When `queryWithBinds` is not available (pre-Spring '21), `String.escapeSingleQuotes()` escapes single quotes in the input, neutralizing the most common injection vector. The `AccessLevel.USER_MODE` parameter replaces the need for separate `stripInaccessible()` calls.
+**Why it works:** `Database.queryWithBinds()` with `AccessLevel.USER_MODE` combines injection prevention (bind variables) with CRUD/FLS enforcement in a single call. The bind variable prevents the user input from being interpreted as SOQL syntax. `Database.queryWithBinds()` shipped in **Spring '23 (API v57)**. Below v57 the substitute is *still a bind variable* — put `:userInput` directly in the string passed to `Database.query()` and keep the variable in scope at the call site. `String.escapeSingleQuotes()` is the last-resort fallback, not the pre-v57 equivalent: it only neutralises quote breakout and leaves injected `LIMIT`, `ORDER BY` and identifier fragments intact. The `AccessLevel.USER_MODE` parameter replaces the need for separate `stripInaccessible()` calls.
 
 ---
 

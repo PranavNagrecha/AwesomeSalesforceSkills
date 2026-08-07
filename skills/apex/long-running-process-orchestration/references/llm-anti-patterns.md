@@ -202,3 +202,21 @@ public class StepOneQueueable implements Queueable, Database.AllowsCallouts {
 ```
 
 **Detection hint:** Presence of `@future` annotations alongside an orchestration design with multiple dependent steps. Any `@future` method that calls or references another `@future` method is an immediate red flag.
+
+---
+
+## Anti-Pattern 7: Stating the Per-Transaction Callout Budget as 10 Seconds
+
+**What the LLM generates:**
+
+Prose in an architecture or design doc:
+
+> "Salesforce imposes hard transaction limits: 60,000 ms CPU, 100 SOQL, 150 DML, 12 MB heap, and a 10-second total callout timeout. Because our sync step makes four callouts averaging four seconds, we must split it across four Queueables."
+
+…and the sibling arithmetic error, "each callout can run up to 10 seconds, for a combined 120-second total".
+
+**Why it happens:** 10 seconds is the documented **default** timeout of a single `HttpRequest`, which is the value developers hit first and therefore the value that circulates as "the callout limit". Slotted into a per-transaction limits table alongside CPU, SOQL, DML, and heap — which genuinely *are* per-transaction — it looks native. The second variant is worse because it back-rationalises: the author remembers the correct 120-second total, remembers 10 seconds and 100 callouts, and invents a product relationship to connect them. 100 × 10 = 1,000, not 120, so the sentence refutes itself, and it still ships.
+
+**Correct pattern:** The per-transaction limit is **120 seconds cumulative across all callouts** — "The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds" — alongside a separate limit of 100 callouts. Per callout, 10 seconds is only the default; `setTimeout()` accepts 1 to 120,000 ms, identically in synchronous and asynchronous Apex. The two limits are independent: one 120-second callout exhausts the transaction budget while using 1 of 100 callouts; 100 callouts averaging 1.2 s exhaust it the other way. Orchestration splits are justified by the 120-second budget, the 100-callout count, CPU, or heap — never by a 10-second figure.
+
+**Detection hint:** in any limits table or bulleted limits list, flag `10[- ]?second` appearing next to `total`, `cumulative`, or `transaction`; the correct value in that position is always 120 seconds. Separately, flag any sentence containing both a per-callout duration and the word `combined` or `total` where the stated product is not the product of its operands — a self-refuting arithmetic claim is a reliable fabrication marker. Correct text pairs `120 seconds` with `cumulative`/`transaction` and `10 seconds` with `default`.

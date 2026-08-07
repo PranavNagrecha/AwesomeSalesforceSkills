@@ -197,8 +197,26 @@ def check_bot_channel_associations(manifest_dir: Path) -> list[str]:
     return issues
 
 
+def _normalise_scope(text: str) -> str:
+    """Collapse a scope token so 'chatbot_api', 'ChatbotApi' and 'Chatbot API' all match.
+
+    ConnectedApp metadata, the Setup scope picker and the OAuth request all spell
+    these differently, so compare on the alphanumeric-only lowercase form.
+    """
+    return "".join(ch for ch in text.lower() if ch.isalnum())
+
+
 def check_connected_apps_for_chatbot_scope(manifest_dir: Path) -> list[str]:
-    """Warn if Connected Apps with 'agent' or 'chatbot' in the name lack the chatbot_api scope."""
+    """Warn if Agent-related Connected Apps lack the Agent API OAuth scopes.
+
+    The Agent API get-started guide requires FOUR scopes:
+      api                       "Manage user data via APIs"
+      refresh_token, offline_access  "Perform requests at any time"
+      chatbot_api               "Access chatbot services"
+      sfap_api                  "Access the Salesforce API Platform"
+    sfap_api is the most commonly omitted and the failure it produces does not
+    name the missing scope, so check for it explicitly.
+    """
     issues: list[str] = []
     ca_files = list_connected_apps(manifest_dir)
 
@@ -216,12 +234,20 @@ def check_connected_apps_for_chatbot_scope(manifest_dir: Path) -> list[str]:
         scope_str = ", ".join(scopes) if scopes else "(no scopes listed)"
         print(f"  - {f.stem}  |  scopes: {scope_str}")
 
-        if scopes and "chatbot_api" not in scopes:
+        flat = _normalise_scope(" ".join(scopes))
+        if scopes and "chatbotapi" not in flat:
             issues.append(
-                f"{f.name}: Connected App does not include the 'chatbot_api' OAuth scope. "
-                "The Agentforce Agent REST API requires the 'chatbot_api' scope in addition "
-                "to the standard 'api' scope. Without it, session creation returns HTTP 403. "
-                "Add 'chatbot_api' (labeled 'Agentforce API' in the UI) to the Connected App."
+                f"{f.name}: Connected App does not include the 'chatbot_api' OAuth scope "
+                "(labeled \"Access chatbot services\" in the scope picker). Without it, "
+                "session creation fails. Add it to the Connected App."
+            )
+        if scopes and "sfapapi" not in flat:
+            issues.append(
+                f"{f.name}: Connected App does not include the 'sfap_api' OAuth scope "
+                "(labeled \"Access the Salesforce API Platform\"). This is the scope that "
+                "specifically gates the Agentforce API platform and is the one most often "
+                "omitted — the resulting auth failure does not name it. The Agent API needs "
+                "all four of: api, refresh_token/offline_access, chatbot_api, sfap_api."
             )
 
     return issues

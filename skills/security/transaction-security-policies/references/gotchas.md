@@ -36,7 +36,7 @@ Confirmed unsupported event types (as of Spring '25):
 
 **When it occurs:** When a practitioner builds a country-based login restriction and types the full country name in the condition value field. The Condition Builder UI accepts the string without validation, so the error is invisible until the policy is tested.
 
-**How to avoid:** Always use ISO 3166-1 alpha-2 country codes in the condition value. Reference the ISO standard or the Salesforce LoginEvent Object Reference to confirm the exact two-letter code for each country. When in doubt, query `LoginEventStream` via SOQL (`SELECT Country, UserId FROM LoginEventStream LIMIT 20`) in a sandbox to inspect actual field values from real login events before building the condition.
+**How to avoid:** Always use ISO 3166-1 alpha-2 country codes in the condition value. Reference the ISO standard or the Salesforce LoginEvent Object Reference to confirm the exact two-letter code for each country. When in doubt, query the `LoginEvent` big object in a sandbox to inspect actual field values from real login events before building the condition: `SELECT Country, UserId, EventDate FROM LoginEvent ORDER BY EventDate DESC LIMIT 20`. `LoginEventStream` is a platform event and cannot be queried — SOQL against it always fails.
 
 ---
 

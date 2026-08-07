@@ -141,7 +141,7 @@ def _check_token_smells(bundle_dir: Path, issues: list[str]) -> None:
         if match:
             issues.append(
                 f"{path}: found '{match.group(0)}' — UI bundles must not hand-roll auth; "
-                f"createDataSDK() from @salesforce/sdk-data handles authentication"
+                f"createDataSDK() from @salesforce/platform-sdk handles authentication"
             )
 
 

@@ -41,7 +41,7 @@ Work through these items in order:
 - [ ] Site membership method configured (Members list updated if profile-based)
 - [ ] Self-registration: Default New User Account set (business Account, not Person Account)
 - [ ] Self-registration: Default Profile set
-- [ ] Self-registration: Handler class confirmed (declarative OR `Auth.ConfigurableSelfRegHandler` Apex — not legacy `Auth.RegistrationHandler`)
+- [ ] Self-registration: Handler class confirmed (declarative OR `Auth.ConfigurableSelfRegHandler` Apex declaring `global Id createUser(Id, Id, Map<SObjectField, String>, String)`)
 - [ ] Login/registration page branding applied in Experience Builder
 - [ ] Site published after any structural change to the login page
 - [ ] End-to-end test completed in a guest/incognito browser session
@@ -51,7 +51,7 @@ Work through these items in order:
 
 **Class name:**
 
-**Interface implemented:** `Auth.ConfigurableSelfRegHandler` (confirm — not `Auth.RegistrationHandler`)
+**Interface implemented:** `Auth.ConfigurableSelfRegHandler` — confirm the class declares `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)` and nothing named `registerUser` / `Auth.SelfRegistrationContext` (neither exists). `Auth.RegistrationHandler` is a separate interface for Auth. Provider SSO, not a legacy alternative.
 
 **Custom logic summary** (e.g., domain allow-list, dynamic account assignment):
 

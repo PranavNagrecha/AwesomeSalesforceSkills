@@ -32,7 +32,7 @@ Unlocked package dependencies pin a package to a specific version of another. Wi
 
 ## Recommended Workflow
 
-1. Run `sf package dependencies list --package <id>` for each package; assemble the graph.
+1. Run `sf package version displaydependencies --package <packageVersionId>` for each package version; assemble the graph. (There is no `sf package dependencies` topic — dependencies are read off a package *version*, not a package.)
 2. In sfdx-project.json, pin deps to `@version` (e.g., `sales-core@1.4.0-2`).
 3. Promote packages bottom-up: base utils first, then dependents.
 4. Validate install order on a fresh scratch org before promoting to prod.

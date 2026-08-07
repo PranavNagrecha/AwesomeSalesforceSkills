@@ -150,4 +150,3 @@ never loads and the embed silently does nothing.
 
 **Correct approach:** put the App-Manager-provided `<script>` tag directly in the external host
 page's HTML.
-</content>

@@ -71,9 +71,13 @@ Key adapters:
 
 ### lightningCommunity__RelaxedCSP Capability
 
-LWR storefront templates disable both Lightning Locker and Lightning Web Security. A custom LWC that is deployed into this context must declare `lightningCommunity__RelaxedCSP` in the `capabilities` array of its `.js-meta.xml` file. Without this declaration, the component may render inconsistently across store pages or fail silently on certain page types. This is not optional: it signals to the Experience Cloud runtime that the component has been authored with awareness that standard LWC sandbox protections are absent.
+LWR storefront templates disable both Lightning Locker and Lightning Web Security. The `lightningCommunity__RelaxedCSP` capability, declared in the `capabilities` array of the `.js-meta.xml`, signals that a component was authored knowing those sandbox protections are absent.
 
-Omitting `lightningCommunity__RelaxedCSP` is the most common reason a component that works in Experience Builder preview fails when deployed to a live store.
+**Know the documented scope, because it is narrower than commonly stated.** Salesforce's rule is: "Lightning web components **in a managed package** that aren't configured with the `lightningCommunity__RelaxedCSP` tag are disabled in the Components panel in Experience Builder for any site with Lightning Locker disabled." So:
+
+- It is a hard requirement for components **distributed in a managed package**. Without it, an admin cannot drag them onto a page at all.
+- The documented symptom is **absence from the Experience Builder Components panel** — not inconsistent rendering, not silent page-type-specific failure at runtime. If a component is on the page and rendering wrongly, `RelaxedCSP` is the wrong hypothesis and chasing it will burn a debugging session.
+- For a component in the org's **own namespace**, it is not a documented requirement. Declaring it anyway is harmless and is a reasonable house convention for storefront work — just do not describe it as mandatory or attribute unrelated runtime failures to its absence.
 
 ### Experience Builder Registration and Design Properties
 
@@ -171,7 +175,7 @@ export default class AddToCartButton extends LightningElement {
 | Adding or removing cart items | Imperative `addItemToCart` / `removeItemFromCart` from `commerce/cartApi` | Mutations must be user-triggered; wire is read-only |
 | Displaying wishlist state | `@wire(getWishlist, ...)` from `commerce/wishlistApi` | Wishlist is buyer-scoped; standard LDS cannot resolve it |
 | Component not showing in Experience Builder | Verify `isExposed: true` and correct `<targets>` in `.js-meta.xml` | Registration issue, not a code issue |
-| Component rendering inconsistently in live store | Add `lightningCommunity__RelaxedCSP` capability to meta XML | LWR disables Locker; capability must be explicit |
+| Managed-package component missing from the Experience Builder Components panel | Add `lightningCommunity__RelaxedCSP` capability to meta XML | Documented: managed-package LWCs without the tag are disabled in the panel on any site with Locker disabled |
 
 ---
 
@@ -206,7 +210,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Missing `lightningCommunity__RelaxedCSP` causes silent rendering failures** — A component that previews correctly in Experience Builder may fail to render on certain live store page types (especially checkout and cart pages) if the `lightningCommunity__RelaxedCSP` capability is absent. The error is not surfaced to the buyer; the component simply does not appear. Always declare this capability even if the component does not use any CSP-restricted APIs directly.
+1. **Missing `lightningCommunity__RelaxedCSP` hides managed-package components from the Components panel** — the documented consequence is that managed-package LWCs without the tag are *disabled in the Experience Builder Components panel* on any site with Locker disabled, so an admin cannot place them at all. It is not a runtime rendering failure, and the distinction matters for triage: if the component is already on the page, this capability is not your bug. Declaring it on org-local storefront components is harmless convention, not a documented requirement.
 2. **`getProduct` fields list is not free-form** — The `fields` parameter for `getProduct` must use field names in the exact format expected by the Commerce Product API, not the same format as `lightning/uiRecordApi`. For example, `Name` works but `Product2.Name` does not. Passing unsupported field names silently returns `undefined` for those fields rather than throwing an error.
 3. **LDS is unavailable; `@wire(getRecord)` returns no data and no error** — In the LWR storefront runtime, `lightning/uiRecordApi` adapters are not loaded. A wire adapter imported from `lightning/uiRecordApi` will resolve its import successfully at compile time but never deliver data at runtime, producing no JavaScript error. This means a developer testing in App Builder will see data but a buyer in the store will see a blank component.
 
@@ -228,5 +232,3 @@ Non-obvious platform behaviors that cause real production problems:
 - `lwc/wire-service-patterns` — use for standard LWC wire service patterns outside the Commerce storefront context
 - `admin/b2c-commerce-store-setup` — use when setting up the B2C store configuration before building custom components
 - `integration/commerce-order-api` — use when a custom component must trigger order placement or order management operations beyond cart mutations
-</content>
-</invoke>

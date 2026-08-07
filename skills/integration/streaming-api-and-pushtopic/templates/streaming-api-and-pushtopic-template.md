@@ -19,7 +19,7 @@ Record the answers to the Before Starting questions from SKILL.md here before wr
 - **Channel type needed** (PushTopic for sObject change events OR Generic Streaming for arbitrary payloads):
 - **Estimated concurrent subscriber count per channel:**
 - **Event retention requirement** (less than 24 hours = Streaming API OK; more than 24 hours = Platform Events):
-- **Replay strategy** (-2 new events only, -1 all retained, or specific stored replayId):
+- **Replay strategy** (-1 = default, new events only; -2 = all retained; or a specific stored replayId):
 
 ---
 
@@ -66,7 +66,7 @@ Fill in these fields before writing the Apex or REST payload:
 | CometD URL | `<instanceUrl>/cometd/<apiVersion>` |
 | Client library | EMP Connector (Java) / cometd npm (JS) / empApi (LWC) / custom |
 | Replay ID storage | (database table, file, in-memory — note if durable) |
-| Initial replay value | -2 (new only) / -1 (all retained) / stored ID |
+| Initial replay value | -1 (default, new events only) / -2 (all retained) / stored ID |
 | Token refresh mechanism | (describe how the client re-authenticates on session expiry) |
 
 ---

@@ -31,5 +31,6 @@ Poorly bulkified flows are a reliability risk because they fail unpredictably du
 - Flow Bulkification in Transactions — https://help.salesforce.com/s/articleView?id=platform.flow_concepts_bulkification.htm&type=5
 - Schedule-Triggered Flow Considerations ("some records fail, all records are rolled back") — https://help.salesforce.com/s/articleView?id=sf.flow_considerations_trigger_schedule.htm&type=5
 - Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5
+- Salesforce Developer Documentation — "Platform Event Allocations" (per-edition publish/delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
 - Flow Builder — https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm

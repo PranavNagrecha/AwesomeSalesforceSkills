@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Bulk API v2 Result Cursor Expires After 10 Minutes of Inactivity
 
-**What happens:** After a Bulk API v2 query job reaches `JobComplete`, Salesforce holds the result set available for download via a paginated cursor tracked through the `Sfdclocator` response header. If the consumer pauses for more than 10 minutes between successive GET requests to the results endpoint — for any reason, including downstream backpressure, rate-limit sleep, or a process crash — the cursor expires and the result set becomes unavailable. Subsequent requests to the results endpoint return a 404 or an error indicating the job results are no longer available.
+**What happens:** After a Bulk API v2 query job reaches `JobComplete`, Salesforce holds the result set available for download via a paginated cursor tracked through the `Sforce-Locator` response header. If the consumer pauses for more than 10 minutes between successive GET requests to the results endpoint — for any reason, including downstream backpressure, rate-limit sleep, or a process crash — the cursor expires and the result set becomes unavailable. Subsequent requests to the results endpoint return a 404 or an error indicating the job results are no longer available.
 
 **When it occurs:** Any pipeline that applies throttling or backpressure between result batch downloads is at risk. Common triggers: the embedding API rate limit is hit mid-download and the pipeline sleeps to wait for the rate limit window to reset; the vector store write is slow and blocks the download loop; the process crashes after downloading the first few batches and a partial-resume is attempted.
 

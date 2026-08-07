@@ -36,10 +36,10 @@ not for routing messages during an active agent conversation.
 ```text
 Use the Salesforce Agent REST API — not a custom Apex REST endpoint.
 
-Endpoint: POST /services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions
-Auth:      Connected App OAuth 2.0 with scopes: api, chatbot_api
-Session:   POST /services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
-Close:     DELETE /services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+Endpoint: POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
+Auth:      Connected App OAuth 2.0 with scopes: api, refresh_token offline_access, chatbot_api, sfap_api
+Session:   POST https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages
+Close:     DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}
 
 Custom Apex REST endpoints cannot create agent sessions, invoke the reasoning engine,
 or route through the Einstein Trust Layer.
@@ -114,11 +114,13 @@ or the Einstein Trust Layer.
 ```text
 Connected App OAuth Scopes for Agent REST API integration:
   - api         (required — access to Salesforce REST API)
-  - chatbot_api (required — access to Agentforce Agent API session endpoints)
+  - chatbot_api (required — "Access chatbot services")
+  - sfap_api   (required — "Access the Salesforce API Platform"; most-omitted scope)
+  - refresh_token, offline_access (required)
   - refresh_token (recommended — for long-lived integrations)
 
 Without chatbot_api:
-  POST /services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions
+  POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
   → HTTP 403 Forbidden (insufficient scope)
 
 Configuration path:
@@ -151,3 +153,54 @@ Channel deployments do NOT auto-update when the agent definition changes.
 ```
 
 **Detection hint:** Flag any instruction that says changes to the agent will "automatically" or "immediately" appear in live channel deployments without an explicit republish step.
+
+---
+
+## Anti-Pattern 6: Serving the Agent API From the Org's `/services/data/vXX.0/` REST Surface
+
+**What the LLM generates:**
+```
+POST   https://MyDomain.my.salesforce.com/services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
+POST   https://MyDomain.my.salesforce.com/services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
+DELETE https://MyDomain.my.salesforce.com/services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+```
+Two independent errors are packed into that block: the wrong host/version prefix, and `agents/{agentId}` retained on the message and delete resources.
+
+**Why it happens:** `/services/data/vXX.0/` is the shape of essentially every Salesforce REST URL in the training corpus — sObjects, Composite, Connect, Tooling, Bulk — so the model applies it as a default frame to any new Salesforce API name it has to render. It then keeps `{agentId}` in the sub-paths because REST convention says a child resource nests under its parent. Agentforce breaks both habits: it is served from a separate platform host, and the session id alone is sufficient to address the conversation once the session exists.
+
+**Correct pattern:**
+```
+Host: https://api.salesforce.com          (Government Cloud: https://api.gov.salesforce.com)
+Version segment: /v1  — NOT the org's /services/data/vXX.0
+
+POST   https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
+POST   https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages
+POST   https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages/stream
+DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}
+       header: x-session-end-reason: UserRequest
+
+After session creation the agentId drops out of the path entirely.
+```
+
+**Detection hint:** the substring `/services/data/` immediately preceding `/einstein/ai-agent/` is always wrong and always yields 404. Equally mechanical: `/sessions/{sessionId}` appearing after `/agents/{agentId}` in the same path — the two ids never co-occur in a valid Agent API URL. `scripts/check_agent_channels.py` and the sibling skill's `check_agentforce_custom_channel_dev.py` both flag the first form.
+
+---
+
+## Anti-Pattern 7: Listing Only `api` + `chatbot_api` for the Agent API Connected App
+
+**What the LLM generates:** "Create a Connected App with OAuth 2.0 enabled and add the `api` and `chatbot_api` scopes." The answer is *partially* right, which is why it survives review — `chatbot_api` is a genuinely obscure scope, so a reader who has never seen it treats its presence as evidence the author knew the material.
+
+**Why it happens:** `chatbot_api` is the memorable, distinctive-sounding token in the set, so it anchors recall and the rest of the list gets dropped. `sfap_api` is newer, blander, and its consent-screen label ("Access the Salesforce API Platform") reads like boilerplate rather than a requirement.
+
+**Why it matters operationally:** the failure is silent about its cause. A connected app configured with `api` + `chatbot_api` authenticates fine and then fails at the Agent API call with an authorization error that never names `sfap_api`, so the developer debugs the token, the agent id, the host and the payload before suspecting the scope list.
+
+**Correct pattern:**
+```
+All FOUR scopes on the Connected App / External Client App:
+  api                              "Manage user data via APIs"
+  refresh_token, offline_access    "Perform requests at any time"
+  chatbot_api                      "Access chatbot services"
+  sfap_api                         "Access the Salesforce API Platform"
+```
+
+**Detection hint:** in prose or a `.connectedApp-meta.xml`, `chatbot_api` present without `sfap_api` alongside it is incomplete for Agent API use. Normalise scope tokens to alphanumerics before comparing (`chatbot_api` / `ChatbotApi` / `Chatbot API` are the same scope) — both skills' checker scripts do this.

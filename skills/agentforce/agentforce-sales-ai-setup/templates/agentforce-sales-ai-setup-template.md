@@ -34,7 +34,7 @@ WHERE IsClosed = true
 AND CloseDate = LAST_N_DAYS:730
 ```
 
-**Result:** _______ closed opportunities in last 24 months
+**Result:** _______ closed-WON and _______ closed-LOST opportunities in last 24 months (each must be >= 200; a combined total is not the gate)
 
 **Gate:** Must be >= 200 to proceed with Opportunity Scoring enablement.
 

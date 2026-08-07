@@ -24,11 +24,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: JWT Bearer invalid_grant From Clock Drift Is Silent
 
-**What happens:** The JWT Bearer flow requires the signed assertion's `iat` (issued-at) timestamp to be within 60 seconds of Salesforce's server time. If the signing server's clock drifts beyond this window, every token request fails with `invalid_grant`. The error response does not distinguish clock drift from other `invalid_grant` causes (expired refresh token, revoked credentials, wrong audience, etc.).
+**What happens:** Salesforce validates the assertion's `exp` claim against its own clock, allowing a documented **3-minute buffer for clock skew**. If the signing server's clock drifts far enough that `exp` falls outside that buffer, every token request fails with `invalid_grant`. The error response does not distinguish clock drift from other `invalid_grant` causes (expired refresh token, revoked credentials, wrong audience, etc.).
+
+Note there is **no 60-second `iat` rule**. `iat` is not a required claim for the Salesforce JWT bearer flow at all — the required set is `iss`, `sub`, `aud`, `exp`. Chasing a sub-minute NTP threshold wastes the debugging session and can mask drift that is genuinely outside the 3-minute `exp` window.
 
 **When it occurs:** On servers with poor NTP configuration, after VM migrations or snapshot restores that reset the system clock, or in containerized environments where the container clock drifts from the host.
 
-**How to avoid:** Synchronize the signing host clock with NTP and monitor drift. Log the raw `iat` value on every JWT assertion so clock-skew debugging is possible. Keep JWT TTL short (≤ 3 minutes as required by Salesforce) — a shorter TTL makes drift failures more consistent and therefore easier to isolate.
+**How to avoid:** Synchronize the signing host clock with NTP and monitor drift. Log the raw `exp` value you signed on every JWT assertion so clock-skew debugging is possible. Keep the assertion TTL short — roughly 3 minutes is conventional and matches the size of the skew buffer, so a drift failure shows up consistently rather than intermittently.
 
 ---
 

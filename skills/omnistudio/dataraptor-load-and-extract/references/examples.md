@@ -51,6 +51,11 @@ In the Integration Procedure, after the Load step, check `<LoadStep>:iferror` an
 
 **What practitioners do:** Configure a DataRaptor Load called from an Integration Procedure looping over a large JSON array to insert hundreds of records.
 
-**What goes wrong:** DataRaptor Load uses standard DML — one DML statement per record iteration. For 500 records, this consumes 500 DML statements in a single transaction, quickly hitting governor limits. The Integration Procedure fails with a `Too many DML statements` error.
+**What goes wrong:** Data Mapper Load writes through **platform DML, not the Bulk API**, so the whole write is bounded by the calling transaction's governor limits — 150 DML statements and 10,000 DML rows per transaction. Driving it from a loop in an Integration Procedure is what makes this bite: each iteration issues its own DML, so the transaction dies at the **151st iteration** with `Too many DML statements`, long before the row limit is anywhere near reached.
+
+Two things worth being precise about, because they are commonly stated wrongly:
+
+- The binding limit for a loop-driven Load is the **150-statement** ceiling, not the 10,000-row one. Any account of this failure that has a 500-record load consuming "500 DML statements" before failing is arithmetically inconsistent — it would have failed at 151.
+- Whether Data Mapper Load internally issues one DML per record for a *single* invocation carrying a 500-element array is **not something to assert without checking**. A genuinely bulkified 500-row write is comfortably inside both limits. Confirm the current batching behaviour against the Omnistudio Data Mapper Load documentation before quoting a per-record figure; the safe and sufficient statement is that Load is platform DML rather than Bulk API, and therefore unsuitable for high-volume writes.
 
 **Correct approach:** DataRaptor Load is designed for conversational, single-record or small-set operations within an OmniScript interaction. For bulk imports, use Bulk API 2.0 directly, Apex Batch with Database.executeBatch, or a data tool like Data Loader — outside the OmniStudio context.

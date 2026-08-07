@@ -165,3 +165,31 @@ Consumer design requirements:
 ```
 
 **Detection hint:** Flag external subscriber implementations that do not handle duplicate events or implement idempotent processing. Look for missing deduplication logic.
+
+---
+
+## Anti-Pattern 6: Inventing a Per-Event Retention Field (`RetainUntilDate`)
+
+**What the LLM generates:** Apex or REST that sets a retention field on a Platform Event to extend the replay window — most often `entry.RetainUntilDate = DateTime.now().addDays(8);` or a `"RetainUntilDate"` key in a REST publish body — accompanied by advice to "use a High-Volume event, which supports configurable retention."
+
+**Why it happens:** The surrounding reasoning is correct and that is what makes this durable. The model correctly knows retention is 72 hours, correctly knows that is too short for a weekly reconciliation, and correctly knows high-volume events differ from standard-volume ones. It then closes the gap with the mechanism that would exist if the platform were designed the obvious way — a settable expiry — and names it in Salesforce's own house style (`RetainUntilDate` looks exactly like a real platform field). Adjacent products reinforce it: SQS, EventBridge, and Kafka all expose per-message or per-topic retention, so a retention knob is the strong prior for anything called an event bus.
+
+**Correct version:** No Platform Event has a retention field. Retention is a fixed platform property — **72 hours** for high-volume events (which is every event definable since Spring '19) and **24 hours** for legacy standard-volume events — and no API accepts an override. For a replay window beyond 72 hours the supported design is a durable ledger: the publisher writes a copy of each payload to a Big Object or external queue in the same unit of work as `EventBus.publish`, keyed by a correlation ID, and a subscriber returning from a long outage backfills from that store before resuming live at its persisted `replayId`.
+
+**Why it is dangerous rather than merely wrong:** Publishing an unrecognized field does not fail. `EventBus.publish` returns success, the REST call returns 201, integration tests pass, and the defect surfaces only when a subscriber that has been down for four days replays and receives three days of events. The subscriber sees a valid, shorter stream — there is no error, no gap marker, and no signal anywhere in the system that data is missing.
+
+**Detection hint:** `grep -rniE 'retainuntil|retentiondate|expiresat' --include='*.cls' --include='*.json' --include='*.md' .` — on an `__e` object or a platform-event publish payload, any hit is either a no-op or a misleadingly-named custom field. Structurally: any design document that answers "what if the subscriber is down longer than 72 hours?" with a *setting* rather than with a *second durable write* has this bug. The skill's checker script (`scripts/check_platform_events_integration.py`, Check 2) flags these field names on `__e` metadata automatically.
+
+---
+
+## Anti-Pattern 7: Treating 250,000/hour as a Standard-Tier Ceiling That High-Volume Escapes
+
+**What the LLM generates:** A comparison table with rows like `| Max events per hour | Standard: 250,000 | High-Volume: Unlimited |`, and routing advice of the form "switch to a High-Volume Platform Event once you exceed 250k/hour."
+
+**Why it happens:** Classic relabelling — the number is real but attached to the wrong dimension. 250,000/hour is the **org-wide publishing allocation for high-volume events** on Enterprise, Performance, and Unlimited. The model, holding a genuine Salesforce figure and a genuine two-tier distinction, assumes the figure is what separates the tiers. "High-volume" as a name actively invites the reading that it is the unbounded option.
+
+**Correct version:** The hourly publishing allocation is per org, not per tier: **250,000/hour** for high-volume events on Enterprise, Performance, and Unlimited; **50,000/hour** on Developer; add-on capacity is sold in **+25,000/hour** increments. Standard-volume (legacy) events have their own, *lower*, allocation of 100,000/hour on EE/Perf/Unlimited — so the tiers do differ, but in the opposite direction from the fabricated table, and neither tier is unlimited. Separately, event *delivery* to CometD/empApi subscribers is metered on a 24-hour basis and is a different allocation; do not merge the two into one row.
+
+**Compounding error:** the tier choice is not live work. After Spring '19 you cannot define a new standard-volume event, and Salesforce retires publish and subscribe for standard-volume events in **Winter '27**. Advice framed as "pick standard or high-volume" is answering a question that no longer exists; the real question for an org holding legacy events is migration sequencing.
+
+**Detection hint:** `grep -rn 'Unlimited (platform capacity)\|High-Volume.*[Uu]nlimited' <files>` — no platform event publishes without an allocation, so "unlimited" in a platform-event limits table is always wrong. More generally, flag any hourly platform-event figure written without an edition qualifier: the allocation differs across editions, so a correct citation cannot be a bare number.

@@ -162,10 +162,10 @@ def check_validation_rules_for_required_fields(manifest_dir: Path) -> list[str]:
         issues.append(
             f"Found {len(affected)} validation rule file(s) that enforce non-blank/non-null "
             f"constraints ({', '.join(affected[:5])}{'...' if len(affected) > 5 else ''}). "
-            "If any of these fields are configured for Null/Delete masking in Data Mask, "
+            "If any of these fields are configured for Delete masking in Data Mask, "
             "the masking job will abort mid-run. Review each validation rule and switch "
-            "affected fields to Pseudonymous or Deterministic masking, or disable the rule "
-            "before running Data Mask."
+            "affected fields to one of the replacement masking types (Random Characters, "
+            "Library, or Pattern), or disable the rule before running Data Mask."
         )
 
     return issues

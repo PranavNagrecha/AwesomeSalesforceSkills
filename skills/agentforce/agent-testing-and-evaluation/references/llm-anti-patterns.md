@@ -173,3 +173,35 @@ command family doesn't wrap (e.g., Get Test Results by runId for archiving).
 ```
 
 **Detection hint:** Generated pipeline scripts containing a `while status != COMPLETED; sleep` polling loop against `/connect/einstein/ai-evaluations`, or an `sf agent test run` invocation with no `--wait` whose output is immediately parsed for pass/fail, both indicate this anti-pattern.
+
+---
+
+## Anti-Pattern: Building the Testing API URL With a `connect/` Segment and No `/runs` Collection
+
+**What the LLM generates:**
+```bash
+POST /services/data/v62.0/connect/einstein/ai-evaluations
+GET  /services/data/v62.0/connect/einstein/ai-evaluations/{runId}
+```
+
+**Why it happens:** Two habits collide. `/services/data/vXX.0/connect/...` is the correct prefix for Connect API resources (Chatter, Communities, CMS), and the Testing API *is* frequently described in prose as "the Connect API endpoint," so the model inserts the segment the label implies. Separately, REST convention says you POST to a collection named after the resource — `ai-evaluations` — so the intermediate `/runs` collection gets dropped as redundant. Both edits produce a URL that reads correctly and 404s.
+
+**Third, quieter error:** the generated flow usually stops at the status poll. There is a separate `/results` sub-resource carrying per-test-case detail, so a pipeline built from the truncated shape can report *that* a run failed but never *which assertions* failed — which is most of the value of running the tests in CI.
+
+**Correct pattern:**
+```
+POST /services/data/v63.0/einstein/ai-evaluations/runs
+     body: { "aiEvaluationDefinitionName": "<definition name>" }
+     → returns the run id
+
+GET  /services/data/v63.0/einstein/ai-evaluations/runs/{runId}
+     → run status / summary
+
+GET  /services/data/v63.0/einstein/ai-evaluations/runs/{runId}/results
+     → per-test-case detail — the part CI actually needs to report
+
+No `connect/` segment. Every operation goes through the /runs collection.
+Auth is an OAuth 2.0 access token, not a session id.
+```
+
+**Detection hint:** `connect/einstein/` is always wrong — the Einstein resources sit directly under `/services/data/vXX.0/einstein/`. Equally checkable: `ai-evaluations` followed immediately by `/` and an id, with no `/runs` in between. And a CI script that polls status but never fetches `/results` will pass or fail a build with no diagnosable output.

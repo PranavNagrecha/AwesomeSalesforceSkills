@@ -186,3 +186,31 @@ List<Account> accounts = [
 ```
 
 **Detection hint:** `\[SELECT.*FROM\s+\w+\s*\]` — SOQL with no WHERE clause and no LIMIT.
+
+---
+
+## Anti-Pattern: `SELECT FIELDS(ALL) ... LIMIT 200` in Apex
+
+**What the LLM generates:**
+
+```apex
+// "FIELDS(ALL) needs a LIMIT of 200 or less — this is the safe form."
+List<Account> accts = [SELECT FIELDS(ALL) FROM Account LIMIT 200];
+
+// or dynamically
+List<SObject> rows = Database.query('SELECT FIELDS(CUSTOM) FROM ' + objName + ' LIMIT 200');
+```
+
+…and prose: "Always pair `FIELDS(ALL)` with `LIMIT`", "`FIELDS(ALL)` without `LIMIT` blows the 50,000-row limit or returns `QUERY_TOO_LARGE`".
+
+**Why it happens:** The `LIMIT n <= 200` rule is real and prominent in the FIELDS() documentation, so the model learns "FIELDS(ALL) requires LIMIT 200" as a complete rule and applies it everywhere. What it drops is the support matrix directly above that rule, which scopes the unbounded forms to REST, SOAP, and the CLI and marks them "Not supported" for Apex and Bulk API 2.0. The error is reinforced by real experience: the same query string genuinely works in Developer Console's Query Editor and in `sf data query`, so examples ported into Apex look field-tested. Two different 200s in the neighbourhood (a 200-row `LIMIT` cap and the familiar 200-record trigger batch) make the number feel like a field or batch cap rather than a context-scoped row rule. The invented `QUERY_TOO_LARGE` companion arises because the real neighbouring code, `QUERY_TOO_COMPLICATED`, primes the model for a `QUERY_TOO_*` family, and "too large" is the obvious sibling.
+
+**Correct pattern:** In Apex, the only supported form is the bounded `FIELDS(STANDARD)`, and it requires no `LIMIT`:
+
+```apex
+List<Contact> cons = [SELECT FIELDS(STANDARD) FROM Contact];
+```
+
+For all fields in Apex, enumerate them, or build the list from `Schema` describes and run `Database.query()` — remembering that a describe-built list does not inherit FIELDS()'s automatic FLS filtering, so add `WITH USER_MODE` or `Security.stripInaccessible`. `FIELDS(ALL)` / `FIELDS(CUSTOM)` belong in REST/SOAP/CLI calls, bounded by `LIMIT n <= 200` or `WHERE Id IN` up to 200 IDs. Where that rule is violated the response is `MALFORMED_QUERY`; `QUERY_TOO_LARGE` is not in the `StatusCode` enumeration at all. `QUERY_TOO_COMPLICATED` is real but describes a different condition — too many fields selected or too many filter conditions.
+
+**Detection hint:** `FIELDS\s*\(\s*(ALL|CUSTOM)\s*\)` inside an Apex context — square-bracket inline SOQL, a `Database.query()` / `Database.queryWithBinds()` / `Search.query()` string argument, or any `.cls` / `.trigger` file — is wrong unconditionally, and the presence of `LIMIT 200` on the same line is a strong positive signal rather than a mitigation. Also flag `FIELDS\s*\(\s*(ALL|CUSTOM)\s*\)` in Bulk API 2.0 job payloads. Independently, `QUERY_TOO_LARGE` anywhere in the corpus is a fabrication: grep it and expect zero legitimate hits.

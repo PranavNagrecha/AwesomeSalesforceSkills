@@ -139,3 +139,59 @@ If wildcard or full-text search is required, the field cannot be encrypted.
 ```
 
 **Detection hint:** If the advice claims LIKE, range, or SOSL works on deterministically encrypted fields, the capability is overstated.
+
+---
+
+## Anti-Pattern 7: Claiming Shield Plaintext Is Gated by a "View Encrypted Data" Permission
+
+**What the LLM generates:** "Assign the *View Encrypted Data* permission to the profiles that need plaintext; users without it will see the value masked as `*********`." Common variants: a rollout checklist item "grant View Encrypted Data to integration users," a warning that middleware will start receiving blanks after encryption is enabled, or the claim that removing the permission is a way to restrict who can read an encrypted SSN.
+
+**Why it happens:** Salesforce has two unrelated encryption features and the model merges them. Classic Encryption (the *Encrypted Text* custom field type, still supported) genuinely does mask with asterisks and genuinely is governed by **View Encrypted Data**. Shield Platform Encryption is the newer, differently-architected feature, and Salesforce dropped the permission requirement for it beginning **Spring '17** (KB 000382508, "View Encrypted Data Permission Not Needed with Shield Platform Encryption Beginning Spring '17"). Pre-2017 blog posts, admin cheat sheets and certification study notes overwhelmingly describe the Classic behaviour, and both features are called "encryption" in the same Setup tree.
+
+**Why this one is dangerous:** it fails in the *exposure* direction and it fails silently. The team believes it has applied a need-to-know control; the platform applied none. Every user who could read the field before encryption still reads plaintext after it, and because the Encryption Statistics page reports 100% success the rollout looks complete. Encryption converts a would-be FLS project into a checked box.
+
+**Correct pattern:**
+
+```
+Shield Platform Encryption is TRANSPARENT above the storage layer.
+  - Anyone with field-level security Read on the field sees plaintext.
+  - Anyone without FLS Read sees nothing — there is no masked rendering.
+  - There is no per-field decrypt permission of any kind.
+
+To restrict who sees an encrypted value, edit field-level security.
+Encryption and access control are orthogonal workstreams; shipping one
+does not deliver the other.
+
+Administering Shield needs: Customize Application + Manage Encryption Keys.
+Those govern setup and key operations, not read access.
+
+"View Encrypted Data" applies ONLY to Classic Encrypted Text fields.
+```
+
+**Detection hint:** grep for `View Encrypted Data` in the same document as `Shield`, `Platform Encryption`, `tenant secret`, `deterministic`, or `probabilistic` — the permission cannot legitimately co-occur with any of them. Also flag the literal mask string `*********` or `*******` alongside Shield vocabulary; Shield produces no asterisks. In a permission-set metadata diff, `<name>ViewEncryptedData</name>` proposed as part of a Shield rollout is the executable form of the same error.
+
+---
+
+## Anti-Pattern 8: Inventing Encryptable Custom Field Types (Number, Checkbox, Currency)
+
+**What the LLM generates:** An encryptable-types list that reads "Text, Long Text Area, Text Area, Phone, URL, Email, Date, Date/Time, Number (limited), Checkbox." The hedge — "Number (limited)", "Number (in some cases)", "Currency where supported" — is the tell: it makes an invented entry look researched.
+
+**Why it happens:** The model knows the shape of the answer (a list of common custom field data types) and completes it with the rest of the Setup field-type picker rather than with the documented subset. Field-type enumerations are exactly the kind of list an LLM will pad to look complete.
+
+**Correct pattern:**
+
+```
+Encryptable CUSTOM field types — the complete list:
+  Email, Phone, Text, Text Area, Text Area (Long), Text Area (Rich),
+  URL, Date, Date/Time
+
+NOT encryptable: Number, Checkbox, Currency, Percent, Formula, Reference
+(lookup), Auto-Number, Roll-Up Summary, Geolocation, Picklist, Id.
+
+Consequence for design: a numeric identifier that must be encrypted
+(SSN, account number, policy number) has to be modelled as Text.
+Decide this at schema-design time — changing the type after data exists
+is a migration, not a field edit.
+```
+
+**Detection hint:** in any "fields you can encrypt" list, the tokens `Number`, `Checkbox`, `Currency`, `Percent`, `Picklist` or `Geolocation` are always wrong. A parenthetical hedge (`(limited)`, `(partial)`, `(in some cases)`) attached to a field type in such a list is a strong fabrication signal on its own. In metadata, a `<fields>` block whose `<type>Number</type>` sits next to `<encryptionScheme>` will fail deployment.

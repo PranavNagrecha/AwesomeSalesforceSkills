@@ -150,7 +150,7 @@ Step-by-step instructions for an AI agent or practitioner setting up Experience 
 
 1. **Identify moderation requirements.** Confirm the site name, which content types need moderation (posts, comments, files), which keywords or member conditions are in scope, and the desired action for each scenario. Get moderator names or profiles for permission assignment.
 
-2. **Assign the Moderate Experiences Feeds permission.** In Setup > Permission Sets (or the relevant profile), grant "Moderate Experiences Feeds" to all designated moderators. Without this permission, the moderation queue is inaccessible and moderators cannot take action on Review-status content.
+2. **Assign the Moderate Experiences Feeds permission.** In Setup > Permission Sets (or the relevant profile), grant "Moderate Experiences Feeds" to all designated moderators. Without this permission, the moderation queue is inaccessible and moderators cannot take action on Review-status content. **The Setup label and the metadata API name differ**: the permission serialises into a `.permissionset` or `.profile` file as `<name>ModerateNetworkFeeds</name>`, not as any camel-casing of the label. Search deployment metadata for `ModerateNetworkFeeds`; searching for `ModerateExperiencesFeeds` matches nothing and will make a correctly configured org look unconfigured.
 
 3. **Configure keyword lists.** Navigate to Setup > Experience Cloud Sites > [Site] > Moderation > Keyword Lists. Create one or more keyword lists. Test terms in a sandbox to confirm partial-match behavior is acceptable before enabling in production.
 

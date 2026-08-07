@@ -34,3 +34,5 @@
 - Event Monitoring documentation — EventLogFile object, API event type, and monitoring patterns: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_resources_event_log_files.htm
 - Salesforce Help: API Request Limits and Allocations — https://help.salesforce.com/s/articleView?id=sf.integrate_api_rate_limiting.htm&type=5
 - Salesforce Help: Connected App OAuth Policies — https://help.salesforce.com/s/articleView?id=sf.connected_app_manage_oauth.htm&type=5
+- REST API Developer Guide — Status Codes and Error Responses (REQUEST_LIMIT_EXCEEDED returned with HTTP 403 for API request-limit exhaustion) — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm
+- Salesforce Help — Enhanced Transaction Security Metering (the subsystem TXN_SECURITY_METERING_ERROR actually belongs to) — https://help.salesforce.com/s/articleView?id=sf.enhanced_transaction_security_metering.htm&language=en_US&type=5

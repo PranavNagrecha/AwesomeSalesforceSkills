@@ -162,3 +162,45 @@ if (Trigger.isDelete) {
 ```
 
 **Detection hint:** Any `Trigger.new` access inside a block guarded by `Trigger.isDelete` or within a trigger that includes `before delete` or `after delete` in its definition is a bug.
+
+---
+
+## Anti-Pattern: Catching or Grepping For `MixedDmlException`
+
+**What the LLM generates:**
+
+```apex
+try {
+    insert acct;
+    insert new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps.Id);
+} catch (MixedDmlException e) {          // does not compile — no such type
+    deferSetupDml(ps.Id, u.Id);
+}
+```
+
+…or a log-analysis reference quoting the signature as `System.MixedDMLException: DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa)`, sending a practitioner to grep production logs for a string that never appears.
+
+**Why it happens:** Apex genuinely has a long list of purpose-named built-in exceptions — `DmlException`, `QueryException`, `ListException`, `LimitException`, `SObjectException`, `CalloutException`, `AsyncException`. Given a named failure condition ("mixed DML"), the model completes the established `<Condition>Exception` pattern, and the name it produces is exactly what a Salesforce engineer *would* have called the class. The confabulation is reinforced by the surrounding explanation being entirely correct — the setup-versus-non-setup rule, the setup-object list, and the `@future` / Queueable / `System.runAs()` fixes are all right, so the paragraph reads as authoritative. It also survives casual review because the error is never observed: the `catch` clause simply fails to compile in a codebase nobody deployed, or lives only in prose.
+
+**Correct pattern:** Mixed DML raises a plain **`System.DmlException`** whose first error carries the `StatusCode` **`MIXED_DML_OPERATION`** — a documented member of the API `StatusCode` enumeration. The real log line is:
+
+```text
+System.DmlException: Insert failed. First exception on row 0; first error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa): []
+```
+
+```apex
+try {
+    insert acct;
+    insert psa;
+} catch (DmlException e) {
+    if (e.getMessage().contains('MIXED_DML_OPERATION')) {
+        deferSetupDml(ps.Id, u.Id);      // @future or Queueable
+    } else {
+        throw e;
+    }
+}
+```
+
+Grep logs for the status code `MIXED_DML_OPERATION`, which is stable, rather than for an exception class name.
+
+**Detection hint:** case-insensitive grep for `MixedDML|MixedDml` across `.cls`, `.trigger`, and prose — every hit is wrong. Generalise it: for any `catch (SomethingException e)` in Apex, confirm `SomethingException` appears in the built-in exception list in the Apex Developer Guide, or is a user-defined class extending `Exception` in the same repo. Apex's `catch` of an unknown type is a compile error, so this is fully mechanically checkable against a compile — but prose and log-analysis references never get compiled, which is precisely where these survive.

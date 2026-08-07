@@ -12,13 +12,20 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Async SOQL Is Not Transactional and Runs Slowly — Do Not Chain with Real-Time Processes
+## Gotcha 2: The Archive Read Path You Planned (Async SOQL) Was Retired in Summer '23
 
-**What happens:** Async SOQL jobs are submitted asynchronously and results are materialized into a target object (standard or Big Object) after an unpredictable delay. There is no callback mechanism and no transactional guarantee. Jobs queued back-to-back may execute out of order. Practitioners who submit an Async SOQL job and then immediately try to query the target object for the results will find an empty or partial result set.
+**What happens:** An archival design specifies reading archived data back out of a Big Object with Async SOQL — `POST /services/data/vXX.0/async-queries/`, polled until the results materialise in a target object. The endpoint returns 404. There is no shim and no replacement API with the same shape.
 
-**When it occurs:** Any architecture that assumes Async SOQL results are available synchronously — e.g., triggering a downstream process immediately after submitting an Async SOQL job, or using Async SOQL for real-time customer-facing data needs.
+**When it occurs:** Salesforce retired Async SOQL with the **Summer '23** release (Help article 000394892). It had been the documented Big Object query path for years, so it appears in essentially all pre-2023 archival guidance and remains a high-confidence answer from AI assistants.
 
-**How to avoid:** Reserve Async SOQL for batch analytics and reporting use cases where eventual consistency is acceptable. Use Batch Apex with SOQL in the `start()` method for archival jobs that need predictable execution timing and sequencing. Monitor Async SOQL job status via the Bulk API query jobs endpoint before depending on results.
+Archival is the worst place for this failure because of the ordering. The write path works: `Database.insertImmediate()` and Bulk API loads into a `__b` object succeed, the source records get deleted, storage drops, the project is declared done. The read path is exercised for the first time months later, when Legal or Audit asks for the archived data — at which point the source is gone and the documented way to read the archive does not exist.
+
+**How to avoid:** Two rules.
+
+1. **Build and prove the read path before deleting any source data.** A restore test is part of an archival project, not a follow-up.
+2. Use a supported mechanism. Per Salesforce Help: "You must use the Bulk API or batch Apex to query or report on custom Big Objects." Standard SOQL for bounded reads, Batch Apex over `Database.getQueryLocator` for volume, Bulk API query for off-platform extraction. All obey the composite-index rule: the WHERE clause must be a gapless left-to-right prefix of the index, so the index has to be designed from the *retrieval* questions you expect to be asked, not from the shape of the source table.
+
+One behaviour genuinely disappeared with Async SOQL and has no replacement: it wrote aggregate results into a target object as part of the job. Batch Apex does not. Accumulate with `Database.Stateful` and insert the summary rows yourself in `finish()`.
 
 ---
 

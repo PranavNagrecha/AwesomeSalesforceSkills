@@ -2,11 +2,11 @@
 
 ## Relevant Pillars
 
-- **Security** — Primary pillar. Shield Platform Encryption is fundamentally a data-at-rest security control. Choosing the right encryption scheme, granting the View Encrypted Data permission precisely, managing tenant secrets carefully, and designing key rotation are all Security pillar concerns. A poorly designed encryption rollout can create false compliance confidence (probabilistic on filtered fields silently breaks queries) or false security confidence (re-encryption never run, so historical data remains plaintext).
+- **Security** — Primary pillar. Shield Platform Encryption is fundamentally a data-at-rest security control. Choosing the right encryption scheme, scoping field-level security precisely (Shield has no separate decrypt permission — FLS alone decides who sees plaintext), managing tenant secrets carefully, and designing key rotation are all Security pillar concerns. A poorly designed encryption rollout can create false compliance confidence (probabilistic on filtered fields silently breaks queries) or false security confidence (re-encryption never run, so historical data remains plaintext).
 
 - **Reliability** — Relevant for Cache-Only Keys specifically. The decision to use Cache-Only Keys introduces a runtime dependency on an external service. An org that uses Cache-Only Keys is only as available as its external key service. Architects must evaluate this tradeoff against the org's availability requirements before committing to Cache-Only Keys.
 
-- **Operational Excellence** — Key rotation schedules, re-encryption runbooks, permission audits, and the Platform Encryption Analyzer output are all operational artifacts that need to be owned, documented, and periodically reviewed. Without an operational model, encryption configurations drift: keys go unrotated, new integration users get missed for the View Encrypted Data permission, and new fields get added to SOQL filters without checking whether they are encrypted.
+- **Operational Excellence** — Key rotation schedules, re-encryption runbooks, permission audits, and the Platform Encryption Analyzer output are all operational artifacts that need to be owned, documented, and periodically reviewed. Without an operational model, encryption configurations drift: keys go unrotated, new profiles quietly acquire Read on encrypted fields (and therefore plaintext, since Shield is transparent), and new fields get added to SOQL filters without checking whether they are encrypted.
 
 - **Performance** — Encrypted search operations are slower than unencrypted equivalents. Encrypted full-index search using AES-256 with per-segment index encryption adds latency, particularly on large data volumes. Probabilistic encryption eliminates index search entirely; deterministic encryption adds index encryption overhead. Orgs with large encrypted datasets should baseline query performance before and after encryption rollout.
 
@@ -28,7 +28,7 @@
 
 3. **Using Cache-Only Keys without an external key service SLA** — Selecting Cache-Only Keys for the strongest possible key separation and then deploying the key service without defined availability monitoring and runbooks creates a situation where a key service outage can render all encrypted records unreadable in production with no recovery path short of restoring Salesforce-managed key control. This is an availability anti-pattern that outweighs the security benefit for most orgs.
 
-4. **Assigning View Encrypted Data to all profiles by default** — The View Encrypted Data permission exists to enforce need-to-know access to plaintext values. Assigning it broadly to avoid support tickets negates the access control benefit of encryption. Maintain a documented list of profiles and personas that genuinely need plaintext access and restrict the permission to only those profiles.
+4. **Treating encryption as an access control** — Shield Platform Encryption is a data-at-rest control only. It does not change who can read a field: every user with FLS Read still sees plaintext, and there is no masked rendering to fall back on. Designs that cite a "View Encrypted Data" permission are describing Classic Encryption (the *Encrypted Text* field type), a different feature. If need-to-know is the requirement, the deliverable is a field-level-security matrix, and encryption is orthogonal to it.
 
 ## Official Sources Used
 
@@ -37,7 +37,10 @@
 - Filter Encrypted Data with Deterministic Encryption — https://help.salesforce.com/s/articleView?id=sf.security_pe_deterministic.htm&language=en_US&type=5
 - Considerations for Using Deterministic Encryption — https://help.salesforce.com/s/articleView?id=sf.security_pe_deterministic_considerations.htm&language=en_US&type=5
 - Which Standard Fields Can I Encrypt? — https://help.salesforce.com/s/articleView?id=sf.security_pe_standard_fields.htm&language=en_US&type=5
-- Which Custom Fields Can I Encrypt? — https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_pe_custom_fields.htm
+- Which Custom Fields Can I Encrypt? — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_custom_fields.htm&language=en_US&type=5
+- View Encrypted Data Permission Not Needed with Shield Platform Encryption Beginning Spring '17 (KB 000382508) — https://help.salesforce.com/s/articleView?id=000382508&type=1
+- General Shield Platform Encryption Considerations — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_considerations_general.htm&language=en_US&type=5
+- Encrypt Custom Fields with Shield Platform Encryption (KB 000382948) — https://help.salesforce.com/s/articleView?id=000382948&language=en_US&type=1
 - Bring Your Own Key (BYOK) — https://help.salesforce.com/s/articleView?id=sf.security_pe_byok_setup.htm&language=en_US&type=5
 - Cache-Only Key Service — https://help.salesforce.com/s/articleView?id=sf.security_pe_byok_cache.htm&language=en_US&type=5
 - Key Management and Rotation — https://help.salesforce.com/s/articleView?id=sf.security_pe_setup.htm&language=en_US&type=5

@@ -46,6 +46,7 @@ Declarative elements (Collection Filter, Sort, Transform) communicate intent mor
 
 - Flow Reference — Assignment Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_assignment.htm
 - Flow Reference — Loop Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_loop.htm
+- Apex Developer Guide — Execution Governors and Limits (50,000 total records retrieved by SOQL per transaction; 10,000 DML rows; 6 MB / 12 MB heap; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Flow Reference — Collection Filter Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_collectionfilter.htm
 - Flow Reference — Collection Sort Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_collectionsort.htm
 - Flow Reference — Transform Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_transform.htm

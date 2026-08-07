@@ -31,7 +31,7 @@ Service Process Studio APIs provide a versioned, named contract for process exec
 
 ## Official Sources Used
 
-- Insurance Policy Business APIs — Insurance Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.insurance_developer_guide.meta/insurance_developer_guide/insurance_policy_business_api_overview.htm
+- Insurance Policy Business APIs — Insurance Developer Guide — the canonical resource list: `POST /connect/insurance/policies` (issue, context-ID body), `GET /connect/insurance/policies/{policyId}`, and the `{policyId}/endorse`, `/out-of-sequence-endorsement`, `/renew`, `/cancel`, `/reinstate` verb sub-resources, plus the asynchronous `/policies/multi-root` family. No `policy-issuances` / `policy-endorsements` / `policy-renewals` / `policy-cancellations` resources exist (verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.insurance_developer_guide.meta/insurance_developer_guide/insurance_policy_business_api_overview.htm
 - Communications Cloud TM Forum API Overview — https://help.salesforce.com/s/articleView?id=ind.comms_industries_get_started.htm&type=5
 - TMF679 Resource Mappings (Communications Cloud) — https://help.salesforce.com/s/articleView?id=ind.comms_tmf679_resource_mapping.htm&type=5
 - Update Asset Status API — Energy and Utilities Cloud Developer Guide — https://help.salesforce.com/s/articleView?id=ind.energy_industry_apis.htm&type=5

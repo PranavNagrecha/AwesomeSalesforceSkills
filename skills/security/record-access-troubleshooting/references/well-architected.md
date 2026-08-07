@@ -149,3 +149,6 @@ the doc layout changes.
   https://help.salesforce.com/s/articleView?id=sf.security_restriction_rule.htm
 - Salesforce Well-Architected — Trusted (Secure) —
   https://architect.salesforce.com/well-architected/trusted/secure
+- Apex Developer Guide — Understanding Apex Managed Sharing ("Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects") — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm
+- Apex Developer Guide — Creating Apex Managed Sharing (share object naming: AccountShare for standard, MyObject__Share for custom) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm
+- Object Reference — AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm

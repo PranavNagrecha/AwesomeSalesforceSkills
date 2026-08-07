@@ -181,3 +181,20 @@ export default class MyThemeLayout extends LightningElement {}
 ```
 
 **Detection hint:** Any `lightningCommunity__Page_Layout` or `lightningCommunity__Theme_Layout` component whose JavaScript file lacks `@slot` JSDoc annotations will have slots that do not appear as configurable regions in Experience Builder. Check that annotations appear immediately before the `export default class` statement with no intervening code.
+
+
+---
+
+## Anti-Pattern: "LWS is always active on LWR sites, regardless of the org setting"
+
+**What the LLM generates:**
+
+> "The org-level `Use Lightning Web Security` setting in Session Settings has no effect on LWR sites. LWS is always active at the site level, regardless of the org setting."
+
+**Why it happens:** The first sentence is correct and well documented, and the second is a natural but wrong completion of it. "The org setting doesn't apply" gets over-read as "the site setting is fixed on," when the real meaning is that the site has its **own independently settable** instance. Independence is being confused with immutability — a common shape whenever documentation says one setting does not govern another. It is reinforced by LWR being newer than Locker: LWR feels like the modern, secure-by-default runtime, so "always on" sounds right.
+
+**Correct version:** An LWR site runs its own instance of LWS, controlled by a **site-level toggle in Experience Builder**, set independently of the org's Session Settings in **both** directions. Salesforce documents that disabling LWS in the LWR site disables that site's LWS instance even when LWS is enabled org-wide. B2B and D2C Commerce store templates ship with both Locker and LWS **disabled**, which is the standing counter-example.
+
+**Why it is worth flagging above its apparent severity:** it is a **security-posture assumption**, not a configuration detail. A reviewer who believes LWS is unconditionally active on LWR will conclude that DOM sandboxing is in place, and will therefore not require a component to sanitize its own `innerHTML` or guard its `@api` surface — on a site where none of that is enforced. Wrong in the unsafe direction.
+
+**Detection hint:** grep security guidance for `always active`, `always on`, `always uses`, or `regardless of` attached to a security control. Structural rule: **a claim that a security control cannot be turned off needs a source, and needs to name the setting it supposedly overrides.** Concretely for this repo: `skills/lwc/commerce-lwc-components` documents B2B/D2C templates shipping with LWS disabled, so any skill asserting LWS is always on for LWR contradicts it — and when two skills disagree about whether a protection is present, resolve it before either is relied on.

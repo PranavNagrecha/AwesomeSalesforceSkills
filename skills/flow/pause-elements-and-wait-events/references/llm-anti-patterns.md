@@ -135,3 +135,24 @@ Pause Element:
 ```
 
 **Detection hint:** Any Pause element design with only a Platform Event wait event and no companion Alarm wait event. Flag as missing a required timeout and require the practitioner to define a maximum acceptable wait duration.
+
+
+---
+
+## Anti-Pattern: A per-edition cap on paused/waiting flow interviews ("2,000, or 4,000 on Unlimited")
+
+**What the LLM generates:**
+
+> "Orgs have an org-wide limit on active paused and waiting interviews — 2,000 for most editions, 4,000 for Unlimited Edition. A data migration creating 10,000 records can instantly exhaust it, failing 8,000 records. Salesforce began removing this limit in Summer '25 (release 250)."
+
+**Why it happens:** Three independent errors stack, and each one individually looks reasonable:
+
+1. **Wrong magnitude.** The real pre-removal allocation was **50,000** pending schedules and paused flow interviews per org — 25x the stated figure. 2,000 is the single most over-produced number in Salesforce automation guidance (bulk trigger batch size, platform-event batch size, the retired Flow element ceiling), so it is the default fill when a Flow limit is not recalled.
+2. **Invented per-edition split.** "2,000 / Unlimited: 4,000" appears in no Salesforce source. Many Salesforce allocations *are* edition-scoped, so inventing a tier feels like added rigour; here it manufactures precision that was never there.
+3. **Wrong release, internally inconsistent.** The removal shipped in **Spring '24 (release 248)**. "Summer '25 (release 250)" is wrong twice over — release 250 is Summer '24, so the label contradicts the number it is paired with.
+
+The consequence is directional: the guidance steers practitioners *away* from Pause-based designs at volumes that were always comfortably fine, and a downstream failure scenario ("failing 8,000 records") gets built on top of the fabricated base.
+
+**Correct version:** The per-org limit on paused and waiting flow interviews was **removed in Spring '24** ("Have Unlimited Paused and Waiting Flows," release 248). Before removal it was **50,000 pending schedules and paused flow interviews per org**, with no per-edition split; exceeding it produced "Your org has too many waiting flow interviews." Today the binding constraint is **Data Storage** — paused interviews are serialized rows — plus the operational question of whether every interview has a resume path that will actually fire.
+
+**Detection hint:** grep Pause/Wait guidance for `2,000` or `4,000` near `interview`. Two structural hints that generalise past this specific number: (1) **a release name paired with a release number that does not match it** — `Summer '25 (release 250)` — is a strong tell that both were reconstructed rather than looked up; the parity is easy to check (248 = Spring '24, 250 = Summer '24, 252 = Winter '25). (2) A limit stated as "historically X, but Salesforce began removing it" **without a named release note** is almost always a half-remembered removal; find the release note title before repeating the old number.

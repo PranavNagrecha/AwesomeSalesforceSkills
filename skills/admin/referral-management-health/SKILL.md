@@ -70,11 +70,11 @@ The `ClinicalServiceRequest` object requires the HealthCloudICM permission set t
 
 ### Provider Search and CareProviderSearchableField
 
-Provider search is powered by a denormalized index object: `CareProviderSearchableField`. This object is NOT populated automatically. It requires a Data Processing Engine (DPE) job to run, which reads provider records (Accounts/Contacts with healthcare provider record types) and writes denormalized, search-optimized records to `CareProviderSearchableField`.
+Provider search is powered by a denormalized index object: `CareProviderSearchableField`. This object is NOT populated automatically. It requires a Data Processing Engine (DPE) job to run, which reads the Provider Relationship Management data model and writes denormalized, search-optimized records to `CareProviderSearchableField`.
 
 The most common implementation blocker: the user running the DPE job (or the automated process credential) must have the **Data Pipelines Base User** permission set license assigned. Without this license, the DPE job either fails to run or silently produces no output. Provider search then returns zero results even when provider records exist.
 
-Provider records must use the correct Health Cloud record types (HealthcareProvider on Account, HealthcarePractitioner on Contact or Account) for the DPE job to pick them up.
+The DPE job reads **objects**, not record types. `HealthcareProvider` is a standard Health Cloud object — "Represents business-level details about the healthcare organization or the practitioner" — alongside `HealthcarePractitionerFacility` and the rest of the Provider Relationship Management model; `Account` represents a healthcare facility or location and `Contact` represents physicians and other licensed practitioners. There is **no `HealthcareProvider` record type on Account and no `HealthcarePractitioner` record type on Contact**. If provider data has been loaded onto Accounts and Contacts alone without the corresponding PRM object records, the DPE job has nothing to denormalize and provider search returns zero results — which looks identical to the permission-set-license failure above, so check both.
 
 ### Referral Status Workflow
 
@@ -127,7 +127,7 @@ A common pattern is to use Flow to automate status transitions — for example, 
 
 Step-by-step instructions for configuring Health Cloud referral management:
 
-1. **Verify prerequisites** — confirm Health Cloud is enabled, HealthCloudGA managed package is installed, and the HealthCloudICM permission set is available. Check that provider records use the correct record types (HealthcareProvider, HealthcarePractitioner). Confirm Data Pipelines Base User license is provisioned.
+1. **Verify prerequisites** — confirm Health Cloud is enabled, HealthCloudGA managed package is installed, and the HealthCloudICM permission set is available. Check that the Provider Relationship Management objects (`HealthcareProvider`, `HealthcarePractitionerFacility`, and the related Account/Contact records) are populated — these are objects, not record types. Confirm Data Pipelines Base User license is provisioned.
 2. **Configure ClinicalServiceRequest** — review and customize the Status picklist values for your referral workflow. Add custom fields if needed. Set up validation rules for required fields (PatientId, ReferralType, ReferredToId). Configure page layouts and record types for inbound vs. outbound referrals.
 3. **Set up Data Processing Engine job for provider search** — in Setup > Data Processing Engine, configure the DPE job that populates CareProviderSearchableField from provider Account/Contact records. Schedule the job to run on a regular basis. Test by running manually and verifying CareProviderSearchableField records appear.
 4. **Build referral status Flow automation** — create a Record-Triggered Flow on ClinicalServiceRequest to automate status transitions, send notifications, and create follow-up tasks. Include an error path for declined referrals.
@@ -143,7 +143,7 @@ Step-by-step instructions for configuring Health Cloud referral management:
 - [ ] DPE job for CareProviderSearchableField is scheduled and successfully populating records
 - [ ] ClinicalServiceRequest page layouts and record types configured for inbound and outbound
 - [ ] Referral status Flow automation tested in sandbox
-- [ ] Provider record types are set to HealthcareProvider / HealthcarePractitioner (not generic Account/Contact)
+- [ ] Provider Relationship Management objects are populated (`HealthcareProvider` records exist and link to the Account/Contact records the search should return) — do not look for HealthcareProvider / HealthcarePractitioner *record types*; no such record types exist
 - [ ] Referral reports and dashboards verified to show correct data
 
 ---

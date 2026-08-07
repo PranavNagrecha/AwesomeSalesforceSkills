@@ -132,3 +132,29 @@ If Compile All succeeds but the deployment still fails:
 ```
 
 **Detection hint:** If Compile All is presented as the final fix without a follow-up step to re-deploy and verify, the advice is incomplete.
+
+
+---
+
+## Anti-Pattern: Mapping Salesforce releases to API versions from memory (usually off by two)
+
+**What the LLM generates:** `Summer '25 (API v62.0)`, `Spring '25 (API v61.0)`, `API version 60.0 (Spring '25)` — plausible-looking pairs that are consistently shifted by one or two releases.
+
+**Why it happens:** The mapping is a moving offset that increments three times a year, so every training snapshot encodes a different alignment; the model has seen "Spring '25" adjacent to several different version numbers and averages them. The *relative* spacing is usually right (each release is +1), which is what makes the error survive — the example still teaches the mechanism correctly, so nothing looks broken. But version-discipline guidance is exactly the place where the absolute number is the payload, and a reader who copies "61.0 is the Spring '25 version" pins two releases too low.
+
+**Correct version (anchor table):**
+
+| Release | API version |
+|---|---|
+| Spring '24 | 60.0 |
+| Summer '24 | 61.0 |
+| Winter '25 | 62.0 |
+| Spring '25 | 63.0 |
+| Summer '25 | 64.0 |
+| Winter '26 | 65.0 |
+| Spring '26 | 66.0 |
+| Summer '26 | 67.0 |
+
+Note the seasons run ahead of the calendar: Winter '25 shipped in 2024. Three releases per year, +1 version each.
+
+**Detection hint:** never assert this pair from memory — derive it from one verified anchor and count. Mechanically: parse every `<Season> '<YY>` / `vNN.0` pair in a document and check it against a single known-good anchor; a document containing two such pairs that are *internally* consistent with each other but both shifted is the common shape, so checking pairs against each other is not sufficient. In this repo, `skills/devops/api-version-management/SKILL.md` carries the anchor list; contradiction with it is the cheapest available signal.

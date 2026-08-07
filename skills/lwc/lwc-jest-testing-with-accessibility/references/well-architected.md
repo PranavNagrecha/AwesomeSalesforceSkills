@@ -30,7 +30,9 @@
 - LWC Developer Guide — Test Lightning Web Components — https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-jest.html
 - LWC Developer Guide — Write Jest Tests for Lightning Web Components That Use the Wire Service — https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-jest-mock-wire.html
 - LWC Component Library — Testing Introduction — https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.testing_introduction
-- `@salesforce/sfdx-lwc-jest` repository (source of `registerApexTestWireAdapter`, `registerLdsTestWireAdapter`) — https://github.com/salesforce/sfdx-lwc-jest
+- `@salesforce/sfdx-lwc-jest` repository (re-exports the wire-service-jest-util test adapters) — https://github.com/salesforce/sfdx-lwc-jest
+- `wire-service-jest-util` — Migrating from version 2.x to 3.x (`register*TestWireAdapter` removed in favour of `create*TestWireAdapter`) — https://github.com/salesforce/wire-service-jest-util/blob/master/docs/migrating-from-version-2.x-to-3.x.md
+- `wire-service-jest-util` README (`createTestWireAdapter`, `createLdsTestWireAdapter`, `createApexTestWireAdapter`; `emit` / `error` / `getLastConfig`) — https://github.com/salesforce/wire-service-jest-util
 - LWC Developer Guide — Accessibility — https://developer.salesforce.com/docs/platform/lwc/guide/create-components-accessibility.html
 - `axe-core` — accessibility rules engine — https://github.com/dequelabs/axe-core
 - Salesforce Well-Architected — Operational Excellence — https://architect.salesforce.com/well-architected/operational-excellence

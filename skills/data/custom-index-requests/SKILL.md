@@ -44,7 +44,7 @@ This skill activates when a Salesforce org's standard indexing is insufficient t
 Gather this context before working on anything in this domain:
 
 - Run the Query Plan tool in Developer Console on the slow query. Set the estimated row count to your actual record count. Look for "TableScan" in the plan — this means no selective index was found. Look for the "cost" column; a cost < 1 means the index is likely to be used.
-- Know the record count on the object. Salesforce defines selectivity thresholds as a percentage of total records. A filter is selective if it returns fewer than 10% of records (for most standard/custom indexes). If your WHERE clause will always match 50% of records, an index will not help.
+- Know the record count on the object — the threshold is not a flat percentage, it decays past the first million records and is capped in absolute terms. Custom index: < 10% of the first million, < 5% beyond, ceiling 333,333 records. Standard index: < 30% of the first million, < 15% beyond, ceiling 1,000,000 records. If your WHERE clause will always match 50% of records, no index will help.
 - Know whether the field is a custom field or a standard field. Custom fields can be indexed via Metadata API. Standard fields (e.g., `CreatedDate` with wide date ranges, `Name` with null-inclusive filters) require a Salesforce Support case.
 - Know whether the object uses Person Accounts. Some index behaviors differ for objects with Person Account data due to the dual Account/Contact nature.
 
@@ -65,18 +65,22 @@ Salesforce automatically maintains indexes on:
 - All standard relationship lookup fields
 
 **Custom indexes** extend indexing to non-indexed fields. They are maintained by Salesforce, not by the customer. There are two paths to request them:
-1. **Custom fields**: Deploy a `CustomField` metadata type with `externalId: false` — this creates a non-unique index. The Metadata API supports this without a Support case.
-2. **Standard fields, null-inclusive indexes, or non-standard patterns**: Require a Salesforce Support case. Salesforce evaluates the request before creating the index.
+1. **Custom fields you control**: mark the field **External ID** (`externalId: true`) or **Unique** (`unique: true`). Salesforce automatically creates an index on the field in both cases — no Support case, and it works through Setup or the Metadata API. Note the direction carefully: `externalId: false` is the *default* and creates **no index at all**. It is not a "non-unique index" switch, and a deployment that sets it expecting an index gets nothing, silently.
+2. **Standard fields, null-inclusive indexes, two-column indexes, or anything else**: require a Salesforce Support case. Salesforce evaluates the request before creating the index.
 
 ### Selectivity Thresholds
 
 An index is only used by the query optimizer when the filter is **selective** — meaning the index dramatically reduces the result set. The thresholds are:
 
+The thresholds have two parts — a percentage that *decays past the first million records*, and an absolute ceiling. Quoting only the percentage, or only one percentage, is the usual error.
+
 | Filter type | Threshold for index use |
 |---|---|
-| Standard index (Id, Name, etc.) | < 30% of records (or < 300,000 records in orgs with 1M+) |
-| Custom index | < 10% of records |
+| Standard index (`Id`, `Name`, `OwnerId`, `CreatedDate`, `RecordTypeId`, lookups…) | < 30% of the first million records, then < 15% of records beyond the first million — capped at **1,000,000** targeted records |
+| Custom index | < 10% of the first million records, then < 5% of records beyond the first million — capped at **333,333** targeted records |
 | Null-inclusive index | Depends on null distribution; Support evaluates case-by-case |
+
+Work an example so the two parts stay distinct. On a 5,000,000-record object with a custom index: 10% × 1,000,000 = 100,000, plus 5% × 4,000,000 = 200,000, giving a computed threshold of 300,000 — which is under the 333,333 ceiling, so 300,000 is the number that applies. The ceiling only binds on much larger objects. **333,333 is the custom-index cap and 1,000,000 is the standard-index cap; do not swap them, and do not quote 300,000 as a cap — it is the output of one worked example.**
 
 If your WHERE clause filter matches 40% of Account records, a custom index on that field will still result in a TableScan. Salesforce will not use an index that is not selective enough. This is the most common reason a custom index request does not improve performance.
 

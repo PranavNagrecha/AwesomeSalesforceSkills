@@ -2,8 +2,10 @@
 """Checker script for Platform Events Integration skill.
 
 Inspects Salesforce metadata files for common Platform Events integration
-issues: missing correlation ID fields, standard events used where high-volume
-is likely needed, and subscription configurations lacking replay ID guidance.
+issues: missing correlation ID fields, fields that attempt to set per-event
+retention (which is fixed and not configurable), legacy standard-volume events
+retiring in Winter '27, and subscription configurations lacking replay ID
+guidance.
 
 Uses stdlib only — no pip dependencies.
 
@@ -22,8 +24,11 @@ from pathlib import Path
 # Salesforce metadata XML namespace
 _SF_NS = "http://soap.sforce.com/2006/04/metadata"
 
-# Threshold above which an event is suspicious without high-volume designation
-_HOURLY_VOLUME_THRESHOLD_COMMENT = 250_000
+# Org-wide platform event publishing allocation per hour for high-volume events
+# on Enterprise / Performance / Unlimited (50,000 on Developer). This is a hard
+# org allocation, not a per-event-tier property — no event type exceeds it.
+# https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+_HOURLY_PUBLISH_ALLOCATION = 250_000
 
 
 def parse_args() -> argparse.Namespace:
@@ -70,19 +75,19 @@ def _has_correlation_id_field(field_files: list[Path]) -> bool:
     return False
 
 
-def _is_high_volume_event(xml_path: Path) -> bool:
-    """Return True if the event object metadata declares it as a high-volume event."""
+def _declares_standard_volume(xml_path: Path) -> bool:
+    """Return True if the event object metadata explicitly declares standard-volume.
+
+    Standard-volume platform events are legacy (undefinable since Spring '19) and
+    Salesforce retires publish/subscribe for them in Winter '27.
+    """
     try:
         tree = ET.parse(xml_path)
         root_el = tree.getroot()
-        # HighVolumeEventBus channel type indicates high-volume
-        for channel in root_el.iter(f"{{{_SF_NS}}}eventChannel"):
-            if "HighVolume" in (channel.text or ""):
-                return True
-        # Also check <eventChannelUsage> element present in some versions
-        for usage in root_el.iter(f"{{{_SF_NS}}}eventChannelUsage"):
-            if "HighVolume" in (usage.text or ""):
-                return True
+        for tag in ("eventType", "eventChannel", "eventChannelUsage"):
+            for el in root_el.iter(f"{{{_SF_NS}}}{tag}"):
+                if "standardvolume" in (el.text or "").lower().replace(" ", ""):
+                    return True
     except ET.ParseError:
         pass
     return False
@@ -102,16 +107,42 @@ def _check_event_file(xml_path: Path, manifest_dir: Path) -> list[str]:
             "or similar Text field to enable idempotent processing."
         )
 
-    # Check 2: RetainUntilDate requires high-volume — warn if event is NOT high-volume
-    # and has more than the default field count (proxy for complex/large payloads likely
-    # used in batch replay scenarios). This is a heuristic warning, not a hard rule.
-    if not _is_high_volume_event(xml_path) and len(field_files) > 5:
+    # Check 2: Fabricated retention field on the event schema.
+    # Platform event retention is a fixed platform property (72h high-volume,
+    # 24h legacy standard-volume) and is NOT settable per event. A field named
+    # RetainUntilDate / RetentionDate / ExpiresAt on an __e object is either a
+    # no-op the publisher believes is extending retention, or a custom field
+    # whose name will mislead the next reader. Either way, flag it.
+    bogus_retention_names = {
+        "retainuntildate",
+        "retainuntil",
+        "retentiondate",
+        "retentionuntil",
+        "expiresat",
+        "expiryDate".lower(),
+    }
+    for fpath in field_files:
+        stem_lower = fpath.stem.lower().replace("__c", "").replace("_", "")
+        if stem_lower in {n.replace("_", "") for n in bogus_retention_names}:
+            issues.append(
+                f"{event_name}: field '{fpath.stem}' looks like an attempt to set "
+                "per-event retention. Platform event retention is fixed and not "
+                "configurable (72 hours for high-volume events, 24 hours for legacy "
+                "standard-volume events); there is no RetainUntilDate field on any "
+                "Platform Event and an unrecognized key is ignored at publish time "
+                "without error. For a replay window beyond 72 hours, have the publisher "
+                "write a durable copy (Big Object / external queue) and backfill from it. "
+                "See references/gotchas.md Gotcha 1."
+            )
+
+    # Check 3: legacy standard-volume events are retiring in Winter '27.
+    if _declares_standard_volume(xml_path):
         issues.append(
-            f"{event_name}: Event has {len(field_files)} custom fields and is NOT a "
-            "High-Volume Platform Event. If this event is used in batch-replay or "
-            "reconciliation patterns requiring retention beyond 72 hours, it must be "
-            "redesigned as a High-Volume event (RetainUntilDate is not available on "
-            "standard Platform Events)."
+            f"{event_name}: declared as a standard-volume platform event. "
+            "Standard-volume events could not be newly defined after Spring '19 and "
+            "Salesforce retires publish and subscribe for them in Winter '27. Plan a "
+            "migration to a high-volume event; note the allocation and retention change "
+            "(100,000 -> 250,000 publishes/hour on EE/Perf/Unlimited; 24h -> 72h retention)."
         )
 
     return issues
@@ -128,7 +159,7 @@ def _check_for_replay_documentation(manifest_dir: Path) -> list[str]:
         return issues
 
     # Heuristic: look for markdown or config files mentioning replay strategy
-    replay_hints = {"replayid", "replay_id", "replay-id", "retainuntildate"}
+    replay_hints = {"replayid", "replay_id", "replay-id", "durable subscription", "backfill"}
     found_replay_doc = False
     for fpath in manifest_dir.rglob("*.md"):
         try:

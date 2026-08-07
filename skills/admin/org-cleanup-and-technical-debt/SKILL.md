@@ -70,7 +70,7 @@ Optimizer runs inside the org — no installation needed. It produces a download
 Salesforce does not permanently delete custom fields immediately. Deleted fields enter a 15-day recycle period during which they can be restored. After 15 days they are hard-deleted and the field slot is reclaimed.
 
 Key limits:
-- Each standard or custom object has a limit on custom fields per data type (e.g., 500 custom fields for most Enterprise Edition objects, 800 for Unlimited).
+- Each standard or custom object has a limit on TOTAL custom fields — the allocation is per object, not per data type (500 for Enterprise Edition objects, 800 for Performance/Unlimited, 100 for Professional). Regardless of edition or source, an org can't exceed 900 custom fields on most object types once managed-package fields are counted.
 - Fields in the deleted queue still count toward the limit until hard-deleted.
 - To reclaim slots immediately, go to Setup > Object Manager > [Object] > Fields & Relationships > Deleted Fields and click "Erase**.
 

@@ -68,7 +68,7 @@ export default class NegotiatedPriceDisplay extends LightningElement {
 </LightningComponentBundle>
 ```
 
-**Why it works:** `getProductPrice` from `commerce/productApi` is the Commerce Storefront wire adapter designed for buyer-scoped pricing. It resolves the buyer's account-level negotiated price directly from the storefront context without requiring a record ID lookup against Pricebook2. The `lightningCommunity__RelaxedCSP` capability ensures the component renders correctly on live store pages where LWS is disabled.
+**Why it works:** `getProductPrice` from `commerce/productApi` is the Commerce Storefront wire adapter designed for buyer-scoped pricing. It resolves the buyer's account-level negotiated price directly from the storefront context without requiring a record ID lookup against Pricebook2. The `lightningCommunity__RelaxedCSP` capability makes the component available in the Experience Builder Components panel on a store site with Locker disabled — required if the component ships in a managed package, conventional otherwise.
 
 ---
 
@@ -144,5 +144,3 @@ export default class WishlistToggle extends LightningElement {
 **What goes wrong:** In the LWR storefront rendering context, `lightning/uiRecordApi` is not loaded. The wire adapter import resolves at compile time but the adapter never delivers data at runtime. The component renders an empty state with no JavaScript error in the console, making the bug extremely hard to diagnose. The developer typically suspects a CSP issue or a permissions problem before discovering the root cause is the wrong adapter module.
 
 **Correct approach:** Replace `lightning/uiRecordApi` with the appropriate `commerce/productApi` adapter. Use `getProduct` with the `fields` parameter to request specific product field values, and ensure `recordId` is renamed to `productId` in the wire parameters since the Commerce adapter uses a different parameter name.
-</content>
-</invoke>

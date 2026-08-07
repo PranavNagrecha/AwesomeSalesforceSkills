@@ -30,6 +30,7 @@ Field Dependencies provide UI-level filtering without any custom code — low co
 ## Official Sources Used
 
 - Salesforce Help — Picklist Limitations: https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm&language=en_US&type=5
+- Salesforce Help (KB 000386685) — Increase Salesforce Multi-Select Picklist Values Limit: https://help.salesforce.com/s/articleView?id=000386685&type=1 — default and maximum are both 500 values; orgs below 500 can request an increase up to 500; "the maximum number of selectable values at one time is limited to 100 and cannot be increased"
 - Salesforce Help — Create a Global Picklist Value Set: https://help.salesforce.com/s/articleView?id=platform.fields_creating_global_picklists.htm&language=en_US&type=5
 - Salesforce Help — Dependent Picklist Considerations: https://help.salesforce.com/s/articleView?id=platform.fields_dependent_field_considerations.htm&language=en_US&type=5
 - Salesforce Help — Define a Dependent Picklist (Field Dependencies): https://help.salesforce.com/s/articleView?id=platform.fields_defining_field_dependencies.htm&language=en_US&type=5

@@ -10,14 +10,48 @@ These patterns help the consuming agent self-check its own output.
 **Why it happens:** Training data frequently describes the limit in terms of "active sites" without explicitly stating that inactive and preview sites also consume the quota. The model generalizes from partial documentation.
 
 **Correct pattern:**
-The 100-site limit is cumulative across all site statuses:
-- Active (published, live)
-- Preview (published to admins only)
-- Inactive (deactivated)
 
-A site only stops counting against the limit when it is permanently **deleted**. Always inventory the org's total site count — not just active sites — before advising on capacity.
+```text
+Salesforce, "How Many Experience Cloud Sites Can My Org Have?":
 
-**Detection hint:** Look for "active sites" or "live portals" language without mention of preview or inactive statuses. Flag any capacity estimate that does not account for the full site inventory.
+  "You can have up to 100 Experience Cloud sites in your org. Active,
+   inactive, and preview sites, including Visualforce sites, count
+   against this limit. Archived sites don't count against this limit."
+
+Counts against the 100:      Does NOT count:
+  - Active (published, live)   - Archived
+  - Preview (admins only)
+  - Inactive (deactivated)
+  - Visualforce sites
+```
+
+Always inventory the org's total site count — not just active sites, and remembering to include Visualforce sites — before advising on capacity.
+
+**Detection hint:** Look for "active sites" or "live portals" language without mention of preview, inactive, or Visualforce sites. Flag any capacity estimate that does not account for the full site inventory, and any inventory that counts archived sites toward the limit.
+
+---
+
+## Anti-Pattern 1b: Telling the user deletion is the only way to reclaim a site slot
+
+**What the LLM generates:** "A site is only removed from the quota count when it is permanently **deleted**, not when it is deactivated. Delete obsolete sites rather than deactivating them indefinitely."
+
+**Why it happens:** The model correctly learns the counter-intuitive half of the rule — *deactivating does not free a slot* — and then over-generalises it into an absolute. The reasoning is a false dichotomy: having established that the reversible-looking option (deactivate) fails, it concludes the irreversible one (delete) must be the answer, without checking whether a third state exists. **Archived** is that third state, and it is less represented in training data than active/inactive because it is a later-added lifecycle stage. This is a general failure shape worth naming: when a model asserts "the only way to X is Y", the assertion is usually reconstructed from a two-option mental model, and the correct answer is frequently a third option it did not enumerate.
+
+The damage here is asymmetric and irreversible. Following this advice destroys Experience Builder configuration, page variations and audience targeting for prototypes that turn out to matter later — and it buys nothing, because archiving frees the same slot.
+
+**Correct pattern:**
+
+```text
+To reclaim a site slot:
+  Deactivate  -> does NOT free the slot   (inactive still counts)
+  ARCHIVE     -> frees the slot, REVERSIBLE   <-- correct default
+  Delete      -> frees the slot, PERMANENT    <-- last resort only
+
+Recommend archiving. Recommend deletion only when the user has stated the
+site will never be revived.
+```
+
+**Detection hint:** Grep generated Experience Cloud guidance for `delete` within the same sentence or bullet as `quota`, `limit`, or `slot` — and for the absolute phrasings "only way", "must be deleted", "permanently deleted" in that context. Each is a fabrication signal. More broadly, treat any recommendation of an irreversible action as requiring an explicit check that no reversible action achieves the same result; that check is cheap and this class of error is not.
 
 ---
 

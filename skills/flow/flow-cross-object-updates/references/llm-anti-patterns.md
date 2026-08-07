@@ -62,8 +62,9 @@ Child-triggered flow entry:  ISCHANGED(Status__c)
 Or use a transient custom setting "suppress_flow" toggled during
 cross-object operations.
 
-Flow recursion limits: 2000 elements per transaction. Chained
-triggers eat this budget fast.
+Recursion budget: CPU time (10,000 ms sync), 150 DML, 100 SOQL
+per transaction. Chained triggers eat these fast. (The old
+2,000-executed-element limit was removed in API 57.0.)
 ```
 
 **Detection hint:** Record-triggered flow A updates a field on object X where flow B (record-triggered on X) writes back a field on A's object.

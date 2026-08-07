@@ -108,16 +108,26 @@ Rule of thumb: `WITH USER_MODE` is THROW-on-inaccessible, `stripInaccessible` is
 
 `stripInaccessible` evaluates FLS for every field on every record. For large lists (10k+) it consumes CPU. It does NOT count against SOQL/DML governor limits, but it does count against the 10-second sync CPU limit. Profile before strip-then-DML on huge collections; consider chunking.
 
-### Gotcha: parent-child relationships are NOT recursively stripped
+### Relationship handling: subquery children ARE stripped; re-queried records are not
 
-`stripInaccessible` evaluates fields on the SObject collection you pass. If a `Case` carries a populated `Contact` lookup with nested fields (e.g., `caseRec.Contact.Email`), those nested fields are NOT evaluated. You must strip child collections separately.
+Get this the right way round — the common belief that `stripInaccessible` ignores everything below the top level is wrong, and coding around a limitation that does not exist wastes effort.
 
-```
-SObjectAccessDecision parents  = Security.stripInaccessible(AccessType.UPDATABLE, cases);
-SObjectAccessDecision contacts = Security.stripInaccessible(
-    AccessType.UPDATABLE,
-    Pluck.contacts(parents.getRecords())  // your own helper
-);
+**What it does cover.** The Apex Developer Guide's worked example passes a collection queried as `SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account` and shows the child `Contact.Phone` field stripped from the subquery results when the running user lacks read access to it. Child records returned *inside* the collection you pass are evaluated. The guide also states the method "checks the source records for lookup or master-detail relationship fields to which the current user doesn't have access" and removes those.
+
+**What it does not cover.** `stripInaccessible` sanitises the sObject collection you hand it, and nothing else. Records fetched by a *separate* query, or traversed by code after the strip, are untouched — the decision object has no reach into them. The supported nesting depth for relationship traversal is not stated in the documentation; do not assume a specific depth in either direction. Verify against your own org with `System.runAs` if a design depends on it.
+
+Practical rule: strip each collection at the point you query it, rather than assuming one strip covers records you obtained elsewhere.
+
+```apex
+// Children returned inside the queried collection: ONE strip covers them.
+List<Account> accts = [SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account];
+SObjectAccessDecision d = Security.stripInaccessible(AccessType.READABLE, accts);
+// d.getRecords() has Phone removed from the child Contact rows too.
+
+// Records from a SEPARATE query: strip them at their own query site.
+List<Contact> extra = [SELECT LastName, Phone FROM Contact WHERE AccountId IN :ids];
+SObjectAccessDecision d2 = Security.stripInaccessible(AccessType.UPDATABLE, extra);
+update d2.getRecords();
 ```
 
 ### Interaction with Schema.SObjectField.isCreateable / isUpdateable / isAccessible
@@ -202,7 +212,7 @@ Tests run as the system user by default — FLS is bypassed. To prove stripInacc
 ## Salesforce-Specific Gotchas
 
 1. **DML on the original list silently bypasses the strip.** `stripInaccessible(...).getRecords()` returns a NEW list. Calling `insert userSupplied;` after the strip line does nothing — the strip's effect is in `getRecords()`.
-2. **Parent strip does not recurse into child collections.** `Security.stripInaccessible(UPDATABLE, cases)` does not evaluate fields on `case.Contact.*`. Strip child collections separately.
+2. **Subquery child records ARE stripped — separately queried records are not.** The documented worked example strips `Contact.Phone` from the child rows of `SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account`, so a strip on the parent collection does cover children returned inside it. What it cannot cover is any record obtained by a *different* query or traversal; strip those at their own query site. The supported traversal depth is not documented — do not design around an assumed limit.
 3. **Tests pass under system context regardless of FLS.** Without `System.runAs(nonAdminUser)`, every field is accessible and your strip call is a no-op — the test proves nothing.
 4. **`AccessType.UPSERTABLE` is the intersection of CREATABLE and UPDATABLE.** A field accessible for create but not update gets stripped on UPSERTABLE — this is correct behavior for upsert but surprising if you expected union semantics.
 5. **`SObjectAccessDecision` is immutable.** You cannot mutate `getRecords()` results and have those changes reflect anywhere; call DML directly on the returned list.

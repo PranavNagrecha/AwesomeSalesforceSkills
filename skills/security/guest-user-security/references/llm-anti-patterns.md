@@ -59,3 +59,39 @@
 **Correct pattern:** Every Experience Cloud site generates its own guest user and guest user profile. Any hardening checklist must enumerate all sites in the org and apply the review to each site's guest profile independently. Reference: `SELECT Id, Name, GuestUser.Profile.Name FROM Network` in Tooling API.
 
 **Detection hint:** Any guest profile hardening advice that does not mention querying or auditing multiple sites.
+
+---
+
+## Misdating the Guest Permission-Set Risk to "Spring '22 Added Permission Set Assignment"
+
+**What the LLM generates:** "Permission sets CAN be assigned to guest users since Spring '22 — this is a new attack surface." Variants: "Salesforce added permission set assignment for guest users in Spring '22," "prior to Spring '22 guests were limited to their profile."
+
+**Why it happens:** Spring '22 *is* a real, correctly-remembered date in the guest-user timeline — it is when Salesforce began restricting guest assignment to permission sets tied to permission set licences containing restricted object permissions. The model retains the release and the topic but inverts the direction of the change, because "release X added capability Y" is the overwhelmingly more common shape of a release note. This is a relabelling, not an invention: the date is right and the verb is wrong.
+
+**Why it misleads an auditor:** it points the review at the wrong question. Told this is a *new* surface, the auditor looks for recently-created permission sets and recent assignments, and treats older configuration as pre-dating the risk. In reality the assignments may be years old, and the platform has been *removing* the dangerous ones since Spring '21. The genuinely useful audit is a full enumeration of what is assigned today, with no date filter.
+
+**Correct pattern:**
+```
+Permission sets could be assigned to guest users long before Spring '22.
+Every dated event in this area is a RESTRICTION:
+
+  Spring '21  Edit, Delete, View All Records and Modify All Records can no
+              longer be granted to guests at all — "even with a permission set
+              or permission set group." Existing assignments auto-removed.
+
+  Spring '22  Salesforce begins restricting guest assignment to permission sets
+              / permission set groups associated with permission set LICENCES
+              carrying those restricted object permissions. Release update
+              shipped to prepare orgs.
+
+  Winter '23  That release update enforced; affected guest assignments
+              auto-removed.
+
+What remains reachable for guests: read and create on standard objects.
+
+The audit is still correct advice — the stated reason is not:
+  SELECT Id, PermissionSet.Name FROM PermissionSetAssignment
+  WHERE AssigneeId = :guestUserId
+```
+
+**Detection hint:** any sentence pairing a guest-user permission-set capability with the verb *added*, *introduced*, *now allows* or *new attack surface* and a release name. Every dated change in this area removes access. A quick check on any such claim: if the release note title contains the word "Remove," the guidance describing it as a grant has inverted it.

@@ -37,7 +37,9 @@ updated: 2026-04-04
 
 # Continuation Callouts
 
-Use this skill when a Salesforce page (Visualforce or LWC) needs to call an external HTTP service that may take longer than the 10-second synchronous Apex callout limit allows, or when you need to fire up to three callouts in parallel without blocking the UI. The Apex `Continuation` class offloads callout execution to Salesforce infrastructure, freeing the request thread while the external service responds.
+Use this skill when a Salesforce page (Visualforce or LWC) needs to call an external HTTP service that is slow enough to make holding the request thread unacceptable, or when you need to fire up to three callouts in parallel without blocking the UI. The Apex `Continuation` class offloads callout execution to Salesforce infrastructure, freeing the request thread while the external service responds.
+
+**What Continuation does and does not buy you.** It is not a way to get a longer timeout. A plain synchronous `Http.send()` can already wait up to 120 seconds — 10 seconds is only the *default* per-callout timeout, and `HttpRequest.setTimeout()` accepts 1 to 120,000 ms in synchronous and asynchronous Apex alike, against a cumulative 120-second budget per transaction. What Continuation buys is that the wait happens on Salesforce infrastructure rather than on the user's blocked request thread, and that the response is handled in a **fresh Apex transaction** with reset governor limits. Choose it for thread occupancy and user experience, not because you think 10 seconds is a ceiling.
 
 ---
 
@@ -155,7 +157,7 @@ public class QuoteContinuationController {
 </apex:page>
 ```
 
-**Why not the alternative:** A synchronous `Http.send()` in a Visualforce action method times out at 10 seconds and blocks the Salesforce request thread. For slow services, this causes `System.CalloutException: Read timed out` before the service responds.
+**Why not the alternative:** A synchronous `Http.send()` in a Visualforce action method blocks the Salesforce request thread for the whole wait. It will also time out at 10 seconds *if you leave the timeout at its default* — raising it with `req.setTimeout(120000)` avoids the `System.CalloutException: Read timed out`, but does nothing about the blocked thread, which is the actual reason to prefer Continuation here.
 
 ---
 
@@ -285,9 +287,9 @@ export default class ProductSearch extends LightningElement {
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Callout expected < 10 seconds, from Apex trigger or batch | Synchronous `Http.send()` or Queueable Apex | Continuation is not supported in triggers or async contexts |
-| Callout expected 10–120 seconds, from Visualforce | `Continuation` object in controller action method | Only mechanism that frees the VF request thread |
-| Callout expected 10–120 seconds, from LWC | `@AuraEnabled(continuation=true)` + `invokeAction` | LWC equivalent of VF Continuation; same 120s ceiling |
+| Any callout from an Apex trigger, batch, or async context | Synchronous `Http.send()` (raise `setTimeout` past the 10 s default if needed) or Queueable Apex | Continuation is not supported in triggers or async contexts; 10 s is a default, not a ceiling |
+| Slow callout (roughly > 5–10 s) from Visualforce | `Continuation` object in controller action method | Only mechanism that frees the VF request thread while waiting |
+| Slow callout (roughly > 5–10 s) from LWC | `@AuraEnabled(continuation=true)` + `invokeAction` | LWC equivalent of VF Continuation; same 120 s ceiling |
 | 2–3 independent callouts needed simultaneously, from UI | Single `Continuation` with multiple `addHttpRequest` calls | Fires in parallel; reduces latency vs. sequential calls |
 | Callout expected > 120 seconds | Polling pattern: trigger async job, poll status endpoint | Platform hard ceiling is 120 seconds; Continuation cannot exceed it |
 | From Apex trigger, Batch, Scheduled, @future | Standard synchronous callout or Queueable with callout=true | Continuation requires a user-initiated HTTP request context |

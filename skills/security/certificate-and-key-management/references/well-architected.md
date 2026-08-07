@@ -30,3 +30,7 @@
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Metadata API Developer Guide: Certificate Metadata Type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_certificate.htm
+- Salesforce Help — SSL Certificate Expiration Warning in Salesforce (KB 000385781: notifications at 60, 30 and 10 days before expiry and on the day of expiry) — https://help.salesforce.com/s/articleView?id=000385781&language=en_US&type=1
+- Salesforce Help — Set Expired Certificate Notification Permission — https://help.salesforce.com/s/articleView?id=xcloud.security_keys_set_expired_certificate_notification_permission.htm&language=en_US&type=5
+- Salesforce Help — About Certificates / Generate a Self-Signed Certificate (validity derived from key size: 2048 and 3072-bit = 1 year, 4096-bit = 2 years) — https://help.salesforce.com/apex/HTViewHelpDoc?id=security_keys_about.htm
+- Salesforce Release Notes — Prepare for Shorter Certificate Lifespans — https://help.salesforce.com/s/articleView?id=release-notes.rn_general_certificate_lifespans.htm&language=en_US&type=5

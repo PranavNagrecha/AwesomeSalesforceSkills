@@ -66,9 +66,9 @@ Platform Events are a custom publish-subscribe mechanism on the Salesforce Event
 
 Key characteristics:
 - Events are decoupled from any specific sObject; the event schema is fully custom.
-- Default retention is **72 hours** with replay via `replayId`.
-- Standard event allocation: **250,000 events per 24 hours** on Enterprise and above (lower on lower editions; check the Platform Events Developer Guide for per-edition allocations).
-- High-Volume Platform Events bypass the per-org standard allocation and support `RetainUntilDate` for extended retention beyond 72 hours.
+- Retention is **72 hours** for high-volume events (every event you can define today) and **24 hours** for legacy standard-volume events, with replay via `replayId`. Retention is a fixed platform property — there is no field or setting that extends it. A window longer than 72 hours requires the publisher to write a durable copy (Big Object / external queue) and the subscriber to backfill from it.
+- Publishing allocation for high-volume events is **250,000 per hour, org-wide** on Enterprise, Performance, and Unlimited (50,000 on Developer), extendable in +25,000/hour add-on increments. This is an org allocation, not a per-event-tier property — no event type publishes above it.
+- Standard-volume events cannot be newly defined (not since Spring '19) and Salesforce retires publish and subscribe for them in **Winter '27**. If an org still has them, the work item is migration, not tier selection.
 - Fire-and-forget from the publisher's perspective — Apex publisher failures surface as `EventBus.publish()` return values, not exceptions.
 
 Use Platform Events when the integration requires a **custom, domain-specific event payload** that is not tied to a specific record's field changes, or when the publisher is an external system or a business process rather than a DML operation.

@@ -53,7 +53,9 @@ CometD client reliability requirements:
    - Store the last received ReplayId persistently (database, file)
    - On reconnect, subscribe with the stored ReplayId
    - If ReplayId has expired (>24 hours for PushTopic):
-     fall back to -1 (all retained) or -2 (new only)
+     fall back to -2 (replay all still-retained events) to minimise the
+     gap, or -1 (tip only, the default) if a gap is acceptable and a
+     separate full re-sync will cover it
 
 3. CometD replay extension:
    Map<String, Long> replayMap = new HashMap<>();
@@ -174,3 +176,29 @@ Do NOT use:
 ```
 
 **Detection hint:** Flag CometD subscriptions with incorrect channel prefixes. Check for `/PushTopic/` instead of `/topic/`, or `/events/` instead of `/event/`.
+
+---
+
+## Anti-Pattern 6: Inverting Replay ID `-1` and `-2`
+
+**What the LLM generates:** A replay-value table (or a code comment) stating that `-2` is the default and means "new events only," and that `-1` replays the retained window. Both halves are backwards, including which value is the default.
+
+**Why it happens:** The two values are adjacent negative sentinels with no mnemonic distinguishing them, and the intuitive ordering — "the first special value is the simple one" — points the wrong way. `-1` reads as "one step back from now" and `-2` as "two steps back," which is a plausible-sounding but invented model. The surrounding explanation of durable subscriptions is usually correct; only the mapping flips.
+
+**Correct version:** Per Streaming API *Message Durability*, verbatim: `-1` (Default) — "Subscriber receives new events that are broadcast after the client subscribes." `-2` — "Subscriber receives all events, including past events that are within the retention window and new events." So `-1` is tip-only and is the default; `-2` is full catch-up.
+
+**Why it matters both ways:** A subscriber written on the inverted table and given `-2` for "tip only" replays the entire retained window on every reconnect — a duplicate storm that looks like a publisher defect. Given `-1` for "catch up after an outage," it silently drops every event from the outage with no error on either side. The second failure is invisible until a downstream reconciliation finds the gap, by which point the events have aged out.
+
+**Detection hint:** `grep -n '`-2`.*default\|-2 (default)\|-2.*new events only\|-1.*all retained' <files>` — any hit is the inversion. Correct text always pairs `-1` with the word "default" and `-2` with "retained" / "catch-up." In code, `store.load(topic, -1L)` as a first-run default is a losing default and deserves a comment justifying it.
+
+---
+
+## Anti-Pattern 7: Citing `402::Unknown client` and a Universal 1,000-Subscriber Cap
+
+**What the LLM generates:** Error handling keyed on `402::Unknown client`, and a flat statement that Streaming API allows "1,000 concurrent clients per org and 100 per channel."
+
+**Why it happens:** Two separate confabulations that travel together. `403::Unknown client` is the real and very commonly seen code; 402 is a familiar HTTP status ("Payment Required") that gets substituted when the code is recalled approximately. And 1,000 is a real Salesforce number — it is the **Enterprise Edition** row of the concurrent-subscriber allocation — which gets promoted to a platform constant when the edition column is dropped. The per-channel figure of 100 has no documented source at all; Salesforce publishes the error (`403::Subscription limit exceeded for this topic`) but not a number.
+
+**Correct version:** There is no 402 code in Streaming API. Use `403::Unknown client` — and note that it means the CometD session expired and the client must re-handshake, *not* that a limit was hit. Concurrency breaches surface as `403::Organization concurrent user limit exceeded` or `403::Subscription limit exceeded for this topic`. The org-wide allocation, counted across all channels and all event types, is 2,000 (Performance, Unlimited) / 1,000 (Enterprise) / 20 (all other supported editions).
+
+**Detection hint:** `grep -rn '402::' <files>` — every hit is wrong; there is no 402 in the Streaming API error-code list. For the cap, flag any subscriber-count figure written without an edition qualifier: a correct citation of this allocation cannot be a single number.

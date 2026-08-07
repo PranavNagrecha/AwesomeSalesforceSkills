@@ -11,10 +11,19 @@
 ```js
 import { createElement } from 'lwc';
 import AccountSummary from 'c/accountSummary';
-import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
 import getAccountSummary from '@salesforce/apex/AccountController.getAccountSummary';
 
-const getAccountSummaryAdapter = registerApexTestWireAdapter(getAccountSummary);
+// Mock the Apex module with a test wire adapter. The mocked default export
+// IS the adapter, so `getAccountSummary.emit(...)` drives the wire directly —
+// no separate register* step (that was the 2.x API, removed in 3.x).
+jest.mock(
+    '@salesforce/apex/AccountController.getAccountSummary',
+    () => {
+        const { createApexTestWireAdapter } = require('@salesforce/sfdx-lwc-jest');
+        return { default: createApexTestWireAdapter(jest.fn()) };
+    },
+    { virtual: true }
+);
 
 const flushPromises = () => Promise.resolve();
 
@@ -30,7 +39,7 @@ describe('c-account-summary', () => {
         element.recordId = '001000000000001AAA';
         document.body.appendChild(element);
 
-        getAccountSummaryAdapter.emit({ name: 'Acme' });
+        getAccountSummary.emit({ name: 'Acme' });
         await flushPromises();
 
         expect(element.shadowRoot.querySelector('[data-id=\"name\"]').textContent).toBe('Acme');

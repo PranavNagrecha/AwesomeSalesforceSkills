@@ -28,4 +28,5 @@
 - Trailhead: Business Process Mapping module — UPN notation, 8–10 box limit per level, As-Is/To-Be/Transition State methodology — https://trailhead.salesforce.com/content/learn/modules/business-process-mapping
 - Trailhead: Explore Techniques for Information Discovery — BABOK-aligned elicitation, stakeholder discovery — https://trailhead.salesforce.com/content/learn/modules/business-analyst_skills-strategies/explore-techniques--information-discovery
 - Salesforce Help: Field-Level Security — https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm
+- Salesforce Help: Custom Fields Allowed Per Object + Edition Allocations — https://help.salesforce.com/s/articleView?id=platform.custom_field_allocations.htm&type=5 — the allocation is per object, not per data type: Professional 100, Enterprise 500, Performance/Unlimited 800, Developer 500; "An org can't have more than 900 custom fields on most object types, regardless of the edition or source of those fields."
 - Salesforce Help: Sharing Rules — https://help.salesforce.com/s/articleView?id=sf.security_about_sharing.htm

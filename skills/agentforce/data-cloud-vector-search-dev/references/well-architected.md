@@ -34,7 +34,7 @@ Vector search index configuration is a Data Kit component. Packaging errors — 
 
 2. **Using Easy Setup in Production Without Benchmarking Retrieval Quality** — Easy Setup is appropriate for prototyping but should not be promoted to production without a retrieval quality benchmark. Chunk size and strategy choices significantly affect the semantic accuracy of search results. Teams that skip this validation step often discover retrieval quality problems only after users complain about unhelpful agent responses, at which point a full index rebuild is required — potentially during business hours.
 
-3. **Reusing CRM Connected App Credentials for Data Cloud API Calls** — Attempting to authenticate with the Data Cloud Query API using credentials from a standard CRM Connected App (without `cdpapi` scope) results in persistent `401 Unauthorized` errors. This wastes debugging time and sometimes leads developers to incorrectly blame the vector index or the grounding configuration. The fix is a separate Data Cloud Connected App — but this is an architectural decision (separate app, separate credentials rotation, separate secret management) that should be planned in advance.
+3. **Reusing CRM Connected App Credentials for Data Cloud API Calls** — Attempting to authenticate with the Data Cloud Query API using credentials from a standard CRM Connected App (without the `cdp_query_api` scope) results in persistent `401 Unauthorized` errors. This wastes debugging time and sometimes leads developers to incorrectly blame the vector index or the grounding configuration. The fix is a separate Data Cloud Connected App — but this is an architectural decision (separate app, separate credentials rotation, separate secret management) that should be planned in advance.
 
 ---
 
@@ -52,3 +52,4 @@ Vector search index configuration is a Data Kit component. Packaging errors — 
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Einstein Platform Services Overview — https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Data 360 (Data Cloud) API Get Started — OAuth scopes (cdp_query_api, cdp_ingest_api, …) and the two-step /services/a360/token exchange — https://developer.salesforce.com/docs/atlas.en-us.c360a_api.meta/c360a_api/c360a_api_get_started.htm

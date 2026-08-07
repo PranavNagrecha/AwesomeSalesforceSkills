@@ -29,4 +29,5 @@
 - Experience Cloud Site Moderation Strategies — help.salesforce.com (Experience Cloud admin documentation: moderation rules, keyword lists, action types, rule evaluation order)
 - Set Up Reputation Levels/Points — help.salesforce.com (Experience Cloud reputation configuration, point actions, level thresholds)
 - Connect REST API Developer Guide — developer.salesforce.com (Moderation REST resources: `/communities/communityId/chatter/feeds/moderation/`, audit statistics, feed flagging endpoints)
+- Salesforce Help — Assign a Moderator / What's an Experience Cloud Site Moderator: https://help.salesforce.com/s/articleView?id=experience.networks_moderator_assign.htm&type=5 (moderator permissions; the feed-moderation permission carries the metadata API name `ModerateNetworkFeeds` — "Users with this permission can moderate feeds in sites" — while Setup renders it as "Moderate Experiences Feeds")
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (architecture quality framing for security and operational excellence pillars)

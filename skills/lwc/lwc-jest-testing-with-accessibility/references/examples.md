@@ -67,11 +67,17 @@ describe('c-status-banner', () => {
 ```js
 // caseList.test.js
 import { createElement } from 'lwc';
-import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
 import getCases from '@salesforce/apex/CaseController.getCases';
 import CaseList from 'c/caseList';
 
-const getCasesAdapter = registerApexTestWireAdapter(getCases);
+jest.mock(
+    '@salesforce/apex/CaseController.getCases',
+    () => {
+        const { createApexTestWireAdapter } = require('@salesforce/sfdx-lwc-jest');
+        return { default: createApexTestWireAdapter(jest.fn()) };
+    },
+    { virtual: true }
+);
 
 describe('c-case-list — empty state a11y', () => {
     afterEach(() => {
@@ -85,7 +91,7 @@ describe('c-case-list — empty state a11y', () => {
         const element = createElement('c-case-list', { is: CaseList });
         document.body.appendChild(element);
 
-        getCasesAdapter.emit([]); // simulate wire response
+        getCases.emit([]); // simulate wire response
         await Promise.resolve();   // microtask: wire fires
         await Promise.resolve();   // microtask: re-render
 
@@ -99,7 +105,7 @@ describe('c-case-list — empty state a11y', () => {
 
 **What to notice:**
 
-- `registerApexTestWireAdapter(getCases)` returns a handle whose `.emit(...)` pushes data into the wire.
+- `createApexTestWireAdapter(jest.fn())` inside the `jest.mock` factory makes the mocked `getCases` export itself the adapter, so `getCases.emit(...)` pushes data into the wire. There is no separate register step — `register*TestWireAdapter` was the 2.x API and was removed in wire-service-jest-util 3.x, which is what current `sfdx-lwc-jest` bundles.
 - Two `await Promise.resolve()` calls — one for the wire, one for the resulting re-render. With one, the assertion runs before the empty state is in the DOM and you get a flaky test.
 - Asserting `aria-live="polite"` is what proves the empty state announces itself to screen readers when it appears mid-session.
 

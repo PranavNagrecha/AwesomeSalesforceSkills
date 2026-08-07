@@ -21,6 +21,8 @@
 
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
+- Salesforce CLI Reference — unified `org` commands (`sf org list metadata`, `sf org list metadata-types`; verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm
+- Salesforce CLI Reference — unified `project` commands (the only `sf project list` subcommand is `list ignored`) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Metadata Coverage Report — https://developer.salesforce.com/docs/metadata-coverage
 - sfdx-hardis — https://sfdx-hardis.cloudity.com/

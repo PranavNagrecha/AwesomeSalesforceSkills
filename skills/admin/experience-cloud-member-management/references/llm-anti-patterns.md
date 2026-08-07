@@ -3,36 +3,79 @@
 Common mistakes AI coding assistants make when generating or advising on Experience Cloud Member Management.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Generating Legacy Auth.RegistrationHandler Instead of Auth.ConfigurableSelfRegHandler
+## Anti-Pattern 1: Inventing a `registerUser(Auth.SelfRegistrationContext)` Method
 
-**What the LLM generates:** An Apex class that implements `Auth.RegistrationHandler` with `createUser(Id portalId, User newUser, String registrationAttributes, String password)` and `updateUser(Id userId, Id portalId, User newUser, String registrationAttributes, String password, String username)` methods.
-
-**Why it happens:** Salesforce introduced `Auth.RegistrationHandler` years before `Auth.ConfigurableSelfRegHandler`. A large portion of training data — Trailhead modules, blog posts, Stack Exchange answers — references the older interface. LLMs default to the higher-frequency pattern.
-
-**Correct pattern:**
+**What the LLM generates:**
 
 ```apex
+// DOES NOT COMPILE — every identifier below is fabricated
 public class MySelfRegHandler implements Auth.ConfigurableSelfRegHandler {
     public User registerUser(Auth.SelfRegistrationContext context) {
         User u = new User();
-        u.Username           = context.email;
-        u.Email              = context.email;
-        u.FirstName          = context.firstName;
-        u.LastName           = context.lastName;
-        u.Alias              = context.email.left(8);
-        u.CommunityNickname  = u.Alias + String.valueOf(System.currentTimeMillis()).right(5);
-        u.TimeZoneSidKey     = 'America/Los_Angeles';
-        u.LocaleSidKey       = 'en_US';
-        u.EmailEncodingKey   = 'UTF-8';
-        u.LanguageLocaleKey  = 'en_US';
-        u.ProfileId          = [SELECT Id FROM Profile
-                                 WHERE Name = 'Customer Community User' LIMIT 1].Id;
+        u.Email     = context.email;
+        u.FirstName = context.firstName;
         return u;
     }
 }
 ```
 
-**Detection hint:** Look for method signatures containing `portalId` as the first parameter or a `password` parameter — these are markers of the legacy `Auth.RegistrationHandler` interface, not `Auth.ConfigurableSelfRegHandler`.
+**Why it happens:** This is a confabulated *name* wrapped around a correctly
+understood *mechanism*. The model knows there is one hook method, that it
+receives the registration form's values, and that returning nothing cancels
+registration — all true. It does not know the identifiers, so it generates the
+most natural-sounding ones: `registerUser` for the method (matching the
+"self-registration" feature name), `Auth.SelfRegistrationContext` for the
+parameter (Apex genuinely has context objects such as
+`Auth.AuthProviderCallbackState`, and Flow/Trigger contexts make "context
+object" a strong prior), and `User` for the return type (because the handler
+obviously produces a user). Three plausible inventions on a correct skeleton
+is far harder to spot than one obviously wrong claim.
+
+There is no `Auth.SelfRegistrationContext` class anywhere in the Auth namespace,
+and no `registerUser` method on any Auth interface.
+
+**Correct pattern:** `Auth.ConfigurableSelfRegHandler` declares exactly one
+method. It returns an `Id`, and it takes four parameters — the third of which
+is keyed by `SObjectField`, not `String`:
+
+```apex
+global class MySelfRegHandler implements Auth.ConfigurableSelfRegHandler {
+    global Id createUser(Id accountId,
+                         Id profileId,
+                         Map<SObjectField, String> registrationAttributes,
+                         String password) {
+        User u = new User();
+        u.ProfileId = profileId;
+        for (SObjectField field : registrationAttributes.keySet()) {
+            u.put(field, registrationAttributes.get(field));
+        }
+        u.EmailEncodingKey  = 'UTF-8';
+        u.LanguageLocaleKey = UserInfo.getLocale();
+        u.LocaleSidKey      = UserInfo.getLocale();
+        u.TimeZoneSidKey    = UserInfo.getTimeZone().getID();
+        if (String.isBlank(password)) {
+            password = generateRandomPassword();
+        }
+        Site.validatePassword(u, password, password);
+        return Site.createExternalUser(u, accountId, password);  // returns the new User Id
+    }
+}
+```
+
+Return `null` or throw to fail the registration.
+
+**Detection hint:** Two mechanical greps, both zero-tolerance:
+
+1. `grep -n 'SelfRegistrationContext\|registerUser' *.cls` — neither identifier
+   exists in the platform. Any hit is a fabrication.
+2. `grep -n 'implements Auth.ConfigurableSelfRegHandler' -A3 *.cls` and check
+   the return type. If the method returns `User` rather than `Id`, or takes
+   fewer than four parameters, or types the map as
+   `Map<String, String>`, it will not compile.
+
+Do **not** use "has a `password` parameter" or "has an `Id` first parameter" as
+a signal that the wrong interface was chosen — `Auth.ConfigurableSelfRegHandler`
+has both.
 
 ---
 

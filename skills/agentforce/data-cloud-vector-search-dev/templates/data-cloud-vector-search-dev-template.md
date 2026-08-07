@@ -26,7 +26,7 @@ Answer these before starting any configuration work:
 - **Chunk size and overlap (if Fixed-size):** `___` tokens / `___` tokens overlap
 - **Embedding model:** Salesforce-managed / BYO via Model Builder (specify model):
 - **Estimated source record count:**
-- **Query API required?** Yes / No — if Yes, Data Cloud Connected App with cdpapi scope exists: Yes / No
+- **Query API required?** Yes / No — if Yes, Data Cloud Connected App with cdp_query_api scope exists: Yes / No
 - **Grounding configuration target:** Agent topic name / Prompt Template name
 - **top-K value:**
 - **Metadata filters required?** Yes / No — if Yes, filter field and expression:
@@ -56,7 +56,7 @@ Answer these before starting any configuration work:
 | Parameter | Value |
 |---|---|
 | Data Cloud Connected App name | |
-| OAuth scope confirmed (cdpapi) | Yes / No |
+| OAuth scope confirmed (cdp_query_api) | Yes / No |
 | Token endpoint | `<org-url>/services/a360/token` |
 | Data Cloud instance URL (from token response) | |
 | Index name used in Query API path | |
@@ -84,7 +84,7 @@ Answer these before starting any configuration work:
 - [ ] Data Cloud Vector Search feature is enabled in Setup → Data Cloud → Vector Search
 - [ ] Salesforce-managed embedding model shows as Active
 - [ ] Source DMO or UDLO is populated with at least representative test data
-- [ ] Data Cloud Connected App with `cdpapi` scope exists (if Query API required)
+- [ ] Data Cloud Connected App with `cdp_query_api` scope exists (if Query API required)
 - [ ] PII/sensitive fields in source DMO have been classified in the Data Cloud field taxonomy
 
 ### Index Creation

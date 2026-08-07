@@ -28,3 +28,4 @@
 - Salesforce Help — Dependent Class Is Invalid: https://help.salesforce.com/s/articleView?id=000382702
 - Salesforce CLI Troubleshooting Guide: https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_troubleshoot.htm
 - Metadata API Developer Guide — deploy() Options: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
+- Salesforce Help — Versioned Updates in Flow Builder ("Summer '25 (API Version 64.0)"; anchor for the release-to-API-version mapping): https://help.salesforce.com/s/articleView?language=en_US&id=platform.automate_flow_versioned_updates_64.htm

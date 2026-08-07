@@ -41,7 +41,7 @@ Use this skill when a component needs to communicate feedback, status, or a deci
 
 Gather this context before working on anything in this domain:
 
-- Is the component running in Lightning Experience, Experience Cloud, a mobile app, or an embedded Visualforce page? Toast does not render in Experience Cloud or Visualforce contexts.
+- Is the component running in Lightning Experience, an Experience Cloud site (Aura or LWR), a mobile app, or an embedded Visualforce page? `lightning/platformShowToastEvent` is documented as unsupported on login pages in Aura sites, in LWR sites, and in standalone apps — use `lightning/toast` there.
 - Does the user need to acknowledge the message (blocking) or just be informed (non-blocking)? That choice drives the primitive selection.
 - Is the action irreversible? Confirm dialogs are appropriate before destructive operations; toast is not.
 
@@ -161,19 +161,32 @@ async handleDelete() {
 
 `lightning-confirm` is the correct replacement for the browser `window.confirm()` call inside LWC. It shares the same parameter shape as `lightning-alert`.
 
-### Platform Notifications for Experience Cloud
+### Toasts in Experience Cloud (`lightning/toast`)
 
-Toast dispatched from a LWC component is caught and rendered by the Lightning page host. In Experience Cloud (formerly Community Cloud) that host is absent, so toast events bubble up and disappear silently. The correct alternative is the `NotificationsLibrary` wire service from `lightning/platformNotificationService`, which works across Experience Cloud contexts:
+`ShowToastEvent` is caught and rendered by the Lightning page host. Salesforce documents that `lightning/platformShowToastEvent` "isn't supported on login pages in Aura sites, LWR sites for Experience Cloud, and standalone apps" — in those contexts the event bubbles up and disappears silently.
+
+The documented replacement is the `lightning/toast` module, whose `Toast.show()` is an imperative call rather than an event dispatch, so it does not depend on a host listener:
 
 ```javascript
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-// NOT suitable in Experience Cloud — use below instead
+import { LightningElement } from 'lwc';
+import Toast from 'lightning/toast';
 
-import { ShowNotification } from 'lightning/platformNotificationService';
-// available in Experience Cloud builders
+export default class SaveButton extends LightningElement {
+    notifySaved() {
+        Toast.show({
+            label: 'Account saved',
+            message: 'Record {0} was updated.',
+            messageData: ['Acme'],
+            variant: 'success',
+            mode: 'dismissible'
+        }, this);
+    }
+}
 ```
 
-For components that must work in both contexts, detect the current context via the `@salesforce/client/formFactor` import or use a feature detection pattern, and dispatch the appropriate notification.
+`Toast.show(config, component)` takes the component reference as its second argument — omitting it is the most common mistake. In LWR sites, place a `lightning-toast-container` (module `lightning/toastContainer`) on the page to control where toasts render.
+
+Salesforce recommends `lightning/toast` over `lightning/platformShowToastEvent` generally, not only in Experience Cloud, so a component that may be reused across contexts should just use `Toast.show()` everywhere rather than branching on `@salesforce/client/formFactor`.
 
 ---
 
@@ -206,7 +219,7 @@ For components that must work in both contexts, detect the current context via t
 | Notify user of a recoverable error | `ShowToastEvent` with `variant: 'error', mode: 'sticky'` | Error must persist until the user acts |
 | Require acknowledgment before proceeding | `lightning-alert` | Promise resolves after dismissal; explicit control flow |
 | Confirm an irreversible destructive action | `lightning-confirm` | Returns boolean; simpler than a full modal |
-| Component runs in Experience Cloud | `NotificationsLibrary` / `platformNotificationService` | Toast is invisible outside Lightning page host |
+| Component runs in an LWR site, an Aura-site login page, or a standalone app | `lightning/toast` — `Toast.show(config, this)` | `platformShowToastEvent` is documented as unsupported in those contexts |
 | Complex multi-step confirmation with form fields | `LightningModal` (see `lwc-modal-and-overlay`) | Notification primitives are not form containers |
 
 ---
@@ -231,7 +244,7 @@ Run through these before marking work in this area complete:
 - [ ] The correct variant (`info`, `success`, `warning`, `error`) matches the semantic meaning of the event.
 - [ ] `sticky` mode is used only for errors that require user action, not for routine success confirmations.
 - [ ] `messageData` placeholder count matches the `{n}` count in `message`.
-- [ ] Components deployed to Experience Cloud use `platformNotificationService`, not `ShowToastEvent`.
+- [ ] Components deployed to LWR sites, Aura-site login pages, or standalone apps use `lightning/toast` (`Toast.show(config, this)`), not `ShowToastEvent`.
 - [ ] Destructive actions are guarded with `lightning-confirm` before the DML call.
 - [ ] Jest tests assert that `ShowToastEvent` was dispatched with the correct parameters.
 - [ ] `lightning-alert` and `lightning-confirm` are not used in Visualforce or standalone HTML contexts.
@@ -242,7 +255,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Toast is silent in Experience Cloud** — `ShowToastEvent` bubbles to the Lightning page host. In Experience Cloud that host is absent, so the event fires without rendering. Teams discover this in QA after deploying to a community. Use `platformNotificationService` instead.
+1. **Toast is silent in LWR sites, Aura-site login pages, and standalone apps** — `ShowToastEvent` bubbles to the Lightning page host. Salesforce documents `lightning/platformShowToastEvent` as unsupported in those contexts, so the event fires without rendering and no error is thrown. Teams discover this in QA after deploying to a site. Use `lightning/toast` — `Toast.show(config, this)` — instead.
 2. **`sticky` mode on success toasts is hostile UX** — it requires the user to manually dismiss a non-critical message. Reserve `sticky` for `error` or `warning` variants where the user must acknowledge a problem.
 3. **`messageData` placeholder mismatch renders raw template text** — if `message` contains `{0}` but `messageData` is an empty array or contains fewer items, the literal string `{0}` appears to end users. Always validate array length against placeholder count.
 4. **`lightning-alert` and `lightning-confirm` are unsupported outside Lightning Experience** — they are not available in Visualforce, standalone pages, or some embedded app contexts. Feature-detect or document the deployment target before choosing these primitives.

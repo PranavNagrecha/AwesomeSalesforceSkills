@@ -141,3 +141,44 @@ Note: Global Value Sets are restricted by default.
 ```
 
 **Detection hint:** If the output creates a picklist without mentioning the restricted vs unrestricted choice, the field may accept invalid API values. Search for `Restrict picklist` or `restricted` in the picklist configuration.
+
+---
+
+## Anti-Pattern: Quoting 150 as the Multi-Select Picklist Value Limit
+
+**What the LLM generates:** "Multi-select picklists support 150 active values
+by default; contact Salesforce Support to raise it." Sometimes paired with a
+design recommendation to split a 200-value taxonomy across two fields.
+
+**Why it happens:** 150 was the real default for years and is baked into a
+generation of admin blog posts, certification study guides and Stack Exchange
+answers. Salesforce raised the default so that new and existing orgs sit at
+500 — which is also the absolute maximum — but the older number is far more
+represented in text. The failure is invisible in review because 150 sounds
+like a plausible platform limit and the surrounding advice ("Support can raise
+it") is still true, just against a different ceiling.
+
+Note the two limits in this area are easy to swap, and only one of them is
+raisable:
+
+**Correct pattern:**
+
+```
+Multi-select picklist:
+- Total values in the field:  500 default AND 500 maximum.
+    An org below 500 can be raised to 500 by Support.
+    500 cannot be exceeded.
+- Values selectable on one record: 100. HARD — cannot be increased.
+
+Standard/custom (single-select) picklist:
+- 1,000 total values (active + inactive), 255 characters per label,
+  15,000 characters across all values in the field.
+```
+
+**Detection hint:** Grep any picklist limit claim for `150`. It is not a
+current Salesforce picklist limit in any dimension, so every occurrence is
+stale. Second check: if a claim says a multi-select limit is "raisable via
+Support" and gives a number *other than* the value the org would be raised
+**to** (500), the number and the mechanism have been attached to each other
+incorrectly — and if it says the 100-selected-per-record cap is raisable, that
+is wrong outright.

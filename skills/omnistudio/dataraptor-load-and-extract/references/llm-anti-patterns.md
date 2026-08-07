@@ -68,3 +68,39 @@ Turbo Extract supports only direct field reads on the base object. For any cross
 DataRaptor Load does not provide rollback for multi-object operations. Design Loads as single-object where possible. For complex multi-object scenarios requiring atomicity, use Apex DML in a single transaction with proper savepoint and rollback logic.
 
 **Detection hint:** Any multi-object DataRaptor Load for a business operation that requires all-or-nothing semantics (e.g., creating an Order Header + Order Items where both must succeed).
+
+---
+
+## Anti-Pattern 6: Justifying the Bulk Warning With Fabricated Governor Arithmetic
+
+**What the LLM generates:** The right conclusion ("don't use Data Mapper Load for bulk") supported by numbers that do not add up:
+
+> "Data Mapper Load uses standard DML — one DML statement per record iteration. For 500 records, this consumes 500 DML statements in a single transaction, quickly hitting governor limits. The Integration Procedure fails with `Too many DML statements`."
+
+**Why it happens:** The model reaches a correct recommendation and then **back-fills a mechanism to justify it**, because a bare "don't do this" reads as weaker than a causal explanation. The back-fill is never checked against the limit it invokes: the DML **statement** limit is 150, so a run that genuinely issued one statement per record would fail at iteration 151 and never reach 500. The "500" is picked as a round illustrative volume, not derived. A second confusion feeds it — the DML **rows** limit is 10,000, and models routinely blur "statements" and "rows" into a single "DML limit", which makes 500 feel comfortably inside a ceiling it is not being measured against.
+
+This matters beyond pedantry. A reader who trusts the arithmetic concludes the safe threshold is somewhere near 500 and builds a 300-record loop that fails in production. Fabricated supporting detail attached to correct advice is more dangerous than no detail, because it converts a directional warning into a false quantitative permission.
+
+**Correct pattern:**
+
+```text
+Per-transaction limits (Apex Developer Guide, sync and async alike):
+  Total number of DML statements issued                    : 150
+  Total records processed as a result of DML statements    : 10,000
+
+A LOOP-DRIVEN Load therefore dies at the 151st iteration, on statements
+— not on rows, which are nowhere near their ceiling.
+
+The claim that is safe to make without further checking:
+  "Data Mapper Load writes via platform DML, not the Bulk API, so the
+   entire write is bounded by the calling transaction's governor limits.
+   It is unsuitable for high-volume writes."
+
+The claim that needs a source before you make it:
+  any statement about how many DML statements Load issues internally for
+  a SINGLE invocation carrying an N-element array. A bulkified 500-row
+  write sits well inside both limits. Verify against the Omnistudio Data
+  Mapper Load documentation; do not infer it from the loop case.
+```
+
+**Detection hint:** Whenever generated guidance pairs a record count with `Too many DML statements`, check the count against 150 — any figure above it that is described as "consuming N DML statements" before failing is fabricated arithmetic. Second, mechanical and general: grep for the phrase `DML limit` / `DML limits` used without the word `statements` or `rows`. Salesforce has two distinct DML ceilings that differ by a factor of ~67, and guidance that does not name which one it means has not checked either.

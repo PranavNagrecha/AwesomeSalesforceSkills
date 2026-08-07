@@ -18,7 +18,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time a developer reuses an existing CRM Connected App for Data Cloud API calls, assumes the standard token endpoint applies to all Salesforce APIs, or copies OAuth examples from CRM API documentation and applies them to Data Cloud endpoints.
 
-**How to avoid:** Create a dedicated Data Cloud Connected App with the `cdpapi` OAuth scope. Obtain the Data Cloud token by posting to `<org-instance>/services/a360/token` with `grant_type=client_credentials` and the Data Cloud Connected App credentials. Note that the `instance_url` returned in the token response is the Data Cloud tenant URL (e.g., `https://<tenant>.c360a.salesforce.com`), which is different from the CRM instance URL and must be used as the base for all subsequent Data Cloud API calls.
+**How to avoid:** Create a dedicated Data Cloud Connected App with the `cdp_query_api` OAuth scope (plus `api` and `refresh_token, offline_access`). Getting a Data Cloud token is a **two-step exchange**, not a single grant. Step 1: obtain an ordinary Salesforce access token, normally via the OAuth 2.0 JWT Bearer flow against `/services/oauth2/token`. Step 2: POST that token to `<org-instance>/services/a360/token` with `grant_type=urn:salesforce:grant-type:external:cdp` and `subject_token_type=urn:ietf:params:oauth:token-type:access_token`. There is no `client_credentials` shortcut here. Note that the `instance_url` returned in the token response is the Data Cloud tenant URL (e.g., `https://<tenant>.c360a.salesforce.com`), which is different from the CRM instance URL and must be used as the base for all subsequent Data Cloud API calls.
 
 ---
 

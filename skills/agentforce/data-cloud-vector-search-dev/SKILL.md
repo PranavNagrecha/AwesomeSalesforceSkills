@@ -99,7 +99,7 @@ Source: [Supported Chunking Strategies (Salesforce Help)](https://help.salesforc
 The **Data Cloud Vector Search Query API** allows external systems (and Apex code calling an external endpoint) to execute semantic searches against a vector index programmatically. Key constraints:
 
 - **Separate access token required.** The Query API accepts a Data Cloud access token, not the standard Salesforce CRM session token or Connected App OAuth token. The Data Cloud token is obtained by posting to the Data Cloud token endpoint (`/services/a360/token`) with the Connected App credentials scoped to the Data Cloud API.
-- **Token scope.** The Connected App used for Query API access must include the `cdpapi` scope (or equivalent Data Cloud API permission). A standard CRM Connected App without this scope will be rejected at the token endpoint.
+- **Token scope.** The Connected App used for Query API access must include the `cdp_query_api` scope ("Perform ANSI SQL queries on Data 360 data"), alongside `api` and `refresh_token, offline_access`. There is no scope named `cdpapi` — the Data Cloud / Data 360 scope family is `cdp_ingest_api`, `cdp_query_api`, `cdp_profile_api`, `cdp_segment_api`, `cdp_identityresolution_api`, `cdp_calculated_insight_api`. A Connected App without `cdp_query_api` is rejected at the token-exchange step.
 - **Request structure.** Query API calls are REST POST requests to the Data Cloud vector search endpoint, passing the search text (or pre-computed query vector), the index name, top-K, and any metadata filter expressions.
 
 Source: [Search Index Reference — Data Cloud (Salesforce Help)](https://help.salesforce.com/s/articleView?id=sf.data_cloud_vector_search_index_reference.htm); [Data 360 Developer Guide — Features Overview (developer.salesforce.com)](https://developer.salesforce.com/docs/atlas.en-us.salesforce_cdp_api.meta/salesforce_cdp_api/cdp_api_features_overview.htm)
@@ -205,7 +205,7 @@ Content-Type: application/json
 
 Step-by-step instructions for an AI agent or practitioner working on Data Cloud vector search development:
 
-1. **Confirm prerequisites** — verify that Data Cloud Vector Search is enabled, the source DMO or Unstructured Data Lake Object is populated, and a Data Cloud Connected App with `cdpapi` scope exists if the Query API will be used.
+1. **Confirm prerequisites** — verify that Data Cloud Vector Search is enabled, the source DMO or Unstructured Data Lake Object is populated, and a Data Cloud Connected App with the `cdp_query_api` scope exists if the Query API will be used.
 2. **Decide on setup path** — determine whether Easy Setup or Advanced Setup is appropriate. If retrieval precision matters or content structure warrants a specific chunking strategy, choose Advanced Setup from the start to avoid a costly rebuild later.
 3. **Create and configure the vector search index** — in Data Cloud Setup → Vector Search, create the index against the target text field. In Advanced Setup, explicitly set the chunking strategy, chunk size, and overlap. Document these choices and their rationale in the decision record.
 4. **Configure the Grounding record** — in Agentforce Setup, attach a Grounding configuration to the agent topic or Prompt Template referencing the new index. Set top-K to 3–7 (start at 5) and add metadata filters if multi-dimensional content is indexed.
@@ -222,7 +222,7 @@ Run through these before marking work complete:
 - [ ] Data Cloud Vector Search feature is enabled and the Salesforce-managed embedding model shows as active in Setup
 - [ ] Chunking strategy decision (Easy Setup vs Advanced Setup, strategy type, chunk size, overlap) is documented in a decision record
 - [ ] If Easy Setup was used initially and precision is inadequate, index has been rebuilt with Advanced Setup
-- [ ] Data Cloud Connected App has `cdpapi` scope and Data Cloud access token generation is tested if Query API access is required
+- [ ] Data Cloud Connected App has `cdp_query_api` (plus `api` and `refresh_token, offline_access`) and the two-step Data Cloud token exchange is tested if Query API access is required
 - [ ] Grounding configuration references the correct vector index with appropriate top-K and metadata filters
 - [ ] Generative AI audit and feedback data collection is turned on in Einstein Setup (otherwise the audit DMOs are empty)
 - [ ] Einstein Trust Layer audit DMOs (`GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`) queried in the Data Cloud Query Editor for at least one end-to-end retrieval turn — masking events investigated if present
@@ -238,7 +238,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Easy Setup Chunk Parameters Are Not Tunable Post-Creation** — Easy Setup automatically selects chunk size and strategy, and these are locked at creation time. There is no UI control to adjust them afterward. If retrieval quality is poor, the only remedy is to delete the index and rebuild with Advanced Setup. Developers who don't know this assumption waste time adjusting top-K and metadata filters trying to fix a chunking-level problem.
 
-2. **Query API Requires a Data Cloud Access Token, Not a CRM Token** — The Data Cloud vector search Query API endpoint uses a separate authentication system from the standard Salesforce CRM. Posting a standard OAuth access token from a CRM Connected App to the Data Cloud API returns a 401. The correct token is obtained from the Data Cloud token endpoint (`/services/a360/token`) using a Connected App scoped with `cdpapi`. Many developers discover this only after a frustrating round of 401 debugging.
+2. **Query API Requires a Data Cloud Access Token, Not a CRM Token** — The Data Cloud vector search Query API endpoint uses a separate authentication system from the standard Salesforce CRM. Posting a standard OAuth access token from a CRM Connected App to the Data Cloud API returns a 401. The correct token comes from a **two-step exchange**: first get a normal Salesforce access token (JWT Bearer flow) from a Connected App scoped with `cdp_query_api`, then POST that token as `subject_token` to `<instance_url>/services/a360/token` with `grant_type=urn:salesforce:grant-type:external:cdp` to receive the Data Cloud token and tenant URL. Many developers discover this only after a frustrating round of 401 debugging.
 
 3. **Einstein Trust Layer Masking Silently Replaces Chunk Content** — If a retrieved chunk contains a field classified as PII in the Data Cloud field taxonomy, the Trust Layer replaces the field value with a masking placeholder before the chunk reaches the LLM. The chunk still counts toward top-K but delivers no useful content for the masked portion. Developers who index DMOs with sensitive fields without pre-classifying them may see the agent ignore retrieved context without understanding why.
 
@@ -254,7 +254,7 @@ Non-obvious platform behaviors that cause real production problems:
 |---|---|
 | Data Cloud vector search index | Configured index with embedding model, chunking strategy (strategy type, chunk size, overlap), and refresh settings — packageable via Data Kit |
 | Grounding configuration record | Retriever definition linking the agent topic or prompt template to the vector index, including top-K and metadata filter expressions |
-| Data Cloud access token generation pattern | Documented OAuth flow for obtaining a Data Cloud token from the `/services/a360/token` endpoint using a `cdpapi`-scoped Connected App |
+| Data Cloud access token generation pattern | Documented two-step OAuth flow: Salesforce token from a `cdp_query_api`-scoped Connected App, exchanged at `/services/a360/token` (`grant_type=urn:salesforce:grant-type:external:cdp`) |
 | Decision record | Chunking strategy rationale, chunk size/overlap values, embedding model choice, top-K selection, and data residency notes |
 | Einstein Trust Layer audit query results | QA evidence from the Data Cloud Query Editor over the generative AI audit DMOs (`GenAIGatewayRequest__dlm`, `GenAIGatewayResponse__dlm`, `GenAIGeneration__dlm`) confirming retrieval turns are recorded and masking behavior is deliberate |
 

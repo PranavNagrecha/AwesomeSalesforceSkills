@@ -27,6 +27,7 @@
 
 - Salesforce Help: Set Up Email-to-Case — https://help.salesforce.com/s/articleView?id=sf.setting_up_email_to_case.htm
 - Salesforce Help: Email-to-Case Limits and Limitations — https://help.salesforce.com/s/articleView?id=sf.email_to_case_limits.htm
+- Salesforce Help (KB 000386265): Attachment size limit for On-Demand Email-to-Case — https://help.salesforce.com/s/articleView?id=000386265&type=1 — 35 MB total redirected message (body + attachments + HTML); up to 33% MIME encoding inflation, giving an effective attachment ceiling of ~25 MB; 25 MB was the total before Winter '21 and 10 MB before Summer '14
 - Salesforce Help: Auto-Response Rules — https://help.salesforce.com/s/articleView?id=sf.creating_auto-response_rules.htm
 - Salesforce Help: Assignment Rules — https://help.salesforce.com/s/articleView?id=sf.creating_assignment_rules.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

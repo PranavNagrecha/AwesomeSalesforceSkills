@@ -104,7 +104,7 @@ Real-Time Event Monitoring delivers security events as they happen, via Streamin
 RTEM events follow the naming convention `ObjectNameEvent` (e.g., `LoginEvent`, `ApiAnomalyEvent`, `FileEvent`). Corresponding storage objects (`ObjectNameEventStore` or `ObjectNameEventStream` for older API versions) persist event data for post-hoc SOQL queries.
 
 Key RTEM event types:
-- `LoginEvent` / `LoginEventStream` — every login attempt
+- `LoginEvent` (big object, SOQL-queryable) / `LoginEventStream` (platform event, subscribe-only) — every login attempt
 - `LogoutEvent` / `LogoutEventStream` — logouts
 - `LoginAsEvent` / `LoginAsEventStream` — admin impersonation of another user
 - `ApiEventStream` — individual API calls
@@ -195,7 +195,7 @@ Policies are configured in Setup > Security > Transaction Security Policies. Eac
 2. Download the CSV. Key columns: `USER_ID`, `SOURCE_IP`, `BROWSER_TYPE`, `PLATFORM_TYPE`, `LOGIN_STATUS`, `CLIENT_VERSION`, `SESSION_TYPE`.
 3. Filter on `LOGIN_STATUS != 'LOGIN_NO_ERROR'` to isolate authentication failures.
 4. Cross-reference `USER_ID` values with User sObject records.
-5. For same-day data (not yet in EventLogFile), query `LoginEventStream` directly via SOQL.
+5. For same-day data (not yet in EventLogFile), query the **`LoginEvent` big object** via SOQL — `SELECT UserId, LoginType, SourceIp, Status, EventDate FROM LoginEvent WHERE EventDate = TODAY`. Do **not** issue SOQL against `LoginEventStream`: `*EventStream` objects are platform events whose only supported call is `describeSObjects()`, consumed by subscribing to `/event/LoginEventStream` over Pub/Sub API or CometD.
 
 ---
 
@@ -210,7 +210,7 @@ Policies are configured in Setup > Security > Transaction Security Policies. Eac
 | Investigate a specific user's API calls | EventLogFile EventType = 'API' | Per-call detail; filter by USER_ID column after download |
 | Enforce MFA on logins from new locations | Transaction Security Policy on LoginEvent | Native MFA enforcement; no custom code required |
 | Monitor file downloads for data exfiltration | RTEM FileEvent (real-time) or ContentTransfer log (historical) | FileEvent for immediate alerting; ContentTransfer for audit trail |
-| Same-day login activity (incident in progress) | Query LoginEventStream or LoginAsEventStream | RTEM storage objects available immediately; EventLogFile unavailable until tomorrow |
+| Same-day login activity (incident in progress) | Query the `LoginEvent` / `LoginAsEvent` **big objects** (not the `*EventStream` platform events) | RTEM storage objects are populated immediately; EventLogFile is unavailable until tomorrow |
 
 ---
 

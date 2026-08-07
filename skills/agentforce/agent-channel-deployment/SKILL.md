@@ -78,7 +78,7 @@ Agentforce deploys to Slack via a Salesforce-managed Slack application — not a
 
 ### Agent REST API Enables Programmatic And Custom-Surface Integrations
 
-The Agentforce Agent API is a REST endpoint (`/services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions`) that allows any external application to open a session with an Agentforce agent, send messages, and receive responses. This is the correct channel for mobile apps, custom web surfaces, IVR integrations, or third-party tools that cannot use Embedded Service. Authentication uses either a Salesforce Session ID (for internal Salesforce clients) or a Connected App OAuth 2.0 flow (for external clients). The Agent API is not the same as a custom Apex REST endpoint — it is a Salesforce platform endpoint managed by the Einstein Platform Services runtime.
+The Agentforce Agent API is a REST endpoint (`https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions`) that allows any external application to open a session with an Agentforce agent, send messages, and receive responses. This is the correct channel for mobile apps, custom web surfaces, IVR integrations, or third-party tools that cannot use Embedded Service. Authentication uses either a Salesforce Session ID (for internal Salesforce clients) or a Connected App OAuth 2.0 flow (for external clients). The Agent API is not the same as a custom Apex REST endpoint — it is a Salesforce platform endpoint managed by the Einstein Platform Services runtime.
 
 ### Multi-Channel Coordination Requires Per-Channel Testing
 
@@ -127,13 +127,13 @@ A single agent deployed across multiple channels will behave identically in term
 
 **How it works:**
 
-1. Create a Connected App (Setup > App Manager > New Connected App) with OAuth 2.0 enabled. Enable `api` and `chatbot_api` OAuth scopes. This is required for external clients; internal Salesforce clients can use Session ID instead.
+1. Create a Connected App (Setup > App Manager > New Connected App) with OAuth 2.0 enabled. Enable all four required OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, and `sfap_api` ("Access the Salesforce API Platform"). `sfap_api` is the one that specifically gates the Agentforce API platform and is the most commonly omitted — leaving it out produces an auth failure with no signal naming the missing scope. This is required for external clients; internal Salesforce clients can use Session ID instead.
 2. Record the Connected App's Consumer Key and Consumer Secret. Use the OAuth 2.0 JWT Bearer Flow or Username-Password Flow to obtain an access token.
 3. Retrieve the agent ID from Setup > Agentforce Agents > select the agent > note the URL or use the Tooling API: `SELECT Id FROM BotDefinition WHERE DeveloperName = 'MyAgent'`.
-4. Start a session: `POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions` with the body `{"externalSessionKey": "<unique-session-id>", "instanceConfig": {"endpoint": "<myOrgInstanceUrl>"}}`. The response returns a `sessionId`.
-5. Send a message: `POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages` with body `{"message": {"text": "user input here", "sequenceId": 1, "type": "StaticContent"}}`.
+4. Start a session: `POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions` with the body `{"externalSessionKey": "<unique-session-id>", "instanceConfig": {"endpoint": "<myOrgInstanceUrl>"}}`. The response returns a `sessionId`.
+5. Send a message: `POST https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages` with body `{"message": {"text": "user input here", "sequenceId": 1, "type": "StaticContent"}}`.
 6. Parse the response `messages` array for the agent's reply. The `type` field on each response message indicates whether it is text, a choice prompt, or a handoff signal.
-7. Close the session when the conversation ends: `DELETE /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}`.
+7. Close the session when the conversation ends: `DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}`.
 
 **Why not the alternative:** Do not create an Apex REST endpoint (`@RestResource`) as a proxy to the agent — this bypasses Einstein Trust Layer enforcement and does not have access to the agent session model. The Agent API is the correct, supported integration surface.
 
@@ -175,7 +175,7 @@ Run through these before marking channel deployment work complete:
 - [ ] For Embedded Service: the snippet has been added to the page or Embedded Messaging component added in Experience Builder, and the site has been republished.
 - [ ] For Slack: Slack workspace admin has approved the Salesforce-managed Slack app installation.
 - [ ] For Slack: required OAuth scopes (`chat:write`, `channels:read`, `app_mentions:read`, `im:read`) are granted.
-- [ ] For Agent API: Connected App is configured with `api` and `chatbot_api` OAuth scopes.
+- [ ] For Agent API: Connected App (or External Client App) is configured with all four scopes — `api`, `refresh_token, offline_access`, `chatbot_api`, and `sfap_api`.
 - [ ] For Agent API: session creation and message endpoint have been tested and return valid responses.
 - [ ] Each channel has been tested independently in sandbox before production promotion.
 - [ ] After production metadata deployment, the agent has been manually activated in production.

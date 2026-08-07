@@ -44,7 +44,7 @@ Correct approach:
 
 ## 6. Ignoring the Org-Wide Publish Limit on Standard-Volume Events
 
-Assistants propose a Standard-Volume PE for a high-rate use case (10k+ per hour). The 6,000/hour org-wide limit is exceeded. The first symptom is `LIMIT_EXCEEDED: Event publishing rate limit reached`.
+Assistants propose a Standard-Volume PE for a high-rate use case without checking the org's edition. On Developer or Professional-with-API-Add-On the Standard-Volume publish allocation is only 1,000/hour, so a 10k/hour design fails there while passing on Enterprise (100,000/hour). The first symptom is `LIMIT_EXCEEDED: Event publishing rate limit reached`.
 
 Correct approach:
 - Ask the expected publish rate explicitly.
@@ -105,3 +105,26 @@ To publish to an external system, you do NOT publish a Salesforce Platform Event
 Correct approach:
 - Confirm whether the external system subscribes via Pub/Sub API.
 - If not, use outbound callout (REST via Named Credential + invocable Apex) directly.
+
+
+---
+
+## Anti-Pattern: The fabricated "6,000 platform events per hour" allocation
+
+**What the LLM generates:**
+
+> "Standard-Volume platform events share a 6,000/hour org-wide publish limit. A 100,000-record bulk import would exceed it by 17x — switch to High-Volume, which has a separate per-event-type allocation."
+
+**Why it happens:** No 6,000/hour figure appears anywhere in the Platform Event Allocations table. The number is a plausible-looking invention that then *propagates into arithmetic*: "exceed the limit by 17x" is exactly 100,000 ÷ 6,000, so a downstream worked example silently inherits the fabricated base and looks rigorous. That is the signature to watch for — a fabricated constant becomes much harder to spot once a calculation has been derived from it. The paired "separate per-event-type allocation" claim is a second, independent error: it is the intuitive mental model (more event types = more headroom) rather than the documented one.
+
+**Correct version** (Platform Event Allocations):
+
+| | Enterprise / Performance / Unlimited | Developer / Professional w/ API Add-On |
+|---|---|---|
+| Standard-volume publishes per hour | 100,000 | 1,000 |
+| High-volume publishes per hour | 250,000 | 50,000 (Developer) |
+| High-volume event **deliveries** per 24 h | 50,000 (Perf/Unl) / 25,000 (Ent) | 10,000 (Developer) |
+
+Every one of these is **org-wide**. Adding a second event type buys no additional headroom in either tier. The 24-hour delivery allocation is shared with Change Data Capture and is usually the binding constraint, not the publish rate.
+
+**Detection hint:** grep Flow/integration guidance for `6,000` or `6000` near `event` — it is not a platform-event allocation figure. Two structural hints that generalise: (1) an allocation quoted **without an edition** is suspect, because every platform-event allocation is edition-scoped; (2) a limit claim immediately followed by an "exceeds by Nx" calculation — verify the base before trusting the arithmetic, because the calculation is evidence the author committed to the number, not evidence the number is right. Third hint: any claim that an allocation is "per event type."

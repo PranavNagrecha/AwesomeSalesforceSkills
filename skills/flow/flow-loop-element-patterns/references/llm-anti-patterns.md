@@ -49,7 +49,7 @@ Update Records: vAcctsToUpdate
 
 **What the LLM generates:** Asked to "for each Case, find the matching Owner from the Owners collection," the model writes nested loops with a Decision inside (O(n*m)).
 
-**Why it happens:** The model recognizes the join-by-key shape and reaches for nested iteration because Flow has no native `Map<K,V>` declarative element. It does not consider that Flow's 2,000-element ceiling makes O(n*m) infeasible at any realistic data size.
+**Why it happens:** The model recognizes the join-by-key shape and reaches for nested iteration because Flow has no native `Map<K,V>` declarative element. It does not consider that O(n*m) element-executions exhaust the transaction's CPU-time budget at any realistic data size.
 
 **Correct pattern:** Pre-load one side into a collection variable, then use Map-Lookup pattern (single outer loop + bounded inner search) for low-hundreds of records, OR escalate to invocable Apex with a real `Map<Id, SObject>` for true O(n) lookup.
 
@@ -115,3 +115,20 @@ For larger volumes, escalate to Apex.
 **Correct pattern:** Inside the loop, capture any value you need post-loop into a clearly-named separate variable via Assignment. Never reference the iteration variable outside the loop.
 
 **Detection hint:** Any merge field `{!loopName_currentItem.X}` referenced in an element that comes after the loop's End connector is suspect. Either capture intent explicitly or remove the reference.
+
+
+---
+
+## Anti-Pattern: Quoting the retired 2,000-executed-element Flow limit as a live constraint
+
+**What the LLM generates:**
+
+> "Flow enforces a limit of 2,000 executed elements per interview. A loop body of 4 elements over 600 records consumes 2,400 element-executions and the flow halts with `Number of executed elements has exceeded the maximum number of 2000`. Decompose the loop or move it to invocable Apex."
+
+**Why it happens:** This limit was real, was widely written about, and was the *defining* Flow design constraint from roughly 2016 through Spring '23 — so it saturates the pre-2023 blog/StackExchange corpus the model learned loop design from. Its removal shipped quietly as a line in a KB article rather than as a headline release note, so the correction is thousands of times rarer in text than the original claim. Two secondary tells travel with it: the number is usually paired with a **fabricated error string** (`Number of executed elements has exceeded the maximum number of 2000`), and it is usually stated **unconditionally**, with no mention of the flow's API version — which is the only thing that actually determines whether it applies.
+
+**Correct version:** Salesforce's KB "Salesforce Flow Error 'Number of Iterations Exceeded'" states: *"In Salesforce Flow API version 56.0 and earlier, a maximum of 2000 Flow elements can be executed at runtime"* and *"In API version 57.0, the limit of 2000 Flow elements was removed."* API 57.0 = Spring '23. On API 57.0+ there is no element ceiling; element-heavy loops fail on **CPU time** (10,000 ms sync / 60,000 ms async) or on the shared 100-SOQL / 150-DML budgets. The real error message, on flows still pinned to API <= 56.0, is `Number of iterations exceeded` — not the reconstructed sentence above.
+
+The design advice built on top of the wrong limit is *not* all wrong: nested loops are still bad, collect-then-DML is still right, and estimating `body_elements × iterations` is still the right instinct. Keep the advice, change the reason — otherwise you decompose a perfectly viable flow, or escalate to invocable Apex, to dodge a ceiling that no longer exists.
+
+**Detection hint:** three mechanical greps. (1) `2000` or `2,000` within ~40 characters of `element` in Flow guidance. (2) The literal string `Number of executed elements` — it is not a Salesforce message; the real one is `Number of iterations exceeded`. (3) Any statement of this limit that does **not** also name an API version — the version qualifier is load-bearing, and its absence is the strongest signal the claim came from stale training data rather than from the docs.

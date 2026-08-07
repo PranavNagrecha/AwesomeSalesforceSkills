@@ -117,3 +117,30 @@ Before configuring Post Message to Slack in Flow:
 ```
 
 **Detection hint:** Any Slack action configuration that does not mention workspace connection verification or uses a channel display name instead of Channel ID is missing critical operational context.
+
+
+---
+
+## Anti-Pattern: Wrong custom-notification limits, and inverting the overflow behaviour
+
+**What the LLM generates:**
+
+> "Salesforce enforces 1,000 custom notifications per hour at the org level. When the limit is crossed, the Send Custom Notification action faults for every subsequent invocation — so always add a fault connector, or the record-triggered flow will roll back."
+
+…usually alongside "Title: max 75 characters (silently truncates)."
+
+**Why it happens:** Two distinct failure modes in one paragraph.
+
+1. **Wrong magnitude.** The documented allocation is **10,000 notification actions per hour per org** — 10x the figure LLMs typically produce. 1,000 is a very common Salesforce round number (it is, among other things, the Developer-edition platform-event publish allocation), so it is the default guess when the real value is not recalled.
+2. **Inverted mechanism — the damaging half.** The model reasons "governor limit → exception → fault path," because that is how nearly every Apex and DML limit behaves. Custom notifications do not work that way. Salesforce's own wording: *"no more notifications are sent in that hour, and all unsent notifications are lost. Notification actions resume in the next hour."* Silent drop, no exception, no rollback. A practitioner following the generated advice builds a fault connector for an exception that is never thrown, then concludes from the absence of faults that the flow is healthy while notifications are quietly being discarded.
+
+The 75-character title figure is a third, unrelated invention: it matches neither the storage limit nor the display truncation point.
+
+**Correct version:**
+
+- 10,000 notification **actions** per hour per org. One action fanned out to many users costs 1 — each notification can target up to 10,000 recipients.
+- Overflow is a **silent drop** for the remainder of the hour; processing resumes on the next hour boundary. Nothing throws.
+- Title: 250 characters stored, ~120 displayed on desktop. Body: 750 stored, ~320 displayed.
+- Org retains the most recent 1,000,000 custom notifications (trimmed at 1,200,000).
+
+**Detection hint:** grep Flow notification guidance for `1,000 custom notification` / `1000 notifications per hour`, and for `75 characters` near `title`. The generalisable structural hint is stronger than either number: **any claim that a limit both "fails silently" and "faults" is self-contradictory** — one of the two is wrong, and for custom notifications it is the fault. Concretely, flag any text that pairs "Send Custom Notification" with "fault connector" as the recommended overflow control; a fault connector cannot detect this limit.

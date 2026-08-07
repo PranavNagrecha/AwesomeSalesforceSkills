@@ -12,13 +12,22 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Image Tokens Silently Ignored in Server-Side Mode
+## Gotcha 2: Missing Images in Server-Side Output Is a Mapping Gap, Not a Mode Limitation
 
-**What happens:** A template containing `{{%CompanyLogo}}` image tokens generates successfully in server-side mode but the images are missing from the output. No error is thrown.
+**What happens:** A template containing image tokens generates successfully in server-side mode but the images are missing from the output. No error is thrown. The natural — and wrong — conclusion is "server-side doesn't support image tokens," which sends the team to re-architect around client-side generation or to pre-render logos as static template content.
 
-**When it occurs:** The template was originally designed and tested with client-side generation (where image tokens work), then reused for a server-side Integration Procedure flow without modification.
+**When it occurs:** Server-side image tokens need a **two-bundle Data Mapper setup** that the client-side path does not make obvious:
 
-**How to avoid:** Maintain separate templates for client-side and server-side generation if images are needed. For server-side, pre-render images into the document template as static content, or use a post-processing step to insert images via an external service.
+1. A **Data Mapper Extract** that retrieves the image ID from one of the supported repositories — Files (`ContentDocument`), Notes & Attachments (`Attachment`), or Documents (Contract Document).
+2. A **Data Mapper Transform** that maps the extracted data onto the document token and, optionally, defines height/width formulas.
+
+Omit the Extract, point it at an unsupported repository, or fail to map the token in the Transform, and the image silently does not render. That is the actual failure, and it is fixable.
+
+Salesforce documents this explicitly in *Map Image Tokens in the Omnistudio Data Mapper for Server-Side Omnistudio Document Generation*: "Use image tokens in a Microsoft Word or Microsoft PowerPoint document template to insert dynamic images in generated DOCX and PDF files. The image token must start with `IMG_`, such as `{{IMG_header}}`."
+
+**Also check the token spelling.** A second silent-blank cause is invented syntax — `{{%CompanyLogo}}` instead of `{{IMG_CompanyLogo}}`. The engine does not recognise the token, does not error, and leaves a blank. `scripts/check_document_generation_omnistudio.py` flags this mechanically.
+
+**How to avoid:** Before concluding a mode limitation, verify in order: (1) the token uses the `IMG_` prefix inside the braces; (2) a Data Mapper Extract sources the image from a supported repository; (3) the Data Mapper Transform maps the extracted image to that token; (4) the rendered size is inside 350 px × 400 px on A4 portrait, or both height and width are defined to reach 600 px × 800 px. A single template can then serve both modes.
 
 ---
 

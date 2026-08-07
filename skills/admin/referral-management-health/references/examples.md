@@ -20,7 +20,7 @@
 
 ## Example 2: Fixing Blank Provider Search Results
 
-**Context:** A Health Cloud implementation has provider records (Accounts with HealthcareProvider record type) set up correctly. The care coordinator uses the provider search component but every search returns zero results.
+**Context:** A Health Cloud implementation has provider data set up correctly — `HealthcareProvider` records (the standard PRM object) linked to the relevant Accounts and Contacts. The care coordinator uses the provider search component but every search returns zero results.
 
 **Problem:** The Data Processing Engine (DPE) job that populates CareProviderSearchableField was never run, and the automated process user lacks the Data Pipelines Base User permission set license — causing the job to complete with zero records written and no visible error in the provider search UI.
 

@@ -236,3 +236,32 @@ handleShowError(event) {
 ```
 
 **Detection hint:** `ShowToastEvent` dispatched from a component that is inside a `LightningModal` or a deeply nested slot.
+
+
+---
+
+## Anti-Pattern: Inventing `lightning/platformNotificationService` for Experience Cloud toasts
+
+**What the LLM generates:**
+
+```javascript
+import { ShowNotification } from 'lightning/platformNotificationService';
+// or
+import { NotificationsLibrary } from 'lightning/platformNotificationService';
+```
+
+…usually attached to a *correct* diagnosis ("`ShowToastEvent` doesn't render in Experience Cloud, so use the platform notification service instead").
+
+**Why it happens:** The mechanism is real and the model knows it, so it confabulates a module name to fit. Three real things get blended: (1) the Aura component `lightning:notificationsLibrary`, which is Aura-only and has no LWC equivalent; (2) the *custom notification* feature (Notification Builder / Send Custom Notification action), which is server-side automation and unrelated to in-page toasts; (3) the genuine `lightning/platform*` module family (`lightning/platformShowToastEvent`, `lightning/platformResourceLoader`), whose naming convention makes `lightning/platformNotificationService` look plausible. No such module exists and no `ShowNotification` export exists anywhere in the LWC platform module set, so the import fails at compile time.
+
+**Correct version:**
+
+```javascript
+import Toast from 'lightning/toast';
+
+Toast.show({ label: 'Saved', message: 'Record updated.', variant: 'success', mode: 'dismissible' }, this);
+```
+
+`Toast.show(config, component)` — the second argument is the component reference and is required. Add `lightning-toast-container` (`lightning/toastContainer`) in LWR sites to control placement. Salesforce's Toast Notifications page states `lightning/platformShowToastEvent` "isn't supported on login pages in Aura sites, LWR sites for Experience Cloud, and standalone apps" and recommends `lightning/toast` instead.
+
+**Detection hint:** grep for `platformNotificationService`, `ShowNotification`, or `NotificationsLibrary` in any `.js` file or LWC guidance — zero of the three is a real LWC module or export. More generally: any `lightning/…` import whose module name is not in the documented Salesforce module list. Second hint: `Toast.show(` called with one argument — the missing component reference is the most common real-API mistake once the module name is right.

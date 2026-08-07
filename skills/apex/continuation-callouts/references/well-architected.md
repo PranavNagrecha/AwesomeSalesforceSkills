@@ -28,7 +28,7 @@
 
 ## Anti-Patterns
 
-1. **Blocking the Salesforce request thread with a slow synchronous callout** — Calling `new Http().send(req)` in a Visualforce action method or standard `@AuraEnabled` method for services that take more than 5–10 seconds causes timeout failures and degrades Salesforce thread pool availability. Use `Continuation` for any callout that may exceed 10 seconds in user-initiated UI contexts.
+1. **Blocking the Salesforce request thread with a slow synchronous callout** — Calling `new Http().send(req)` in a Visualforce action method or standard `@AuraEnabled` method for services that take more than 5–10 seconds holds the request thread for the full wait and degrades thread-pool availability. It also fails with `Read timed out` if the timeout is left at its 10-second default. Raising `req.setTimeout()` (legal up to 120,000 ms) fixes the timeout but not the blocked thread, so it is not a substitute: use `Continuation` for any user-initiated UI callout slow enough to be noticeable.
 
 2. **Using `@future` or Queueable as a workaround for UI-initiated slow callouts** — Moving the callout into an async job avoids the timeout but introduces polling complexity, DML overhead for storing results, and a degraded user experience (page refresh required). The Continuation pattern was purpose-built for this scenario and should be the default choice.
 
@@ -43,6 +43,8 @@
 - Apex Developer Guide: Continuation Class Overview — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm
 - Apex Developer Guide: Continuation Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_limits.htm
 - Apex Developer Guide: Apex Callouts — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm
+- Apex Developer Guide: Callout Timeouts — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm — "The default timeout is 10 seconds"; "the minimum is 1 millisecond and the maximum is 120,000 milliseconds"; "The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds"
+- Apex Reference Guide: HttpRequest.setTimeout — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm — settable range applies in synchronous and asynchronous Apex alike
 - Apex Reference Guide: Continuation Class — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Continuation.htm
 - LWC Developer Guide: Make Long-Running Callouts with Continuations — https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.apex_continuations
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

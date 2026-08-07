@@ -2,18 +2,22 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: The beta wall is org-shaped
+## Gotcha 1: The gate is the release, not the org type — and the beta-era rules are gone
 
-**What happens:** the app works perfectly through the whole sandbox pilot, then the
-production rollout is blocked outright — beta apps cannot be deployed to production orgs.
+**What happens:** a team is told (by an assistant, a stale blog post, or an internal doc
+written during the beta) that Multi-Framework cannot ship to production, and rewrites the app
+in LWC or postpones the release. Multi-Framework went **GA in July 2026** and deploys to
+production, sandbox, Developer Edition, and scratch orgs.
 
-**When it occurs:** any plan that treats the Multi-Framework open beta as "GA with an
-asterisk." The beta is restricted to **scratch orgs and sandboxes that use English as the
-org default language**; non-English-default orgs are excluded even for pilots.
+**When it occurs:** any plan sourced from the April 2026 beta announcement rather than the
+July 2026 GA announcement. The beta restrictions — sandboxes/scratch orgs only, English
+default language only, no production deploys — **no longer apply**.
 
-**How to avoid:** state the beta boundary in the first estimate. If the requirement is a
-production app on a fixed date, build it as LWC (`lwc/*` skills) and treat the React version
-as a forward-looking spike.
+**How to avoid:** check the **release** of the target org, which is the actual gate:
+Summer '26 (API 67.0) or later. Also check the SDK package name, because the same staleness
+usually travels with it (`@salesforce/sdk-data` is the beta package; `@salesforce/platform-sdk`
+is GA). Keep the qualifiers that survived GA: the ACC Web SDK is still Beta, and Lightning-page
+micro-frontend embedding is still a pilot.
 
 ---
 

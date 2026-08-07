@@ -116,20 +116,33 @@ To add a cross-filter:
 
 **What the LLM generates:** "Add 25 components to the dashboard to show all the key metrics."
 
-**Why it happens:** LLMs add components without considering limits. Dashboards support a maximum of 20 components. Reports support up to 250 groupings and 2,000 rows in dashboard charts. Report subscriptions have per-user limits. Exceeding limits causes silent truncation or errors.
+**Why it happens:** LLMs add components without considering limits, and they reach for whichever report number they remember most strongly — usually 2,000, which is the *on-screen row display cap* and gets misapplied to exports, groupings and chart capacity. Exceeding real limits causes silent truncation or errors.
 
 **Correct pattern:**
 
 ```
 Key limits for reports and dashboards:
-- Dashboard components: max 20 per dashboard.
-- Dashboard columns: 3 (9 components per column for a 3-column layout).
-- Report rows in dashboard chart: max 2,000.
+- Dashboard widgets: max 25 per dashboard (of which max 20 charts/tables,
+  max 3 images, max 25 rich text widgets).
+- Dashboard layout: Lightning uses a flexible 12- or 9-column grid
+  (the fixed "3 columns" figure is Salesforce Classic only).
+- Dashboard filters: max 5 per dashboard, max 50 values per filter.
+- Dashboard widget groupings: a widget can calculate up to 1,000 groupings.
+- Report chart groups (Lightning): max 2,000 groups.
 - Report groupings: max 3 for Summary, 2 row + 2 column for Matrix.
-- Report subscriptions: max 5 per user (Enterprise edition).
-- Joined report blocks: max 5 blocks.
-- Dashboard refresh: auto-refresh every 24 hours minimum.
-- Report export rows: 2,000 for formatted, no limit for Excel export.
+- Report rows displayed on screen: 2,000. This is a DISPLAY cap, not an
+  export cap — do not reuse this number anywhere else.
+- Joined report blocks: max 5 blocks, max 100 columns per block;
+  joined report export / printable view: 20,000 rows.
+- Subscriptions: 500 report + 500 dashboard subscriptions per org per hour,
+  max 500 recipients per subscription.
+- Report export rows:
+    * Formatted Report (.xlsx only): 100,000 rows x 100 columns for tabular
+      and summary reports; 2,000 rows x 100 columns for MATRIX reports.
+    * Details Only as .xlsx: 100,000 rows x 100 columns.
+    * Details Only as .xls or .csv: no Salesforce row cap — bounded by the
+      receiving spreadsheet tool (1,048,576 rows in modern Excel).
+    * Long/rich text fields truncate to 255 characters in every export.
 
 Design for the limits:
 - Prioritize the top 10-15 metrics per dashboard.
@@ -137,4 +150,62 @@ Design for the limits:
 - Use report-level drill-down for detail, not dashboard-level complexity.
 ```
 
-**Detection hint:** If the output adds more than 20 dashboard components or creates reports with more than 3 grouping levels, limits will be exceeded. Count components and grouping levels.
+**Detection hint:** If the output adds more than 20 chart/table widgets to a
+dashboard, or more than 3 grouping levels to a summary report, the limit is
+exceeded. Separately, grep the output for `2,000` / `2000`: that number is
+correct ONLY for (a) the on-screen row display cap, (b) Lightning report chart
+groups, and (c) a *matrix* Formatted Report export. If it appears attached to
+"export rows" generally, to "groupings", or to "rows in a dashboard chart",
+the number has been relabelled onto the wrong dimension — the export figure is
+100,000 and the dashboard-widget grouping figure is 1,000.
+
+---
+
+## Anti-Pattern 6: Inventing the Historical Trend Reporting matrix
+
+**What the LLM generates:** "Enable Historical Trending on Leads to trend
+lead status week over week. Historical Trending supports Opportunities,
+Cases, Leads, Forecasts and up to 3 custom objects; you can track Date,
+Date/Time, Number, Currency, Percent, Checkbox and Picklist fields, and keep
+up to 8 date snapshots per record."
+
+**Why it happens:** Historical Trend Reporting sits next to two adjacent
+features with different rules — Field History Tracking (which *does* work on
+Leads, and carries its own per-object trackable-field allowance) and Reporting
+Snapshots (which work on any object). The model blends the three, and the
+blend is what makes the output dangerous: every element is a real Salesforce
+fact, just filed under the wrong feature. The snapshot-date count is the
+clearest case — small field-tracking allowances are the numbers most available
+in memory near this topic, and one of them gets re-attached to the
+snapshot-date dimension, where the documented figure is 5. Leads are added
+because lead-funnel trending is such a common request that the feature *feels*
+like it must support it.
+
+**Correct pattern:**
+
+```
+Historical Trend Reporting (Setup -> Historical Trending):
+- Objects: Opportunities, Cases, Forecasting Items, and up to 3 custom
+  objects. Leads are NOT supported.
+- Trackable field types: Number, Currency, Date, Picklist, Lookup.
+  Date/Time, Percent and Checkbox are NOT trackable. Formula fields are
+  not supported at all.
+- Snapshot dates per historical trend report: up to 5.
+- Historical filters per report: up to 4.
+- Fields per historical trend report: up to 100.
+- Retention: previous 3 months plus the current month (12 months for
+  Opportunity history with Pipeline Inspection historical trending on).
+- Storage: up to 5 million rows of trending data per object; collection
+  stops above that, with an admin alert at 70%.
+- No retroactive data: tracking starts the day you enable it.
+
+For lead-funnel trending, use a Reporting Snapshot into a custom object,
+or Field History Tracking plus a history report — not Historical Trending.
+```
+
+**Detection hint:** Grep the output for `Historical Trend`. If the same
+sentence also contains `Lead`, `Date/Time`, `Percent`, `Checkbox`, or a
+snapshot-date count other than `5`, it is wrong. A second mechanical check:
+`Forecasting Items` must be present in any supported-object list — an answer
+that says "Forecasts" but omits Cases or includes Leads was generated from
+memory of Field History Tracking, not from the Historical Trending doc.

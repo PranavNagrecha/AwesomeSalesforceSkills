@@ -31,7 +31,7 @@
 | | | ☐ Yes ☐ No | |
 | | | ☐ Yes ☐ No | |
 
-*(Add rows as needed. Remember: 1,000 value max for standard picklists; 500 active for multi-select.)*
+*(Add rows as needed. Remember: 1,000 value max for standard picklists; 500 values max for multi-select — and no more than 100 of them selectable on one record.)*
 
 **Default value (if any):** ___________________
 

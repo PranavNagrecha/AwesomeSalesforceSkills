@@ -33,7 +33,7 @@ export function subscribeRecordUpdate(handler) {
 ```javascript
 // accountSummary.js
 import { LightningElement, wire, api } from 'lwc';
-import { getRecord, refreshApex } from 'lightning/uiRecordApi';
+import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
 import { subscribeRecordUpdate } from 'c/recordSyncBus';
 
 const FIELDS = ['Account.LastActivityDate'];
@@ -51,7 +51,11 @@ export default class AccountSummary extends LightningElement {
     connectedCallback() {
         this.unsubscribe = subscribeRecordUpdate(({ recordId }) => {
             // Refresh the account if the saved record was its own case child
-            if (recordId === this.recordId) refreshApex(this.wired);
+            // getRecord is an LDS wire, so refreshApex does NOT apply here —
+            // notifyRecordUpdateAvailable invalidates the LDS cache entry instead
+            if (recordId === this.recordId) {
+                notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+            }
         });
     }
 
@@ -61,7 +65,7 @@ export default class AccountSummary extends LightningElement {
 }
 ```
 
-**Why it works:** `BroadcastChannel` does not echo to the sender; only other tabs receive the message. The `unsubscribe` returned from `subscribe` is the cleanup the `disconnectedCallback` needs.
+**Why it works:** `BroadcastChannel` does not echo to the sender; only other tabs receive the message. The `unsubscribe` returned from `subscribe` is the cleanup the `disconnectedCallback` needs. `notifyRecordUpdateAvailable` is the correct refresh primitive because the data came from `getRecord` (Lightning Data Service). `refreshApex` — imported from `@salesforce/apex`, never from `lightning/uiRecordApi` — only works on results provisioned by an Apex `@wire`.
 
 ---
 

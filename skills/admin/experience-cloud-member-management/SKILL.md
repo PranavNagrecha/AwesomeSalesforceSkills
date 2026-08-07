@@ -85,7 +85,7 @@ Self-registration lets anonymous visitors register as site members without an ad
 
 - **Default Account** — Every self-registered user must be associated with an account. Configure a "catch-all" account in Setup > Digital Experiences > [site] > Administration > Registration > Default New User Account. Without this, self-registration silently fails.
 - **Default Profile** — The profile assigned to new self-registered users. Must be an external profile tied to the correct license. Set in the same Registration settings panel.
-- **Handler** — Either the declarative "Configurable Self-Registration" page (preferred for most orgs on LWR or Aura sites using the standard page) or a custom Apex class implementing `Auth.ConfigurableSelfRegHandler`. The legacy `Auth.RegistrationHandler` interface is older and requires writing a `createUser` and `updateUser` method; `ConfigurableSelfRegHandler` is the current interface and provides a single `registerUser` method with a richer context object.
+- **Handler** — Either the declarative "Configurable Self-Registration" page (preferred for most orgs on LWR or Aura sites using the standard page) or a custom Apex class implementing `Auth.ConfigurableSelfRegHandler`, which declares exactly one method: `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)`. It returns the Id of the user it created. `Auth.RegistrationHandler` is a **different interface for a different job** — just-in-time provisioning behind an Auth. Provider (SSO / social sign-on), with `User createUser(Id portalId, Auth.UserData userData)` and `void updateUser(Id userId, Id portalId, Auth.UserData userData)`. It is not a legacy version of the self-reg handler and the two are not substitutes.
 
 ### Login Page Branding
 
@@ -111,7 +111,7 @@ Changes to the login page do not require a site re-publish if you are only adjus
 4. Choose the handler: for standard registration pages, leave it as Configurable Self-Registration (no code needed). For custom flows, implement `Auth.ConfigurableSelfRegHandler` in Apex and reference the class name in the Registration settings.
 5. Test by navigating to the site's login URL as a guest and clicking Register.
 
-**Why not the alternative:** Using the legacy `Auth.RegistrationHandler` interface requires writing more boilerplate Apex and does not receive new platform improvements. Prefer `Auth.ConfigurableSelfRegHandler` on all new implementations.
+**Why not the alternative:** `Auth.RegistrationHandler` is not an alternative here — it is the registration hook for an Auth. Provider (SSO or social sign-on JIT provisioning) and takes `Auth.UserData`, which self-registration never supplies. For a site's own self-registration page, `Auth.ConfigurableSelfRegHandler` is the only applicable interface.
 
 ### Pattern: Partner User Onboarding via Manual Addition
 
@@ -135,7 +135,7 @@ Changes to the login page do not require a site re-publish if you are only adjus
 | Large B2C portal, users self-onboard | Self-registration with Configurable Self-Reg page or `Auth.ConfigurableSelfRegHandler` | Scales without admin touch; declarative option requires no code for standard flows |
 | Small partner network, each partner vetted | Manual user creation / Enable Partner User on Contact | Per-user control without granting broad profile membership |
 | Existing internal profile needs to access portal | Create a new external profile tied to the external license | You cannot reuse internal profiles for external users; license binding prevents it |
-| Need custom post-registration logic (e.g., assign to correct account dynamically) | Custom `Auth.ConfigurableSelfRegHandler` Apex class | Provides `registerUser` hook where account, profile, and user fields can be set programmatically |
+| Need custom post-registration logic (e.g., assign to correct account dynamically) | Custom `Auth.ConfigurableSelfRegHandler` Apex class | Its `createUser(accountId, profileId, registrationAttributes, password)` hook receives the configured account and profile and can override both before calling `Site.createExternalUser` |
 | Login page must match brand guidelines | Experience Builder Login & Registration settings | No code required; publish after structural changes |
 
 ---
@@ -172,7 +172,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Deactivated users still consume license seats** — Deactivating an external user does not free the license. You must deactivate the user AND then go to Setup > Company Information to confirm the count drops. If license seats are exhausted, new user creation fails silently or with a generic error. Audit inactive external users regularly.
 2. **Profile-license binding is permanent** — A profile created for the Customer Community license can never be reassigned to the Partner Community license or any other license. Attempting to change the license on an existing profile throws an error. If you chose the wrong license, you must create a new profile and migrate users.
-3. **`Auth.ConfigurableSelfRegHandler` vs legacy `Auth.RegistrationHandler`** — The legacy interface requires implementing `createUser(portalId, userId, registrationAttributes, password)` and `updateUser(...)`. The current interface (`Auth.ConfigurableSelfRegHandler`) uses a single `registerUser(context)` method with a richer `Auth.SelfRegistrationContext` object. LLMs trained on older material often generate the legacy signature; always verify which interface is expected in the Registration settings panel.
+3. **`Auth.ConfigurableSelfRegHandler` and `Auth.RegistrationHandler` are different jobs, not old and new** — `Auth.ConfigurableSelfRegHandler` backs a site's own self-registration page and declares one method, `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)`, returning the new User's Id. `Auth.RegistrationHandler` backs an Auth. Provider (SSO / social sign-on) and declares `User createUser(Id portalId, Auth.UserData userData)` plus `void updateUser(Id userId, Id portalId, Auth.UserData userData)`. Models frequently emit a third, nonexistent shape — `registerUser(Auth.SelfRegistrationContext)` returning a `User`. Neither that method nor that class exists in the Auth namespace; code using them will not compile.
 4. **Self-registration fails silently without a Default Account** — If the Default New User Account is not set in the Registration settings, self-registration POST requests return a generic error page with no useful debug output. This is the single most common self-reg setup mistake. Confirm the account is set and is not a Person Account (standard accounts only for the catch-all).
 5. **Login page changes require a publish to take effect for structural changes** — Style-only changes (CSS, background colour) may propagate without a full publish in some scenarios, but adding or removing components on the login page always requires clicking Publish in Experience Builder before external users see the change.
 

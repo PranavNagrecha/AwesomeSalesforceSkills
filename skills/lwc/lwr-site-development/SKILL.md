@@ -87,7 +87,9 @@ LWR sites use Lightning Web Security (LWS) instead of Lightning Locker. LWS is s
 | Third-party library integration | Easier — analytics and charting libraries can interact with DOM elements more naturally. |
 | Restricted DOM properties | `document.domain`, `document.location`, `window.location`, and `window.top` are unsupported. |
 
-The org-level `Use Lightning Web Security` setting in Session Settings has **no effect** on LWR sites. LWS is always active at the site level, regardless of the org setting.
+The org-level `Use Lightning Web Security` setting in Session Settings has **no effect** on LWR sites — but do not read that as "LWS is always on." An LWR site runs its own instance of LWS, controlled by a **site-level toggle in Experience Builder**, and that toggle can be turned off: disable LWS in the site and the site's instance is disabled even while LWS is enabled org-wide. The independence runs in both directions.
+
+This matters for review, not just configuration: you cannot infer from the org's Session Settings that a given LWR site is sandboxed. Check the site setting. B2B and D2C Commerce store templates, for example, ship with **both** Locker and LWS disabled — so a component deployed there has unmediated DOM access and must sanitize its own output.
 
 Existing components built for Aura sites or Lightning Experience may rely on Locker-specific patterns. Test them in an LWR site context before deploying.
 

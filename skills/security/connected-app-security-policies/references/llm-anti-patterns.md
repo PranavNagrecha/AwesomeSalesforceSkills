@@ -70,8 +70,11 @@ To enforce MFA and deny low-assurance access, set policy to "Blocked."
 
 ```
 When JWT Bearer returns invalid_grant, check in this order:
-1. Clock drift on the signing server (NTP sync; 60-second window)
-2. JWT TTL > 3 minutes (exp - iat must be ≤ 3 minutes)
+1. Clock drift on the signing server (NTP sync). The documented tolerance is a
+   3-minute buffer applied to `exp` — NOT a 60-second window on `iat`.
+2. `exp` already in the past, or so far in the past that the 3-minute buffer
+   cannot cover it. (`iat` is not a required claim for this flow: the required
+   set is iss, sub, aud, exp.)
 3. Wrong audience (aud must be the Salesforce login URL)
 4. Certificate thumbprint or key mismatch
 5. Permission set / profile API access
@@ -118,3 +121,31 @@ Audit Connected App IP relaxation separately from profile IP range audits.
 Use the current Metadata API ConnectedApp reference (v63+) to confirm field names. Always retrieve the ConnectedApp metadata from the target org after deployment and verify policy fields are present and correct.
 
 **Detection hint:** ConnectedApp metadata XML that does not include an `<oauthPolicy>` block when IP or session policies are being configured.
+
+---
+
+## Anti-Pattern: Inventing a 60-Second `iat` Window for the JWT Bearer Flow
+
+**What the LLM generates:** "The assertion's `iat` and `exp` claims must satisfy `exp - iat <= 3 minutes`, and the JWT must reach Salesforce within 60 seconds of `iat`. Any clock skew beyond 60 seconds produces `invalid_grant`."
+
+**Why it happens:** `iat` *is* a standard RFC 7519 claim and many JWT-issuing systems do enforce a freshness window on it, so the model transfers the general JWT idiom onto Salesforce's specific flow. The real "3 minutes" from the documentation is present in the answer — attached to the wrong pair of claims — which is what makes the whole sentence read as researched. The invented "60 seconds" is then stated with false precision, and precision is exactly what an engineer trusts when debugging.
+
+**Why it costs time at the worst moment:** `invalid_grant` is Salesforce's catch-all JWT failure. An engineer told the threshold is 60 seconds will chase sub-minute NTP drift, conclude the clocks are fine because they are within 60 seconds, and never check the condition that actually failed — an `exp` outside the real 3-minute buffer, or a wrong `aud`, or a certificate mismatch.
+
+**Correct pattern:**
+```
+Required claims for the Salesforce OAuth 2.0 JWT bearer flow:
+    iss   the connected app's OAuth client_id
+    sub   the username to authenticate as
+    aud   the authorization server URL (https://login.salesforce.com, or
+          https://test.salesforce.com for a sandbox)
+    exp   expiry, seconds since 1970-01-01T00:00:00Z UTC
+
+`iat` is NOT required and carries no documented freshness window.
+
+Clock skew: "Salesforce allows a 3-minute buffer for clock skew." The buffer
+applies to `exp`. Set exp a few minutes out, keep the signing host on NTP,
+and log the exp you signed so drift is diagnosable.
+```
+
+**Detection hint:** any numeric constraint on `iat` in a Salesforce JWT context, and specifically the pairing of `60 seconds` with `iat`. Also flag `exp - iat <= 3 minutes` as an expression — the documented 3 minutes is a *tolerance applied to `exp`*, not a constraint on the interval between the two claims. Mechanically: a JWT signer whose only skew instrumentation logs `iat` is instrumenting the claim Salesforce does not check.

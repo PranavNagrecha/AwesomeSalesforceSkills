@@ -73,13 +73,29 @@ Record Sharing detail → "Why can this user access this record?" — surfaces t
 
 ### __Share objects
 
-Query `<Object>__Share` for non-Public OWD objects:
+Every object with a non-Public OWD has a share object, but **standard and custom objects
+name their share object and its fields differently** — getting this wrong is the most common
+reason a diagnostic query fails to compile.
+
+| | Standard object | Custom object |
+|---|---|---|
+| Share object | `AccountShare`, `OpportunityShare`, `CaseShare` — append `Share`, no underscores | `Project__Share` — replace the `__c` suffix with `__Share` |
+| Parent lookup field | `AccountId`, `OpportunityId`, `CaseId` — `<Object>Id` | `ParentId` |
+| Access level field | `AccountAccessLevel`, `OpportunityAccessLevel` — `<Object>AccessLevel` | `AccessLevel` |
+| Custom Apex sharing reason | **Not available** | Available |
 
 ```
-SELECT UserOrGroupId, AccessLevel, RowCause FROM Account__Share WHERE ParentId = '001...'
+-- Standard object
+SELECT UserOrGroupId, AccountAccessLevel, RowCause FROM AccountShare WHERE AccountId = '001...'
+
+-- Custom object
+SELECT UserOrGroupId, AccessLevel, RowCause FROM Project__Share WHERE ParentId = 'a01...'
 ```
 
-`RowCause` values: Owner, Manual, Rule, Team, Implicit, `<ApexRowCause>`.
+`RowCause` values: Owner, Manual, Rule, Team, Implicit, and — **on custom objects only** —
+a declared Apex sharing reason. The Apex Developer Guide states plainly: "Apex sharing reasons
+and Apex managed sharing recalculation are only available for custom objects."
+`Account__Share` does not exist in any org.
 
 ## Common Patterns
 
@@ -96,8 +112,15 @@ WHERE UserId = :uid AND RecordId = :rid
 ### Pattern: Trace via __Share table
 
 ```
+-- Standard object (note AccountId / AccountAccessLevel, not ParentId / AccessLevel)
+SELECT Id, UserOrGroupId, AccountAccessLevel, RowCause, AccountId
+FROM AccountShare
+WHERE AccountId = :rid
+ORDER BY RowCause
+
+-- Custom object
 SELECT Id, UserOrGroupId, AccessLevel, RowCause, ParentId
-FROM Account__Share
+FROM Project__Share
 WHERE ParentId = :rid
 ORDER BY RowCause
 ```

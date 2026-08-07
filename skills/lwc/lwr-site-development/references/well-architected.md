@@ -42,3 +42,5 @@
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html — LWC design guidelines, composition, and coding best practices
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide — base component behavior and supported usage in LWR context
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — Trusted/Easy/Adaptable framing for architectural decisions
+- Lightning Web Security in LWR Sites (LWR sites have their own LWS instance, set by a site-level toggle independently of the org setting; verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.exp_cloud_lwr.meta/exp_cloud_lwr/template_differences_locker.htm
+- Experience Builder Sites and LWS — https://developer.salesforce.com/docs/platform/lightning-components-security/guide/lws-lms-ec.html

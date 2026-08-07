@@ -24,10 +24,13 @@
 
 - **Probabilistic vs deterministic encryption.** Probabilistic is
   cryptographically stronger; deterministic is the only path that
-  preserves filterability and sortability. The decision is per field,
-  driven by what queries / reports the business needs against the
-  field. Wrong choice produces either weaker security than necessary
-  or queries that silently return zero rows.
+  preserves **exact-match filterability**. Neither preserves
+  sortability — no scheme does. The decision is per field, driven by
+  what queries / reports the business needs against the field. Wrong
+  choice produces either weaker security than necessary or queries that
+  silently return zero rows. A field that must be sorted or
+  range-scanned is not a scheme decision at all: it needs an
+  unencrypted sortable surrogate, or it stays unencrypted.
 - **CCKM vs BYOK vs Salesforce-managed keys.** Strongest custody
   posture (CCKM) couples encryption availability to HSM availability.
   Middle ground (BYOK) gives customer-controlled rotation without
@@ -64,6 +67,8 @@
 
 - Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=salesforce_shield.htm&type=5
 - Shield Platform Encryption concepts — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_concepts.htm&type=5
+- Filter Encrypted Data with Deterministic Encryption — deterministic restores exact-match filtering in SOQL, reports and list views (case-sensitive or case-insensitive), which probabilistic does not — https://help.salesforce.com/s/articleView?id=sf.security_pe_deterministic.htm&language=en_US&type=5
+- General Shield Platform Encryption Considerations — sorting is not restored by any scheme: "You can't sort records in list views by fields that contain encrypted data", and encrypted fields can't be referenced in filtering or sorting contexts in flows, orchestrations and processes (consulted 2026-08-01; help.salesforce.com would not render for direct quotation, so the sort restriction is additionally corroborated by the mechanism — determinism is an equality property and carries no ordering information) — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_considerations_general.htm&language=en_US&type=5
 - Shield Platform Encryption BYOK — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_byok.htm&type=5
 - Cache-Only Key Service — https://help.salesforce.com/s/articleView?id=xcloud.security_pe_cache_only_keys.htm&type=5
 - Field Audit Trail — https://help.salesforce.com/s/articleView?id=xcloud.field_audit_trail.htm&type=5

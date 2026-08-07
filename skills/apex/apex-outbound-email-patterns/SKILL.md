@@ -91,15 +91,29 @@ part traps every team at least once.
    a list parallel to the input — each element carries `isSuccess()`,
    `getErrors()`, and a status code. Treating the call as fire-and-
    forget hides per-recipient failures.
-7. **Cap and observe daily-limit errors.** Catch
-   `System.HandledException` containing `SINGLE_EMAIL_LIMIT_EXCEEDED`
-   and degrade gracefully (queue for retry the next day, surface to
+7. **Cap and observe daily-limit errors.** How the daily-limit failure
+   reaches you depends on the `allOrNothing` argument, and getting this
+   wrong means the handler silently never runs:
+   - `sendEmail(msgs)` or `sendEmail(msgs, true)` — throws
+     `System.EmailException` (**not** `System.HandledException`, which is
+     the generic Visualforce/Aura surface exception and will never match
+     here). Catch `EmailException` and check for
+     `SINGLE_EMAIL_LIMIT_EXCEEDED`.
+   - `sendEmail(msgs, false)` — does **not** throw at all. Inspect each
+     `Messaging.SendEmailResult`: `isSuccess()` and `getErrors()`, whose
+     entries carry the status code.
+
+   Then degrade gracefully (queue for retry the next day, surface to
    monitoring). 5,000/day is per-org, not per-user.
 
 ## SingleEmailMessage vs Email Alert vs MassEmailMessage
 
-- **SingleEmailMessage**: programmatic; up to 100 recipients per call;
-  supports attachments, OWE, ReplyTo, custom merge.
+- **SingleEmailMessage**: programmatic; **up to 150 recipients per
+  message**, counted as the *combined total* of `toAddresses` +
+  `ccAddresses` + `bccAddresses` — not 150 in each. Each of those three
+  fields is separately capped at 4,000 bytes, so long address lists can
+  hit the byte cap before the recipient count. Supports attachments,
+  OWE, ReplyTo, custom merge.
 - **Email Alert (Flow)**: declarative; admin-editable template and
   recipient set; respects OWE; cannot conditionally branch attachments.
 - **MassEmailMessage**: deprecated for new work; keep only legacy

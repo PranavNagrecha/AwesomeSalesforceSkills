@@ -74,7 +74,7 @@ Avoid it:
 
 ## 10. `Publish After Commit` Semantics Are Not The Same As Async
 
-A Platform Event published with `Publish After Commit` delivers AFTER the current DML commits, but the SUBSCRIBER runs in its own async transaction. The publisher still publishes in the current transaction's context and the publish DML counts against the publish limit (6,000/hour org-wide). This is NOT the same as "move work to async" — it's "defer delivery until commit".
+A Platform Event published with `Publish After Commit` delivers AFTER the current DML commits, but the SUBSCRIBER runs in its own async transaction. The publisher still publishes in the current transaction's context and the publish DML counts against the org-wide hourly publish allocation (Standard-Volume: 100,000/hour on Enterprise / Performance / Unlimited, 1,000/hour on Developer and Professional-with-API-Add-On). This is NOT the same as "move work to async" — it's "defer delivery until commit".
 
 Avoid it:
 - Read the publisher's and subscriber's transaction contexts separately when debugging.

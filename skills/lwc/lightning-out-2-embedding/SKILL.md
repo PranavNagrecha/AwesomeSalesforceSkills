@@ -200,5 +200,3 @@ Non-obvious platform behaviors that cause real production problems:
 - `lwc/lwc-app-builder-config` — author and expose the custom LWC (`@api` properties, targets) that Lightning Out 2.0 embeds.
 - `security/oauth-connected-apps` — the OAuth authorization / token model behind the frontdoor-URL exchange and the fallback flow.
 - `flow/flow-for-experience-cloud` — the *different* pattern for surfacing Salesforce UI on a Salesforce-hosted Experience site; don't confuse it with external embedding.
-</content>
-</invoke>

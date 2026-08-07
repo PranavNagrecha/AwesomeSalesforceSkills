@@ -49,7 +49,7 @@ This skill activates when you need to audit, standardize, or upgrade the API ver
 Gather this context before working on anything in this domain:
 
 - **What is the project's `sourceApiVersion`?** Found in `sfdx-project.json`, this is the baseline version the project intends to use. Individual components can override it, and that override is where drift begins.
-- **What is the current Salesforce release?** Each major release (Spring, Summer, Winter) increments the API version by 1. As of Spring '25, the current API version is 63.0. Salesforce retires versions on a rolling basis — versions 7.0 through 30.0 were retired in Summer '22, and versions 21.0-30.0 lose support according to the minimum 3-year deprecation notice policy.
+- **What is the current Salesforce release?** Each major release (Spring, Summer, Winter) increments the API version by 1. Anchor points: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0. Salesforce retires versions on a rolling basis in distinct waves — 7.0 through 20.0 were **retired** in Summer '22; 21.0 through 30.0 were **deprecated** in Summer '22 and **retired** in Summer '25, consistent with the minimum 3-year deprecation notice policy. Deprecated and retired are not the same state: a deprecated version still works.
 - **Are there integrations using explicit API version numbers?** External systems calling `/services/data/vXX.0/` or `/services/Soap/c/XX.0` endpoints pin to a version. These must be inventoried alongside metadata.
 
 ---
@@ -74,7 +74,14 @@ Salesforce publishes an API End-of-Life policy with a minimum 3-year deprecation
 - Metadata components pinned to that version may exhibit undefined behavior or deployment failures.
 - `ApiTotalUsage` event logs in Event Monitoring track which versions are actively called, providing a detection mechanism before retirement hits.
 
-Versions 7.0-30.0 were retired in Summer '22. The next retirement wave will follow the same 3-year notice pattern. Proactive scanning is essential because Salesforce does not automatically upgrade component versions.
+Two distinct waves have completed, and conflating them is the most common error in this area:
+
+| Versions | Deprecated | Retired |
+|---|---|---|
+| 7.0 – 20.0 | before Summer '22 | **Summer '22** |
+| 21.0 – 30.0 | **Summer '22** | **Summer '25** |
+
+So the "3-year notice" is visible in the second row: deprecation in Summer '22, retirement three years later in Summer '25. As of Summer '26 the 21.0–30.0 wave has already landed — a team planning against "the next wave" using the Summer '22 date is reasoning with three-year-stale runway. Calls to a retired version fail hard: REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, Bulk returns `400 InvalidVersion`. Proactive scanning is essential because Salesforce does not automatically upgrade component versions.
 
 ### 3. LWC Component Versioning (Spring '25+)
 

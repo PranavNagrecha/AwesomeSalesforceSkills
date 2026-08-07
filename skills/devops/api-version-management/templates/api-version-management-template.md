@@ -12,7 +12,7 @@ Use this template when auditing, upgrading, or standardizing API versions across
 
 - **Project sourceApiVersion:** (from `sfdx-project.json`)
 - **Current Salesforce release / API version:** (e.g., Spring '25 / 63.0)
-- **Minimum safe API version:** 31.0 (versions 7.0-30.0 retired Summer '22)
+- **Minimum safe API version:** 31.0 (7.0–20.0 retired Summer '22; 21.0–30.0 retired Summer '25)
 - **Managed package?** Yes / No — if yes, minimum subscriber version: ___
 
 ## Version Inventory

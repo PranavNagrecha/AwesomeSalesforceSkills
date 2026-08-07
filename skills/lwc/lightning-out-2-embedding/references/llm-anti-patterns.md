@@ -119,4 +119,3 @@ release notes don't give.
 
 **Detection hint:** any GA date other than Winter '26, or language calling 2.0 an "extension" or
 "enhancement" of the beta.
-</content>

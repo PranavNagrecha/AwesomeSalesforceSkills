@@ -25,7 +25,7 @@ Answer the Before Starting questions from SKILL.md before proceeding.
 | `ShowToastEvent` `warning` | | |
 | `lightning-alert` (blocking acknowledgment) | | |
 | `lightning-confirm` (destructive guard) | | |
-| `platformNotificationService` (Experience Cloud) | | |
+| `lightning/toast` — `Toast.show(config, this)` (LWR sites, standalone apps) | | |
 | `LightningModal` — see `lwc-modal-and-overlay` | | |
 
 ## Implementation Checklist
@@ -35,7 +35,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 - [ ] Variant (`info`, `success`, `warning`, `error`) matches semantic meaning
 - [ ] `sticky` mode used only for errors requiring user action
 - [ ] `messageData` placeholder count matches `{n}` count in `message`
-- [ ] Experience Cloud context handled with `platformNotificationService`
+- [ ] LWR-site / standalone-app context handled with `lightning/toast` `Toast.show(config, this)`
 - [ ] Destructive actions guarded with `lightning-confirm` before DML
 - [ ] Jest test asserts `ShowToastEvent` dispatch with expected parameters
 - [ ] `lightning-alert` / `lightning-confirm` not used in Visualforce or unsupported contexts

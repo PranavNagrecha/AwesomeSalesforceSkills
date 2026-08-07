@@ -15,17 +15,21 @@ Audit IP SOQL consumption in debug logs before applying async modes.
 
 ---
 
-## Gotcha 2: The 25-Concurrent-Long-Running-Apex Limit Is Org-Wide, Not Portal-Specific
+## Gotcha 2: The Concurrent-Long-Running-Apex Limit Is Org-Wide, Synchronous-Only, and Licence-Scaled
 
-**What happens:** During peak portal hours, OmniScript submissions start failing with capacity errors that do not appear to be governor limit errors. Investigation reveals that a nightly batch job scheduled to run at the same time as portal peak is consuming a large share of the org's concurrent Apex capacity.
+**What happens:** During peak portal hours, OmniScript submissions start failing with capacity errors that do not look like ordinary governor limit errors. Investigation shows the org exceeded its concurrent long-running Apex ceiling — every *synchronous* Apex entry point in the org shares that pool: portal Integration Procedures, internal Lightning/Visualforce actions, synchronous API requests from a middleware, and any managed-package Apex running at the same moment.
 
-**When it occurs:** The 25-concurrent-long-running-Apex limit (for requests lasting more than 20 seconds) applies to all Apex execution in the org simultaneously: Integration Procedures, triggers, batch jobs, Queueable chains, scheduled classes. High-concurrency portal deployments share this ceiling with all other Apex running at the same time. A batch data migration or scheduled rollup that runs during business hours will silently consume portal capacity.
+**When it occurs:** Three details are routinely got wrong, and each one wrecks the sizing arithmetic:
 
-**How to avoid:** 
-- Schedule heavy batch jobs outside peak portal hours
-- Monitor the concurrent request count in Setup > Apex Jobs
-- Design IPs to complete well under 20 seconds in the common case (use Queueable Chainable only for genuinely long operations, not as a default)
-- Consider the org-wide Apex capacity when sizing portal concurrency expectations
+1. **The threshold is 5 seconds, not 20.** Salesforce counts "synchronous concurrent transactions for long-running transactions that last longer than 5 seconds for each org." An IP that averages 8 seconds is already consuming a slot on every invocation.
+2. **The ceiling is not a flat 25.** It is "calculated as a ratio of 100 licenses to one concurrent long-running Apex transaction. Minimum limit is 10, Maximum limit is 50." A 500-licence org has 10 slots (the floor); a 3,000-licence org has 30; anything above 5,000 licences is capped at 50.
+3. **Asynchronous Apex does not consume slots.** Batch, Queueable, `@future`, and Scheduled Apex are governed by separate async limits, not this one. Blaming a nightly batch job for portal capacity errors is the classic mis-attribution.
+
+**How to avoid:**
+- Compute the org's real ceiling from its licence count before sizing anything
+- Design IPs to complete well under **5 seconds** in the common case; route genuinely long operations to Queueable Chainable, which removes them from this pool entirely
+- Subscribe to the `ConcurLongRunApexErrEvent` platform event — `CurrentValue` and `LimitValue` report the actual breach and the actual ceiling, which is the only reliable way to learn your org's number
+- Still schedule heavy batch jobs outside peak portal hours, but for the correct reason: batch work contends for database and CPU resources and for row locks, which pushes *synchronous* transactions past the 5-second bar. The batch job does not occupy a slot itself; it makes other transactions long-running.
 
 ---
 

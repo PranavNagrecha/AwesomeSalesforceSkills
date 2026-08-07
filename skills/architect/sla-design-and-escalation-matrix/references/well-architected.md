@@ -48,6 +48,7 @@ The platform limit of 10 milestones per entitlement process constrains tier desi
 
 - Salesforce Help: Entitlements Overview — https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm
 - Salesforce Help: Milestones — https://help.salesforce.com/s/articleView?id=sf.entitlements_milestone_overview.htm
+- Salesforce Help: **Entitlement Management Limits and Limitations** — "You can create up to 1000 entitlement processes and include up to ten milestones in each entitlement process." (consulted 2026-08-01; help.salesforce.com would not render for direct fetch, so this is the page's search-indexed text, corroborated across two independent queries. The ~40 milestone-action and 3,000 escalation-entry figures could **not** be settled and are marked unverified in SKILL.md.) — https://help.salesforce.com/s/articleView?language=en_US&id=sf.entitlements_best_practices.htm&type=5
 - Salesforce Help: Set Up Entitlement Processes — https://help.salesforce.com/s/articleView?id=sf.entitlements_process_setup.htm
 - Salesforce Help: Business Hours — https://help.salesforce.com/s/articleView?id=sf.customize_businesshours.htm
 - Salesforce Help: Set Up Case Escalation Rules — https://help.salesforce.com/s/articleView?id=sf.customize_escalation.htm

@@ -304,7 +304,10 @@ def check_event_log_retention_posture(manifest_dir: Path) -> list[str]:
     else:
         findings.append(
             "WARNING: No Event Monitoring or Shield license indicators found in org settings metadata. "
-            "Org may be on free-tier Event Monitoring: 5 event types, 1-day retention only. "
+            "Org may be on free-tier Event Monitoring: 7 event types (Apex Unexpected Exception, "
+            "CORS Violation Record, CSP Violation, Hostname Redirects, Login, Logout, "
+            "API Total Usage), 1-day retention only. URI, LightningPageView, Report, "
+            "ReportExport and DataExport are add-on-only. "
             "In a security incident, EventLogFile records may expire within 24 hours of the attack. "
             "Always download EventLogFile CSVs as the FIRST IR action. "
             "Free-tier fallback forensic sources: LoginHistory (6-month retention), "

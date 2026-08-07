@@ -148,7 +148,7 @@ Loop: FilterOptIns
 End Loop
 ```
 
-Three elements per iteration counted against the 2,000-element ceiling, plus the design intent ("filter") is hidden in three nested elements.
+Three element-executions per iteration instead of one, plus the design intent ("filter") is hidden in three nested elements.
 
 **Solution (GOOD — Collection Filter element):**
 
@@ -227,6 +227,6 @@ Loop: LoopCases
     Decision: Match { vCase.OwnerId = vOwner.Id }
 ```
 
-**What goes wrong:** 200 cases × 200 owners = 40,000 element-executions before any work happens; far above the 2,000-element interview limit. Flow halts with `Number of executed elements has exceeded the maximum`.
+**What goes wrong:** 200 cases × 200 owners = 40,000 element-executions before any work happens. On API 57.0+ there is no element ceiling to trip, so this does not fail fast — it burns synchronous CPU time until the interview dies at 10,000 ms, which is a slower and much harder failure to diagnose. (A flow still pinned to API <= 56.0 fails earlier and more legibly with `Number of iterations exceeded`.)
 
 **Correct approach:** Pre-load owners once, then the inner loop iterates a small bounded collection — or better, escalate to invocable Apex with a `Map<Id, User>` for true O(n).

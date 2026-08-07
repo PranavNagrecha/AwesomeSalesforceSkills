@@ -38,5 +38,6 @@ Design target: stay under 70% at peak bulk size.
 
 - Salesforce Developer — Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Salesforce Help — Flow Limits and Considerations: https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm
+- Salesforce Developer Documentation — "Configure the User and Batch Size for Your Platform Event Trigger" (2,000-message maximum and default): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm
 - Salesforce Architects — Performance Engineering: https://architect.salesforce.com/
 - Salesforce Developer — Trigger Order of Execution: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm

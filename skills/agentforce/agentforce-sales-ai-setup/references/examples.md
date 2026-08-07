@@ -4,7 +4,7 @@
 
 **Context:** A mid-market Sales Cloud org has enabled Einstein Opportunity Scoring via Setup. The toggle is on, the permission set is assigned to reps, and the Opportunity Score field is on the page layout. Seventy-two hours have passed and no scores appear on any open opportunity records.
 
-**Problem:** The model training silently failed because the org only has 140 closed opportunities with a Closed Date in the last 24 months — below the 200-opportunity minimum. The Setup UI shows the feature as "enabled" and does not proactively warn about insufficient data at enablement time. The only way to discover the issue is to check Setup > Einstein > Opportunity Scoring > Model Status, which shows "Insufficient Data."
+**Problem:** The model training silently failed because the org only has 140 closed-lost opportunities with a Closed Date in the last 24 months — below the 200-closed-lost floor (won and lost are gated separately, at 200 each). The 200-opportunity minimum. The Setup UI shows the feature as "enabled" and does not proactively warn about insufficient data at enablement time. The only way to discover the issue is to check Setup > Einstein > Opportunity Scoring > Model Status, which shows "Insufficient Data."
 
 **Solution:**
 

@@ -40,7 +40,7 @@ The lock chain per execution:
 2. `Get Account` does NOT take a lock (Get Records is read-only).
 3. `Update Account` already had the Account locked from step 1, so this DML is "free" — but the lock continues to be held until commit.
 
-With 5 concurrent transactions all touching `001ABC`, the second-through-fifth are queued waiting for the first transaction's Account lock. After ~10 seconds, Salesforce fires the 10-retry exponential backoff. After the 10th retry, the fault surfaces. Sometimes 10 retries is enough to slot in; sometimes not. The flow's automatic rollback then discards both the Opportunity update AND the Account update — net data loss.
+With 5 concurrent transactions all touching `001ABC`, the second-through-fifth queue waiting for the first transaction's Account lock. Each waits a maximum of 10 seconds; whichever ones do not get the lock inside that window fault with `UNABLE_TO_LOCK_ROW`. There is no retry after the wait — the wait *is* the whole mechanism. The flow's automatic rollback then discards both the Opportunity update AND the Account update — net data loss.
 
 **Why the legacy Process Builder hid this:** The previous Process Builder serialized via the legacy automation engine, so even on hot Accounts, transactions would queue but rarely surface UNABLE_TO_LOCK_ROW because the parent lock was held for milliseconds, not the full flow duration. Migrating to Flow exposed the latent contention.
 
@@ -155,7 +155,7 @@ Trigger: Platform Event — Opportunity_Stage_Changed__e
 **Why it works:**
 
 - The Opportunity transaction never takes the Account lock. It writes to the Opportunity row, publishes the event (an in-memory + small DB write to the event bus, no parent-object lock), and ends. The Opportunity transaction now completes in <100ms regardless of Account contention.
-- The subscriber flow runs in a separate transaction with its own retry budget. If two concurrent events hit the same Account, the subscriber's automatic 10-retry usually absorbs the contention because the subscriber is doing nothing else (no other DML, no other locks).
+- The subscriber flow runs in a separate transaction with its own fresh 10-second lock-wait window and its own governor limits. If two concurrent events hit the same Account, the subscriber usually succeeds inside that window because it is doing nothing else (no other DML, no other locks), so it holds the lock for milliseconds rather than seconds. Platform-event subscribers additionally support an opt-in retry (an Apex subscriber can throw `EventBus.RetryableException`); a subscriber flow does not retry automatically.
 - Event subscribers naturally batch — Salesforce delivers events in batches of up to 2,000 per subscriber invocation. If 50 Opportunity events fire in the same second, the subscriber processes them as one batch with one Account update per affected Account. Bulk pattern emerges for free.
 - Failure isolation: if the subscriber fault path fires, the Opportunity update has already committed. The user sees no error; the central log captures the issue for ops review. With the synchronous flow, both updates would have rolled back.
 
@@ -262,9 +262,9 @@ The single bulk Update locks each Group row exactly once for the duration of the
 
 **What goes wrong:**
 
-- Salesforce **already retries** failed DML 10 times with exponential backoff. The flow-level retry is layered on top, so total attempts are now 50+ (10 platform retries × 5 flow retries). The contention window is extended dramatically.
+- Each Flow-level "retry" is a **fresh transaction** that starts its own 10-second lock wait from scratch. Five retries therefore hold a worker for up to 50 seconds of pure waiting while contributing nothing, and extend the contention window dramatically. (Salesforce does *not* retry the DML itself — the 10 seconds is a single wait, not a backoff loop.)
 - The Wait element does not pause the transaction — it ends the transaction and resumes in a new one. Each "retry" is a fresh transaction, which means re-acquiring locks from scratch. The Wait does not relieve contention; it just delays it.
 - Flow Wait elements consume a `Pause` resource and are governed (limited per flow). High-volume retries can hit the Pause limit before the contention clears.
 - The legitimate fix (decouple via Platform Event or Queueable) is now harder to spot because the retry logic masks the symptom.
 
-**Correct approach:** Trust Salesforce's automatic retries. If they're not enough, the contention is severe and requires architectural decoupling, not more retries. Wire the fault path to an Integration_Log__c entry so the contention is visible, and route the work to a Queueable or Platform Event subscriber where it can run with its own independent retry budget.
+**Correct approach:** Do not build a retry loop. The platform gives each attempt a 10-second lock wait and no more; if that is not enough, the contention is severe and requires architectural decoupling, not more attempts. Wire the fault path to an Integration_Log__c entry so the contention is visible, and route the work to a Queueable or Platform Event subscriber where it can run with its own independent retry budget.

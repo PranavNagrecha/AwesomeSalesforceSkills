@@ -20,11 +20,19 @@
 
 ---
 
-## 3. Guest Users Can Be Assigned Permission Sets Since Spring '22
+## 3. Permission Sets Assigned to the Guest User Are an Access Path Most Audits Miss
 
 **What happens:** A developer needs to give guest users the ability to submit a specific type of form. Rather than modifying the guest profile, they create a permission set with Create access on a few objects and assign it to the guest user. Later, the permission set is expanded (by a different developer who doesn't realize it's on the guest user) to include access to Contact records. Guest users can now query Contact records.
 
-**Why:** Salesforce added permission set assignment to guest users in Spring '22. Permission sets on the guest user can grant object, field, and even system permissions beyond what the profile provides.
+**Why:** Permission sets on the guest user grant object, field and system permissions on top of the profile, and nothing about the guest user makes that union visible in one place.
+
+Do not date this risk to Spring '22 — assigning permission sets to guest users predates that release, and the Spring '22 event was a *restriction*, not a grant. The actual timeline runs the other way:
+
+- **Spring '21** — Edit, Delete, View All Records and Modify All Records can no longer be given to guest users at all, "even with a permission set or permission set group." Existing assignments carrying them were removed automatically.
+- **Spring '22** — Salesforce began restricting assignment of guest users to permission sets and permission set groups associated with permission set *licences* that contain those restricted object permissions, and shipped a release update to prepare orgs for enforcement.
+- **Winter '23** — that release update, "Remove Guest User Assignments from Permission Sets Associated with Permission Set Licenses with Restricted Object Permissions," was enforced and the affected assignments were auto-removed.
+
+So the surviving exposure is narrower than "guests can be given anything through a permission set": read and create on standard objects is what remains reachable. That is still worth auditing — a permission set expanded by a developer who does not realise it is assigned to the guest user is exactly how read access to Contact leaks onto a public site.
 
 **How to avoid:** Regularly audit permission set assignments to the guest user: `SELECT Id, PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId = :guestUserId`. Treat the guest user's effective permission set as the union of profile + all assigned permission sets.
 

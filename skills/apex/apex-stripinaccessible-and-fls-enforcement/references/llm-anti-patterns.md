@@ -116,3 +116,28 @@ insert d.getRecords();   // wrong AccessType for an insert
 **Correct pattern:** AccessType must match the operation: CREATABLE for `insert`, UPDATABLE for `update`, UPSERTABLE for `upsert`, READABLE only for outbound payloads (reads).
 
 **Detection hint:** `Security.stripInaccessible(AccessType.READABLE, ...)` in the same method as `insert`, `update`, or `upsert`.
+
+---
+
+## Anti-Pattern: Asserting That `stripInaccessible` Ignores Child/Subquery Records
+
+**What the LLM generates:**
+
+```apex
+List<Account> accts = [SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account];
+SObjectAccessDecision d = Security.stripInaccessible(AccessType.READABLE, accts);
+
+// "strip does not recurse into child collections" — so re-strip the children.
+List<Contact> kids = new List<Contact>();
+for (Account a : (List<Account>) d.getRecords()) { kids.addAll(a.Contacts); }
+SObjectAccessDecision d2 = Security.stripInaccessible(AccessType.READABLE, kids);
+// …and now reconcile two decision objects by hand
+```
+
+…and prose: "Parent strip does not recurse into child collections", "nested fields are NOT evaluated — strip child collections separately".
+
+**Why it happens:** Two real facts get over-generalised. `SObjectAccessDecision` genuinely does return a *new* list rather than mutating the input, and the strip genuinely has no reach into records fetched by a separate query. From "it only touches what you pass it" the model infers "it only touches the top level of what you pass it", which does not follow. The direction of the error is fail-safe — it prescribes *more* stripping than necessary — and that is exactly why it survives review: nobody flags an over-cautious security claim, and the extra code passes its tests. It still costs real complexity, and it teaches an incorrect model of the API that leads to wrong conclusions elsewhere.
+
+**Correct pattern:** Child records returned inside the collection you pass **are** evaluated. The Apex Developer Guide's own example applies `stripInaccessible(AccessType.READABLE, accountsWithContacts)` to `SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account` and strips `Phone` from the child Contact rows. The method also "checks the source records for lookup or master-detail relationship fields to which the current user doesn't have access." One strip on the queried collection is sufficient for that collection. What genuinely is *not* covered: records from a separate query, and anything your code traverses after the fact. Strip each collection at its own query site. The supported nesting depth is not documented — do not assert a specific limit in either direction; verify with `System.runAs` if a design depends on it.
+
+**Detection hint:** in prose, `(not|does ?n.t|NOT)\s+(recurse|evaluate|strip)[^.]{0,40}(child|nested|subquer)` — the claim is wrong as stated. In code, a second `Security.stripInaccessible` call whose input is built by flattening `getRecords()` from a first decision object is redundant work built on the misconception. Conversely, a genuine gap worth flagging is any SOQL result that reaches DML or a return value without passing through a strip or `WITH USER_MODE` at its own query site.

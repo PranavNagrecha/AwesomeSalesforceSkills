@@ -22,7 +22,7 @@ Adding more quality gates reduces defect escape rate but increases cycle time. T
 
 ### DevOps Center vs. CLI-Driven Pipeline
 
-DevOps Center provides a GUI-driven promotion experience that lowers the barrier for admin-led teams but imposes the 15-stage limit and does not support custom quality gate configuration or code scanning. A CLI-driven pipeline (GitHub Actions, GitLab CI, Jenkins) requires more upfront engineering but is unlimited in stage count and can enforce any gate logic. The tradeoff is team capability vs. platform constraint: organizations with dedicated DevOps engineers benefit from CLI pipelines; admin-led teams benefit from DevOps Center. A hybrid is valid: DevOps Center manages promotion; an external CI tool manages quality gates.
+DevOps Center provides a GUI-driven promotion experience that lowers the barrier for admin-led teams. It does **not** cap stage count — "your pipeline can contain any number of pipeline stages" — so stage depth is not a differentiator between it and a CLI pipeline; sandbox entitlement bounds both equally. The genuine DevOps Center tradeoff is gate flexibility: it does not support custom quality gate configuration or code scanning. A CLI-driven pipeline (GitHub Actions, GitLab CI, Jenkins) requires more upfront engineering but can enforce any gate logic. The tradeoff is team capability vs. platform constraint: organizations with dedicated DevOps engineers benefit from CLI pipelines; admin-led teams benefit from DevOps Center. A hybrid is valid: DevOps Center manages promotion; an external CI tool manages quality gates.
 
 ### Automated Promotion vs. Manual Gate
 
@@ -44,6 +44,6 @@ Automated promotion (every commit that passes gates advances to the next stage) 
 
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce DX Developer Guide: Deploying and Testing — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_develop.htm
-- Salesforce DevOps Center Help: Plan Your Pipeline — https://help.salesforce.com/s/articleView?id=sf.devops_center_pipeline_plan.htm
+- Salesforce DevOps Center Help: Plan Your Pipeline — states "Your pipeline can contain any number of pipeline stages", i.e. there is **no** documented maximum stage count (verified 2026-08-01) — https://help.salesforce.com/s/articleView?id=platform.devops_center_pipeline_plan.htm&language=en_US&type=5
 - Salesforce CLI Command Reference: sf project deploy validate — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm
 - Salesforce Well-Architected: Operational Excellence — https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html

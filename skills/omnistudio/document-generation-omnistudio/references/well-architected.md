@@ -14,7 +14,7 @@
 
 ### Client-Side vs Server-Side Generation
 
-Client-side generation provides immediate feedback and supports the full token feature set (including images and rich text), but is limited to single-document interactive scenarios and depends on browser resources. Server-side generation supports batch and headless scenarios with Salesforce compute resources, but lacks image/rich text token support and produces output asynchronously.
+Client-side generation provides immediate feedback and preview, but is limited to single-document interactive scenarios and depends on browser resources. Server-side generation supports batch and headless scenarios on Salesforce compute and produces output asynchronously. **Token support is not the axis of this tradeoff** — image tokens are documented for server-side generation through the Data Mapper, and the token reference does not restrict rich text or hyperlink tokens by mode. Decide on interactivity, volume and trigger source.
 
 The tradeoff is between **feature richness and interactivity** (client-side) vs **scalability and automation** (server-side). Most implementations need both modes for different use cases within the same org.
 
@@ -30,7 +30,7 @@ A single monolithic template is simpler to manage but becomes unwieldy as docume
 
 1. **Bypassing the Data Mapper to construct JSON manually in OmniScript Set Values.** This creates a brittle, unmaintainable mapping layer that does not benefit from automatic token extraction or visual mapping. When the template changes, every Set Values action must be manually audited and updated. Use the OmniDataTransform as the single source of truth for token mapping.
 
-2. **Reusing a client-side template for server-side generation without removing unsupported tokens.** Image and rich text tokens silently fail in server-side mode, producing documents with missing content. Maintain separate templates per generation mode, or design templates to use only universally supported token types when cross-mode reuse is intended.
+2. **Forking a template per generation mode on the false belief that server-side cannot render images or rich text.** Maintaining two templates for one document doubles the change surface and guarantees drift. Image tokens are documented for server-side generation via a Data Mapper Extract + Transform pair, and rich text and hyperlink tokens are listed in the token reference without a mode restriction. Keep one template; if an image fails to render server-side, debug the Data Mapper pair and the `IMG_` prefix rather than forking.
 
 3. **Deploying templates without corresponding Data Mapper and Document Generation Setting updates.** Partial deployments leave the generation pipeline in an inconsistent state. A new token in the template without a corresponding Data Mapper mapping produces blank output. Always deploy the template, Data Mapper, and Document Generation Setting as a single change set or package.
 
@@ -38,6 +38,9 @@ A single monolithic template is simpler to manage but becomes unwieldy as docume
 
 - OmniStudio Document Generation Overview (SF Help) -- feature overview, client-side and server-side modes
 - OmniStudio Document Templates (SF Help) -- template authoring, token types, merge syntax
+- Tokens in Microsoft Word or Microsoft PowerPoint Documents (SF Help) -- the canonical token-prefix reference: variable, `{{#…}}`/`{{^…}}` repeating, `{{#IF_…}}` condition, `{{IMG_…}}` image, `{{HYP_…}}` hyperlink, `{{RTB_…}}` rich text, `{{DT_…}}` data true-up, `bypass_tokens` (verified 2026-08-01) -- https://help.salesforce.com/s/articleView?id=ind.doc_gen_tokens_in_microsoft_word_or_microsoft_powerpoint_documents.htm&language=en_US&type=5
+- Map Image Tokens in the Omnistudio Data Mapper for Server-Side Omnistudio Document Generation (SF Help) -- confirms server-side image token support; Data Mapper Extract (ContentDocument / Attachment / Contract Document) + Transform; max 350 px × 400 px on A4 portrait by default, 600 px × 800 px when both dimensions are defined; "to maintain the original aspect ratio of an image, define either the height or the width, but not both" (verified 2026-08-01) -- https://help.salesforce.com/s/articleView?id=ind.doc_gen_serverside_dynamic_images_five.htm&language=en_US&type=5
+- Map Rich Text Tokens in Omnistudio Data Mapper (SF Help) -- `{{RTB_…}}` syntax and Data Mapper Extract/Transform mapping steps (verified 2026-08-01) -- https://help.salesforce.com/s/articleView?id=ind.doc_gen_map_rich_text_tokens_in_the_dataraptors.htm&language=en_US&type=5
 - OmniStudio Client-Side Document Generation (SF Help) -- OmniScript orchestration, PDF conversion
 - OmniStudio Server-Side Document Generation (SF Help) -- Integration Procedure orchestration, limitations
 - OmniStudio Document Generation Troubleshooting Guide (SF Help) -- common errors and resolution steps

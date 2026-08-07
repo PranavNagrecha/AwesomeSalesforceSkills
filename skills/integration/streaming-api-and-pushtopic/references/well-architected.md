@@ -10,7 +10,7 @@
 
 - **Performance** — `NotifyForFields = All` fires a streaming event on every field change to a matching record, including non-functional system fields (LastModifiedDate, SystemModstamp). `Referenced` limits events to fields that appear in the SELECT or WHERE, which reduces noise and payload size. Avoid overly broad PushTopic queries (no WHERE filter) on high-volume objects like Task or Event.
 
-- **Scalability** — The 100 simultaneous clients per channel and 1,000 org-wide limits constrain horizontal scaling of streaming subscribers. Fan-out architectures (one Salesforce subscriber relays events to internal consumers via a message bus like Kafka or SQS) scale better than many direct CometD connections. For very high event volumes, the Pub/Sub API (gRPC) offers higher throughput than Streaming API.
+- **Scalability** — The org-wide concurrent-subscriber allocation constrains horizontal scaling of streaming subscribers, and it is edition-dependent: 2,000 (Performance/Unlimited), 1,000 (Enterprise), 20 (all other supported editions), counted across all channels and all event types. A per-topic limit also exists but is not published as a number. Fan-out architectures (one Salesforce subscriber relays events to internal consumers via a message bus like Kafka or SQS) scale better than many direct CometD connections. For very high event volumes, the Pub/Sub API (gRPC) offers higher throughput than Streaming API.
 
 ## Architectural Tradeoffs
 
@@ -35,6 +35,8 @@
 - Streaming API Developer Guide (PushTopic SOQL Restrictions) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/pushtopic_soql.htm
 - Streaming API Developer Guide (Replay Events) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm
 - Streaming API Developer Guide (Generic Streaming) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/create_streaming_channel.htm
-- Streaming API Developer Guide (Streaming API Limits) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/streaming_api_limits.htm
+- Streaming API Developer Guide (PushTopic Streaming Allocations — concurrent subscribers 2,000 Perf/Unlimited, 1,000 EE, 20 other; 110s socket timeout; 40s keepalive) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/limits.htm
+- Streaming API Developer Guide (Streaming API Error Codes — no 402 code exists; `403::Unknown client`, `403::Organization concurrent user limit exceeded`, `403::Subscription limit exceeded for this topic`) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/streaming_error_codes.htm
+- Streaming API Developer Guide (Message Durability — replayId `-1` default/tip, `-2` all retained) — https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Integration Patterns and Practices — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html

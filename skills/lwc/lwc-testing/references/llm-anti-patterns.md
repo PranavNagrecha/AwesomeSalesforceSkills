@@ -50,37 +50,33 @@ jest.mock('lightning/uiRecordApi', () => ({
 }));
 ```
 
-**Why it happens:** LLMs mock wire adapters like regular functions. Wire adapters require the `@salesforce/sfdx-lwc-jest` test utilities to emit data and errors correctly.
+**Why it happens:** LLMs mock wire adapters like regular `jest.fn()` functions. A wire adapter is a class the framework instantiates, not a function it calls, so a plain mock never provisions anything — the component renders its loading state forever and the assertion fails with no useful message. The `create*TestWireAdapter` factories from `@salesforce/sfdx-lwc-jest` produce a real adapter shape with `emit()`, `error()`/`emitError()`, and `getLastConfig()`.
 
 **Correct pattern:**
 
 ```javascript
 import { getRecord } from 'lightning/uiRecordApi';
 
-// sfdx-lwc-jest auto-registers wire adapters as jest mocks
-// Use the emit pattern:
-const mockGetRecord = require('lightning/uiRecordApi').__esModule
-    ? getRecord
-    : getRecord;
+jest.mock(
+    'lightning/uiRecordApi',
+    () => {
+        const { createLdsTestWireAdapter } = require('@salesforce/sfdx-lwc-jest');
+        return { getRecord: createLdsTestWireAdapter(jest.fn()) };
+    },
+    { virtual: true }
+);
 
-// In the test:
+// In the test — the mocked export IS the adapter:
 getRecord.emit(mockData);
 await flushPromises();
+
+// Error path:
+getRecord.error({ message: 'Not found' }, 404);
 ```
 
-Or use the `@wire` test utility directly:
+For Apex, the same shape with `createApexTestWireAdapter` and the `@salesforce/apex/Class.method` module path.
 
-```javascript
-import { registerLdsTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
-import { getRecord } from 'lightning/uiRecordApi';
-
-const getRecordAdapter = registerLdsTestWireAdapter(getRecord);
-
-// In test:
-getRecordAdapter.emit(mockData);
-```
-
-**Detection hint:** `jest.mock('lightning/uiRecordApi')` with manual mock functions instead of using `registerLdsTestWireAdapter` or the built-in adapter mocking.
+**Detection hint:** a `jest.mock('lightning/uiRecordApi')` factory that returns bare `jest.fn()`s rather than `createLdsTestWireAdapter(...)` — i.e. `jest.mock` is correct and required, what matters is what the factory returns. Note that `jest.mock` plus `create*TestWireAdapter` is exactly what Salesforce now prescribes, so do **not** flag `jest.mock` itself.
 
 ---
 
@@ -233,3 +229,46 @@ it('renders contacts', async () => {
 ```
 
 **Detection hint:** More than 10 lines of literal mock data inside a test function body.
+
+
+---
+
+## Anti-Pattern: `register*TestWireAdapter` — the removed wire-service-jest-util 2.x API
+
+**What the LLM generates:**
+
+```javascript
+import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
+import getCases from '@salesforce/apex/CaseController.getCases';
+
+const getCasesAdapter = registerApexTestWireAdapter(getCases);
+getCasesAdapter.emit([]);
+```
+
+…and, in its inverted form, an anti-pattern rule that flags the *correct* modern shape: "using `jest.mock('lightning/uiRecordApi')` instead of `registerLdsTestWireAdapter` is wrong."
+
+**Why it happens:** `register*TestWireAdapter` was the real API for years and dominates the blog/StackExchange corpus. It was superseded in wire-service-jest-util **3.x** — the version current `sfdx-lwc-jest` bundles — and the official migration doc states: *"With your wire adapters mocked using `create*TestWireAdapter`, you can use them directly in your test, making `register*TestWireAdapter` unnecessary."* The import simply does not resolve now, so the whole test file fails to load and the error (an unresolved named export) points at the import line rather than at the pattern.
+
+The inverted variant is the more damaging half: it tells a reviewer to reject `jest.mock`, which is precisely what Salesforce now prescribes.
+
+**Correct version:**
+
+```javascript
+jest.mock(
+    '@salesforce/apex/CaseController.getCases',
+    () => {
+        const { createApexTestWireAdapter } = require('@salesforce/sfdx-lwc-jest');
+        return { default: createApexTestWireAdapter(jest.fn()) };
+    },
+    { virtual: true }
+);
+
+// the mocked export IS the adapter
+getCases.emit([{ Id: '500...' }]);
+getCases.error({ message: 'boom' }, 500);
+getCases.getLastConfig();
+```
+
+Three factories exist: `createTestWireAdapter` (generic), `createLdsTestWireAdapter` (LDS shape), `createApexTestWireAdapter` (Apex, also callable imperatively). All are re-exported from `@salesforce/sfdx-lwc-jest`, so no extra dependency is needed. The key mental shift: **there is no separate handle.** The mocked module export is the adapter you call `.emit()` on.
+
+**Detection hint:** grep test files and LWC testing guidance for `registerApexTestWireAdapter`, `registerLdsTestWireAdapter`, `registerTestWireAdapter` — all three are removed. Structural hint: `const someAdapter = register…(someImport)` assigns a *handle* separate from the import; in the 3.x API no such variable exists, so any two-name pattern (`getCases` and `getCasesAdapter` both in scope) is a 2.x tell. Inverted-rule hint: any guidance that lists `jest.mock` as the anti-pattern and `register*` as the fix has the polarity backwards.

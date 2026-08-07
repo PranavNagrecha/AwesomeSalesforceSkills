@@ -74,3 +74,5 @@ For most compliance use cases, the pull model with daily EventLogFile is adequat
   URL: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_resources_event_log_files.htm
 - Salesforce Security Guide — Event Monitoring overview, Shield licensing context
   URL: https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
+- Platform Events Object Reference — LoginEventStream (supported call: describeSObjects() only; consumed via Pub/Sub API or CometD on /event/LoginEventStream) — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_logineventstream.htm
+- Platform Events Object Reference — LoginEvent (big object storing LoginEventStream data; supported calls describeSObjects(), query()) — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_loginevent.htm

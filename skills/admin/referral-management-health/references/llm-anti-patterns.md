@@ -64,3 +64,53 @@ CareProviderSearchableField must be explicitly populated by running a Data Proce
 Health Cloud clinical referrals belong on ClinicalServiceRequest, not Lead. Lead-based tracking is appropriate for marketing attribution and sales pipeline management, not clinical care coordination. ClinicalServiceRequest supports patient lookup, provider lookup, FHIR R4 mapping, and clinical encounter linkage — none of which are available on the Lead object.
 
 **Detection hint:** If the referral tracking recommendation uses Lead, Opportunity, or custom referral objects for a Health Cloud clinical use case without mentioning ClinicalServiceRequest, the wrong data model is being applied.
+
+---
+
+## Anti-Pattern: Demoting an Industry-Cloud Object into a Record Type
+
+**What the LLM generates:** "Provider records must use the correct Health
+Cloud record types — HealthcareProvider on Account, HealthcarePractitioner on
+Contact — for the Provider Search DPE job to pick them up."
+
+**Why it happens:** The name `HealthcareProvider` is real, and the mechanism
+described around it is real: the Provider Search Data Processing Engine job
+genuinely does read provider data and write to `CareProviderSearchableField`,
+and it genuinely does return nothing if the source data is wrong. What has been
+lost is the *kind* of the identifier. Two pressures cause it. First, core
+Salesforce trains the pattern "Account with a Business or Person Account record
+type", so any provider-shaped noun gets slotted in as an Account record type by
+default. Second, industry clouds add hundreds of standard objects with
+descriptive compound names that read exactly like record type labels —
+`HealthcareProvider`, `HealthcarePractitionerFacility`, `CareProviderAdverseAction` —
+and nothing in the name signals which it is. The invented sibling
+(`HealthcarePractitioner`) then gets generated to complete the pair, because a
+record type list with one entry looks incomplete.
+
+The consequence is worse than a dead end: an admin who cannot find the record
+types will often *create* them, producing custom record types that the DPE job
+does not read, and the search stays empty for a new reason.
+
+**Correct pattern:**
+
+```
+Provider Relationship Management is an OBJECT model:
+  HealthcareProvider              standard object — business-level details
+                                  about the healthcare organisation or the
+                                  practitioner
+  HealthcarePractitionerFacility  standard object
+  Account                         a healthcare facility or location
+  Contact                         physicians and other licensed practitioners
+  CareProviderSearchableField     denormalised search index, populated by the
+                                  Provider Search DPE job
+
+There is NO HealthcareProvider record type on Account.
+There is NO HealthcarePractitioner record type on Contact.
+```
+
+**Detection hint:** Any sentence pairing an industry-cloud object name with the
+words "record type" deserves verification before it ships. Mechanically: an
+object is addressable in SOQL, a record type is not — `SELECT Id FROM
+HealthcareProvider LIMIT 1` compiles, which settles the question in one query.
+In metadata, a record type appears as `<Object>.<RecordTypeName>` inside a
+`.recordType-meta.xml`; if you cannot find that file, the name is an object.

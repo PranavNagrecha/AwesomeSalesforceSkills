@@ -29,21 +29,59 @@ insert cov;
 **Correct pattern:**
 
 ```http
-POST /services/data/v62.0/connect/insurance/policy-issuances
+POST /services/data/v67.0/connect/insurance/policies
 Content-Type: application/json
 
-{
-  "policyName": "AUTO-2026-00001",
-  "effectiveDate": "2026-04-15",
-  "productId": "01tXXXXXXXXXXXXX",
-  "policyHolderId": "001XXXXXXXXXXXXXXX",
-  "coverages": [
-    { "coverageType": "Liability", "coverageAmount": 100000 }
-  ]
-}
+{ "<contextIdField>": "<context record Id>" }
 ```
 
+The body placeholder is intentional — see Anti-Pattern 1b for why filling it in from memory is the *second* failure mode here.
+
 **Detection hint:** Any code that contains `insert InsurancePolicy` or `new InsurancePolicy(` followed by a DML statement for a lifecycle operation (create, modify, cancel) is using the wrong API layer. Read-only Apex that queries `[SELECT Id FROM InsurancePolicy]` is fine.
+
+---
+
+## Anti-Pattern 1b: Pluralising the Lifecycle Verb into a Fake Connect Resource
+
+**What the LLM generates:** Having correctly decided to use the Insurance Policy Business API, the model then invents the resource path by turning each lifecycle operation into its own pluralised collection:
+
+```http
+POST /connect/insurance/policy-issuances       <-- does not exist
+POST /connect/insurance/policy-endorsements    <-- does not exist
+POST /connect/insurance/policy-renewals        <-- does not exist
+POST /connect/insurance/policy-cancellations   <-- does not exist
+```
+
+It usually also invents the request body — a flat document with `policyName`, `effectiveDate`, `productId` and a nested `coverages` array — assembled from `InsurancePolicy` and `InsurancePolicyCoverage` field names.
+
+**Why it happens:** This is confabulation *inside a correct decision*, which is what makes it so durable. The model has the mechanism right (atomic lifecycle transaction, not DML) and only the identifier wrong, so the surrounding prose reads as authoritative and reviewers accept the path along with the reasoning. The specific shape comes from **REST convention over-generalisation**: "a resource per noun, pluralised" is the dominant pattern in REST training data, so a lifecycle *verb* gets nominalised into a collection ("issue" → "policy-issuances"). Salesforce Connect APIs frequently do the opposite — one collection with verb sub-resources on the member. The body is invented by the same reflex applied to the object model: the model knows the objects, so it assumes the payload mirrors them.
+
+**Correct pattern:**
+
+```text
+Insurance Policy Business API — one collection, verb sub-resources:
+
+  POST /connect/insurance/policies
+       "Use the context ID provided in the request body to generate a new
+        insurance policy."
+  GET  /connect/insurance/policies/{policyId}?_qs=contextOnly=true
+  POST /connect/insurance/policies/{policyId}/endorse
+  POST /connect/insurance/policies/{policyId}/out-of-sequence-endorsement
+  POST /connect/insurance/policies/{policyId}/renew
+  POST /connect/insurance/policies/{policyId}/cancel
+  POST /connect/insurance/policies/{policyId}/reinstate
+
+Multi-root (parent + children of different product types) — ASYNCHRONOUS:
+
+  POST /connect/insurance/policies/multi-root
+  POST /connect/insurance/policies/multi-root/endorse
+  POST /connect/insurance/policies/multi-root/renew
+
+Request body: context-ID driven. NOT a flat policy document, NOT an sObject
+payload. Read the "Requests" section of the reference for exact field names.
+```
+
+**Detection hint:** Grep any generated Industries integration code for a `/connect/` path segment containing a **hyphenated noun ending in `s`** that nominalises a verb — `policy-issuances`, `policy-endorsements`, `policy-renewals`, `policy-cancellations`, `asset-activations`, `order-submissions`. Salesforce Connect resources overwhelmingly place lifecycle verbs as bare sub-resources on a member (`/{id}/endorse`), so a nominalised-plural segment is a strong fabrication signal. Second check: any Connect API request body whose field names are camelCased versions of the sObject's own fields is reconstructed rather than recalled — Connect payloads generally do not mirror the object model. Resolve both against the vertical's developer guide before shipping.
 
 ---
 

@@ -15,7 +15,7 @@ Use this template when configuring or troubleshooting Health Cloud referral mana
 - Is provider search required? (Y/N)
 - Is the HealthCloudICM permission set available in the org?
 - Is the Data Pipelines Base User license provisioned?
-- Are provider records using HealthcareProvider / HealthcarePractitioner record types?
+- Are the Provider Relationship Management objects populated (`HealthcareProvider`, `HealthcarePractitionerFacility`, plus the Account/Contact records they reference)? Note these are objects — there are no HealthcareProvider / HealthcarePractitioner record types.
 
 ## Referral Configuration Summary
 
@@ -39,7 +39,7 @@ Use this template when configuring or troubleshooting Health Cloud referral mana
 ## Provider Search Setup Checklist
 
 - [ ] Data Pipelines Base User license assigned to DPE process user
-- [ ] Provider records using HealthcareProvider record type on Account
+- [ ] `HealthcareProvider` object records exist and reference the intended Account (facility/location) and Contact (practitioner) records
 - [ ] DPE job for CareProviderSearchableField configured in Setup > Data Processing Engine
 - [ ] DPE job run manually and verified with: `SELECT Id, Name FROM CareProviderSearchableField LIMIT 10`
 - [ ] DPE job scheduled for regular refresh (daily recommended)

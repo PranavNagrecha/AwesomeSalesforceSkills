@@ -8,12 +8,13 @@
   credential material in the bundle. The `isActive` flag gates accessibility of the app, and
   an `Experience`-target bundle is *external-facing* by definition, so review what data the
   GraphQL queries and Apex `fetch()` calls expose to that audience.
-- **Operational Excellence** — this capability is **open beta** (scratch orgs/sandboxes,
-  English default language, no production deploys), with Lightning-page micro-frontend
-  embedding in a narrower closed pilot (Spring 2026). Well-architected here means managing
-  the lifecycle honestly: record the beta boundary in the design doc, use the required
-  `version` field on the bundle deliberately, and re-verify restrictions each release cycle
-  as the beta evolves.
+- **Operational Excellence** — this capability went **GA in July 2026** (production, sandbox,
+  Developer Edition, and scratch orgs on Summer '26 / API 67.0+), while Lightning-page
+  micro-frontend embedding and the ACC Web SDK remain at narrower maturity levels.
+  Well-architected here means recording maturity **per component rather than per platform**,
+  using the required `version` field on the bundle deliberately, and re-verifying the SDK
+  package name and API surface each release cycle — this capability renamed its SDK package
+  and split its GraphQL API between beta and GA, so pinned snippets rot quickly.
 - **Performance** — the deployable artifact is a built web app under a 2,500-file cap. Ship
   Vite build output only; a lean bundle is both a deployability requirement and a load-time
   win.
@@ -49,7 +50,8 @@
 ## Official Sources Used
 
 - Metadata API Developer Guide — UIBundle — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_uibundle.htm
-- Build with React, Run on Salesforce: Introducing Salesforce Multi-Framework (Salesforce Developers Blog, April 2026) — https://developer.salesforce.com/blogs/2026/04/build-with-react-run-on-salesforce-introducing-salesforce-multi-framework
+- Build with React on Salesforce: Multi-Framework Is Now GA (Salesforce Developers Blog, July 2026 — GA status, `@salesforce/platform-sdk` rename, `.query()`/`.mutate()` split, `CustomApplication` target, production deploys; verified 2026-08-01) — https://developer.salesforce.com/blogs/2026/07/build-with-react-on-salesforce-multi-framework-is-now-ga
+- Build with React, Run on Salesforce: Introducing Salesforce Multi-Framework (Salesforce Developers Blog, April 2026 — **superseded by the GA post above; its beta restrictions no longer apply**) — https://developer.salesforce.com/blogs/2026/04/build-with-react-run-on-salesforce-introducing-salesforce-multi-framework
 - Build a React App with Salesforce Multi-Framework (Beta) — https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/reactdev-overview.html
 - Build and Deploy a React App Using Agentforce Vibes (Beta) — https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/reactdev-vibe-code.html
 - Get Started — Agentforce Conversation Client Developer Guide — https://developer.salesforce.com/docs/platform/accsdk/guide/acc-get-started.html

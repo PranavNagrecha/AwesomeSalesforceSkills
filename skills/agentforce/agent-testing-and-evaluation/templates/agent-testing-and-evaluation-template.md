@@ -95,7 +95,7 @@ sf project deploy start --source-dir force-app/main/default/aiEvaluationDefiniti
 ```bash
 # POST to Connect API - replace ORG_DOMAIN, SESSION_ID, and DEFINITION_NAME
 curl -X POST \
-  https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations \
+  https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs \
   -H "Authorization: Bearer SESSION_ID" \
   -H "Content-Type: application/json" \
   -d '{"aiEvaluationName": "DEFINITION_NAME"}'

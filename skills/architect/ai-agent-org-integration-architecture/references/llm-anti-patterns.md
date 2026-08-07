@@ -115,3 +115,39 @@ Review the scope with the data steward or security team before go-live.
 ```
 
 **Detection hint:** Any AI-to-Salesforce integration architecture that does not explicitly define data exposure scope (objects, fields, operations) is incomplete.
+
+---
+
+## Anti-Pattern 6: Stating CDC / Platform Event Retention as 24 Hours
+
+**What the LLM generates:** "Change Data Capture events are stored in the event bus for only 24 hours. If your subscriber goes offline for more than 24 hours, those events are lost." Usually paired with a recovery job whose SOQL filter is a hard-coded `LastModifiedDate = LAST_N_DAYS:1`.
+
+**Why it happens:** This is number-relabelling, not invention. **24 hours is a real and very salient Salesforce window — it is the daily API request allocation period**, which in an AI-integration architecture is discussed a paragraph or two away from event retention. "Per 24-hour period" is the single most repeated time unit in Salesforce limits documentation, so when the model needs a retention duration it reaches for the nearest well-worn interval rather than recalling the specific one. The direction of the error is also seductive: 24 hours *sounds* conservative, so it survives review as "erring on the safe side" — but it is not safe, it is just wrong, and it propagates into an SLA commitment and a hard-coded query filter.
+
+**Correct pattern:**
+
+```
+Salesforce Change Data Capture Developer Guide, "Subscription Channels and
+Event Delivery":
+
+  "Change event messages are stored in the event bus for three days."
+
+  => 72 hours, not 24.
+
+Within the 72-hour window:
+  - Each message carries a ReplayId
+  - A subscriber can resume from a stored ReplayId after an outage
+Past 72 hours:
+  - Events are unrecoverable. No dead letter queue. Replay from -2 (earliest
+    retained) starts from the oldest event still IN the window, not from the
+    beginning of time.
+
+Recovery job design:
+  - Key the requery off the LAST SUCCESSFULLY PROCESSED timestamp/ReplayId
+    persisted in a custom object or custom setting
+  - Do NOT hard-code a lookback constant (LAST_N_DAYS:1 or :3). A constant
+    silently drops records the moment an outage exceeds it, and fails silently
+    because the job still "succeeds"
+```
+
+**Detection hint:** Two mechanical checks. (1) Grep generated architecture text for `24` within 60 characters of `retention`, `event bus`, `CDC`, `Change Data Capture`, or `replay` — the correct answer for all of them is 72 hours / three days. (2) Grep any generated recovery/catch-up job for `LAST_N_DAYS:` or `LAST_N_HOURS:` with a literal number: a catch-up query keyed to a constant rather than to persisted watermark state is a bug independent of whether the constant matches the retention window.

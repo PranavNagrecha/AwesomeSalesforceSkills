@@ -38,13 +38,18 @@ List every object and field containing regulated data. Complete this before conf
 
 | Object API Name | Field API Name | Field Type | Required? | Encrypted? | Proposed Masking Type |
 |---|---|---|---|---|---|
-| Contact | Email | Email | No | No | Pseudonymous |
-| Contact | Phone | Phone | No | No | Pseudonymous |
+| Contact | Email | Email | No | No | Library |
+| Contact | Phone | Phone | No | No | Library |
 | *(add rows)* | | | | | |
 
 **Masking type key:**
-- `Pseudonymous` — replace with realistic fake value (preserves format)
-- `Deterministic` — same input always gives same output (use when cross-object FK consistency needed)
+- `Random Characters` — replace with randomly generated characters (fast; result is not realistic-looking)
+- `Library` — replace with a similarly mapped word from the Salesforce library (realistic; slowest)
+- `Pattern` — replace using a pattern you define (for fields that must keep a specific shape)
+- `Delete` — blank the field (fastest; not for required fields or fields under a non-blank validation rule)
+
+There is no `Deterministic` or `Pseudonymous` type. If a value must stay consistent
+across two objects, plan a post-mask reconciliation job — no masking type consistency needed)
 - `Null/Delete` — blank the field (only for non-required fields where value is irrelevant to tests)
 - `N/A — Encrypted` — field is Shield-encrypted; Data Mask cannot mask it; document as gap
 - `N/A — Big Object` — not supported by Data Mask; document as gap

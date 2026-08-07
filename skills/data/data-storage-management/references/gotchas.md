@@ -2,13 +2,15 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Deleting Records Does Not Immediately Free Storage
+## Gotcha 1: Storage Usage Lags a Mass Delete — and the Recycle Bin Is Not Why
 
 **What happens:** An admin or developer runs a mass delete (Bulk API, data loader, or SOQL delete in anonymous Apex) and then checks Setup > Storage Usage expecting the number to drop. The storage usage does not change or changes only slightly.
 
-**When it occurs:** Any delete operation that sends records to the Recycle Bin. Standard deletes via DML, REST API, or Bulk API (non-hardDelete) all route records to the Recycle Bin. Records in the Recycle Bin continue to count against data storage until they are permanently purged — either by emptying the bin, waiting for the 15-day automatic purge (30 days for Bulk API hard deletes), or calling `Database.emptyRecycleBin()`.
+**When it occurs:** After any large delete. The cause is **asynchronous storage recalculation**, not the Recycle Bin: Salesforce Help states that when you add or remove a large number of records or files, "the change in your org's storage usage isn't reflected immediately."
 
-**How to avoid:** After any mass delete operation intended to reclaim storage, explicitly empty the Recycle Bin. For automation, use Bulk API with `hardDelete` operation (which bypasses the Recycle Bin entirely) only when you are certain the data should not be recoverable. In Apex, `Database.emptyRecycleBin(recordIds)` purges specific records. Via REST: `DELETE /services/data/vXX.0/sobjects/{Type}/{id}` with `allOrNone=false` does not bypass the bin — use the Bulk API hardDelete job type for bin bypass.
+The Recycle Bin is the wrong suspect, and chasing it does damage. Per *Manage the Recycle Bin*: "Records in the Recycle Bin don't count against your Salesforce org's storage usage," and "There isn't a limit on the number of deleted records that the Recycle Bin can hold." The 15-day figure is how long a deleted record stays **restorable**. It is not a storage-accounting window, and emptying the bin reclaims nothing.
+
+**How to avoid:** Wait and re-check Setup > Storage Usage before concluding the delete failed. Treat `Database.emptyRecycleBin()` and Bulk API `hardDelete` as recoverability decisions, not storage levers — hard delete bypasses the bin entirely and is immediate and permanent, with no restore window of any length. Standard deletes via DML, REST, or non-hardDelete Bulk API all route to the bin and remain restorable for 15 days; `DELETE /services/data/vXX.0/sobjects/{Type}/{id}` does not bypass it.
 
 ---
 

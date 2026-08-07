@@ -51,7 +51,7 @@ Gather this context before switching a component's render mode:
 
 - What is the real blocker? (SEO indexing on Experience Cloud, a tooltip/chart library's `document.querySelector`, a global CSS system, screen-reader or analytics tooling.) Do not reach for light DOM to "fix" a CSS specificity issue you have not tried to solve with styling hooks.
 - Where will the component run? Internal Lightning Experience pages rarely need light DOM. Experience Cloud LWR sites are the common home for it. Experience Cloud Aura sites and managed-package distribution have extra rules.
-- Will the component ship through a managed package? Salesforce explicitly recommends **against** light DOM for managed-package components because their styles would leak into consumer orgs.
+- Will the component ship through a managed package? If yes, light DOM is off the table: Salesforce states that **"distributing components rendered in light DOM isn't supported"** — component references in a managed package use the `c` namespace and would produce a namespace conflict. This is a support boundary, not a style-hygiene preference (style leakage is a separate, real problem, but it is not the stated reason).
 - Is the LWC ecosystem still subject to Lightning Web Security (LWS)? Yes — LWS sandboxes JavaScript regardless of render mode.
 
 ---
@@ -93,7 +93,7 @@ A common mistake is to assume light DOM disables LWS. It does not. LWS continues
 
 ### Managed Packages: Do Not Ship Light DOM
 
-Salesforce guidance is explicit: do not distribute light-DOM components inside managed packages. Their un-encapsulated styles would bleed into any consumer org's pages, and consumers cannot scope them after install.
+Salesforce guidance is explicit: **"Distributing components rendered in light DOM isn't supported. Component references in a managed package use the `c` namespace and would result in a namespace conflict."** So the packaging blocker is namespace resolution, not aesthetics — get the reason right, because it means no amount of `*.scoped.css` discipline makes a packaged light-DOM component supported. The style argument is independently true (un-encapsulated styles would bleed into any consumer org's pages and consumers cannot scope them after install) but it is not what Salesforce cites.
 
 ---
 
@@ -173,7 +173,7 @@ Non-obvious platform behaviors that cause real production problems:
 2. **You cannot mix render modes inside one template** — the root `<template>` sets it for the entire component tree it owns.
 3. **`:host` selectors do nothing in light DOM** — there is no shadow host. Refactor to a wrapper element with a class.
 4. **LWS is still on** — light DOM does not re-expose blocked JS globals or disable the sandbox.
-5. **Managed-package components must stay shadow DOM** — Salesforce's docs explicitly warn against shipping light DOM through managed packages because of style leaks.
+5. **Managed-package components must stay shadow DOM** — Salesforce's docs state that distributing light-DOM components isn't supported, citing a `c`-namespace conflict in component references. Practitioners often repeat "because of style leaks," which is a plausible but different reason and leads them to think scoped CSS makes it acceptable. It does not.
 6. **Experience Cloud Aura sites behave differently from LWR sites** — confirm the site template before assuming light DOM fixes the SEO problem.
 7. **Toggling an existing component from shadow to light is a breaking change** — existing consumers may rely on style isolation, and removing it can regress their layouts.
 

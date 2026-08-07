@@ -35,7 +35,7 @@ class AgentSession:
             ],
             "bypassUser": False
         }
-        # POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
+        # POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
         response = self._post(f"/sessions", payload)
 
         if response.status_code == 409:
@@ -62,7 +62,7 @@ class AgentSession:
             },
             "variables": []
         }
-        # POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
+        # POST https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages
         response = self._post(f"/sessions/{self.session_id}/messages", payload)
         response.raise_for_status()
 
@@ -72,7 +72,7 @@ class AgentSession:
     def end_session(self) -> None:
         """Terminate the session. Always call this when the conversation ends."""
         if self.session_id:
-            # DELETE /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+            # DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}
             self._delete(f"/sessions/{self.session_id}")
             self.session_id = None
             self.external_session_key = None

@@ -59,9 +59,7 @@ Gather this context before working on anything in this domain:
 
 Salesforce enforced Multi-Factor Authentication for all users who access the Salesforce UI directly (Service Cloud, Sales Cloud, Experience Cloud internal users, Setup, etc.) starting February 1, 2022. This is a contractual requirement, not optional. SSO users whose identity provider performs MFA are exempt from the Salesforce-side enforcement because the IdP satisfies the requirement.
 
-Configure MFA at: **Setup > Identity > MFA Management and Setup**
-
-The org-level MFA enforcement toggle at **Setup > Security > Identity Verification** enables MFA for all applicable users in one step. Per-profile or permission-set-level MFA can also be set using the **Multi-Factor Authentication for User Interface Logins** system permission.
+Configure MFA from Setup, using the Quick Find box to find and select **Identity Verification**, then selecting **Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org**. That single setting enables MFA for all applicable users. (Setup also has a separate **Multi-Factor Authentication Assistant** node — a rollout guide, not the enforcement switch. There is no Setup node named "MFA Management and Setup".) Per-profile or permission-set-level MFA can also be set using the **Multi-Factor Authentication for User Interface Logins** system permission.
 
 ### My Domain Is Required For Many Features
 
@@ -141,7 +139,7 @@ A CSP violation does not produce a Salesforce error message visible to the user 
 **How it works:**
 1. Navigate to **Setup > Company Settings > My Domain**. Register the domain. Wait for Salesforce to provision it (up to 24 hours for production).
 2. Test the My Domain URL in a browser. Navigate to **My Domain > Deploy to Users** only after verifying logins work.
-3. Navigate to **Setup > Identity > MFA Management and Setup** (or **Setup > Security > Identity Verification**). Enable the **Require MFA for all direct logins** org-level toggle.
+3. From Setup, Quick Find > **Identity Verification**. Enable **Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org**.
 4. Navigate to **Setup > Security > Session Settings**. Set timeout to 2 hours (or lower for regulated environments). Enable HTTPS. Set clickjack protection to "Allow framing by same origin only."
 5. Navigate to **Setup > Security > Password Policies**. Set minimum length to 10 characters, complexity to require alphanumeric plus special characters, expiration to 90 days or Never (if relying solely on SSO/MFA), lockout to 5 attempts.
 6. Navigate to **Setup > Security > Network Access**. Add office/VPN IP ranges that should bypass the email verification challenge.

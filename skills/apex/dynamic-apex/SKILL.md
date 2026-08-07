@@ -81,7 +81,9 @@ Salesforce exposes schema metadata through several describe APIs:
 - `DescribeSObjectResult.fields.getMap()` — returns `Map<String, Schema.SObjectField>` of all fields on the object.
 - `Schema.SObjectField.getDescribe()` — returns `Schema.DescribeFieldResult`. Includes `isAccessible()`, `isCreateable()`, `isUpdateable()`, `getType()`, `getPicklistValues()`, `getReferenceTo()`, `getName()`.
 
-Each `getDescribe()` call counts as one describe call and Salesforce enforces a governor limit of 100 describe calls per transaction. Cache results in `static` maps or class-level variables to avoid burning through this limit.
+There is **no governor limit on the number of describe calls** in a transaction. Describe limits were removed and are no longer enforced in any API version — the Limits methods that once measured them (`Limits.getLimitDescribes()` and friends) were withdrawn, and `Limits.getChildRelationshipsDescribes()` is documented as "no longer available" for exactly that reason. Do not write code, tests, or review checklists that assert a describe-count ceiling; a `LimitException` from describe volume cannot occur.
+
+Cache describes anyway, in `static` maps or class-level variables — the real cost is **CPU time and heap**, both of which are hard-limited (10,000 ms synchronous CPU, 6 MB synchronous / 12 MB asynchronous heap). `Schema.getGlobalDescribe()` in a large org materialises hundreds of `SObjectType` tokens on every call; doing that inside a loop is a CPU and heap problem, not a describe-count problem. Getting the *reason* right matters: a developer told the ceiling is 100 will "fix" a slow batch by counting describes instead of profiling `Limits.getCpuTime()`.
 
 ### SObjectType and Runtime Type Inspection
 

@@ -102,8 +102,8 @@ header fields, the highlights panel, or related components that
 were rendered before the modal opened — those have already
 committed to their `@wire`'d snapshot. Calling
 `notifyRecordUpdateAvailable` is the documented mitigation but
-it's marked as a legacy path; the Summer '24 replacement is the
-`RefreshEvent` API.
+it's the targeted path; the view-scoped alternative is the
+`RefreshEvent` half of the RefreshView API, shipped in Spring '23.
 
 **Solution:**
 
@@ -145,7 +145,7 @@ function computeScore({ financial, engagement, risk }) {
 **Why it works:** `RefreshEvent` propagates up the DOM and into the
 `lightning/refresh` infrastructure, which signals every component in
 the active view (record page tabs, related lists, custom components
-listening via `@wire(RefreshView)`) to invalidate and re-fetch.
+registered via `registerRefreshHandler()`) to invalidate and re-fetch.
 This is the modern replacement for the targeted-record approach;
 unlike `notifyRecordUpdateAvailable`, it doesn't require the caller
 to know which records changed — useful when the modal's logic might

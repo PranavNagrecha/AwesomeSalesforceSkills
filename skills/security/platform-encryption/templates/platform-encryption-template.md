@@ -61,9 +61,11 @@ List every SOQL query, Flow element, report filter, or list view that uses the f
 
 ## 5. Permission Assignments
 
-List all profiles and permission sets that need the View Encrypted Data permission:
+Shield has no decrypt permission — field-level security is the only control over plaintext
+visibility. List every profile and permission set that will keep **FLS Read** on each encrypted
+field, and confirm that everyone absent from this table has had Read removed:
 
-| Profile / Permission Set | Reason Needs Plaintext Access |
+| Profile / Permission Set | Reason Needs Plaintext Access (FLS Read retained) |
 |---|---|
 | System Administrator | Full admin access |
 | Integration User — MuleSoft | Record matching by Email |
@@ -83,7 +85,7 @@ Copy this checklist and tick items as you complete them:
 - [ ] Flows and automations referencing affected fields audited
 - [ ] Sharing rules referencing affected fields reviewed (encryption breaks criteria-based sharing)
 - [ ] Key management model selected; tenant secret generated or customer key material uploaded
-- [ ] View Encrypted Data permission assigned to all required profiles and permission sets
+- [ ] FLS reviewed on every encrypted field; Read removed from profiles/permission sets that must not see plaintext (Shield decrypts transparently for anyone with Read)
 - [ ] Encryption policy enabled in **sandbox** first; validated by logging in as each affected profile
 - [ ] Re-encryption job initiated and completed for all objects with existing data
 - [ ] Encryption Statistics page reviewed to confirm encrypted record counts are correct

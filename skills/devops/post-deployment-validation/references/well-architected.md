@@ -27,6 +27,7 @@
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
 - Salesforce CLI Reference — `sf project deploy report` — https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_project_deploy_report.html
+- Salesforce CLI Reference — unified `project` commands (full `sf project deploy` subcommand list, including `validate` and `preview`; verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm
 - Metadata API Developer Guide — Monitor Deployments (Deployment Status page) — https://help.salesforce.com/s/articleView?id=sf.deploy_monitoring.htm&language=en_US&type=5
 - Metadata API Developer Guide — DeployResult — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deployresult.htm
 - Metadata API Developer Guide — Check Deploy Status (REST) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_rest_deploy_checkstatus.htm

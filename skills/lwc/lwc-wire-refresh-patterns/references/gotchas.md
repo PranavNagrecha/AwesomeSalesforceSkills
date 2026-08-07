@@ -37,11 +37,12 @@ the `refreshApex` call.
 
 ---
 
-## Gotcha 2: `RefreshEvent` performance scales with the number of `@wire(RefreshView)` listeners
+## Gotcha 2: `RefreshEvent` performance scales with the number of registered refresh handlers
 
 **What happens:** Dispatching `new RefreshEvent()` triggers every
-component in the active view that has wired `RefreshView` or
-listens to the refresh signal. On a record page with 12 components
+component in the active view that has called
+`registerRefreshHandler()` (or is a platform container that
+registers one for you). On a record page with 12 components
 (highlights, related lists, custom LWCs, Path, etc.) and each of
 those re-running 2–3 wires, a single `RefreshEvent` can produce
 36+ network round-trips. Users see a multi-second loading state

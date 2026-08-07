@@ -49,3 +49,5 @@ Channel deployment is a security boundary. Decisions made at the channel level d
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — Reliability and User Experience pillar framing
 - Embedded Service Deployment Help — https://help.salesforce.com/s/articleView?id=sf.embedded_service_deployment.htm — Embedded Service widget configuration, CORS, CSP Trusted Sites
 - Agentforce for Slack Help — https://help.salesforce.com/s/articleView?id=sf.agentforce_slack.htm — Slack deployment OAuth flow, managed app installation, channel configuration
+- Agentforce Developer Guide — Agent API Get Started (host api.salesforce.com, /einstein/ai-agent/v1, four required OAuth scopes incl. sfap_api) — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-get-started.html
+- Agentforce Developer Guide — Agent API Examples (exact session / message / stream / DELETE URLs and x-session-end-reason header) — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-examples.html

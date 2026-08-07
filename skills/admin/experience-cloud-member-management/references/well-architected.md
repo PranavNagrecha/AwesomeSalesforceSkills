@@ -24,6 +24,7 @@
 
 - Experience Cloud Help — Add Members to Your Experience Cloud Site: https://help.salesforce.com/s/articleView?id=sf.networks_customize_members.htm
 - Experience Cloud Help — Configure Self-Registration: https://help.salesforce.com/s/articleView?id=sf.networks_self_reg.htm
-- Apex Reference Guide — Auth.ConfigurableSelfRegHandler: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_auth_configurable_selfreghandler.htm
+- Apex Reference Guide — ConfigurableSelfRegHandler Interface: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfigurableSelfRegHandler.htm — the interface's only method is `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)`; the doc's own sample handler returns `Site.createExternalUser(u, accountId, password)`
+- Apex Reference Guide — RegistrationHandler Interface: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm — `User createUser(Id portalId, Auth.UserData userData)` and `void updateUser(Id userId, Id portalId, Auth.UserData userData)`, used for Auth. Provider single sign-on, not site self-registration
 - Experience Cloud Help — Experience Cloud Licenses: https://help.salesforce.com/s/articleView?id=sf.users_license_types_communities.htm
 - Salesforce Well-Architected Overview — architecture quality framing: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

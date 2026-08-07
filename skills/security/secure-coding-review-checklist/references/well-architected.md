@@ -32,3 +32,7 @@ A secondary tradeoff is performance vs. security granularity. The older describe
 - Shield Platform Encryption Implementation Guide — https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5
 - Secure Apex Classes — https://developer.salesforce.com/docs/platform/lwc/guide/apex-security
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
+- Apex Developer Guide — Dynamic SOQL (bind variables in Database.query; queryWithBinds introduced in API v57) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm
+- Apex Reference — Database.queryWithBinds(query, bindMap, accessLevel) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm
+- Salesforce Developers — Write Simplified and Secure Apex with Spring '23 Updates (USER_MODE / queryWithBinds release attribution) — https://developer.salesforce.com/blogs/2023/05/write-simplified-and-secure-apex-with-spring-23-updates
+- Secure Coding Guide — SOQL Injection — https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_soql_injection.htm

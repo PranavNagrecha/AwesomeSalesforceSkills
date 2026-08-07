@@ -97,7 +97,7 @@ for (Account acc : activeAccounts) {
 }
 ```
 
-**Why it works:** Server-side generation runs asynchronously on Salesforce compute resources, not in a browser. The Integration Procedure handles data extraction, document generation, and file linking in a single orchestrated flow. No image or rich text tokens are used, which is required for server-side mode.
+**Why it works:** Server-side generation runs asynchronously on Salesforce compute resources, not in a browser. The Integration Procedure handles data extraction, document generation, and file linking in a single orchestrated flow. This example happens to use only variable and repeating tokens, but that is a property of the document, not a requirement: image tokens (`IMG_`) are documented for server-side generation via a Data Mapper Extract + Transform pair, and the token reference does not restrict hyperlink (`HYP_`) or rich text (`RTB_`) tokens by mode.
 
 ---
 

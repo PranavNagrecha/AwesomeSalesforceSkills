@@ -48,7 +48,7 @@ Gather this context before working on anything in this domain:
 - Confirm the org edition — Email Services limits differ: Developer/Professional orgs get fewer daily processing slots than Enterprise/Unlimited. The standard limit is 1,000 email messages per day per service address; check the org's actual allocation.
 - Identify whether you need text parsing, HTML parsing, or binary attachment processing — these require different handler branches.
 - The most common wrong assumption: practitioners expect `handleInboundEmail` to run as a specific user. It runs in **system context** — no user permission enforcement applies unless you explicitly switch context in your code.
-- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, 10 MB heap. Large attachments (up to 25 MB per email) can breach heap limits quickly.
+- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation, not the 6 MB synchronous / 12 MB asynchronous figure that applies to ordinary Apex. Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once.
 - The Email Service address must be **activated** in Setup. An inactive address silently drops all inbound mail.
 
 ---

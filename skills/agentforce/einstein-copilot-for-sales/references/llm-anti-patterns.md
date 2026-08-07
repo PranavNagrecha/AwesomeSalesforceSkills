@@ -196,3 +196,32 @@ Monitoring:
 **Detection hint:** Flag Einstein Sales enablement guides that do not mention data quality prerequisites. Check for orgs with more than 30% of opportunities missing Amount or CloseDate. Flag stale pipelines with open opportunities past CloseDate by more than 90 days.
 
 ---
+
+---
+
+## Anti-Pattern: Stating the Opportunity Scoring Gate as "200 Closed Opportunities (Won + Lost Combined)"
+
+**What the LLM generates:** "Einstein Opportunity Scoring requires a minimum of 200 closed opportunities (Won + Lost combined) with a Close Date in the last 24 months." Variants: "200 closed opportunities, any mix of won and lost", "at least 200 records where IsClosed = true".
+
+**Why it happens:** The real requirement is *two* 200-record floors and the model compresses them into one, because a single threshold is the more common shape for a data-volume prerequisite. "200" is genuinely correct — this is a relabelling, not an invention: the number is right and the dimension it is attached to is wrong. That is precisely why it survives review; a reader checking "is 200 the number?" gets a yes.
+
+**Why it matters, and why it is self-defeating:** the skill exists to stop admins enabling a feature that will sit in "Insufficient Data". A one-sided pipeline is the *normal* failure case — orgs migrating from another CRM typically import closed-won history and drop closed-lost, so 350 won / 20 lost is a realistic shape. That org passes the combined-200 check, gets told to enable scoring, and lands in exactly the state the check was supposed to prevent.
+
+**Correct pattern:**
+```
+Einstein Opportunity Scoring data requirements:
+  >= 200 closed-WON  opportunities in the last 24 months, each with a
+                     lifespan of at least 2 days
+  >= 200 closed-LOST opportunities in the last 24 months, each with a
+                     lifespan of at least 2 days
+  Standard Stage field in use, values mapped to Open / Closed-Won / Closed-Lost
+     (win rates are computed from Stage, and win rates drive the scores)
+  >= 12 months of opportunity history, with at least one update in each month
+
+Fallback: if your org cannot build its own model, Einstein uses a global model
+built from anonymised cross-customer data, and switches to yours once it wins.
+
+The readiness query must GROUP BY IsWon. A single COUNT hides the failure.
+```
+
+**Detection hint:** the phrases `Won + Lost combined`, `any mix of Won and Lost`, or `200 closed opportunities` without the word *each* are the tell. Mechanically: a readiness query of the form `SELECT COUNT() FROM Opportunity WHERE IsClosed = true AND CloseDate = LAST_N_DAYS:730` **without** `GROUP BY IsWon` cannot evaluate the real gate, whatever threshold it compares against.

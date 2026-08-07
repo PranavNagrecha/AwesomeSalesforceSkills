@@ -128,7 +128,7 @@ for (AggregateResult ar : results) {
 
 **What goes wrong:** When new fields are added or fields are removed, the dynamically constructed field list breaks. Encrypted fields, formula fields with complex logic, or long text area fields can trigger `QUERY_TOO_COMPLICATED` even when the query length is under 100,000 characters. The dynamic approach also introduces SOQL injection risk if any user input is concatenated.
 
-**Correct approach:** Use `FIELDS(STANDARD)` for standard fields and `FIELDS(CUSTOM)` for custom fields (API v51.0+), always with `LIMIT`. These respect FLS automatically. For specific use cases, enumerate only the fields actually needed — this is explicit, safe, and performant.
+**Correct approach:** In Apex, use `FIELDS(STANDARD)` (API v51.0+) — it is the only form of the keyword Apex supports, and it needs no `LIMIT`. `FIELDS(CUSTOM)` and `FIELDS(ALL)` are the *unbounded* forms and are documented as "Not supported" in Apex, inline or dynamic, at any `LIMIT`; they are for REST, SOAP, and CLI queries, bounded there by `LIMIT n <= 200`. `FIELDS()` respects FLS automatically wherever it is supported. For everything else, enumerate only the fields actually needed — explicit, safe, and performant.
 
 ```apex
 // Safe schema exploration with FIELDS keyword

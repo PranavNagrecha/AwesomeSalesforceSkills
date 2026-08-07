@@ -52,7 +52,7 @@
 
 ```javascript
 // Step 1: Obtain a Data Cloud access token
-// Uses the Data Cloud Connected App — must have cdpapi scope
+// Uses the Data Cloud Connected App — must have the cdp_query_api scope
 async function getDataCloudToken(clientId, clientSecret, instanceUrl) {
   const params = new URLSearchParams({
     grant_type: 'client_credentials',

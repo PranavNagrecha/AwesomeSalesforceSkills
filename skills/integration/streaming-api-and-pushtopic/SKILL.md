@@ -22,7 +22,7 @@ tags:
 inputs:
   - "Salesforce object and SOQL filter condition for the PushTopic (or channel name for Generic Streaming)"
   - "Authentication method used by the external CometD client (OAuth user-agent, username-password, JWT)"
-  - "Replay ID requirement: -1 (all retained), -2 (new only), or a specific stored replay ID"
+  - "Replay ID requirement: -1 (default, new events only), -2 (all retained), or a specific stored replay ID"
   - "Expected concurrent subscriber count per channel"
   - "API version to use (minimum 24.0 for PushTopic, 36.0 for Generic Streaming replay)"
 outputs:
@@ -49,7 +49,7 @@ Gather this context before working on anything in this domain:
 
 - **Salesforce API version in use**: PushTopic requires API v24.0+. Generic Streaming channel replay requires v36.0+. The CometD client version must match or exceed the API version declared in the `/cometd/<version>` endpoint URL.
 - **Authentication method**: The external client must authenticate first via OAuth (or username-password flow in sandboxes) and obtain a session token before connecting to CometD. Named Credentials cannot be used directly for inbound CometD; the client owns the session.
-- **Concurrent client limits**: Each Streaming API channel supports a maximum of 1,000 concurrent clients per org (across all channels), and a maximum of 100 simultaneous clients per individual channel. Exceeding this causes `402::Unknown client` or handshake rejection.
+- **Concurrent client limits**: The documented allocation is **concurrent clients (subscribers) across all channels and all event types, per org**, and it is edition-dependent: **2,000** on Performance and Unlimited, **1,000** on Enterprise, **20** on all other supported editions. Do not quote 1,000 as a universal figure — it is the Enterprise row. Breaching it returns `403::Organization concurrent user limit exceeded`. A separate per-topic subscriber limit exists for PushTopic and generic streaming (`403::Subscription limit exceeded for this topic`), but Salesforce does not publish a number for it in the allocations table — treat it as real but unquantified and confirm against your org rather than designing to an assumed value. Note that **`402::Unknown client` is not a Salesforce error** — no 402 code exists in Streaming API; the real code is `403::Unknown client`, and it signals an expired CometD session (re-handshake), not a concurrency breach.
 - **PushTopic SOQL restrictions**: Not all SOQL is valid. Aggregate functions (COUNT, SUM, etc.), relationship traversal in the SELECT clause (e.g., `Account.Name` from Opportunity), LIMIT, OFFSET, and semi-joins are all prohibited. Only fields on the root object can appear in SELECT.
 - **Event retention**: Streaming API retains events for 24 hours. If a subscriber is offline longer than that, events are permanently lost. For guaranteed delivery, consider Platform Events with a 72-hour window instead.
 
@@ -113,11 +113,13 @@ Replay values:
 
 | Value | Behavior |
 |---|---|
-| `-2` (default) | Receive only new events from this point forward. |
-| `-1` | Replay all retained events (up to 24 hours). |
-| `<replayId>` | Replay all events after (not including) that ID. |
+| `-1` (default) | Receive only new events broadcast after the client subscribes. Everything published during a prior outage is skipped. |
+| `-2` | Receive all events still inside the retention window, then continue with new events. PushTopic, generic, and standard-volume events are retained **24 hours**; high-volume platform events and change events, **72 hours**. |
+| `<replayId>` | Replay all events after (not including) that ID, provided it is still inside the retention window. |
 
-Clients must persist the last-seen `replayId` to durable storage before processing each event. On reconnect they pass the stored ID. Storing the ID after processing risks duplicate processing if the process crashes between the two steps — weigh idempotency requirements.
+Get these two the right way round. `-1` is the default and means *tip only*; `-2` is the catch-up value. A subscriber that reconnects on `-2` believing it means "new events only" gets the full retained window replayed on every reconnect — a duplicate flood that looks like a publisher bug. A subscriber that reconnects on `-1` believing it means "catch up" silently loses every event published during the outage, with no error on either side.
+
+Clients must persist the last-seen `replayId` to durable storage **after** the event has been processed successfully, not before. Persisting first makes the subscriber at-most-once: a crash between the write and the processing advances past an event that was never handled, and it is gone. Persisting after makes it at-least-once — the same event can arrive twice — which is the platform's contract anyway, so the subscriber has to be idempotent regardless. Choose the failure mode you can defend, and note that it is duplicates, not gaps.
 
 ---
 
@@ -185,7 +187,7 @@ Content-Type: application/json
 1. Check the last persisted `replayId` in client-side storage.
 2. On reconnect, set the replay extension to that `replayId`. The server replays all events with a higher ID within the 24-hour retention window.
 3. If no `replayId` was persisted, set replay to `-1` to receive all retained events (risk: replay storm if the backlog is large).
-4. Verify the client is re-issuing `connect` immediately after every server response. A gap in the long-poll loop causes the server to expire the client session (`402::Unknown client`), requiring a full re-handshake.
+4. Verify the client is re-issuing `connect` immediately after every server response. A gap in the long-poll loop causes the server to expire the client session (`403::Unknown client`), requiring a full re-handshake.
 5. Check for rate limit errors: `401::Authentication required` after a session token expires. The client must re-authenticate and reconnect, not just re-subscribe.
 
 ---

@@ -42,7 +42,7 @@ class AgentSession:
 
 ```json
 // At session creation: inject all stable context
-POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
+POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
 {
   "variables": [
     { "name": "Context.Channel", "type": "Text", "value": "mobile-ios" },
@@ -62,7 +62,7 @@ POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
 
 ## Anti-Pattern 3: Conflating BYOC CCaaS with Raw Agent API (Using Sessions Endpoint for CCaaS)
 
-**What the LLM generates:** A BYOC CCaaS integration that calls `POST /einstein/ai-agent/agents/{agentId}/sessions` directly, then sends messages to `POST .../sessions/{sessionId}/messages`, exactly as in the raw Agent API pattern — without using the Establish Conversation API or Interaction API.
+**What the LLM generates:** A BYOC CCaaS integration that calls `POST /einstein/ai-agent/v1/agents/{agentId}/sessions` directly, then sends messages to `POST .../sessions/{sessionId}/messages`, exactly as in the raw Agent API pattern — without using the Establish Conversation API or Interaction API.
 
 **Why it happens:** The raw Agent API is simpler, better documented in general resources, and appears earlier in search results. LLMs default to the simpler pattern even when the user's description mentions CCaaS, Omni-Channel routing, or human escalation — context that should trigger the BYOC pattern.
 
@@ -82,7 +82,7 @@ POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
    { "messageType": "END_CONVERSATION" }
 ```
 
-**Detection hint:** Flag any code that uses the `/einstein/ai-agent/agents/{agentId}/sessions` endpoint when the user description mentions CCaaS, Omni-Channel, supervisor, escalation, human agent, MessagingEndUser, or a named CCaaS vendor (Genesys, Amazon Connect, Five9, NICE).
+**Detection hint:** Flag any code that uses the `/einstein/ai-agent/v1/agents/{agentId}/sessions` endpoint when the user description mentions CCaaS, Omni-Channel, supervisor, escalation, human agent, MessagingEndUser, or a named CCaaS vendor (Genesys, Amazon Connect, Five9, NICE).
 
 ---
 
@@ -149,9 +149,9 @@ finally:
 // Pick ONE integration path and stay on it:
 
 // PATH A — Raw Agent API (no Omni-Channel):
-POST   /einstein/ai-agent/agents/{agentId}/sessions
-POST   /einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
-DELETE /einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+POST   /einstein/ai-agent/v1/agents/{agentId}/sessions
+POST   /einstein/ai-agent/v1/sessions/{sessionId}/messages
+DELETE /einstein/ai-agent/v1/sessions/{sessionId}
 
 // PATH B — BYOC CCaaS (with Omni-Channel):
 POST   /einstein/ai-agent/byoc/conversations

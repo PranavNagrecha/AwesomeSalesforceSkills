@@ -38,5 +38,7 @@
 - LWC Developer Guide: Property Errors — https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_errors
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide
+- Lightning Component Library — base component index (checked 2026-08-01: no `lightning-iframe` entry) — https://developer.salesforce.com/docs/component-library/overview/components
+- Lightning Components Security — Compare LWS and Lightning Locker — https://developer.salesforce.com/docs/platform/lightning-components-security/guide/get-started-compare-lws-locker.html
 - LWC Data Guidelines — https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

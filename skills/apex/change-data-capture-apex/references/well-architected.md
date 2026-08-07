@@ -27,4 +27,6 @@
 - Change Data Capture Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm — primary authority for trigger syntax, header fields, execution model, GAP events, and entity selection
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm — governor limits, async execution, Queueable patterns
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm — `EventBus.ChangeEventHeader` class and `getRecordIds()` method signature
+- Apex Developer Guide: Execution Governors and Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm — per-transaction heap is 6 MB synchronous / 12 MB asynchronous (there is no 10 MB heap in any Apex context); SOQL 100, DML 150
+- Change Data Capture Developer Guide: Change Event Triggers — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_trigger_intro.htm — change event triggers run under **synchronous** governor limits and receive up to 2,000 events per invocation
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — reliability and performance framing

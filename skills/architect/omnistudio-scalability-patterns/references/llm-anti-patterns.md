@@ -56,25 +56,46 @@ Queueable Chainable: Runs designated steps as Queueable Apex jobs.
 
 ---
 
-## Anti-Pattern 3: Ignoring the 25-Concurrent-Long-Running-Apex Org-Wide Limit
+## Anti-Pattern 3: Stating the Concurrent-Long-Running-Apex Limit as a Flat "25 Requests Over 20 Seconds"
 
-**What the LLM generates:** A scalability design for a 500-user concurrent portal that focuses exclusively on per-session governor limits (SOQL, CPU per IP execution) without accounting for the org-wide concurrent Apex request ceiling.
+**What the LLM generates:** Either (a) a scalability design for a 500-user concurrent portal that ignores the org-wide concurrent Apex ceiling entirely, or — more insidiously — (b) a design that *does* cite the ceiling but states it as **"25 concurrent long-running Apex requests, where long-running means over 20 seconds, shared across triggers, batch jobs, Queueable and future methods."** Every clause of (b) is wrong: the count, the threshold, and the scope.
 
-**Why it happens:** LLMs are well-trained on per-transaction governor limits (the SOQL 100, DML 150, CPU 10,000ms numbers appear frequently in documentation). The concurrent long-running Apex limit (25 requests exceeding 20 seconds, org-wide) appears less frequently and is an org-wide constraint rather than a per-transaction one, making it less salient in training data.
+**Why it happens:** Three separate confusions stack up. The **20-second** figure is a relabelled real number — 20 seconds is a commonly quoted Lightning/Visualforce page-response guideline and appears near concurrency discussions, so it gets attached to the wrong dimension. The **25** appears to be an averaging of the real 10–50 licence-scaled range into a single memorable midpoint; LLMs prefer a scalar to a formula. The **scope error** (including async) comes from the general association "governor limits apply to all Apex", which is true of per-transaction limits and false of this one. And because per-transaction limits (SOQL 100, DML 150, CPU 10,000 ms) dominate training data, the org-wide constraint is reconstructed rather than recalled.
 
 **Correct pattern:**
 ```
-Org-wide concurrent long-running Apex limit: 25 requests > 20 seconds
+Apex Developer Guide, Execution Governors and Limits:
+
+  "Number of synchronous concurrent transactions for long-running
+   transactions that last longer than 5 seconds for each org."
+
+  "Based on the number of applicable licenses in an org, the limit is
+   calculated as a ratio of 100 licenses to one concurrent long-running
+   Apex transaction. Minimum limit is 10, Maximum limit is 50."
+
+So:
+  Threshold : 5 seconds        (NOT 20)
+  Ceiling   : ceil(licences/100), floored at 10, capped at 50   (NOT a flat 25)
+              500 licences  -> 10   (floor)
+              3,000         -> 30
+              8,000         -> 50   (cap)
+  Scope     : SYNCHRONOUS transactions only.
+              @future / Queueable / Batch / Scheduled do NOT consume slots.
+              (Async has its own ceiling: 250,000 executions per 24 hours,
+               or licences x 200, whichever is greater.)
 
 Design implications for portal deployments:
-1. Any IP that takes > 20s under load consumes this org-wide slot
-2. 500 concurrent users with IPs averaging 25s = immediate ceiling breach
-3. Batch jobs scheduled during peak portal hours consume slots from the same pool
-4. Mitigation: ensure common-case IP execution < 20s; use Queueable Chainable 
-   only for genuinely long operations; schedule batch away from peak portal hours
+1. Any synchronous IP averaging > 5s under load occupies a slot for its duration
+2. Do the licence arithmetic for the specific org; never quote a scalar
+3. A nightly Batch job does NOT occupy a slot. It can still cause breaches
+   indirectly, by contending for CPU/locks and pushing synchronous
+   transactions past the 5-second bar. Say that, not "it consumes slots"
+4. Moving work to Queueable Chainable removes it from this pool entirely
+5. Observe the real ceiling via the ConcurLongRunApexErrEvent platform event
+   (CurrentValue / LimitValue / Quiddity), not by assuming a number
 ```
 
-**Detection hint:** Any portal scalability recommendation that omits the 25-concurrent-request limit should be flagged for incompleteness. Ask: "What is the impact of the org-wide concurrent long-running Apex limit on this design?"
+**Detection hint:** Grep any generated architecture text for `\b25\b` within 80 characters of "concurrent", and for "20 second" / "20s" near "long-running". Both are near-certain fabrications. Then check the scope clause: if the sentence enumerating what counts toward the limit contains `batch`, `future`, `Queueable`, or `scheduled`, it is wrong regardless of the number. Conversely, any portal scalability recommendation that omits the concurrent long-running ceiling altogether is incomplete — ask: "What is this org's licence count, and therefore its concurrent long-running Apex ceiling?"
 
 ---
 
@@ -151,7 +172,7 @@ Multi-user concurrency patterns (this skill):
 - Direct Platform Access for read-heavy IPs
 - LWR + CDN for portal page delivery
 - IP-level caching for concurrent reference data requests
-- 25-concurrent-long-running-Apex limit management
+- Concurrent long-running Apex ceiling management (synchronous, >5s, licence-scaled 10–50)
 - Symptom: OmniStudio degrades or errors under many simultaneous users
 ```
 

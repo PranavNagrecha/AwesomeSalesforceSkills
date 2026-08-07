@@ -46,7 +46,7 @@ Use this skill when an org is approaching storage limits, experiencing query per
 Gather this context before working on anything in this domain:
 
 - What is the current storage usage breakdown? Run Setup > Storage Usage to see data storage vs file storage split.
-- What is the org edition? Storage limits differ: Essentials and Professional each get 1 GB base; Enterprise and Unlimited get 10 GB base plus 20 MB per user license for data storage.
+- What is the org edition, and how many user licences of which type? Both matter, and the base allocation is less edition-dependent than people expect. Per Salesforce Help *Data and File Storage Allocations*, **data storage base is 10 GB** for Contact Manager, Group, Essentials, Professional, Enterprise, Performance, Unlimited, and Starter alike. What differs is the per-user increment: **20 MB per user licence** (Enterprise, Professional, Contact Manager, Group), **120 MB per user licence** (Performance, Unlimited), and **no per-user increment** (Essentials, Starter). Do not quote "1 GB base" for any edition's data storage — 1 GB is the *file* storage figure for Essentials and Starter, and it gets relabelled onto data storage constantly.
 - Does the org use Salesforce Shield? Shield provides Field Audit Trail with configurable retention beyond the default 18 months; without Shield, field history is capped at 18 months rolling.
 - Are there compliance or legal hold requirements that prevent hard deletion of records?
 - What is the query access pattern for the data to be archived — does it need to remain queryable from within Salesforce, or is it purely for audit/retention?
@@ -59,8 +59,10 @@ Gather this context before working on anything in this domain:
 
 Salesforce separates storage into two buckets:
 
-- **Data storage** — counts standard and custom object records. Roughly 2 KB per record on average. Every record in an object counts, including soft-deleted records in the recycle bin (see Recycle Bin section).
-- **File storage** — counts Attachments, Files (ContentVersion), and documents. File storage limits scale differently: Enterprise gets 1 GB base plus 2 GB per user license.
+- **Data storage** — counts standard and custom object records. Roughly 2 KB per record on average. Records in the Recycle Bin are the exception: per Salesforce Help, "Records in the Recycle Bin don't count against your Salesforce org's storage usage," and there is no cap on how many the bin holds. The 15-day figure is a *restore* window, not a storage-accounting window, so emptying the bin frees nothing.
+- **File storage** — counts Attachments, Files (ContentVersion), documents, Chatter files, and Site.com assets. Per-org base is **10 GB** for Contact Manager, Group, Professional, Enterprise, Performance, and Unlimited; **1 GB** for Essentials and Starter; **20 MB** for Developer and Personal. Per-user file-storage increments depend on the *user licence type* rather than the edition alone — read the current allocation table rather than quoting a single figure.
+
+Both pools are **recalculated asynchronously**. Salesforce Help states that after adding or removing a large number of records or files, "the change in your org's storage usage isn't reflected immediately." An archival run that appears to have freed nothing has usually just not been recounted yet.
 
 Storage alerts fire at 85% and 100% of your allocation. Exceeding data storage blocks new record inserts org-wide — a critical reliability risk.
 
@@ -195,7 +197,7 @@ Run through these before marking archival work complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Big Object records cannot be updated or deleted via standard DML** — `update` and `delete` DML statements throw an exception on Big Object records. Updates require reinserting with the same index values (upsert semantics). Deletion uses `Database.deleteImmediate()` which requires all index fields to be specified. Treating a Big Object like a standard object in Apex will cause runtime errors.
-2. **Async SOQL is not transactional and runs slowly** — Async SOQL jobs run asynchronously and materialize results into a standard or Big Object. They are not real-time and cannot be chained with synchronous processes. Do not use Async SOQL where immediate consistency is required.
+2. **Async SOQL was retired in Summer '23 — do not design an archive read path around it** — The `/services/data/vXX.0/async-queries/` endpoint and `AsyncQueryJob` no longer exist. This bites archival projects specifically and late: the *write* path into a Big Object (`Database.insertImmediate`, Bulk API) works fine, so ingestion runs for months before anyone attempts the first compliance read and finds there is no implemented way to get the data back. Per Salesforce Help 000394892: "You must use the Bulk API or batch Apex to query or report on custom Big Objects." Build and test the read path before you delete the source records.
 3. **Recycle bin affects query optimizer selectivity** — Even though soft-deleted records are excluded from normal SOQL results, they still participate in selectivity calculations used by the query optimizer. A full Recycle Bin on a large object can cause full table scans and slow reports, even if the table appears smaller to users. Empty the Recycle Bin regularly.
 4. **Field history on archived records is not archived automatically** — When you archive (or delete) parent records, the associated History object rows (`AccountHistory`, `CaseHistory`, etc.) are NOT deleted automatically. They remain in the History object and continue to count against data storage until the 18-month automatic truncation window expires.
 

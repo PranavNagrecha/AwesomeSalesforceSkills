@@ -31,3 +31,6 @@ Unit tests that verify loading, error, empty, and success states directly protec
 - Test Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/testing.html
 - Write Jest Tests for Lightning Web Components That Use the Wire Service - https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-wire-utility?-escaped-fragment-=.html
 - Best Practices for Development with Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
+- `wire-service-jest-util` — Migrating from version 2.x to 3.x (`register*TestWireAdapter` removed; use `create*TestWireAdapter`; verified 2026-08-01) - https://github.com/salesforce/wire-service-jest-util/blob/master/docs/migrating-from-version-2.x-to-3.x.md
+- `wire-service-jest-util` README (`createTestWireAdapter` / `createLdsTestWireAdapter` / `createApexTestWireAdapter`; `emit` / `error` / `getLastConfig`) - https://github.com/salesforce/wire-service-jest-util
+- `sfdx-lwc-jest` README (re-exports the wire-service-jest-util adapters, so no extra dependency is needed) - https://github.com/salesforce/sfdx-lwc-jest

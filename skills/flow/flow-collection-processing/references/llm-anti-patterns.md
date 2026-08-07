@@ -153,3 +153,24 @@ Use a formula or direct comparison:
 No loop needed to count records in a collection.
 
 **Detection hint:** Loop whose only purpose is incrementing a counter variable to determine collection size.
+
+
+---
+
+## Anti-Pattern: Inventing a Flow "collection element count limit" of 50,000
+
+**What the LLM generates:**
+
+> "The collection element count limit is 50,000 rows per Flow interview — not 10,000 DML rows, but 50,000 in-memory records across all collections. A Get Records returning 50k+ will fault."
+
+**Why it happens:** 50,000 *is* a real Salesforce number — it is the per-transaction cap on **total records retrieved by SOQL queries**. The relabelling is subtle and self-reinforcing: the model contrasts it explicitly against the 10,000-DML-row limit, and that contrast makes it read like a carefully distinguished, separately-named governor. It is not; Flow has no limit called a collection element count, and nothing caps how many records a collection variable may hold.
+
+The prediction happens to land ("a Get Records returning 50k+ will fault") which is why this survives casual review. But the *reasoning* is wrong in ways that change real decisions:
+
+- Under the invented limit, splitting one Get Records into three smaller ones looks like it helps. It does not — all three draw on the same 50,000 query-row budget.
+- Under the invented limit, the budget looks like it belongs to the interview. It belongs to the **transaction**, shared with every trigger, Apex class, and other flow in the same call stack — so a flow can blow it without querying 50,000 rows itself.
+- Under the invented limit, re-using or copying a collection looks costly. It is not; only the query is.
+
+**Correct version:** 50,000 = total records retrieved by SOQL per **transaction**, shared across all queries and all automation in that transaction. Collection size is otherwise bounded by **heap** (6 MB synchronous / 12 MB asynchronous), which is the limit that actually constrains large in-memory collections. DML rows remain 10,000 per transaction.
+
+**Detection hint:** grep for `collection element count`, or for `50,000` described as per-*interview* rather than per-*transaction*. The generalisable rule: **when a limit is introduced by contrasting it with another limit ("not X, but Y"), check that Y has a documented name.** Fabricated governors are frequently born from that construction — the contrast supplies the appearance of precision that the invented limit lacks on its own. Also flag any per-transaction Salesforce budget described as belonging to a single flow, trigger, or interview; almost all of them are shared across the whole call stack.

@@ -98,6 +98,12 @@ caching; they fight you when freshness is critical (see
   https://developer.salesforce.com/docs/platform/lwc/guide/reference-lightning-ui-api-record.html
 - LWC Guide — Refresh Cached Data:
   https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-refresh.html
+- LWC Guide — Use RefreshView API (`registerRefreshHandler` / `registerRefreshContainer` code samples):
+  https://developer.salesforce.com/docs/platform/lwc/guide/data-refreshview-api.html
+- LWC Guide — Refresh Component Data with RefreshView API:
+  https://developer.salesforce.com/docs/platform/lwc/guide/data-refreshview.html
+- Learn MOAR Spring '23 — LWC Enhancements for Developers (RefreshView / `lightning/refresh` introduction):
+  https://developer.salesforce.com/blogs/2023/01/lwc-enhancements-for-developers-learn-moar-spring-23
 - Apex Developer Guide — `@AuraEnabled(cacheable=true)`:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm
 - Salesforce Well-Architected — Adaptable (Resilient):

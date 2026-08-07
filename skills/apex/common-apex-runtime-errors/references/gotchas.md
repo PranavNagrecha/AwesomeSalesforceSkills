@@ -52,9 +52,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 6: MixedDmlException fires on setup + non-setup DML — not on mixing two ordinary objects
+## Gotcha 6: Mixed DML is a `DmlException` / `MIXED_DML_OPERATION` — there is no `MixedDmlException` type, and it fires on setup + non-setup DML, not on mixing two ordinary objects
 
-**What happens:** `MixedDmlException` is thrown when a DML operation on a *setup* object (`User`, `UserRole`, `Group`, `GroupMember`, `PermissionSet`, `PermissionSetAssignment`, `Territory2`, `ObjectPermissions`, `FieldPermissions`, `QueueSObject`, …) is mixed with a DML operation on a *non-setup* object (`Account`, `Contact`, custom objects) in the same transaction. Developers frequently misdiagnose this as "you can't DML two object types at once" and waste time splitting unrelated `Account`/`Contact` writes, which are perfectly legal.
+**What happens:** Two distinct misconceptions travel together here.
+
+First, the identifier. Apex has **no `MixedDmlException` class**. It is absent from the built-in exception list, `catch (MixedDmlException e)` fails to compile, and searching a debug log for `System.MixedDMLException` matches nothing — which sends practitioners hunting for a log line that will never appear. The real failure is a plain `System.DmlException` whose first error carries the status code `MIXED_DML_OPERATION`: `System.DmlException: Insert failed. First exception on row 0; first error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa): []`.
+
+Second, the trigger condition. It fires when a DML operation on a *setup* object (`User`, `UserRole`, `Group`, `GroupMember`, `PermissionSet`, `PermissionSetAssignment`, `Territory2`, `ObjectPermissions`, `FieldPermissions`, `QueueSObject`, `AuthSession`, `SetupEntityAccess`, …) is mixed with a DML operation on a *non-setup* object (`Account`, `Contact`, custom objects) in the same transaction. Developers frequently misdiagnose this as "you can't DML two object types at once" and waste time splitting unrelated `Account`/`Contact` writes, which are perfectly legal.
 
 **When it occurs:** A trigger, controller action, or test setup that, for example, inserts an `Account` and then assigns a `PermissionSet` (or creates a `User`) in the same execution context. Common in provisioning flows that create a business record and grant access in one go.
 

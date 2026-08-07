@@ -79,7 +79,7 @@ for (SObject rec : records) {
 }
 ```
 
-**Why it happens:** LLMs generate self-contained, "correct" code for the loop body in isolation. The describe call looks like a reasonable way to get the field map for each record's type. The model does not reason about the cumulative governor limit cost across records.
+**Why it happens:** LLMs generate self-contained, "correct" code for the loop body in isolation. The describe call looks like a reasonable way to get the field map for each record's type. The model does not reason about the cumulative CPU and heap cost across records — `getGlobalDescribe()` materialises every accessible sObject token on each call, so 200 iterations in a large org is hundreds of thousands of map entries built and discarded. (Note: the cost here is CPU time and heap, both hard-limited. It is *not* a describe-count limit — see Anti-Pattern 7.)
 
 **Correct pattern:**
 
@@ -204,3 +204,30 @@ List<List<SObject>> results = Search.query(soslQuery);
 Note: SOSL's `FIND` clause does not support Apex bind variables as of Spring '25. `String.escapeSingleQuotes()` is the correct and only defense here — unlike SOQL WHERE clause values where bind variables are preferred.
 
 **Detection hint:** Any `Search.query()` call where the `FIND` term is a runtime string without `escapeSingleQuotes()` applied.
+
+---
+
+## Anti-Pattern 7: Citing a "100 Describe Calls Per Transaction" Governor Limit
+
+**What the LLM generates:**
+
+```apex
+// "Salesforce enforces a limit of 100 describe calls per transaction,
+//  so we cache to stay under it."
+private static Integer describeCount = 0;
+private static Schema.DescribeSObjectResult safeDescribe(Schema.SObjectType t) {
+    if (describeCount >= 100) {
+        throw new CalloutException('Describe limit approaching');   // guards nothing
+    }
+    describeCount++;
+    return t.getDescribe();
+}
+```
+
+…or, more often, prose and review checklists: "cache describes to avoid the 100-describe governor limit", "assert no `LimitException` from describe calls", "`Limits.getLimitDescribes()` shows remaining headroom".
+
+**Why it happens:** Describe limits were **real** — up to API version 30.0 there was an enforced per-transaction describe ceiling, and `Limits.getFieldsDescribes()` / `getPicklistDescribes()` / `getChildRelationshipsDescribes()` / `getLimitDescribes()` existed to measure it. A decade of blog posts, StackExchange answers, and training-data Apex still repeat the number. The model has read far more pre-2015 Apex commentary than current reference pages, and the advice built on the stale limit (*cache your describes*) is still good — which is exactly why nobody catches the wrong justification during review. Nothing at compile or deploy time contradicts it, because the claim only ever appears in comments, prose, and test assertions.
+
+**Correct pattern:** There is no governor limit on describe calls, in any API version. `Limits.getChildRelationshipsDescribes()` is documented verbatim as "Because describe limits are no longer enforced in any API version, this method is no longer available", and the other describe-counting `Limits` methods no longer exist at all — code referencing them does not compile. Cache describes for **CPU time and heap**: `Schema.getGlobalDescribe()` builds a token for every accessible sObject on each call, which burns the 10,000 ms synchronous CPU budget and the 6 MB / 12 MB heap. Profile with `Limits.getCpuTime()` and `Limits.getHeapSize()`; never assert a describe count.
+
+**Detection hint:** grep the whole package (not just `.cls`) for `getLimitDescribes|getFieldsDescribes|getPicklistDescribes|getChildRelationshipsDescribes` — every hit is either non-compiling or dead. In prose and checklists, `(?i)\b(100|\d+)\s+describe` and `describe[^.\n]{0,30}(governor )?limit` and `LimitException[^.\n]{0,40}describe`. Any sentence pairing the words *describe* and *limit* in this domain is wrong on current API versions; the correct pairing is *describe* and *CPU* or *heap*.

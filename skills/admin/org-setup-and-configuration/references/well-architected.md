@@ -27,6 +27,7 @@
 ## Official Sources Used
 
 - Salesforce Help — MFA for Salesforce — https://help.salesforce.com/s/articleView?id=sf.security_overview_2fa.htm&type=5
+- Salesforce Help — Enable MFA for Your Entire Salesforce Org — https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_org_wide_setting.htm&type=5 — "From Setup, use the Quick Find box to find and select Identity Verification", then select "Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org"
 - Salesforce Help — My Domain Overview — https://help.salesforce.com/s/articleView?id=sf.domain_name_overview.htm&type=5
 - Salesforce Help — Session Settings — https://help.salesforce.com/s/articleView?id=sf.admin_sessions.htm&type=5
 - Salesforce Help — Network Access (Trusted IP Ranges) — https://help.salesforce.com/s/articleView?id=sf.security_networkaccess.htm&type=5

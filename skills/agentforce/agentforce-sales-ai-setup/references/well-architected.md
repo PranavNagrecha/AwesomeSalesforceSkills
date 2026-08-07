@@ -29,3 +29,5 @@
 - Pipeline Inspection Guidelines and Limits — https://help.salesforce.com/s/articleView?id=sf.pipeline_inspection_guidelines_and_limits.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+- Salesforce Help — Data Requirements for Sales Cloud Einstein (200 closed-won AND 200 closed-lost in the last 24 months, each with a lifespan of at least 2 days; standard Stage field required) — https://help.salesforce.com/s/articleView?id=einstein_sales_data_requirements.htm&language=en_US&type=5
+- Salesforce Help — Understand How Einstein Scores Your Opportunities — https://help.salesforce.com/s/articleView?id=einstein_sales_opportunity_scoring_how_it_works.htm&language=en_US&type=5

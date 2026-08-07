@@ -128,7 +128,10 @@ Prepare role-specific question guides before each interview.
 ```
 Requirements must account for platform limits:
 1. Custom objects: PE=50, EE=200, UE=2000.
-2. Custom fields per object: varies by type (800 for standard Text).
+2. Custom fields per object: the allocation is per OBJECT, not per data
+   type. PE=100, EE=500, Performance/Unlimited=800, Developer=500.
+   An org can't exceed 900 custom fields on most object types regardless
+   of edition or source (self-created + managed package).
 3. Record-Triggered Flows per object: no hard limit but consolidate
    to 1 per timing (before/after) for maintainability.
 4. API calls per 24 hours: varies by edition and license count.

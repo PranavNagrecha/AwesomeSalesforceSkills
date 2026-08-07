@@ -22,10 +22,12 @@ Run `Setup > Digital Experiences > All Sites` and record the current count.
 | Active (live) | |
 | Preview (admin only) | |
 | Inactive (deactivated) | |
-| **Total** | |
-| **Remaining quota** (100 − Total) | |
+| Visualforce sites | |
+| **Total counting against quota** | |
+| Archived (does **not** count against quota) | |
+| **Remaining quota** (100 − Total counting against quota) | |
 
-Sites to consider deleting before this project:
+Sites to consider **archiving** before this project (archiving frees the slot and is reversible; deletion is not required):
 - (list names of inactive or abandoned sites)
 
 ---

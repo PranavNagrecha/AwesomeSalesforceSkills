@@ -56,4 +56,3 @@
 - Set Up Authentication for Lightning Out 2.0 (Salesforce Help) — https://help.salesforce.com/s/articleView?id=platform.lightning_out_auth.htm&language=en_US&type=5
 - Build a Lightning Out 2.0 App (Salesforce Help) — https://help.salesforce.com/s/articleView?id=platform.lightning_out_build.htm&language=en_US&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-</content>

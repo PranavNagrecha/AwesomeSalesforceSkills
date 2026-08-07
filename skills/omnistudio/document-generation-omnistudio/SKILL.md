@@ -56,8 +56,8 @@ Gather this context before working on anything in this domain:
 
 - **Confirm the OmniStudio DocGen feature is enabled.** Check Setup > OmniStudio Settings and verify the Document Generation toggle is active. Server-side DocGen requires an additional setting (`Enable Server-Side Document Generation`) to be turned on separately.
 - **Identify the generation mode early.** Client-side DocGen runs synchronously in the user's browser via an OmniScript and is suitable for interactive, single-document scenarios. Server-side DocGen runs asynchronously via an Integration Procedure and is suitable for batch, headless, or large-document scenarios. Choosing the wrong mode late in development forces a full re-architecture of the orchestration layer.
-- **Understand that image tokens and rich text tokens are client-side only.** Server-side DocGen does not support image merge tokens or rich text tokens. If the template requires dynamic images, you must use client-side generation or pre-render the images into the JSON payload as base64.
-- **Dynamic images are capped at approximately 2.5 MB per image.** Exceeding this limit causes the image token to render as blank or throws a generation error without a clear message.
+- **Do not assume image or rich text tokens force client-side mode.** Salesforce publishes a dedicated topic, *Map Image Tokens in the Omnistudio Data Mapper for Server-Side Omnistudio Document Generation*, and the token reference lists image, hyperlink and rich text tokens without restricting them by generation mode. Image tokens work server-side; they are wired through a Data Mapper Extract (from Files/`ContentDocument`, Notes & Attachments/`Attachment`, or Documents/Contract Document) plus a Data Mapper Transform that maps the retrieved image to the token and optionally supplies height/width formulas. Choose the mode on interactivity and volume, not on a token-support myth.
+- **Image constraints are dimensional, not byte-based.** A dynamic image renders "up to a maximum of 350 px (width) × 400 px (height) on an A4 portrait page" by default, and "up to a maximum of 600 px × 800 px on an A4 portrait page" when both height and width are defined in the Data Mapper Transform. To preserve the original aspect ratio, define either the height or the width, **not both**. There is no documented megabyte ceiling on a DocGen image.
 
 ---
 
@@ -67,11 +67,15 @@ Gather this context before working on anything in this domain:
 
 A Document Template is a .docx or .pptx file uploaded to Salesforce that contains merge tokens in `{{ }}` double-curly-brace syntax. Tokens are placeholders that map to JSON keys in the input data. Templates support several token types:
 
-- **Simple tokens:** `{{AccountName}}` -- replaced with a single value from the JSON input.
-- **Repeating tokens:** `{{#LineItems}}...{{/LineItems}}` -- iterates over an array in the JSON to produce repeating rows or sections.
-- **Conditional tokens:** `{{#if ShowDiscount}}...{{/if}}` -- renders the enclosed content only when the condition evaluates to true.
-- **Image tokens:** `{{%ImageField}}` -- inserts a dynamic image (client-side only). The JSON value must be a base64-encoded image string.
-- **Rich text tokens:** `{{&RichTextField}}` -- inserts HTML-formatted rich text (client-side only).
+Every token type below uses a documented **prefix inside the braces** — `IMG_`, `HYP_`, `RTB_`, `IF_`, `DT_`. There is no `%`, `&`, or other sigil syntax in OmniStudio DocGen; if you see one, it is invented (see `references/llm-anti-patterns.md`).
+
+- **Variable tokens:** `{{AccountName}}` -- replaced with a single value from the JSON input.
+- **Repeating content tokens:** `{{#LineItems}}...{{/LineItems}}` -- iterates over an array in the JSON to produce repeating rows or sections. The inverted form `{{^LineItems}}...{{/LineItems}}` renders fallback content when the array is empty.
+- **Condition evaluation tokens:** `{{#IF_ShowDiscount}}...{{/IF_ShowDiscount}}` -- renders the enclosed content only when the Boolean evaluates true. `{{^IF_ShowDiscount}}...{{/IF_ShowDiscount}}` is the negated form. Note the `IF_` prefix on the token name; this is **not** Handlebars `{{#if cond}}`.
+- **Image tokens:** `{{IMG_header}}` -- inserts a dynamic image into generated .docx and .pdf files. Supported in both client-side and server-side generation; server-side is mapped through a Data Mapper Extract + Transform pair.
+- **Hyperlink tokens:** `{{HYP_termsLink}}` -- inserts a dynamic URL.
+- **Rich text tokens:** `{{RTB_Header}}` -- inserts formatted text (fonts, colours, ordered/unordered lists, hyperlinks) into .docx and .pdf output. Place a rich text token on its own new line in the template; it works in paragraphs, tables, text boxes, headers and footers.
+- **Data true-up tokens:** `{{DT_FieldName}}` -- syncs field values between the document and the Salesforce record.
 
 Templates are stored as ContentVersion records and referenced by the Document Generation Setting. The token names are case-sensitive and must match the JSON keys produced by the OmniDataTransform exactly.
 
@@ -89,7 +93,7 @@ Key points:
 
 **Client-side** generation is orchestrated by an OmniScript. The OmniScript collects user input, calls the Data Mapper, passes the JSON to the template engine running in the browser, and renders the output. The user sees the document immediately. PDF conversion happens via a Visualforce page (`fndMultiPDFConvertLwc`) or a custom conversion step.
 
-**Server-side** generation is orchestrated by an Integration Procedure. The Integration Procedure calls the Data Mapper, passes the JSON to the server-side template engine, converts the output to the target format, and stores the result as a ContentVersion. No user interaction is required. This mode supports larger documents and batch processing but does not support image or rich text tokens.
+**Server-side** generation is orchestrated by an Integration Procedure. The Integration Procedure calls the Data Mapper, passes the JSON to the server-side template engine, converts the output to the target format, and stores the result as a ContentVersion. No user interaction is required. This mode supports larger documents and batch processing. It does **not** cost you the rich token types — image tokens are explicitly documented for server-side generation via the Data Mapper, and the token reference does not restrict hyperlink or rich text tokens by mode. The real tradeoff is interactivity and preview, not token support.
 
 ### Document Generation Setting
 
@@ -128,7 +132,7 @@ The Document Generation Setting is the metadata record that ties the template, t
 
 **How it works:**
 
-1. Create a .docx template with `{{ }}` tokens (no image or rich text tokens).
+1. Create a .docx template with `{{ }}` tokens. Image (`IMG_`), hyperlink (`HYP_`) and rich text (`RTB_`) tokens are all usable here — image tokens additionally need a Data Mapper Extract that retrieves the image from Files (`ContentDocument`), Notes & Attachments (`Attachment`), or Documents (Contract Document).
 2. Create an OmniDataTransform mapping tokens to Salesforce fields.
 3. Create a Document Generation Setting linking the template and Data Mapper, set to server-side.
 4. Build an Integration Procedure that:
@@ -161,7 +165,8 @@ The Document Generation Setting is the metadata record that ties the template, t
 |---|---|---|
 | User reviews/customizes data before generating a single document | Client-side via OmniScript | Synchronous, interactive, immediate preview |
 | Batch generation of hundreds of documents on a schedule | Server-side via Integration Procedure | Asynchronous, no browser session required, handles volume |
-| Template needs dynamic images or rich text | Client-side only | Image and rich text tokens are not supported server-side |
+| Template needs dynamic images or rich text | **Either mode** — decide on interactivity, not token support | Image tokens are documented for server-side generation via Data Mapper Extract + Transform; the token reference does not restrict rich text or hyperlink tokens by mode |
+| Image must render larger than 350 px × 400 px on A4 portrait | Define **both** height and width in the Data Mapper Transform | Raises the ceiling to 600 px × 800 px. Defining both forfeits aspect-ratio preservation — set only one to keep the ratio |
 | Document generation triggered by platform event or Apex | Server-side via Integration Procedure | No user session available for client-side |
 | Output must be PDF | Either mode, but add a PDF conversion step | Neither mode produces PDF natively from .docx -- conversion step required |
 | Template exceeds browser memory for large documents | Server-side | Server-side uses Salesforce compute resources, not browser memory |
@@ -172,8 +177,8 @@ The Document Generation Setting is the metadata record that ties the template, t
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Identify the generation mode.** Determine whether the use case is interactive (client-side) or batch/headless (server-side). Check whether the template requires image or rich text tokens, which force client-side.
-2. **Author the Document Template.** Create the .docx or .pptx file with `{{ }}` merge tokens. Use `{{#Array}}...{{/Array}}` for repeating sections and `{{#if Condition}}...{{/if}}` for conditional content. Upload the template as a ContentVersion.
+1. **Identify the generation mode.** Determine whether the use case is interactive (client-side) or batch/headless (server-side). Decide on interactivity, volume and trigger — **not** on token support, which does not differ the way it is often claimed to.
+2. **Author the Document Template.** Create the .docx or .pptx file with `{{ }}` merge tokens. Use `{{#Array}}...{{/Array}}` for repeating sections and `{{#IF_Condition}}...{{/IF_Condition}}` for conditional content (note the `IF_` prefix — this is not Handlebars). Use the `IMG_`, `HYP_`, `RTB_` and `DT_` prefixes for image, hyperlink, rich text and data-true-up tokens respectively. Upload the template as a ContentVersion.
 3. **Build the OmniDataTransform.** Create a Mapping Data Mapper, extract tokens from the uploaded template, and map each token to the correct Salesforce field or formula. Verify the output JSON structure matches the template token paths exactly.
 4. **Create the Document Generation Setting.** Link the template, Data Mapper, and generation mode. Set the output format.
 5. **Build the orchestration component.** For client-side, build an OmniScript with a DocGen Document step. For server-side, build an Integration Procedure with a DocGen action. Wire the Document Generation Setting into the orchestration.
@@ -190,8 +195,10 @@ Run through these before marking work in this area complete:
 - [ ] All `{{ }}` tokens in the template have corresponding mappings in the OmniDataTransform
 - [ ] OmniDataTransform output JSON structure matches template token paths (case-sensitive)
 - [ ] Document Generation Setting links the correct template, Data Mapper, and generation mode
-- [ ] Image tokens (if any) are used only in client-side mode and images are under 2.5 MB
-- [ ] Rich text tokens (if any) are used only in client-side mode
+- [ ] Token prefixes are the documented ones (`IMG_`, `HYP_`, `RTB_`, `IF_`, `DT_`) — no `{{%`, `{{&`, or Handlebars `{{#if `
+- [ ] Image tokens (if any) have a Data Mapper Extract sourcing the image (ContentDocument / Attachment / Contract Document) and a Data Mapper Transform mapping it to the token
+- [ ] Image rendered size is within 350 px × 400 px on A4 portrait, or both height and width are defined to reach the 600 px × 800 px ceiling
+- [ ] Where original aspect ratio matters, only one of height/width is defined
 - [ ] Repeating sections produce correct output with 0, 1, and many items
 - [ ] Conditional sections render correctly when condition is true and when false
 - [ ] PDF conversion step is included if PDF output is required
@@ -205,10 +212,10 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Token names are case-sensitive across template, Data Mapper, and JSON.** If the template uses `{{AccountName}}` but the Data Mapper outputs `accountName` (lowercase 'a'), the token renders blank. There is no warning or error -- just an empty space in the output document. Always verify exact case matching across all three layers.
-2. **Image and rich text tokens silently fail in server-side mode.** If a template containing `{{%ImageField}}` or `{{&RichTextField}}` is used with server-side generation, those tokens render as blank or as the raw token string. The generation does not throw an error. This is a design limitation, not a bug.
+2. **Invented token syntax renders as literal text, and nothing warns you.** The documented prefixes are `IMG_`, `HYP_`, `RTB_`, `IF_`, `DT_` — all *inside* the braces, e.g. `{{IMG_header}}`. A template written with sigil syntax (`{{%ImageField}}`, `{{&RichTextField}}`) or with Handlebars conditionals (`{{#if Cond}}`) does not error; the engine simply does not recognise the token and the raw string or a blank appears in the output. Verify prefixes against *Tokens in Microsoft Word or Microsoft PowerPoint Documents* before blaming the generation mode.
 3. **Empty arrays in repeating sections can produce ghost rows.** If the OmniDataTransform returns an empty array `[]` for a repeating section, some template engines leave a blank row in the output rather than omitting the section entirely. Wrap repeating sections in a conditional `{{#if}}` check on array length to avoid phantom rows.
 4. **PDF conversion is a separate step, not native to DocGen.** Neither client-side nor server-side DocGen produces PDF directly from a .docx template. Client-side uses the `fndMultiPDFConvertLwc` Visualforce component for conversion. Server-side requires a custom Apex conversion utility or external service callout. Forgetting the conversion step results in .docx output when the user expected PDF.
-5. **Dynamic image size cap (~2.5 MB) is not documented in error messages.** When a base64-encoded image exceeds the limit, the generation may fail silently or produce a corrupt document. Pre-validate image sizes in the OmniScript before passing them to the DocGen step.
+5. **Image constraints are pixel dimensions, not megabytes — and defining both height and width silently changes the aspect ratio.** The documented ceilings are 350 px × 400 px on an A4 portrait page by default, rising to 600 px × 800 px when *both* height and width are defined in the Data Mapper Transform. The trap is that defining both is exactly what you do to reach the larger ceiling, and doing so forfeits aspect-ratio preservation: Salesforce's guidance is "to maintain the original aspect ratio of an image, define either the height or the width, but not both." A logo that comes out stretched has usually been given both dimensions by someone chasing the higher size cap. There is no documented byte-size cap on a DocGen image.
 
 ---
 

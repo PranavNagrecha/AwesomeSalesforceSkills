@@ -60,3 +60,4 @@
 
 - Salesforce CLI Command Reference — agent commands (agent generate test-spec, agent test create/run/resume/results/list, agent test run-eval Beta)
   URL: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_agent_commands_unified.htm
+- Agentforce Developer Guide — Testing API (POST /services/data/vXX.0/einstein/ai-evaluations/runs; GET .../runs/{runId}; GET .../runs/{runId}/results) — https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-connect.html

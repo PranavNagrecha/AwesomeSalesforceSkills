@@ -42,10 +42,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Agent API Requires The `chatbot_api` OAuth Scope In Addition To `api`
+## Gotcha 5: Agent API Requires Four OAuth Scopes — `sfap_api` Is The One Everyone Misses
 
-**What happens:** A developer creates a Connected App with the `api` OAuth scope, obtains an access token, and attempts to create an Agent API session via `POST /services/data/vXX.0/einstein/ai-agent/agents/{agentId}/sessions`. The request returns HTTP 403 Forbidden with an error indicating insufficient scope, even though the token is valid for other Salesforce REST API calls.
+**What happens:** A developer creates a Connected App with the `api` OAuth scope, obtains an access token, and attempts to create an Agent API session via `POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions`. The request returns HTTP 403 Forbidden with an error indicating insufficient scope, even though the token is valid for other Salesforce REST API calls.
 
 **When it occurs:** When the Connected App is configured with only the standard `api` scope and the `chatbot_api` scope has not been explicitly added. The Agent API session and message endpoints require the `chatbot_api` scope as a distinct authorization grant. A token issued without this scope is valid for the Salesforce REST API but not for the Agent API endpoints.
 
-**How to avoid:** When creating a Connected App for Agent API integration, explicitly add both the `api` scope and the `chatbot_api` scope to the Connected App's OAuth Scopes list. After updating the Connected App, re-authorize the OAuth flow to obtain a new token that includes the `chatbot_api` scope. Verify the new token's scopes before testing the Agent API endpoints.
+**How to avoid:** When creating a Connected App (or External Client App) for Agent API integration, add all four documented scopes — `api` ("Manage user data via APIs"), `refresh_token, offline_access` ("Perform requests at any time"), `chatbot_api` ("Access chatbot services") and `sfap_api` ("Access the Salesforce API Platform"). Configuring only `api` + `chatbot_api` still fails, and the error does not name the missing scope. Add the `api` scope and the `chatbot_api` scope to the Connected App's OAuth Scopes list. After updating the Connected App, re-authorize the OAuth flow to obtain a new token that includes the `chatbot_api` scope. Verify the new token's scopes before testing the Agent API endpoints.

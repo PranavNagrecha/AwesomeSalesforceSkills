@@ -47,7 +47,9 @@ if (email.binaryAttachments != null) {
 
 ## Gotcha 4: Large Attachments Processed Synchronously Can Exhaust Heap
 
-**What happens:** Binary attachments up to 25 MB are passed directly into `handleInboundEmail` as `Blob` values. Loading, decoding, or converting that Blob to a String (e.g., `EncodingUtil.base64Encode(blob)`) inside the synchronous handler can exceed the 12 MB heap limit, causing a `System.LimitException` that fails the email processing.
+**What happens:** Binary attachments are passed directly into `handleInboundEmail` as `Blob` values. The heap ceiling here is **50 MB** — email services are documented as an exception to the ordinary 6 MB synchronous / 12 MB asynchronous Apex heap, so a large attachment does *not* blow heap merely by arriving. What blows heap is **transforming** it: `EncodingUtil.base64Encode(blob)` allocates a second, ~33%-larger copy; `blob.toString()` allocates a third; string concatenation in a parse loop allocates one per iteration. Three copies of a 15 MB attachment plus parse intermediates is how you reach 50 MB and get a `System.LimitException` that fails the email processing.
+
+Get the number right in both directions. Under-stating it (12 MB) makes teams defer work that would have fit and mis-size their chunking; assuming heap is unbounded because "50 MB is huge" ignores that the multiplier is on transformations, not on the payload.
 
 **When it occurs:** When emails arrive with large PDFs, images, or binary files. The problem is invisible during unit tests because test `InboundEmail` objects use synthetic small payloads that never approach real attachment sizes.
 

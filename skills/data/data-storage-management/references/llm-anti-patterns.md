@@ -6,24 +6,29 @@ Common mistakes AI coding assistants make when generating or advising on Data St
 
 **What the LLM generates:** "To free up storage, simply delete the old records using a SOQL delete loop or Data Loader. Your storage will drop right away."
 
-**Why it happens:** The LLM models storage reclamation after typical database behavior where DELETE immediately frees space. Salesforce's Recycle Bin mechanism is a platform-specific behavior not reflected in general database training data.
+**Why it happens:** The LLM models storage reclamation after typical database behavior where DELETE immediately frees space.
+
+Note the *over*-correction that follows once a model learns the Recycle Bin exists: it then asserts that bin records keep consuming storage for 15 days, and that Bulk API hard delete has its own 30-day bin window. Both are fabrications built on a real 15-day number. The 15 days is a **restore** window; hard delete has **no** window at all, because bypassing the bin is what the operation *is*.
 
 **Correct pattern:**
 
 ```text
-Deleting records sends them to the Recycle Bin for 15 days (standard delete) or
-30 days (Bulk API hard delete). Records in the Recycle Bin still count against
-data storage.
+Standard delete  -> Recycle Bin, restorable for 15 days.
+                    Bin records do NOT count against storage.
+                    Bin has no record-count cap.
+Hard delete      -> bypasses the Recycle Bin. Immediate. Permanent.
+                    No restore window of any length.
 
-To immediately free storage after deletion:
-1. Use Bulk API with hardDelete=true operation to bypass the Recycle Bin, OR
-2. After standard delete, empty the Recycle Bin via:
-   - Setup > Recycle Bin > Empty Recycle Bin
-   - Database.emptyRecycleBin(List<Id>) in Apex
-   - DELETE /services/data/vXX.0/sobjects/... does NOT bypass the bin
+Why Setup > Storage Usage did not move after your mass delete:
+  storage is recalculated ASYNCHRONOUSLY. Per Salesforce Help, after a
+  large add or remove "the change in your org's storage usage isn't
+  reflected immediately." Wait and re-check.
+
+Emptying the Recycle Bin is a RECOVERABILITY decision, not a storage
+lever. It frees no storage and destroys the 15-day restore window.
 ```
 
-**Detection hint:** Look for phrasing like "delete to free storage" or "storage drops after deletion" without any mention of the Recycle Bin.
+**Detection hint:** `grep -niE 'recycle bin.*(count|consume|against).*storage|hard delete.*30 day'` — both shapes are wrong. Also flag any runbook step of the form "empty the Recycle Bin to reclaim storage": the action is irreversible and the stated benefit does not exist.
 
 ---
 

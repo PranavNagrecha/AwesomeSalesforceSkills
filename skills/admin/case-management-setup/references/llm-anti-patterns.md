@@ -131,3 +131,87 @@ information as an attachment rather than inline text.
 ```
 
 **Detection hint:** Email-to-Case setup instructions that describe body handling without mentioning the 32,000-character truncation limit. Flag: "email body" in Email-to-Case context without the character limit.
+
+---
+
+## Anti-Pattern: Naming SOSL as a Record-Creation Path
+
+**What the LLM generates:** "For volumes above the Web-to-Case limit, replace
+the built-in endpoint with a custom form that creates cases via SOSL/REST."
+
+**Why it happens:** SOQL and SOSL are learned as a pair and are almost always
+mentioned together, so they acquire near-identical embeddings and get emitted
+as an interchangeable slash-pair — "SOQL/SOSL", "SOSL/REST". The sentence is
+also structurally correct: an API-based intake form genuinely is the right
+answer, and REST genuinely is one of the right technologies. Only the second
+token in the pair is wrong, which makes it easy to read past. Note this is not
+even a SOQL/SOSL confusion in the usual direction: *neither* language creates
+records. SOQL queries, SOSL searches; DML and the REST/SOAP APIs write.
+
+**Correct pattern:**
+
+```
+Creating Cases from an external form:
+- REST API  — POST /services/data/vXX.0/sobjects/Case
+- SOAP API  — create() call
+- Experience Cloud form backed by a Flow or Apex controller
+- Web-to-Case (the built-in endpoint, subject to the 24-hour
+  submission limit and the shared 50,000 pending request queue)
+
+NOT a creation path:
+- SOSL — text search across objects. No create/update/delete.
+- SOQL — record query. No create/update/delete.
+```
+
+**Detection hint:** `grep -in "SOSL" ` over any output that also contains
+`create`, `insert`, `update`, `upsert`, `delete`, or `write`. SOSL appearing in
+the same sentence as any write verb is always an error. The same grep catches
+the compressed form: any occurrence of the literal string `SOSL/REST` or
+`SOQL/SOSL` used to name an *integration* mechanism rather than a query one.
+
+---
+
+## Anti-Pattern: Asserting a Platform Has No Native Signal, Then Designing Around the Absence
+
+**What the LLM generates:** "New Web-to-Case submissions are silently dropped
+once the pending request queue reaches 50,000 entries. No error is logged in
+Salesforce and no alert is sent to admins by default." — followed by a
+recommendation to build a scheduled Flow or external monitor.
+
+**Why it happens:** "Salesforce doesn't tell you about this" is a
+high-frequency, high-plausibility filler clause in admin writing, and it is
+unfalsifiable-sounding enough to survive review. It also *feels* right: the
+submitter genuinely sees no error, so the model generalises the silence to the
+admin side. Salesforce does notify — it emails the administrator about the
+first five rejected submissions — but that notification is rarely mentioned in
+secondary sources because it is nearly useless in practice, which keeps it out
+of the training distribution.
+
+The damage is subtle. The advice that follows is not wrong (external monitoring
+is still worth having), but the design is anchored on a false premise, so the
+one cheap fix that actually exists — making sure the notification address is a
+monitored mailbox — never gets recommended.
+
+**Correct pattern:**
+
+```
+Web-to-Case overflow, in order:
+1. 24-hour submission limit reached.
+2. Further requests go to a PENDING queue shared with Web-to-Lead,
+   capped at 50,000 combined requests. (Support can raise this.)
+3. Pending queue full -> requests rejected, not queued.
+4. Salesforce emails the administrator for the FIRST FIVE rejected
+   submissions. Then nothing, however long the outage runs.
+5. The submitter sees the form's success page throughout.
+
+So: route those five emails somewhere monitored, AND add volume
+monitoring for everything after them.
+```
+
+**Detection hint:** Treat "no alert is sent", "Salesforce provides no native
+notification", and "there is no way to detect this" as claims requiring a
+citation, not as background. Grep drafts for `no alert`, `no error is logged`,
+`silently` and `no native` — each one is a place where a real platform signal
+may have been asserted out of existence. Also check the ordering: any
+description of a Web-to-Case limit that reaches 50,000 without first passing
+through the 24-hour submission limit has skipped a step.

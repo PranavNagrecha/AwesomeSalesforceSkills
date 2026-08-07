@@ -1,7 +1,7 @@
 # Multi-Framework UI Bundles — Work Template
 
 Use this template when building or reviewing a React app packaged as a UIBundle
-(Salesforce Multi-Framework, Open Beta).
+(Salesforce Multi-Framework, GA since July 2026 — Summer '26 / API 67.0+).
 
 ## Scope
 
@@ -45,7 +45,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 - [ ] Meta XML has masterLabel / version / isActive; no deprecated `AppLauncher` target
 - [ ] Manifest at API 66.0+ (67.0+ for CustomApplication)
 - [ ] Bundle ships built output only; file count under the 2,500 cap
-- [ ] All data access via `createDataSDK()` — no tokens/OAuth in app code
+- [ ] All data access via `await createDataSDK()` from `@salesforce/platform-sdk` — no tokens/OAuth in app code
 - [ ] ACC embed (if any) flagged as Beta; Lightning-page embedding flagged as closed pilot
 
 ## Validation

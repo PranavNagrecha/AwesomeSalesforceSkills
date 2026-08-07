@@ -52,10 +52,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 6: View Encrypted Data Permission Must Be Explicitly Granted — Integration Users Are Commonly Missed
+## Gotcha 6: Shield Encryption Grants No Access Control At All — Everyone With FLS Still Sees Plaintext
 
-**What happens:** After enabling Shield encryption, integration users, managed package users, and experience site guest users who previously read field values now receive blank values or permission errors. Shield encryption respects the View Encrypted Data permission — users without it see masked values rather than plaintext.
+**What happens:** A team encrypts SSN, then tells the auditor that "only privileged users can see it." Nobody's visibility changed. Shield Platform Encryption is transparent above the storage layer: any user who could read the field before encryption reads exactly the same plaintext after it. There is no masked (`*******`) rendering and no separate decrypt permission — Salesforce removed the need for a "View Encrypted Data" permission with Shield beginning Spring '17 (KB 000382508). That permission belongs to legacy Classic Encryption (the *Encrypted Text* custom field type), which is a different feature.
 
-**When it occurs:** Immediately after encryption is enabled in production if the permission assignment step was skipped or incomplete. The most common victims are API integration users (used by middleware platforms) and connected app service accounts.
+**When it occurs:** At the compliance review after go-live, or worse, at the breach. The rollout "succeeded" — the Encryption Statistics page shows every record encrypted — so nothing signals that the intended need-to-know restriction was never implemented.
 
-**How to avoid:** Before enabling encryption in production, produce a complete list of all profiles, permission sets, and named credentials that need plaintext access to the encrypted fields. Assign the View Encrypted Data permission to those profiles or permission sets. Explicitly include integration user profiles. Validate in a sandbox by logging in as the integration user profile and confirming field values are visible before enabling encryption in production.
+**How to avoid:** Treat encryption and access control as two separate workstreams. Shield protects data at rest (a stolen database file, a physical media disposal path); field-level security protects it from users. Before go-live, run the FLS matrix for every encrypted field and remove Read from every profile and permission set that does not need plaintext — that is the only lever that changes who sees the value. If a design document says "grant View Encrypted Data to X," it was written against Classic Encryption and the access model in it does not apply. Setting *up* Shield needs **Customize Application** plus **Manage Encryption Keys**; those govern administration, not read access.

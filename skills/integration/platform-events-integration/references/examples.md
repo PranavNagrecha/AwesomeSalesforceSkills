@@ -75,46 +75,61 @@ async function subscribe() {
 subscribe();
 ```
 
-**Why it works:** Persisting the `replayId` only after successful downstream processing ensures that a crash mid-batch causes the subscriber to replay from the last confirmed position rather than advancing past unprocessed events. Starting with `-2` on first run replays all events in the 72-hour retention window, preventing loss on initial deployment.
+**Why it works:** Persisting the `replayId` only after successful downstream processing ensures that a crash mid-batch causes the subscriber to replay from the last confirmed position rather than advancing past unprocessed events. Starting with `-2` on first run replays all events still inside the retention window (72 hours for high-volume events), preventing loss on initial deployment. Note the values: `-1` is the default and means new events only; `-2` means replay everything retained.
 
 ---
 
-## Example 3: High-Volume Platform Event with RetainUntilDate for Weekly Batch Reconciliation
+## Example 3: Durable Ledger for a Replay Window Longer Than 72 Hours
 
-**Context:** A financial services org publishes `LedgerEntry__e` as a High-Volume Platform Event. A downstream reconciliation job runs every Sunday and needs to replay the entire week of events.
+**Context:** A financial services org publishes `LedgerEntry__e`. A downstream reconciliation job runs every Sunday and needs to read the entire week of entries.
 
-**Problem:** Standard Platform Events have a fixed 72-hour (3-day) retention window, which is insufficient for a weekly reconciliation window. Using a standard event and relying on replay would lose 4 days of data.
+**Problem:** Platform event retention is a fixed platform property — 72 hours for high-volume events (all events defined after Spring '19), 24 hours for legacy standard-volume events. It is not configurable, and there is no publishable retention field on the event. A Sunday job that relies on `replayId` catch-up alone receives Thursday onward and silently loses four days.
 
-**Solution:**
+**Solution — publish and persist in the same unit of work, then backfill from the ledger:**
 
 ```apex
-// Set RetainUntilDate when publishing from Apex
-// (can also be set via REST from external systems as a field on the event)
-LedgerEntry__e entry = new LedgerEntry__e(
-    AccountId__c = ledger.AccountId,
-    Amount__c = ledger.Amount,
-    EntryDate__c = Date.today()
-);
-// RetainUntilDate is a standard field on High-Volume events
-entry.RetainUntilDate = DateTime.now().addDays(8); // Retain for 8 days
+// The Big Object is the durable record; the event is the low-latency notification.
+// Composite index on LedgerEntry__b must be (EntryDate__c, AccountId__c) so the
+// weekly reconciliation filter follows it left to right.
+List<LedgerEntry__e> events = new List<LedgerEntry__e>();
+List<LedgerEntry__b> ledgerRows = new List<LedgerEntry__b>();
 
-EventBus.publish(entry);
+for (Ledger__c ledger : ledgers) {
+    String correlationId = ledger.Id + ':' + String.valueOf(ledger.SystemModstamp.getTime());
+
+    events.add(new LedgerEntry__e(
+        AccountId__c     = ledger.AccountId__c,
+        Amount__c        = ledger.Amount__c,
+        EntryDate__c     = ledger.EntryDate__c,
+        CorrelationId__c = correlationId
+    ));
+
+    ledgerRows.add(new LedgerEntry__b(
+        AccountId__c     = ledger.AccountId__c,
+        Amount__c        = ledger.Amount__c,
+        EntryDate__c     = ledger.EntryDate__c,
+        CorrelationId__c = correlationId
+    ));
+}
+
+Database.insertImmediate(ledgerRows);   // Big Object write — survives the 72h window
+EventBus.publish(events);               // notification — expires after 72h
 ```
 
-```bash
-# External publisher setting RetainUntilDate via REST
-curl -X POST https://yourorg.salesforce.com/services/data/v61.0/sobjects/LedgerEntry__e/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "AccountId__c": "001xx000003GYkA",
-    "Amount__c": 1500.00,
-    "EntryDate__c": "2025-10-15T00:00:00Z",
-    "RetainUntilDate": "2025-10-23T00:00:00Z"
-  }'
+The Sunday job reads the ledger, not the event bus:
+
+```apex
+// Filters follow the composite index left to right (EntryDate__c first).
+List<LedgerEntry__b> week = [
+    SELECT AccountId__c, Amount__c, EntryDate__c, CorrelationId__c
+    FROM LedgerEntry__b
+    WHERE EntryDate__c >= :Date.today().addDays(-7)
+];
 ```
 
-**Why it works:** High-Volume Platform Events expose `RetainUntilDate` as a publishable field. Setting it to 8 days ahead ensures events survive the full weekly reconciliation window. Without this explicit field on a High-Volume event, events are subject to the default platform retention behavior, which may not cover the full replay window needed.
+**Why it works:** The event carries latency; the Big Object carries durability. `CorrelationId__c` is the join key, so a subscriber that processed Thursday's events live and then backfills the full week can deduplicate against what it already applied — which it needs anyway, because platform events are at-least-once. The reconciliation job's correctness no longer depends on any subscriber having stayed connected.
+
+**What NOT to do:** Do not add a retention field to the event payload. `RetainUntilDate` is not a real field on any Platform Event; Salesforce ignores the unrecognized key and the publish succeeds, so the mistake produces no error at any point — only missing events days later.
 
 ---
 

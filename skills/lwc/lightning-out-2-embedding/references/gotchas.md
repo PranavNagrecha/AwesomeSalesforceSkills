@@ -84,4 +84,3 @@ session out of the page source.
 
 **How to avoid:** always set `frontdoor-url` at runtime from a value fetched through your own
 authenticated backend and the UI Bridge API — never in checked-in or served static markup.
-</content>

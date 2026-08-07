@@ -8,7 +8,7 @@ This is the primary pillar for this skill. OmniStudio scalability requires expli
 
 Key scalability design rules:
 - Queueable Chainable must be selected for IP steps that exceed governor limits under load, not applied reactively after incidents
-- The 25-concurrent-long-running-Apex limit (requests > 20 seconds) must be a design input for any portal expecting more than 50 concurrent active sessions
+- The org's concurrent long-running Apex ceiling (synchronous transactions running longer than **5 seconds**; 100 licences : 1 slot, minimum 10, maximum 50) must be a design input for any portal expecting more than a few dozen concurrent active sessions. Derive the number from the org's licence count — it is not a fixed 25, and async Apex does not count against it
 - Direct Platform Access (Spring '25+) should be evaluated for all read-heavy Integration Procedures on LWR sites before go-live
 - IP-level caching capacity must be sized against peak concurrent request rates for reference data; cache TTL is a scalability parameter, not just a data-freshness preference
 - LWR + CDN is a binary prerequisite for Experience Cloud scalability — not optional
@@ -22,14 +22,14 @@ High-concurrency OmniStudio deployments have a performance dimension distinct fr
 
 ### Reliability
 
-Reliability under high concurrency is primarily threatened by the 25-concurrent-long-running-Apex limit and governor limit violations:
-- When the concurrent Apex ceiling is reached, requests do not gracefully degrade — they error. OmniScripts that invoke IPs hitting this ceiling surface as unexplained failures to users
+Reliability under high concurrency is primarily threatened by the concurrent long-running Apex ceiling and governor limit violations:
+- When the concurrent Apex ceiling is reached, synchronous requests do not gracefully degrade — they error. OmniScripts that invoke IPs hitting this ceiling surface as unexplained failures to users
 - Governor limit errors in async contexts (fire-and-forget) are harder to surface and may go unmonitored
 - MuleSoft escalation criteria should be documented before go-live as a reliability commitment: at what threshold does the team move orchestration out of OmniStudio?
 
 ### Operational Excellence
 
-- Monitor concurrent long-running Apex request count in Setup > Apex Jobs during peak portal hours, not just during testing
+- Monitor concurrent long-running Apex pressure during peak portal hours, not just during testing. The `ConcurLongRunApexErrEvent` platform event is the near-real-time surface; it carries `CurrentValue`, `LimitValue`, and `Quiddity` (the outer execution type that breached)
 - Establish alerts on Apex concurrency metrics before go-live
 - Include cache TTL review in the release management process — reference data TTLs that made sense at launch may become stale after data model changes
 - Document async execution mode choices (fire-and-forget vs. Queueable Chainable) in the integration architecture decision record
@@ -56,4 +56,6 @@ Reliability under high concurrency is primarily threatened by the 25-concurrent-
 - OmniStudio Integration Procedures Help — https://help.salesforce.com/s/articleView?id=sf.os_integration_procedures.htm
 - OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_dev_guide.meta/omnistudio_dev_guide/
 - Salesforce Governor Limits Reference — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Execution Governors and Limits → *Number of synchronous concurrent transactions for long-running transactions that last longer than 5 seconds for each org* — the licence-scaled 100:1 ratio, minimum 10 / maximum 50, and the exclusion of asynchronous Apex (verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- `ConcurLongRunApexErrEvent` (Concurrent Long-Running Apex Limit Error Event) — the platform event that reports `CurrentValue` / `LimitValue` / `Quiddity` when the ceiling is breached — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_concurlongrunapexerrevent.htm
 - Experience Cloud LWR Sites — https://help.salesforce.com/s/articleView?id=sf.exp_cloud_lwr_intro.htm

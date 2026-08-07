@@ -26,7 +26,7 @@ Multi-site architectures require operational processes that single-site deployme
 - A site inventory with owner, purpose, audience, license type, and lifecycle status.
 - A deployment pipeline that can push shared LWC component updates to all sites simultaneously.
 - A per-site security configuration review cadence, particularly after Salesforce releases that change guest user behavior or CSP policies.
-- A site creation and deletion workflow that prevents quota accumulation.
+- A site creation and **archival** workflow that prevents quota accumulation. Archiving frees the quota slot and is reversible; reserve deletion for sites certain never to be revived.
 
 Without these processes, multi-site architectures drift toward inconsistent security postures, orphaned sites, and component version fragmentation.
 
@@ -84,7 +84,7 @@ Without these processes, multi-site architectures drift toward inconsistent secu
 ## Official Sources Used
 
 - Salesforce Help — Experience Cloud Site Considerations — https://help.salesforce.com/s/articleView?id=sf.networks_considerations.htm
-- Salesforce Help — How Many Sites Can My Org Have — https://help.salesforce.com/s/articleView?id=sf.networks_limits_sites.htm
+- Salesforce Help — How Many Experience Cloud Sites Can My Org Have? — "You can have up to 100 Experience Cloud sites in your org. Active, inactive, and preview sites, including Visualforce sites, count against this limit. Archived sites don't count against this limit." (consulted 2026-08-01; help.salesforce.com would not render for direct fetch, so this is the page's search-indexed text) — https://help.salesforce.com/s/articleView?id=experience.faq_communities_how_do_i_find_number_available.htm&language=en_US&type=5
 - Salesforce Help — Configure a Custom Domain for Your Experience Cloud Site — https://help.salesforce.com/s/articleView?id=sf.communities_custom_domain_overview.htm
 - Salesforce Help — Experience Cloud Usage Allocation — https://help.salesforce.com/s/articleView?id=sf.networks_licenses_and_usage_allocation.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -15,7 +15,7 @@
 
 1. **`without sharing` Apex reachable from guest sessions** — a single `without sharing` class called from a guest LWC or Apex REST endpoint ignores the sharing model entirely, exposing records based only on the SOQL filter logic. This is a full-org data read risk for public users.
 2. **Granting Create/Edit to guest profile "temporarily" for testing** — temporary elevated permissions on the guest profile frequently persist to production. The guest profile should have only the minimum permissions needed for the public use case. Test with a separate internal user that mirrors guest permissions.
-3. **Not auditing permission sets assigned to the guest user** — since Spring '22, permission sets can be assigned to guest users. A permission set that grants access to sensitive objects silently elevates the guest user's effective permissions beyond what the profile shows.
+3. **Not auditing permission sets assigned to the guest user** — permission sets can be assigned to guest users and always could; Spring '22 restricted rather than introduced this. A permission set that grants access to sensitive objects silently elevates the guest user's effective permissions beyond what the profile shows.
 
 ## Official Sources Used
 
@@ -25,3 +25,4 @@
 - Best Practices and Considerations When Configuring the Guest User Profile ("Have org-wide defaults set to Private for all objects. This access level can't be changed."; "Never assign the View All Records or Modify All Records permission to guest users.") — https://help.salesforce.com/s/articleView?id=platform.networks_guest_profile_best_practices.htm&type=5
 - Communities Developer Guide (Guest User) — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_secur_setup.htm
 - Apex Security and Sharing (WITH USER_MODE) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm
+- Salesforce Help — Guest User Security Policies and Timelines (Spring '21 permission removals; Spring '22 permission-set-licence restriction; Winter '23 enforcement of "Remove Guest User Assignments from Permission Sets Associated with Permission Set Licenses with Restricted Object Permissions") — https://help.salesforce.com/apex/HTViewHelpDoc?id=networks_guest_policies_timelines.htm

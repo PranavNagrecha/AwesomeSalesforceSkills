@@ -132,3 +132,38 @@ empApi only supports Platform Event and CDC channels, not PushTopic channels.
 ```
 
 **Detection hint:** Any LWC code that imports `lightning/empApi` and uses a `/topic/` channel path (PushTopic) rather than `/event/` (Platform Event) is an anti-pattern — `empApi` does not support PushTopic channels.
+
+---
+
+## Anti-Pattern: Platform Event Allocation and Retention Stated From Memory
+
+**What the LLM generates:** Three recurring shapes, all built from real Salesforce numbers pinned to the wrong dimension:
+
+1. "Standard event allocation: 250,000 events per **24 hours**." — right number, wrong period. 250,000 is an **hourly** allocation.
+2. "High-Volume Platform Events bypass the standard allocation" / "high-volume events are unlimited." — no event type publishes without an allocation.
+3. "High-Volume Platform Events support `RetainUntilDate` for retention beyond 72 hours." — there is no retention field on any Platform Event.
+
+**Why it happens:** Platform Events genuinely have several allocations metered over different periods — publishing per hour, delivery to CometD/empApi subscribers per 24 hours — so a period gets attached to the wrong figure with no loss of plausibility. "High-volume" as a product name invites the reading that it is the uncapped tier. And every neighbouring event bus (SQS, EventBridge, Kafka) exposes per-message or per-topic retention, so a retention knob is the strong prior for anything that stores events.
+
+**Correct version:**
+
+```text
+Publishing (org-wide, PER HOUR):
+  high-volume     250,000  (Enterprise, Performance, Unlimited)
+                   50,000  (Developer)
+                  +25,000/hour per add-on
+  standard-volume 100,000  (EE / Perf / Unlimited)  [legacy]
+
+Retention (fixed, NOT configurable, no field sets it):
+  high-volume      72 hours
+  standard-volume  24 hours
+
+Tier: after Spring '19 you cannot define a standard-volume event.
+      Publish and subscribe for standard-volume retire in Winter '27.
+      So "standard vs high-volume" is a migration question, not a design choice.
+
+Replay window > 72 hours: publisher writes a durable copy (Big Object /
+      external queue) alongside the publish; subscriber backfills from it.
+```
+
+**Detection hint:** `grep -rniE 'RetainUntilDate|250,?000 (events )?per (24|day)|high.?volume.*unlimited'` — all three shapes are wrong. Positively: any platform-event allocation quoted without both an edition and a period ("per hour" vs "per 24 hours") is under-specified and probably relabelled.

@@ -52,7 +52,8 @@ Gather this context before working on anything in this domain:
 
 - **What support tiers exist and what customer segment do they cover?** Enterprise, Professional, and Basic are common names, but the actual tier count, names, and eligibility criteria vary. Gather this from the support operations team or the customer contract.
 - **What are the most common wrong assumptions?** That business hours need to be configured only on the entitlement process. In Salesforce, business hours must be attached to both the entitlement process AND each escalation rule entry independently — the two objects do not share a clock. Missing one side means the other still runs 24/7.
-- **What limits are in play?** An org can have a maximum of 2,000 entitlement processes. Each entitlement process supports up to 10 milestones. Each milestone can have up to 40 milestone actions total (across warning, violation, and success). Escalation rules have a single active rule per org with up to 3,000 entries.
+- **What limits are in play?** Salesforce's *Entitlement Management Limits and Limitations* states: "You can create up to **1000** entitlement processes and include up to **ten** milestones in each entitlement process." Note the process ceiling is 1,000 — a figure of 2,000 is a common misstatement and doubles the real headroom.
+  Two further figures are frequently quoted alongside these and are **not verified here**: a cap of ~40 milestone actions per milestone (across warning, violation and success), and "one active escalation rule per org with up to 3,000 entries". Treat both as unconfirmed and check the current limits page before designing against them. Be especially wary of the 3,000 figure: **3,000 entries per rule is the documented ceiling for *assignment* rules** (see `skills/admin/assignment-rules`), so it is a strong candidate for having been borrowed from the wrong rule type. The one-active-rule-at-a-time property of escalation rules is real; the entry count attached to it is what needs checking.
 
 ---
 
@@ -167,7 +168,7 @@ Run through these before marking work in this area complete:
 - [ ] Escalation matrix documents actions at 50%, 75%, 90%, and 100% for every tier-priority combination
 - [ ] Business hours mapping table assigns a specific Business Hours record to every entitlement process AND every escalation rule entry — not just one of the two
 - [ ] Notification targets in the escalation matrix correspond to real Salesforce users or queues (not just job title descriptions)
-- [ ] Platform limits have been checked: ≤2,000 entitlement processes, ≤10 milestones per process, ≤40 milestone actions per milestone
+- [ ] Platform limits have been checked against the current *Entitlement Management Limits and Limitations* page: ≤1,000 entitlement processes, ≤10 milestones per process. Milestone-action and escalation-rule-entry ceilings were re-read from the docs rather than carried over from a design template
 - [ ] Design distinguishes between customer-facing SLA milestones and internal operational escalation rules
 
 ---

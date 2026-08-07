@@ -105,18 +105,23 @@ even if the org average is 95%.
 
 ## Anti-Pattern 6: Inventing sf CLI flags that do not exist
 
-**What the LLM generates:** Commands like `sf project deploy validate`, `sf project deploy status --live`, `sf project deploy resume --from-validation`, or `sf project deploy quick --skip-validation`.
+**What the LLM generates:** Flag variations like `sf project deploy status --live`, `sf project deploy resume --from-validation`, or `sf project deploy quick --skip-validation`.
 
-**Why it happens:** LLMs generate plausible-looking CLI commands by pattern-matching against other CLI tools. The sf CLI has specific subcommands (`deploy start`, `deploy quick`, `deploy report`, `deploy resume`) and specific flags, but LLMs frequently hallucinate variations.
+**Why it happens:** LLMs generate plausible-looking CLI commands by pattern-matching against other CLI tools, and the `sf` rewrite renamed almost every `sfdx force:source:*` command, so stale forms and invented flags are both common.
+
+**Do not over-correct.** `sf project deploy validate` and `sf project deploy preview` are **real, documented commands** and are the backbone of the safest production deployment path on the platform. Rejecting them is a worse failure than accepting a fake flag, because it pushes teams off validate-then-quick-deploy and onto a live deploy against production.
 
 **Correct pattern:**
 
 ```bash
-# Validation deploy
-sf project deploy start --manifest package.xml --dry-run --test-level RunLocalTests --target-org prod
+# Validate-only deployment (returns a job ID; does not execute)
+sf project deploy validate --manifest package.xml --test-level RunLocalTests --target-org prod
 
-# Quick deploy from validation
+# Quick deploy the previously validated job (skips re-running tests)
 sf project deploy quick --job-id <validationId> --target-org prod
+
+# Preview what would deploy, including conflicts and ignored files
+sf project deploy preview --target-org prod
 
 # Check deployment status
 sf project deploy report --job-id <deployId>
@@ -125,4 +130,19 @@ sf project deploy report --job-id <deployId>
 sf project deploy resume --job-id <deployId>
 ```
 
-**Detection hint:** Any `sf project deploy` subcommand other than `start`, `quick`, `report`, `resume`, `cancel`, or `pipeline` is likely hallucinated. Cross-check against the Salesforce CLI Reference.
+**Detection hint:** the documented `sf project deploy` subcommands are `start`, `validate`, `quick`, `preview`, `report`, `resume`, `cancel`, and the `pipeline` group (`pipeline start` / `validate` / `quick` / `report` / `resume`, Beta). Anything outside that list is likely hallucinated — but check the current CLI reference before rejecting, rather than relying on a memorised allow-list. `sf project list metadata` is a genuine fake; the real command is `sf org list metadata`.
+
+
+---
+
+## Anti-Pattern 7: Declaring the real `sf project deploy validate` command a hallucination
+
+**What the LLM generates:** An anti-pattern rule, lint check, or review comment asserting that `sf project deploy validate` does not exist, usually with an allow-list of "the only real subcommands" that omits `validate` and `preview` — and a rewrite to `sf project deploy start --dry-run`.
+
+**Why it happens:** Over-correction. The `sfdx` → `sf` migration produced a genuine flood of stale and invented commands, so "this sf subcommand is probably fake" is a high-prior heuristic. A model that has been primed to hunt CLI hallucinations then applies it to a command it does not happen to recall, and an allow-list written from memory silently omits the less-frequently-typed members. `--dry-run` (which does exist on `deploy start`) is close enough in meaning to feel like the "real" version, completing the false correction.
+
+This one is worth calling out separately because of **where it lands**: an anti-patterns file is the document an assistant reads specifically to decide what to *reject*. An inverted claim there does not merely mislead, it is executed as a rule — every future review refuses the correct command.
+
+**Correct version:** From the Salesforce CLI command reference — `sf project deploy validate`: *"Validate a metadata deployment without actually executing it."* It returns a job ID that `sf project deploy quick --job-id` consumes to deploy without re-running tests, which is the standard production release pattern. `sf project deploy preview` also exists: *"Preview a deployment to see what will deploy to the org, the potential conflicts, and the ignored files."*
+
+**Detection hint:** any rule that asserts a command is fake **without a link to the CLI reference section it is absent from**. Concretely: grep this repo for `sf project deploy validate` — it appears as a recommended command in dozens of skills (e.g. `skills/architect/ci-cd-pipeline-architecture`), so a file claiming it is hallucinated is contradicting the rest of the corpus, and internal contradiction is the cheapest available signal that one side is wrong. Generalisable rule: **a claim that something does not exist needs a source too.** Negative claims feel safe and are not.

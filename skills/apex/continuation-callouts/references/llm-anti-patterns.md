@@ -225,3 +225,33 @@ con.continuationMethod = 'processResponse';
 ```
 
 **Detection hint:** `new Continuation\(\d{3,}\)` — timeout values over 120 seconds.
+
+---
+
+## Anti-Pattern: Treating 10 Seconds as the Synchronous Apex Callout Ceiling
+
+**What the LLM generates:**
+
+```apex
+// "Synchronous Apex callouts are hard-capped at 10 seconds, so anything
+//  slower MUST use Continuation."
+public with sharing class RatingController {
+    public Object startQuote() {
+        // ...elaborate Continuation plumbing introduced solely to beat a
+        //    timeout that setTimeout() would have raised in one line
+    }
+}
+```
+
+…and prose of the form "callouts taking longer than the 10-second synchronous limit", "the 10-second timeout hard ceiling", or "transaction limits: … a 10-second total callout timeout".
+
+**Why it happens:** 10 seconds is a real, documented number — it is the **default** value of `HttpRequest.setTimeout()`. Because it is the value developers actually observe when they write a naive callout and it fails, it gets described in blog posts and StackExchange answers as "the synchronous callout limit", and the model learns the wrong noun. The relabelling then propagates in two directions: upward into the *transaction* budget ("a 10-second total callout timeout", which should be 120 seconds), and sideways into an architectural rule ("> 10 s therefore Continuation"). It is invisible to review because the recommendation it produces — use Continuation for slow UI callouts — happens to be right for a different reason.
+
+**Correct pattern:** Three distinct numbers, none of which is a 10-second ceiling.
+- **Default** per-callout timeout: 10 seconds. "The default timeout is 10 seconds."
+- **Settable** per-callout timeout: `req.setTimeout(ms)`, "the minimum is 1 millisecond and the maximum is 120,000 milliseconds" — identical in synchronous and asynchronous Apex.
+- **Cumulative** per-transaction budget: "The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds."
+
+So a synchronous callout may legitimately wait 120 seconds. Reach for `Continuation` because it frees the request thread and resumes in a fresh transaction with reset limits, not because of a timeout you could have raised. And do not multiply the two limits: 100 callouts × 10 s is not where 120 s comes from; the callout count and the cumulative timeout are independent limits.
+
+**Detection hint:** grep for `10[- ]second.{0,30}(limit|ceiling|cap)` and `10\s*s(econds)?\s+(synchronous|sync|total|transaction)` in prose. Any sentence that pairs `10 second` with `total`, `cumulative`, or `transaction` is wrong — that slot belongs to 120. Any sentence pairing `10 second` with `limit`, `ceiling`, `cap`, or `hard` is wrong — the correct noun is `default`. In code review, a `Continuation` introduced with no `setTimeout` anywhere in the class and a justification comment mentioning 10 seconds is the signature. Arithmetic tell: any text deriving `120` from `100 × 10`.

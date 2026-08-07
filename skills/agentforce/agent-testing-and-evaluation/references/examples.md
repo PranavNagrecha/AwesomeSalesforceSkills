@@ -62,7 +62,7 @@ sf project deploy start --source-dir force-app/main/default/aiEvaluationDefiniti
 
 # Execute the test suite via Connect API (replace ORG_DOMAIN and SESSION_ID)
 curl -X POST \
-  https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations \
+  https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs \
   -H "Authorization: Bearer SESSION_ID" \
   -H "Content-Type: application/json" \
   -d '{"aiEvaluationName": "OrderAgentTopicTests"}'
@@ -70,7 +70,7 @@ curl -X POST \
 # Returns: { "jobId": "0Xx..." }
 
 # Poll for results
-curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations/0Xx... \
+curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evaluations/runs/0Xx... \
   -H "Authorization: Bearer SESSION_ID"
 ```
 

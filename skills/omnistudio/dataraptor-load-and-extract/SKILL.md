@@ -130,7 +130,7 @@ DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObj
 | Single object, simple fields, performance-sensitive | Turbo Extract | Faster, no query overhead |
 | Cross-object data (parent + child) | Standard Extract with sub-select | Turbo Extract does not support relationships |
 | Writing to Salesforce from OmniScript | DataRaptor Load | Purpose-built DML tool |
-| Writing >200 records | Do NOT use DataRaptor Load | No Bulk API — use Batch Apex separately |
+| Writing high volumes, or driving a Load from a loop | Do NOT use DataRaptor Load | Load is platform DML, not Bulk API, so it is bounded by the calling transaction (150 DML statements / 10,000 DML rows). A loop-driven Load dies at the 151st iteration. Use Batch Apex or Bulk API 2.0 separately |
 | Need to detect write failure | Check `iferror` in Load output | Load does not throw; returns error info in output JSON |
 | Need atomic multi-object write | Aware: no rollback | Load fails forward; design compensating actions |
 
@@ -155,7 +155,7 @@ DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObj
 - [ ] Turbo Extract used where only simple field reads are needed
 - [ ] Load upsert key field confirmed as External ID on the sObject
 - [ ] Integration Procedure checks `iferror` output from Load steps
-- [ ] No Load operation used for more than ~200 records (Bulk API not supported)
+- [ ] No loop-driven Load exceeds ~150 iterations — that is the per-transaction DML **statement** limit, and it is what binds first (the DML **row** limit is 10,000 and is not the constraint here). Bulk API is not supported by Data Mapper Load
 - [ ] Multi-object Load: team aware there is no rollback on partial failure
 
 ---

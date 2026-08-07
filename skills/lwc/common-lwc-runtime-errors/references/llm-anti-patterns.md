@@ -279,3 +279,18 @@ export default class ParentContainer extends LightningElement {
 ```
 
 **Detection hint:** Flag parent components that render `<c-*>` child components but do not implement `errorCallback`. This is especially important for container components, page layouts, and anything that renders third-party or community-contributed child components.
+
+
+---
+
+## Anti-Pattern: Inventing a `lightning-*` base component for a plain HTML element
+
+**What the LLM generates:** `<lightning-iframe src="/apex/MyPage">` as the way to embed a Visualforce page in an LWC. Same shape, other invented tags: `<lightning-workspace-api>`, `<lightning-virtual-list>`, `<lightning-community-search>`.
+
+**Why it happens:** LWC guidance repeatedly says "prefer the base component over the raw HTML element" (`lightning-button` over `<button>`, `lightning-input` over `<input>`), and that rule generalises correctly often enough that the model applies it everywhere. When no base component exists for a given element, it manufactures the name from the element — the `lightning-` prefix plus the tag. `lightning:container` (Aura, wraps an iframe for a packaged third-party app) supplies enough real-world adjacency to make `lightning-iframe` feel remembered rather than invented. The failure is quiet: an unrecognised custom element renders nothing and throws nothing, so the feature is simply missing.
+
+Note *where* this one hid in this skill: in prose, inside a numbered list of recommended remediations, rather than in a code block. The skill's own checkers correctly flag other invented tags because they scan templates — a fabricated component name written as English text slips past both the checker and the reader.
+
+**Correct version:** a standard `<iframe src={vfPageUrl}></iframe>`, with the Visualforce domain registered in Setup → CSP Trusted Sites. There is no `lightning-iframe`.
+
+**Detection hint:** for any `lightning-*` tag, confirm it resolves in the Lightning Component Library (`developer.salesforce.com/docs/component-library/bundle/<tag>/documentation`) before using it — a 404 is the answer. Two heuristics that catch these without a lookup: (1) a `lightning-` tag that is just an **HTML element name with a prefix** (`lightning-iframe`, `lightning-canvas`, `lightning-video`) is almost always invented — real base components are named for SLDS blueprints, not for HTML tags; (2) a `lightning-` tag named after an **API** rather than a UI control (`lightning-workspace-api`) is a JavaScript module being mistaken for a component. Extend template scanning to prose: grep `<lightning-[a-z-]+>` across markdown, not just `.html`.

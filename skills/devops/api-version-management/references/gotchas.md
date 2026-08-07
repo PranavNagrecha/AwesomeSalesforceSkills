@@ -24,9 +24,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: Retired Versions Cause Hard Errors, Not Graceful Degradation
 
-**What happens:** When Salesforce retires an API version, REST calls to `/services/data/vXX.0/` return a `UNSUPPORTED_API_VERSION` error. SOAP calls to `/services/Soap/c/XX.0` also fail. There is no automatic forwarding to the nearest supported version. Metadata components pinned to a retired version may fail during deployment with opaque errors.
+**What happens:** When Salesforce retires an API version, calls fail with a protocol-specific error — REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, and Bulk returns `400 InvalidVersion`. (Do not expect `UNSUPPORTED_API_VERSION` on the REST path; a client matching on that string will not recognise the failure.) There is no automatic forwarding to the nearest supported version. Metadata components pinned to a retired version may fail during deployment with opaque errors.
 
-**When it occurs:** After a retirement wave takes effect (e.g., versions 7.0-30.0 retired in Summer '22). External integrations hard-coded to a specific version URL break immediately on the retirement date.
+**When it occurs:** After a retirement wave takes effect. Two waves have completed: 7.0–20.0 retired in Summer '22; 21.0–30.0 deprecated in Summer '22 and retired in Summer '25. External integrations hard-coded to a specific version URL break immediately on the retirement date.
 
 **How to avoid:** Monitor the Salesforce API End-of-Life policy page. Query `ApiTotalUsage` event logs to detect runtime calls to versions approaching retirement. Upgrade integration endpoints at least one release before the retirement date.
 

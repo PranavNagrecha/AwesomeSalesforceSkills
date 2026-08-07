@@ -208,7 +208,7 @@ A single trigger needs to update 5 unrelated objects. Instead of inline After-Sa
 - **Before-Save flows are the most bulk-safe** — no DML, simple element set, shared-limit impact is tiny.
 - **After-Save flows must be written with bulk DML in mind** — use a Create Records element with a collection, never a loop with a DML inside.
 - **Scheduled Paths process records in batches of up to 200.** If your record set per trigger event is larger than that, multiple scheduled-path executions run in parallel — plan for concurrent writes and set `Allow Concurrent Execution = true` only when truly safe.
-- **Platform-Event-triggered flows** receive events in batches of up to 2,000 per Standard PE, 10,000 per High-Volume PE. The flow's loop body runs once per event in the batch; loops must be bulk-safe.
+- **Platform-Event-triggered flows** receive events in batches of up to **2,000** event messages. 2,000 is both the maximum and the default, and it is the same for standard-volume and high-volume events; `PlatformEventSubscriberConfig` can only lower it (valid range 1–2,000), never raise it. The flow's loop body runs once per event in the batch; loops must be bulk-safe.
 - **Scheduled flows run once per scheduled execution** and process the query result set. If you use a Loop element, every DML inside is one-per-record — convert to a collection and do a single Update Records.
 
 ## Error handling

@@ -66,3 +66,6 @@ These reports are operational health signals — schedule them as subscriptions 
 - Salesforce Well-Architected Overview — operational reporting quality framing
 - Metadata API Developer Guide — report and dashboard metadata deployment behavior
 - Object Reference — object semantics that affect report design and completeness
+- [Limitations on Historical Trend Reporting](https://help.salesforce.com/s/articleView?id=sf.reports_historical_limits.htm&type=5) — supported field types, 5 snapshot dates, 4 historical filters, 100 fields, 5M-row storage cap, 3-months-plus-current-month retention
+- [Export a Report](https://help.salesforce.com/s/articleView?id=analytics.reports_export.htm&type=5) — Formatted Report 100,000 x 100 (2,000 x 100 for matrix); Details Only .xlsx 100,000 x 100; Details Only .xls/.csv uncapped by Salesforce
+- [Reports and Dashboards Limits](https://help.salesforce.com/s/articleView?id=analytics.rd_reports_dashboards_limits.htm&type=5) — 25 widgets per dashboard, 1,000 groupings per widget, 2,000 on-screen rows, 2,000 report chart groups, joined-report block and subscription allocations

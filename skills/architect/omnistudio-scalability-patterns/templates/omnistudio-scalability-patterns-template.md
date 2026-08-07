@@ -19,9 +19,11 @@ Use this template when designing or reviewing an OmniStudio deployment for high-
 | Peak concurrent users (portal) | | |
 | Average IP execution time (seconds) | | |
 | Maximum observed IP execution time (seconds) | | |
-| IPs with execution time > 20s under load? | Yes / No | If Yes: triggers concurrent Apex limit concern |
-| Other Apex workloads during portal peak hours | | Batch jobs, scheduled classes, triggers |
-| Estimated concurrent long-running Apex requests at peak | | Must remain below 25 org-wide |
+| IPs with execution time > 5s under load? | Yes / No | 5s is the long-running threshold; if Yes, the IP occupies a concurrency slot |
+| Applicable licence count in the org | | Drives the ceiling |
+| **Org concurrent long-running ceiling** = min(50, max(10, licences ÷ 100)) | | Compute it; it is not a fixed number |
+| Other **synchronous** Apex workloads during portal peak hours | | Internal Lightning/VF actions, synchronous API traffic, managed-package Apex. Batch/Queueable/`@future`/Scheduled do NOT count |
+| Estimated concurrent synchronous long-running transactions at peak | | Must remain below the computed ceiling above |
 
 ---
 
@@ -92,7 +94,7 @@ List all Integration Procedures invoked under portal load:
 
 | Concern | Current State | Mitigation |
 |---|---|---|
-| Total concurrent long-running Apex at peak | / 25 | |
+| Total concurrent **synchronous** long-running (>5s) transactions at peak | ____ / ____ (computed ceiling, 10–50) | |
 | HTTP callout volume (external APIs) | requests/hour | |
 | DataRaptor caching for high-frequency reference queries | Enabled / Not enabled | |
 | Batch jobs scheduled during portal peak hours | Yes / No | Reschedule if Yes |

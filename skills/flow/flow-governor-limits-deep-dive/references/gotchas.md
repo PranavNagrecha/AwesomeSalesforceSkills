@@ -50,4 +50,4 @@ Salesforce doesn't publish "Decision costs X ms" tables. Benchmark per-element c
 
 ## Gotcha 9: Platform-Event subscriber batches can surprise
 
-High-Volume PE subscribers receive up to 10,000 events per batch. Each run has fresh limits but a big loop inside the subscriber flow can still breach CPU.
+PE subscribers receive up to 2,000 event messages per batch — the documented maximum and default for both standard-volume and high-volume events, lowerable (not raisable) via `PlatformEventSubscriberConfig`. Each run has fresh limits, but a big loop inside the subscriber flow can still breach CPU at 2,000 events.

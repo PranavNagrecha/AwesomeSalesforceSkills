@@ -101,8 +101,8 @@ Gather if not available:
 |---|---|---|
 | `Custom Notification Type ID` | `{!customNotifTypeId}` | Query `CustomNotificationType` where `DeveloperName = 'Case_Escalation_Alert'` |
 | `Recipient IDs` | `{!recipientCollection}` | Text Collection of 15/18-char User IDs |
-| `Title` | `"Case Escalation — Action Required"` | Max 75 characters (silently truncates) |
-| `Body` | `{!notificationBody}` | Text Template with merge fields; plain text only |
+| `Title` | `"Case Escalation — Action Required"` | Max 250 characters; desktop displays only the first ~120 before truncating with an ellipsis, so write the actionable part first |
+| `Body` | `{!notificationBody}` | Max 750 characters (desktop displays ~320); Text Template with merge fields; plain text only |
 | `Target ID` | `{!$Record.Id}` | Tapping the notification navigates to this record |
 
 **Why not email:** Bell notifications are synchronous with the transaction, appear immediately in the app, and do not require an email address. Email adds latency and inbox noise for internal user alerts.
@@ -194,10 +194,10 @@ Always add a fault connector — `SendEmailException` faults when limits are exc
 
 1. **Custom Notification recipientIds must be User IDs, not email addresses** — The Send Custom Notification action requires Salesforce User record IDs (15 or 18-character). Passing an email address string causes a runtime error that is often reported as "notification not delivered" rather than a clear field-level error.
 2. **Send Email does not use Classic Email Templates** — Flow's Send Email action cannot reference a Letterhead or Classic HTML template from Setup. Body content must come from a Flow Text Template resource or an inline text value. Practitioners who expect template-driven emails must use an Email Alert action instead.
-3. **1,000 custom notifications/hour org limit can fail silently without a fault connector** — When the limit is exceeded, the action faults. Without a fault connector, the Flow fails or rolls back (in record-triggered context), and the only trace is the Flow debug log or a system admin fault email.
+3. **The 10,000 notification-actions/hour org limit drops notifications silently — a fault connector will NOT catch it** — Salesforce documents that beyond the cap "no more notifications are sent in that hour, and all unsent notifications are lost," resuming next hour. No exception is thrown, so the flow does not fault and does not roll back, and there is no fault email. Detection requires your own instrumentation, not error handling.
 4. **SMS is invisible without Digital Engagement — no fallback action appears** — If the Digital Engagement add-on is not provisioned, the Send SMS action does not appear in Flow Builder at all. There is no placeholder or error message.
 5. **Slack Post Message requires an active connected workspace, not just package installation** — Installing the Salesforce for Slack managed package does not automatically make the action work. An admin must authenticate and connect a Slack workspace in Setup.
-6. **Custom Notification title max length is 75 characters** — longer titles silently truncate. Validate string length.
+6. **Custom Notification title is capped at 250 characters (body 750), but desktop truncates the *display* far earlier** — titles render to about 120 characters and bodies to about 320 before an ellipsis. Do not conflate the two numbers: 250/750 is what the API accepts, 120/320 is what a user reads. Front-load the actionable text.
 7. **Email deliverability setting "No access" blocks all outbound emails** — Sandbox orgs default to this setting; Flow's Send Email succeeds in the flow but nothing leaves the org. Verify deliverability is `All email` in Setup before testing.
 8. **Custom Notifications to inactive users don't error but don't deliver** — Filter recipient collections by `IsActive=true` before passing to the action.
 9. **Slack message character limit (~40k) + formatting caveats** — Slack truncates long messages; BlockKit JSON isn't supported from the standard Flow action.

@@ -101,16 +101,31 @@ upgrades both, plus adds Event Monitoring.
 The most consequential per-field decision under Shield Platform
 Encryption. Salesforce supports two schemes:
 
-| Scheme | Same plaintext → same ciphertext? | Filter / sort / group-by? | Strength |
-|---|---|---|---|
-| **Probabilistic** (default) | No (random IV per encryption) | Equality filter NO; sort NO | Stronger — ciphertext analysis cannot infer plaintext distribution |
-| **Deterministic — case-sensitive** | Yes | Equality filter YES; sort YES (lexicographic on ciphertext) | Weaker — ciphertext frequency analysis is possible |
-| **Deterministic — case-insensitive** | Yes (after case-fold) | Equality filter YES (case-insensitive); sort YES | Same as case-sensitive plus case-fold |
+| Scheme | Same plaintext → same ciphertext? | Exact-match filter? | Sort / ORDER BY? | Strength |
+|---|---|---|---|---|
+| **Probabilistic** (default) | No (random IV per encryption) | NO | NO | Stronger — ciphertext analysis cannot infer plaintext distribution |
+| **Deterministic — case-sensitive** | Yes | YES (`=`, `IN`) | **NO** | Weaker — ciphertext frequency analysis is possible |
+| **Deterministic — case-insensitive** | Yes (after case-fold) | YES, case-insensitive | **NO** | Same as case-sensitive plus case-fold |
 
-Deterministic is the only path if SOQL needs to filter or sort on the
-encrypted field. Probabilistic is the right default for everything else.
-You cannot change scheme on a populated field without re-encrypting
-every row.
+**Sorting is not a capability either scheme buys you.** Salesforce states
+you can't sort records in list views by fields that contain encrypted
+data, and the same restriction applies to encrypted fields in flows,
+orchestrations and processes. The mechanism makes this unsurprising:
+deterministic encryption guarantees only that equal plaintexts produce
+equal ciphertexts — it says nothing about *order*. Ciphertext collates in
+an order unrelated to the plaintext, so a lexicographic sort on ciphertext
+would return rows in an order that is not the business order even where
+the platform allowed it. Treat any claim that deterministic encryption
+"enables sorting" as false regardless of how it is justified.
+
+Deterministic is therefore the only path if SOQL needs to **filter by
+exact match** on the encrypted field. It does not unlock ranges,
+`LIKE`/wildcard, or ordering. If the design needs to sort or range-scan on
+a value, the answer is not a different encryption scheme — it is to keep a
+separate unencrypted sortable surrogate (a bucketed or masked field), or
+to not encrypt that field. Probabilistic is the right default for
+everything else. You cannot change scheme on a populated field without
+re-encrypting every row.
 
 ### Field types you cannot encrypt
 
@@ -208,7 +223,7 @@ from the archive — capped at 10 years.
 ## Salesforce-Specific Gotchas
 
 1. **Three Shield components, three separate licenses.** None included in any standard edition. Verify each PSL before any Setup work. (See `references/gotchas.md` § 1.)
-2. **Probabilistic encryption blocks SOQL `WHERE` equality filters.** Deterministic supports equality filter (and sort). Wrong scheme = wrong queries. (See `references/gotchas.md` § 2.)
+2. **Probabilistic encryption blocks SOQL `WHERE` equality filters; deterministic restores exact-match filtering only.** Neither scheme restores sorting — you can't sort records in list views by fields containing encrypted data, and ciphertext order does not track plaintext order in any case. Wrong scheme = wrong queries; expecting sort from deterministic = a design that fails at query time. (See `references/gotchas.md` § 2.)
 3. **Formula / Roll-Up / unique-indexed External ID cannot be encrypted.** Encrypt the source field instead. (See `references/gotchas.md` § 3.)
 4. **Cache-Only Key Service outage = encryption operations fail.** A customer-HSM outage stops new writes that need encryption. Trade for the strongest custody posture. (See `references/gotchas.md` § 4.)
 5. **Field Audit Trail retention requires metadata XML, not Setup UI.** `HistoryRetentionPolicy` is set per object via Tooling API or metadata deploy — not a checkbox. (See `references/gotchas.md` § 5.)

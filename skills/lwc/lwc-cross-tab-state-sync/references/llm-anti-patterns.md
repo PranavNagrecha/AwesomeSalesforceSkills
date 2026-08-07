@@ -81,3 +81,33 @@ this.channel.postMessage(...);
 **Correct pattern:** `typeof BroadcastChannel !== 'undefined'` guard with a storage-event polyfill or graceful degradation.
 
 **Detection hint:** Direct construction `new BroadcastChannel(...)` without a surrounding feature check.
+
+
+---
+
+## Anti-Pattern: Importing `refreshApex` from `lightning/uiRecordApi` (and calling it on an LDS wire)
+
+**What the LLM generates:**
+
+```javascript
+import { getRecord, refreshApex } from 'lightning/uiRecordApi';
+...
+@wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+handle(result) { this.wired = result; }
+...
+refreshApex(this.wired);
+```
+
+**Why it happens:** Two errors compound. (1) `refreshApex` and `getRecord` co-occur constantly in refresh discussions, so the model merges them into one import statement; `lightning/uiRecordApi` is the more memorable module name, so it wins. (2) `refreshApex` is treated as the generic "re-run my wire" function, when it is specifically the Apex-wire refresh primitive — it reads the internal Apex cache key off the provisioned result, which an LDS-provisioned result does not carry. In a cross-tab sync bus this is especially easy to miss: the code *looks* like it works because the tab often re-renders for unrelated reasons.
+
+**Correct version:**
+
+```javascript
+import { getRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+// refreshApex, when you actually need it, comes from '@salesforce/apex'
+notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+```
+
+Rule of thumb: **Apex `@wire` → `refreshApex` from `@salesforce/apex`. LDS wire (`getRecord`, `getRecords`, `getRelatedListRecords`, GraphQL) → `notifyRecordUpdateAvailable`, or a view-scoped `RefreshEvent` from `lightning/refresh`.**
+
+**Detection hint:** two mechanical greps. First, `refreshApex` appearing in the same `import { … } from 'lightning/uiRecordApi'` statement — `lightning/uiRecordApi` never exports it, so this fails at compile time. Second, `refreshApex(x)` where `x` is assigned from a `@wire` whose adapter is not an `@salesforce/apex/...` import — that one compiles and silently does nothing.

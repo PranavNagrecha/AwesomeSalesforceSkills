@@ -111,6 +111,14 @@ def check_moderation_rules(manifest_dir: Path) -> list[str]:
     return issues
 
 
+# The Setup label for this permission is "Moderate Experiences Feeds", but the
+# METADATA API NAME — the string that actually appears inside a .permissionset
+# file — is ModerateNetworkFeeds. Searching a permission set for the label,
+# or for a camel-cased version of the label, never matches, so a correctly
+# configured org gets reported as missing the permission.
+MODERATE_FEEDS_API_NAME = "ModerateNetworkFeeds"
+
+
 def check_permission_sets(manifest_dir: Path) -> list[str]:
     """Check for at least one permission set granting Moderate Experiences Feeds."""
     issues: list[str] = []
@@ -123,7 +131,7 @@ def check_permission_sets(manifest_dir: Path) -> list[str]:
     for ps_file in perm_set_files:
         try:
             content = ps_file.read_text(encoding="utf-8")
-            if "ModerateExperiencesFeeds" in content or "moderateExperiencesFeeds" in content:
+            if MODERATE_FEEDS_API_NAME.lower() in content.lower():
                 found_moderate_permission = True
                 break
         except OSError:
@@ -131,7 +139,9 @@ def check_permission_sets(manifest_dir: Path) -> list[str]:
 
     if not found_moderate_permission:
         issues.append(
-            "No permission set found that grants 'Moderate Experiences Feeds' (ModerateExperiencesFeeds). "
+            "No permission set found that grants the feed-moderation permission "
+            f"(<name>{MODERATE_FEEDS_API_NAME}</name>, shown in Setup as "
+            "'Moderate Experiences Feeds'). "
             "Moderators will not be able to access the moderation queue or approve Review-status content."
         )
 

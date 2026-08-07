@@ -60,7 +60,7 @@ The cardinal rule: **preserve evidence before containment**. In free-tier orgs, 
 
 | Source | Retention | License | What It Shows |
 |---|---|---|---|
-| EventLogFile | 1 day (free) / 30 days (add-on/Shield) | Free tier: 5 event types only | API usage, report exports, logins, data exports, SOQL queries (ApiTotalUsage) |
+| EventLogFile | 1 day (free) / 30 days (add-on/Shield) | Free tier: 7 event types only — see below | Logins, logouts, API total usage; report exports, data exports and URI/page-view detail require the add-on |
 | LoginHistory | 6 months | Free | Login IP, geolocation, MFA used, login type, browser/client |
 | SetupAuditTrail | 180 days | Free | Setup-UI config changes (not Metadata API deploys) |
 | AuthSession | Live only | Free | Active sessions — query and DELETE to revoke |
@@ -68,9 +68,21 @@ The cardinal rule: **preserve evidence before containment**. In free-tier orgs, 
 
 ### Event Monitoring Tiers
 
-- **Free tier**: 5 event types (Login, Logout, URI, API, LightningPageView), **1-day retention** — nearly useless for incidents discovered >24 hours after the attack.
-- **Event Monitoring add-on**: 70+ event types, **30-day retention** — includes ReportExport, DataExport, ApiTotalUsage, MetadataApiOperation.
-- **Shield**: Includes Event Monitoring add-on plus Real-Time Event Monitoring (RTEM) with LoginAnomaly, PermissionSetAssignment, ApiAnomalyEventStore.
+| Tier | EventLogFile types available | Retention |
+|---|---|---|
+| Free (Enterprise / Unlimited / Performance) | Exactly seven: Apex Unexpected Exception, CORS Violation Record, CSP Violation, Hostname Redirects, Login, Logout, API Total Usage | 1 day |
+| Free (Developer Edition) | All log types | 1 day |
+| Event Monitoring add-on | 70+ types — adds ReportExport, DataExport, URI, LightningPageView, MetadataApiOperation and the rest | 30 days |
+| Shield | Add-on set plus Real-Time Event Monitoring (LoginAnomaly, PermissionSetAssignment, ApiAnomalyEventStore) | 30 days + RTEM real-time |
+
+Read the free-tier row for what it excludes, not just what it contains: `URI`,
+`LightningPageView`, `Report`, `ReportExport` and `DataExport` are all add-on-only.
+A responder on a free-tier org who plans the investigation around page-view or
+report-export evidence will burn the entire non-renewable 24-hour window querying
+event types the org does not have. Confirm the available set first — that is step 1
+of the workflow, and it exists for this reason. Developer Edition's full log set is
+useful for rehearsing a runbook but is not a guide to what a production EE/UE org
+will actually have.
 
 ### Transaction Security Policy Enforcement Actions
 

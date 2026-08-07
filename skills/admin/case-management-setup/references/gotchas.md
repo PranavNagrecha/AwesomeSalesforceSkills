@@ -32,13 +32,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: Web-to-Case 50,000 Pending Request Limit Is a Hard Drop
+## Gotcha 4: The Web-to-Case Overflow Signal Exists, But It Stops After Five Emails
 
-**What happens:** New Web-to-Case submissions are silently dropped once the pending request queue reaches 50,000 entries. The submitter sees a success message from the HTML form but no case is ever created. No error is logged in Salesforce and no alert is sent to admins by default.
+**What happens:** Web-to-Case enforces a 24-hour submission limit. Requests above it are not discarded — they land in a pending request queue that Web-to-Case and Web-to-Lead **share**, capped at 50,000 combined requests. Only when that queue is full are further requests rejected and not queued at all. The submitter sees the HTML form's success page regardless, and no case is created.
 
-**When it occurs:** High-volume campaigns, product launches, or outage events that drive spike submission volume can fill the queue quickly. The queue is drained as cases are processed, but a sustained spike can keep it full.
+There **is** a native signal, and teams routinely build monitoring as though there weren't: when the pending limit is reached and requests start being rejected, Salesforce emails the administrator about the **first five rejected submissions**. That is the whole notification. A four-hour outage that drops 40,000 requests produces exactly five emails, all in the first few seconds — so the useful design question is not "how do we detect this at all" but "is the address receiving those five emails monitored, and do we have a second signal for the remaining 39,995?"
 
-**How to avoid:** Monitor the pending Web-to-Case count in Setup → Web-to-Case regularly. Set up an operational alert (via external monitoring or a scheduled Flow/Apex job that checks the count via SOAP API) to notify admins when the count approaches the limit. For high-volume scenarios, consider On-Demand Email-to-Case as a supplement, or use Experience Cloud or a custom API-based form that creates cases via SOSL/REST rather than the built-in Web-to-Case endpoint.
+**When it occurs:** High-volume campaigns, product launches, or outage events that drive spike submission volume. Because the pending queue is shared, a Web-to-Lead spike from a marketing campaign can exhaust the queue and take Web-to-Case down with it — a coupling that is invisible from the Service Cloud side.
+
+**How to avoid:** Route the administrator notification address to a monitored support mailbox or ticket queue, not an individual's inbox. Monitor the pending request count in Setup, and account for Web-to-Lead volume in the same budget. Salesforce Customer Support can raise the pending request limit. For sustained high volume, supplement with On-Demand Email-to-Case, or replace the built-in endpoint with an Experience Cloud form or a custom integration that creates cases through the **REST or SOAP API**. (SOSL is a search language and cannot create records of any kind — it is not an alternative intake path.)
 
 ---
 

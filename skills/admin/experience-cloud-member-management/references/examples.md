@@ -19,34 +19,56 @@ Step 2 — In Setup > Digital Experiences > [site] > Administration > Registrati
 For sites that need custom post-registration logic (e.g., assign users to different accounts based on email domain), implement a handler class:
 
 ```apex
-public class CustomerSelfRegHandler implements Auth.ConfigurableSelfRegHandler {
+global class CustomerSelfRegHandler implements Auth.ConfigurableSelfRegHandler {
 
-    private static final String DEFAULT_ACCOUNT_ID = '001000000000001AAA'; // replace with real ID
+    private static final String PARTNER_ACCOUNT_ID = '001000000000001AAA'; // replace with real ID
 
-    public User registerUser(Auth.SelfRegistrationContext context) {
+    // The ONLY method on Auth.ConfigurableSelfRegHandler.
+    // It returns the Id of the User it created — not a User sObject.
+    global Id createUser(Id accountId,
+                         Id profileId,
+                         Map<SObjectField, String> registrationAttributes,
+                         String password) {
+
         User u = new User();
-        u.Username     = context.email;
-        u.Email        = context.email;
-        u.FirstName    = context.firstName;
-        u.LastName     = context.lastName;
-        u.Alias        = context.email.substring(0, Math.min(8, context.email.indexOf('@')));
-        u.CommunityNickname = u.Alias + String.valueOf(Math.random()).substring(2, 7);
-        u.TimeZoneSidKey    = 'America/Los_Angeles';
-        u.LocaleSidKey      = 'en_US';
-        u.EmailEncodingKey  = 'UTF-8';
-        u.LanguageLocaleKey = 'en_US';
-        u.ProfileId         = [SELECT Id FROM Profile
-                                WHERE Name = 'Customer Community User' LIMIT 1].Id;
-        // Link to the catch-all account via Contact — platform handles Contact creation
-        // AccountId is set on the Contact, not the User directly in self-reg context
-        return u;
+        u.ProfileId = profileId;
+
+        // registrationAttributes is keyed by SObjectField, not by String.
+        for (SObjectField field : registrationAttributes.keySet()) {
+            u.put(field, registrationAttributes.get(field));
+        }
+
+        // Domain-based account routing: override the account the platform passed in.
+        Id targetAccountId = accountId;
+        String email = registrationAttributes.get(User.Email);
+        if (String.isNotBlank(email) && email.endsWithIgnoreCase('@partner.example.com')) {
+            targetAccountId = PARTNER_ACCOUNT_ID;
+        }
+
+        u.CommunityNickname  = generateNickname(email);
+        u.TimeZoneSidKey     = UserInfo.getTimeZone().getID();
+        u.LocaleSidKey       = UserInfo.getLocale();
+        u.LanguageLocaleKey  = UserInfo.getLocale();
+        u.EmailEncodingKey   = 'UTF-8';
+
+        if (String.isBlank(password)) {
+            password = generateRandomPassword();
+        }
+        Site.validatePassword(u, password, password);
+
+        // Site.createExternalUser creates the Contact under targetAccountId,
+        // creates the User, and returns the new User Id.
+        return Site.createExternalUser(u, targetAccountId, password);
     }
+
+    private String generateNickname(String email) { /* ... */ return null; }
+    private String generateRandomPassword()       { /* ... */ return null; }
 }
 ```
 
 Then set this class name in the Self-Registration Handler field in the Registration settings.
 
-**Why it works:** `Auth.ConfigurableSelfRegHandler.registerUser` gives full control over the User record returned to the platform. The platform creates the associated Contact and links it to the account specified in the Default New User Account setting (or one set programmatically if the handler overrides it). Returning `null` from `registerUser` cancels the registration, which is useful for domain-based allow/deny lists.
+**Why it works:** `Auth.ConfigurableSelfRegHandler.createUser` receives the account and profile configured in the Registration settings, plus the form values as a `Map<SObjectField, String>`, and hands back the Id of the user it created. `Site.createExternalUser(user, accountId, password)` does the Contact creation and account linkage in one call, which is why the handler can route users to different accounts by passing a different `accountId`. Returning `null` — or throwing — fails the registration, which is how a domain-based allow/deny list is implemented.
 
 ---
 

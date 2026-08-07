@@ -14,8 +14,15 @@ These patterns help the consuming agent self-check its own output.
 ```
 Diagnosis path:
 1. Identify the error: HTTP 429 with Retry-After → rate throttle (momentary)
-   HTTP 503 or SOAP REQUEST_LIMIT_EXCEEDED → either concurrent or daily exhaustion
-   SOAP fault body containing "TXN_SECURITY_METERING_ERROR" or "CONCURRENT_REQUESTS_LIMIT_EXCEEDED" → concurrent limit
+   REQUEST_LIMIT_EXCEEDED (HTTP 403) → either concurrent or daily exhaustion.
+     Read the MESSAGE, not just the code: a ConcurrentPerOrgLongTxn-style
+     message means concurrent exhaustion; otherwise it is the daily allocation.
+   TXN_SECURITY_METERING_ERROR → NOT a concurrency signal. This belongs to
+     Enhanced Transaction Security policy metering. If you see it during a
+     throughput incident, it is a separate problem, not this one.
+   CONCURRENT_REQUESTS_LIMIT_EXCEEDED → does not appear in the REST API
+     error-code reference. Do not build alerting or retry logic that matches
+     on this string; match on REQUEST_LIMIT_EXCEEDED plus the message.
 
 2. If concurrent limit:
    - Identify which requests are taking > 20 seconds (check Event Log TOTAL_TIME column)
@@ -175,3 +182,32 @@ Before configuring Connected App session timeout:
 ```
 
 **Detection hint:** A recommendation to set Connected App session timeout to X hours without verifying the org-wide session settings is this anti-pattern.
+
+---
+
+## Anti-Pattern: Mapping `TXN_SECURITY_METERING_ERROR` to API Concurrency Exhaustion
+
+**What the LLM generates:** "Exceeding the concurrent request limit produces an HTTP 503 or a `REQUEST_LIMIT_EXCEEDED` / `TXN_SECURITY_METERING_ERROR` SOAP fault." Frequently paired with `CONCURRENT_REQUESTS_LIMIT_EXCEEDED`, a string that reads exactly like a real Salesforce status code and does not appear in the REST API error-code reference.
+
+**Why it happens:** `TXN_SECURITY_METERING_ERROR` *is* a real Salesforce error, and the word "metering" reads as rate-limiting vocabulary — so the model files it under the throughput heading. It belongs to Enhanced Transaction Security policy metering, an entirely different subsystem (a policy whose Apex fails at runtime or exceeds the org's metering limit blocks the user; Salesforce has a dedicated KB titled "TXN_SECURITY_METERING_ERROR is thrown on all the Salesforce operations"). `CONCURRENT_REQUESTS_LIMIT_EXCEEDED` is the complementary failure: the model composes a code from the limit's *name*, which is how most Salesforce codes are formed, and gets something indistinguishable from real.
+
+**Why it costs an incident:** error-code-to-cause mapping is what a responder consults first. Sent to Transaction Security policies during an API-throughput incident, they will find policies that are fine, conclude the error mapping is right and the policies are misconfigured somewhere subtle, and lose the window. Alerting and retry logic that matches on the invented string simply never fires.
+
+**Correct pattern:**
+```
+Concurrent long-running request exhaustion (25 in-flight requests > 20s, per org):
+    REQUEST_LIMIT_EXCEEDED, HTTP 403, with a ConcurrentPerOrgLongTxn-style message.
+
+Daily API allocation exhaustion:
+    REQUEST_LIMIT_EXCEEDED, HTTP 403, with a daily-allocation message.
+
+    -> The CODE is the same for both. Diagnose from the MESSAGE.
+
+TXN_SECURITY_METERING_ERROR:
+    Enhanced Transaction Security policy metering. Unrelated to API throughput.
+
+CONCURRENT_REQUESTS_LIMIT_EXCEEDED:
+    Not in the REST API error-code reference. Do not match on it.
+```
+
+**Detection hint:** `TXN_SECURITY_METERING_ERROR` appearing in the same list as `REQUEST_LIMIT_EXCEEDED` or any concurrency discussion is a misattribution. `CONCURRENT_REQUESTS_LIMIT_EXCEEDED` is unverifiable against the error-code reference — treat any monitoring rule, retry predicate or runbook branch keyed on that literal as dead code that will never match.

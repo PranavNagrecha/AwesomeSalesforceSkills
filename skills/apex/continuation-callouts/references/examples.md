@@ -2,9 +2,9 @@
 
 ## Example 1: Visualforce Quote Generation with 60-Second Timeout
 
-**Context:** An insurance quoting Visualforce page calls an external rating engine that consistently takes 25–50 seconds to compute a premium. The synchronous callout limit (10 seconds) causes `System.CalloutException: Read timed out` before the service ever responds.
+**Context:** An insurance quoting Visualforce page calls an external rating engine that consistently takes 25–50 seconds to compute a premium. At the default per-callout timeout of 10 seconds, `Http.send()` fails with `System.CalloutException: Read timed out` before the service ever responds.
 
-**Problem:** Using `Http.send()` directly in the VF controller action blocks the Salesforce request thread and hits the 10-second timeout hard ceiling before the rating engine responds.
+**Problem:** Raising the timeout is legal — `req.setTimeout(60000)` is well inside the 1–120,000 ms range — so the timeout is not the blocker. The blocker is that `Http.send()` in a VF controller action holds the Salesforce request thread for the full 25–50 seconds, giving the user a frozen page and consuming a thread slot per concurrent quote.
 
 **Solution:**
 
@@ -111,7 +111,7 @@ static void testPremiumCalculation() {
 
 **Context:** A Lightning Web Component on a product detail page needs current stock levels from an ERP system and live pricing from a pricing microservice. Both calls are independent but each averages 15–20 seconds. Sequential calls would take 30–40 seconds total.
 
-**Problem:** Firing them one after the other either times out (synchronous) or requires two separate user actions. An LWC using standard `@AuraEnabled` methods with `Http.send()` hits the 10-second synchronous limit.
+**Problem:** Firing them one after the other serialises 30–40 seconds of waiting onto a blocked request thread, or requires two separate user actions. An LWC using standard `@AuraEnabled` methods with `Http.send()` also fails at the default 10-second callout timeout unless each request raises it explicitly — and even with the timeout raised, the two sequential waits still consume the transaction's 120-second cumulative callout budget and block the thread throughout.
 
 **Solution:**
 

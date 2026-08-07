@@ -66,7 +66,8 @@ EventLogFile records have a 24-hour delay. Logs for today's date are NOT
 available until tomorrow (UTC). For same-day forensics during an active
 incident, use:
 
-- LoginEventStream or other RTEM storage objects (available immediately)
+- The RTEM storage big objects — `LoginEvent`, `ApiEvent`, `ReportEvent` (queryable, populated immediately).
+  NOT `LoginEventStream`: `*EventStream` objects are platform events, subscribe-only.
 - Setup > Login History UI (real-time, limited to recent records)
 - Hourly log files (Shield only, still delayed by up to 1 hour)
 
@@ -144,3 +145,47 @@ for the precise activity timestamp.
 ```
 
 **Detection hint:** If the advice treats a Threat Detection event timestamp as the exact time of the suspicious activity, the timeline reconstruction may be inaccurate.
+
+---
+
+## Anti-Pattern: Running SOQL Against a `*EventStream` Object
+
+**What the LLM generates:**
+```sql
+SELECT Country, UserId FROM LoginEventStream LIMIT 20
+SELECT UserId, SourceIp FROM ApiEventStream WHERE EventDate = TODAY
+```
+Often phrased as "for same-day data, query `LoginEventStream` directly via SOQL" or "the RTEM storage objects are `LoginEventStream`, `ApiEventStream`, …".
+
+**Why it happens:** Real-Time Event Monitoring ships each event under **two** object names that differ by one suffix — `LoginEvent` and `LoginEventStream` — and Salesforce Help discusses them in the same paragraphs. The model has both names available and no strong signal about which one is the queryable half, so it picks the more distinctive-sounding `…Stream` variant. The surrounding advice is usually correct (EventLogFile really does lag 24 hours; RTEM really is the same-day answer), which makes the wrong object name easy to trust.
+
+**Why it matters:** it fails during an incident, at the moment of least slack. The query errors out — or worse, a wrapper swallows the error and the responder reads "no results" as "no suspicious logins," concluding the investigation from an object that was never readable.
+
+**Correct pattern:**
+```
+Two objects per RTEM event, two different access mechanisms:
+
+  LoginEvent          big object   supported calls: describeSObjects(), query()
+                                   → SOQL. Populated immediately. This is the
+                                     one you query during an incident.
+
+  LoginEventStream    platform event   supported call: describeSObjects() ONLY
+                                   → subscribe to /event/LoginEventStream via
+                                     Pub/Sub API or CometD, or target it from a
+                                     Transaction Security Policy. Never SOQL.
+
+Same split for ApiEvent/ApiEventStream, LogoutEvent/LogoutEventStream,
+LoginAsEvent/LoginAsEventStream, ReportEvent/ReportEventStream.
+
+Note LoginEventStream also cannot be consumed by Apex triggers or Flow —
+Pub/Sub API and CometD only.
+```
+
+**Correct query:**
+```sql
+SELECT UserId, LoginType, SourceIp, Status, Country, EventDate
+FROM LoginEvent
+WHERE EventDate = TODAY
+```
+
+**Detection hint:** mechanically — the token `EventStream` appearing after `FROM` in any SOQL string is always wrong. Equally: `EventStream` described as a "storage object", or paired with the verbs *query*, *SELECT*, *filter*. Conversely, a subscription channel written as `/event/LoginEvent` (without `Stream`) is the mirror-image error — you subscribe to the stream, you query the event.

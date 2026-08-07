@@ -18,7 +18,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time a site is deactivated rather than deleted. The error is often discovered only when the org approaches 100 total sites and the team cannot understand why there are so few "active" sites but the limit is still being approached.
 
-**How to avoid:** Permanently delete sites that are no longer needed. If the site configuration must be preserved for documentation, export the page layout screenshots and Experience Builder settings before deletion. Do not use deactivation as a long-term archival strategy.
+**How to avoid:** **Archive** sites that are no longer needed. Salesforce is explicit that "archived sites don't count against this limit", so archiving reclaims the slot — and unlike deletion it is reversible, so an abandoned prototype that turns out to matter later is recoverable. Do not use deactivation as a long-term archival strategy; use actual archiving.
+
+**Do not reach for deletion as the default remedy.** Guidance that says the slot can only be reclaimed by permanent deletion is wrong, and acting on it destroys site configuration irreversibly for no quota benefit that archiving would not also deliver. Reserve deletion for sites you are certain will never be revived, and export page layout screenshots and Experience Builder settings first if any record of the configuration is wanted.
 
 ---
 

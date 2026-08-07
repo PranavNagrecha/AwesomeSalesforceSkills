@@ -22,23 +22,34 @@ email content routing through Salesforce infrastructure.
 
 ---
 
-## Anti-Pattern 2: Stating That On-Demand and Standard Have Identical Attachment Limits
+## Anti-Pattern 2: Quoting a Retired Email-to-Case Total as a Current Per-Attachment Cap
 
-**What the LLM generates:** A statement that both modes support the same attachment limits: total email size of 25 MB, without mentioning the On-Demand per-attachment cap.
+**What the LLM generates:** "Both modes support a maximum total inbound email size of 25 MB. On-Demand Email-to-Case additionally caps individual attachments at 10 MB per attachment; Standard has no per-attachment cap."
 
-**Why it happens:** The 25 MB total limit applies to both modes and is the most commonly cited number. The 10 MB per-attachment cap is specific to On-Demand and is documented in the limits article, not in the main setup article. LLMs conflate the two and omit the per-attachment cap.
+**Why it happens:** 10 MB and 25 MB are both real Salesforce Email-to-Case numbers — they are the *former total inbound message limits*, raised at Summer '14 and again at Winter '21. Fifteen years of blog posts, Stack Exchange answers and training decks quote them, so they dominate the training distribution. Because a model has two plausible numbers and only one total-size slot to put them in, it manufactures a second dimension — "per attachment" — to make both fit, and then invents a mode difference to explain why one is smaller. Every part of that construction is a confabulation on top of correct component numbers. The mode difference is doubly attractive because Standard and On-Demand genuinely do differ in where mail is received.
 
 **Correct pattern:**
 
 ```
-Both modes: maximum total email size 25 MB.
-On-Demand only: maximum individual attachment size 10 MB.
-Standard: no per-attachment cap (total 25 MB still applies).
-Orgs migrating from Standard to On-Demand must communicate the
-10 MB per-attachment limit to customers and support teams.
+On-Demand Email-to-Case:
+  Total inbound message size (body + attachments + HTML): 35 MB.
+  MIME transfer encoding inflates a message by up to 33% in transit,
+  so the effective attachment ceiling is approximately 25 MB.
+  There is NO documented per-attachment cap.
+
+Standard Email-to-Case:
+  Mail is received by the customer's own mail server, so the first
+  size gate is that server's configuration; the agent then creates
+  the case through the API. Do not quote a Salesforce per-attachment
+  cap here either.
+
+Retired values that models still emit as current:
+  10 MB — total message limit before Summer '14.
+  25 MB — total message limit before Winter '21 (now the *effective*
+          attachment figure, by coincidence of the 33% overhead).
 ```
 
-**Detection hint:** Any response describing attachment limits that mentions only the 25 MB limit without differentiating On-Demand's 10 MB per-attachment cap.
+**Detection hint:** Grep the answer for `per attachment` / `per-attachment`. Salesforce documents no per-attachment Email-to-Case limit, so any occurrence is wrong regardless of the number attached to it. Second check: if `25 MB` appears next to the word `total`, it is the retired pre-Winter-'21 figure — the current total is `35 MB` and 25 MB belongs to the *effective attachment* dimension after encoding overhead.
 
 ---
 

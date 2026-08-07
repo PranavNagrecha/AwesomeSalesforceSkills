@@ -18,7 +18,7 @@
 
 ## Anti-Patterns
 
-1. **Performing all attachment processing synchronously** — Processing large binary attachments inline inside `handleInboundEmail` is the most common production failure mode. Attachment Blobs up to 25 MB are passed directly to the handler; in-line decoding or parsing exhausts heap and causes `LimitException`, which fails the email acceptance and triggers the Error Action (often a bounce storm). Correct approach: persist the Blob to ContentVersion immediately, enqueue a Queueable for all subsequent processing.
+1. **Performing all attachment processing synchronously** — Processing large binary attachments inline inside `handleInboundEmail` is the most common production failure mode. The email-services heap allocation is 50 MB (not the ordinary 6 MB synchronous / 12 MB asynchronous Apex heap), but in-line decoding or parsing allocates several full-size copies of the payload and can still exhaust it, causing `LimitException`, which fails the email acceptance and triggers the Error Action (often a bounce storm). Note that deferring to a Queueable *lowers* the heap ceiling to 12 MB — the win is a fresh transaction with its own CPU and DML budget and a retry surface, not more heap. Correct approach: persist the Blob to ContentVersion immediately (cheap in heap terms), enqueue a Queueable for all subsequent processing, and size the Queueable's work against 12 MB.
 
 2. **Assuming sender identity from `fromAddress` without validation** — `fromAddress` on `InboundEmail` reflects the email header `From:`, which is trivially spoofable. Handlers that grant elevated DML access or expose sensitive query results based solely on `fromAddress` are vulnerable to spoofed inbound email. Correct approach: validate `fromAddress` against a known allowlist stored in Custom Metadata or a Custom Setting, and configure `Accept Email From` in the Email Service to add a transport-level filter.
 
@@ -30,4 +30,6 @@
 - Apex Developer Guide: InboundEmail Class — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_email_inbound_inbemail.htm
 - Apex Developer Guide: InboundEmailHandler Interface — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_email_inbound_handler.htm
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
+- Apex Developer Guide: Execution Governors and Limits — heap size 6 MB synchronous / 12 MB asynchronous, and the footnote "Email services heap size is 50 MB" — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Salesforce Developer Limits and Allocations Quick Reference: Apex Governor Limits (per-transaction heap table, email-services exception) — https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_apexgov.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

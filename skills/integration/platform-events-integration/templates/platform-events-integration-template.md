@@ -39,7 +39,7 @@ Answer these before designing:
 | Field Name | Type | Purpose |
 |---|---|---|
 | `CorrelationId__c` | Text(255) | Idempotency key — publisher sets, subscriber checks |
-| `RetainUntilDate` | DateTime | Only on High-Volume events. Set if replay window > 72h |
+| (no retention field) | — | Retention is fixed at 72h and NOT settable per event. Do not add one. |
 | (add event-specific fields) | | |
 
 ---
@@ -89,16 +89,23 @@ Content-Type: application/json
 
 ---
 
-## High-Volume Decision
+## Event Tier (legacy check, not a design choice)
 
-| Criteria | Standard Event | High-Volume Event |
+Every event defined after Spring '19 is high-volume. Standard-volume is a legacy
+population that Salesforce retires in Winter '27.
+
+| Property | Standard-Volume (legacy) | High-Volume (all new events) |
 |---|---|---|
-| Publish rate | < 250,000/hour | > 250,000/hour |
-| Retention window | 72 hours (fixed) | Configurable via RetainUntilDate |
+| Definable today | No | Yes |
+| Publish allocation (org-wide/hour) | 100,000 EE/Perf/Unl | 250,000 EE/Perf/Unl; 50,000 Dev |
+| Retention window | 24 hours | 72 hours |
+| Retention configurable | No | No |
 | Apex trigger subscriber | Yes | Yes |
 | External subscriber | Yes | Yes |
 
-**Decision:** [ ] Standard (document why rate and retention are within limits) [ ] High-Volume (required)
+**Existing events in scope:** [ ] All high-volume [ ] Some standard-volume (list them + migration date, Winter '27 deadline)
+
+**Peak publish rate:** ______ /hour against the 250,000/hour org allocation. Add-on capacity needed? [ ] No [ ] Yes (+25,000/hour increments)
 
 ---
 
@@ -108,7 +115,7 @@ If subscriber falls offline longer than the retention window, events cannot be r
 
 - [ ] Accept gap — subscriber requests full state sync via REST/Bulk API on reconnect
 - [ ] Durable publisher-side store — publisher also writes payload to BigObject / external queue; subscriber backfills from there
-- [ ] Retention extended via RetainUntilDate on High-Volume event (document window)
+- [ ] (NOT AVAILABLE — retention cannot be extended by any field or setting; if the design needs > 72h, pick one of the two options above)
 
 ---
 
@@ -117,10 +124,10 @@ If subscriber falls offline longer than the retention window, events cannot be r
 - [ ] External publisher authenticates via OAuth 2.0 Connected App — no hard-coded credentials
 - [ ] Subscriber persists `replayId` durably after successful processing (not before)
 - [ ] First-start replay strategy is documented and tested
-- [ ] Event volume confirmed against 250k/hour standard limit; High-Volume selected if needed
+- [ ] Peak publish rate sized against the org-wide 250,000/hour allocation (50,000 Developer)
 - [ ] `CorrelationId__c` or equivalent idempotency key field is present on the event schema
 - [ ] Dead-letter / gap recovery strategy is defined for outages beyond retention window
-- [ ] High-Volume events requiring extended retention have `RetainUntilDate` set by publishers
+- [ ] No field on the event schema purports to set retention — no such field exists
 - [ ] Monitoring covers publisher failures (HTTP errors) and subscriber lag
 
 ---

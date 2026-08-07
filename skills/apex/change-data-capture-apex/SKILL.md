@@ -281,7 +281,7 @@ trigger ContactChangeEventTrigger on ContactChangeEvent (after insert) {
 
 4. **GAP events carry no field values** — A gap event fires when the full change event cannot be generated (event too large, bulk bypass, internal error). The event body is empty; only `recordIds` and the GAP-prefixed `changeType` are available. Apex code that skips the GAP check and falls through to field access will read null fields and silently skip the change. Production CDC subscribers must include explicit GAP handling that queues a record re-fetch.
 
-5. **CDC triggers are subject to synchronous governor limits** — Despite running asynchronously, CDC triggers consume Apex synchronous limits (100 SOQL, 150 DML operations, 10 MB heap) per batch invocation. A batch of 2,000 events that naively issues one SOQL per event will hit the 100-SOQL limit. Always collect IDs across the full `Trigger.new` loop and issue bulk SOQL outside the loop.
+5. **CDC triggers are subject to synchronous governor limits** — Despite running asynchronously, CDC triggers consume Apex **synchronous** limits (100 SOQL, 150 DML operations, **6 MB heap**) per batch invocation. Read that heap number carefully: it is the synchronous 6 MB, *not* the 12 MB an asynchronous context would suggest — the "runs asynchronously" framing is exactly what misleads people into budgeting double. A batch of 2,000 events that naively issues one SOQL per event will hit the 100-SOQL limit; 2,000 events plus their queried parent records against 6 MB is a real heap constraint, not a theoretical one. Always collect IDs across the full `Trigger.new` loop and issue bulk SOQL outside the loop, and keep only the fields you need.
 
 ---
 

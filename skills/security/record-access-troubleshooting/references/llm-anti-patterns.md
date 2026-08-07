@@ -115,18 +115,67 @@ Custom objects: on by default, can be disabled.
 
 ```
 RowCause='Manual' shares are deleted when the record's owner changes.
-For persistent Apex-managed sharing, declare a custom Apex Sharing
-Reason (per-object) and use its RowCause:
+Custom Apex sharing reasons survive ownership transfer — but they are
+available ONLY on custom objects. There is no way to declare one on
+Account, Opportunity, Case or any other standard object.
 
-Account__Share s = new Account__Share(
-    ParentId = acc.Id,
-    UserOrGroupId = uid,
-    AccessLevel = 'Edit',
-    RowCause = Schema.Account__Share.RowCause.SalesOps__c
+// CUSTOM object — custom Apex sharing reason is available
+Project__Share s = new Project__Share(
+    ParentId       = proj.Id,                              // ParentId
+    UserOrGroupId  = uid,
+    AccessLevel    = 'Edit',                               // AccessLevel
+    RowCause       = Schema.Project__Share.RowCause.SalesOps__c
 );
 insert s;
 
-Shares with a custom RowCause survive ownership transfers.
+// STANDARD object — different object name AND different field names.
+// Only built-in RowCause values are available; to survive an owner
+// change, re-create the share in an after-update trigger on OwnerId,
+// or move the requirement to a sharing rule / account team.
+AccountShare a = new AccountShare(
+    AccountId          = acc.Id,                           // NOT ParentId
+    UserOrGroupId      = uid,
+    AccountAccessLevel = 'Edit',                           // NOT AccessLevel
+    RowCause           = Schema.AccountShare.RowCause.Manual
+);
+insert a;
 ```
 
 **Detection hint:** Apex code inserting a `__Share` row with `RowCause = 'Manual'` in a context where the record owner may change.
+
+---
+
+## Anti-Pattern 6: Applying the Custom-Object `__Share` Naming Convention to Standard Objects
+
+**What the LLM generates:**
+```apex
+Account__Share s = new Account__Share(
+    ParentId    = acc.Id,
+    UserOrGroupId = uid,
+    AccessLevel = 'Edit',
+    RowCause    = Schema.Account__Share.RowCause.SalesOps__c
+);
+```
+Also as SOQL: `SELECT ... FROM Account__Share WHERE ParentId = '001...'`, and as prose: "query `<Object>__Share` for any object with a restrictive OWD."
+
+**Why it happens:** `MyObject__c → MyObject__Share` is the pattern that appears in every Apex managed sharing tutorial, because those tutorials are all built on the custom `Job__c` example in the Apex Developer Guide. The model generalises the rule to all objects, and the double-underscore suffix *looks* like a platform convention rather than a custom-object marker. The `__Share` form is genuinely a rule — it is just a rule about custom objects only.
+
+**Three errors compound in the generated block:**
+1. `Account__Share` does not exist. Standard objects append `Share` with no underscores: `AccountShare`, `OpportunityShare`, `CaseShare`, `ContactShare`.
+2. Standard object shares do not have `ParentId` or `AccessLevel`. They use `<Object>Id` and `<Object>AccessLevel` — `AccountShare.AccountId` and `AccountShare.AccountAccessLevel`.
+3. `Schema.AccountShare.RowCause.SalesOps__c` cannot exist under any spelling. The Apex Developer Guide: "Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects."
+
+**Correct pattern:**
+```
+                     Standard object          Custom object
+Share object         AccountShare             Project__Share
+Parent lookup        AccountId                ParentId
+Access level field   AccountAccessLevel       AccessLevel
+Custom Apex reason   NOT AVAILABLE            Schema.Project__Share.RowCause.X__c
+
+To make a standard-object share survive an owner change, you cannot use a
+custom RowCause. Re-create the share from an after-update trigger on OwnerId,
+or express the requirement as a sharing rule / account team instead.
+```
+
+**Detection hint:** the string `__Share` preceded by a standard object name is always wrong — mechanically, `__Share` on any token that does not end in `__c` before substitution. Second checkable tell: `ParentId` or a bare `AccessLevel` assigned on a share object whose name lacks `__`. Third: `Schema.<Anything>Share.RowCause.<Anything>__c` where the object is standard — a custom RowCause with no `__Share` in the type name cannot compile.

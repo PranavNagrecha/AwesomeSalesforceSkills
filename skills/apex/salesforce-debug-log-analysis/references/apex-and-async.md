@@ -254,9 +254,14 @@ To stop async recursion, use:
 
 Some object pairs cannot be modified in the same synchronous transaction. The classic is User + any non-setup object.
 
-Log signature:
+Log signature — note the exception class is `System.DmlException`, **not** `System.MixedDMLException` (no such type exists in Apex; grepping for it matches nothing):
 ```
-System.MixedDMLException: DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa)
+System.DmlException: Insert failed. First exception on row 0; first error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa): []
+```
+
+Grep for the status code, which is the stable part of the line:
+```bash
+grep -n "MIXED_DML_OPERATION" log.log
 ```
 
 Resolution: do one operation, then do the other in `@future` or a queueable.

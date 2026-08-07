@@ -36,7 +36,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A developer building a CCaaS integration reads the raw Agent API documentation, implements session POST/DELETE, and then wonders why Omni-Channel shows no activity, supervisor dashboards are empty, and the Agentforce Service Agent escalation actions have no effect. The integration appears to work (agent responds to messages) but the entire Omni-Channel layer is bypassed.
 
-**When it occurs:** When developers use the raw Agent API sessions endpoint (`/einstein/ai-agent/agents/{agentId}/sessions`) for a BYOC CCaaS integration instead of the Establish Conversation API (`/einstein/ai-agent/byoc/conversations`) and Interaction API. The two patterns are documented separately but it is easy to start with the simpler raw API and miss the distinction.
+**When it occurs:** When developers use the raw Agent API sessions endpoint (`/einstein/ai-agent/v1/agents/{agentId}/sessions`) for a BYOC CCaaS integration instead of the Establish Conversation API (`/einstein/ai-agent/byoc/conversations`) and Interaction API. The two patterns are documented separately but it is easy to start with the simpler raw API and miss the distinction.
 
 **How to avoid:** Determine the integration pattern before writing any code. If the use case involves routing through Omni-Channel queues, supervisor visibility, human agent escalation, or Salesforce-side conversation history on `MessagingEndUser` records — use BYOC CCaaS APIs exclusively. The raw Agent API cannot be retrofitted to add Omni-Channel routing mid-project.
 

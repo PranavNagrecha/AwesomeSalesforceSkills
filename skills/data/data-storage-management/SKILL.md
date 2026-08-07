@@ -98,7 +98,12 @@ Rich Text Area fields that store embedded images actually move those image bytes
 
 ### Recycle Bin and Storage Reclamation
 
-Deleted records remain in the Recycle Bin for **15 days** (standard delete) or **30 days** (Bulk API hard delete), and they continue to count against data storage during that period. Emptying the Recycle Bin is often the fastest way to reclaim meaningful storage without any data risk — but it is irreversible.
+Two claims circulate about this and both are wrong. Check them against Salesforce Help before acting on a storage incident.
+
+- **Standard delete puts records in the Recycle Bin for 15 days**, during which they can be restored. Records in the Recycle Bin **do not count against the org's storage usage** ("Records in the Recycle Bin don't count against your Salesforce org's storage usage" — *Manage the Recycle Bin*), and there is no cap on how many deleted records the bin holds. So emptying the bin is not a storage-reclamation lever; it is a *recoverability* decision, and an irreversible one.
+- **Bulk API hard delete does not go to the Recycle Bin at all.** That is the definition of the operation: records bypass the bin and are immediately and permanently gone. There is no 30-day (or any) window in which a hard delete can be undone. Anyone told otherwise will authorise a hard-delete job believing it is reversible.
+
+Why storage still looks unchanged after a mass delete: **storage is recalculated asynchronously.** Salesforce Help states that after adding or removing a large number of records or files, "the change in your org's storage usage isn't reflected immediately." Wait and re-check Setup > Storage Usage rather than reaching for the Recycle Bin.
 
 Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or the REST API `DELETE /services/data/vXX.0/sobjects/{SObjectType}/{id}?allOrNone=false` to permanently delete specific records. For bulk reclamation, use the Bulk API with hardDelete operation.
 
@@ -141,7 +146,7 @@ Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or th
 | Data storage alert, top object is Task/Event | Archive or delete old activity records | Activities accumulate rapidly; 2+ year old records rarely queried |
 | Data storage alert, top object is custom log/audit table | Evaluate Big Object migration for append-only history | Big Objects do not consume regular data storage |
 | Need to check storage programmatically in a CI pipeline | Query Limits API (`/services/data/vXX.0/limits/`) | Returns DataStorageMB and FileStorageMB with Max/Remaining |
-| Records deleted but storage not freed | Empty the Recycle Bin | Deleted records hold storage for 15–30 days until purged |
+| Records deleted but storage not freed | Wait and re-check Setup > Storage Usage | Storage is recalculated asynchronously; Recycle Bin records do not count against storage, so emptying it will not move the number |
 | Rich Text Area fields suspected of high storage usage | Audit for embedded base64 images in field content | Embedded images bloat data storage; prefer ContentDocument links |
 
 ---
@@ -151,7 +156,7 @@ Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or th
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Gather current state** — Open Setup > Storage Usage and record the current data storage used/allocated and file storage used/allocated. Note the top 5 objects by consumption in each pool. Confirm org edition and license count to understand the total allocation formula.
-2. **Check the Recycle Bin** — If Recycle Bin data storage is significant (>5% of total), empty it first. This is zero-risk reclamation. Use `Database.emptyRecycleBin()` for targeted purges or the Setup UI for full purge.
+2. **Rule out asynchronous recalculation** — If a large delete or load ran recently, the Storage Usage page may simply not have caught up; Salesforce recalculates storage asynchronously. Re-check before diagnosing further. Do NOT empty the Recycle Bin as a reclamation step: bin records do not count against storage, so it frees nothing, and it destroys the 15-day restore window for everything in there.
 3. **Identify orphaned ContentDocuments** — Run `SELECT Id, Title, ContentSize FROM ContentDocument WHERE Id NOT IN (SELECT ContentDocumentId FROM ContentDocumentLink)` in the Developer Console or Workbench. Delete orphans in batches using Bulk API hardDelete.
 4. **Assess high-volume objects** — For the top data storage consumers, determine: (a) whether a retention policy allows deletion of old records, (b) whether the object is a candidate for Big Object archival, and (c) whether Large Text Area fields with embedded content are inflating sizes beyond the 2 KB average.
 5. **Evaluate Attachment-to-ContentDocument migration** — If Attachments appear in the top file storage consumers, query for duplicate content (same ParentId pattern or same file name across many records). Plan migration using ContentVersion + ContentDocumentLink to eliminate binary duplication.
@@ -178,7 +183,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Recycle Bin counts toward storage** — Deleted records are not immediately freed. They hold their data storage allocation for 15 days (standard deletes) or 30 days (Bulk API hard deletes). An org that mass-deletes records and then wonders why storage hasn't dropped needs to empty the Recycle Bin.
+1. **Recycle Bin records do NOT count toward storage, and hard delete is not recoverable** — Two widely-repeated beliefs, both wrong. Per Salesforce Help, records in the Recycle Bin don't count against the org's storage usage and the bin has no record-count cap; the 15-day figure is a *restore* window, not a storage-accounting window. And Bulk API hard delete bypasses the bin entirely — immediate, permanent, no undo, no 30-day grace. Storage that hasn't dropped after a mass delete is almost always asynchronous recalculation, which resolves on its own.
 2. **Big Objects do NOT consume regular data storage** — Practitioners planning to migrate log or audit records to Big Objects to "free up" storage will succeed — Big Objects have their own separate, larger allocation and are entirely independent of the standard data storage pool.
 3. **ContentVersion renditions consume file storage** — When a ContentDocument is uploaded, Salesforce auto-generates preview thumbnails and PDF renditions. These renditions are stored as additional ContentVersion records and count toward file storage. An org with millions of small uploaded files can see file storage inflated 2–3x by renditions alone.
 4. **Field History Tracking records count toward data storage** — Every tracked field change creates a FieldHistory (or similar history sObject) record. Orgs with many tracked fields on high-volume objects can accumulate millions of history records. History records are stored for 18 months and then deleted by Salesforce, but current records count toward storage.

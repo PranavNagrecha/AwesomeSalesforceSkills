@@ -28,6 +28,9 @@
 ## Official Sources Used
 
 - Salesforce Help: Manage Storage — https://help.salesforce.com/s/articleView?id=sf.admin_monitorresources.htm&type=5
+- Salesforce Help: Manage the Recycle Bin in Lightning Experience — verbatim: "Records in the Recycle Bin don't count against your Salesforce org's storage usage"; "There isn't a limit on the number of deleted records that the Recycle Bin can hold"; 15-day restore window — https://help.salesforce.com/s/articleView?id=xcloud.recycle_bin_manage.htm&language=en_US&type=5
+- Salesforce Help: Data and File Storage Allocations — 10 GB base data storage; 20 MB/user (Enterprise, Professional, Contact Manager, Group), 120 MB/user (Performance, Unlimited); storage is calculated asynchronously so changes are not reflected immediately — https://help.salesforce.com/s/articleView?id=xcloud.overview_storage.htm&language=en_US&type=5
+- Best Practices for Deployments with Large Data Volumes: Deleting Data — verbatim: "Deleted items remain in the Recycle Bin for 15 days"; "items in the Recycle Bin don't count against an org's storage usage"; hard delete "allows records to bypass the Recycle Bin" — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_techniques_deleting_data.htm
 - Salesforce REST API Developer Guide: Limits Resource — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_limits.htm
 - Salesforce Object Reference: ContentDocument — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentdocument.htm
 - Salesforce Object Reference: ContentDocumentLink — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentdocumentlink.htm

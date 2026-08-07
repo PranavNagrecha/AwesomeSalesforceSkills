@@ -38,13 +38,73 @@ probabilistic scheme for maximum security."
 doesn't surface the tradeoff that probabilistic encryption blocks
 filterability.
 
-**Correct pattern.** Always ask whether the field is filtered, sorted,
-or grouped. If yes → deterministic. If no → probabilistic. Document the
-choice in the design.
+**Correct pattern.** Always ask what the field is used for in queries.
+If it needs **exact-match** filtering (`=`, `IN`) → deterministic. If it
+is display/audit/archival only → probabilistic. If it needs **sorting,
+ranges, or wildcard search** → neither scheme helps; see Anti-Pattern 2b.
+Document the choice in the design.
 
 **Detection hint.** Any Platform Encryption recommendation with no
-discussion of "do you need to filter / sort on this field?" is missing
-the central decision.
+discussion of "what queries run against this field?" is missing the
+central decision.
+
+---
+
+## Anti-Pattern 2b: Claiming deterministic encryption enables sorting / ORDER BY
+
+**What the LLM generates.** A scheme-comparison table whose deterministic
+row reads "equality filter YES; **sort YES**", frequently with an
+invented mechanism attached — "lexicographic on ciphertext" — and a
+decision rule of the form "if the field is filtered, sorted, or
+grouped → deterministic."
+
+**Why it happens.** Two things compound. First, **capability bundling**:
+"filterable" and "sortable" travel together for ordinary database
+columns, so once the model establishes that deterministic restores
+filtering it extends the same win to sorting without separate evidence.
+Second — and this is the diagnostic tell — the model *justifies* the
+extension by reasoning about the mechanism and gets the reasoning
+backwards. Determinism guarantees **equal plaintext → equal ciphertext**.
+That is an equality property. It carries no ordering information
+whatsoever: AES ciphertexts for "Adams" and "Zeller" collate in an order
+unrelated to A-before-Z. "Lexicographic on ciphertext" is not a
+misremembered fact; it is a fabricated mechanism invented to support a
+conclusion the model already reached. Fabricated mechanisms read as
+*more* authoritative than bare claims, so this survives review.
+
+The cost is high because it is load-bearing: encryption scheme is chosen
+at design time, cannot be changed on a populated field without
+re-encrypting every row, and the failure surfaces only when someone tries
+to sort a list view in UAT.
+
+**Correct pattern.**
+
+```text
+Deterministic encryption restores:   = and IN  (exact match)
+                                      filtering in reports and list views
+                                      (case-sensitive or case-insensitive)
+
+NO scheme restores:                   ORDER BY / sorting
+                                      ranges (<, >, BETWEEN)
+                                      LIKE / wildcard
+
+Salesforce: "You can't sort records in list views by fields that contain
+encrypted data." Encrypted fields also can't be referenced in filtering
+or sorting contexts in flows, orchestrations, and processes.
+
+If the business needs to sort or range-scan the value, the answer is an
+unencrypted sortable surrogate (bucket, masked prefix, derived sort key)
+— not a different encryption scheme.
+```
+
+**Detection hint.** Grep any encryption design for `sort` or `ORDER BY`
+in the same table row, sentence, or bullet as `deterministic` — the
+pairing is wrong every time. Then apply the general rule this instance
+illustrates: when generated guidance supplies a *mechanism* for a
+capability claim, check the mechanism actually entails the capability.
+"Equal inputs give equal outputs" entails equality matching and nothing
+about order; any ordering claim built on it is fabricated regardless of
+how fluently it is written.
 
 ---
 

@@ -24,7 +24,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: Salesforce Session Expiry Silently Invalidates the CometD Connection
 
-**What happens:** The CometD connection is bound to the OAuth session token that was used during the initial handshake. When that session expires (controlled by the Connected App session policy or org session timeout settings), the server starts returning `401::Authentication required` on the `/connect` long-poll. Clients that only handle `402::Unknown client` (the reconnect error) and not `401` will silently stop receiving events without logging a visible error, depending on the CometD client implementation.
+**What happens:** The CometD connection is bound to the OAuth session token that was used during the initial handshake. When that session expires (controlled by the Connected App session policy or org session timeout settings), the server starts returning `401::Authentication required` on the `/connect` long-poll. Clients that only handle `403::Unknown client` (the re-handshake error) and not `401` will silently stop receiving events without logging a visible error, depending on the CometD client implementation.
 
 **When it occurs:** For user-context sessions, the default session timeout is often 2 hours. For connected app JWT or OAuth 2.0 flows, the token lifetime depends on the connected app configuration. Sessions can also be revoked administratively (e.g., "Log Out" in Setup > Active Sessions). In sandbox environments, session timeouts are sometimes shorter than production defaults.
 
@@ -44,7 +44,12 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 5: Maximum 100 Simultaneous Clients Per Channel; 1,000 Org-Wide
 
-**What happens:** When a channel reaches 100 simultaneous CometD subscribers, new connection attempts receive a handshake failure or `402::Unknown client` on subscribe. Existing subscribers continue to work, but new ones cannot join. The org-wide limit across all channels is 1,000 concurrent clients; breaching this blocks all new subscriptions across all channels.
+**What happens:** New connection attempts start failing at handshake or subscribe while existing subscribers keep working. Two different allocations produce this, and they return different error codes:
+
+- **Org-wide concurrent subscribers, across all channels and all event types** — `403::Organization concurrent user limit exceeded`. This is edition-dependent: **2,000** (Performance, Unlimited), **1,000** (Enterprise), **20** (all other supported editions). The 1,000 figure is the Enterprise row, not a platform constant.
+- **Per-topic subscriber limit** (PushTopic and generic streaming only, not platform events) — `403::Subscription limit exceeded for this topic`. Salesforce documents the error but not a number, so do not design against an assumed per-channel ceiling; measure it in the target org.
+
+Neither surfaces as `402::Unknown client` — that code does not exist. `403::Unknown client` is a different condition entirely (expired CometD session, re-handshake required) and reading it as a concurrency signal sends the investigation in the wrong direction.
 
 **When it occurs:** Organizations that route streaming subscriptions through a fan-out middleware, or that open one CometD connection per browser tab instead of sharing a connection. LWC `empApi` uses one connection per browser session (not per tab), which is efficient. Custom Java or Node services that spawn a thread per subscription are common offenders.
 

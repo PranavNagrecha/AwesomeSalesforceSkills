@@ -57,7 +57,7 @@ Gather this context before working on anything in this domain:
 
 - Confirm whether the integration targets the raw Agent API directly (mobile apps, IVR, custom web surfaces) or uses BYOC for CCaaS (routing through Omni-Channel via Interaction API and Establish Conversation API). These use different endpoints, different auth scopes, and different record types.
 - The most common wrong assumption: that context variables can be updated mid-session. They cannot. All context variables set at session creation via the `variables` payload are immutable for the entire session lifetime, with the single exception of `Context.EndUserLanguage`.
-- Platform constraints: the Agent API requires the `chatbot_api` OAuth scope in addition to the standard `api` scope. Sessions are tied to a single agent and cannot be re-routed mid-session. The `externalSessionKey` must be a valid UUID (RFC 4122 format) — arbitrary strings are rejected. The `sequenceId` must be a monotonically increasing integer per session — gaps or resets cause message ordering errors.
+- Platform constraints: the Agent API requires four OAuth scopes — `api`, `refresh_token, offline_access`, `chatbot_api`, and `sfap_api` — not just `api` + `chatbot_api`; `sfap_api` ("Access the Salesforce API Platform") is the one most often missed. Sessions are tied to a single agent and cannot be re-routed mid-session. The `externalSessionKey` must be a valid UUID (RFC 4122 format) — arbitrary strings are rejected. The `sequenceId` must be a monotonically increasing integer per session — gaps or resets cause message ordering errors.
 
 ---
 
@@ -70,7 +70,7 @@ The Agentforce Agent API follows a strict three-phase lifecycle for every conver
 **1. Session Creation (POST)**
 
 ```
-POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions
+POST https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions
 ```
 
 Request body:
@@ -93,7 +93,7 @@ The response returns a `sessionId` (Salesforce-generated UUID) distinct from the
 **2. Message Exchange (POST with sequenceId)**
 
 ```
-POST /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}/messages
+POST https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}/messages
 ```
 
 Request body:
@@ -113,7 +113,7 @@ The `sequenceId` must start at 1 and increment by 1 for each message in the sess
 **3. Session Termination (DELETE)**
 
 ```
-DELETE /services/data/v63.0/einstein/ai-agent/agents/{agentId}/sessions/{sessionId}
+DELETE https://api.salesforce.com/einstein/ai-agent/v1/sessions/{sessionId}
 ```
 
 Always call DELETE when the conversation ends. Failing to do so leaves orphaned sessions that consume platform resources and may interfere with concurrent session limits.
@@ -145,7 +145,7 @@ Key distinctions from raw Agent API:
 | Routing | Direct to agent, no Omni-Channel | Routes via Omni-Channel queue/agent assignment |
 | End-user record | No Salesforce record created | Creates/reuses `MessagingEndUser` object |
 | Conversation history | External responsibility | Stored in Salesforce Messaging Session |
-| Auth scope | `api` + `chatbot_api` | `api` + `chatbot_api` + Omni-Channel permissions |
+| Auth scope | `api` + `refresh_token, offline_access` + `chatbot_api` + `sfap_api` | same four + Omni-Channel permissions |
 | Primary API | Agent API sessions endpoint | Establish Conversation + Interaction API |
 
 ### Webhook Handling Patterns
@@ -234,7 +234,7 @@ For state that genuinely changes during a conversation (e.g., items added to car
 Step-by-step instructions for an AI agent or practitioner building a custom Agentforce channel integration:
 
 1. **Determine integration pattern** — Confirm whether the use case requires raw Agent API (direct, no Omni-Channel) or BYOC for CCaaS (Omni-Channel routing, human escalation, MessagingEndUser records). These use different APIs, endpoints, and data models. Do not mix them.
-2. **Configure Connected App and OAuth** — Create or verify a Connected App with OAuth scopes `api` and `chatbot_api`. For BYOC CCaaS, also confirm Omni-Channel permissions. Retrieve the Agent ID from `SELECT Id, DeveloperName FROM BotDefinition WHERE DeveloperName = 'YourAgent'` or Setup > Agentforce Agents > Agent Detail.
+2. **Configure Connected App and OAuth** — Create or verify a Connected App (or External Client App) with all four OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, and `sfap_api`. For BYOC CCaaS, also confirm Omni-Channel permissions. Retrieve the Agent ID from `SELECT Id, DeveloperName FROM BotDefinition WHERE DeveloperName = 'YourAgent'` or Setup > Agentforce Agents > Agent Detail.
 3. **Design session management** — Implement a UUIDv4 generator for `externalSessionKey` (one UUID per logical conversation). Initialize a per-session `sequenceId` counter starting at 0. Plan the session creation, message exchange, and DELETE lifecycle. Handle 409 Conflict on session POST by extracting `sessionId` from the conflict response.
 4. **Define context variables** — Determine which context variables to inject at session start (`Context.Channel`, `Context.EndUserLanguage`, authenticated user identifiers, account tier). Document that all variables except `Context.EndUserLanguage` are immutable for the session lifetime. Plan external state management for data that changes during a conversation.
 5. **Implement webhook or event handling** — For raw Agent API: parse the synchronous `messages` array in POST /messages responses. For BYOC CCaaS: register the inbound webhook endpoint, implement the Establish Conversation API call, and handle `OUTBOUND_MESSAGE` push events from the Interaction API.
@@ -249,7 +249,7 @@ Run through these before marking work in this area complete:
 
 - [ ] `externalSessionKey` is generated as a valid UUIDv4 (not a user ID, timestamp, or sequential integer)
 - [ ] `sequenceId` starts at 1 and increments by exactly 1 per message with no gaps or resets within a session
-- [ ] Connected App includes both `api` and `chatbot_api` OAuth scopes
+- [ ] Connected App includes all four OAuth scopes: `api`, `refresh_token, offline_access`, `chatbot_api`, `sfap_api`
 - [ ] Context variables are injected only at session creation; no code attempts to update non-language variables mid-session
 - [ ] DELETE is called on session termination in all code paths (success, error, timeout, user drop)
 - [ ] For BYOC CCaaS: Establish Conversation API is called before any Interaction API messages; `MessagingEndUser` record creation is handled

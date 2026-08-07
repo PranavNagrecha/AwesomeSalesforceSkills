@@ -35,6 +35,9 @@ For SMS and Slack, the native Flow actions require specific add-ons. In orgs wit
 - Salesforce Help — Flow Core Action: Send Custom Notification — https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_actions_sendcustomnotif.htm&type=5
 - Salesforce Help — Flow Core Action: Send Email — https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_actions_sendemail.htm&type=5
 - Salesforce Help — Custom Notification Builder — https://help.salesforce.com/s/articleView?id=sf.notif_builder_custom.htm&type=5
+- Salesforce Help — Considerations for Processes that Send Custom Notifications (10,000 notification actions/hour per org; unsent notifications are lost, not faulted; 10,000 recipients per notification) — https://help.salesforce.com/s/articleView?id=platform.process_limits_customnotification.htm&type=5
+- Salesforce Developer Documentation — Custom Notification invocable action (Title max 250, Body max 750) — https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_obj_custom_notification.htm
+- Salesforce Help — Considerations for Notification Builder (desktop display truncation) — https://help.salesforce.com/s/articleView?id=sf.notif_builder_considerations.htm&type=5
 - Salesforce Help — Salesforce for Slack — https://help.salesforce.com/s/articleView?id=sf.slack_setup_salesforce_for_slack.htm&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5

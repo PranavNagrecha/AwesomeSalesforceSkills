@@ -12,7 +12,7 @@
 2. Verify the new domain URL works: open a private browser window and log in at `mycompany.my.salesforce.com/login`.
 3. Deploy to Users: **My Domain > Deploy to Users**. All users are redirected to the custom domain URL.
 4. Configure the Okta SAML integration with the `mycompany.my.salesforce.com` Issuer and callback URL — now that My Domain is stable.
-5. Navigate to **Setup > Identity > MFA Management and Setup**. Enable the org-wide **Require MFA** toggle. Okta users whose IdP performs MFA are automatically exempted.
+5. From Setup, Quick Find > **Identity Verification**. Enable **Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org**. Okta users whose IdP performs MFA are automatically exempted.
 6. Verify: have a test user log in directly (bypassing SSO). Confirm MFA is prompted. Have the Okta test user log in via SSO — confirm no Salesforce MFA prompt appears (IdP satisfies the requirement).
 
 **Why it works:** My Domain deployment must precede any SSO configuration that references the org's login URL. MFA enforcement can be applied via the org-wide toggle without needing to touch individual profiles once all SSO users are exempted through the IdP.

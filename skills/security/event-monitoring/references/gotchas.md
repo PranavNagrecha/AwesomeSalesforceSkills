@@ -23,13 +23,17 @@ The REST response returns the actual gzip-compressed CSV bytes.
 
 **When it occurs:** Any same-day forensics scenario: login investigation while an attack is ongoing, trying to see if a specific action just happened, or building a "near-real-time" dashboard with EventLogFile as the data source.
 
-**How to avoid:** For same-day data, query the RTEM storage objects directly:
-- Logins: `LoginEventStream`
-- Logouts: `LogoutEventStream`
-- Admin impersonation: `LoginAsEventStream`
-- API calls: `ApiEventStream`
+**How to avoid:** For same-day data, query the RTEM **storage** objects — the ones without the `Stream` suffix:
+- Logins: `LoginEvent`
+- Logouts: `LogoutEvent`
+- Admin impersonation: `LoginAsEvent`
+- API calls: `ApiEvent`
 
-These sObjects store RTEM event data and are queryable via SOQL immediately after the event fires. EventLogFile remains the right tool for historical analysis and SIEM ingestion.
+These are big objects that store RTEM event data and support `query()`, so they are readable immediately after the event fires.
+
+The `*EventStream` siblings (`LoginEventStream`, `LogoutEventStream`, `LoginAsEventStream`, `ApiEventStream`) are a *different* thing: they are platform events whose only supported call is `describeSObjects()`. You consume them by subscribing to `/event/LoginEventStream` over the Pub/Sub API or CometD, or by pointing a Transaction Security Policy at them. SOQL against any `*EventStream` object always fails.
+
+EventLogFile remains the right tool for historical analysis and SIEM ingestion.
 
 ---
 

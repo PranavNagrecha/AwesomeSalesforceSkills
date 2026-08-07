@@ -4,9 +4,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Non-Leading Index Column Queries Return Zero Results Silently
 
-**What happens:** An Async SOQL job completes with status `Completed` and zero errors, but the target object has zero new records. No error message is produced. The query appears to succeed but retrieves nothing.
+**What happens:** A Big Object query that looks perfectly reasonable comes back empty, or is rejected outright, and the reason is the shape of the WHERE clause rather than the data.
 
-**When it occurs:** When a WHERE clause filters on a column that is not the first (leading) column of the composite index, or when it skips a column in the middle of the index chain. For a Big Object with composite index `(AccountId__c, EventDate__c, EventType__c)`, a query `WHERE EventDate__c = :date` skips `AccountId__c` and returns nothing. Salesforce does not raise an error — it simply finds no matching partition.
+**When it occurs:** When the filter is not a gapless left-to-right prefix of the composite index. Per the SOQL and SOSL Reference, verbatim: "A SOQL query can only filter on the fields defined in the big object's index, in the order that they are defined, without gaps." For composite index `(AccountId__c, EventDate__c, EventType__c)`, filtering `WHERE EventDate__c = :date` skips the leading `AccountId__c` and is not a valid big object query.
+
+Operator support compounds this. Index fields *before* the last one you filter on accept **`=` only** — no ranges. The last filtered field additionally accepts `<`, `>`, `<=`, `>=`, and `IN`. And `!=`, `LIKE`, `NOT IN`, `EXCLUDES`, `INCLUDES` are unsupported anywhere in the query. A design that assumed it could range-filter a middle index column will not work, and the fix is an index redesign, not a query rewrite.
 
 **How to avoid:** Always design queries and indexes together. Draw out every query pattern before defining the composite index. Ensure every query filters on a continuous left-to-right prefix of the index fields. If two different query patterns need different leading columns, create two separate Big Objects or redesign the index to accommodate the most critical access pattern.
 
@@ -33,13 +35,21 @@ if (!sr.isSuccess()) {
 
 ---
 
-## Gotcha 3: Async SOQL Cannot Query External Objects
+## Gotcha 3: The Big Object Read Path You Read About (Async SOQL) Was Retired in Summer '23
 
-**What happens:** A team designs a workflow where an External Object (backed by Salesforce Connect) holds the data and expects to run Async SOQL jobs over it for batch reporting. The job is submitted but fails or returns no results.
+**What happens:** A design specifies Big Object reads via `POST /services/data/vXX.0/async-queries/` with a `targetObject`. The call returns 404. There is no deprecation warning, no shim, and no equivalent replacement API — the whole job-with-a-target-object model is gone.
 
-**When it occurs:** Async SOQL operates on data stored within the Salesforce Big Object storage tier and standard objects. It does not proxy callouts to external data sources the way synchronous SOQL against External Objects does. Submitting an Async SOQL query referencing an `__x` object will fail or return an error indicating the object is unsupported.
+**When it occurs:** Constantly, and it is structurally likely rather than a rare slip. Async SOQL was the documented Big Object query path for roughly six years, so nearly every blog post, Trailhead-adjacent write-up, Stack Exchange answer, and LLM training corpus predating mid-2023 presents it as *the* answer. Salesforce retired it with the **Summer '23** release (Help article 000394892). The corpus never caught up, so confidently-worded Async SOQL advice keeps being produced by both humans and models.
 
-**How to avoid:** Async SOQL is for Big Objects and certain standard objects — not External Objects. If you need batch analytics over data in an external system, one of these approaches is correct: (a) periodically ingest a copy into a Big Object using the Bulk API, then run Async SOQL; (b) run the analytics directly in the external system; (c) use Salesforce Data Cloud for federated queries if licensed.
+The damage is sequenced badly: the archival *write* path works, so a team builds ingestion, runs it for months, and hits the missing read path only when the first compliance or analytics query is due — with hundreds of millions of rows already landed.
+
+**How to avoid:** Treat any mention of `async-queries` or `AsyncQueryJob` as a defect on sight. Per Salesforce Help: "You must use the Bulk API or batch Apex to query or report on custom Big Objects." In practice:
+
+- **Standard SOQL** for bounded reads (index-prefix filters, normal query-row limits apply).
+- **Batch Apex** over `Database.getQueryLocator` on the `__b` object for anything past one transaction. This replaces the job semantics — but *not* the automatic write into a target object. You aggregate in `execute()` and insert your summary rows in `finish()` yourself.
+- **Bulk API query** to extract rows off-platform.
+
+Separately, and still true: none of these paths reach External Objects (`__x`). If you need batch analytics over data in an external system, ingest a copy into a Big Object via Bulk API and read that, run the analytics in the external system, or use Data Cloud.
 
 ---
 

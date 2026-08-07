@@ -161,3 +161,41 @@ Hybrid approach:
 ```
 
 **Detection hint:** Flag Calculation Procedures with more than 40 steps or deeply nested conditional branches. Check whether the complexity warrants an Apex alternative.
+
+---
+
+## Anti-Pattern 6: Inventing a `ConnectApi` Apex Class to Invoke an Expression Set
+
+**What the LLM generates:** Asked how to call a Calculation Procedure / expression set from Apex, the model produces a confident one-liner against a class that does not exist:
+
+```apex
+// DOES NOT COMPILE — ConnectApi.EvaluationService is not a real class
+Map<String, Object> result =
+    ConnectApi.EvaluationService.executeExpression(expressionSetName, inputs);
+```
+
+Variants swap in `ConnectApi.BusinessRulesEngine`, `ConnectApi.ExpressionSetService`, or a `.evaluate()` / `.run()` method on the same imagined class.
+
+**Why it happens:** The `ConnectApi` namespace is a genuinely large, genuinely heterogeneous surface — dozens of `*Service`-suffixed classes covering Chatter, Communities, Commerce, Einstein and more. That makes `ConnectApi.<Domain>Service.<verb>()` a **highly productive naming template**, and the model completes it for any domain that has a Connect REST API, on the assumption that every Connect REST resource has a mirrored Apex class. It does not. Business Rules Engine has Connect *REST* APIs without a corresponding `ConnectApi` Apex class. The tell is that the surrounding explanation is usually correct — the model knows expression sets are invoked rather than queried, and knows Connect is involved — so only the symbol is confabulated, and it lands in a decision table where a developer copies it straight into a class.
+
+**Correct pattern:**
+
+```text
+Documented invocation surfaces for Business Rules Engine expression sets:
+
+  - Flow            : the "Evaluate Expression Set" action
+  - OmniStudio      : Integration Procedure / Calculation Procedure steps
+  - Connect REST API: the Business Rules Engine Connect resources under
+                      /services/data/vXX.0/connect/...
+                      (resolve the exact path in the Business Rules Engine
+                       Connect API reference for your API version)
+
+There is NO ConnectApi.EvaluationService class and no executeExpression()
+method. Confirmed against the ConnectApi Namespace reference, whose class
+list contains no EvaluationService entry.
+
+If Apex must be the caller, call the Connect REST resource over a Named
+Credential. Do not guess an Apex symbol.
+```
+
+**Detection hint:** Mechanically checkable in two ways. (1) Before accepting any `ConnectApi.<Something>` symbol in generated Apex, confirm `<Something>` appears in the ConnectApi Namespace class list — the namespace is documented exhaustively, so absence from that list is proof of non-existence, not merely absence of evidence. A compile in a scratch org settles it in seconds. (2) Treat the inference "this feature has a Connect REST API, therefore it has a `ConnectApi` Apex class" as invalid: the two surfaces are curated independently and REST coverage is much broader. Any generated code that pairs a correct REST resource with a same-named Apex class is exhibiting exactly this error.

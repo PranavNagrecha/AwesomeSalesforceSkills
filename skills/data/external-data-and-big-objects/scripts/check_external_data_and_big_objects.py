@@ -67,7 +67,8 @@ def check_big_object_indexes(manifest_dir: Path) -> list[str]:
             if not indexes:
                 issues.append(
                     f"Big Object '{obj_file.name}' has no <indexes> element. "
-                    "Big Objects are unqueryable via Async SOQL without a composite index."
+                    "Big Objects are unqueryable without a composite index: a SOQL "
+                    "filter must be a gapless left-to-right prefix of the index."
                 )
             else:
                 # Check that at least one index has at least one <fields> child
@@ -121,6 +122,15 @@ _BIG_OBJECT_SOQL_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 
+# Regex: references to Async SOQL, retired with the Summer '23 release.
+# The /async-queries/ REST endpoint and the AsyncQueryJob resource no longer
+# exist, so any occurrence is a dead code path or dead documentation.
+# https://help.salesforce.com/s/articleView?id=000394892&language=en_US&type=1
+_ASYNC_SOQL_RE = re.compile(
+    r"async-queries|AsyncQueryJob|async\s*soql",
+    re.IGNORECASE,
+)
+
 # Regex: finds for-loop patterns followed (within ~10 lines) by an __x SOQL query
 # We use a simple heuristic: __x SOQL inside a for(...) block
 _FOR_LOOP_RE = re.compile(r"\bfor\s*\(", re.IGNORECASE)
@@ -130,8 +140,49 @@ _EXT_OBJ_SOQL_RE = re.compile(
 )
 
 
-def check_apex_big_object_sync_soql(manifest_dir: Path) -> list[str]:
-    """Warn if Apex files contain synchronous SOQL queries against __b objects."""
+def check_retired_async_soql(manifest_dir: Path) -> list[str]:
+    """Flag any reference to Async SOQL, which Salesforce retired in Summer '23.
+
+    This replaces an earlier check that did the opposite - it flagged standard
+    SOQL against __b objects and told the author to use Async SOQL instead.
+    That advice was correct until Summer '23 and has been wrong since: the
+    /services/data/vXX.0/async-queries/ endpoint returns 404 and there is no
+    AsyncQueryJob resource. Standard SOQL IS the supported query mechanism for
+    Big Objects, so the old check fired against correct code.
+    """
+    issues: list[str] = []
+
+    for path in manifest_dir.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in {
+            ".cls", ".trigger", ".js", ".py", ".json", ".md", ".xml", ".yaml", ".yml"
+        }:
+            continue
+        try:
+            source = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if _ASYNC_SOQL_RE.search(source):
+            issues.append(
+                f"'{path.name}' references Async SOQL (async-queries / AsyncQueryJob). "
+                "Salesforce retired Async SOQL with the Summer '23 release; the endpoint "
+                "no longer exists. Per Salesforce Help 000394892: \"You must use the Bulk "
+                "API or batch Apex to query or report on custom Big Objects.\" Note that "
+                "Async SOQL also wrote aggregate results into a targetObject for you - "
+                "Batch Apex does not, so accumulate with Database.Stateful and insert the "
+                "summary records yourself in finish()."
+            )
+
+    return issues
+
+
+def check_apex_big_object_unbounded_soql(manifest_dir: Path) -> list[str]:
+    """Note inline SOQL against a __b object outside a Batchable class.
+
+    Standard SOQL on Big Objects is supported and correct. The only concern is
+    volume: an inline query is bounded by the normal Apex query-row limit, so a
+    class that reads a Big Object without being Batchable is worth a look. This
+    is informational, not a defect - do not "fix" it by reaching for a retired API.
+    """
     issues: list[str] = []
     classes_dir = manifest_dir / "classes"
     if not classes_dir.exists():
@@ -142,12 +193,18 @@ def check_apex_big_object_sync_soql(manifest_dir: Path) -> list[str]:
             source = apex_file.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if _BIG_OBJECT_SOQL_RE.search(source):
-            issues.append(
-                f"Apex class '{apex_file.name}' contains a synchronous SOQL query against a Big Object (__b). "
-                "Synchronous SOQL on Big Objects returns zero results at production scale. "
-                "Use the Async SOQL REST API (POST /async-queries/) instead."
-            )
+        if not _BIG_OBJECT_SOQL_RE.search(source):
+            continue
+        if "Database.Batchable" in source or "getQueryLocator" in source:
+            continue
+        issues.append(
+            f"INFO: Apex class '{apex_file.name}' queries a Big Object (__b) inline and is "
+            "not Batchable. Standard SOQL on Big Objects is supported and correct, but an "
+            "inline query is capped by the Apex query-row limit. If the result set can "
+            "exceed that, move the read into Batch Apex over a Database.QueryLocator. "
+            "Also confirm the WHERE clause is a gapless left-to-right prefix of the "
+            "composite index (fields before the last filtered one accept = only)."
+        )
 
     return issues
 
@@ -193,7 +250,8 @@ def check_external_data_and_big_objects(manifest_dir: Path) -> list[str]:
 
     issues.extend(check_big_object_indexes(manifest_dir))
     issues.extend(check_external_object_datasource(manifest_dir))
-    issues.extend(check_apex_big_object_sync_soql(manifest_dir))
+    issues.extend(check_retired_async_soql(manifest_dir))
+    issues.extend(check_apex_big_object_unbounded_soql(manifest_dir))
     issues.extend(check_apex_external_object_in_loop(manifest_dir))
 
     return issues

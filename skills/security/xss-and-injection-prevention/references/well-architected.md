@@ -24,3 +24,4 @@
 - Apex Developer Guide — Security Tips for Apex and Visualforce — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_xss.htm
 - Visualforce Developer Guide — Security Tips — https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_security_tips_xss.htm
 - Salesforce Security Implementation Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview_applications.htm
+- Salesforce Secure Coding Guide — Cross-Site Scripting (JSENCODE for JavaScript contexts, HTMLENCODE for HTML contexts) — https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_cross_site_scripting.htm

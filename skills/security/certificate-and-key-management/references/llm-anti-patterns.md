@@ -122,3 +122,58 @@ Mitigation:
 ```
 
 **Detection hint:** Any response claiming Salesforce will proactively notify about certificate expiry is incorrect. Flag phrases like "you'll receive an alert," "Salesforce notifies you," or "there's a warning before it expires."
+
+---
+
+## Anti-Pattern: Claiming Salesforce Sends No Certificate Expiry Notifications
+
+**What the LLM generates:** "Set a calendar reminder for the certificate's expiry date — Salesforce does not send expiry notifications for certificates." Variants: "there is no built-in alerting for certificate expiration, so build a scheduled Apex job / external monitor."
+
+**Why it happens:** The advice pattern "the platform won't tell you, so track it yourself" is a genuine and very common shape in Salesforce guidance — it is true for many things — and the model applies it as a default when it does not recall a specific notification mechanism. The confident negative is more useful-sounding than "I'm not sure," so it wins.
+
+**Why a false negative is worse than a false positive here:** it teaches a team to distrust a channel that is already working. Certificate-expiry emails then get treated as noise, filtered, or left pointed at a departed admin's address, and the manual calendar entry becomes the only control — one that survives exactly as long as the person who created it. The outage that follows is an integration-wide auth failure with no warning, caused by turning off an alarm that was ringing.
+
+**Correct pattern:**
+```
+Salesforce DOES email certificate-expiration warnings, at:
+    60 days before expiry
+    30 days before expiry
+    10 days before expiry
+    the day of expiry
+
+Configure the recipients: Setup > Certificate and Key Management >
+"Set Expired Certificate Notification Permission".
+
+The real work is not building an alerting mechanism — it is verifying the
+existing one points at a monitored, role-based inbox rather than an individual,
+and that someone owns the response. Add a calendar reminder on top if you like;
+do not present it as a workaround for a missing feature.
+```
+
+**Detection hint:** any sentence asserting Salesforce does *not* notify on certificate expiry. Mechanically, a proposal to build scheduled Apex or an external cron purely to detect certificate expiry is the tell — the requirement is already met, and the review question should be "who receives the existing notification?" rather than "how do we build one?"
+
+---
+
+## Anti-Pattern: Inventing a Configurable Validity Period for Self-Signed Certificates
+
+**What the LLM generates:** "Default validity is 1 year from creation. Custom validity (up to 10 years) can be set at creation time using the *Expiration* field." Variants: a `validityPeriod` or `expiryDate` parameter, "choose between 1, 2, 5 or 10 years."
+
+**Why it happens:** Nearly every other tool that issues self-signed certificates — `openssl req -days`, `keytool -validity`, most cloud KMS UIs — takes an explicit validity argument, so the model assumes Salesforce's screen has one and supplies a plausible field name and ceiling. The "1 year default" half is right, which lends the invented half credibility.
+
+**Why it matters:** rotation plans are built on this number. A team that believes it issued a 10-year certificate schedules no rotation and no successor, and the integration fails at the 1- or 2-year mark with the original engineer long gone.
+
+**Correct pattern:**
+```
+Self-signed certificate validity is DERIVED FROM KEY SIZE and cannot be set:
+
+    2048-bit  ->  1 year
+    3072-bit  ->  1 year
+    4096-bit  ->  2 years   (recommended for Shield Platform Encryption)
+
+There is no "Expiration" field on the creation screen. Two years is the
+maximum obtainable from a Salesforce self-signed certificate. If a longer
+lifetime is genuinely required, use a CA-signed certificate — and check
+current CA maximums, because industry certificate lifespans are shortening.
+```
+
+**Detection hint:** any self-signed-certificate validity longer than 2 years is wrong. So is any reference to an `Expiration` / `validityPeriod` / `expiryDate` input on the Salesforce creation screen. Positive tell of a correct answer: the validity is stated *as a consequence of* the key size rather than as an independent choice.

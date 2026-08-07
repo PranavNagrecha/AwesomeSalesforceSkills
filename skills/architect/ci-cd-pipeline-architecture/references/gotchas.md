@@ -22,13 +22,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: DevOps Center Hard Limit of 15 Pipeline Stages
+## Gotcha 3: DevOps Center Has No Stage-Count Limit — Sandbox Supply Is the Real Ceiling
 
-**What happens:** DevOps Center enforces a hard maximum of 15 stages per pipeline (documented in the DevOps Center Setup and Administration Guide). Attempting to add a 16th stage via the UI produces an error. Orgs with complex environment topologies — multiple regional UAT sandboxes, a shared integration sandbox, a pre-production staging org, and environment-specific QA orgs — can exhaust this limit before the pipeline covers all necessary stages.
+**What happens:** A team maps a complex environment topology, hears (or is told by an assistant) that DevOps Center caps pipelines at some number of stages, and rejects the tool on that basis — buying Copado or AutoRABIT for a constraint that does not exist. Salesforce's pipeline planning documentation states: **"Your pipeline can contain any number of pipeline stages."**
 
-**When it occurs:** Regulated industries (financial services, healthcare, government) are most susceptible. These orgs often require separate UAT sandboxes per business unit, multiple sign-off environments, and a pre-production sandbox that mirrors production settings exactly.
+**When it occurs:** Regulated industries (financial services, healthcare, government) are most susceptible, because they genuinely do need separate UAT sandboxes per business unit, multiple sign-off environments, and a pre-production sandbox mirroring production. Those topologies invite a plausible-sounding "you'll exceed the stage limit" objection.
 
-**How to avoid:** Map the required environment topology before choosing DevOps Center as the promotion tool. If the topology requires more than 15 stages, evaluate CLI-driven promotion (sf project deploy with custom scripts), Copado, or AutoRABIT — which do not have this limit. If DevOps Center is already chosen, consolidate stages by using a single Full Sandbox for both staging and pre-production sign-off, or by moving feature-branch CI validation to an external tool and starting the DevOps Center pipeline at the QA stage.
+**The constraint that is real:** Every DevOps Center stage requires its own connected environment and its own long-lived branch. The ceiling on a deep pipeline is therefore your **sandbox licence entitlement** — how many Developer, Developer Pro, Partial Copy, and Full sandboxes the edition provides, and the refresh intervals on each — not a stage counter. A 9-stage pipeline that needs three Full sandboxes fails on Full-sandbox entitlement, not on stage count. Promotion is also sequential: each additional stage adds a merge and a deploy to every work item's path, so deep pipelines cost lead time.
+
+**How to avoid:** Map the required environment topology and price it against the org's actual sandbox entitlement before choosing a promotion tool. If you conclude DevOps Center is unsuitable, name the specific capability gap driving that (non-linear/branching promotion, per-stage approvals, data seeding, back-promotion) — never a stage-count limit. Consolidating stages remains a good idea for lead-time reasons; it is not forced by a limit.
 
 ---
 

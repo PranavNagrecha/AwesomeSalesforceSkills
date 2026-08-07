@@ -132,16 +132,22 @@ Wire and Apex mocks are essential because jest does not have a Salesforce server
 
 ```js
 import { createElement } from 'lwc';
-import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
 import getCases from '@salesforce/apex/CaseController.getCases';
 import CaseList from 'c/caseList';
 
-const getCasesAdapter = registerApexTestWireAdapter(getCases);
+jest.mock(
+    '@salesforce/apex/CaseController.getCases',
+    () => {
+        const { createApexTestWireAdapter } = require('@salesforce/sfdx-lwc-jest');
+        return { default: createApexTestWireAdapter(jest.fn()) };
+    },
+    { virtual: true }
+);
 
 it('shows accessible empty state when no cases', async () => {
     const element = createElement('c-case-list', { is: CaseList });
     document.body.appendChild(element);
-    getCasesAdapter.emit([]); // simulate wire returning empty
+    getCases.emit([]); // simulate wire returning empty
     await Promise.resolve();
     const empty = element.shadowRoot.querySelector('[role="status"]');
     expect(empty).not.toBeNull();

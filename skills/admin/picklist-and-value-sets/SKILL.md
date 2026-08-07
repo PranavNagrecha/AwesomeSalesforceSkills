@@ -81,7 +81,7 @@ An **object-local picklist** is a value set defined within a single custom field
 
 **Limits:**
 - Standard and custom picklists: up to **1,000 total values** (active + inactive combined); each value label has a max of **255 characters**; total characters across all values in a field is capped at **15,000**
-- Multi-select picklists: **150 active values** by default (raisable via Salesforce Support); maximum **100 values selected simultaneously** on a single record
+- Multi-select picklists: **500 values** is both the default and the absolute maximum — new and existing orgs default to 500, an org sitting below it can be raised to 500 by Salesforce Support, and 500 cannot be exceeded. Separately, **at most 100 values can be selected at once** on a single record, and that 100 cannot be increased. (150 is a retired default that persists in older documentation and in model memory.)
 - Global Value Sets: max **500 Global Value Sets per org**; same 1,000 value limit applies per GVS; GVS fields are **always restricted** (API writes of arbitrary text fail with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`)
 
 ### Controlling and Dependent Picklists

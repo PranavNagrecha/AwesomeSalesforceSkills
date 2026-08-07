@@ -51,7 +51,7 @@ Use this skill when the integration boundary crosses outside Salesforce: an exte
 - What event API will the subscriber use: the legacy Streaming API over CometD, or the newer Pub/Sub API over gRPC?
 - What is the expected event volume per hour? This determines whether you need a High-Volume Platform Event or a standard one.
 - Does the subscriber need to recover after downtime? If yes, a durable subscription with explicit replay ID management is mandatory.
-- What is the event retention requirement? Platform Events retain for 72 hours by default. High-Volume Platform Events support `RetainUntilDate` for longer windows.
+- What is the event retention requirement? High-volume platform events are stored for **72 hours**; standard-volume (legacy, pre-Spring '19) events for **24 hours**. Neither window is extensible — there is no retention field to set. If you need a longer replay window, you must design an out-of-band durable ledger.
 
 ---
 
@@ -87,22 +87,29 @@ Platform Events deliver at-least-once. Every event has a `replayId`. External co
 
 Three special replay ID values:
 - `-1` — subscribe from the latest event (miss all events published before subscription)
-- `-2` — subscribe from the earliest retained event (replay from 72-hour window start)
+- `-2` — subscribe from the earliest retained event (replay from the start of the retention window: 72 hours for high-volume events, 24 hours for standard-volume)
 - Specific `replayId` — replay from a known position (requires that the event is still within the retention window)
 
 If a consumer starts fresh with `-1` and fails during processing, events emitted during the outage are lost unless the consumer switches to `-2` or a stored position on restart. Design consumers to store replay position before acknowledging processing completion.
 
 ### High-Volume Platform Events vs Standard Platform Events
 
-| Feature | Standard Platform Event | High-Volume Platform Event |
+**This is not a live design choice for new work.** After Spring '19 you cannot define a new standard-volume platform event — every event you create in Setup is high-volume. Standard-volume events are a legacy population, and Salesforce is retiring publish and subscribe for them in **Winter '27**. If an org still has standard-volume events, the task is migration, not selection.
+
+| Feature | Standard-Volume (legacy) | High-Volume (all new events) |
 |---|---|---|
-| Max events per hour (publish) | 250,000 | Unlimited (platform capacity) |
-| `RetainUntilDate` support | No (72-hour fixed window) | Yes (configurable retention) |
+| Can be newly defined | No — not since Spring '19 | Yes (the only option) |
+| Publish allocation per hour (org-wide) | 100,000 (EE / Perf / Unlimited); 1,000 (Dev, Prof w/ API add-on) | 250,000 (EE / Perf / Unlimited); 50,000 (Developer) |
+| Event retention window | 24 hours | 72 hours |
+| Retention configurable | No | No — 72 hours is fixed |
 | Apex subscriber trigger | Supported | Supported |
 | External CometD/Pub/Sub | Supported | Supported |
-| Event monitoring | Event Log File | Event Log File |
+| Lifecycle | Retiring in Winter '27 | Current |
 
-Use High-Volume when message rate exceeds 250,000 per hour or when events must be retained beyond 72 hours (e.g., for batch reconciliation patterns that run on weekly cadence).
+Two things this table exists to stop you assuming:
+
+1. **The 250,000/hour figure is an org-wide publishing allocation, not a tier feature.** It is the ceiling for high-volume events on Enterprise, Performance, and Unlimited. It is not "unlimited above 250k" — moving to a high-volume event does not buy additional hourly headroom beyond that allocation. Capacity plans must size against 250,000/hour and buy the add-on (+25,000/hour) if they need more.
+2. **Retention is fixed at 72 hours and cannot be extended by any field or setting.** For replay windows longer than 72 hours, the publisher must write a copy of each event to a durable store (Big Object, external queue) and the subscriber backfills from that store. See Pattern 3.
 
 ---
 
@@ -130,13 +137,13 @@ Use High-Volume when message rate exceeds 250,000 per hour or when events must b
 2. Fetch events in batches using the `FetchRequest` RPC. Pub/Sub API uses a request-credits model: send a `FetchRequest` with a `num_requested` count; the server streams responses until the credit is exhausted.
 3. After processing each batch, persist the highest `replayId` to durable storage before acknowledging or processing the next batch.
 4. On reconnect, always pass the last stored `replayId`. Never hardcode `-1` except for throw-away consumers.
-5. For High-Volume events with `RetainUntilDate`, use Salesforce's `GetTopic` RPC to confirm the schema version before replaying older events.
+5. Before replaying from an older stored `replayId`, use Pub/Sub API's `GetTopic` / `GetSchema` RPCs to confirm the schema version — a replayed event carries the schema ID that was current when it was published, which may predate the subscriber's cached schema.
 
 **Why not the alternative:** CometD requires more client-side reconnect logic and is slower for high-throughput scenarios; Pub/Sub API handles backpressure natively through the credit model.
 
 ### Pattern 3 — Dead-Letter Handling When Subscribers Fall Behind
 
-**When to use:** A subscriber has been offline longer than the 72-hour retention window, or a High-Volume event's `RetainUntilDate` has passed.
+**When to use:** A subscriber has been offline longer than the retention window (72 hours for high-volume events, 24 for standard-volume). Because the window is fixed and cannot be extended, this pattern is mandatory — not optional — for any subscriber whose worst-case outage exceeds three days.
 
 **How it works:**
 1. Accept that events outside the retention window are permanently lost via normal replay.
@@ -153,8 +160,9 @@ Use High-Volume when message rate exceeds 250,000 per hour or when events must b
 | External system publishes business events into Salesforce | REST POST to `/sobjects/EventName__e/` with JWT auth | Standard REST endpoint, no special client library needed |
 | New middleware subscriber, gRPC stack available | Pub/Sub API | Higher throughput, Avro schema fetch, better backpressure |
 | Legacy middleware already using Bayeux/CometD | Streaming API CometD | Less migration effort; still fully supported |
-| Message rate > 250k/hour or retention > 72 hours | High-Volume Platform Event | Exceeds standard limits; HV events handle unlimited rate |
-| Subscriber must recover after multi-day outage | High-Volume + RetainUntilDate + compensating durable store | 72-hour window insufficient; design explicit backfill path |
+| Sustained publish rate approaching 250k/hour | Buy the event add-on (+25,000/hour) and/or batch domain changes into fewer, coarser events | 250,000/hour is a hard org-wide allocation on EE/Perf/Unlimited; no event tier exceeds it |
+| Org still has pre-Spring '19 standard-volume events | Migrate them to high-volume events now | Publish and subscribe for standard-volume events are retired in Winter '27 |
+| Subscriber must recover after multi-day outage | Publisher writes a durable copy (Big Object / external queue) + subscriber backfills from it | The 72-hour window is fixed and cannot be extended by any setting; backfill is the only path |
 | Subscriber processing is not idempotent | Add correlation ID field + consumer-side dedup table | At-least-once delivery means duplicates will arrive |
 
 ---
@@ -177,17 +185,18 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] External publisher authenticates with OAuth 2.0 connected app — no hard-coded credentials.
 - [ ] Subscriber persists last processed `replayId` durably before marking batch complete.
 - [ ] First-start replay strategy is documented: `-2` (earliest), stored ID, or intentional `-1` (no history).
-- [ ] Event volume is confirmed against hourly publish limits; High-Volume tier selected if > 250k/hour.
+- [ ] Peak publish rate is sized against the org-wide hourly allocation (250,000/hour on EE/Perf/Unlimited, 50,000 on Developer), with add-on capacity budgeted if the design approaches it.
 - [ ] Idempotency: event payload includes a stable correlation or deduplication key.
 - [ ] Dead-letter strategy defined for subscribers that may be offline beyond the retention window.
-- [ ] High-Volume events that need extended retention have `RetainUntilDate` set explicitly.
+- [ ] Any requirement for a replay window longer than 72 hours is satisfied by a durable ledger, NOT by a retention setting — no such setting exists.
+- [ ] No pre-Spring '19 standard-volume platform events remain in the integration path (Winter '27 retirement).
 - [ ] Monitoring: publisher failures and subscriber lag are observable (event log files, middleware metrics).
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **`RetainUntilDate` does NOT exist on standard Platform Events** — it is only available on High-Volume Platform Events. Teams that design long-replay windows on standard events will hit silent data loss when the 72-hour window expires.
+1. **There is no retention-extension field on any Platform Event** — not `RetainUntilDate`, not anything else. Retention is a fixed platform property: 72 hours for high-volume events, 24 hours for legacy standard-volume events. Any design that assumes a publisher can push the expiry out will lose every event past the window, silently, with the subscriber seeing only a gap. Longer windows require a durable ledger written alongside the publish.
 2. **CometD connections silently expire after 40 seconds of inactivity** — clients must send `/meta/connect` heartbeats continuously or the server closes the channel without error, leading to missed events that appear as gaps in the subscriber.
 3. **Pub/Sub API uses a credit-based flow model** — if a client sends a `FetchRequest` and does not issue new credits after consuming the batch, the stream stalls. Middleware that expects a push model without managing credits will stop receiving events under load.
 4. **At-least-once delivery means duplicates are guaranteed in retry scenarios** — every external subscriber must be idempotent; not designing for duplicates is the most common production reliability bug.

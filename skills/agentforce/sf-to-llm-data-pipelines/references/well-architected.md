@@ -86,3 +86,6 @@ Full load is simpler to implement and guarantees completeness. Incremental extra
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Einstein Platform Services — https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Bulk API 2.0 Developer Guide — Get Job Results (Sforce-Locator / Sforce-NumberOfRecords headers; maxRecords has no published default; stop on the literal string "null") — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/query_get_job_results.htm
+- Bulk API 2.0 Developer Guide — Query Jobs / supported SOQL (child-to-parent supported; GROUP BY, OFFSET, TYPEOF, aggregates, compound address/geolocation and parent-to-child subqueries unsupported) — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/queries.htm
+- Salesforce Developer Limits and Allocations Quick Reference — Bulk API 2.0 (150,000,000 records per rolling 24h, org-level; 1 GB max retrieved file; 10,000 query jobs/24h; 1 TB results/24h; 20-minute retrieval timeout) — https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_bulkapi.htm

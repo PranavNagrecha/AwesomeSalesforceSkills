@@ -4,7 +4,7 @@
 
 - **Security** — The most critical pillar for AI-to-org integration. The connected AI agent must be treated as an external integration with the same threat model as any third-party API consumer. Key concerns: OAuth scope minimization, run-as user least privilege, data exposure scope definition, PII field exclusion, SOQL injection defense in Apex tools, audit trail design.
 - **Scalability** — Per-org API call limits and Apex governor limits bound what AI agents can do within the Salesforce platform. Architecture must account for peak call volume, concurrent users, and the combination of human + agent API consumption. Stateless Apex design (required by salesforce-mcp-lib) naturally scales horizontally.
-- **Reliability** — AI agent integrations introduce an external dependency into Salesforce workflows. When the agent or its proxy is unavailable, what happens? Architecture must define failure modes, timeouts, and fallback behaviors. For event-driven patterns, the 24-hour CDC retention window is a hard reliability constraint.
+- **Reliability** — AI agent integrations introduce an external dependency into Salesforce workflows. When the agent or its proxy is unavailable, what happens? Architecture must define failure modes, timeouts, and fallback behaviors. For event-driven patterns, the **72-hour** (three-day) CDC retention window is a hard reliability constraint.
 - **Operational Excellence** — Observability is non-negotiable. Agent API calls must be logged and alertable. Apex deployments for tool changes need the same CI/CD pipeline as production code. The architecture should make it easy to add, remove, or modify tools without disrupting the agent's connection to the org.
 
 ## Architectural Tradeoffs
@@ -30,6 +30,7 @@
 - Salesforce REST API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/
 - Salesforce Platform Events Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/
 - Salesforce Change Data Capture Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/
+- Change Data Capture Developer Guide → *Subscription Channels and Event Delivery* — "Change event messages are stored in the event bus for **three days**" (72 hours), with `ReplayId`-based replay inside that window (verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_subscribe_delivery.htm
 - Salesforce API Limits Cheat Sheet — https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

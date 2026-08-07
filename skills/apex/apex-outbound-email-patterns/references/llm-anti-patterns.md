@@ -104,9 +104,10 @@ return true;
 failures (bounces, opt-outs) appear here and nowhere else — the
 call itself returns normally.
 
-**Detection hint.** Any `Messaging.sendEmail` call whose return
-value is discarded, with no surrounding `try/catch` for
-`SINGLE_EMAIL_LIMIT_EXCEEDED`.
+**Detection hint.** Any `Messaging.sendEmail(..., false)` call whose
+return value is discarded. Note the converse trap: wrapping that same
+`allOrNone=false` call in a `try/catch` is equally wrong, because it
+does not throw — see Anti-Pattern 7.
 
 ---
 
@@ -140,9 +141,51 @@ Messaging.sendEmail(new Messaging.MassEmailMessage[]{ mass });
 ```
 
 **Correct pattern.** `MassEmailMessage` is deprecated for new
-development. Use SingleEmailMessage in a chunked loop (≤100
-recipients per call). The mass form lacks attachment, OWE, and
+development. Use SingleEmailMessage in a chunked loop (≤150
+recipients per message, counting `toAddresses` + `ccAddresses` +
+`bccAddresses` together). The mass form lacks attachment, OWE, and
 allOrNone control.
 
 **Detection hint.** Any `Messaging.MassEmailMessage` reference in
 a file that does not have a comment justifying legacy maintenance.
+
+---
+
+## Anti-Pattern 7: Catching `System.HandledException` for `SINGLE_EMAIL_LIMIT_EXCEEDED`
+
+**What the LLM generates.**
+
+```apex
+try {
+    Messaging.sendEmail(msgs, false);
+} catch (System.HandledException e) {                       // wrong type…
+    if (e.getMessage().contains('SINGLE_EMAIL_LIMIT_EXCEEDED')) {
+        EmailRetryQueue.enqueue(msgs);                      // …never runs
+    }
+}
+```
+
+**Why it happens.** Two independent errors reinforce each other. The exception type is wrong because `HandledException` sounds like the generic base for "errors you are expected to handle" — a reasonable reading of the name. It is actually the Visualforce/Aura surface exception, described in the reference as merely "A generic handled exception", and it is never raised by `Messaging.sendEmail`. The email exception is `EmailException` ("Any problem with email, such as failure to deliver"). Separately, `allOrNone = false` means the call **does not throw at all** — failures come back inside `Messaging.SendEmailResult` — so even the correct `catch (EmailException e)` would be dead code in this snippet. Both errors are invisible: the class compiles, deploys, and passes every test that does not actually exhaust the org's daily email allocation. The retry queue looks implemented and is not, and the failure surfaces as customers silently not receiving mail.
+
+**Correct pattern.** Match the error-delivery mechanism to the `allOrNone` argument.
+
+```apex
+// allOrNone = true (the default): it throws.
+try {
+    Messaging.sendEmail(msgs);
+} catch (System.EmailException e) {
+    if (e.getMessage().contains('SINGLE_EMAIL_LIMIT_EXCEEDED')) { /* retry */ }
+    else { throw e; }
+}
+
+// allOrNone = false: it does NOT throw — read the results.
+Messaging.SendEmailResult[] rs = Messaging.sendEmail(msgs, false);
+for (Integer i = 0; i < rs.size(); i++) {
+    if (rs[i].isSuccess()) { continue; }
+    for (Messaging.SendEmailError err : rs[i].getErrors()) {
+        if (err.getStatusCode() == StatusCode.SINGLE_EMAIL_LIMIT_EXCEEDED) { /* retry */ }
+    }
+}
+```
+
+**Detection hint.** grep for `catch\s*\(\s*(System\.)?HandledException` in any `.cls` — in email code it is always wrong, and outside Visualforce/Aura controllers it is nearly always wrong. Stronger and fully mechanical: flag any `Messaging.sendEmail\([^)]*,\s*false\s*\)` that is lexically inside a `try` block, and any `Messaging.sendEmail` with a second argument of `false` whose return value is not assigned. Conversely flag `Messaging.sendEmail\(\s*\w+\s*\)` (single-argument, therefore throwing) that is *not* inside a `try`. Cross-check any exception class named in email guidance against the built-in exception list; `EmailException` is the only email-specific member.

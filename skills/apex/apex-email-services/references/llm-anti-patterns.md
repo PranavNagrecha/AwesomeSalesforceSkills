@@ -228,3 +228,31 @@ static void testHandler() {
 ```
 
 **Detection hint:** `handleInboundEmail\(.*,\s*null\)` in test classes.
+
+---
+
+## Anti-Pattern 7: Sizing Inbound Attachment Handling Against the Wrong Heap Limit
+
+**What the LLM generates:**
+
+```apex
+global Messaging.InboundEmailResult handleInboundEmail(
+        Messaging.InboundEmail email, Messaging.InboundEnvelope env) {
+    // "Heap here is 10 MB, so anything non-trivial must be deferred."
+    for (Messaging.InboundEmail.BinaryAttachment att : email.binaryAttachments) {
+        if (att.body.size() > 1000000) {          // arbitrary 1 MB guard
+            enqueueForLaterProcessing(att);       // defers work that would have fit
+            continue;
+        }
+        // ...
+    }
+}
+```
+
+…and prose of the form "Governor limits apply to the full handler execution: 100 SOQL, 150 DML, **10 MB heap**" or "…exceed the **12 MB** heap limit".
+
+**Why it happens:** Two failures compound. First, 10 MB is not an Apex heap limit *in any context* — it is a plausible round number sitting between the two real ones, and the model emits it because "10 MB" is the most common heap figure across non-Salesforce runtimes in training data. Second, even the model that recalls a real Salesforce number reaches for 6 MB or 12 MB, because those are correct **for ordinary Apex** and the email-services exception lives in a table footnote rather than in the prose most training data was scraped from. This is a relabelling error, not an invention: the right number attached to the wrong context. It survives review because the resulting advice ("defer heavy work to a Queueable") is prudent regardless, so nobody re-checks the premise.
+
+**Correct pattern:** Email services heap is **50 MB** — documented verbatim as "Email services heap size is 50 MB" in Execution Governors and Limits. Ordinary Apex is 6 MB synchronous, 12 MB asynchronous. Two consequences the wrong number hides: (a) an attachment that a 12 MB budget would force you to stream can often be handled inline; (b) **moving work to a Queueable reduces your heap ceiling from 50 MB to 12 MB**, so "defer it for more heap" is backwards. Defer for a fresh CPU/DML budget and a retry surface. Budget by copies, not payload size: `EncodingUtil.base64Encode` allocates ~1.33× a second copy, `Blob.toString()` a third.
+
+**Detection hint:** grep any Salesforce guidance for `10\s?MB\s+heap` — zero legitimate hits exist across the entire platform, so every match is a fabrication regardless of domain. Then, scoped to email-services files (`handleInboundEmail`, `InboundEmailHandler`, `Messaging.InboundEmail`), flag `(6|12)\s?MB` and any `heap` sentence not containing `50`. In code, a heap guard inside `handleInboundEmail` whose threshold is below ~40 MB is sized against the wrong ceiling.

@@ -88,17 +88,27 @@ Thrown when a DML operation (insert, update, delete, upsert) fails at the databa
 - A before-trigger or validation rule blocks the record.
 - **Row-lock contention** — `Unable to lock row - Record currently unavailable`. A transaction waits a maximum of 10 seconds for a lock to be released before timing out and throwing this error. It is one of the most frequently hit real-world DML failures, caused by concurrent DML on the same records, Apex triggers with long execution time, Bulk API loads in parallel mode, and Master-Detail child updates that all lock the same parent. See the dedicated Core Concept below.
 
-Note: mixing an insert of two *non-setup* types (e.g. an `Account` and a `Contact`) into separate DML statements in one transaction is fine — that is not what triggers a mixed-DML failure. The mixed-DML restriction is specifically about setup vs non-setup objects; see **MixedDmlException** below.
+Note: mixing an insert of two *non-setup* types (e.g. an `Account` and a `Contact`) into separate DML statements in one transaction is fine — that is not what triggers a mixed-DML failure. The mixed-DML restriction is specifically about setup vs non-setup objects; see **Mixed DML (`MIXED_DML_OPERATION`)** below.
 
 The `DmlException` is the only common exception that carries per-row error details. Use `e.getNumDml()`, `e.getDmlMessage(i)`, `e.getDmlIndex(i)`, and `e.getDmlFields(i)` to extract which records failed and why.
 
 Resolution: Validate required fields before DML. Use Database.insert/update/delete with `allOrNone=false` and inspect `Database.SaveResult[]` for partial-success scenarios. Log per-row `getDmlMessage` errors rather than only the top-level exception message.
 
-### MixedDmlException
+### Mixed DML — `System.DmlException` with status code `MIXED_DML_OPERATION`
 
-Thrown when a DML operation on a *setup* object is mixed with a DML operation on a *non-setup* object in the same transaction. Per the official docs: "DML operations on certain sObjects, sometimes referred to as setup objects, can't be mixed with DML on non-setup sObjects in the same transaction." The restriction exists because some setup objects affect the running user's access to records.
+**There is no `MixedDmlException` type in Apex.** This is one of the most common wrong identifiers in the language. `catch (MixedDmlException e)` does not compile, and grepping production logs for `System.MixedDMLException` returns nothing. Mixed setup/non-setup DML raises an ordinary **`System.DmlException`** carrying the status code **`MIXED_DML_OPERATION`** — a real member of the API `StatusCode` enumeration. The log line looks like:
 
-- **Setup objects** include `User`, `UserRole`, `Group`, `GroupMember`, `PermissionSet`, `PermissionSetAssignment`, `Territory2`, `ObjectPermissions`, `FieldPermissions`, `QueueSObject`, and others.
+```text
+System.DmlException: Insert failed. First exception on row 0; first error:
+MIXED_DML_OPERATION, DML operation on setup object is not permitted after you
+have updated a non-setup object (or vice versa): []
+```
+
+Catch it as a `DmlException` and discriminate on the message or on `e.getDmlType(0)`, not on a dedicated exception class.
+
+It occurs when a DML operation on a *setup* object is mixed with a DML operation on a *non-setup* object in the same transaction. Per the official docs: "DML operations on certain sObjects, sometimes referred to as setup objects, can't be mixed with DML on non-setup sObjects in the same transaction." The restriction exists because some setup objects affect the running user's access to records.
+
+- **Setup objects**, per the Apex Developer Guide list: `AuthSession`, `ContentWorkspace`, `FieldPermissions`, `ForecastingShare`, `Group`, `GroupMember`, `ObjectPermissions`, `ObjectTerritory2AssignmentRule`, `ObjectTerritory2AssignmentRuleItem`, `PermissionSet`, `PermissionSetAssignment`, `QueueSObject`, `RuleTerritory2Association`, `SetupEntityAccess`, `Territory`, `Territory2`, `Territory2Model`, `User`, `UserPackageLicense`, `UserRole`, `UserTerritory`, `UserTerritory2Association`.
 - **Non-setup objects** are ordinary standard/custom records like `Account`, `Contact`, and custom objects.
 
 The failure is *not* caused by mixing two arbitrary non-setup types. It fires only when a setup-object DML and a non-setup-object DML land in the same transaction.
@@ -210,7 +220,7 @@ List<Contact> contacts = [SELECT Id FROM Contact WHERE AccountId IN :accountIds]
 | DmlException: required field missing | Field blank on record before DML | Validate fields before insert/update |
 | DmlException: duplicate value | Duplicate rule or unique constraint hit | Check for existing record first or use upsert |
 | DmlException: Unable to lock row | Row-lock contention (concurrent DML, long triggers, Bulk API parallel mode, MD child updates) | Shorten triggers; Bulk API serial mode + batch sort by parent ID; distribute MD children |
-| MixedDmlException | Setup-object DML (User, Group, PermissionSet…) mixed with non-setup DML in one transaction | Defer setup-object DML to @future / Queueable so it runs in its own transaction |
+| DmlException: MIXED_DML_OPERATION | Setup-object DML (User, Group, PermissionSet…) mixed with non-setup DML in one transaction. Note: there is **no** `MixedDmlException` type — catch `DmlException` | Defer setup-object DML to @future / Queueable so it runs in its own transaction |
 | SObjectException | Writing an insert-only/read-only field on update, or reading a field not in the SELECT | Only update updateable fields; add the field to the SOQL SELECT |
 | ListException: index out of bounds | Indexed access on empty or short list | Check list.size() before access |
 | LimitException: Too many SOQL queries | SOQL inside loop | Bulkify: move SOQL outside loop |

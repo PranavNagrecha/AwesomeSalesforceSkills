@@ -12,13 +12,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: CDC Event Retention Is 24 Hours
+## Gotcha 2: CDC Event Retention Is 72 Hours — Not 24, and Not Indefinite
 
-**What happens:** Change Data Capture events are stored in the event bus for only 24 hours. If an AI pipeline subscriber goes offline for more than 24 hours (maintenance, crash, deployment), it misses events that were published during the outage. There is no built-in replay beyond 24 hours and no dead letter queue.
+**What happens:** Change Data Capture events are stored in the event bus for a bounded window: Salesforce documents that "change event messages are stored in the event bus for three days" — **72 hours**. Within that window a subscriber can replay from a stored `ReplayId`. Past it, the events are gone: there is no replay beyond the retention window and no dead letter queue.
 
-**When it occurs:** Any time a Platform Events or CDC-based AI pipeline has an outage of more than 24 hours. Also relevant for deployment windows that take longer than expected.
+**When it occurs:** Any time a CDC-based AI pipeline is offline longer than the retention window — an extended outage, a crashed connector nobody noticed over a weekend, or a deployment freeze. Note the shape of the risk: 72 hours is long enough that a Friday-evening failure discovered Monday morning lands right at the boundary.
 
-**How to avoid:** Design a "catch-up" mechanism: a scheduled Apex job or batch class that identifies records in the expected processing state but with no AI output, and requeues them for processing. Test the recovery flow explicitly before go-live. Document the maximum acceptable outage window in the architecture decision record.
+**Get the number right in both directions.** Under-stating it as 24 hours (a common error, and the daily API-request window in Gotcha 1 is the likely source of the confusion) makes you design a recovery job against a window four times tighter than reality and mis-state the recovery SLA to the business. Over-stating it, or assuming replay is unbounded, is worse: it produces a pipeline with no catch-up path at all.
+
+**How to avoid:** Design a "catch-up" mechanism regardless: a scheduled Apex job or batch class that identifies records in the expected processing state but with no AI output, and requeues them. Persist the last successfully processed `ReplayId` so an in-window restart replays rather than reprocesses everything. Test the recovery flow explicitly before go-live, including a simulated outage longer than 72 hours. Document the maximum acceptable outage window in the architecture decision record, measured against 72 hours.
 
 ---
 

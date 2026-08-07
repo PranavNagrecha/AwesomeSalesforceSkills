@@ -77,7 +77,7 @@ If count < 200: Do NOT enable Opportunity Scoring yet. Document plan for reachin
 **Model training status (check Setup > Einstein > Opportunity Scoring):**
 - [ ] Not yet enabled
 - [ ] In Progress (training underway — do not present to users yet)
-- [ ] Insufficient Data (< 200 closed opps — feature deferred)
+- [ ] Insufficient Data (< 200 closed-won or < 200 closed-lost in trailing 24 months — feature deferred)
 - [ ] Active (scores being generated — ready for user rollout)
 
 **Custom fields added to scoring model (optional — high-signal fields only):**

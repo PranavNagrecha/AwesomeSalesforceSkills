@@ -202,10 +202,12 @@ def check_scheduled_apex_naming_patterns(manifest_dir: Path) -> List[str]:
         if name_parts & peak_hour_keywords:
             issues.append(
                 f"Scheduled Apex class '{cls_file.stem}' implements Schedulable and its name "
-                f"suggests it may run during business hours. Scheduled Apex consuming long-running "
-                f"Apex slots during portal peak hours competes with portal user sessions against the "
-                f"25-concurrent-long-running-Apex org-wide limit. Verify its schedule and consider "
-                f"moving heavy scheduled jobs to off-peak hours. File: {cls_file}"
+                f"suggests it may run during business hours. Scheduled Apex does NOT consume "
+                f"concurrent long-running Apex slots (that ceiling counts synchronous transactions "
+                f"only), but heavy scheduled work contends for CPU and row locks and can push "
+                f"synchronous portal transactions past the 5-second long-running threshold. "
+                f"Verify its schedule and consider moving heavy scheduled jobs off-peak. "
+                f"File: {cls_file}"
             )
 
     return issues

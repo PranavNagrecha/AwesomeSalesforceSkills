@@ -147,8 +147,10 @@ def check_meta_xml_file(path: Path, issues: list[str]) -> None:
     if "lightningCommunity__RelaxedCSP" not in content:
         issues.append(
             f"{path}: missing <capability>lightningCommunity__RelaxedCSP</capability> — "
-            "all components deployed to B2B/D2C LWR stores must declare this capability "
-            "or they may fail to render on cart and checkout pages."
+            "required for components distributed in a managed package (Salesforce documents "
+            "that those are disabled in the Experience Builder Components panel on any site "
+            "with Lightning Locker disabled, which includes every B2B/D2C store template); "
+            "recommended as a convention for org-local storefront components."
         )
 
     if "isExposed" not in content or "<isExposed>true</isExposed>" not in content:
