@@ -2,7 +2,8 @@
 """Audit Apex files for encoding, hashing, and crypto anti-patterns.
 
 Scans .cls and .trigger files for:
-- weak algorithms (MD5, SHA-1, HmacMD5, HmacSHA1) used in Crypto calls
+- weak algorithms (MD5, SHA-1, hmacMD5, hmacSHA1) used in Crypto calls
+- unsupported algorithm names (hmacSHA384) that compile but fail at run time
 - hardcoded HMAC secrets / private key literals
 - standard base64 in JWT-like concatenations without base64url transform
 - MAC comparison via == without constant-time wrapper
@@ -28,6 +29,13 @@ SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW":
 WEAK_ALGO_RE = re.compile(
     r"Crypto\.(?:generateDigest|generateMac|sign(?:WithCertificate)?)"
     r"\s*\(\s*'(HmacMD5|HmacSHA1|MD5|SHA1|SHA-1)'",
+    re.IGNORECASE,
+)
+# Crypto.generateMac accepts only hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512.
+# hmacSHA384 does not exist on the platform: it compiles and deploys, then
+# throws at run time. Apex Reference Guide -> Crypto Class -> generateMac.
+UNSUPPORTED_MAC_ALGO_RE = re.compile(
+    r"Crypto\.generateMac\s*\(\s*'\s*hmac[- ]?sha[- ]?384\s*'",
     re.IGNORECASE,
 )
 HARDCODED_SECRET_RE = re.compile(
@@ -104,6 +112,9 @@ def audit_file(path: Path) -> list[str]:
 
     if WEAK_ALGO_RE.search(text):
         findings.append(f"HIGH {path}: weak algorithm (MD5/SHA-1/HmacMD5/HmacSHA1) used in Crypto call")
+
+    if UNSUPPORTED_MAC_ALGO_RE.search(text):
+        findings.append(f"CRITICAL {path}: Crypto.generateMac('hmacSHA384') — unsupported algorithm; generateMac accepts only hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512. Compiles, then fails at run time")
 
     if HARDCODED_SECRET_RE.search(text):
         findings.append(f"HIGH {path}: hardcoded secret literal near secret/key/token identifier; move to Named Credential or protected CMT")

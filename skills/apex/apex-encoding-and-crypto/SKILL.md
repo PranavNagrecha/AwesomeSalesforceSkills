@@ -56,7 +56,18 @@ Gather this context before writing any `Crypto` or `EncodingUtil` call:
 
 `Crypto.generateDigest(algorithmName, input)` produces a plain hash (MD5, SHA1, SHA-256, SHA-512). Hashes are not signatures — anyone can recompute them. Use them for integrity checks on non-adversarial payloads (deduplication, cache keys, file fingerprints).
 
-`Crypto.generateMac(algorithmName, input, privateKey)` produces an HMAC keyed by a shared secret. Supported algorithms are `HmacSHA1`, `HmacSHA256`, `HmacSHA384`, `HmacSHA512`, and the weaker `HmacMD5` — do not use `HmacMD5` or `HmacSHA1` for new work. HMACs are the right tool for webhook verification and request signing against a shared secret (Stripe, Slack, Twilio, GitHub all use HMAC-SHA256).
+`Crypto.generateMac(algorithmName, input, privateKey)` produces an HMAC keyed by a shared secret. The Apex Crypto reference documents exactly four valid values, spelled with a lowercase `hmac` prefix:
+
+| Documented value | Use |
+|---|---|
+| `hmacMD5` | Legacy interop only — broken for security purposes |
+| `hmacSHA1` | Legacy interop only |
+| `hmacSHA256` | Default choice for new work |
+| `hmacSHA512` | When the counterparty specifies it |
+
+**There is no `hmacSHA384`.** SHA-384 exists in the Crypto class only for *asymmetric signatures* (`RSA-SHA384`, `ECDSA-SHA384` via `sign` / `signWithCertificate`), never for MACs, and `generateDigest` has no SHA-384 either (it offers `MD5`, `SHA1`, `SHA-256`, `SHA-512`, `SHA3-256`, `SHA3-384`, `SHA3-512`). If a counterparty genuinely requires HMAC-SHA-384: renegotiate to `hmacSHA256`/`hmacSHA512`, or move the MAC step outside Apex (middleware, an external service behind a Named Credential). Do **not** substitute a different algorithm and hope — the MAC will simply not verify. Do not reach for `SHA3-384` as a stand-in: that is an unkeyed digest, not an HMAC.
+
+`algorithmName` is a plain `String` checked at run time, not by the compiler, so a misspelled or unsupported name ships clean and fails in production. Use the documented spelling verbatim. HMACs are the right tool for webhook verification and request signing against a shared secret (Stripe, Slack, Twilio, GitHub all use HMAC-SHA256).
 
 `Crypto.sign(algorithmName, input, privateKey)` produces an asymmetric signature using a raw private key blob. `Crypto.signWithCertificate(algorithmName, input, certDevName)` uses a certificate stored in Setup → Certificate and Key Management — this is the right pattern for OAuth 2.0 JWT bearer flow because the private key stays in the platform-managed certificate store and never appears as a literal in Apex.
 
@@ -109,7 +120,7 @@ global with sharing class VendorWebhookResource {
             return;
         }
 
-        Blob computedMac = Crypto.generateMac('HmacSHA256', rawBody, Blob.valueOf(secret));
+        Blob computedMac = Crypto.generateMac('hmacSHA256', rawBody, Blob.valueOf(secret));
         String computedHex = EncodingUtil.convertToHex(computedMac);
 
         if (!constantTimeEquals(computedHex, signatureHeader.toLowerCase())) {
@@ -198,13 +209,13 @@ public with sharing class IntegrationTokenVault {
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Verify a webhook signed by an external service | `Crypto.generateMac('HmacSHA256', ...)` + constant-time compare | Matches the vendor's signing method exactly |
+| Verify a webhook signed by an external service | `Crypto.generateMac('hmacSHA256', ...)` + constant-time compare | Matches the vendor's signing method exactly |
 | Sign a JWT assertion for OAuth JWT bearer flow | `Crypto.signWithCertificate('RSA-SHA256', ..., certName)` | Keeps the private key in the certificate store |
 | Hash a record for deduplication or cache keys | `Crypto.generateDigest('SHA-256', ...)` | Not a security control — just a deterministic fingerprint |
 | Encrypt a custom-field secret without Shield | `Crypto.encryptWithManagedIV('AES256', ...)` | Platform generates a fresh IV per call |
 | Encode bytes for a JSON payload | `EncodingUtil.base64Encode` | Standard base64 with padding |
 | Encode a token for a URL segment or JWT header | base64 then replace `+→-`, `/→_`, strip `=` | No native base64url method |
-| Obscure a short ID for non-security reasons | `Crypto.generateDigest('SHA-1', ...)` | Not acceptable for HMACs or signatures |
+| Obscure a short ID for non-security reasons | `Crypto.generateDigest('SHA1', ...)` — documented spelling has no hyphen, unlike `SHA-256` | Not acceptable for HMACs or signatures |
 
 ---
 
@@ -222,13 +233,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Review Checklist
 
-- [ ] Algorithm name matches the consumer's specification exactly (`HmacSHA256`, not `HMAC-SHA-256`, not `SHA256-HMAC`).
+- [ ] Algorithm name is copied verbatim from the Apex Crypto reference (`hmacSHA256` — not `HMAC-SHA-256`, not `SHA256-HMAC`) and matches the consumer's specification.
+- [ ] No `hmacSHA384` anywhere — `generateMac` supports only `hmacMD5`, `hmacSHA1`, `hmacSHA256`, `hmacSHA512`.
 - [ ] Key material is not a literal string in Apex; source is documented.
 - [ ] Verification paths use a constant-time comparison, not `==` on raw MACs.
 - [ ] Base64url transformation is applied for JWT segments (replace `+`, `/`, strip `=`).
 - [ ] Ciphertexts and signatures stay as `Blob` until the last encoding step.
 - [ ] `encryptWithManagedIV` is preferred over `encrypt` unless IV interop is required.
-- [ ] Weak algorithms (`MD5`, `SHA1`, `HmacMD5`, `HmacSHA1`) are flagged and justified.
+- [ ] Weak algorithms (`MD5`, `SHA1`, `hmacMD5`, `hmacSHA1`) are flagged and justified.
 - [ ] Test class pins at least one known-answer vector for the algorithm in use.
 
 ---

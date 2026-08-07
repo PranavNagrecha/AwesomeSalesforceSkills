@@ -113,8 +113,9 @@ Answer these before starting any configuration work:
 ### Validation and QA
 
 - [ ] Agent Preview tested with 5+ representative queries; Grounding tab confirms relevant chunks retrieved
-- [ ] Einstein Trust Layer audit log reviewed for at least one end-to-end retrieval turn
-- [ ] Any masking events in the audit log investigated and confirmed intentional
+- [ ] Generative AI audit and feedback data collection turned on in Einstein Setup
+- [ ] Einstein Trust Layer audit DMOs (`GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`) queried in the Data Cloud Query Editor for at least one end-to-end retrieval turn
+- [ ] Any masking events found there investigated and confirmed intentional
 - [ ] Prompt token budget checked: topK × chunk_size_estimate should not exceed 30% of model context window
 - [ ] Retrieval latency measured for at least 3 queries; within acceptable SLA range
 

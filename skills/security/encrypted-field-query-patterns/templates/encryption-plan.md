@@ -12,8 +12,11 @@
 
 ## Test Plan
 
-- [ ] User with "View Encrypted Data" sees plaintext.
-- [ ] User without sees masked.
+- [ ] User with FLS Read on the field sees plaintext (Shield decrypts
+      transparently for anyone with field read).
+- [ ] User with FLS Read removed cannot retrieve the field at all.
+- [ ] Plan does NOT rely on "View Encrypted Data" — that is a Classic
+      Encryption permission and does not mask Shield fields.
 - [ ] All filters tested post-encryption flip.
 - [ ] All reports tested post-encryption flip.
 

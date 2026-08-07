@@ -12,7 +12,9 @@ Dynamic SOQL and dynamic field access are high-risk surfaces because they shift 
 
 ### Scalability
 
-Describe calls are transactional resources. Governor limits cap describe operations at 100 per synchronous transaction. In batch, trigger, or multi-object utilities that touch many sObjects or many fields, naive implementations hit this limit and throw `LimitException`. Schema describe results do not change within a transaction — caching them in static maps is free and should always be done.
+Describe calls are not capped by a dedicated governor limit. The Limits class documentation states that "describe limits are no longer enforced in any API version," and the per-transaction limits table lists no describe-count limit — so there is no `LimitException` to hit by describing too many objects or fields. Do not design around a describe budget, and do not write tests that assert one.
+
+Describes are still worth caching, but for cost rather than for a count limit: `Schema.getGlobalDescribe()` returns a map of every object in the org, so repeated calls consume CPU time and heap — both of which *are* governed (10,000 ms synchronous / 60,000 ms asynchronous CPU; 6 MB / 12 MB heap). In batch, trigger, or multi-object utilities that describe inside a loop, the failure mode is a CPU-time or heap limit, not a describe limit. Schema describe results do not change within a transaction, so caching them in a static map is a straightforward win.
 
 Dynamic SOQL also bypasses compile-time query binding, meaning selective filter analysis must be validated at design time rather than relying on the optimizer to do it. Poor filter selectivity in dynamic queries produces the same large-scan behavior as in static SOQL but is harder to detect in code review.
 
@@ -41,6 +43,12 @@ Dynamic SOQL enables admin-configurable field lists, generic utilities, and mult
 
 - Apex Reference Guide — Schema.DescribeSObjectResult, Schema.DescribeFieldResult, Database.query, String.escapeSingleQuotes
   https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
+
+- Apex Reference Guide — Limits Class ("Because describe limits are no longer enforced in any API version, this method is no longer available")
+  https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_limits.htm
+
+- Apex Developer Guide — Execution Governors and Limits (no describe-count limit; CPU-time and heap limits)
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 
 - Secure Apex Classes — FLS enforcement patterns, dynamic field access security model
   https://developer.salesforce.com/docs/platform/lwc/guide/apex-security

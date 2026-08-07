@@ -34,13 +34,15 @@ For objects with Read access, review field permissions:
 
 ---
 
-## OWD Alignment
+## Guest User Sharing Rule Inventory
 
-| Object | Current OWD | Guest Access Required | Action Required |
-|---|---|---|---|
-| | | Yes / No | |
+| Object | Guest user sharing rule | Criteria | Records matched | Business justification | Action Required |
+|---|---|---|---|---|---|
+| | | | | | |
 
-**Rule:** Guests can only see records where OWD is Public Read Only or Public Read/Write. Private OWD = zero guest access.
+**Rule:** Guest org-wide defaults are Private for every object and can't be changed. Guest user sharing rules (criteria-based, Read Only) are the only way to grant a guest access to a record. OWD is not a lever — never propose changing it to grant guest access.
+
+**Also check:** guest user still listed in a public group or queue, leftover manual shares, leftover Apex managed shares. None of these reach guests any more; all are stale grants to remove.
 
 ---
 
@@ -76,7 +78,7 @@ List all permission sets assigned to the guest user:
 |---|---|---|
 | Object permissions | | |
 | Field permissions | | |
-| OWD alignment | | |
+| Guest sharing rule inventory | | |
 | Apex class sharing | | |
 | Permission sets | | |
 

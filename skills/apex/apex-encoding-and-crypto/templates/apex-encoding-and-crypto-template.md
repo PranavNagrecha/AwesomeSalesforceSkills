@@ -5,7 +5,7 @@
 | Item | Value |
 |---|---|
 | Purpose | Digest / MAC / Signature / Encryption / Encoding |
-| Algorithm | `HmacSHA256` / `RSA-SHA256` / `AES256` / `SHA-256` / other |
+| Algorithm | `hmacSHA256` / `RSA-SHA256` / `AES256` / `SHA-256` / other |
 | Consumer encoding expected | base64 / base64url / hex (case) / binary |
 | Key / cert source | Named Credential / Certificate DeveloperName / Protected CMT / OTHER (flag) |
 | Body source | `req.requestBody` / serialized JSON / concatenated string |

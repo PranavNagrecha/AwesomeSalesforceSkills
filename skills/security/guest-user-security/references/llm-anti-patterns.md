@@ -6,7 +6,7 @@
 
 **Why it happens:** `without sharing` is often recommended for integration classes or system-context operations. The LLM incorrectly generalizes this to guest user scenarios.
 
-**Correct pattern:** Use `with sharing` for all guest-facing Apex. This enforces the sharing model (Public OWD records are visible; Private OWD records are not). Combine with `WITH USER_MODE` in SOQL for field-level enforcement.
+**Correct pattern:** Use `with sharing` for all guest-facing Apex. This enforces the sharing model — for a guest that means only records reached by a guest user sharing rule are visible, since guest org-wide defaults are Private on every object. Combine with `WITH USER_MODE` in SOQL for field-level enforcement.
 
 **Detection hint:** Any `without sharing` class that is annotated `@AuraEnabled` or `@RestResource` and is reachable from an Experience Cloud page.
 
@@ -24,15 +24,17 @@
 
 ---
 
-## 3. Recommending Guest Sharing Rules to Access Private OWD Records
+## 3. Telling Someone to Loosen OWD So Guest Users Can See Records
 
-**What the LLM generates wrong:** When a developer asks "how can guest users see specific Account records on my Experience Cloud site?", the LLM suggests creating guest sharing rules.
+**What the LLM generates wrong:** Asked "how can guest users see specific Account records on my Experience Cloud site?", the model answers "set the Account org-wide default to Public Read Only — guests can only see records where OWD is Public Read Only or Public Read/Write; Private OWD hides everything from them." Variants add "and Spring '21 removed guest sharing rules' ability to reach Private records," which inverts the mechanism a second time.
 
-**Why it happens:** Sharing rules are the standard mechanism for extending record access in Salesforce. The LLM applies this pattern without knowing the Spring '21 change that removed guest sharing rule access to Private OWD records.
+**Why it happens:** For every *other* user type, OWD really is the floor and sharing rules layer on top — so the model applies the general Salesforce sharing model to guests, where it does not hold. The Winter '21 guest policy is recent enough and narrow enough that older blog posts, Stack Exchange answers, and pre-2021 implementation guides dominate the training signal. The wrong answer is also *actionable*: an admin can follow it, the OWD change succeeds, and nothing errors — the guest simply still can't see the record, while every authenticated user in the org now can.
 
-**Correct pattern:** Since Spring '21, guest sharing rules cannot grant access to Private OWD records. The only way to give guest users access to records is to set the OWD to Public Read Only. Use Apex filtering to control which of those public records the guest actually sees.
+**Correct pattern:** Guest org-wide defaults are **Private for every object, including objects not shown on the Sharing Settings page, and that access level can't be changed.** "Secure guest user record access" is enabled in all orgs with Experience Cloud sites and can't be disabled. Record access is granted **exclusively** through **guest user sharing rules** — a special criteria-based sharing rule type that grants Read Only and counts toward the 50 criteria-based rules per object. Guests also can't be added to public groups or queues, can't receive manual or Apex managed shares, and can't own records. So: write a narrow guest user sharing rule; never touch OWD.
 
-**Detection hint:** Any guidance suggesting "create a sharing rule for the guest user to access [Object] records" where that object has Private OWD.
+**Why this one is dangerous:** it fails in the exposure direction. The recommended remedy does nothing for the stated goal and silently widens record access across the entire authenticated org.
+
+**Detection hint:** in prose, the strings `Public Read Only` or `Public Read/Write` within ~200 characters of `guest`; any sentence pairing `guest` with `set the OWD` / `change the org-wide default`; any claim that guest sharing rules *cannot* reach Private records. In metadata, a `.sharingRules-meta.xml` change proposed alongside a guest remediation, or an `objectPermissions` diff on a Guest profile paired with an OWD edit in the same change set.
 
 ---
 

@@ -7,7 +7,7 @@
 This skill lives at the Security boundary. Wrong algorithm choice, misplaced keys, or a non-constant-time comparison turns a compliant-looking code path into a cryptographic vulnerability.
 
 Tag findings as Security when:
-- algorithm is MD5/SHA-1 or `HmacMD5`/`HmacSHA1` in a security-relevant role
+- algorithm is MD5/SHA-1 or `hmacMD5`/`hmacSHA1` in a security-relevant role
 - key material is hardcoded in Apex or a Static Resource
 - a MAC or signature comparison uses `==` on the raw value without a constant-time wrapper
 - `Crypto.encrypt` is used with a fixed IV or a reused IV across calls
@@ -48,6 +48,7 @@ Tag findings as Operational Excellence when:
 ## Official Sources Used
 
 - Apex Developer Guide — Crypto Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Crypto.htm
+- Apex Reference Guide — Crypto Class (`generateMac`: "These are valid values for algorithmName. hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512"; `sign`/`signWithCertificate`: RSA, RSA-SHA1, RSA-SHA256, RSA-SHA384, RSA-SHA512, ECDSA-SHA256, ECDSA-SHA256-PLAIN, ECDSA-SHA384, ECDSA-SHA512; `generateDigest`: MD5, SHA1, SHA3-256, SHA3-384, SHA3-512, SHA-256, SHA-512): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm
 - Apex Developer Guide — EncodingUtil Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_EncodingUtil.htm
 - Certificate And Key Management: https://help.salesforce.com/s/articleView?id=sf.security_keys_about.htm&type=5
 - OAuth 2.0 JWT Bearer Flow: https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5

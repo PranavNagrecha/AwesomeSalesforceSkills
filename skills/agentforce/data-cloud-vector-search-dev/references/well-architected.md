@@ -45,6 +45,9 @@ Vector search index configuration is a Data Kit component. Packaging errors — 
 - Search Index Reference — Data Cloud — https://help.salesforce.com/s/articleView?id=sf.data_cloud_vector_search_index_reference.htm
 - Data 360 Developer Guide — Features Overview — https://developer.salesforce.com/docs/atlas.en-us.salesforce_cdp_api.meta/salesforce_cdp_api/cdp_api_features_overview.htm
 - Einstein Trust Layer — https://help.salesforce.com/s/articleView?id=sf.einstein_trust_layer.htm
+- The Einstein Audit and Feedback Data Model in Data Cloud (Salesforce Developers Blog) — names the audit DMOs `GenAIGatewayRequest__dlm`, `GenAIGatewayRequestTags__dlm`, `GenAIGatewayResponse__dlm`, `GenAIGeneration__dlm`, `GenAIContentQuality__dlm`, `GenAIContentCategory__dlm`, `GenAIFeedback__dlm`, `GenAIFeedbackDetail__dlm`, `GenAIAppGeneration__dlm`, queried with ANSI SQL in the Data Cloud Query Editor — https://developer.salesforce.com/blogs/2024/07/the-einstein-audit-and-feedback-data-model-in-data-cloud
+- Data Model for Generative AI Audit and Feedback — https://help.salesforce.com/s/articleView?id=ai.generative_ai_feedback_data_model.htm&type=5
+- Access Einstein Generative AI Audit and Feedback Data — https://help.salesforce.com/s/articleView?id=sf.generative_ai_feedback_install_report.htm&type=5
 - Einstein Copilot Grounding — https://help.salesforce.com/s/articleView?id=sf.einstein_copilot_grounding.htm
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Einstein Platform Services Overview — https://developer.salesforce.com/docs/einstein/genai/guide/overview.html

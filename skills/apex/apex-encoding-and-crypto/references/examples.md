@@ -37,7 +37,7 @@ global with sharing class StripeEventResource {
 
         String secret = StripeConfig__mdt.getInstance('Live').Webhook_Secret__c;
         String signedPayload = timestamp + '.' + req.requestBody.toString();
-        Blob computed = Crypto.generateMac('HmacSHA256',
+        Blob computed = Crypto.generateMac('hmacSHA256',
             Blob.valueOf(signedPayload), Blob.valueOf(secret));
         String computedHex = EncodingUtil.convertToHex(computed);
 
@@ -173,7 +173,7 @@ public with sharing class PartnerTokenVault {
 **What practitioners do:**
 
 ```apex
-Blob mac = Crypto.generateMac('HmacSHA256', body, Blob.valueOf(secret));
+Blob mac = Crypto.generateMac('hmacSHA256', body, Blob.valueOf(secret));
 if (EncodingUtil.convertToHex(mac) == providedSignature) { /* accept */ }
 ```
 

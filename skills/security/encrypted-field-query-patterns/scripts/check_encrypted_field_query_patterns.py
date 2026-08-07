@@ -39,8 +39,22 @@ def check_file(path: Path) -> list[str]:
     if "index" not in text:
         issues.append(f"{path}: no indexing plan mentioned")
 
-    if "view encrypted data" not in text:
-        issues.append(f"{path}: no permission test for 'View Encrypted Data'")
+    # Shield Platform Encryption decrypts transparently for any user with
+    # field-level READ. Plaintext is gated by FLS, not by a permission.
+    if "field-level security" not in text and "fls" not in text:
+        issues.append(
+            f"{path}: no field-level security (FLS) test — Shield plaintext "
+            f"visibility is controlled by FLS, not by a permission"
+        )
+
+    # 'View Encrypted Data' is a Classic Encryption permission. Relying on it
+    # in a Shield plan is a false sense of protection.
+    if "view encrypted data" in text and "classic" not in text:
+        issues.append(
+            f"{path}: relies on 'View Encrypted Data' — that permission is "
+            f"Classic Encryption only and does not mask Shield-encrypted "
+            f"fields (unnecessary for Shield since Spring '17)"
+        )
 
     return issues
 

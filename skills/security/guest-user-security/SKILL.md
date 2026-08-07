@@ -22,7 +22,7 @@ inputs:
   - "Experience Cloud site name and guest user profile"
   - "List of Apex classes accessible via guest context (Apex REST, @AuraEnabled, invocable)"
   - "Object and field permissions granted to the guest profile"
-  - "OWD settings for objects exposed to guest users"
+  - "Guest user sharing rules granting record access on the site"
 outputs:
   - "Guest user hardening checklist with specific remediation steps"
   - "Apex class review findings: classes that expose data to guest context"
@@ -35,7 +35,7 @@ updated: 2026-04-04
 
 # Guest User Security
 
-This skill activates when a practitioner needs to audit, configure, or remediate security for Salesforce Experience Cloud guest users — the unauthenticated profile that backs every public-facing site. Guest users have a unique execution context with permanent system-mode Apex access, OWD-enforced record visibility (since Spring '21), and a profile that cannot be deleted or duplicated.
+This skill activates when a practitioner needs to audit, configure, or remediate security for Salesforce Experience Cloud guest users — the unauthenticated profile that backs every public-facing site. Guest users have a unique execution context: permanent system-mode Apex access, org-wide defaults locked to Private on every object (since Winter '21), record access granted only through guest user sharing rules, and a profile that cannot be deleted or duplicated.
 
 ---
 
@@ -44,9 +44,9 @@ This skill activates when a practitioner needs to audit, configure, or remediate
 Gather this context before working on anything in this domain:
 
 - Identify which Experience Cloud sites use guest access (Setup > Digital Experiences > All Sites). Each site has its own guest user profile with independent object permissions.
-- Confirm the org is on API v51+ (Spring '21). The mandatory Secure Guest User Record Access toggle enforced org-wide-default-based record visibility for guests in Spring '21. If this toggle is OFF in older orgs, guests may be seeing all records.
+- Confirm how "Secure guest user record access" is configured. Since Winter '21 it is enabled in every org with Experience Cloud sites and **cannot be disabled** — there is no toggle to leave off. What legacy orgs *do* carry forward is stale configuration: public groups and queues that still list the guest user, orphaned manual/Apex managed shares, and grandfathered profile permissions.
 - List all Apex classes referenced by guest pages: @AuraEnabled classes, Apex REST endpoints on Force.com Sites, and invocable actions exposed via guest Flow.
-- Know the OWD for every object the site touches. Guest users see records only when OWD is Public Read Only or Public Read/Write — Private OWD hides all records unless sharing rules explicitly grant Read Only.
+- Inventory the **guest user sharing rules**, not the OWD. Guest org-wide defaults are Private for every object and that access level can't be changed, so an object's OWD tells you nothing about guest visibility. Every record a guest can read arrives through a criteria-based guest user sharing rule.
 
 ---
 
@@ -58,14 +58,19 @@ Every guest user executes Apex in system mode regardless of the `with sharing` o
 
 Practical impact: An Apex class marked `with sharing` will correctly hide records the guest cannot see via sharing, but it will still expose every field on the records that ARE visible. Combine `with sharing` for record filtering with explicit FLS checks or `WITH USER_MODE` in SOQL for field filtering.
 
-### Spring '21 Mandatory Secure Guest User Record Access
+### Secure Guest User Record Access — Guest OWD Is Private, Permanently
 
-Before Spring '21, guest users could use sharing rules to access Private OWD records. Spring '21 made the "Secure Guest User Record Access" toggle mandatory. After this change:
-- Guest users can only access records where OWD is Public Read Only or Public Read/Write.
-- Guest sharing rules can only grant Read Only access (not Read/Write).
-- Guest users cannot see records owned by other guest users unless OWD is public.
+This is the fact most guidance gets backwards. Since Winter '21, "Secure guest user record access" is enabled in every org with Experience Cloud sites and can't be disabled. Under it:
 
-Any site built before Spring '21 that relied on guest sharing rules for Private OWD records broke silently during the release upgrade. Orgs that had the toggle OFF and have not yet enforced it are running with weakened guest isolation.
+- **Guest org-wide defaults are Private for every object**, including objects not listed on the Sharing Settings page, and **that access level can't be changed.** Child objects in a master-detail relationship inherit the parent's Private setting.
+- Setting an object's OWD to Public Read Only does **not** expose its records to guests. Guest sharing is a separate, always-Private model — the internal/external OWD you see in Sharing Settings is not what the guest user is evaluated against.
+- **Guest user sharing rules are the only way to grant record access** to unauthenticated guests. They are a special type of criteria-based sharing rule, grant **Read Only** and nothing more, and count against the 50-criteria-based-rules-per-object limit.
+- Guest users **can't** be added to public groups or queues, **can't** receive access through manual sharing or Apex managed sharing, and **can't** own records (guest-created records are reassigned to a default org user).
+- Spring '21 additionally removed View All Records, Modify All Records, edit, and delete from guest users permanently.
+
+The remediation direction therefore inverts too: a site whose guests lost access is fixed by **writing a guest user sharing rule**, never by loosening OWD. Loosening OWD widens exposure for authenticated users while doing nothing for guests — the worst possible trade.
+
+Legacy orgs do not auto-migrate their *stale* configuration: guest users previously added to public groups or queues are not removed automatically and must be removed by hand, and grandfathered profile permissions persist until an admin strips them. That, not a disabled toggle, is what an audit is looking for.
 
 ### Object and Field Permissions on the Guest Profile
 
@@ -122,17 +127,19 @@ public with sharing class GuestCaseController {
 }
 ```
 
-**Why not without sharing:** `without sharing` ignores the sharing model entirely — any guest user who knows a record ID can access it via SOQL even if OWD is Private.
+**Why not without sharing:** `without sharing` ignores the sharing model entirely — any guest user who knows a record ID can read it via SOQL, even though the guest org-wide default is Private. This is the one thing that defeats the platform's guest lockdown, which is why it is the single highest-value finding in a guest audit.
 
-### Configuring OWD for Guest-Accessible Objects
+### Granting Record Access to Guest Users
 
-**When to use:** Deciding whether an object's records should be accessible to unauthenticated users.
+**When to use:** An unauthenticated visitor legitimately needs to read specific records (a public event listing, a published article, an order-status lookup).
 
 **How it works:**
-1. If the object must be publicly readable, set OWD to Public Read Only. Guest users can then read all records.
-2. If the object must NOT be publicly readable, set OWD to Private. Guest users will see zero records regardless of Apex sharing keywords.
-3. Use `WITH USER_MODE` in all Apex touching this object so the OWD enforcement is consistent.
-4. Never rely on Apex logic alone to hide records — an Apex bug can bypass conditional filters. The OWD is the backstop.
+1. Leave the guest sharing model alone — guest OWD is Private on every object and can't be changed. Do not touch the object's OWD hoping to reach guests; it will not.
+2. Create a **guest user sharing rule** on that object (Setup → Sharing Settings → the object → Guest user sharing rules). It is criteria-based, so write criteria that match *only* the records that are genuinely public — `Is_Public__c = true`, not `Id != null`.
+3. Accept the ceiling: guest user sharing rules grant Read Only. If the requirement is guest writes, that is Create permission on the guest profile plus a submission-only Apex/Flow path — not a sharing rule.
+4. Budget the limit: guest user sharing rules count toward the 50 criteria-based sharing rules per object.
+5. Use `WITH USER_MODE` in all Apex touching the object so sharing *and* FLS are enforced consistently.
+6. Never rely on Apex `WHERE` clauses alone to hide records — an Apex bug bypasses conditional filters. The sharing-rule criteria are the backstop.
 
 ---
 
@@ -141,9 +148,9 @@ public with sharing class GuestCaseController {
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Apex class used by both guests and authenticated users | Split into guest-specific class with `with sharing` + `WITH USER_MODE`, delegate to shared service layer | Mixing contexts in one class is error-prone |
-| Object with sensitive fields but publicly queryable records | OWD Public Read Only, remove sensitive fields from guest profile FLS | OWD controls visibility; FLS controls field access |
+| Object with sensitive fields but publicly queryable records | Narrow guest user sharing rule on the public records, remove sensitive fields from guest profile FLS | The sharing rule controls which rows; FLS controls which fields |
 | Guest user needs to create records (e.g., form submission) | Grant Create permission on guest profile for that object only, never Edit/Delete | Minimum privilege; form submissions are Create-only |
-| Guest site was built pre-Spring '21 and sharing rules are failing | Enable "Secure Guest User Record Access" toggle and switch affected objects to Public OWD | Old sharing rules for Private OWD no longer work; restructure required |
+| Guest site was built pre-Winter '21 and guest access is failing | Replace the old grant (public group, queue, manual share, Apex managed share, ordinary sharing rule) with a criteria-based **guest user sharing rule**; remove the guest user from any group or queue | Those mechanisms no longer reach guests; loosening OWD would not help and would widen internal exposure |
 | Permission set must be assigned to guest user | Audit carefully — list all PSets assigned, verify no elevated object permissions or system permissions are included | PS assignment to guest user is a new vector since Spring '22 |
 
 ---
@@ -153,7 +160,7 @@ public with sharing class GuestCaseController {
 1. Enumerate all Experience Cloud sites in the org and identify which use guest access. For each site, open the guest user profile.
 2. Audit object permissions on the guest profile: remove any Create/Edit/Delete/View All/Modify All that is not strictly required.
 3. Audit field permissions on the guest profile for every Read-accessible object: remove access to sensitive fields (PII, financial, health data).
-4. Review OWD for every object the site touches. Confirm Private objects are not accessible to guests. Set to Public Read Only only if unauthenticated access is genuinely required.
+4. Review every **guest user sharing rule** in the org. Each one should map to a documented business justification and to criteria narrow enough that only genuinely public records match. Never change an object's OWD to reach guests — guest OWD is Private and unchangeable. Also remove the guest user from any public group or queue it was added to before Winter '21.
 5. Review all Apex classes reachable from guest sessions. Add `with sharing` and replace SOQL with `WITH USER_MODE` queries.
 6. Run the Salesforce Security Health Check to identify open guest user permission gaps.
 7. Test the site as a guest user (incognito browser, no session) and confirm that no unexpected records or fields are exposed.
@@ -165,8 +172,9 @@ public with sharing class GuestCaseController {
 - [ ] Guest profile has no Create, Edit, Delete, View All, or Modify All on any object
 - [ ] Sensitive fields are removed from guest profile field permissions
 - [ ] All Apex reachable from guest sessions uses `with sharing` AND `WITH USER_MODE`
-- [ ] Objects with Private OWD are not being accessed via guest SOQL
-- [ ] "Secure Guest User Record Access" toggle is ON in all relevant orgs
+- [ ] Every guest user sharing rule has a documented justification and criteria that match only public records
+- [ ] Guest user is not a member of any public group or queue, and holds no leftover manual or Apex managed shares
+- [ ] No remediation in the plan proposes loosening an object's OWD to grant guest access
 - [ ] Permission sets assigned to the guest user have been reviewed and minimized
 - [ ] Site tested in incognito/unauthenticated state — no unexpected record or field exposure
 
@@ -176,7 +184,7 @@ public with sharing class GuestCaseController {
 
 1. **`with sharing` alone does not prevent field exposure** — it controls which RECORDS a guest sees, not which FIELDS. A `with sharing` class can still return all fields on every accessible record. Always combine with `WITH USER_MODE` or explicit FLS checks.
 2. **Apex without sharing executed by a guest is a full-org data read** — a single `without sharing` class called from a guest LWC component will return any record matching the SOQL filter, regardless of OWD. This is the most common guest data leak pattern.
-3. **Guest sharing rules became Read Only only in Spring '21** — any guest sharing rule granting Read/Write that was created before Spring '21 was silently downgraded to Read Only. Orgs that depended on guest write access via sharing rules broke on upgrade.
+3. **Guest user sharing rules grant Read Only, full stop** — since Winter '21 no sharing mechanism can give a guest write access to an existing record, and guests can no longer be reached through public groups, queues, manual sharing, or Apex managed sharing at all. Orgs that depended on any of those broke on upgrade, and the fix is a guest user sharing rule (for reads) or Create-only profile permission (for submissions) — not an OWD change.
 4. **Guest users can be assigned permission sets since Spring '22** — this means elevated permissions can be granted to the guest user indirectly. Always audit the full effective permission set of the guest user, not just the profile.
 5. **Each site has its own guest user** — changing the guest profile on Site A does not affect Site B. If you have 3 sites, you must audit 3 guest profiles independently.
 
@@ -186,9 +194,9 @@ public with sharing class GuestCaseController {
 
 | Artifact | Description |
 |---|---|
-| Guest user hardening checklist | Ordered remediation items for each site: profile permissions, FLS, OWD alignment, Apex review |
+| Guest user hardening checklist | Ordered remediation items for each site: profile permissions, FLS, guest sharing rule review, Apex review |
 | Apex exposure report | List of @AuraEnabled/@RestResource classes reachable from guest sessions with `with sharing` and `WITH USER_MODE` status |
-| OWD alignment table | Object-by-object table showing current OWD, guest accessibility intent, and required change |
+| Guest sharing rule inventory | Rule-by-rule table showing object, criteria, records matched, business justification, and required change (guest OWD is Private everywhere and is not a variable) |
 
 ---
 

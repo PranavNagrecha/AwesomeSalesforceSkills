@@ -9,7 +9,7 @@ Common mistakes AI coding assistants make when generating or reviewing Apex code
 ```apex
 public static Boolean verify(Blob body, String receivedSig) {
     String secret = 'whsec_testsecret1234567890';   // <- literal
-    Blob mac = Crypto.generateMac('HmacSHA256', body, Blob.valueOf(secret));
+    Blob mac = Crypto.generateMac('hmacSHA256', body, Blob.valueOf(secret));
     return EncodingUtil.convertToHex(mac) == receivedSig;
 }
 ```
@@ -20,7 +20,7 @@ public static Boolean verify(Blob body, String receivedSig) {
 
 ```apex
 String secret = WebhookConfig__mdt.getInstance('Live').Secret__c; // protected CMT
-Blob mac = Crypto.generateMac('HmacSHA256', body, Blob.valueOf(secret));
+Blob mac = Crypto.generateMac('hmacSHA256', body, Blob.valueOf(secret));
 ```
 
 **Detection hint:** `Crypto.generateMac(...)` or `Crypto.encrypt(...)` on the same line or within 3 lines of a string literal that looks like a secret (contains "secret", "key", "token", or 16+ opaque characters).
@@ -54,7 +54,7 @@ String segment = EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(claims)))
 **What the LLM generates:**
 
 ```apex
-Blob mac = Crypto.generateMac('HmacSHA256', body, Blob.valueOf(secret));
+Blob mac = Crypto.generateMac('hmacSHA256', body, Blob.valueOf(secret));
 if (EncodingUtil.convertToHex(mac) == receivedSig) {
     // accept
 }
@@ -102,7 +102,7 @@ Blob sig = Crypto.signWithCertificate('RSA-SHA256', Blob.valueOf(input), 'Partne
 **What the LLM generates:**
 
 ```apex
-Blob mac = Crypto.generateMac('HmacSHA256', body, Blob.valueOf(secret));
+Blob mac = Crypto.generateMac('hmacSHA256', body, Blob.valueOf(secret));
 String macStr = mac.toString();  // corrupts non-UTF-8 bytes
 CustomObj__c.Signature__c = macStr;
 ```
@@ -145,14 +145,33 @@ Blob cipher = Crypto.encryptWithManagedIV('AES256', key, Blob.valueOf(plaintext)
 **What the LLM generates:**
 
 ```apex
-Blob mac = Crypto.generateMac('HmacMD5', body, Blob.valueOf(secret));
+Blob mac = Crypto.generateMac('hmacMD5', body, Blob.valueOf(secret));
 ```
 
-**Why it happens:** LLMs copy the first algorithm name from the docs list; `HmacMD5` and `HmacSHA1` are listed first alphabetically.
+**Why it happens:** LLMs copy the first algorithm name from the docs list; `hmacMD5` and `hmacSHA1` are listed first alphabetically.
 
-**Correct pattern:** `HmacSHA256` minimum for HMACs; `SHA-256` minimum for digests when the output has a security role.
+**Correct pattern:** `hmacSHA256` minimum for HMACs; `SHA-256` minimum for digests when the output has a security role.
 
-**Detection hint:** `'HmacMD5'`, `'HmacSHA1'`, `'MD5'`, or `'SHA1'` / `'SHA-1'` passed to any `Crypto` method.
+**Detection hint:** `'hmacMD5'`, `'hmacSHA1'`, `'MD5'`, or `'SHA1'` / `'SHA-1'` passed to any `Crypto` method — match case-insensitively, since `HmacMD5` and `hmacMD5` both appear in the wild.
+
+---
+
+## Anti-Pattern 7b: Inventing `hmacSHA384` (Or Any Unsupported Algorithm Name)
+
+**What the LLM generates:**
+
+```apex
+// compiles fine; throws at run time
+Blob mac = Crypto.generateMac('hmacSHA384', body, Blob.valueOf(secret));
+```
+
+…or prose listing the supported set as "hmacSHA1, hmacSHA256, hmacSHA384, hmacSHA512, hmacMD5".
+
+**Why it happens:** SHA-384 is a real SHA-2 member and a real HMAC in Java's JCE (`HmacSHA384`), in Python's `hmac`, and in OpenSSL. The model completes the 256/384/512 sequence by pattern rather than by reading Salesforce's list, and Salesforce's own `sign` / `signWithCertificate` *does* accept `RSA-SHA384` and `ECDSA-SHA384`, which reinforces the guess. Because `algorithmName` is a `String`, the compiler and the deploy both pass, so nothing contradicts the model.
+
+**Correct pattern:** `Crypto.generateMac` accepts exactly `hmacMD5`, `hmacSHA1`, `hmacSHA256`, `hmacSHA512`. SHA-384 has no keyed-MAC form on the platform, and `generateDigest` has no SHA-384 either. When a counterparty mandates HMAC-SHA-384, renegotiate to SHA-256/SHA-512 or compute the MAC outside Apex; never silently substitute another algorithm, because the signature will not verify. `SHA3-384` is not a substitute — it is an unkeyed digest.
+
+**Detection hint:** case-insensitive regex `Crypto\.generateMac\s*\(\s*['"]\s*hmac[- ]?sha[- ]?384` in any `.cls`/`.trigger`, and in prose any supported-algorithm list for `generateMac` whose cardinality is not exactly 4 or that contains the substring `384`.
 
 ---
 

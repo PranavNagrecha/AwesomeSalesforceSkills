@@ -4,7 +4,7 @@
 
 **What happens:** A developer adds `with sharing` to a guest-facing Apex class and considers the security review complete. An internal audit later discovers that the class returns sensitive fields (BillingCity, AnnualRevenue) from Account records because `with sharing` only enforces which RECORDS are visible, not which FIELDS.
 
-**Why:** `with sharing` enforces the sharing model (row visibility). It does not enforce field-level security. On Public OWD objects, all records are visible to the guest user, so `with sharing` has no effect on rows either. The class can still return every field on every record.
+**Why:** `with sharing` enforces the sharing model (row visibility). It does not enforce field-level security. For a guest user the row set is whatever the guest user sharing rules grant — so on an object with a broad sharing rule, `with sharing` filters out almost nothing, and the class still returns every field on every matched record.
 
 **How to avoid:** Combine `with sharing` with `WITH USER_MODE` in SOQL or explicit `Schema.SObjectType.Account.fields.AnnualRevenue.isAccessible()` checks. Return DTOs (data transfer objects) that explicitly whitelist returned fields.
 
@@ -30,10 +30,10 @@
 
 ---
 
-## 4. Secure Guest User Record Access Toggle Breaks Pre-Spring '21 Sites
+## 4. Secure Guest User Record Access Breaks Pre-Winter '21 Sharing Mechanisms
 
-**What happens:** An org that was configured before Spring '21 with Private OWD on an object and guest sharing rules (granting Read access to specific records) stops working after upgrading. Guest users can no longer see the records they previously accessed via sharing rules.
+**What happens:** An org configured before Winter '21 granted guests access by adding the guest user to a public group or queue, by manual/Apex managed sharing, or by an ordinary sharing rule. After enforcement, guests can no longer see those records.
 
-**Why:** Spring '21 made "Secure Guest User Record Access" mandatory. This toggle enforces OWD-based access for guest users — Private OWD records are completely hidden from guests regardless of sharing rules. The sharing rules from before Spring '21 are still present in the org but have no effect for Private OWD objects.
+**Why:** Since Winter '21, "Secure guest user record access" is enabled in every org with Experience Cloud sites and can't be disabled. Guest org-wide defaults are Private for all objects and that access level can't be changed. Guests can't be members of public groups or queues, can't receive manual or Apex managed shares, and can't own records. The only surviving grant path is a **guest user sharing rule** — a criteria-based rule that grants Read Only.
 
-**How to avoid:** For sites that need guest users to access records, change the OWD for those objects to Public Read Only. Use Apex filtering (WITH USER_MODE + where clauses) to restrict which Public records the guest actually sees.
+**How to avoid:** Replace each broken grant with a guest user sharing rule whose criteria match only the genuinely public records. Do **not** raise the object's OWD: guest visibility is not evaluated against it, so the change grants guests nothing while widening exposure for authenticated internal users. Also remove the guest user from any group or queue by hand — legacy memberships are not cleaned up automatically. Keep `WITH USER_MODE` in Apex for field enforcement; the sharing-rule criteria remain the row-level backstop.

@@ -33,11 +33,17 @@ You can set a deterministic encrypted field as External ID for
 upsert-by-external-id, but the upsert path has specific requirements.
 Test thoroughly.
 
-## 7. Data Import Tools Need Permission
+## 7. Data Import Tools Need FLS, Not "View Encrypted Data"
 
-Data Loader / ETL users loading to encrypted fields need "View
-Encrypted Data" to verify. Otherwise they see masked values in
-confirmations.
+Data Loader / ETL users loading to a Shield-encrypted field need
+field-level **Read** (to verify) and **Edit** (to write) on that field.
+Shield decryption is transparent to anyone with FLS read.
+
+"View Encrypted Data" is a **Classic Encryption** permission and has no
+effect on Shield-encrypted fields (unnecessary since Spring '17). If an
+integration user is seeing `*********`, the field is a Classic
+`Encrypted Text` field, not a Shield field — check which product is in
+play before changing permissions.
 
 ## 8. Key Rotation Rebuilds Encryption
 

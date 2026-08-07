@@ -43,10 +43,14 @@
 
 ## Example 6: Mixed-Permission Test Plan
 
-- User A: "View Encrypted Data" = true.
-- User B: "View Encrypted Data" = false.
+- User A: FLS Read granted on the encrypted field.
+- User B: FLS Read removed on the encrypted field.
 - For each flow: list view, report, Apex dashboard, LWC detail — verify
-  A sees plaintext and B sees mask, with no functional error.
+  A sees plaintext and B cannot retrieve the field at all, with no
+  functional error.
+- Do **not** build this matrix on "View Encrypted Data". That permission
+  is Classic Encryption only; toggling it changes nothing for a
+  Shield-encrypted field.
 
 ## Example 7: Schema Decision Log
 

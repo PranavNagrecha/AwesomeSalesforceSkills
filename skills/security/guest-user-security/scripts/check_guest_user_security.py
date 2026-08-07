@@ -61,7 +61,9 @@ def scan_apex_files(apex_dir: Path) -> list[str]:
             issues.append(
                 f"{cls_file.name}: Class uses 'without sharing' and has @AuraEnabled or "
                 f"@RestResource methods. If this class is reachable from an Experience Cloud "
-                f"guest session, it will expose records ignoring OWD. Review and change to "
+                f"guest session, it will expose records ignoring the guest sharing model "
+                f"(guest OWD is Private on every object; access comes only from guest user "
+                f"sharing rules). Review and change to "
                 f"'with sharing' unless there is a documented reason for system-mode access."
             )
 

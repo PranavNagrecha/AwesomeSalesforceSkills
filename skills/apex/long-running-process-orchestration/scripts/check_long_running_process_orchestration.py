@@ -6,7 +6,13 @@ Scans Apex source files for common anti-patterns in multi-step async orchestrati
   - attachFinalizer called after risky code (SOQL/DML/callout) in execute()
   - Multiple System.enqueueJob() calls within a single execute() method
   - Static fields used for inter-step state in Queueable classes
-  - @future methods used inside Queueable execute() for chaining
+  - Queueable execute() doing DML/callouts with no Finalizer attached
+
+Note: calling a @future method from a Queueable's execute() is NOT checked here,
+because it is legal. The Apex per-transaction limits table allocates "0 in batch
+and future contexts; 50 in queueable context" for methods with the future
+annotation, so @future-from-Queueable is explicitly permitted.
+See https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 
 Uses stdlib only — no pip dependencies.
 
@@ -78,6 +84,44 @@ def extract_execute_body(source: str) -> str:
     return ""
 
 
+def extract_call_args(source: str, open_paren_idx: int) -> str | None:
+    """
+    Given the index of a '(' in source, return the text between it and its
+    matching ')', honouring nesting. Returns None if unbalanced.
+    """
+    if open_paren_idx >= len(source) or source[open_paren_idx] != "(":
+        return None
+    depth = 0
+    for i in range(open_paren_idx, len(source)):
+        char = source[i]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return source[open_paren_idx + 1 : i]
+    return None
+
+
+def count_top_level_args(args: str) -> int:
+    """
+    Count comma-separated arguments at nesting depth 0, so that commas inside
+    nested calls or generic type parameters (Map<Id, Account>) are not counted.
+    """
+    if not args.strip():
+        return 0
+    depth = 0
+    count = 1
+    for char in args:
+        if char in "(<[":
+            depth += 1
+        elif char in ")>]":
+            depth -= 1
+        elif char == "," and depth == 0:
+            count += 1
+    return count
+
+
 # ---------------------------------------------------------------------------
 # Individual checks
 # ---------------------------------------------------------------------------
@@ -91,15 +135,20 @@ def check_enqueue_without_options(path: Path, source: str) -> list[str]:
     if "implements Queueable" not in source and "implements Queueable," not in source:
         return issues
 
-    # Find all enqueueJob calls; flag those without a second argument (no AsyncOptions)
-    # Pattern: System.enqueueJob( ... ) — two forms: one arg vs two args
-    enqueue_calls = re.findall(r'System\.enqueueJob\s*\(([^)]*)\)', source)
-    for call_args in enqueue_calls:
-        # If only one argument (no comma separating a second arg), AsyncOptions is absent
-        if "," not in call_args:
+    # Find all enqueueJob calls and count TOP-LEVEL arguments. A naive
+    # r'\(([^)]*)\)' match stops at the first inner ')', so
+    # System.enqueueJob(new Foo(a, b), opts) would be read as "new Foo(a, b"
+    # and misjudged. Walk the parentheses instead.
+    for match in re.finditer(r'System\.enqueueJob\s*\(', source):
+        args = extract_call_args(source, match.end() - 1)
+        if args is None:
+            continue
+        if count_top_level_args(args) < 2:
             issues.append(
                 f"{path.name}: System.enqueueJob() called without AsyncOptions — "
-                "MaximumQueueableStackDepth will not be enforced on this chain link."
+                "the chain runs with the org's default queueable stack-depth behavior. "
+                "Pass AsyncOptions with MaximumQueueableStackDepth to bound the chain "
+                "explicitly."
             )
     return issues
 
@@ -175,40 +224,26 @@ def check_static_state_fields(path: Path, source: str) -> list[str]:
     if "implements Queueable" not in source and "implements Queueable," not in source:
         return issues
 
-    # Static fields that are not final constants (all-caps name) are suspicious
+    # Static fields that are not final constants (all-caps name) are suspicious.
+    # Capture the declared name so the ALL_CAPS constant test can run in Python —
+    # a variable-width lookbehind such as (?<![A-Z_]{3,}) is not a legal regex.
     static_field_pattern = re.compile(
-        r'\bpublic\s+static\s+(?!final\s)(?:Map|List|Set|String|Id|Integer|Boolean|Object)\b'
-        r'[^;]*(?<![A-Z_]{3,})\s*;',
+        r'\b(?:public|private|protected|global)\s+static\s+(?!final\b)'
+        r'(?:Map|List|Set|String|Id|Integer|Boolean|Object|Decimal|Long|Double)\b'
+        r'(?:\s*<[^>]*>)?\s+'
+        r'(\w+)\s*(?:=|;)',
         re.IGNORECASE,
     )
-    if static_field_pattern.search(source):
+    for match in static_field_pattern.finditer(source):
+        field_name = match.group(1)
+        # ALL_CAPS names are conventional constants, not inter-step state.
+        if field_name.isupper():
+            continue
         issues.append(
-            f"{path.name}: Queueable class declares a non-constant static field — "
+            f"{path.name}: Queueable class declares non-constant static field "
+            f"'{field_name}' — "
             "static variables do not survive between async transactions; "
             "pass state through constructor fields instead."
-        )
-    return issues
-
-
-def check_future_in_execute(path: Path, source: str) -> list[str]:
-    """
-    Warn when execute() references a @future method call, which cannot be chained
-    from Queueable and cannot itself chain back.
-    """
-    issues: list[str] = []
-    if "implements Queueable" not in source and "implements Queueable," not in source:
-        return issues
-
-    execute_body = extract_execute_body(source)
-    if not execute_body:
-        return issues
-
-    # Look for calls that pattern like ClassName.methodName() where the file also has @future
-    if "@future" in source and re.search(r'\b\w+\.\w+\s*\(', execute_body):
-        issues.append(
-            f"{path.name}: Queueable execute() may be calling a @future method — "
-            "@future cannot chain to another @future and lacks Finalizer support; "
-            "use Queueable chaining for multi-step orchestration."
         )
     return issues
 
@@ -262,7 +297,6 @@ def check_long_running_process_orchestration(manifest_dir: Path) -> list[str]:
         check_finalizer_placement,
         check_multiple_enqueues_in_execute,
         check_static_state_fields,
-        check_future_in_execute,
         check_missing_finalizer_on_queueable,
     ]
 

@@ -178,3 +178,26 @@ To package for scratch org or ISV distribution:
 ```
 
 **Detection hint:** Any instruction to place vector search index configuration files in `force-app/main/default/` or deploy using `sf project deploy start` without a Data Kit wrapper should be flagged as incorrect for Data Cloud vector search configuration.
+
+---
+
+## Anti-Pattern 7: Inventing a REST sObject Endpoint for the Einstein Trust Layer Audit Log
+
+**What the LLM generates:** "Review the Einstein Trust Layer audit log at `/services/data/v63.0/sobjects/AIGrndngEinsteinTrustLog`" — or any variant naming a plausible-looking sObject (`EinsteinTrustLog`, `AIAuditLog__c`, `GenAIAuditEntry`) reachable through the CRM REST API, sometimes with a SOQL query against it.
+
+**Why it happens:** Two habits collide. Salesforce genuinely does expose most platform telemetry as CRM sObjects (`EventLogFile`, `SetupAuditTrail`, `AIInsightValue`), so "audit log" pattern-matches to "sObject". And Salesforce's AI objects use dense internal abbreviations (`AIGrndng…`, `AIAgentDefn…`, `GenAI…`), which are trivially imitable — a model can synthesize a name that *reads* exactly like a real one. Because the answer is a URL rather than a claim, it looks checkable and gets copied straight into runbooks; it fails only when someone actually calls it and gets a 404, usually during an audit or an incident.
+
+**Correct pattern:** Einstein Trust Layer audit and feedback data is **not** a CRM sObject and has **no** `/services/data/` endpoint. It is collected into **Data Cloud data model objects** and queried with ANSI SQL from the Data Cloud Query Editor or the Data Cloud Query API:
+
+| DMO | Holds |
+|---|---|
+| `GenAIGatewayRequest__dlm` | What was sent to the Salesforce generative AI layer (post-masking) |
+| `GenAIGatewayRequestTags__dlm` | Request tags |
+| `GenAIGatewayResponse__dlm` | The LLM response |
+| `GenAIGeneration__dlm` | The specific generated output |
+| `GenAIContentQuality__dlm`, `GenAIContentCategory__dlm` | Toxicity / content-category scoring |
+| `GenAIFeedback__dlm`, `GenAIFeedbackDetail__dlm`, `GenAIAppGeneration__dlm` | User feedback |
+
+Two preconditions: Data Cloud must be provisioned, and generative AI audit and feedback data collection and storage must be turned on in Einstein Setup — otherwise the DMOs are simply empty, and a QA step reads that as "no masking occurred."
+
+**Detection hint:** any `/services/data/v\d+\.\d+/sobjects/\w*(Trust|Grndng|Grounding|GenAI)\w*` path; any SOQL `FROM` clause naming an object matching `AIGrndng.*` or `.*EinsteinTrustLog.*`; any reference to Trust Layer audit data that does not mention Data Cloud, a `__dlm` suffix, or the Query Editor. Mechanically: every real DMO name in this domain ends in `__dlm` and is queried in SQL, never SOQL — a Trust Layer audit identifier without that suffix is a fabrication until proven otherwise against the Data Cloud object reference.

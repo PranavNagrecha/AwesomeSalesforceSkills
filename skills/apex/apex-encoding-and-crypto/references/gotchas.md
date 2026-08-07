@@ -48,7 +48,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Legacy code; or a developer conflating hash (integrity) with MAC (authenticated integrity) with signature (authenticated non-repudiation).
 
-**How to avoid:** SHA-256 or stronger for digests. `HmacSHA256` or stronger for MACs. `RSA-SHA256` or `ECDSA-SHA256` for signatures. Reserve MD5/SHA-1 for non-security fingerprints (deduplication, cache keys) and comment why.
+**How to avoid:** SHA-256 or stronger for digests. `hmacSHA256` or stronger for MACs. `RSA-SHA256` or `ECDSA-SHA256` for signatures. Reserve MD5/SHA-1 for non-security fingerprints (deduplication, cache keys) and comment why.
 
 ---
 

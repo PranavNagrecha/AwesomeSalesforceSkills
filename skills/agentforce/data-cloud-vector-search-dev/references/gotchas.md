@@ -28,7 +28,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** When source DMOs contain fields that hold or reference customer PII (e.g., case descriptions referencing customer names, account numbers), and those fields were classified in the Data Cloud field taxonomy before indexing without the developer anticipating how masking would interact with retrieval.
 
-**How to avoid:** Before building the vector search index, audit the source DMO fields against the Data Cloud field taxonomy. Identify any fields classified as Restricted or Personal. For fields that will be embedded, decide whether masking is acceptable at retrieval time or whether the field should be excluded from the indexed text. Review the Einstein Trust Layer audit log (`/services/data/v63.0/sobjects/AIGrndngEinsteinTrustLog`) for masking events during QA testing to confirm that masking behavior is deliberate rather than accidental.
+**How to avoid:** Before building the vector search index, audit the source DMO fields against the Data Cloud field taxonomy. Identify any fields classified as Restricted or Personal. For fields that will be embedded, decide whether masking is acceptable at retrieval time or whether the field should be excluded from the indexed text.
+
+Then confirm the masking is deliberate by reading the Einstein Trust Layer audit trail. **That audit trail is not a CRM sObject** — there is no `/services/data/vXX.X/sobjects/...` endpoint for it. Trust Layer audit and feedback data is collected into **Data Cloud data model objects**, and you query it with ANSI SQL in the Data Cloud Query Editor (or the Data Cloud Query API). The prompt-and-response pair is in `GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`, with `GenAIGeneration__dlm` for the generated output and `GenAIGatewayRequestTags__dlm` for request tags. Compare the text stored in the request DMO against the raw source DMO record: where they differ, masking fired.
+
+Two prerequisites bite in practice. Data collection is **off until you turn it on** — enable Einstein generative AI audit and feedback data collection and storage in Einstein Setup, or the DMOs stay empty and QA concludes "no masking occurred" from an empty result set. And the org needs Data Cloud provisioned; without it there is nowhere for the audit trail to land.
 
 ---
 

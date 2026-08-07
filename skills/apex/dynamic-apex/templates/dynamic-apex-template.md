@@ -70,7 +70,7 @@ Copy this and tick items as you complete them.
 - [ ] Test covers the happy path with accessible fields.
 - [ ] Test covers the FLS-denied path using `System.runAs()` with a restricted profile or permission set.
 - [ ] Test covers a non-existent field name to verify validation throws a clear error.
-- [ ] Test covers bulk input (200 records) to confirm no `LimitException` from describe calls.
+- [ ] Test covers bulk input (200 records). Assert on CPU time / heap headroom (`Limits.getCpuTime()`, `Limits.getHeapSize()`) or on query and DML counts — do NOT assert "no `LimitException` from describe calls", because describe limits are no longer enforced in any API version and that condition cannot occur.
 
 ---
 

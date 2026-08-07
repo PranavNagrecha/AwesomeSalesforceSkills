@@ -7,7 +7,7 @@
 
 ## Architectural Tradeoffs
 
-**OWD Public Read Only vs guest sharing rules:** Setting OWD to Public Read Only gives guest users read access to all records of that type — simple to configure, but broad. Guest sharing rules can grant more targeted access (e.g., only records related to a specific account) but are limited to Read Only since Spring '21 and cannot grant access to Private OWD records. For most use cases, Public Read Only OWD with Apex filtering is the cleaner pattern.
+**Broad vs narrow guest user sharing rule criteria:** OWD is not a lever here. Guest org-wide defaults are Private for every object and can't be changed, and guest user sharing rules are the only mechanism that grants a guest any record access. The real tradeoff is criteria width: a rule like `Id != null` is trivial to write and effectively republishes the whole object to the internet, while `Is_Public__c = true` costs a field and a maintenance habit but bounds the blast radius to records someone deliberately marked public. Prefer a dedicated boolean or record type in the criteria over a filter that happens to be true today. Budget for the limit — guest user sharing rules count toward the 50 criteria-based sharing rules per object.
 
 **`with sharing` + `WITH USER_MODE` vs manual FLS checks:** `WITH USER_MODE` in SOQL is declarative and enforces both sharing and FLS in one modifier. Manual `Schema.SObjectType.Field.isAccessible()` checks require checking every field individually and are easier to misconfigure (a missed field check becomes a data leak). Prefer `WITH USER_MODE` for all guest-facing Apex.
 
@@ -20,6 +20,8 @@
 ## Official Sources Used
 
 - Salesforce Security Guide (Guest User Access) — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
-- Secure Guest User Record Access — https://help.salesforce.com/s/articleView?id=sf.networks_secure_guest_user_record_access.htm&type=5
+- Secure Guest Users' Sharing Settings and Record Access ("guest users have org-wide defaults set to Private for all objects"; "Guest user sharing rules are a special type of criteria-based sharing rule and the only way to grant record access to unauthenticated guest users"; "The Secure guest user record access setting is enabled in all Salesforce orgs with Experience Cloud sites and can't be disabled") — https://help.salesforce.com/s/articleView?id=platform.networks_secure_guest_user_sharing.htm&type=5
+- Guest User Security Policies and Timelines (Secure guest user record access — Winter '21; View All / Modify All / edit / delete removed from guest users — Spring '21) — https://help.salesforce.com/s/articleView?id=sf.networks_guest_policies_timelines.htm&type=5
+- Best Practices and Considerations When Configuring the Guest User Profile ("Have org-wide defaults set to Private for all objects. This access level can't be changed."; "Never assign the View All Records or Modify All Records permission to guest users.") — https://help.salesforce.com/s/articleView?id=platform.networks_guest_profile_best_practices.htm&type=5
 - Communities Developer Guide (Guest User) — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_secur_setup.htm
 - Apex Security and Sharing (WITH USER_MODE) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm

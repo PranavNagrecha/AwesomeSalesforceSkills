@@ -46,3 +46,35 @@ used as selective filters.
 
 **Correct pattern:** never log encrypted values. Event Monitoring,
 replay logs, and support dumps all persist debug output.
+
+## Anti-Pattern 6: Claiming "View Encrypted Data" Gates Shield Plaintext
+
+**What the LLM generates:** "Users need the *View Encrypted Data*
+permission to see the decrypted value; without it they see `*********`"
+— applied to a **Shield Platform Encryption** field. Test plans and
+permission matrices are then built on toggling that permission.
+
+**Why it happens:** Salesforce shipped two unrelated encryption
+products. Classic Encryption (the legacy `Encrypted Text` custom field
+type) genuinely does mask on "View Encrypted Data", and the bulk of
+older blog/forum text describes it. The model blends that into Shield,
+which is the product people actually ask about. The phrasing is
+plausible and self-consistent, so nothing in the answer looks wrong.
+
+**Correct pattern:** Shield Platform Encryption decrypts
+**transparently** — anyone with field-level READ on the field sees
+plaintext, in Apex, SOQL, reports, and the UI. "View Encrypted Data" has
+been unnecessary for Shield since Spring '17. Restrict plaintext with
+**field-level security** (profiles / permission sets), page layouts, and
+sharing. State which product a claim applies to: Classic → "View
+Encrypted Data"; Shield → FLS.
+
+**Why this one matters more than the rest:** it fails in the dangerous
+direction. It tells a reader their PII is masked from users who can in
+fact read it in plaintext.
+
+**Detection hint:** the string `View Encrypted Data` co-occurring with
+`Shield`, `Platform Encryption`, `deterministic`, or `probabilistic` in
+the same document, with no sentence scoping it to Classic Encryption.
+Equivalently: any test plan whose "cannot see plaintext" row is a
+permission toggle rather than an FLS change.

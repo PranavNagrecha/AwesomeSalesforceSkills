@@ -210,7 +210,7 @@ Step-by-step instructions for an AI agent or practitioner working on Data Cloud 
 3. **Create and configure the vector search index** — in Data Cloud Setup → Vector Search, create the index against the target text field. In Advanced Setup, explicitly set the chunking strategy, chunk size, and overlap. Document these choices and their rationale in the decision record.
 4. **Configure the Grounding record** — in Agentforce Setup, attach a Grounding configuration to the agent topic or Prompt Template referencing the new index. Set top-K to 3–7 (start at 5) and add metadata filters if multi-dimensional content is indexed.
 5. **Obtain a Data Cloud access token and validate Query API access** (if applicable) — test the token endpoint with the Data Cloud Connected App credentials and execute a test query against the index before integrating into application code.
-6. **Run end-to-end retrieval tests** — in the Agent Preview panel, submit at least five representative queries and review the Grounding tab to confirm chunk retrieval. Check the Einstein Trust Layer audit log for unexpected masking events.
+6. **Run end-to-end retrieval tests** — in the Agent Preview panel, submit at least five representative queries and review the Grounding tab to confirm chunk retrieval. Then check for unexpected masking by querying the Einstein Trust Layer audit trail in the **Data Cloud Query Editor** (ANSI SQL over `GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`) — turn on generative AI audit and feedback data collection in Einstein Setup first, or the DMOs will be empty and the test will pass vacuously.
 7. **Review the checklist below** and confirm generated artifacts match the packaging and data residency requirements before marking the work complete.
 
 ---
@@ -224,7 +224,8 @@ Run through these before marking work complete:
 - [ ] If Easy Setup was used initially and precision is inadequate, index has been rebuilt with Advanced Setup
 - [ ] Data Cloud Connected App has `cdpapi` scope and Data Cloud access token generation is tested if Query API access is required
 - [ ] Grounding configuration references the correct vector index with appropriate top-K and metadata filters
-- [ ] Einstein Trust Layer audit log reviewed for at least one end-to-end retrieval turn — masking events investigated if present
+- [ ] Generative AI audit and feedback data collection is turned on in Einstein Setup (otherwise the audit DMOs are empty)
+- [ ] Einstein Trust Layer audit DMOs (`GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`) queried in the Data Cloud Query Editor for at least one end-to-end retrieval turn — masking events investigated if present
 - [ ] Agent Preview tested with 5+ representative queries; Grounding tab confirms retrieved chunks are relevant
 - [ ] Source DMO PII fields classified in Data Cloud field taxonomy before index build if sensitive data is present
 - [ ] If packaging: vector search index, DMO definition, and Data Stream configuration are all included in the Data Kit
@@ -255,7 +256,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Grounding configuration record | Retriever definition linking the agent topic or prompt template to the vector index, including top-K and metadata filter expressions |
 | Data Cloud access token generation pattern | Documented OAuth flow for obtaining a Data Cloud token from the `/services/a360/token` endpoint using a `cdpapi`-scoped Connected App |
 | Decision record | Chunking strategy rationale, chunk size/overlap values, embedding model choice, top-K selection, and data residency notes |
-| Einstein Trust Layer audit log excerpt | QA evidence confirming retrieval events are logged and masking behavior is deliberate |
+| Einstein Trust Layer audit query results | QA evidence from the Data Cloud Query Editor over the generative AI audit DMOs (`GenAIGatewayRequest__dlm`, `GenAIGatewayResponse__dlm`, `GenAIGeneration__dlm`) confirming retrieval turns are recorded and masking behavior is deliberate |
 
 ---
 

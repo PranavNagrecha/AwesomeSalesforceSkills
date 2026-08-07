@@ -29,20 +29,21 @@ public with sharing class KnowledgeController {
 }
 ```
 
-**Why it works:** `with sharing` restricts the result to records the guest user can see (only Public OWD records). `WITH USER_MODE` enforces FLS, blocking access to fields not on the guest profile. The DTO explicitly whitelists returned fields.
+**Why it works:** `with sharing` restricts the result to records the guest user can see — for a guest, only the records matched by a guest user sharing rule, since guest org-wide defaults are Private on every object. `WITH USER_MODE` enforces FLS, blocking access to fields not on the guest profile. The DTO explicitly whitelists returned fields.
 
 ---
 
 ## Example 2: Guest User Creating Support Cases on a Service Portal
 
-**Scenario:** A manufacturer's public service portal allows unauthenticated visitors to submit warranty claims (create Case records). The site was built before Spring '21.
+**Scenario:** A manufacturer's public service portal allows unauthenticated visitors to submit warranty claims (create Case records), then shows a read-only confirmation. The site was built before Winter '21.
 
-**Problem:** After the Spring '21 upgrade, the original guest sharing rules that allowed guests to create Cases stopped working because the org had Cases on Private OWD. The site team panics and grants "Modify All" on Case to the guest profile to make it work.
+**Problem:** After enforcement, the visitors' post-submission confirmation stopped rendering — the old grant was a queue membership / manual share that no longer reaches guest users. The site team panics and grants "Modify All" on Case to the guest profile to make it work.
 
-**Solution:** Modify All is never appropriate for guest users. The correct fix:
-1. Set Case OWD to Public Read/Write (acceptable since guests should only see their own submissions — enforce this via Apex after creation).
+**Solution:** Modify All is never appropriate for guest users, and (since Spring '21) can no longer be granted to them anyway. The correct fix:
+1. Leave Case OWD alone. Guest org-wide defaults are Private on every object and can't be changed, so raising the Case OWD would not restore guest access — it would only widen access for authenticated internal users.
 2. On the guest profile, grant only Create permission on Case. No Edit, Delete, or View All.
-3. In the Case creation Apex, immediately set `OwnerId` to a dedicated Case Queue so guests cannot re-access their submitted case after navigation.
-4. Remove "Modify All" from the guest profile immediately.
+3. In the Case creation Apex, immediately set `OwnerId` to a dedicated Case Queue. Guests can't own records regardless, and queue ownership keeps the record out of any guest-facing sharing rule's criteria.
+4. If the confirmation screen genuinely must read the Case back, return the field values from the same Apex transaction that created it, or add a **guest user sharing rule** whose criteria match only that submission class (for example `Is_Public_Submission__c = true`) — Read Only is all a guest sharing rule can grant, which is exactly right here.
+5. Remove "Modify All" from the guest profile immediately, and remove the guest user from the queue/public group left over from the pre-Winter '21 design.
 
-**Why it works:** Public OWD with Create-only profile permission gives guests exactly the access needed for form submission — no more. The queue ownership prevents guests from later reading all cases.
+**Why it works:** Create-only profile permission gives guests exactly the access needed for form submission — no more. Read-back is granted narrowly and explicitly through the one mechanism that still reaches guests, instead of by loosening a setting that guests are not evaluated against.
