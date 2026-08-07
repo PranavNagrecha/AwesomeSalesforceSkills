@@ -128,20 +128,28 @@ The cleanest guards:
 
 ### Order of execution overlap with other automation
 
-Salesforce's published order-of-execution puts:
+Salesforce's published order-of-execution is a fixed 20-step sequence.
+The steps this skill touches, using the documented step numbers:
 
-1. System validation rules
-2. **Before-save flows + before-update triggers (interleaved order
-   not guaranteed)**
-3. Custom validation rules
-4. Duplicate rules
-5. Save the record
-6. **After-save flows + after-update triggers (interleaved order
-   not guaranteed)**
-7. Assignment rules, auto-response rules, escalation rules,
-   workflow rules (if any), processes, entitlement rules
-8. Roll-up summary fields recalculate
-9. Commit
+| Step | What runs |
+|---|---|
+| 3 | Before-save record-triggered flows |
+| 4 | Before triggers |
+| 5 | System validation and custom validation rules |
+| 6 | Duplicate rules |
+| 7 | Record saved to the database, not yet committed |
+| 8 | After triggers |
+| 9–12 | Assignment, auto-response, workflow rules (11 — where Workflow Rule field updates fire), escalation |
+| 13 | Process Builder and workflow-launched flows, **not in a guaranteed order** — the one genuinely indeterminate slot |
+| 14 | After-save record-triggered flows |
+| 15 | Entitlement rules |
+| 16–17 | Roll-up summary fields recalculate on parent, then grandparent |
+| 19 | Commit |
+
+Before-save flows (3) and before-update triggers (4) are **separate,
+ordered steps** — the flow always runs first. The same holds for after
+triggers (8) and after-save flows (14): the trigger always runs first,
+with steps 9–13 in between. Neither pair is interleaved.
 
 Field updates from **flows can fire other before-save flows /
 triggers**. Field updates from **after-save automation re-enter the
@@ -287,7 +295,7 @@ unstamped.
 2. **After-save flow updating the same record recurses without a guard.** Default behavior; explicit guard required. (See `references/gotchas.md` § 2.)
 3. **Workflow Rule field updates are deprecated for new actions** as of late 2022 — migrate or accept they're frozen. (See `references/gotchas.md` § 3.)
 4. **Formula fields are computed at read time, not stored.** Reports / dashboards can sort / filter on them but at query cost. (See `references/gotchas.md` § 4.)
-5. **Order of execution interleaves before-save flows with before-update triggers** — relative ordering between them is not guaranteed. (See `references/gotchas.md` § 5.)
+5. **Before-save flows run at step 3, before-update triggers at step 4** — the order is fixed and documented, so a before trigger always sees values the before-save flow already wrote, and can overwrite them. (See `references/gotchas.md` § 5.)
 6. **Cross-object update from a flow fires the target object's automation.** Plan the chain. (See `references/gotchas.md` § 6.)
 7. **Multiple flows on the same object firing on the same save event** all run; ordering is not guaranteed across flows. (See `references/gotchas.md` § 7.)
 

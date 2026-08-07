@@ -6,7 +6,7 @@ Common mistakes AI coding assistants make when generating or advising on Salesfo
 
 **What the LLM generates:** Statements like "after-save Flows and after triggers both run after the record is saved, so they are equivalent in timing" or code designs that assume a Flow-created record will be available when an after trigger queries for it.
 
-**Why it happens:** LLMs conflate "after save" (the conceptual grouping) with "same step." After triggers are step 8; after-save Flows are step 14. The gap of six steps (assignment rules, auto-response rules, workflow rules, escalation rules, legacy Process Builder / workflow-launched Flows) is significant and not intuitive from the label alone.
+**Why it happens:** LLMs conflate "after save" (the conceptual grouping) with "same step." After triggers are step 8; after-save Flows are step 14. The gap of five steps (assignment rules, auto-response rules, workflow rules, escalation rules, legacy Process Builder / workflow-launched Flows) is significant and not intuitive from the label alone.
 
 **Correct pattern:**
 

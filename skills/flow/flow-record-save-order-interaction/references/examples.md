@@ -55,7 +55,7 @@ and skip DML. Or move `Last_Touch__c` to before-save so no DML fires.
 
 Before-save Flow reads `Amount_Total__c` (a roll-up) — always stale in
 the same transaction. The Flow runs at step 3; the parent's roll-up is
-not recalculated until step 16, eleven steps later in the child's save.
+not recalculated until step 16, thirteen steps later in the child's save.
 (Step 16 is still before the commit at step 19 — the value is stale
 because the recalculation is *later in the save*, not because it happens
 after commit.)

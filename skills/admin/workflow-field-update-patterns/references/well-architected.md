@@ -43,7 +43,9 @@
 5. **Migrating Workflow Rules without deactivating the source.**
    Both fire; field stamped twice.
 6. **Before-save flow + before-update trigger on the same object
-   with cross-dependency.** Order between them is not guaranteed.
+   with cross-dependency.** The order is fixed — flow at step 3, then
+   trigger at step 4 — so a flow that depends on the trigger's output
+   is structurally impossible, and the trigger can overwrite the flow.
 
 ## Official Sources Used
 

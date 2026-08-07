@@ -2,8 +2,25 @@
 
 Lexical retrieval is the mandatory, no-API-key path — every `search_knowledge`
 call and every MCP `search_skill` call goes through ``tokenize_query`` and
-``search_index``. A raw user query reaches FTS5 through one thin translate
-table, so query sanitisation is a correctness AND an availability concern.
+``search_index``. A raw user query reaches FTS5 through one sanitisation pass,
+so query sanitisation is a correctness AND an availability concern.
+
+Call sites, and how much sanitisation each one has (checked 2026-08-01):
+
+- ``scripts/search_knowledge.py:225`` — GUARDED TWICE. ``run_search`` runs the
+  query through its own ``_sanitize_query_for_fts5`` (defined :204, applied
+  :224, allow-list ``[^A-Za-z0-9\\-]+`` at :201) before calling
+  ``search_index``, and then ``tokenize_query`` sanitises again.
+- ``mcp/sfskills-mcp/src/sfskills_mcp/skills.py:188`` — GUARDED ONCE. It
+  passes the caller's ``query`` string to ``search_index`` untouched; the file
+  has no sanitiser of its own. ``tokenize_query`` is the only thing standing
+  between an MCP client and the FTS5 parser.
+
+That asymmetry is why the pre-2026-08-01 deny-list bug was reachable in
+practice: it was an MCP-only crash, NOT a crash "in both the CLI and the MCP
+server" as an earlier revision of this file claimed. The CLI's extra pass had
+been absorbing it. The fix now lives in ``tokenize_query``, which both paths
+share, so the single-guard MCP path is covered too.
 
 Every test builds a three-chunk index in a temp dir. Nothing here touches
 ``vector_index/lexical.sqlite`` (which is gitignored, ~50 MB, and rebuilt from
@@ -180,12 +197,13 @@ class SearchIndexTest(IndexFixtureMixin, unittest.TestCase):
 
 
 class QuerySanitisationTest(IndexFixtureMixin, unittest.TestCase):
-    """User input reaches FTS5 MATCH through one translate table.
+    """User input reaches FTS5 MATCH through one sanitisation pass.
 
     `search_index` has no try/except, so any character `tokenize_query` leaves
     behind that FTS5 treats as syntax raises `sqlite3.OperationalError` out of
-    the retrieval call. The characters CURRENTLY stripped are handled here; the
-    ones that are not are in `UnsanitisedQueryCrashTest` below.
+    the retrieval call. This class covers ordinary metacharacters; the
+    regression cases for the 2026-08-01 allow-list fix are in
+    `FTS5MetacharacterRegressionTest` below.
     """
 
     SAFE = [
@@ -227,19 +245,24 @@ class QuerySanitisationTest(IndexFixtureMixin, unittest.TestCase):
         self.assertIn("c-lwc", hits)  # `NOT` did not exclude anything
 
 
-class UnsanitisedQueryCrashTest(IndexFixtureMixin, unittest.TestCase):
-    """OPEN BUG — `pipelines/lexical_index.py:9` `_FTS5_SPECIAL`.
+class FTS5MetacharacterRegressionTest(IndexFixtureMixin, unittest.TestCase):
+    """Regression suite for the 2026-08-01 allow-list fix in
+    ``pipelines/lexical_index.py``.
 
-    The translate table strips ``'".,$@#!?()[]{}|\\^~*:-`` but NOT
-    ``% + & = < > ;``. Those are FTS5 query syntax, so a query containing one
-    raises ``sqlite3.OperationalError: fts5: syntax error near "%"`` straight
-    out of ``search_index`` — an uncaught 500-equivalent in both the CLI and
-    the MCP server, on inputs a Salesforce user types constantly
-    (``100% CPU``, ``c++``, ``A&B``, ``field = value``, ``<apex:page>``).
+    ``tokenize_query`` used to sanitise with a DENY-list that stripped
+    ``'".,$@#!?()[]{}|\\^~*:-`` and nothing else. It leaked in two directions,
+    both of which are asserted-against below:
 
-    ``+`` is worse than a crash in one shape: ``trigger+recursion`` survives as
-    ``trigger+recursion*``, which FTS5 parses as a PHRASE concatenation, so the
-    documented OR semantics silently become an adjacency requirement.
+    CRASH — ``% & ; < = > \\`` and a leading ``+`` reached MATCH and raised
+    ``sqlite3.OperationalError: fts5: syntax error near "%"`` straight out of
+    ``search_index``, on inputs users type constantly (``100% test coverage``,
+    ``A&B testing``, ``field<>value``, ``salesforce + slack``).
+
+    SILENT — the worse arm, because nothing is raised. An INFIX ``+`` survived,
+    so ``trigger+recursion`` became the expression ``trigger+recursion*``. Per
+    the FTS5 grammar ``+`` concatenates two phrases, so the documented OR
+    became an ADJACENCY requirement and the caller got zero rows back with no
+    error to notice.
 
     Grounded in the FTS5 spec (https://sqlite.org/fts5.html, § "Full-text Query
     Syntax"): a bareword may contain only ASCII letters, ASCII digits, the
@@ -247,51 +270,83 @@ class UnsanitisedQueryCrashTest(IndexFixtureMixin, unittest.TestCase):
     that include any other characters must be quoted" — and "Two phrases can be
     concatenated into a single large phrase using the '+' operator".
 
-    These tests are marked ``expectedFailure`` so the suite is green against
-    HEAD and turns RED (unexpected success) the moment the bug is fixed —
-    at which point delete the decorators. They are NOT an assertion that
-    crashing is correct.
-
-    Fix belongs in ``pipelines/lexical_index.py`` (not owned by this item):
-    add ``%+&=<>;`` to ``_FTS5_SPECIAL``.
+    The fix replaced the deny-list with an allow-list, so these tests are
+    deliberately written against the CLASS of defect (sweep every ASCII
+    punctuation character) rather than the eight characters that happened to be
+    reported. A deny-list regression would fail `test_no_ascii_punctuation_
+    character_can_reach_fts5_as_syntax` even for a character nobody has
+    reported yet.
     """
 
-    CRASHERS = [
-        "100% CPU", "c++", "A&B testing", "field = value", "<apex:page>", "a;b",
-        "50%+", "cost ~= $5",
+    # Each of these raised `sqlite3.OperationalError` before the fix.
+    PREVIOUSLY_CRASHING = [
+        "100% test coverage", "salesforce + slack", "a=b", "field<>value",
+        "A&B testing", "trigger; recursion", "c++", "100% CPU",
+        "field = value", "<apex:page>", "a;b", "50%+", "cost ~= $5",
+        "SELECT Id FROM Account WHERE Name = 'x'",
     ]
 
-    def test_each_unsanitised_character_currently_raises(self):
-        """Documents the live blast radius. Delete alongside the fix."""
-        for query in self.CRASHERS:
+    def test_previously_crashing_queries_no_longer_raise(self):
+        for query in self.PREVIOUSLY_CRASHING:
             with self.subTest(query=query):
-                with self.assertRaises(sqlite3.OperationalError):
+                search_index(self.index_path, query, None, 10)
+
+    def test_no_ascii_punctuation_character_can_reach_fts5_as_syntax(self):
+        """The allow-list's real contract: no ASCII punctuation character, in
+        any position, is passed through to MATCH. Catches a future leak the
+        moment it is introduced, not the next time a user reports a crash."""
+        for code in range(1, 127):
+            ch = chr(code)
+            if ch.isalnum():
+                continue
+            for query in (f"trigger{ch}recursion", f"{ch}trigger", f"trigger{ch}", ch):
+                with self.subTest(char=repr(ch), query=repr(query)):
                     search_index(self.index_path, query, None, 10)
 
-    @unittest.expectedFailure
-    def test_percent_should_not_raise(self):
-        search_index(self.index_path, "100% CPU time", None, 10)
+    # -- the silent arm: `+` must mean OR, not adjacency --------------------
 
-    @unittest.expectedFailure
-    def test_plus_should_not_raise(self):
-        search_index(self.index_path, "c++ style trigger", None, 10)
-
-    @unittest.expectedFailure
-    def test_ampersand_should_not_raise(self):
-        search_index(self.index_path, "A&B record types", None, 10)
-
-    @unittest.expectedFailure
-    def test_equals_and_angle_brackets_should_not_raise(self):
-        search_index(self.index_path, "<apex:page> field = value", None, 10)
-
-    @unittest.expectedFailure
-    def test_semicolon_should_not_raise(self):
-        search_index(self.index_path, "trigger; recursion", None, 10)
-
-    @unittest.expectedFailure
-    def test_plus_should_not_become_a_phrase_operator(self):
-        """`trigger+recursion` must mean the same as `trigger recursion`."""
+    def test_infix_plus_produces_or_not_phrase_concatenation(self):
+        """String-level assertion. Before the fix this returned the single
+        token `trigger+recursion*` — one FTS5 phrase, not two OR'd terms."""
         self.assertEqual(tokenize_query("trigger+recursion"), "trigger* OR recursion*")
+        self.assertEqual(tokenize_query("recursion+wire"), "recursion* OR wire*")
+
+    def test_infix_plus_matches_documents_that_share_no_term(self):
+        """Behavioural proof that the semantics are OR and not adjacency.
+
+        `recursion` appears only in c-apex and `wire` only in c-lwc, in
+        different documents. Under OR both rows match; under `+` phrase
+        concatenation the terms would have to be ADJACENT in one document, so
+        neither matches and the caller silently gets an empty result."""
+        joined = {r["chunk_id"] for r in search_index(self.index_path, "recursion+wire", None, 10)}
+        spaced = {r["chunk_id"] for r in search_index(self.index_path, "recursion wire", None, 10)}
+        self.assertEqual(joined, {"c-apex", "c-lwc"})
+        self.assertEqual(joined, spaced, "`a+b` must be identical to `a b`")
+
+    def test_plus_separated_query_is_not_silently_empty(self):
+        """The narrowest statement of the bug that was shipping: a non-empty
+        query over terms that ARE in the corpus returned zero rows."""
+        self.assertNotEqual(search_index(self.index_path, "recursion+wire", None, 10), [])
+
+    # -- the allow-list must not over-strip --------------------------------
+
+    def test_underscore_is_kept_because_it_is_a_legal_bareword_character(self):
+        """Underscore is valid inside an FTS5 bareword and appears in real API
+        names, so stripping it would split `Account_c` into two weaker terms."""
+        self.assertEqual(tokenize_query("my_custom_field"), "my_custom_field*")
+
+    def test_non_ascii_is_kept(self):
+        """Codepoints above 127 are legal barewords; dropping them would make
+        an accented or CJK query unsearchable rather than merely odd."""
+        self.assertEqual(tokenize_query("café"), "café*")
+        self.assertEqual(tokenize_query("承認"), "承認*")
+
+    def test_hyphen_and_slash_still_split_into_separate_terms(self):
+        """Neither is a legal bareword character, and splitting is load-bearing
+        — skill ids get pasted in as queries."""
+        self.assertEqual(
+            tokenize_query("apex/trigger-recursion"), "apex* OR trigger* OR recursion*"
+        )
 
 
 class BuildLexicalIndexTest(unittest.TestCase):

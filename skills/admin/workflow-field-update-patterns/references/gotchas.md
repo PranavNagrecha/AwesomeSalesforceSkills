@@ -68,20 +68,22 @@ vs query cost.
 
 ---
 
-## Gotcha 5: Order of execution interleaves before-save flows with before-update triggers
+## Gotcha 5: Before-save flows always run before before-update triggers, so the trigger wins
 
 **What happens.** Admin builds a before-save flow that depends on
-a value stamped by a before-update trigger. The trigger fires AFTER
-the flow on some saves and BEFORE on others. Behavior is
-non-deterministic.
+a value stamped by a before-update trigger. It never sees that value:
+the flow is step 3 and the trigger is step 4, so the flow runs first,
+every time. The dependency is backwards, not flaky. The reverse
+direction bites too — the trigger reads what the flow wrote and can
+silently overwrite it, so the flow's value never reaches the database.
 
 **When it occurs.** Mixing before-save flow with before-update
 trigger on the same object.
 
 **How to avoid.** Pick one tool for the same-record before-save
-slot. Salesforce's documented order-of-execution explicitly does
-not guarantee relative ordering between before-save flows and
-before-update triggers.
+slot. If both must exist, write them knowing the fixed order:
+step 3 (flow) then step 4 (trigger), with the trigger having the last
+word before validation rules at step 5.
 
 ---
 

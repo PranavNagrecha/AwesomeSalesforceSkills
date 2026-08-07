@@ -35,7 +35,7 @@ def extract_spanning(formula: str) -> set[str]:
 
 **Context:** An after-update trigger on OpportunityLineItem needs to check whether the parent Opportunity's rollup field `Total_Revenue__c` has crossed a threshold and then create a Task for the owner.
 
-**Problem:** Reading `Total_Revenue__c` inside the trigger returns the pre-recalculation value because rollups fire at step 13, after all triggers complete.
+**Problem:** Reading `Total_Revenue__c` inside the trigger returns the pre-recalculation value because rollups fire at step 16, after all triggers complete.
 
 **Solution:**
 
@@ -129,6 +129,6 @@ public class SensorReadingRollupHandler {
 
 **What practitioners do:** Write an after-update trigger on the child that queries the parent rollup field and branches logic based on the value.
 
-**What goes wrong:** The rollup has not recalculated yet (step 13 has not run). The trigger reads the previous value and makes incorrect decisions — such as skipping a threshold notification or applying the wrong discount tier.
+**What goes wrong:** The rollup has not recalculated yet (step 16 has not run). The trigger reads the previous value and makes incorrect decisions — such as skipping a threshold notification or applying the wrong discount tier.
 
 **Correct approach:** Enqueue a Queueable or publish a Platform Event from the trigger. Handle the rollup-dependent logic in the asynchronous handler where the recalculated value is available.

@@ -6,12 +6,51 @@ from pathlib import Path
 import sqlite3
 
 
-_FTS5_SPECIAL = str.maketrans({c: " " for c in "'\".,$@#!?()[]{}|\\^~*:-"})
+# ALLOW-list, deliberately, not a deny-list.
+#
+# `tokenize_query` emits an FTS5 MATCH *expression*, so every character that
+# survives is parsed as query syntax. This was a deny-list until 2026-08-01 and
+# it leaked in both directions:
+#
+#   crash    `% & ; < = > \`` reached MATCH and raised
+#            `sqlite3.OperationalError: fts5: syntax error near "%"` straight
+#            out of `search_index` on inputs users type constantly
+#            ("100% test coverage", "A&B testing", "field<>value").
+#   silent   `+` survived, so `trigger+recursion` became the expression
+#            `trigger+recursion*`. Per the FTS5 grammar `+` CONCATENATES two
+#            phrases, so the documented OR became an adjacency requirement and
+#            the caller got zero rows with no error at all.
+#
+# A deny-list has to enumerate every operator SQLite has now and every one it
+# adds later; the silent arm above shows a miss need not even announce itself.
+# The allow-list is closed by construction: anything not listed becomes
+# whitespace, so a new operator character is inert on the day it ships.
+#
+# What is kept is exactly the FTS5 "bareword" alphabet
+# (https://sqlite.org/fts5.html, § Full-text Query Syntax) minus control
+# codepoint 26: ASCII alphanumerics, the underscore, and every codepoint above
+# 127. Non-ASCII is kept so accented and CJK queries still tokenize ("café"),
+# and it is safe — `café*` and `🎉*` are legal barewords.
+#
+# `-` and `/` are NOT kept: both are illegal in a bareword, and splitting on
+# them is load-bearing, since skill ids ("apex/trigger-recursion") are routinely
+# pasted in as queries and must reach the index as separate prefix terms.
+def _is_fts5_bareword_char(ch: str) -> bool:
+    """True for characters FTS5 accepts inside an unquoted bareword.
+
+    Written as an explicit predicate rather than a regex character class on
+    purpose: the character-class form is a footgun here. Spelling the
+    non-ASCII arm as an underscore followed by a dash and an upper codepoint
+    reads like "alnum, underscore, and non-ASCII", but in a character class
+    that is a RANGE starting at underscore (0x5F), which silently re-admits
+    `{ | } ~` and reintroduces exactly the class of leak this replaced.
+    """
+    return (ch.isalnum() and ch.isascii()) or ch == "_" or ord(ch) > 127
 
 
 def tokenize_query(query: str) -> str:
-    cleaned = query.replace("/", " ").translate(_FTS5_SPECIAL)
-    tokens = [token.strip().lower() for token in cleaned.split() if token.strip()]
+    cleaned = "".join(ch if _is_fts5_bareword_char(ch) else " " for ch in query)
+    tokens = [token.lower() for token in cleaned.split() if token]
     if not tokens:
         return ""
     return " OR ".join(f"{token}*" for token in tokens)

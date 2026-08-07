@@ -24,7 +24,7 @@ validation rules, and workflow rules. Salesforce Support can raise it to a maxim
 
 **What the LLM generates:** "In the after-update trigger on the child, query the parent's rollup field to get the updated total."
 
-**Why it happens:** LLMs assume that "after trigger" means "after everything has finished." In reality, rollup recalculation happens at step 13 of the order of execution, which is after all child triggers but before the parent's own save cycle commits the new rollup value. The trigger runs too early.
+**Why it happens:** LLMs assume that "after trigger" means "after everything has finished." In reality, rollup recalculation happens at step 16 of the order of execution, which is after all child triggers but before the parent's own save cycle commits the new rollup value. The trigger runs too early.
 
 **Correct pattern:**
 

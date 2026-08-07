@@ -49,7 +49,7 @@ You are a Salesforce performance expert focused on cross-object formula spanning
 Gather this context before working on anything in this domain:
 
 - How many unique spanning relationships already exist on the object? The hard limit is 15 per object across all formula fields, validation rules, and workflow rules combined.
-- Are any triggers or flows reading parent rollup values in the same transaction that modifies child records? Rollups recalculate at step 13 of the save order, so trigger-time reads see the pre-recalculation value.
+- Are any triggers or flows reading parent rollup values in the same transaction that modifies child records? Rollups recalculate at step 16 of the save order, so trigger-time reads see the pre-recalculation value.
 - What is the child record volume per parent? Full rollup recalculation on 300k+ children with non-indexed filter criteria risks REQUEST_RUNNING_TOO_LONG.
 
 ---
@@ -62,7 +62,7 @@ Every cross-object formula reference (e.g., `Opportunity.Account.Owner.Profile.N
 
 ### Rollup Recalculation Timing in the Save Order
 
-Roll-up summary fields recalculate at step 13 of the Salesforce order of execution — after all before and after triggers on the child record, after workflow field updates, and after flow automations. This means any Apex trigger on the parent or child that reads the rollup value during the same transaction sees the old (pre-recalculation) value. The updated value is only available after the parent record's own save cycle completes.
+Roll-up summary fields recalculate at step 16 of the Salesforce order of execution — after all before and after triggers on the child record, after workflow field updates, and after flow automations. This means any Apex trigger on the parent or child that reads the rollup value during the same transaction sees the old (pre-recalculation) value. The updated value is only available after the parent record's own save cycle completes.
 
 ### Rollup Filter Criteria and Distant Cross-Object References
 
@@ -166,7 +166,7 @@ update parents;
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Object nearing 15 spanning relationships | Consolidate formulas or replace cross-object formulas with stored fields synced via Flow/trigger | Prevents hard save-time failure when limit is exceeded |
-| Trigger needs to read updated rollup value | Enqueue Queueable to read rollup in a new transaction | Rollup recalculates at step 13 — trigger sees stale value |
+| Trigger needs to read updated rollup value | Enqueue Queueable to read rollup in a new transaction | Rollup recalculates at step 16 — trigger sees stale value |
 | Rollup on object with 300k+ children | Replace native rollup with incremental Apex rollup | Native full recalculation times out on non-indexed filter scans |
 | Rollup filter references cross-object formula on child | Replace with Apex rollup or add a stored denormalized field for the filter | Distant record changes do not re-trigger native rollup recalculation |
 | Need rollup on lookup (not master-detail) | Use Apex trigger, DLRS, or Flow-based rollup | Native rollups only exist on master-detail relationships |
@@ -203,7 +203,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Rollup values are stale inside triggers** — Rollup summary fields recalculate at step 13 of the order of execution. Any before or after trigger that queries the parent rollup field sees the old value. The only reliable way to act on the updated value is from a new transaction (Queueable, Platform Event, or Change Data Capture).
+1. **Rollup values are stale inside triggers** — Rollup summary fields recalculate at step 16 of the order of execution. Any before or after trigger that queries the parent rollup field sees the old value. The only reliable way to act on the updated value is from a new transaction (Queueable, Platform Event, or Change Data Capture).
 2. **Spanning limit is cumulative across metadata types** — The 15-reference cap counts formula fields, validation rules, workflow field updates, and cross-object flow references together. Adding a validation rule with a cross-object reference can break an unrelated formula field that was at the limit.
 3. **Rollup filters ignore distant record changes** — If a rollup summary filters on a child formula field that spans to a grandparent, editing the grandparent does not recalculate the rollup. The rollup only fires when the direct child record is saved.
 4. **Full recalculation on filter changes** — Editing rollup filter criteria in Setup triggers a full background recalculation across all parent records. On LDV orgs this can run for hours and temporarily show incorrect values.

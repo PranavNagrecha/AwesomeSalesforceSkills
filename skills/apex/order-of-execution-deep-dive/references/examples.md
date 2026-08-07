@@ -106,4 +106,4 @@ trigger AccountTrigger on Account (after update) {
 
 **What goes wrong:** An after-save Flow creates a related record at step 14. An after trigger that queries for that related record runs at step 8 — before the Flow has created it. The query returns zero rows, and the trigger logic silently skips processing.
 
-**Correct approach:** If trigger logic depends on a Flow-created record, move the creation into the after trigger (step 8) and remove the Flow creation step, or restructure so the trigger does not depend on a Flow side effect. The six steps between 8 and 14 (assignment, auto-response, workflow, escalation, legacy Flow automations) are the reason the two are not interchangeable.
+**Correct approach:** If trigger logic depends on a Flow-created record, move the creation into the after trigger (step 8) and remove the Flow creation step, or restructure so the trigger does not depend on a Flow side effect. The five steps between 8 and 14 (assignment, auto-response, workflow, escalation, legacy Flow automations) are the reason the two are not interchangeable.

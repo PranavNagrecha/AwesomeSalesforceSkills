@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (47 active runtime agents across developer, admin,
+3. **Run-time agents** (48 active runtime agents across developer, admin,
    strategic, and vertical/governance tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
@@ -104,7 +104,7 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 47 active runtime agents. Fourteen single-mode
+Tier sizes below count the 48 active runtime agents. Fourteen single-mode
 auditors/governors were retired in Wave 3b and now redirect via
 `list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
 returns the active set shown here.
@@ -157,7 +157,7 @@ Strategic — Tier 2 (7):
 | `fit-gap-analyzer`                         | Fit / gap analysis: requirements vs org configuration |
 | `story-drafter`                            | User stories with Given/When/Then acceptance criteria |
 
-Vertical + governance — Tier 3 (10):
+Vertical + governance — Tier 3 (11):
 
 | Agent name                            | What it returns |
 | ------------------------------------- | --------------- |
@@ -169,6 +169,7 @@ Vertical + governance — Tier 3 (10):
 | `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
 | `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list || `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
 | `user-access-diff`                    | Side-by-side access comparison report between users |
+| `omnistudio-designer`                 | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit |
 
 ### `validate_against_org` routing
 

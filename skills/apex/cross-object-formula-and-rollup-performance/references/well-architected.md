@@ -19,7 +19,7 @@ Cross-object formulas are declarative, always current, and require no sync logic
 
 ### Synchronous Rollup Read vs. Deferred Async Read
 
-Reading a rollup in the same transaction is simpler and avoids async complexity. But the value is stale until step 13 completes. Deferring to a Queueable adds latency and consumes an async job slot, but guarantees the correct value. The tradeoff is correctness vs. simplicity and resource consumption.
+Reading a rollup in the same transaction is simpler and avoids async complexity. But the value is stale until step 16 completes. Deferring to a Queueable adds latency and consumes an async job slot, but guarantees the correct value. The tradeoff is correctness vs. simplicity and resource consumption.
 
 ## Anti-Patterns
 

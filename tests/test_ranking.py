@@ -176,22 +176,59 @@ class AggregateBackCompatTest(unittest.TestCase):
             self.assertEqual(param.kind, inspect.Parameter.KEYWORD_ONLY, param.name)
             self.assertIsNot(param.default, inspect.Parameter.empty, param.name)
 
-    def test_mcp_call_site_still_passes_rows_and_limit_positionally(self):
-        """Reads the real call site. If someone rewrites it to keyword form the
-        contract this file protects has moved, and this test says so."""
-        call_site = (
-            Path(__file__).resolve().parents[1]
-            / "mcp/sfskills-mcp/src/sfskills_mcp/skills.py"
+    def test_the_mcp_calling_convention_works_end_to_end(self):
+        """Exercises the MCP server's exact calling convention BEHAVIOURALLY.
+
+        ``sfskills_mcp.skills.search_skill`` calls::
+
+            aggregate_skill_scores(
+                ranked, bounded_limit,
+                skill_meta=..., query=...,
+                name_weight=..., description_weight=...,
+            )
+
+        i.e. two positional args plus four keyword args. This test makes that
+        same call and asserts on the result, rather than grepping the call
+        site's source text for an exact newline-and-indentation substring — the
+        previous version of this test matched
+        ``"aggregate_skill_scores(\\n        ranked,\\n        bounded_limit,"``
+        and so was broken by any cosmetic reformat (black, a rename, a changed
+        indent level) that left the contract perfectly intact.
+
+        If the signature regresses — either arg promoted to keyword-only, or a
+        new positional inserted — this raises TypeError or silently misbinds,
+        and the shape assertions catch it."""
+        rows = [
+            chunk_row("apex/bulkify-triggers", 1.0, path="p-best"),
+            chunk_row("apex/bulkify-triggers", 0.4, path="p-worse"),
+            chunk_row("lwc/wire-adapters", 0.6),
+        ]
+        result = aggregate_skill_scores(
+            rows,
+            5,
+            skill_meta={"apex/bulkify-triggers": ("Bulkify triggers", "Bulk-safe Apex")},
+            query="bulkify",
+            name_weight=1.5,
+            description_weight=0.5,
         )
-        if not call_site.exists():  # pragma: no cover - MCP not vendored
-            self.skipTest("MCP package not present in this checkout")
-        text = call_site.read_text(encoding="utf-8")
-        self.assertIn(
-            "aggregate_skill_scores(\n        ranked,\n        bounded_limit,",
-            text,
-            "sfskills_mcp.skills no longer calls aggregate_skill_scores(rows, limit) "
-            "positionally — update tests/test_ranking.py's back-compat contract",
-        )
+
+        self.assertEqual([r["id"] for r in result], ["apex/bulkify-triggers", "lwc/wire-adapters"])
+        for record in result:
+            for key in ("id", "score", "max_score", "rank_score", "hit_count", "path"):
+                self.assertIn(key, record)
+        best = result[0]
+        self.assertAlmostEqual(best["max_score"], 1.0)
+        self.assertAlmostEqual(best["score"], 1.4)
+        self.assertEqual(best["hit_count"], 2)
+        self.assertEqual(best["path"], "p-best")
+        # the name bonus applies to rank_score only, never to the gate inputs
+        self.assertGreater(best["rank_score"], best["max_score"])
+
+    def test_limit_is_honoured_when_passed_positionally(self):
+        """The second positional is ``limit``, not something else. A newly
+        inserted positional parameter would make this bind the wrong value."""
+        rows = [chunk_row(f"apex/s{i}", 1.0 - i / 100) for i in range(10)]
+        self.assertEqual(len(aggregate_skill_scores(rows, 3)), 3)
 
 
 class AggregateScoringTest(unittest.TestCase):
