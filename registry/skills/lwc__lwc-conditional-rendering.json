@@ -113,11 +113,6 @@
     "skills/lwc/lwc-conditional-rendering/templates/lwc-conditional-rendering-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-conditional-rendering"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

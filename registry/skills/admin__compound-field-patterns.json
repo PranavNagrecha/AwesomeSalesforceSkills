@@ -135,11 +135,6 @@
     "skills/admin/compound-field-patterns/templates/compound-field-patterns-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "admin/compound-field-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.2.0"
 }

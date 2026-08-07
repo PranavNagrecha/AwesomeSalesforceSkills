@@ -90,11 +90,6 @@
     "skills/data/einstein-analytics-data-model/templates/einstein-analytics-data-model-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/einstein-analytics-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -119,11 +119,6 @@
     "skills/devops/org-shape-and-scratch-definition/templates/org-shape-and-scratch-definition-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "devops/org-shape-and-scratch-definition"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

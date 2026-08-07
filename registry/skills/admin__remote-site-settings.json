@@ -104,11 +104,6 @@
     "skills/admin/remote-site-settings/templates/remote-site-settings-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/remote-site-settings"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

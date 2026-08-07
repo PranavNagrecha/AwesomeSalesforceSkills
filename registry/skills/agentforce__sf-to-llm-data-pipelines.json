@@ -1,6 +1,7 @@
 {
   "category": "agentforce",
   "chunk_ids": [
+    "023d624bee2377e5a81c",
     "02c4e6d47f48ed2d0659",
     "05689b3997d1b18cdf60",
     "07449dd27d160b55d67d",
@@ -8,6 +9,7 @@
     "085484f34f61bd52ec83",
     "094ac0c83a8de4d3ee03",
     "0dbf630243efd0cf72b5",
+    "110d4c1fd8bb5d67439f",
     "1160d5e8f5f0e6164757",
     "1174b59bcda49aee28f9",
     "1331540a302f82f03fc6",
@@ -58,9 +60,9 @@
     "5514e511d5ba8419e57b",
     "55662a652f03a7e0602f",
     "57966007f9f64fc5b474",
-    "57cc9f119697c95e522c",
     "583cfd7349dcf241da0b",
     "58b003d6d37357367f20",
+    "5aef3a19fe2796d4e929",
     "5c6ff54b7489aaf1b531",
     "5cbaab3366972d8740a2",
     "5e7fa2c8967adc8f4258",
@@ -69,6 +71,7 @@
     "62578fcb8926b3ff60cf",
     "62cab7d147b94301c0ff",
     "63c4271d55bf1288b536",
+    "64efb70c9426c2e191ac",
     "6529820c088049359430",
     "661ea31b5b6835fd70eb",
     "663507f815eadb27c221",
@@ -76,6 +79,7 @@
     "6849a52610393bc73ba1",
     "6ad210271424f2644cf7",
     "6c1ca2faf60b3145abc8",
+    "6d75c1bae68c249fb3c4",
     "6ff52a3707c183b19ec5",
     "701d3561ed9f2eba50be",
     "71aa5eda732f41fd3afa",
@@ -98,6 +102,7 @@
     "9ac6d87645ea3ce3fbfd",
     "9c1c14e3630a183d6739",
     "9d9f14e461dd27a7b045",
+    "9dffd536b74bf8340b68",
     "9e9103a69702ba67ee81",
     "a1afb2106944345a39fe",
     "a1dc7dcc58b0205c87de",
@@ -132,8 +137,11 @@
     "d2f3aff767af418465bb",
     "d30b2103aabf29ea8206",
     "d375eec9bc5388e60284",
+    "d3aed5dacaf99133a713",
     "d72377b2bf2dba4344a7",
+    "d78e845b755992f9336c",
     "d84070940f7df5c4edf4",
+    "d87257c3f53dfa20b4d5",
     "d9b6e4f3a8a82a97a1cc",
     "da0fc8ab164c2a01fa04",
     "da17abd8c26c594f4185",
@@ -147,10 +155,12 @@
     "e952a6e94cdbe449cfef",
     "e97b6b1d3ed1312ca4b9",
     "eaac6880452feee98957",
+    "eb9a296263698adc840e",
     "ef3c212fe9459308be70",
     "f16cdf98193af0067fb7",
     "f2074119b0327b57170e",
     "f2d312e62acc4de97903",
+    "f5698b530c7fc5b99244",
     "f5d2b083fe89aff55e6a",
     "f66cf2855e9e3c7b499c",
     "f70bac1f546b4a6bc8de",
@@ -159,7 +169,7 @@
     "fdf460b2285e59238459",
     "fe34b12dbca2034c1cfa"
   ],
-  "content_hash": "ea47a19a76b7bcb5bb668ccc7ee037ed944405e6c747cbf9b302c55dad5a2e37",
+  "content_hash": "d3d4fcbfac3854b657824e999c60edde50683630dd6849b05123973c3d5600fe",
   "dependencies": [
     "einstein-trust-layer",
     "rag-patterns-in-salesforce"
@@ -182,7 +192,10 @@
     "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_data_access.htm",
     "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
     "Einstein Platform Services \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/overview.html",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Bulk API 2.0 Developer Guide \u2014 Get Job Results (Sforce-Locator / Sforce-NumberOfRecords headers; maxRecords has no published default; stop on the literal string \"null\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/query_get_job_results.htm",
+    "Bulk API 2.0 Developer Guide \u2014 Query Jobs / supported SOQL (child-to-parent supported; GROUP BY, OFFSET, TYPEOF, aggregates, compound address/geolocation and parent-to-child subqueries unsupported) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/queries.htm",
+    "Salesforce Developer Limits and Allocations Quick Reference \u2014 Bulk API 2.0 (150,000,000 records per rolling 24h, org-level; 1 GB max retrieved file; 10,000 query jobs/24h; 1 TB results/24h; 20-minute retrieval timeout) \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_bulkapi.htm"
   ],
   "outputs": [
     "Bulk API v2 query job configuration (SOQL, content type, operation parameters)",
@@ -216,11 +229,6 @@
     "skills/agentforce/sf-to-llm-data-pipelines/templates/sf-to-llm-data-pipelines-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "agentforce/sf-to-llm-data-pipelines"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

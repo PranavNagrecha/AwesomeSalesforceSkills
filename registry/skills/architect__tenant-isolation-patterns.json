@@ -94,11 +94,6 @@
     "skills/architect/tenant-isolation-patterns/templates/tenant-isolation-patterns-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-21",
-    "vector_id": "architect/tenant-isolation-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

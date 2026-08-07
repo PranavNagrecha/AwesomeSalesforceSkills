@@ -119,11 +119,6 @@
     "skills/flow/screen-flow-radio-button-group/templates/screen-flow-radio-button-group-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "flow/screen-flow-radio-button-group"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

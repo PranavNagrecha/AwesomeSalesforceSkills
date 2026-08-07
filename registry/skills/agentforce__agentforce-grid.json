@@ -118,11 +118,6 @@
     "skills/agentforce/agentforce-grid/templates/grid-worksheet-spec.example.json"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "agentforce/agentforce-grid"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

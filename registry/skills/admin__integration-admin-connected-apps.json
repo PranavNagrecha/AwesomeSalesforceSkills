@@ -110,11 +110,6 @@
     "skills/admin/integration-admin-connected-apps/templates/integration-admin-connected-apps-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/integration-admin-connected-apps"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

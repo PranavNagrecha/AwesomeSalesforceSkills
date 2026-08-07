@@ -3,32 +3,47 @@
   "chunk_ids": [
     "00309ee2ebd459450116",
     "0160165bb999a2de887a",
+    "0201a9274117d74f68bd",
+    "04c6a1bd9d649ca4686b",
     "055ab95abc6a00ea3505",
+    "064e1092f0d40a8f8f95",
+    "092ab9dda667fb624541",
     "0d8470012a25cdc939fc",
-    "0f623c4fe9d905e81659",
-    "1ac29e2a66d107962708",
+    "1aba047f68e6261edd6d",
     "1c4fdc6c95740d2cd5fe",
-    "1de651cab429c773863c",
     "2340f59af642d40780f7",
+    "267ec419130ff69f17ab",
     "279e206bc0f1f9999ce9",
     "3d7dc14e154900dd524f",
-    "4216f0d82aaf2c1eb027",
+    "42b9ce8bd0fdc5cf3321",
+    "43725f606a0d978d9102",
     "4c7b113523bbb7673c9c",
+    "5cee70bc973202dfb393",
     "5e21f76cad0b4772b4db",
+    "6277c8fa360a35e425d4",
     "718a7f9ddeade3f9adaa",
+    "718f06efc424e2d5cab8",
     "76db5ebb8e7905ed3093",
+    "779743029beaa1d1471d",
+    "7c294213095b59799a9e",
+    "87ff3efafc8f8f0db39f",
     "940da54ceab7dfed7b1d",
     "97ae0ca8ae1fd820bcef",
+    "ab19050b7f59ed4412cf",
+    "afcb8ccd387f9660336b",
     "b096524d3b5c636dc390",
     "b1f808df7eada6af85b4",
-    "bccc69112d6dd2591c76",
+    "b4ab0d75c3bdde790ba5",
     "c1ea3d3095abe2d5c6c9",
+    "c6b67bf5c20d3ea41c6d",
     "dbe2c075d5e8fa474c96",
+    "df88fb1d2fd0f3bcce52",
     "e89429df0eb33200d611",
+    "f25e0eed6e2ae876aedc",
     "fba142e9b0d018536827",
     "ff733cff7fb461451c04"
   ],
-  "content_hash": "5eaab5ee903fa6d173fea8a66c38f27de1cd513efd79f8c4072d99d41f2d8030",
+  "content_hash": "6042c80e112eabecc3df21727fa3a5787c87ed76a3044cfd113135a3b66265d2",
   "dependencies": [],
   "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
   "file_location": "skills/flow/flow-data-tables",
@@ -39,10 +54,11 @@
   ],
   "name": "flow-data-tables",
   "official_sources": [
-    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
-    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
-    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
-    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+    "Flow screen component reference \u2014 Data Table configuration, selection modes and column types \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp.htm",
+    "Flow Builder \u2014 Get Records element, filters, sort and record limits \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_getrecords.htm",
+    "Flow limits and considerations \u2014 the per-transaction limits a running flow shares with Apex \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_considerations_limit.htm",
+    "Apex Governor Limits \u2014 150 DML statements and 50,000 records retrieved by SOQL queries per transaction, which apply to a flow transaction too \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Flow metadata \u2014 recordLookups, decisions and screen element structure \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm"
   ],
   "outputs": [
     "screen with Data Table configured"
@@ -65,12 +81,7 @@
   "templates": [
     "skills/flow/flow-data-tables/templates/flow-data-tables-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-data-tables"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

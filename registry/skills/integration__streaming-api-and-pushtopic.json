@@ -23,6 +23,7 @@
     "34ceee312aae4c2bcf9f",
     "430dfe16dfcf9da19c74",
     "477b65a2de3decc05c2e",
+    "47da18f4289676609b72",
     "47e355f34e57d513cc64",
     "4a4e85351fde083caf3f",
     "5394f5ba7bb34541a3da",
@@ -40,9 +41,11 @@
     "6f40cdd3afeda1b634fa",
     "72f6a2e45eee7b709e5a",
     "75791beb6d0747e3706a",
+    "79143cd9710ecf12e652",
     "7a22656dd8283c8396d6",
     "7a52e4ced6375aeb9fdb",
     "7e1e98072952d7004a92",
+    "7f0e4ccfd6835e73ed1c",
     "8247105a4ea333e877ba",
     "868cda7da161b43b847e",
     "8728ee13408abea1137d",
@@ -53,10 +56,13 @@
     "9ac2bb98385d70d5ec0b",
     "9fd2609ca2e39871134a",
     "9ff26c42f4db2cf65f38",
+    "a046b813f4cecd7952c7",
     "a0c8d9036337363f51fd",
+    "a3e903636645e76bd5e6",
     "a7cc8dc05d0aa340bb43",
     "aac80daf3d7ab040925e",
     "b0a1e5731e441f05ce0f",
+    "b13a0b011a47882390ce",
     "b3db03516bf0b45a7ce6",
     "b55879a7545b5c81d2b0",
     "b5e81c13d6e18f94993d",
@@ -85,12 +91,13 @@
     "e9824f880f23599e0ef6",
     "eb4755e70370cd452dff",
     "f02a2e2282c717f0067e",
+    "f4efb68bb6dd834ce2e1",
     "f52aab07b74dd0e4e358",
     "f5d57c23217e9d4273e5",
     "f9178a54d53f5bddafd9",
     "fe0b51bc906107f71810"
   ],
-  "content_hash": "213675c401a39de5af0f67f9f8246282e9bcd16a42b9ea7cb1b8d49179e5e28b",
+  "content_hash": "f4051ab3f3a1caa2ac6079dc9ebf193add053ce8d1a15408786735e19b3ffeb8",
   "dependencies": [],
   "description": "Use when setting up real-time data streaming from Salesforce to external systems using the Streaming API (PushTopic, Generic Streaming), CometD client configuration, replay, and channel management. NOT for Platform Events (use platform-events-apex or platform-events-integration).",
   "file_location": "skills/integration/streaming-api-and-pushtopic",
@@ -98,7 +105,7 @@
   "inputs": [
     "Salesforce object and SOQL filter condition for the PushTopic (or channel name for Generic Streaming)",
     "Authentication method used by the external CometD client (OAuth user-agent, username-password, JWT)",
-    "Replay ID requirement: -1 (all retained), -2 (new only), or a specific stored replay ID",
+    "Replay ID requirement: -1 (default, new events only), -2 (all retained), or a specific stored replay ID",
     "Expected concurrent subscriber count per channel",
     "API version to use (minimum 24.0 for PushTopic, 36.0 for Generic Streaming replay)"
   ],
@@ -109,7 +116,9 @@
     "Streaming API Developer Guide (PushTopic SOQL Restrictions) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/pushtopic_soql.htm",
     "Streaming API Developer Guide (Replay Events) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm",
     "Streaming API Developer Guide (Generic Streaming) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/create_streaming_channel.htm",
-    "Streaming API Developer Guide (Streaming API Limits) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/streaming_api_limits.htm",
+    "Streaming API Developer Guide (PushTopic Streaming Allocations \u2014 concurrent subscribers 2,000 Perf/Unlimited, 1,000 EE, 20 other; 110s socket timeout; 40s keepalive) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/limits.htm",
+    "Streaming API Developer Guide (Streaming API Error Codes \u2014 no 402 code exists; `403::Unknown client`, `403::Organization concurrent user limit exceeded`, `403::Subscription limit exceeded for this topic`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/streaming_error_codes.htm",
+    "Streaming API Developer Guide (Message Durability \u2014 replayId `-1` default/tip, `-2` all retained) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Integration Patterns and Practices \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html"
   ],
@@ -142,11 +151,6 @@
     "skills/integration/streaming-api-and-pushtopic/templates/streaming-api-and-pushtopic-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "integration/streaming-api-and-pushtopic"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

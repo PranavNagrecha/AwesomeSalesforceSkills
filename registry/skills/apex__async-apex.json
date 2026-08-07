@@ -3,6 +3,7 @@
   "chunk_ids": [
     "00fc1ad40eeeec38b414",
     "011f5b7069cee3ef4724",
+    "03e684e64ff490fa2d44",
     "06b824a1b8f0a9eba74e",
     "0cf5323a31b638aad156",
     "0d8cb13b64184f56d195",
@@ -30,6 +31,7 @@
     "7fb5c9ab8a1173963b04",
     "8196d6bfc94fe92196d2",
     "85facff6b38de12bc27c",
+    "8785967cf68b7dec31bb",
     "88ad3f5b9edc358e78eb",
     "92e0933cbec3230bdf24",
     "9a8dfb4876c31ad876ac",
@@ -45,7 +47,7 @@
     "bdcf78ec9b28df8184f6",
     "be6feda2a5418a273ab1",
     "bef5b6c4d2aa505144be",
-    "c1643bed4e86cb1bc574",
+    "c0a4502e2680efc5fa39",
     "cca5bdb3c600fb33f8c1",
     "cd4afdebda39ba498664",
     "ce9d602c834bcb14d35a",
@@ -59,7 +61,7 @@
     "f7ed50ab35131c4784e7",
     "fcc938aead54845dbe5b"
   ],
-  "content_hash": "13629bc455298d848d25bf6366a44e42d27ed7f975df7cf1115decdb7d46a961",
+  "content_hash": "d7f8df43cfcc94ecde7f0558f6a2f4cae1b876c6e8291d5d26a2fdd307e18573",
   "dependencies": [],
   "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Platform Events or a deep-only Batch Apex implementation guide.",
   "file_location": "skills/apex/async-apex",
@@ -71,6 +73,9 @@
   ],
   "name": "async-apex",
   "official_sources": [
+    "Apex Developer Guide \u2014 Execution Governors and Limits (\"Maximum number of methods with the future annotation allowed per Apex invocation\": 50 sync; \"0 in batch and future contexts; 50 in queueable context\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Apex Developer Guide \u2014 Future Methods \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm",
+    "Apex Developer Guide \u2014 Queueable Apex \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
     "Apex Developer Guide \u2014 async Apex behavior and scheduling guidance",
     "Apex Reference Guide \u2014 `Queueable`, `Database.Batchable`, and related API reference",
     "Salesforce Well-Architected Overview \u2014 scalability, performance, and reliability framing"
@@ -101,11 +106,6 @@
     "skills/apex/async-apex/templates/async-apex-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/async-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

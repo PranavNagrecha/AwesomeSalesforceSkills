@@ -100,11 +100,6 @@
     "skills/flow/flow-rollback-patterns/templates/flow-rollback-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-rollback-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

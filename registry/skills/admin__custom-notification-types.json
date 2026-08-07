@@ -119,11 +119,6 @@
     "skills/admin/custom-notification-types/templates/custom-notification-types-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "admin/custom-notification-types"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

@@ -129,11 +129,6 @@
     "skills/apex/npsp-custom-rollups/templates/npsp-custom-rollups-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "apex/npsp-custom-rollups"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

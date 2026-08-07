@@ -97,11 +97,6 @@
     "skills/lwc/lwc-chart-and-visualization/templates/lwc-chart-and-visualization-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-21",
-    "vector_id": "lwc/lwc-chart-and-visualization"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

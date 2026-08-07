@@ -2,9 +2,11 @@
   "category": "flow",
   "chunk_ids": [
     "00aebfcf1b1119c6c4d1",
+    "05159b89a7948dce4f90",
     "0aa681c7b9df86f6531e",
-    "0bc577db4b7408425af2",
+    "0b4605c228bc9ef8a74d",
     "0e1a075b307b922a0669",
+    "11a0d96ff043fae1f631",
     "13a96148f6618e845162",
     "1b76e4907e50be4cc3f3",
     "202fd577bf21fb25d81d",
@@ -12,38 +14,44 @@
     "26924bd5b7500cea1e84",
     "2851c7df1f9068636b0b",
     "2a75a1b5d341df6458db",
+    "2fa2c57f16c6ec0626c9",
     "346bbef3a9b1182f79f1",
     "34b13e5214087c04350c",
+    "35f607618e1eb44f0184",
     "36543a55c33e26814e7e",
+    "39fe7db4fe02162a22dd",
     "3a456ba8d98b599318d9",
+    "3acfbe54d419f723806a",
     "3e93872df804f7034ed5",
+    "410afa8bae920d410c29",
     "42253f649e5fae73f71f",
     "45b121f9585404d52ef5",
     "49472cece06dfae23f8b",
     "6d8a0f6d22386713f3dd",
+    "8562c533edcadb38e3c0",
+    "8b6d1c8d831f8dea0527",
     "8e221d599bca31fd9ce9",
     "90464fcb8d4fe46e4ec4",
     "9454eeb0ce8dfb9f659d",
-    "96835006df86d3ba7b5c",
-    "9ff246f1cdbae887bd1a",
-    "a090551b03967ab95429",
-    "a3cb6f6f6c048d6f7a45",
+    "9c9acd3482c2596e1c31",
+    "a35a1e9e95ee582859be",
+    "a4a1bb8e7a57e6490391",
+    "a994c72dd0e5e67d8582",
     "b1773ee6284355078c84",
     "b4bd8bcc2711184636c4",
     "b9adca69a49a78ffdd61",
-    "bb24fa9f17a0452a6f98",
     "bf55a7ac3ada123eacd6",
     "c153778c511ab88e653e",
     "d2f280466822df37092e",
+    "d514bbb4e712d97857e0",
     "d68e8042189f8520041b",
-    "e23bdac7934ae1c49922",
     "ec4564e186c532ea58dd",
     "f15695059fa531297634",
     "f34540fcb01f5afeb286",
     "f6ec18e1bf5295435be3",
-    "ff5b2335811cdd2251b6"
+    "fc0a2f9a96cef588bb9d"
   ],
-  "content_hash": "ae54f13da9a877576b2b21b5c17cc37cba0747893d7dd52a44187c0c74f1b458",
+  "content_hash": "b22e5358b69969a5b2d9c23e0342f1338d88af8226a26eab62898b456a7a09f2",
   "dependencies": [
     "flow/record-triggered-flow-patterns",
     "flow/flow-migration-from-trigger"
@@ -57,7 +65,8 @@
   ],
   "name": "flow-record-save-order-interaction",
   "official_sources": [
-    "Triggers and Order of Execution \u2014",
+    "Triggers and Order of Execution (20-step list; before-save Flows step 3,",
+    "Apex Developer Guide \u2014 Execution Governors and Limits (recursive trigger",
     "Before-Save Flows \u2014"
   ],
   "outputs": [
@@ -86,11 +95,6 @@
     "skills/flow/flow-record-save-order-interaction/templates/save-order-map.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "flow/flow-record-save-order-interaction"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

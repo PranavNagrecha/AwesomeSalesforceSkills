@@ -226,11 +226,6 @@
     "skills/architect/government-cloud-compliance/templates/government-cloud-compliance-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "architect/government-cloud-compliance"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

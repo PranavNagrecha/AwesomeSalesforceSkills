@@ -114,11 +114,6 @@
     "skills/flow/workflow-rule-to-flow-migration/templates/workflow-rule-to-flow-migration-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-17",
-    "vector_id": "flow/workflow-rule-to-flow-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -104,11 +104,6 @@
     "skills/admin/validation-rules/templates/validation-rule-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/validation-rules"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

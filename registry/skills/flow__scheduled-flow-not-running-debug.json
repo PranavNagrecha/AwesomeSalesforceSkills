@@ -131,11 +131,6 @@
     "skills/flow/scheduled-flow-not-running-debug/templates/scheduled-flow-not-running-debug-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-08",
-    "vector_id": "flow/scheduled-flow-not-running-debug"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

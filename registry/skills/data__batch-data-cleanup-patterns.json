@@ -134,11 +134,6 @@
     "skills/data/batch-data-cleanup-patterns/templates/batch-data-cleanup-patterns-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "data/batch-data-cleanup-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

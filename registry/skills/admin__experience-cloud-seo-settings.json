@@ -121,11 +121,6 @@
     "skills/admin/experience-cloud-seo-settings/templates/experience-cloud-seo-settings-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/experience-cloud-seo-settings"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

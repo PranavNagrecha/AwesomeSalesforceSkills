@@ -169,11 +169,6 @@
     "skills/admin/uat-test-case-design/templates/uat-test-case-design-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/uat-test-case-design"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

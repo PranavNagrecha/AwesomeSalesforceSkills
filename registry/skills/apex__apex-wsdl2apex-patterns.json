@@ -153,11 +153,6 @@
     "skills/apex/apex-wsdl2apex-patterns/templates/apex-wsdl2apex-patterns-template.md"
   ],
   "updated": "2026-05-22",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-22",
-    "vector_id": "apex/apex-wsdl2apex-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

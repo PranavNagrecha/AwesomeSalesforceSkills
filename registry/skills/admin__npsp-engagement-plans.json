@@ -127,11 +127,6 @@
     "skills/admin/npsp-engagement-plans/templates/npsp-engagement-plans-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "admin/npsp-engagement-plans"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

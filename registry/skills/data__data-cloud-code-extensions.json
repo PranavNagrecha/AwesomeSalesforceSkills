@@ -143,11 +143,6 @@
     "skills/data/data-cloud-code-extensions/templates/data-cloud-code-extensions-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "data/data-cloud-code-extensions"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

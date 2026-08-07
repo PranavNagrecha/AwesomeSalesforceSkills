@@ -122,11 +122,6 @@
     "skills/apex/soql-object-limits-and-restrictions/templates/soql-object-limits-and-restrictions-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/soql-object-limits-and-restrictions"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

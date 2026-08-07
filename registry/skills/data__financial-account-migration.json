@@ -139,11 +139,6 @@
     "skills/data/financial-account-migration/templates/financial-account-migration-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "data/financial-account-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

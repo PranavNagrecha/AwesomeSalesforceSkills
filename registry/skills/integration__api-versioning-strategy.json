@@ -2,33 +2,46 @@
   "category": "integration",
   "chunk_ids": [
     "01b3810954c7cb9c3e58",
+    "03f6b68810f4104913f2",
     "05ed790254fcc1c65835",
+    "0c49ba6a9e8918bc9979",
+    "10db69dc06bb6bf5a5be",
     "11de1fe7ca8bac3cb668",
+    "126f1141e14258d4a71b",
     "1429f229882838b1696e",
     "19e4c25c298824a23cab",
     "1bd33cb35024c774da27",
     "1c3da7d3abb20c0f9ec1",
+    "29b7160278a47dbc66a5",
+    "364d079e8109d31ee21e",
     "38f1f4d48b2f071f9dc0",
+    "39638a12eed9c94cb7ff",
     "3e8dec2e611e5914ddbd",
     "3f734fadcd9841e2b3f5",
     "4070b28431d8bdadaa0d",
     "4d6894ff19e6041c5b48",
-    "59fa3221e8aa2f5c5fce",
+    "64ce80941275cb534a50",
     "7085a182e1933e0a8f19",
     "70e7a23b6f30bd18f8d8",
+    "8750d495913370aaa69c",
     "8f954507b444457e2cee",
-    "93e641833e2a02d7d4c3",
     "97fcf92e47271de7880c",
     "9e562e2b51732ef037e1",
+    "acfe02c0610d022a7423",
     "ad71ade31960dd6ae75b",
     "b49336967f3e72082939",
     "b5ddfd8382c3abd334ad",
     "b8a6a712ae7cc90f8236",
+    "c5f48fe8a84333241c35",
     "d89dc2f501a889eb387c",
+    "db05275761ded30aa766",
+    "dcf28f34006ed1a71550",
     "e51b6bc7fc22920fdfc7",
-    "ea6e94e494ca8901f1e2"
+    "ea6e94e494ca8901f1e2",
+    "f972cedd28d9038c7159",
+    "fdfd23b41f9881dcaf3a"
   ],
-  "content_hash": "289e75128ccd12fd6cc884a1e580f6e61aa06865019a91bf11e0c791c1bd7966",
+  "content_hash": "5939adaec99da65206a6dc0096f842d245fcb253f8765a53c4c98951a499dc82",
   "dependencies": [],
   "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
   "file_location": "skills/integration/api-versioning-strategy",
@@ -39,12 +52,11 @@
   ],
   "name": "api-versioning-strategy",
   "official_sources": [
-    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
-    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
-    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
-    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
-    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
-    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+    "Apex REST \u2014 @RestResource, urlMapping uniqueness, and the /services/apexrest/ base URI \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest_intro.htm",
+    "Apex REST annotations \u2014 @HttpGet, @HttpPost, @HttpPatch, @HttpDelete \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest_methods.htm",
+    "RestContext, RestRequest and RestResponse \u2014 reading the request URI and setting response headers and status \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_RestContext.htm",
+    "ApexClass metadata \u2014 the apiVersion element in .cls-meta.xml, which governs platform semantics and is independent of your URL version \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_classes.htm",
+    "Salesforce API versioning and retirement of legacy API versions \u2014 https://help.salesforce.com/s/articleView?id=000389108&type=1"
   ],
   "outputs": [
     "URI versioning scheme, deprecation policy, Apex class layout"
@@ -67,12 +79,7 @@
   "templates": [
     "skills/integration/api-versioning-strategy/templates/api-versioning-strategy-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "integration/api-versioning-strategy"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

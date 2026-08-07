@@ -141,11 +141,6 @@
     "skills/apex/formula-field-performance-and-limits/templates/formula-field-performance-and-limits-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "apex/formula-field-performance-and-limits"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

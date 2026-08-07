@@ -151,11 +151,6 @@
     "skills/admin/einstein-activity-capture-setup/templates/einstein-activity-capture-setup-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/einstein-activity-capture-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

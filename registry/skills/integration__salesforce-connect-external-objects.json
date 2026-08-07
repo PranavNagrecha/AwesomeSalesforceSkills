@@ -95,11 +95,6 @@
     "skills/integration/salesforce-connect-external-objects/templates/salesforce-connect-external-objects-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "integration/salesforce-connect-external-objects"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

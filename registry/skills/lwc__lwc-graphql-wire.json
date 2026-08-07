@@ -157,11 +157,6 @@
     "skills/lwc/lwc-graphql-wire/templates/lwc-graphql-wire-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "lwc/lwc-graphql-wire"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

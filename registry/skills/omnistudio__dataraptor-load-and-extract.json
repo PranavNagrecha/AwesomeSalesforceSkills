@@ -1,21 +1,26 @@
 {
   "category": "omnistudio",
   "chunk_ids": [
+    "05f5e588cfd6f68714c9",
     "0b66b1fadd231688c16a",
     "0bf97f7f0e36c9785d38",
+    "109c86237ebddad0c3e6",
     "1547067f2f7c388aab57",
     "1ee29b4db824cb7e4241",
     "24e2dd60599c0e7ed7b5",
     "260e88d951d408feb5f0",
+    "29b175621d433203b210",
     "2ad2e7815e940969b755",
     "2bd681ed2dc98e447700",
     "355933c1c86ea5e9b08f",
     "35b3d5a1bca4916defe1",
     "3abf829561d85c0ff18b",
+    "3cb776c9ea5a766c5307",
     "4bfcd68ea99ac989bcf0",
     "4ec2486013afde27ccca",
     "520bd2b672160d2f23be",
     "5539af6e97278bfb1dfe",
+    "59f9a129b7885cc9abd2",
     "5c0710e42563ad0ce026",
     "6707a65984fca7a9209d",
     "6e8fde45502363d7499a",
@@ -47,10 +52,11 @@
     "e6356c181617f335f164",
     "f4acab6c1b176ab5da89",
     "f911679d4da961d07a99",
+    "f9a6a2ad0693b2bdb3bb",
     "fe0cd2b061f03e938bd3",
     "ff710d930c81c41141f3"
   ],
-  "content_hash": "12da4f9649ebed5b248bd5b817bab2dc27c2ca1959a86243808241834ac56ce1",
+  "content_hash": "02862eb0b0ce82ad3c8d23996c10ce90a6cb68c0c54b7d71a4ffac47076989df",
   "dependencies": [],
   "description": "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio.",
   "file_location": "skills/omnistudio/dataraptor-load-and-extract",
@@ -65,7 +71,9 @@
     "OmniStudio Help \u2014 DataRaptor Extract Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_extract_overview.htm",
     "OmniStudio Help \u2014 DataRaptor Load Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_load_overview.htm",
     "OmniStudio Help \u2014 DataRaptor Extract Output \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_extract_output.htm",
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm"
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
+    "Apex Developer Guide \u2014 Execution Governors and Limits \u2014 the two distinct per-transaction DML ceilings that bound a Data Mapper Load: \"Total number of DML statements issued\" = **150** and \"Total number of records processed as a result of DML statements\" = **10,000**, identical for synchronous and asynchronous (verified 2026-08-01) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Omnistudio Data Mapper Best Practices \u2014 \"To avoid performance issues on the server, keep the number of SObjects to three or fewer.\" Note: this page does **not** state a maximum record count or document a batch-size setting, so per-record DML claims about Data Mapper Load remain unverified here \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_best_practices_47412.htm&language=en_US&type=5"
   ],
   "outputs": [
     "DataRaptor Extract configuration with SOQL and output field mappings",
@@ -94,11 +102,6 @@
     "skills/omnistudio/dataraptor-load-and-extract/templates/dataraptor-load-and-extract-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/dataraptor-load-and-extract"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

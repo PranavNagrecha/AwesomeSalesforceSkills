@@ -119,11 +119,6 @@
     "skills/admin/connected-apps-and-auth/templates/auth-integration-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "admin/connected-apps-and-auth"
-  },
+  "vector_embedding": null,
   "version": "1.2.1"
 }

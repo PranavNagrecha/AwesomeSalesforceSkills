@@ -105,11 +105,6 @@
     "skills/integration/dataweave-for-apex/templates/dataweave-for-apex-template.md"
   ],
   "updated": "2026-05-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-07",
-    "vector_id": "integration/dataweave-for-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

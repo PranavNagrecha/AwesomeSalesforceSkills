@@ -162,11 +162,6 @@
     "skills/admin/global-search-configuration/templates/global-search-configuration-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "admin/global-search-configuration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

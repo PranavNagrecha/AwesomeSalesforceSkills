@@ -122,11 +122,6 @@
     "skills/admin/moscow-prioritization-for-sf-backlog/templates/moscow-prioritization-for-sf-backlog-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/moscow-prioritization-for-sf-backlog"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

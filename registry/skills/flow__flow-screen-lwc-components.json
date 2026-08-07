@@ -144,11 +144,6 @@
     "skills/flow/flow-screen-lwc-components/templates/flow-screen-lwc-components-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-27",
-    "vector_id": "flow/flow-screen-lwc-components"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

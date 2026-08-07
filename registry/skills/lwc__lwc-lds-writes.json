@@ -127,11 +127,6 @@
     "skills/lwc/lwc-lds-writes/templates/lwc-lds-writes-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "lwc/lwc-lds-writes"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

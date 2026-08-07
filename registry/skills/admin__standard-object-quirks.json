@@ -112,11 +112,6 @@
     "skills/admin/standard-object-quirks/templates/standard-object-quirks-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/standard-object-quirks"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

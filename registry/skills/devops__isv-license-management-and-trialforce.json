@@ -144,11 +144,6 @@
     "skills/devops/isv-license-management-and-trialforce/templates/isv-license-management-and-trialforce-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-08",
-    "vector_id": "devops/isv-license-management-and-trialforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

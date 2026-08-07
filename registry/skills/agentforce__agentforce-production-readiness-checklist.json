@@ -192,11 +192,6 @@
     "skills/agentforce/agentforce-production-readiness-checklist/templates/agentforce-production-readiness-checklist-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-08",
-    "vector_id": "agentforce/agentforce-production-readiness-checklist"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -177,11 +177,6 @@
     "skills/admin/industries-communications-setup/templates/industries-communications-setup-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "admin/industries-communications-setup"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

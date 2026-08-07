@@ -159,11 +159,6 @@
     "skills/admin/health-cloud-patient-setup/templates/health-cloud-patient-setup-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/health-cloud-patient-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

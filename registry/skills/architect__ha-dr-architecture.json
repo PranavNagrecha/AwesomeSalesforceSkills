@@ -125,11 +125,6 @@
     "skills/architect/ha-dr-architecture/templates/ha-dr-architecture-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "architect/ha-dr-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

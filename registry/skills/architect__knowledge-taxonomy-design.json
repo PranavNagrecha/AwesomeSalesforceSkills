@@ -151,11 +151,6 @@
     "skills/architect/knowledge-taxonomy-design/templates/knowledge-taxonomy-design-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "architect/knowledge-taxonomy-design"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

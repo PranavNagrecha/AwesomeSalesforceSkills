@@ -253,6 +253,7 @@
     "4ad33c5dad250a1cbe04",
     "4c41015e59d1e21e3f5a",
     "4c7738386df2175e33ff",
+    "4d6fa5d11c5e426793aa",
     "4de5604d2d8cf456a2de",
     "4de91666870a7627d1a9",
     "4e3212b2521f1ced1d89",
@@ -495,6 +496,7 @@
     "965154da382ec0df39c3",
     "96cef38a1d043c636892",
     "96e86abef98cd8f4c8c0",
+    "97b57dbf2a90e5f1ef00",
     "97bb0d75aa6ef1fa7677",
     "98024e66c789102258d5",
     "98a387b9ad037bc8494d",
@@ -801,7 +803,7 @@
     "ff72be1944a3d585ac42",
     "ffaec02f00561a63ee04"
   ],
-  "content_hash": "a42df628f5f4a11c7373e1b765a0ed758903ac8250df2533e39139924bd7fe4b",
+  "content_hash": "2794c76518a9c8e33045e9a6b5b1be5b57f30f8c0baf19fabcff7fe49825c3de",
   "dependencies": [],
   "description": "Use when the user has captured Salesforce debug logs and needs forensic analysis of runtime behavior \u2014 trigger cascades, flow interviews, LWC/Aura @AuraEnabled calls, batch/queueable/future/scheduled Apex, platform events, CDC, validation/workflow/approvals, callouts, DML failures, governor limit hits, managed-package traces, flip-flop fields, UNABLE_TO_LOCK_ROW, INSUFFICIENT_ACCESS, mixed DML. Triggers: '.log file', 'debug log', 'why is this field changing', 'flow cascade', 'CPU timeout', 'heap exceeded', 'UNABLE_TO_LOCK_ROW', 'INSUFFICIENT_ACCESS', 'replay debugger'. NOT for choosing log levels or designing a logging framework (use apex/debug-and-logging), and NOT for setting up trace flags or Developer Console (use apex/debug-logs-and-developer-console).",
   "file_location": "skills/apex/salesforce-debug-log-analysis",
@@ -815,6 +817,8 @@
   "official_sources": [
     "Apex Developer Guide \u2014 [Debug Log](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_debugging_debug_log.htm), [Log Event Reference](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_log_events_reference.htm)",
     "Apex Reference Guide \u2014 [System.Limits](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_limits.htm)",
+    "Apex Reference Guide \u2014 [Exception Class and Built-In Exceptions](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm) \u2014 used to confirm the exception class names quoted in log signatures; there is no `MixedDmlException` type, so mixed-DML log lines read `System.DmlException: \u2026 MIXED_DML_OPERATION`",
+    "SOAP API Developer Guide \u2014 [StatusCode enumeration](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm) \u2014 used to verify status-code strings quoted in the error-code reference",
     "Salesforce Developer Guide \u2014 [Order of Execution](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm)",
     "Salesforce Architects \u2014 [Well-Architected: Trusted > Resilient](https://architect.salesforce.com/well-architected/trusted/resilient), [Well-Architected: Adaptable > Composable](https://architect.salesforce.com/well-architected/adaptable/composable)"
   ],
@@ -862,11 +866,6 @@
     "skills/apex/salesforce-debug-log-analysis/templates/log-triage-worksheet.md"
   ],
   "updated": "2026-04-24",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-24",
-    "vector_id": "apex/salesforce-debug-log-analysis"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

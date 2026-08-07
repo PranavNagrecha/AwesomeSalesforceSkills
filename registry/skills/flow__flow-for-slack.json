@@ -101,11 +101,6 @@
     "skills/flow/flow-for-slack/templates/flow-for-slack-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "flow/flow-for-slack"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

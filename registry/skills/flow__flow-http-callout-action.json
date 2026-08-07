@@ -5,30 +5,45 @@
     "095dd7436a4794546f01",
     "11d1c8c31955a488f4ef",
     "1ad212d2f70726025419",
+    "218b803b4c82f34c7f31",
+    "22bd8010b880f005a43f",
     "2c70075ff2d6a98c8273",
-    "378bc8d4c57399d7e6e5",
     "3c4e7ae505ab0086be4c",
     "3cec0fbe78b0def09efa",
     "4d22f33048007438d0aa",
+    "514111c538b54e5ac200",
     "587ab0eaeedbda4ecd9f",
+    "5f05b6825b7208f35717",
     "6339664c84809ae54ade",
     "6a9849fe1bca5910b725",
     "6b6a74d0a34541e4335a",
+    "7379e00dcf3780b0c5df",
+    "74d952c490b722c1bc89",
     "76c6546645281642209b",
     "77c492b4d42523364bc0",
     "7976a78dd30d858d591b",
+    "7d287d47ab0a9652263d",
     "805ef573f586d5d7ac49",
+    "80695586a711f9e2d18e",
+    "8495bc88bddcc6898083",
+    "87f8b042018156002543",
+    "8c4dfea8f96ca4cea87f",
     "9318a0cf8084ec7b53b6",
+    "95a656a79a520ea885e5",
     "a0fae23454a4f7f92a13",
+    "a58a1d5a5e8096ece4b4",
+    "a899cc8857c2589066bb",
+    "a92c244b6f2d8bd3124d",
     "ad1499c01d86073ed515",
     "aee70b42c478b785f30c",
-    "b9f5a75c8aa2069a3c7a",
     "cb839b0d640126004828",
     "cdfb6137ce20fc97a4ba",
     "d4cbd986b1898d6cbdbf",
+    "d79a00803bca944b9131",
+    "f005aca1b60d309669fc",
     "f439d84be95e6c2480bf"
   ],
-  "content_hash": "d9d607c80fe26231f973ea71c4bc6a90527ba613b50c857121644db8d5c9dbd7",
+  "content_hash": "7359aa09d9cf4132737ed40f5f617a1b7c2ce0f529eaa6011b9afbd0c2e8b9f3",
   "dependencies": [],
   "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
   "file_location": "skills/flow/flow-http-callout-action",
@@ -39,10 +54,11 @@
   ],
   "name": "flow-http-callout-action",
   "official_sources": [
-    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
-    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
-    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
-    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+    "Named Credentials and External Credentials \u2014 the credential model the HTTP Callout action requires, including principal access grants \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "ExternalCredential metadata type \u2014 authentication protocol, named principal and auth parameters \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalcredential.htm",
+    "Flow Builder \u2014 HTTP Callout actions and schema from a sample response \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_build_extend_httpcallout.htm",
+    "Apex Governor Limits \u2014 100 callouts per transaction and a 120-second cumulative callout timeout, which apply to a flow transaction \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Flow Builder \u2014 record-triggered flow run order, including the asynchronous path after the transaction completes \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_concepts_trigger_recordchange.htm"
   ],
   "outputs": [
     "Flow HTTP Callout action with schema + fault path"
@@ -65,12 +81,7 @@
   "templates": [
     "skills/flow/flow-http-callout-action/templates/flow-http-callout-action-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-http-callout-action"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

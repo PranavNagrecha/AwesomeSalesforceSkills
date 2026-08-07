@@ -1,33 +1,44 @@
 {
   "category": "agentforce",
   "chunk_ids": [
+    "0281a623694d1d81d63f",
+    "062bf927189d665bd465",
     "0cc9694db3651ec4fa51",
     "0f1f440aec8aca92b2c4",
     "109d8f81f4462a48c12d",
+    "1828d2ba9c5008369c34",
+    "1dbfb76bdac39fcd1419",
     "25dc66a6f92d496ac032",
     "44d9441abd1b1331150b",
+    "4660ea0dca519517bcc5",
+    "4a88bfb262aa5931f3b7",
     "68f43714daccfc9f0799",
     "70d1237671d9d2f17c66",
     "723e069fbd3e9eb4bc18",
     "76d0d35298d20d672b37",
     "7a7993917b1b08915331",
+    "803dc44f7d1b3f8dfc16",
     "845723318cbda138c5e7",
     "85f02e00406faa0849a1",
     "8f96b57fed8e25c9ba8e",
     "961955be6e2607914acd",
     "a08effe3f1ff86e81080",
     "a535ed075f8817a38780",
+    "ab22877327c60b70eb25",
     "b4b0428abcd97778f0d7",
     "b6e4b8d6c81953f3f058",
+    "beb676cdffc993e4dd94",
     "c4b97071179c9c10f81b",
+    "cfa6a49ac89e1f861030",
     "d2aff0f252afaa33601f",
     "df2962384847191d526b",
     "e0788c309ae76f2ed770",
+    "e606b60e5d430fe65afc",
     "f12b13d43f0b0ff73368",
     "f15a86d81551bb6db3f3",
     "f84f9a8a1052a86e29ad"
   ],
-  "content_hash": "5f9ab47213cde5809c95ab7ba106da68ccc3faa086fbda808f088fc56631c2c1",
+  "content_hash": "2fc285f7d2d9a3186beae471925fdd2af640543d9b8dfb2ffe2e154cc583c6f1",
   "dependencies": [],
   "description": "Apex test patterns for @InvocableMethod agent actions: per-branch coverage, bulk safety, deterministic assertions. NOT for UI/LWC testing or agent conversational quality scoring.",
   "file_location": "skills/agentforce/agent-action-unit-tests",
@@ -37,10 +48,11 @@
   ],
   "name": "agent-action-unit-tests",
   "official_sources": [
-    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
-    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
-    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
-    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+    "InvocableMethod annotation \u2014 one per class, and \"the Inputs and Outputs must match on both the size and the order\" \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm",
+    "InvocableVariable annotation \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm",
+    "Apex Developer Guide \u2014 Testing Apex (Test.startTest/stopTest, async completion) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm",
+    "Testing HTTP Callouts with HttpCalloutMock \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_testing.htm",
+    "Apex Governor Limits \u2014 100 SOQL queries synchronous, 150 DML statements per transaction \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"
   ],
   "outputs": [
     "Test class with per-branch assertions + bulk test"
@@ -64,12 +76,7 @@
   "templates": [
     "skills/agentforce/agent-action-unit-tests/templates/agent-action-unit-tests-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-action-unit-tests"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

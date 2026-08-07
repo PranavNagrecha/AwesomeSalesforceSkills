@@ -107,11 +107,6 @@
     "skills/architect/fsl-optimization-architecture/templates/fsl-optimization-architecture-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "architect/fsl-optimization-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

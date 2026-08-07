@@ -100,11 +100,6 @@
     "skills/lwc/lifecycle-hooks/templates/lwc-component-scaffold.js"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lifecycle-hooks"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -101,11 +101,6 @@
     "skills/agentforce/agentforce-cost-optimization/templates/cost-model.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agentforce-cost-optimization"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

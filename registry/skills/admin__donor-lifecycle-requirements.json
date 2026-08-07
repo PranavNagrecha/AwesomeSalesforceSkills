@@ -117,11 +117,6 @@
     "skills/admin/donor-lifecycle-requirements/templates/donor-lifecycle-requirements-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "admin/donor-lifecycle-requirements"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

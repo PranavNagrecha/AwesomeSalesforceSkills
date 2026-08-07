@@ -172,11 +172,6 @@
     "skills/devops/experience-cloud-deployment-dev/templates/experience-cloud-deployment-dev-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "devops/experience-cloud-deployment-dev"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

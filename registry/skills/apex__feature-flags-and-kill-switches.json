@@ -118,11 +118,6 @@
     "skills/apex/feature-flags-and-kill-switches/templates/feature-flags-and-kill-switches-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "apex/feature-flags-and-kill-switches"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

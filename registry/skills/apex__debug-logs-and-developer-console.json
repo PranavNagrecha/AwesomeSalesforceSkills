@@ -107,11 +107,6 @@
     "skills/apex/debug-logs-and-developer-console/templates/debug-logs-and-developer-console-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "apex/debug-logs-and-developer-console"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

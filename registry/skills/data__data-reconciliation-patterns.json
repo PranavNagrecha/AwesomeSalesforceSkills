@@ -5,6 +5,7 @@
     "078d2587b4ce7c5db39c",
     "0c4cfcc6709f63b9adbf",
     "0dcd7593ef1f11efa3f1",
+    "0e66ac4bd08281072a27",
     "0f98a1f4793ae145e600",
     "0fe43efaf0bc45c8b6f0",
     "139373d3c2e2fbf35fee",
@@ -28,6 +29,7 @@
     "5a24033f821772a72d79",
     "5b7611c91d95a424fe80",
     "5bd894999583b99e20db",
+    "5cf9a88b1517cc53be86",
     "5d904303d56490418e89",
     "5d91643b778a3f12d5b2",
     "5f4dfb5ec9e4f8713a4e",
@@ -44,6 +46,7 @@
     "7b53024b03fa629ce07e",
     "813fd3bff312598283db",
     "83b459f81c682b21b509",
+    "866053f9e0962e320a79",
     "8767299a2f9639d222ab",
     "887a8c2c36da27afd8da",
     "8a984b7159cb8154f482",
@@ -66,7 +69,6 @@
     "bf974b86bb08af2c9162",
     "c142a7e24e234190a17e",
     "c4ba04352173a558f648",
-    "c8ff8cd011d36260993d",
     "c9ea956546b1cdba39db",
     "cbf4ec42c457c73e0c13",
     "cfe4f1f96fce75b4ab80",
@@ -86,7 +88,7 @@
     "f665f451a1ee066c5aea",
     "f9776819bd215652625c"
   ],
-  "content_hash": "81a77454033fc4513525eb951a898faf766f3235bde5bf565030af72ad1c8113",
+  "content_hash": "b9036869a3a5fd7022cb570561f833af28bc8883dc0218d12033b260424b7589",
   "dependencies": [],
   "description": "Patterns for reconciling Salesforce data with external systems: count-level, field-level, and record-level reconciliation, external ID upsert patterns, Change Data Capture for delta detection, and soft-delete tombstone strategies. Use when validating ongoing data sync or diagnosing discrepancies between Salesforce and external data sources. NOT for one-time data migration planning (use data-migration-planning). NOT for initial CDC topic configuration (use change-data-capture skill). NOT for deduplication within Salesforce (use large-scale-deduplication).",
   "file_location": "skills/data/data-reconciliation-patterns",
@@ -99,6 +101,8 @@
   ],
   "name": "data-reconciliation-patterns",
   "official_sources": [
+    "SOAP API Developer Guide \u2014 StatusCode (`DUPLICATE_EXTERNAL_ID`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm",
+    "REST API Developer Guide \u2014 Insert or Update (Upsert) a Record Using an External ID (HTTP 300 on ambiguous match) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm",
     "Bulk API 2.0 Developer Guide (Upsert) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
     "Change Data Capture Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm",
     "Data Integration Decision Guide \u2014 https://architect.salesforce.com/decision-guides/data-integration",
@@ -135,11 +139,6 @@
     "skills/data/data-reconciliation-patterns/templates/data-reconciliation-patterns-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "data/data-reconciliation-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

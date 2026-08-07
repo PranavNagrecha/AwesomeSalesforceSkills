@@ -142,11 +142,6 @@
     "skills/admin/managed-package-installation-and-upgrade/templates/managed-package-installation-and-upgrade-template.md"
   ],
   "updated": "2026-05-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-15",
-    "vector_id": "admin/managed-package-installation-and-upgrade"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

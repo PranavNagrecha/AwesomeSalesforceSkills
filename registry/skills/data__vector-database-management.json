@@ -126,11 +126,6 @@
     "skills/data/vector-database-management/templates/vector-database-management-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "data/vector-database-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

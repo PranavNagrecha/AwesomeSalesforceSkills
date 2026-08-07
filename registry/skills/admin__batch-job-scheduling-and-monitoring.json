@@ -104,11 +104,6 @@
     "skills/admin/batch-job-scheduling-and-monitoring/templates/batch-job-scheduling-and-monitoring-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/batch-job-scheduling-and-monitoring"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

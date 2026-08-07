@@ -127,11 +127,6 @@
     "skills/architect/zero-trust-salesforce-patterns/templates/zero-trust-salesforce-patterns-template.md"
   ],
   "updated": "2026-05-01",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-01",
-    "vector_id": "architect/zero-trust-salesforce-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

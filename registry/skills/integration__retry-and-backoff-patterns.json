@@ -16,6 +16,7 @@
     "26ca918c3afb9bd00ab4",
     "27a7aee86f5195acced6",
     "2a601dadcf56e8c86bd3",
+    "328821709c52bbd9a732",
     "3394924c50e67a36cdd6",
     "34d163f29131089d07a1",
     "3505a31cbe555e381181",
@@ -28,7 +29,6 @@
     "52a48ccba32de5829ebb",
     "5bac27a170ee68c85b27",
     "5c1c69c1142a79e404bd",
-    "5cd7213b5cadf5c38774",
     "5e19f4d1930442e1f77f",
     "5ecf1e989edf5d99d2ab",
     "5ffb041ceaea1914a47e",
@@ -38,6 +38,7 @@
     "70a62e8fd36be8acced2",
     "71e0dd5da0e5d75ca393",
     "7232bed58b8a44bf3cdd",
+    "7a37ef2837a74f8dc128",
     "7f90ff5f2f8456ff3881",
     "811956bbdf283f53ec49",
     "8138e49fe09f11ab39a1",
@@ -64,22 +65,25 @@
     "bc1e4b382db32165c518",
     "c0765e6dda140953d828",
     "c2fea07ae5fa4d740142",
+    "c40c1ba5252c467ce11b",
     "c42bea5693f0b4bf4927",
     "cd5e7422182aca1ff391",
-    "d976fc33b8096b1c001d",
     "da124f54018692081638",
     "da16ca85c8e1c500ee17",
     "de3dd081a54882009d8b",
     "df11f8eb70e3862aec0a",
     "e6f9a76f0e64bb834fef",
     "e9778dcfc92a6e9621bb",
+    "eb6cffc6567b426d32ef",
+    "ec6e24c5f29758b03a2c",
+    "f23b9a4d08f4a06c4668",
     "f51d1be3efdf1c542067",
     "f58db2e6f8a375181394",
     "fa654833a71c155b195a",
     "ff983d70f398464ff39e",
     "ffa0c958080f414ed323"
   ],
-  "content_hash": "24f4a4835a86bd3753957078804c14e17b5956aa0d7f15bc2e14788e5bc878f3",
+  "content_hash": "2d63e4faedcfdc1125b08243b89110342089066f5869f71c52221e7eb74be0da",
   "dependencies": [
     "callout-limits-and-async-patterns",
     "apex-queueable-patterns"
@@ -96,7 +100,9 @@
   "name": "retry-and-backoff-patterns",
   "official_sources": [
     "Apex Developer Guide \u2014 Apex Callouts: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
-    "Apex Developer Guide \u2014 Queueable Apex: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
+    "Apex Developer Guide \u2014 Queueable Apex (\"specified minimum delay (0\u201310 minutes)\"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
+    "Apex Reference Guide \u2014 AsyncOptions (`MinimumQueueableDelayInMinutes`): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_AsyncOptions.htm",
+    "Salesforce Help \u2014 Org-Wide Default Delay in Scheduling Queueable Jobs (1\u2013600 seconds): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_orgWide_delayQueueable.htm&type=5",
     "Apex Developer Guide \u2014 Governor Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
     "Salesforce Help \u2014 Outbound Messaging Retry: https://help.salesforce.com/s/articleView?id=sf.workflow_outbound_troubleshoot.htm",
     "Platform Events Developer Guide \u2014 Event Replay: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_intro.htm",
@@ -132,11 +138,6 @@
     "skills/integration/retry-and-backoff-patterns/templates/retry-and-backoff-patterns-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "integration/retry-and-backoff-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

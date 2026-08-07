@@ -52,6 +52,7 @@
     "b7e0e267b50d6a312980",
     "b97384dc149ad4851bc1",
     "bd67bbffbd08026c514e",
+    "becd7f1d04ed5c08e18d",
     "c177573c8ba691707520",
     "c703fbcce8f2dca2eeec",
     "ce9196742e1a9fb6dfde",
@@ -68,7 +69,7 @@
     "edbdb7c1ce0abe6ef588",
     "fc75b1fc08ccf5d5235f"
   ],
-  "content_hash": "61d72a498248e15183f1b5dd2db4ef2f3413e3992d3df15249bb5ead5ab4c1af",
+  "content_hash": "cf228f7c4ae47a551a2aa0ac76f665b8f6b95883f4c0f15d51240bab5ad44c41",
   "dependencies": [],
   "description": "Use when a Lightning Web Component needs to escape shadow DOM isolation so Experience Cloud / LWR sites can be SEO-indexed, a third-party library can walk the DOM, global styling has to reach inside the component, or accessibility tooling must see the rendered tree. NOT for the default shadow DOM behavior most LWCs should use \u2014 reach for light DOM only when SEO, third-party DOM access, or global styling requires it, and never for components distributed through managed packages.",
   "file_location": "skills/lwc/lwc-light-dom",
@@ -85,7 +86,8 @@
     "Style Light DOM Components \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom-styles.html",
     "Migrate Shadow DOM Components to Light DOM \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom-migration.html",
     "Lightning Web Security Introduction \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/security-lwsec-intro.html",
-    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html"
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "LWC Developer Guide \u2014 Light DOM (\"Distributing components rendered in light DOM isn't supported\u2026 would result in a namespace conflict\"; verified 2026-08-01) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html"
   ],
   "outputs": [
     "render-mode decision (shadow vs light) with citation to the blocker it solves",
@@ -115,11 +117,6 @@
     "skills/lwc/lwc-light-dom/templates/lwc-light-dom-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-light-dom"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

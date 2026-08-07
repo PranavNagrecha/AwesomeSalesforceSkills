@@ -2,33 +2,47 @@
   "category": "lwc",
   "chunk_ids": [
     "0179022f58471852e121",
+    "02f73caa14cb9144072e",
     "0a8ff50fb97be1110eec",
     "136d86bbe5c21f43042a",
     "225d2a66b37ef691b260",
     "2b85dc33d0a636a30fec",
+    "2c4b7c33b0ae3db08bcf",
+    "36a9babdd27f54b53566",
     "3e304e98758331f59cf0",
     "482f770ca49c0e2c1c0a",
-    "484782cfb5cb50677448",
+    "4e440406041ac607c8a8",
     "6382bf2f5c6368a7b909",
+    "705551c2efcbe59fbc4a",
     "73de9e6e100e5ecff329",
     "755a447de511ad1e33f9",
+    "77cae62982012011d01b",
+    "79b1ef2b5442d6fce507",
     "7dd86996e4d227d04412",
+    "81a1b216fecb78e28fc4",
+    "89d293f9e33353df4f27",
     "9083d1d918328210740c",
     "90acdcfd6c1403b89424",
     "94b5bf1977f1bf26144b",
+    "9d925ba469991665ab0b",
     "9f0dcbe7888ac50b5c98",
     "a1919fdb6c02f761957e",
     "a383d380eb5611a4ab76",
+    "a6d5c3da4209628f05f2",
     "a73fde9f0e3f19102282",
+    "a874e4f2a37c487b4075",
     "b1f58ec4dd61827cdd9f",
     "b4ad8ee3e931bf836697",
-    "d121373a65dee0742682",
+    "c37f26f0e42b2863cb56",
     "dd6f2b8f281d4eff6f08",
     "de5dd7376ccfbb206082",
+    "eb7bfe9afc9d8001cde7",
     "ec4af10c8b829d3b9a2e",
+    "f369e0592db64f59d1d4",
+    "fd9ad7e61b276a52ce5a",
     "ff4ca98b50cb45925d4b"
   ],
-  "content_hash": "4135c441acb3ea436a3530e8aa7a8d0b8b0532bd2923a11fe38b0be7b7bfede2",
+  "content_hash": "7a92d11e031f923251c8d18e9c6deaf2a9eb9782cc0bc7c171957d522daa4117",
   "dependencies": [],
   "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
   "file_location": "skills/lwc/lwc-error-boundaries",
@@ -39,10 +53,11 @@
   ],
   "name": "lwc-error-boundaries",
   "official_sources": [
-    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
-    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
-    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
+    "errorCallback() \u2014 what it captures in descendants, the unmount-on-error behaviour, and the exclusion of programmatically assigned handlers \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-lifecycle-hooks-error.html",
+    "Lifecycle Hooks \u2014 where `errorCallback` sits relative to `connectedCallback` and `renderedCallback` \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-lifecycle-hooks.html",
+    "Handle Errors \u2014 wire failures provisioned onto the `error` property \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-error.html",
+    "Work with Errors \u2014 the `FetchResponse` shape (`body`, `status`, `statusText`) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-error-types.html",
+    "Pass Markup into Slots \u2014 the `<slot>` mechanism the wrapper pattern depends on \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-slots.html"
   ],
   "outputs": [
     "wrapper boundary component + fallback UI"
@@ -65,12 +80,7 @@
   "templates": [
     "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwc-error-boundaries"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

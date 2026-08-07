@@ -107,11 +107,6 @@
     "skills/apex/apex-decimal-arithmetic-precision/templates/apex-decimal-arithmetic-precision-template.md"
   ],
   "updated": "2026-05-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-07",
-    "vector_id": "apex/apex-decimal-arithmetic-precision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

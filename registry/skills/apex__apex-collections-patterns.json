@@ -99,11 +99,6 @@
     "skills/apex/apex-collections-patterns/templates/apex-collections-patterns-template.md"
   ],
   "updated": "2026-04-18",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-18",
-    "vector_id": "apex/apex-collections-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

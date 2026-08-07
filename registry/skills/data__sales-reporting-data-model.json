@@ -162,11 +162,6 @@
     "skills/data/sales-reporting-data-model/templates/sales-reporting-data-model-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "data/sales-reporting-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

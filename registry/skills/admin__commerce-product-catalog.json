@@ -149,11 +149,6 @@
     "skills/admin/commerce-product-catalog/templates/commerce-product-catalog-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/commerce-product-catalog"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

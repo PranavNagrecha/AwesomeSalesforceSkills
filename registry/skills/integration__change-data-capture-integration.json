@@ -17,6 +17,7 @@
     "1ab47d0c8d00a1ba8287",
     "1c2c5c0836f76090c8a7",
     "1cc3eb02552e91ce9aac",
+    "1e5dd42d121b20b404b7",
     "1f85d8452e5287009a2e",
     "1f8ec73a49ab1ecda082",
     "228673249df800c3f801",
@@ -30,10 +31,11 @@
     "32ce2f51e856f9b5c392",
     "33700a6a3a5295b613d9",
     "3d7af8774c5fedbac22b",
+    "3eaf0a3442e8b67d8be2",
     "4059c837c499f4145f75",
-    "418010c1be14e7fc4a54",
     "423843b45676f11231db",
     "4566815fa5a49c1da5d8",
+    "49f27923a3a26c930d7c",
     "4cb7c85013c57bcda56f",
     "53e2dc3daf18c7b4dfba",
     "551a06c3bcf20fd6b78e",
@@ -79,6 +81,7 @@
     "cbe60685afb2b4168bab",
     "d186899edf70156b5771",
     "d47a7ace79c4d3a3ef04",
+    "d6d43154162b148927f8",
     "d78434b78559c3274789",
     "d812b7a9aa865515e7bb",
     "d96663f270ca836c3004",
@@ -88,6 +91,7 @@
     "e0f28ba669ac18b6d187",
     "e2673e87d681af09c816",
     "e28cdf5a130e8ee024f0",
+    "e2ba186681d0fed8c3c9",
     "e816fd99351ea959a477",
     "e88f1855c11e019bb80e",
     "eccc6df5b662381dc56f",
@@ -97,11 +101,11 @@
     "f68720927d75cf66e1dc",
     "f7f30ef74343379cd117",
     "f93ceb14c35fa74945a4",
+    "f960474a5527a33fc7e9",
     "fd2b5cc1f0a30e2eb30a",
-    "fef52536d2a31c8ae728",
     "ff42d47e6c05501d5a47"
   ],
-  "content_hash": "96296043fc9aa82a5e1450cd6f8bb5683999e74383119a214c54d92379b7c8e9",
+  "content_hash": "1052894b0dd10e59f5ce98c9dbe6dfa06ce5c00b7f55ecb8bbf6873c43a6cb10",
   "dependencies": [],
   "description": "Use this skill when setting up CDC to stream Salesforce record changes to external systems via CometD or Pub/Sub API. Covers change event channels, entity selection, event structure, replay ID management, gap events, and subscriber management. NOT for Apex CDC trigger subscribers (see apex/platform-events-apex). NOT for publishing custom business events (use integration/platform-events-integration).",
   "file_location": "skills/integration/change-data-capture-integration",
@@ -115,6 +119,8 @@
   "name": "change-data-capture-integration",
   "official_sources": [
     "Change Data Capture Developer Guide \u2014 CDC event structure, channel types, replay ID, gap events, entity selection, allocations",
+    "Change Data Capture Developer Guide \u2014 Overflow Events (100,000-change threshold, `000000000000000AAA`)",
+    "Change Data Capture Developer Guide \u2014 Change Data Capture Allocations (delivery allocation, subscriber types, add-on)",
     "Pub/Sub API Developer Guide \u2014 gRPC subscription, FetchRequest, changedFields availability",
     "Integration Patterns \u2014 architecture pattern selection: CDC vs Platform Events vs outbound messaging",
     "Salesforce Well-Architected Overview \u2014 Reliability, Integration, and Scalability pillar framing"
@@ -149,12 +155,7 @@
   "templates": [
     "skills/integration/change-data-capture-integration/templates/change-data-capture-integration-template.md"
   ],
-  "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "integration/change-data-capture-integration"
-  },
+  "updated": "2026-08-01",
+  "vector_embedding": null,
   "version": "1.0.0"
 }

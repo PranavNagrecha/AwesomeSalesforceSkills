@@ -94,11 +94,6 @@
     "skills/data/etl-vs-api-data-patterns/templates/etl-vs-api-data-patterns-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/etl-vs-api-data-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

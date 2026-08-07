@@ -99,11 +99,6 @@
     "skills/apex/apex-rest-services/templates/apex-rest-services-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/apex-rest-services"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

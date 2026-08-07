@@ -93,11 +93,6 @@
     "skills/data/multi-currency-and-advanced-currency-management/templates/multi-currency-and-advanced-currency-management-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "data/multi-currency-and-advanced-currency-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

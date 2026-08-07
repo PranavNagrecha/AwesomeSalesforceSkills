@@ -110,11 +110,6 @@
     "skills/admin/escalation-rules/templates/escalation-rules-template.md"
   ],
   "updated": "2026-04-03",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-03",
-    "vector_id": "admin/escalation-rules"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -43,6 +43,7 @@
     "6c275e6df631ae9d9100",
     "73d3726f125169695d9d",
     "78af72b7fdd4a2e93657",
+    "798d6f55cbf543da7cdf",
     "7dc81a485dbc314ac1e0",
     "87038785216f44bcab6f",
     "87d5906f8d353527cd79",
@@ -61,9 +62,11 @@
     "b0d38c2505ad188e4de5",
     "babb3442509ebce154d4",
     "bc6de25a9730cb3cdcb8",
+    "bd26ada35b08f8e367b1",
     "c83b0896ceb1854d2d62",
     "cb937d224e38639a5288",
     "d126c774c4d272e10ba2",
+    "d8b059e222942705230a",
     "d9da652b234b67326f3f",
     "da797b273ae29ded59a9",
     "de7d8cba491d4f5f63a9",
@@ -74,12 +77,13 @@
     "eba54cb69e7c5bea782d",
     "fb1031d68560ad5db8ea",
     "fbdf25476bcd6c704086",
+    "fc8c1da5d91d785a64d4",
     "fde2412b1861b3c7e355",
     "feaa7c1d91b1bc788f59",
     "fed4be57e2e12f91ba2e",
     "ff72b4d14913478a1b57"
   ],
-  "content_hash": "581171bc9c3762f0aa162b808c44147d40cd448d26f850e5f329941e240e3b0f",
+  "content_hash": "50a7b7dfd41d6e23d147a98ff71635e482403a2e8107e5afa5489be7a2ab93f2",
   "dependencies": [],
   "description": "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow'. NOT for individual single-record retrieval (use Get Records alone), NOT for Apex-based collection manipulation, NOT for flow bulkification performance analysis (see flow-bulkification).",
   "file_location": "skills/flow/flow-collection-processing",
@@ -94,6 +98,7 @@
   "official_sources": [
     "Flow Reference \u2014 Assignment Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_assignment.htm",
     "Flow Reference \u2014 Loop Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_loop.htm",
+    "Apex Developer Guide \u2014 Execution Governors and Limits (50,000 total records retrieved by SOQL per transaction; 10,000 DML rows; 6 MB / 12 MB heap; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
     "Flow Reference \u2014 Collection Filter Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_collectionfilter.htm",
     "Flow Reference \u2014 Collection Sort Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_collectionsort.htm",
     "Flow Reference \u2014 Transform Element: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_transform.htm",
@@ -128,11 +133,6 @@
     "skills/flow/flow-collection-processing/templates/flow-collection-processing-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-collection-processing"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

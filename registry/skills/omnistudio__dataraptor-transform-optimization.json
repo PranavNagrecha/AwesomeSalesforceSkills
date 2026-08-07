@@ -96,11 +96,6 @@
     "skills/omnistudio/dataraptor-transform-optimization/templates/transform-audit-worksheet.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/dataraptor-transform-optimization"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

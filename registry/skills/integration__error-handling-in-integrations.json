@@ -125,11 +125,6 @@
     "skills/integration/error-handling-in-integrations/templates/error-handling-in-integrations-template.md"
   ],
   "updated": "2026-04-14",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-14",
-    "vector_id": "integration/error-handling-in-integrations"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -113,11 +113,6 @@
     "skills/devops/destructive-changes-deployment/templates/destructive-changes-deployment-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "devops/destructive-changes-deployment"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

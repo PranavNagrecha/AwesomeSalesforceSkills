@@ -19,6 +19,7 @@
     "3b9eb489bc7ac8f43afc",
     "3c4978bdc579ecf46ba2",
     "3f367e53084dceee671d",
+    "4174e2c399d3905fc657",
     "4491c6f83d9c1c2589d6",
     "4637cd1a96a4954bd3a7",
     "48bcd363b5f87bf3b010",
@@ -33,6 +34,7 @@
     "5b7ce10ce8c390f1eeb0",
     "612af8704f4f16edf7c1",
     "63694bda732954768998",
+    "64bd43cf4e71491680f0",
     "6545f541055b70681f5a",
     "6709033407df6d1d2652",
     "677b69674235bf7057bb",
@@ -48,10 +50,12 @@
     "8a62328c9dc0ee5a5c61",
     "8bf4b8caf4016be353db",
     "8e0e8373c1bf0f7a4d38",
+    "8f262c4523fcb17384c5",
     "94007c9966e14bdb4f1e",
     "96b4e7961ed8fb3855fc",
     "988f3c2745a868014835",
     "9f202eff9464733fedaf",
+    "a1df00c6f92c125fe8b5",
     "a50a5c2a26867578e1c4",
     "ab1e6199d158dc61a3cb",
     "ad326162a1973bd28101",
@@ -68,6 +72,7 @@
     "c6ce85c79a9feaf35d7e",
     "c85c55b4b334c1cfc3a4",
     "cd3b4c4e50e801c95767",
+    "cd47b30b862c2a07f738",
     "cfdf57d376304f86a66e",
     "d5d41a8f7c9ddb4b87f9",
     "d9059723e41aa038df79",
@@ -84,7 +89,7 @@
     "fdd43e2e526c8a6d741f",
     "ff3c513088a5c20fb590"
   ],
-  "content_hash": "56fc29ab6c600ecd6d2941352cdeb01a2876f64f874be0ed1b373cbf8a837d0e",
+  "content_hash": "59b96ffcada30ac21cb55084ff6d17a6e6542e73c07d573d5b585abe8c279654",
   "dependencies": [],
   "description": "Use this skill when writing or reviewing Apex change event triggers: trigger syntax on ChangeEvent objects, reading ChangeEventHeader fields (changeType, changedFields, recordIds, commitUser), handling CREATE/UPDATE/DELETE/UNDELETE and GAP events in Apex, and configuring entity tracking. NOT for platform events published by application code (use apex/platform-events-apex). NOT for external CDC subscribers via CometD or Pub/Sub API (use integration/change-data-capture-integration).",
   "file_location": "skills/apex/change-data-capture-apex",
@@ -100,6 +105,8 @@
     "Change Data Capture Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm \u2014 primary authority for trigger syntax, header fields, execution model, GAP events, and entity selection",
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm \u2014 governor limits, async execution, Queueable patterns",
     "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm \u2014 `EventBus.ChangeEventHeader` class and `getRecordIds()` method signature",
+    "Apex Developer Guide: Execution Governors and Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm \u2014 per-transaction heap is 6 MB synchronous / 12 MB asynchronous (there is no 10 MB heap in any Apex context); SOQL 100, DML 150",
+    "Change Data Capture Developer Guide: Change Event Triggers \u2014 https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_trigger_intro.htm \u2014 change event triggers run under **synchronous** governor limits and receive up to 2,000 events per invocation",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 reliability and performance framing"
   ],
   "outputs": [
@@ -131,11 +138,6 @@
     "skills/apex/change-data-capture-apex/templates/change-data-capture-apex-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "apex/change-data-capture-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

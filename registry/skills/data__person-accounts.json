@@ -147,11 +147,6 @@
     "skills/data/person-accounts/templates/person-accounts-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "data/person-accounts"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

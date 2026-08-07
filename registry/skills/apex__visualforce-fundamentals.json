@@ -143,11 +143,6 @@
     "skills/apex/visualforce-fundamentals/templates/visualforce-fundamentals-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "apex/visualforce-fundamentals"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

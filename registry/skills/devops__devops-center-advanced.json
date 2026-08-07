@@ -67,11 +67,6 @@
     "skills/devops/devops-center-advanced/templates/devops-center-advanced-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "devops/devops-center-advanced"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

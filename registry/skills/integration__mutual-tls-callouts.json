@@ -1,34 +1,50 @@
 {
   "category": "integration",
   "chunk_ids": [
+    "00f3f3ff2a3720ecd2a0",
     "07478b08138bdfcf7479",
     "163ed71b00e6c871e6dc",
     "17416e4bad7d7e46d23d",
+    "1941c6b706280c557a05",
     "22c45ab3dde8c19e87e0",
+    "251190fdcb3fd5385446",
+    "353d3b4225560eb6c412",
     "39aeeb20b76482c9b0a0",
-    "42df230c77ce289a002b",
     "48c622ecbaa3313f473e",
     "4b25bc2284f2f47a8945",
+    "54a10e055d61d05282ac",
+    "5685b8c0349aacf4c7d6",
     "60f5e891390a25f8458d",
     "626909622089cdf1a580",
     "62697fbf72994a727468",
     "6867807e0443f1ee595a",
+    "69140d16230e97842938",
+    "6f95a5d2fb332295ac75",
     "7629139a381d933be1d1",
     "78ecea7b0c414c836fcd",
     "7a964da7a69ea1d3746a",
+    "7b6f11f6770b220635b3",
     "8a23aac8ae4fd2103dd6",
-    "958052bfd182e7c0934f",
+    "8cbd9aa4f2a67294bd5b",
+    "9384c1772f7d621831b4",
+    "96441fcdabc7c979e1e1",
+    "989b86265ad3c086690e",
     "99f1c979f68d5af195b0",
+    "9cea65a62c67c3e97839",
+    "a174e272549f50458569",
     "b50dc6afea4946884eec",
     "bc5c6eff05e0c5caff0e",
     "c58cac9adb6486daadf7",
+    "c642ca292eee4d7f507e",
     "ca4dc4cec5e3fbce1e9a",
     "cb23d7c195a75fe69129",
     "cedde8cf05d1ebbac432",
     "d50d6e0acc40304faeff",
-    "d8325a5c192caa73e701"
+    "d5a5e8a9e1a4763fc02a",
+    "d8325a5c192caa73e701",
+    "ef7d902e8be2ec05655a"
   ],
-  "content_hash": "acfc6374d65ae5cca00c30a99760f579ab4ff2066cf443735cd036aa93d035d5",
+  "content_hash": "09ef787f80d06e43034f5f8fe4983f4f7495eb0e9807f8132e88003ae0698d24",
   "dependencies": [],
   "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
   "file_location": "skills/integration/mutual-tls-callouts",
@@ -39,12 +55,11 @@
   ],
   "name": "mutual-tls-callouts",
   "official_sources": [
-    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
-    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
-    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
-    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
-    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
-    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+    "Named Credentials as Callout Endpoints \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm",
+    "Apex Developer Guide \u2014 Invoking Callouts Using Apex, including the 120-second maximum callout timeout \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Certificate object reference \u2014 DeveloperName, ExpirationDate, for the monitoring query \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_certificate.htm",
+    "Identity Provider and certificate management in Setup (Certificate and Key Management) \u2014 https://help.salesforce.com/s/articleView?id=sf.security_keys_about.htm",
+    "Named Credentials setup \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm"
   ],
   "outputs": [
     "Named Credential + uploaded certificate + callout snippet"
@@ -67,12 +82,7 @@
   "templates": [
     "skills/integration/mutual-tls-callouts/templates/mutual-tls-callouts-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "integration/mutual-tls-callouts"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

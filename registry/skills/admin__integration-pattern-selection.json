@@ -99,11 +99,6 @@
     "skills/admin/integration-pattern-selection/templates/integration-pattern-selection-template.md"
   ],
   "updated": "2026-04-14",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-14",
-    "vector_id": "admin/integration-pattern-selection"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

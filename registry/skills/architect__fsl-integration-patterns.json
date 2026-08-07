@@ -100,11 +100,6 @@
     "skills/architect/fsl-integration-patterns/templates/fsl-integration-patterns-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "architect/fsl-integration-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -99,11 +99,6 @@
     "skills/data/ai-training-data-preparation/templates/ai-training-data-preparation-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/ai-training-data-preparation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

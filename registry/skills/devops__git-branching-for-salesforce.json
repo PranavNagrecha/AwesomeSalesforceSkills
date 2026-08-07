@@ -126,11 +126,6 @@
     "skills/devops/git-branching-for-salesforce/templates/git-branching-for-salesforce-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "devops/git-branching-for-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

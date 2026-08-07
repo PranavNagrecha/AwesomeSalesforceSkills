@@ -2,33 +2,47 @@
   "category": "lwc",
   "chunk_ids": [
     "08fed2861398706058e5",
+    "0b5009e81943fd477717",
     "0e6e1722405d88edef98",
+    "0e8cc9af1e065fde023c",
     "0f48ab8de3cc0eea879e",
     "13d7ebddf5e22d55ad0d",
+    "15abfbe6e9ff3b02b9ac",
     "2362a2c9148854a649dc",
     "30afe07fe0aee7f3c56b",
     "44cb2b3436c86424c9fc",
+    "47194d1faa1111980bd2",
     "484cd5fef6184a4e887c",
     "4868209580f7a240c835",
     "5544578f5c4219d18681",
-    "5de5350a33b757dd388c",
+    "5a56e48cd669e7411dba",
+    "5aec90befc21cfa2ba96",
+    "5c6269c5346f755eda38",
     "6376738e43a5498e3a8a",
     "6b28fce293dfc91753fd",
-    "7218d4ec0a3180f84e67",
+    "78042769a53f861f5e46",
+    "78c314a7fa34e810da8c",
     "7cbfbe35ca35a19df2f2",
+    "8abb8898c027e22660ee",
+    "a3b07c21beeb678f8d59",
     "a774b9c9631bc4aabe79",
+    "a9b74419478bf32e3969",
     "c3cb137eae1001f32250",
     "c477568070ee629970be",
     "d2ae7790d523c45dddaf",
     "d2e17a5b950fe8d4ff9f",
     "d864b2d239c4890d5a3e",
+    "de833798f10ee739f421",
     "e0f5fdaf43ced272e342",
     "e4762730f3c7da9c5df6",
     "e511cfc79ced87523a6f",
+    "e5d664a5bffc9865304a",
+    "ea41cb77b5329b2c8bac",
     "eb07ff015d8d9a4748c8",
-    "ee138321efa00b806ab1"
+    "ee138321efa00b806ab1",
+    "f44023d774177d553ef2"
   ],
-  "content_hash": "84a26d460e60214699e7cbbec641c3cb800af7226141761a0ceeb1a0f4e5204c",
+  "content_hash": "c848367122f4be69a56c4306f19aa839636ebb9dedcde283df28b4e62c6c8aac",
   "dependencies": [],
   "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
   "file_location": "skills/lwc/lwc-state-management",
@@ -39,10 +53,11 @@
   ],
   "name": "lwc-state-management",
   "official_sources": [
-    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
-    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
-    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
+    "Lightning Message Service \u2014 Message Service Limitations (supported and unsupported containers, the iframe constraint) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-message-channel-considerations.html",
+    "Subscribe and Unsubscribe from a Message Channel (`subscribe`, `unsubscribe`, subscriber options) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-message-channel-subscribe.html",
+    "Define the Scope of the Message Service (`APPLICATION_SCOPE` requires `@wire(MessageContext)`) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-message-channel-scope.html",
+    "Publish on a Message Channel \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-message-channel-publish.html",
+    "Communicate Across the DOM \u2014 the platform position on pub/sub between components \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/events-pubsub.html"
   ],
   "outputs": [
     "state-management decision + implementation snippets"
@@ -66,12 +81,7 @@
   "templates": [
     "skills/lwc/lwc-state-management/templates/lwc-state-management-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwc-state-management"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

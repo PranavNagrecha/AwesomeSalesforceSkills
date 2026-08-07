@@ -131,11 +131,6 @@
     "skills/apex/ampscript-development/templates/ampscript-development-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/ampscript-development"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

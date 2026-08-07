@@ -153,11 +153,6 @@
     "skills/apex/ai-model-integration-apex/templates/ai-model-integration-apex-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "apex/ai-model-integration-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

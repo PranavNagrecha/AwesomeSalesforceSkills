@@ -162,11 +162,6 @@
     "skills/admin/fsc-relationship-groups/templates/fsc-relationship-groups-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/fsc-relationship-groups"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

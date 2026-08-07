@@ -103,11 +103,6 @@
     "skills/apex/soql-string-escaping-and-reserved-characters/templates/soql-string-escaping-and-reserved-characters-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/soql-string-escaping-and-reserved-characters"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

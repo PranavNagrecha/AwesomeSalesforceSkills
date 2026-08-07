@@ -147,11 +147,6 @@
     "skills/architect/npsp-vs-nonprofit-cloud-decision/templates/npsp-vs-nonprofit-cloud-decision-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "architect/npsp-vs-nonprofit-cloud-decision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

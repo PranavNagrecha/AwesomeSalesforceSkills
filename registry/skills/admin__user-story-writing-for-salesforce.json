@@ -151,11 +151,6 @@
     "skills/admin/user-story-writing-for-salesforce/templates/user-story-writing-for-salesforce-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/user-story-writing-for-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

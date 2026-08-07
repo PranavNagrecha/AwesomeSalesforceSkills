@@ -107,11 +107,6 @@
     "skills/admin/omniscript-flow-design-requirements/templates/omniscript-flow-design-requirements-template.md"
   ],
   "updated": "2026-04-14",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-14",
-    "vector_id": "admin/omniscript-flow-design-requirements"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

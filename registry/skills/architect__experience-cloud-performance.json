@@ -153,11 +153,6 @@
     "skills/architect/experience-cloud-performance/templates/experience-cloud-performance-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "architect/experience-cloud-performance"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

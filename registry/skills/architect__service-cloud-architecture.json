@@ -143,11 +143,6 @@
     "skills/architect/service-cloud-architecture/templates/service-cloud-architecture-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "architect/service-cloud-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -125,11 +125,6 @@
     "skills/lwc/lwc-async-patterns/templates/lwc-async-patterns-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "lwc/lwc-async-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

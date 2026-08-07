@@ -146,11 +146,6 @@
     "skills/lwc/visualforce-to-lwc-migration/templates/visualforce-to-lwc-migration-template.md"
   ],
   "updated": "2026-04-29",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-29",
-    "vector_id": "lwc/visualforce-to-lwc-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

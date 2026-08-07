@@ -1,26 +1,38 @@
 {
   "category": "integration",
   "chunk_ids": [
+    "07045901b2636346be25",
+    "085b974bfe13451a3864",
     "0c5e77148c3c3d86970b",
     "0fa96553631234403e98",
     "14ffa54fa84700c994c0",
     "1d3cb5648bd81a6db945",
+    "21a01bd8a8ff210fc12a",
     "2553ace7986832988aff",
+    "25b63211e72bbcc2409f",
     "2dcf4c92038f1e991e3f",
     "31a47bc7cfb8270c2a71",
     "42601f13e5d6602afa41",
+    "455d2d24e2301700ad6a",
     "4dd1dfc547afdbb1367b",
-    "4e27d49e86ab292f379a",
+    "524267b038aadf130195",
     "52c17f50f125cfa3a02a",
     "561ba2168b9e43835ced",
-    "67369f7fe9a4554433a4",
+    "58a05246f9070901e9b4",
+    "5a62c6c68c91593df273",
     "6cdaddb6a62d66c7b721",
+    "707be93caabfa6414979",
     "76f1445f2006ce14b986",
+    "80dc1ca1a66192116b7d",
+    "81ffce3713076905654a",
     "846b78d3650925649f81",
+    "950a7f55ee10bfad8de1",
     "992c70c431524539f34f",
     "9a32acab348d335e4380",
+    "9d62b55b4bf2821cae85",
     "a0a2b185987754b940ea",
     "a15e8776e10eb6793180",
+    "a2aeb10ab9f29bb7db62",
     "c15d7c1d6a84d912667a",
     "c39f144fe548f4521438",
     "c88c0075eeec6b8941cc",
@@ -28,7 +40,7 @@
     "d2faba80ac20113c6e54",
     "de37839eb06d00fc88a7"
   ],
-  "content_hash": "e6c329f4707ac5623f2c6b09e1e5fe0d0b33c9aebfb86b02ee1211da35eb81b8",
+  "content_hash": "1c18e349c536f55fe3caa1d66b7f63e15a1510aa783f54367221b2e14e201eab",
   "dependencies": [],
   "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
   "file_location": "skills/integration/connect-rest-api-patterns",
@@ -39,12 +51,11 @@
   ],
   "name": "connect-rest-api-patterns",
   "official_sources": [
-    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
-    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
-    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
-    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
-    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
-    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+    "ConnectApi Namespace overview \u2014 the Apex surface for Chatter, communities and CMS \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/connectapi_namespace_overview.htm",
+    "ConnectApi.ChatterFeeds class \u2014 postFeedElement and feed retrieval \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/connectapi_class_chatterfeeds.htm",
+    "Connect REST API Developer Guide \u2014 resources, cursor pagination and response shapes \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Network class \u2014 getNetworkId() for the current community context \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Network.htm",
+    "FeedItem object reference \u2014 what the raw SObject can and cannot represent \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_feeditem.htm"
   ],
   "outputs": [
     "REST call examples + Apex ConnectApi equivalents"
@@ -67,12 +78,7 @@
   "templates": [
     "skills/integration/connect-rest-api-patterns/templates/connect-rest-api-patterns-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "integration/connect-rest-api-patterns"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

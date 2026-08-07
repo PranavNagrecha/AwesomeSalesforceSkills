@@ -132,11 +132,6 @@
     "skills/admin/fsc-referral-management/templates/fsc-referral-management-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/fsc-referral-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -114,11 +114,6 @@
     "skills/apex/apex-metadata-api/templates/apex-metadata-api-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "apex/apex-metadata-api"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

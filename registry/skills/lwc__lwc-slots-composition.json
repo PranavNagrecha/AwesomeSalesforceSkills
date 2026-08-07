@@ -118,11 +118,6 @@
     "skills/lwc/lwc-slots-composition/templates/lwc-slots-composition-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-slots-composition"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

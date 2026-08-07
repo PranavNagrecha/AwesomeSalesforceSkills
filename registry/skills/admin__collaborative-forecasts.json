@@ -152,11 +152,6 @@
     "skills/admin/collaborative-forecasts/templates/collaborative-forecasts-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/collaborative-forecasts"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

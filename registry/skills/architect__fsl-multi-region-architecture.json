@@ -108,11 +108,6 @@
     "skills/architect/fsl-multi-region-architecture/templates/fsl-multi-region-architecture-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "architect/fsl-multi-region-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

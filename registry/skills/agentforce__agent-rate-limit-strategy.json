@@ -1,17 +1,28 @@
 {
   "category": "agentforce",
   "chunk_ids": [
+    "04e8e49515cb668c126a",
     "0776c58e24b15ade6742",
     "08fa2550a7d9965ff8f5",
     "0fa34d304d82506a2611",
+    "1470d78bf74eb8f3f523",
     "1e810add61544dfea150",
+    "1e98e8847cd7723165b4",
+    "1fe1f47dffe06ba1fbf5",
+    "233484946b01bb1f0a01",
     "23f3dcce51b0f17e9343",
     "2e0c50fe958e5c1e1087",
+    "3ff9944e11612930fe0b",
     "43e844d821965fbf03b5",
+    "46425f381078f5419068",
+    "51e8af924df0967322ea",
+    "5254320cbd2555d16cb5",
     "57a868216f383756e701",
     "57c673de7f0c8234afa3",
     "5b4b4ee263d5dbe75630",
     "7b890bc936b80693415d",
+    "7dfcec3d7630d5703b15",
+    "803b330025fbb67198ba",
     "890d2cdc90a45fbd658a",
     "8c3b419f0cfb4a23347d",
     "8e7ff8642b134772c4ff",
@@ -20,14 +31,14 @@
     "9d2124833e45c7d4945e",
     "a20706b516723e995902",
     "a4327c0ac4ca4ee46f86",
-    "a9509909173a06d73d87",
     "b5b3b0d92847db5499c0",
     "bd0a8c4d31f2e7831e9e",
+    "c9abc50c99cf69cd454f",
     "dcc59b1e7b91e322a372",
     "dfa05e06c65d15eb3cde",
-    "e1c4308476facf23cf68"
+    "fa7be75f998717f37e8b"
   ],
-  "content_hash": "f78647843517aa12c1b8c7587901177291c5979eda19f8252fa61dec9f0f496d",
+  "content_hash": "b8c9379cf2fe0f40c4d82eeb2d1ec84ab90b556ab4768254174d4395491ee269",
   "dependencies": [],
   "description": "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints.",
   "file_location": "skills/agentforce/agent-rate-limit-strategy",
@@ -39,10 +50,11 @@
   ],
   "name": "agent-rate-limit-strategy",
   "official_sources": [
-    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
-    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
-    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
-    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+    "Apex Governor Limits \u2014 100 SOQL queries and 150 DML statements per synchronous transaction, and the custom metadata exemption (\"In a single Apex transaction, custom metadata records can have unlimited SOQL queries\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Salesforce Platform API limits \u2014 concurrent long-running request allocation and the REQUEST_LIMIT_EXCEEDED exception code \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm",
+    "Platform Events Developer Guide \u2014 publishing behaviour and allocations for the consumption ledger \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm",
+    "Custom Metadata Types \u2014 getInstance() access from Apex \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_custom_metadata_get.htm",
+    "Agentforce Developer Guide \u2014 agent invocation surface \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html"
   ],
   "outputs": [
     "Rate-limit policy CMDT",
@@ -68,12 +80,7 @@
   "templates": [
     "skills/agentforce/agent-rate-limit-strategy/templates/agent-rate-limit-strategy-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-rate-limit-strategy"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

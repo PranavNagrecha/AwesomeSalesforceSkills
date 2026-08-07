@@ -151,11 +151,6 @@
     "skills/admin/ai-adoption-change-management/templates/ai-adoption-change-management-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/ai-adoption-change-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

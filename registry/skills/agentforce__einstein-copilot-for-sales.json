@@ -45,6 +45,7 @@
     "67480651a6a0d50427b9",
     "68851a01f5ef2bfd2128",
     "6a513f621a20163fe18b",
+    "6b957dc8d024a352057d",
     "6bf96316a8c168fe8876",
     "6eac0ccb8c193104b5bf",
     "7a354b4dac3574f03003",
@@ -61,6 +62,7 @@
     "9553b98b811f4a3d9f27",
     "9673bdb123f884f752eb",
     "96c5e10ee1b20ac714dd",
+    "96f201c4e5f1b88c2b63",
     "98f67ce4f0575b205ab1",
     "9b05211a996c7dbc7339",
     "a5dfdc0942ba062016ed",
@@ -90,6 +92,7 @@
     "dea4e2d10ee3cce617b7",
     "e042fd1357900b1f3e8f",
     "e1051ff841c7368f12f2",
+    "e148525ba5b84364afb8",
     "e1cda974a736ae191528",
     "e4570a403204b1c41d75",
     "e55399f91a165fa877ad",
@@ -105,7 +108,7 @@
     "fe0b34eb39f08169ea19",
     "fffe5083f6ccd5243ca9"
   ],
-  "content_hash": "48508e1f4e8a47dc757e198414ec73e67eb233309c66c7f5ce46559aa4c4f62d",
+  "content_hash": "8389fcb1a6d5448e4e402c58c21cc8908133e714212857736be77794cdd2b18f",
   "dependencies": [],
   "description": "Sales-specific AI features in Sales Cloud: Einstein Opportunity Scoring setup and optimization, Einstein Activity Capture configuration, AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. NOT for core Agentforce setup, agent topic design, or Einstein Trust Layer configuration.",
   "file_location": "skills/agentforce/einstein-copilot-for-sales",
@@ -123,7 +126,9 @@
     "Einstein Activity Capture \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_activity_capture.htm",
     "Einstein Copilot for Sales (email and copilot features) \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_copilot.htm",
     "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Salesforce Help \u2014 Data Requirements for Sales Cloud Einstein (200 closed-won AND 200 closed-lost in the last 24 months, each with a lifespan of at least 2 days; standard Stage field required) \u2014 https://help.salesforce.com/s/articleView?id=einstein_sales_data_requirements.htm&language=en_US&type=5",
+    "Salesforce Help \u2014 Understand How Einstein Scores Your Opportunities \u2014 https://help.salesforce.com/s/articleView?id=einstein_sales_opportunity_scoring_how_it_works.htm&language=en_US&type=5"
   ],
   "outputs": [
     "Enabled and configured Einstein Sales AI features",
@@ -157,11 +162,6 @@
     "skills/agentforce/einstein-copilot-for-sales/templates/einstein-copilot-for-sales-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "agentforce/einstein-copilot-for-sales"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

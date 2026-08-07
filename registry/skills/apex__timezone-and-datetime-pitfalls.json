@@ -150,11 +150,6 @@
     "skills/apex/timezone-and-datetime-pitfalls/templates/timezone-and-datetime-pitfalls-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/timezone-and-datetime-pitfalls"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

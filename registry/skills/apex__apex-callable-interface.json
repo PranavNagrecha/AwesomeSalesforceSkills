@@ -116,11 +116,6 @@
     "skills/apex/apex-callable-interface/templates/apex-callable-interface-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "apex/apex-callable-interface"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

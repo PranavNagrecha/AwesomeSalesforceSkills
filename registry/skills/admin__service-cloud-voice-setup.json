@@ -135,11 +135,6 @@
     "skills/admin/service-cloud-voice-setup/templates/service-cloud-voice-setup-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/service-cloud-voice-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

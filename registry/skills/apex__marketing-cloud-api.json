@@ -127,11 +127,6 @@
     "skills/apex/marketing-cloud-api/templates/marketing-cloud-api-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/marketing-cloud-api"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

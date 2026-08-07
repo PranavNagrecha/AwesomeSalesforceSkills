@@ -25,11 +25,15 @@
     "344086bdd38b60916397",
     "351e919f8d864392736d",
     "35dad1939c5056dc2d9e",
+    "369f657f590d7e2ed84a",
     "37c305136ae5a2fe8bf7",
     "3b83a008667a76db53dd",
     "3decc98e849d3514adbf",
+    "402cbc5f7f2ef3761ba3",
+    "40d9ac00827d80e144a8",
     "47c21a72cd49ca4ad396",
     "48357a19e852cc6da8cd",
+    "49f1f69612780350d394",
     "4d3534a316013ecfc968",
     "4e6a60df8460255db154",
     "52d2addc03f9b00df543",
@@ -45,6 +49,7 @@
     "66e45872301cca26f87f",
     "694028d202fe564bea4d",
     "6a6fdae5144c28abf308",
+    "6c46e7463fdb035cdb52",
     "6cbeba54290e90282acc",
     "6d059f32d6c5e522155e",
     "6f21c3b3d7e813574fd5",
@@ -55,6 +60,7 @@
     "7c1506342c37fc039647",
     "7f1e009bc7849201d58b",
     "80119ffa700a27237d4b",
+    "80b2e2014d14036d2b86",
     "812cfd1a2a85b3d9d26b",
     "831f28aa6fd8ee4fd300",
     "84eb7a6345a44b1dc709",
@@ -86,8 +92,8 @@
     "cefd8ab0d708aa42662e",
     "defa0d30f1814ed913e9",
     "e112c7c7f14a95c1bfa1",
-    "e2f2518ac19c4083ad6e",
     "e54e8e8948469b267c81",
+    "e602f2e60cc062c2245d",
     "e7242be7968fd7bac3e8",
     "ea6467b5ce13b90fe17b",
     "eb72b3dc5c38f795010b",
@@ -100,12 +106,13 @@
     "f5f834b645012b586f50",
     "f827b513c1f0b02f8d24",
     "fb9023d991bda76ea2c2",
+    "fc20903c0b5e03ef5919",
     "fc818d598bb503687d42",
     "fd1daa7d75b69897bcf2",
     "fd3667764c78e2c60ffa",
     "fd558fed2d5e3316e3a7"
   ],
-  "content_hash": "b7354ad8b83f3ebf5252f796e55b7c3586db0c38b1233ef759798efa44d87ac8",
+  "content_hash": "dcca40bb393f120591e571c93f0082fb551a51609848571a491c721ebe6426c6",
   "dependencies": [
     "apex/apex-queueable-patterns",
     "apex/platform-events-apex"
@@ -127,6 +134,8 @@
     "Apex Developer Guide \u2014 Continuation Class (Async Callouts): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm",
     "Platform Events Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm",
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Developer Guide \u2014 Callout Timeouts: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm \u2014 \"The default timeout is 10 seconds\"; \"the maximum is 120,000 milliseconds\"; \"The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds\"",
+    "Apex Developer Guide \u2014 Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm \u2014 120-second cumulative callout timeout, 100 callouts per transaction, and \"50 in queueable context\" for `@future` methods (so `@future` may be called from a Queueable)",
     "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
@@ -159,11 +168,6 @@
     "skills/apex/long-running-process-orchestration/templates/long-running-process-orchestration-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "apex/long-running-process-orchestration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

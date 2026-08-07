@@ -41,6 +41,7 @@
     "aa9d255d01e1e3c765b4",
     "aeb9d8f341f74a6f0d59",
     "b46e8ebaaf7ca39ef892",
+    "b48f8dc12bc1805a6e3c",
     "b78773d88b95cbbf9311",
     "b822ea218c6323eebf05",
     "bc6074fb5182d03ebc6a",
@@ -65,7 +66,7 @@
     "f978db0bdd01656fdb11",
     "fda75f20b4e820dc4c0b"
   ],
-  "content_hash": "2483b07bfb302507eda99bb685183c500fe0cc900ae16dd36703b9f65ac9d884",
+  "content_hash": "17ed78ed34f67cfb1f90a7e973e5df9de4b9540113b47859f77c8cfb526acd22",
   "dependencies": [],
   "description": "Use when designing retry-safe integrations with Salesforce \u2014 including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for Salesforce duplicate management rules.",
   "file_location": "skills/integration/idempotent-integration-patterns",
@@ -78,6 +79,7 @@
   ],
   "name": "idempotent-integration-patterns",
   "official_sources": [
+    "SOAP API Developer Guide \u2014 StatusCode (`DUPLICATE_EXTERNAL_ID`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm",
     "Salesforce Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
     "REST API Developer Guide: Upsert a Record Using an External ID \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm",
     "EventBus.publish() \u2014 Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_EventBus.htm",
@@ -112,11 +114,6 @@
     "skills/integration/idempotent-integration-patterns/templates/idempotent-integration-patterns-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "integration/idempotent-integration-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

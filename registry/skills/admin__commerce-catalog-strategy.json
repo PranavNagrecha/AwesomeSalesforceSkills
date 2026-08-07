@@ -145,11 +145,6 @@
     "skills/admin/commerce-catalog-strategy/templates/commerce-catalog-strategy-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/commerce-catalog-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

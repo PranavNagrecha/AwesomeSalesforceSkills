@@ -84,11 +84,6 @@
     "skills/flow/flow-decision-element-patterns/templates/decision-review.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "flow/flow-decision-element-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

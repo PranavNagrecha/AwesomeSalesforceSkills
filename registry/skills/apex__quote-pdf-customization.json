@@ -137,11 +137,6 @@
     "skills/apex/quote-pdf-customization/templates/quote-pdf-customization-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "apex/quote-pdf-customization"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

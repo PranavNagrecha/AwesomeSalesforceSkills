@@ -117,11 +117,6 @@
     "skills/lwc/lwc-show-toast-patterns/templates/lwc-show-toast-patterns-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "lwc/lwc-show-toast-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

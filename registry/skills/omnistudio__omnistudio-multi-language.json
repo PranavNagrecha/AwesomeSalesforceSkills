@@ -1,22 +1,38 @@
 {
   "category": "omnistudio",
   "chunk_ids": [
+    "07d63a0bea3726dd1241",
+    "09bfa8a17d55bdfb6470",
     "0a24c630011188a82f2b",
     "0ce9786fdf6fec4568f2",
     "10299fe84b3cca5801a9",
+    "125fe5500935c1d2f430",
     "13fe7fb8a93c6ac92739",
+    "16fd2662eac2d99222b4",
+    "1fa1f06d99bf81521e42",
+    "2054724f242b71f97d10",
     "210ef86d5d7277fdc5d0",
+    "375a8b9e4e2010e73bf3",
+    "3be93fd42d748cbec26d",
+    "3ca5c50affea54c842db",
     "3f27a475e83713b9d973",
     "42db8b18c03d946d5d75",
     "43ead215015cc671834d",
+    "4423acb102a9f871af3c",
+    "4a31c0f30ac2c4ce8092",
     "52d2a7047cde580db82c",
     "69e26758c89d0ce9ec3c",
     "6e7f7482b807638981da",
-    "77de98fe7106fad7f3b7",
     "7936e211324ab33efbc5",
+    "7b2308276cc6b9efa976",
+    "7d939f27a772136eef4a",
+    "8386e9b9ac33a2844753",
     "865dc4d6b4b234ed7f25",
     "88c47a9650cb1f2ce1a9",
+    "93d7c3b254f73ab58ae6",
+    "94328c834786850d9cf0",
     "9d1075839f47fbd26162",
+    "a2e48eb4cb27273a4d2f",
     "a456c07e97c92e52e08a",
     "b77e79eef1cacc820476",
     "d3a23925a39d323b8079",
@@ -24,11 +40,14 @@
     "d5071a04ed105f0ab5fc",
     "d83aeca9f1b09e1cc60a",
     "e5188fae44976bbc03db",
-    "eda1783b56dbe841cc89",
+    "e868c4131f34f90c194c",
+    "eed065b6c464ad0fa16f",
     "f06c030107e99474fee3",
-    "f2638b11e389c35933ce"
+    "f2638b11e389c35933ce",
+    "f81cad6753fdc9b4bb3b",
+    "fec2de7558440fe89807"
   ],
-  "content_hash": "769643b6e809bbab9e2abc0bf727219e8503891843fa4d5967bdb658d1004f4d",
+  "content_hash": "590bbe8cc6a2ea08f7d78696159408719b9595623a9e9af42e505f0cc64a7bba",
   "dependencies": [],
   "description": "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone.",
   "file_location": "skills/omnistudio/omnistudio-multi-language",
@@ -39,9 +58,12 @@
   ],
   "name": "omnistudio-multi-language",
   "official_sources": [
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
-    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
-    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+    "Define Custom Label Translations in Multi-Language Omniscripts \u2014 the custom-label mechanism and the create-English-first rule \u2014 https://help.salesforce.com/s/articleView?id=sf.os_define_custom_label_translations_in_multi_language_omniscripts.htm&type=5",
+    "Create Multi-Language Omniscripts \u2014 multi-language as a creation-time choice \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_create_multi_language_omniscripts_20695.htm&type=5",
+    "Enable Multi-Language Omniscript Support \u2014 the org-level prerequisite \u2014 https://help.salesforce.com/s/articleView?id=sf.os_enable_multi_language_omniscript_support_20725.htm&type=5",
+    "Omniscript Custom Label Reference \u2014 the default labels OmniStudio ships already translated \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_omniscript_custom_label_reference.htm&type=5",
+    "Access Custom Labels in an Omniscript Custom Lightning Web Component \u2014 translating text inside an embedded component \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_access_custom_labels_in_an_omniscript_custom_lightning_web_component_20854.htm&type=5",
+    "Custom Labels \u2014 the org-wide store these strings live in, its 5,000-label and 1,000-character ceilings \u2014 https://help.salesforce.com/s/articleView?id=platform.cl_about.htm&type=5"
   ],
   "outputs": [
     "language data JSON + label extraction plan"
@@ -64,12 +86,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-multi-language/templates/omnistudio-multi-language-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-multi-language"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

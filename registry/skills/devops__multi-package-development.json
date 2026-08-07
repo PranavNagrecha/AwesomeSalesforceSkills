@@ -132,11 +132,6 @@
     "skills/devops/multi-package-development/templates/multi-package-development-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "devops/multi-package-development"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

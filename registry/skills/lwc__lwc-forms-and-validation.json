@@ -96,11 +96,6 @@
     "skills/lwc/lwc-forms-and-validation/templates/lwc-forms-and-validation-template.md"
   ],
   "updated": "2026-03-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-15",
-    "vector_id": "lwc/lwc-forms-and-validation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

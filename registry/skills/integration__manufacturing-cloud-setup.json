@@ -111,11 +111,6 @@
     "skills/integration/manufacturing-cloud-setup/templates/manufacturing-cloud-setup-template.md"
   ],
   "updated": "2026-05-03",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-03",
-    "vector_id": "integration/manufacturing-cloud-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

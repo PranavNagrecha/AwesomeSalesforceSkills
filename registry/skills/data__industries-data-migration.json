@@ -165,11 +165,6 @@
     "skills/data/industries-data-migration/templates/industries-data-migration-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-15",
-    "vector_id": "data/industries-data-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

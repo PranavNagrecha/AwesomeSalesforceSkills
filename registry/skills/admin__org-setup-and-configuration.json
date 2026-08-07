@@ -22,6 +22,8 @@
     "27016b2f500f4293c3ce",
     "2735569256cc6c98d914",
     "2c83bdf8798586aa1cd2",
+    "2cbb13eb0d96b17df826",
+    "2dfd830e26b4975a48ae",
     "2f7829935a0db1f0de82",
     "359902154517394291ca",
     "37cd9623d7a537758d38",
@@ -93,7 +95,7 @@
     "f962c9d0592a1c3755eb",
     "f9d8b7b1beffc04657d4"
   ],
-  "content_hash": "80498eb27daab4cf7ac6c150126bcc33fde462cbb221877de03d3262ad2e3ac4",
+  "content_hash": "a1f8e768169756080f292cd410898765604dab30a897dd1f6407d0868f72c546",
   "dependencies": [],
   "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
   "file_location": "skills/admin/org-setup-and-configuration",
@@ -107,6 +109,7 @@
   "name": "org-setup-and-configuration",
   "official_sources": [
     "Salesforce Help \u2014 MFA for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview_2fa.htm&type=5",
+    "Salesforce Help \u2014 Enable MFA for Your Entire Salesforce Org \u2014 https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_org_wide_setting.htm&type=5 \u2014 \"From Setup, use the Quick Find box to find and select Identity Verification\", then select \"Require multi-factor authentication (MFA) for all direct UI logins to your Salesforce org\"",
     "Salesforce Help \u2014 My Domain Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.domain_name_overview.htm&type=5",
     "Salesforce Help \u2014 Session Settings \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_sessions.htm&type=5",
     "Salesforce Help \u2014 Network Access (Trusted IP Ranges) \u2014 https://help.salesforce.com/s/articleView?id=sf.security_networkaccess.htm&type=5",
@@ -139,11 +142,6 @@
     "skills/admin/org-setup-and-configuration/templates/org-setup-and-configuration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/org-setup-and-configuration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

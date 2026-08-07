@@ -106,11 +106,6 @@
     "skills/apex/apex-custom-settings-hierarchy/templates/apex-custom-settings-hierarchy-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "apex/apex-custom-settings-hierarchy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

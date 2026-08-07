@@ -8,7 +8,6 @@
     "1ae268c198fb8a4935e5",
     "1c7c4e4cd3d16fd87649",
     "23d24c38d50222c54053",
-    "28f95520903789dd07c1",
     "2ae8913a00656602ac88",
     "3319241aa544dcce8daa",
     "3e39d2fd223dd4f30261",
@@ -36,6 +35,7 @@
     "7ec52b70526595a3d798",
     "86d547bf3f3197050a35",
     "8e84576e9efb0d634378",
+    "8ee661c4d125762d504b",
     "a411bd25379b5e0a2b3d",
     "c2257aa58e18b1eaa841",
     "c3dac6fa0b7e28b43db7",
@@ -51,7 +51,7 @@
     "fdb312c8c5d5145ace1e",
     "fe0b4c55285c8100da13"
   ],
-  "content_hash": "2c43cef0af1b21f769c734668a78a070155a18bf1711da11a5b37cacf3346728",
+  "content_hash": "6eab4dc4c56419dfbbfe256e70bc917ae1492b6efcd76f6c9ce9b4dad3713bd2",
   "dependencies": [
     "devops/flow-deployment-activation-ordering"
   ],
@@ -66,7 +66,9 @@
   "name": "flow-versioning-strategy",
   "official_sources": [
     "Flow Versioning \u2014",
-    "Paused Interviews \u2014"
+    "Paused Interviews \u2014",
+    "Subflow version resolution (\"the parent flow runs the child flow's active",
+    "Flow Element: Subflow \u2014"
   ],
   "outputs": [
     "Flow versioning convention",
@@ -93,11 +95,6 @@
     "skills/flow/flow-versioning-strategy/templates/activation-checklist.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "flow/flow-versioning-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

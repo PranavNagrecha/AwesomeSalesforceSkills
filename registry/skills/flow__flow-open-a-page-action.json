@@ -130,11 +130,6 @@
     "skills/flow/flow-open-a-page-action/templates/flow-open-a-page-action-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "flow/flow-open-a-page-action"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

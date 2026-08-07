@@ -90,11 +90,6 @@
     "skills/admin/lookup-filter-cross-object-patterns/templates/lookup-filter-cross-object-patterns-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-30",
-    "vector_id": "admin/lookup-filter-cross-object-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

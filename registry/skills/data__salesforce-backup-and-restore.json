@@ -104,11 +104,6 @@
     "skills/data/salesforce-backup-and-restore/templates/salesforce-backup-and-restore-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "data/salesforce-backup-and-restore"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -148,11 +148,6 @@
     "skills/omnistudio/business-rules-engine/templates/business-rules-engine-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "omnistudio/business-rules-engine"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

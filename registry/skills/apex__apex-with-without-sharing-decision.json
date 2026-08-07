@@ -118,11 +118,6 @@
     "skills/apex/apex-with-without-sharing-decision/templates/apex-with-without-sharing-decision-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "apex/apex-with-without-sharing-decision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

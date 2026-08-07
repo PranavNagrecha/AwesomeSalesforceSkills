@@ -1,33 +1,53 @@
 {
   "category": "devops",
   "chunk_ids": [
+    "008df8cfe94a3b84582c",
+    "073e520e649d13613ca6",
+    "074bfb9c77c98a74527a",
     "13d7c68c2ca340d41216",
-    "1a0b8b9743a13b15b92e",
+    "1ba69c3764a572ea44c6",
+    "24ad73b739cde86c3261",
+    "2c48402b812d8ad03ae6",
+    "2ddba66bc0cf5edced1d",
     "2f53b89dee9b39581614",
+    "37c42c7a003ac3ed25f2",
     "433b454c03c7741409be",
     "4cbc7b41ea78bb3382db",
     "4e3ca858788cbc514fe1",
     "50f07f2b9063f5f25c36",
     "52c6cd7c4d927a5b2891",
+    "5322f4735edac6ee4127",
+    "53ca7553f2836bf8a060",
     "54d543c51620bf8ec866",
-    "5e72cb4cd4ecd4e750c1",
+    "5a1c2e12c1fcad179c20",
+    "5a1f6422d6fc16218ae1",
     "65ae5662e2c2a75e3264",
     "684ed103920bfce2ad4d",
+    "68577e9964c138d747e5",
+    "7f2d7abc52b3aeff575f",
     "88afd85821dbfca7e706",
     "92642bdb8abf61b6c447",
+    "9432a56c1789912cecf7",
+    "9da0c2283039e5365a66",
+    "a1882bf096be46e3cecc",
     "b3e773d400eea8c4b032",
     "b4db78990865a4f0e98f",
     "b9fab2e5c27ff6340e52",
+    "bfbbf3a82575cedb0088",
     "c298a8bdc8ab8e3afaa6",
+    "cf21dbb06c8b22881bbf",
+    "cf828f05776bdd98c46a",
+    "d5926dc28fd2b54a9f7f",
     "d7857141cda633d04942",
     "e43f233510293b5287d6",
     "f4ff0714a1a8b56be75f",
     "f555ea7c737475674d3b",
     "f60a68df44414910dbf8",
+    "f7bb93c0a30c2260db38",
     "fa0b330480ed09b45a33",
     "fe318f8797e7b50cd8c0"
   ],
-  "content_hash": "19736f142aaf4c9bb36286eccd14d29657f0f6b533801e3365d9a0c2861a77e0",
+  "content_hash": "2e93e6627f36a94af251814d6bf5c2a3f1217dcab44808495bdaec57fb4856b3",
   "dependencies": [],
   "description": "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets.",
   "file_location": "skills/devops/feature-flag-custom-metadata",
@@ -39,12 +59,12 @@
   ],
   "name": "feature-flag-custom-metadata",
   "official_sources": [
-    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
-    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
-    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
-    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
-    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
-    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+    "Apex Governor Limits \u2014 the explicit SOQL exemption for custom metadata types \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "Custom Metadata Type Methods \u2014 `getAll()` / `getInstance()`, the application cache, and the 255-character field truncation \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm",
+    "Retrieving and Deploying Metadata in Apex \u2014 `Metadata.Operations.enqueueDeployment()` and its asynchronous behaviour \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_retrieve_deploy.htm",
+    "Metadata.CustomMetadata class \u2014 the `fullName`, `label` and `values` shape used to build a deployment \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Metadata_CustomMetadata.htm",
+    "Custom Metadata Types (CustomObject) in the Metadata API \u2014 how the records are represented in source \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_custommetadatatypes.htm",
+    "Custom Metadata Allocations and Usage Calculations \u2014 the per-org limits that bound how many flags you can have \u2014 https://help.salesforce.com/s/articleView?id=platform.custommetadatatypes_limits.htm&type=5"
   ],
   "outputs": [
     "Feature_Flag__mdt record + Apex/LWC/Flow accessor"
@@ -67,12 +87,7 @@
   "templates": [
     "skills/devops/feature-flag-custom-metadata/templates/feature-flag-custom-metadata-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "devops/feature-flag-custom-metadata"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

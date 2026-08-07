@@ -149,11 +149,6 @@
     "skills/admin/entitlements-and-milestones/templates/entitlements-and-milestones-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/entitlements-and-milestones"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

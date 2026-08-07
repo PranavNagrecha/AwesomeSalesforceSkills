@@ -5,7 +5,7 @@ by `scripts/generate_validation_index.py`. **Do not hand-edit.** The
 drift check in `scripts/validate_repo.py` catches stale copies.
 
 
-- total gates: **65**  ·  errors: **57**  ·  warnings: **7**  ·  other: **1**
+- total gates: **72**  ·  errors: **57**  ·  warnings: **14**  ·  other: **1**
 
 Each gate links to its source line. The intent line is the first line of
 the enclosing function's docstring — read it for *why* the gate exists,
@@ -15,36 +15,39 @@ not just what it checks.
 
 | Line | Level | Function | Intent | Message |
 |---|---|---|---|---|
-| [141](pipelines/validators.py#L141) | **ERROR** | `validate_frontmatter` | — | missing frontmatter key `{…}` |
-| [144](pipelines/validators.py#L144) | **ERROR** | `validate_frontmatter` | — | invalid category |
-| [148](pipelines/validators.py#L148) | **ERROR** | `validate_frontmatter` | — | `{…}` must be a list |
-| [153](pipelines/validators.py#L153) | **ERROR** | `validate_frontmatter` | — | `name` frontmatter `{…}` does not match folder name `{…}` |
-| [158](pipelines/validators.py#L158) | **ERROR** | `validate_frontmatter` | — | `category` frontmatter `{…}` does not match parent domain folder `{…}` |
-| [164](pipelines/validators.py#L164) | **ERROR** | `validate_frontmatter` | — | `description` must include a scope exclusion (e.g. 'NOT for ...') |
-| [170](pipelines/validators.py#L170) | **ERROR** | `validate_frontmatter` | — | `{…}` contains an unfilled TODO marker; replace with real content |
-| [174](pipelines/validators.py#L174) | **ERROR** | `validate_frontmatter` | — | `{…}` contains an unfilled TODO marker; replace with real content |
-| [180](pipelines/validators.py#L180) | **ERROR** | `validate_frontmatter` | — | SKILL.md body has {…} words; minimum is {…} |
-| [185](pipelines/validators.py#L185) | **ERROR** | `validate_frontmatter` | — | SKILL.md body contains {…} unfilled TODO marker(s); replace all TODOs with real content before syncing |
-| [189](pipelines/validators.py#L189) | **ERROR** | `validate_frontmatter` | — | — |
-| [214](pipelines/validators.py#L214) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has only {…} meaningful lines — may be a stub; implement real validation logic |
-| [230](pipelines/validators.py#L230) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has no conditional branches (`if`); it will always produce the same output regardless of input |
-| [236](pipelines/validators.py#L236) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has no error-output path (sys.exit(1), raise, or ERROR/ISSUE/WARN print); it may never report problems |
-| [249](pipelines/validators.py#L249) | **ERROR** | `validate_skill_structure` | — | missing required file `{…}` |
-| [254](pipelines/validators.py#L254) | **ERROR** | `validate_skill_structure` | — | templates/ must contain at least one file |
-| [256](pipelines/validators.py#L256) | **ERROR** | `validate_skill_structure` | — | scripts/ must contain at least one Python file |
-| [265](pipelines/validators.py#L265) | **ERROR** | `validate_skill_structure` | — | missing `references/llm-anti-patterns.md` — add LLM-specific anti-patterns for this skill |
-| [270](pipelines/validators.py#L270) | **ERROR** | `validate_skill_structure` | — | llm-anti-patterns.md contains {…} unfilled TODO marker(s) |
-| [279](pipelines/validators.py#L279) | _WARN_ | `validate_skill_structure` | — | llm-anti-patterns.md has only {…} anti-pattern(s); CLAUDE.md requires 5+ (any heading or numbered-list format). |
-| [291](pipelines/validators.py#L291) | _WARN_ | `validate_skill_structure` | — | SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions |
-| [297](pipelines/validators.py#L297) | **ERROR** | `validate_skill_structure` | — | missing `## Official Sources Used` section |
-| [303](pipelines/validators.py#L303) | **ERROR** | `validate_skill_structure` | — | `## Official Sources Used` section is empty; list at least one source |
-| [351](pipelines/validators.py#L351) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section — frontmatter `description` is the canonical trigger surface; remove the body section or fold it into the descriptio… |
-| [376](pipelines/validators.py#L376) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section while `references/well-architected.md` already covers it — keep pillar mapping in references/well-architected.md onl… |
-| [421](pipelines/validators.py#L421) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | {…} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md (e.g. "{…}…") — keep the deep version in references/gotchas.md,… |
-| [512](pipelines/validators.py#L512) | _WARN_ | `flush` | — | L{…}–L{…}: {…} consecutive `- **X** — ...` bullets should be a table (see standards/skill-authoring-style.md § 6.2) |
-| [559](pipelines/validators.py#L559) | **ERROR** | `validate_skill_registry_record` | — | — |
-| [566](pipelines/validators.py#L566) | **ERROR** | `validate_knowledge_source` | — | — |
-| [647](pipelines/validators.py#L647) | _WARN_ | `validate_skill_similarity` | Flag near-duplicate skills as WARN. | near-duplicate of `{…}` (score {…}, description {…}, tags {…}, triggers {…}); review with `python3 scripts/audit_duplicates.py` or merge/re… |
+| [159](pipelines/validators.py#L159) | **ERROR** | `validate_frontmatter` | — | missing frontmatter key `{…}` |
+| [162](pipelines/validators.py#L162) | **ERROR** | `validate_frontmatter` | — | invalid category |
+| [166](pipelines/validators.py#L166) | **ERROR** | `validate_frontmatter` | — | `{…}` must be a list |
+| [171](pipelines/validators.py#L171) | **ERROR** | `validate_frontmatter` | — | `name` frontmatter `{…}` does not match folder name `{…}` |
+| [176](pipelines/validators.py#L176) | **ERROR** | `validate_frontmatter` | — | `category` frontmatter `{…}` does not match parent domain folder `{…}` |
+| [182](pipelines/validators.py#L182) | **ERROR** | `validate_frontmatter` | — | `description` must include a scope exclusion (e.g. 'NOT for ...') |
+| [188](pipelines/validators.py#L188) | **ERROR** | `validate_frontmatter` | — | `{…}` contains an unfilled TODO marker; replace with real content |
+| [192](pipelines/validators.py#L192) | **ERROR** | `validate_frontmatter` | — | `{…}` contains an unfilled TODO marker; replace with real content |
+| [198](pipelines/validators.py#L198) | **ERROR** | `validate_frontmatter` | — | SKILL.md body has {…} words; minimum is {…} |
+| [203](pipelines/validators.py#L203) | **ERROR** | `validate_frontmatter` | — | SKILL.md body contains {…} unfilled TODO marker(s); replace all TODOs with real content before syncing |
+| [207](pipelines/validators.py#L207) | **ERROR** | `validate_frontmatter` | — | — |
+| [232](pipelines/validators.py#L232) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has only {…} meaningful lines — may be a stub; implement real validation logic |
+| [248](pipelines/validators.py#L248) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has no conditional branches (`if`); it will always produce the same output regardless of input |
+| [254](pipelines/validators.py#L254) | _WARN_ | `_validate_checker_script_content` | Detect always-pass stubs in skill checker scripts. | checker script has no error-output path (sys.exit(1), raise, or ERROR/ISSUE/WARN print); it may never report problems |
+| [267](pipelines/validators.py#L267) | **ERROR** | `validate_skill_structure` | — | missing required file `{…}` |
+| [272](pipelines/validators.py#L272) | **ERROR** | `validate_skill_structure` | — | templates/ must contain at least one file |
+| [274](pipelines/validators.py#L274) | **ERROR** | `validate_skill_structure` | — | scripts/ must contain at least one Python file |
+| [283](pipelines/validators.py#L283) | **ERROR** | `validate_skill_structure` | — | missing `references/llm-anti-patterns.md` — add LLM-specific anti-patterns for this skill |
+| [288](pipelines/validators.py#L288) | **ERROR** | `validate_skill_structure` | — | llm-anti-patterns.md contains {…} unfilled TODO marker(s) |
+| [297](pipelines/validators.py#L297) | _WARN_ | `validate_skill_structure` | — | llm-anti-patterns.md has only {…} anti-pattern(s); CLAUDE.md requires 5+ (any heading or numbered-list format). |
+| [311](pipelines/validators.py#L311) | _WARN_ | `validate_skill_structure` | — | llm-anti-patterns.md is {…} bytes, under the {…}-byte depth floor. For scale, the corpus 10th percentile is 3365 bytes and the median is 68… |
+| [332](pipelines/validators.py#L332) | _WARN_ | `validate_skill_structure` | — | examples.md has no fenced block — add at least one worked artifact (code, YAML, JSON, metadata XML, or a concrete payload/table), not a pro… |
+| [345](pipelines/validators.py#L345) | _WARN_ | `validate_skill_structure` | — | SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions |
+| [351](pipelines/validators.py#L351) | **ERROR** | `validate_skill_structure` | — | missing `## Official Sources Used` section |
+| [357](pipelines/validators.py#L357) | **ERROR** | `validate_skill_structure` | — | `## Official Sources Used` section is empty; list at least one source |
+| [405](pipelines/validators.py#L405) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section — frontmatter `description` is the canonical trigger surface; remove the body section or fold it into the descriptio… |
+| [430](pipelines/validators.py#L430) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section while `references/well-architected.md` already covers it — keep pillar mapping in references/well-architected.md onl… |
+| [475](pipelines/validators.py#L475) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | {…} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md (e.g. "{…}…") — keep the deep version in references/gotchas.md,… |
+| [566](pipelines/validators.py#L566) | _WARN_ | `flush` | — | L{…}–L{…}: {…} consecutive `- **X** — ...` bullets should be a table (see standards/skill-authoring-style.md § 6.2) |
+| [613](pipelines/validators.py#L613) | **ERROR** | `validate_skill_registry_record` | — | — |
+| [620](pipelines/validators.py#L620) | **ERROR** | `validate_knowledge_source` | — | — |
+| [701](pipelines/validators.py#L701) | _WARN_ | `validate_skill_similarity` | Flag near-duplicate skills as WARN. | near-duplicate of `{…}` (score {…}, description {…}, tags {…}, triggers {…}); review with `python3 scripts/audit_duplicates.py` or merge/re… |
+| [781](pipelines/validators.py#L781) | _WARN_ | `validate_official_sources_uniqueness` | Flag skills in the same domain sharing a byte-identical Official Sources block. | `## Official Sources Used` is byte-identical to {…} other `{…}` skill(s): {…}. A shared per-domain source list is not grounding for this sk… |
 
 ## `pipelines/agent_validators.py`
 
@@ -80,13 +83,17 @@ not just what it checks.
 
 | Line | Level | Function | Intent | Message |
 |---|---|---|---|---|
-| [95](scripts/validate_repo.py#L95) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
-| [105](scripts/validate_repo.py#L105) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
-| [129](scripts/validate_repo.py#L129) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
-| [304](scripts/validate_repo.py#L304) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
-| [313](scripts/validate_repo.py#L313) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
-| [355](scripts/validate_repo.py#L355) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
-| [375](scripts/validate_repo.py#L375) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
-| [386](scripts/validate_repo.py#L386) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
-| [449](scripts/validate_repo.py#L449) | **ERROR** | `_check_orphan_skills` | Emit an ERROR for each filtered skill with no agent decision recorded. | skill `{…}` has no agent decision — wire it to a run-time agent via `python3 scripts/patch_agent_skill.py <agent_id> {…} "### Mandatory Rea… |
-| [553](scripts/validate_repo.py#L553) | ? | `main` | — | — |
+| [101](scripts/validate_repo.py#L101) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
+| [111](scripts/validate_repo.py#L111) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
+| [135](scripts/validate_repo.py#L135) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
+| [310](scripts/validate_repo.py#L310) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
+| [319](scripts/validate_repo.py#L319) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
+| [361](scripts/validate_repo.py#L361) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
+| [381](scripts/validate_repo.py#L381) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
+| [392](scripts/validate_repo.py#L392) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
+| [472](scripts/validate_repo.py#L472) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill no run-time agent cites (advisory). | skill `{…}` is cited by no run-time agent (advisory). Wire it only if some agent's output would be wrong without it — a citation an agent w… |
+| [600](scripts/validate_repo.py#L600) | **ERROR** | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | Mandatory Reads entry for `skills/{…}` is an echo stub — its description ({…}) restates the slug and tells the agent nothing the path did n… |
+| [623](scripts/validate_repo.py#L623) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) carry no justification at all: {…}. A bare path tells the agent what to open but not why, so it cannot decide… |
+| [632](scripts/validate_repo.py#L632) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) restate the slug behind a bucketing label: {…}. Stripping the label leaves a description identical to the ski… |
+| [641](scripts/validate_repo.py#L641) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} numbered skill reads in this AGENT.md, over the advisory ceiling of {…}. Past that, the list stops being a reading list and becomes a c… |
+| [746](scripts/validate_repo.py#L746) | ? | `main` | — | — |

@@ -142,11 +142,6 @@
     "skills/agentforce/agentforce-agent-creation/templates/agentforce-agent-creation-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agentforce-agent-creation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

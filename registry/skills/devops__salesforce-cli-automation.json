@@ -118,11 +118,6 @@
     "skills/devops/salesforce-cli-automation/templates/salesforce-cli-automation-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "devops/salesforce-cli-automation"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

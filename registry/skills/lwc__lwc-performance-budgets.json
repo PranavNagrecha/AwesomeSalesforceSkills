@@ -85,11 +85,6 @@
     "skills/lwc/lwc-performance-budgets/templates/budget-manifest.yaml"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-performance-budgets"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

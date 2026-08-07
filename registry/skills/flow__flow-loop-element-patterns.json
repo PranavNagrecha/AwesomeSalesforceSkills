@@ -1,6 +1,7 @@
 {
   "category": "flow",
   "chunk_ids": [
+    "03a681d8cf13468e1fe7",
     "06cad36a61c451190fa8",
     "0c26b8d93cb69c612a32",
     "0f3cc7c986e484afbd98",
@@ -12,13 +13,13 @@
     "24eba0eb54977a361a74",
     "287ecab2cb8e4c7f4806",
     "28a02d481e39ccec3a4d",
-    "28cb125246e491e0a2ff",
     "29d6a7da2cdc43c21161",
     "2bd2bcbc3b8a3c8d887b",
     "2e127361491b8adbb4c3",
     "30f5cf69c1b61893fda7",
     "321be9541f7523fc788c",
     "35887fe2970f7db73275",
+    "3e079a3b4dbf73ec5740",
     "4069db5cc3dd8ca90443",
     "4662293011d828137950",
     "4bd01d1c742bfb346790",
@@ -35,6 +36,7 @@
     "721f284975658f1c9a7e",
     "7a4cf706dba4eeb9d7f4",
     "88a84cb8d78fd2e296f3",
+    "92e614b56472a4c442fe",
     "9774f0528ed2a708202b",
     "9a4705f0574aa03c8a95",
     "9b746efde3ca5d30b00e",
@@ -43,10 +45,10 @@
     "a12e4d783c3a5668654e",
     "aa036903530e0669a16b",
     "aa6b53080e45cbbeef91",
-    "adaf244eb6fd4e4231e3",
     "b11d9daa3cada5076cf4",
     "b1549704794405aa7a60",
     "b40739395c415c6a2b78",
+    "b660991deb0a12969d07",
     "bb26891c729abdd63159",
     "c1c79c0aedad98a55ea0",
     "c1cae9fb94fdfec36676",
@@ -56,6 +58,7 @@
     "c8d173e3d8f2c3fcb1bf",
     "cc00c4cefc1b605b6e17",
     "d12813007038dbbe2361",
+    "d1782ff585d993754eb5",
     "d30bc5f5a1066ed70a3a",
     "d4cb272181cd1295adf1",
     "d6a1e0c1a86b19712c0d",
@@ -64,6 +67,7 @@
     "db1292d49a041e8edd30",
     "dc33b0864dddcaf4152e",
     "de2b8ceef2bcf2d84dfc",
+    "de7d11c9cc03edd050e0",
     "e1598f0bb13c0209b7bd",
     "e37bbe40aa992d821a7c",
     "e5b18f95b264779db1e7",
@@ -77,7 +81,7 @@
     "fe631ec50c8e98e0ddc1",
     "fec92fa27c1e4783603d"
   ],
-  "content_hash": "146493689403c20825ca5a6707f5c808f688f4db722facf3d29d5b993b98c5bb",
+  "content_hash": "fb437609781050f6dafa941990a1f566047316b51059c6c7bd623b30b29cfd8b",
   "dependencies": [],
   "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 covers DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for general collection processing semantics (see flow-collection-processing) and NOT for end-to-end bulkification redesign across an entire flow (see flow-bulkification).",
   "file_location": "skills/flow/flow-loop-element-patterns",
@@ -96,13 +100,14 @@
     "Apex Governor Limits (transaction-shared DML / SOQL caps) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_gov_limits.htm",
     "Salesforce Well-Architected Framework \u2014 https://architect.salesforce.com/well-architected/overview",
     "Collection Filter element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_collection_filter.htm&type=5",
-    "Transform element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_transform.htm&type=5"
+    "Transform element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_transform.htm&type=5",
+    "Salesforce KB: Flow Error 'Number of Iterations Exceeded' (\"In API version 57.0, the limit of 2000 Flow elements was removed\") \u2014 https://help.salesforce.com/s/articleView?id=000382258&language=en_US&type=1"
   ],
   "outputs": [
     "Identified loop anti-patterns (DML-in-loop, SOQL-in-loop, subflow-in-loop, nested loop) with concrete refactor",
     "Collect-then-DML refactor instructions per loop",
     "Recommendation to keep, replace with Collection Filter / Transform / Get-with-criteria, or escalate to invocable Apex",
-    "Element-count estimate against the 2,000-element interview limit"
+    "Worst-case element-execution and CPU-time estimate for the loop"
   ],
   "references": [
     "skills/flow/flow-loop-element-patterns/references/examples.md",
@@ -125,11 +130,6 @@
     "skills/flow/flow-loop-element-patterns/templates/flow-loop-element-patterns-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-27",
-    "vector_id": "flow/flow-loop-element-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -158,11 +158,6 @@
     "skills/apex/commerce-payment-integration/templates/commerce-payment-integration-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "apex/commerce-payment-integration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

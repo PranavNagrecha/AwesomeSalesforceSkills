@@ -107,11 +107,6 @@
     "skills/admin/custom-metadata-types/templates/custom-metadata-types-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "admin/custom-metadata-types"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

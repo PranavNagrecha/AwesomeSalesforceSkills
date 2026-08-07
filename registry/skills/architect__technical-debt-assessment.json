@@ -159,11 +159,6 @@
     "skills/architect/technical-debt-assessment/templates/technical-debt-assessment-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "architect/technical-debt-assessment"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

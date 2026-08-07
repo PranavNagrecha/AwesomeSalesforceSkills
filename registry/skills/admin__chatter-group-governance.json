@@ -144,11 +144,6 @@
     "skills/admin/chatter-group-governance/templates/chatter-group-governance-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-08",
-    "vector_id": "admin/chatter-group-governance"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

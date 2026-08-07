@@ -6,6 +6,7 @@
     "0645474a4634a9c7c5fb",
     "0b590743e84f6a93b8ee",
     "0d465849fcba99483e56",
+    "0f46de19f50583138f16",
     "0fb3e6966584b80a045c",
     "10acdaf2a2c88a8efa13",
     "10cce10d7df4173dc52e",
@@ -22,6 +23,7 @@
     "2bbcc782403b1c2a5ff7",
     "2c6afd90c4c06b3ae16a",
     "2d38bd6ce368a2e5a440",
+    "3291d839782d09d61625",
     "35431bd379ced434544c",
     "36856e85dd1ddf13bcda",
     "378de0b5e107cc310153",
@@ -30,6 +32,7 @@
     "3c9c0cdb5d2a006b6a24",
     "3f371a53a509e793e091",
     "435234a1d01cc50ef294",
+    "442b76f6c3eeb99c86ed",
     "45ec25d5867f9002abef",
     "4e4a37d13b7d31f6081f",
     "4f60ae098da38779c9db",
@@ -43,6 +46,7 @@
     "5fd29549b65afa8d8797",
     "6054d764a8baa5352d4f",
     "613df8f1197c1a32417e",
+    "61e0fce73412f660b074",
     "65cc49bcba01066dfeb8",
     "675b966e60eeea57634c",
     "6815924268b67db64d5e",
@@ -51,6 +55,7 @@
     "745e0f6845bca4e53b2d",
     "7b304ff88aeb64eed745",
     "7ca79488e3ae3a8b6131",
+    "7cdaef9f5f66615aac7a",
     "7dc7960170679b092c9a",
     "8063c833c9463f80cb17",
     "854e87d05dc50c01422c",
@@ -71,6 +76,9 @@
     "a5f22974562c57033158",
     "a76f9e3af4aa5b0605ff",
     "a7d127c5e6c6a8677bb1",
+    "a8356f7bc2ac2b69e4f2",
+    "a9e9f4412de042307f1b",
+    "aac62746258425d11c22",
     "b028851bc64543ebe98f",
     "b38e6aad7972f7cd140f",
     "b4035629da396fda436e",
@@ -93,6 +101,7 @@
     "e63d67a592cd908680be",
     "ea297ab3166933704243",
     "ec00f34245348e7fa62e",
+    "ed0339a9eb2ab6fda947",
     "eecd0c267ba934c9b3ba",
     "f026f28cbf80c5fce3a9",
     "f1eb8b94b00fc468dc2e",
@@ -105,7 +114,7 @@
     "fef2c27877abe1a3b373",
     "ff3be6e00eb8b35a95c2"
   ],
-  "content_hash": "11969571cf6b2fd165658836c1c7dab3a3c122538a41978673e9d5a7ee755b61",
+  "content_hash": "1ccc75c8f7bbfdf1ccf492fb96c33a837af5dd4227bf6dcd698faa4add26da13",
   "dependencies": [],
   "description": "Use when designing the SLA tier definition table, escalation matrix document, and milestone threshold configuration for a Salesforce Service Cloud implementation. Covers designing the artifact layer \u2014 tier tiers (e.g., Enterprise/Professional/Basic), response and resolution time targets, business hours mapping, milestone percentage thresholds at 50/75/90/100%, and the escalation action matrix that maps thresholds to notification targets and automated actions. Triggers: SLA design, escalation matrix, milestone thresholds, tier definition, business hours alignment, SLA enforcement design. NOT for entitlement process configuration steps (use admin/case-management-setup), NOT for escalation rule setup (use admin/escalation-rules), NOT for CPQ quoting SLAs.",
   "file_location": "skills/architect/sla-design-and-escalation-matrix",
@@ -121,6 +130,7 @@
   "official_sources": [
     "Salesforce Help: Entitlements Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm",
     "Salesforce Help: Milestones \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_milestone_overview.htm",
+    "Salesforce Help: **Entitlement Management Limits and Limitations** \u2014 \"You can create up to 1000 entitlement processes and include up to ten milestones in each entitlement process.\" (consulted 2026-08-01; help.salesforce.com would not render for direct fetch, so this is the page's search-indexed text, corroborated across two independent queries. The ~40 milestone-action and 3,000 escalation-entry figures could **not** be settled and are marked unverified in SKILL.md.) \u2014 https://help.salesforce.com/s/articleView?language=en_US&id=sf.entitlements_best_practices.htm&type=5",
     "Salesforce Help: Set Up Entitlement Processes \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_process_setup.htm",
     "Salesforce Help: Business Hours \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_businesshours.htm",
     "Salesforce Help: Set Up Case Escalation Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_escalation.htm",
@@ -156,11 +166,6 @@
     "skills/architect/sla-design-and-escalation-matrix/templates/sla-design-and-escalation-matrix-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "architect/sla-design-and-escalation-matrix"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

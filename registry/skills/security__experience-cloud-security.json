@@ -99,11 +99,6 @@
     "skills/security/experience-cloud-security/templates/experience-cloud-security-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "security/experience-cloud-security"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

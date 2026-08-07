@@ -98,11 +98,6 @@
     "skills/omnistudio/omnistudio-security/templates/omnistudio-security-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "omnistudio/omnistudio-security"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

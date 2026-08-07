@@ -137,11 +137,6 @@
     "skills/lwc/lwc-console-workspace-api/templates/lwc-console-workspace-api-template.md"
   ],
   "updated": "2026-05-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-15",
-    "vector_id": "lwc/lwc-console-workspace-api"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -133,11 +133,6 @@
     "skills/architect/wealth-management-architecture/templates/wealth-management-architecture-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "architect/wealth-management-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

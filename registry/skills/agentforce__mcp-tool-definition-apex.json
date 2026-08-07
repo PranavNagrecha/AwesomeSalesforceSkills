@@ -124,11 +124,6 @@
     "skills/agentforce/mcp-tool-definition-apex/templates/mcp-tool-definition-apex-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/mcp-tool-definition-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

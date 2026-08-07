@@ -169,11 +169,6 @@
     "skills/data/data-model-design-patterns/templates/data-model-design-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "data/data-model-design-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

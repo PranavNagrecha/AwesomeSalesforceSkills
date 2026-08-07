@@ -123,11 +123,6 @@
     "skills/lwc/lwc-virtualized-lists/templates/lwc-virtualized-lists-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-04",
-    "vector_id": "lwc/lwc-virtualized-lists"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

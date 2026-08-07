@@ -121,11 +121,6 @@
     "skills/admin/compliant-data-sharing-setup/templates/compliant-data-sharing-setup-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "admin/compliant-data-sharing-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

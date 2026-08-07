@@ -93,11 +93,6 @@
     "skills/devops/release-notes-automation/templates/release-notes-automation-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-30",
-    "vector_id": "devops/release-notes-automation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

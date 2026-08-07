@@ -130,11 +130,6 @@
     "skills/admin/einstein-discovery-deployment/templates/einstein-discovery-deployment-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "admin/einstein-discovery-deployment"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

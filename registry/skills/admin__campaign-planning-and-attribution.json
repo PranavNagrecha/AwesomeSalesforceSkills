@@ -141,11 +141,6 @@
     "skills/admin/campaign-planning-and-attribution/templates/campaign-planning-and-attribution-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/campaign-planning-and-attribution"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

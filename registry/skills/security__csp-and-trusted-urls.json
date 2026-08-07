@@ -68,11 +68,6 @@
     "skills/security/csp-and-trusted-urls/templates/csp-and-trusted-urls-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "security/csp-and-trusted-urls"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

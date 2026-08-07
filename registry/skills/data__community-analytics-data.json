@@ -135,11 +135,6 @@
     "skills/data/community-analytics-data/templates/community-analytics-data-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "data/community-analytics-data"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

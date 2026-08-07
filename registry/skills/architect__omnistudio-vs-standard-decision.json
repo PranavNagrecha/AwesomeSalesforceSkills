@@ -129,11 +129,6 @@
     "skills/architect/omnistudio-vs-standard-decision/templates/omnistudio-vs-standard-decision-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "architect/omnistudio-vs-standard-decision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

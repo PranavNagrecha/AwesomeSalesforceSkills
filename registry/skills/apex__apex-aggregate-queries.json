@@ -142,11 +142,6 @@
     "skills/apex/apex-aggregate-queries/templates/apex-aggregate-queries-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/apex-aggregate-queries"
-  },
+  "vector_embedding": null,
   "version": "1.2.0"
 }

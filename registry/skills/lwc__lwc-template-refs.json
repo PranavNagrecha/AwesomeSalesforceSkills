@@ -111,11 +111,6 @@
     "skills/lwc/lwc-template-refs/templates/lwc-template-refs-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-template-refs"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

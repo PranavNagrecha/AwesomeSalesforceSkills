@@ -184,11 +184,6 @@
     "skills/lwc/lwc-shadow-vs-light-dom-decision/templates/lwc-shadow-vs-light-dom-decision-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwc-shadow-vs-light-dom-decision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

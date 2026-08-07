@@ -137,11 +137,6 @@
     "skills/data/data-cloud-data-streams/templates/data-cloud-data-streams-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "data/data-cloud-data-streams"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

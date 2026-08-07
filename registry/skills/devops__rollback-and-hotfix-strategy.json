@@ -125,11 +125,6 @@
     "skills/devops/rollback-and-hotfix-strategy/templates/rollback-and-hotfix-strategy-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "devops/rollback-and-hotfix-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

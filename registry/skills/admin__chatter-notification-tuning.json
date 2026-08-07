@@ -114,11 +114,6 @@
     "skills/admin/chatter-notification-tuning/templates/chatter-notification-tuning-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-08",
-    "vector_id": "admin/chatter-notification-tuning"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

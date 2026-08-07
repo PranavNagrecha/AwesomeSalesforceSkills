@@ -94,11 +94,6 @@
     "skills/apex/custom-metadata-in-apex/templates/custom-metadata-in-apex-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/custom-metadata-in-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

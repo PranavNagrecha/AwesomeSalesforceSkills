@@ -127,11 +127,6 @@
     "skills/flow/screen-flow-choice-component-selection/templates/screen-flow-choice-component-selection-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "flow/screen-flow-choice-component-selection"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

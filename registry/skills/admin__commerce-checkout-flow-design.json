@@ -165,11 +165,6 @@
     "skills/admin/commerce-checkout-flow-design/templates/commerce-checkout-flow-design-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/commerce-checkout-flow-design"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

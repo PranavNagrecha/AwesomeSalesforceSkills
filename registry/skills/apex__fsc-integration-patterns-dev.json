@@ -142,11 +142,6 @@
     "skills/apex/fsc-integration-patterns-dev/templates/fsc-integration-patterns-dev-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "apex/fsc-integration-patterns-dev"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

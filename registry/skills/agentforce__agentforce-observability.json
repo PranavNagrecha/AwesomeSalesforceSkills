@@ -118,11 +118,6 @@
     "skills/agentforce/agentforce-observability/templates/agentforce-observability-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "agentforce/agentforce-observability"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

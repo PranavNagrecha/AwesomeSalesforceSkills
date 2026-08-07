@@ -106,11 +106,6 @@
     "skills/apex/apex-switch-on-sobject/templates/apex-switch-on-sobject-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-04",
-    "vector_id": "apex/apex-switch-on-sobject"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

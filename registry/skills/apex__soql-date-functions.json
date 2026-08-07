@@ -106,11 +106,6 @@
     "skills/apex/soql-date-functions/templates/soql-date-functions-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/soql-date-functions"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

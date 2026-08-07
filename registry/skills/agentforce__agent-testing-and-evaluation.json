@@ -12,6 +12,7 @@
     "1195cc31b34600e7bfe9",
     "11cee1aab65681df43b1",
     "125c0a08ef6910c92fab",
+    "1388caa313d4af04f87d",
     "14812ecffe69f31a632c",
     "14d5a20a0143e209e657",
     "161f5538bd1bee6c4e38",
@@ -89,6 +90,7 @@
     "85f5002a17661bf1be98",
     "878a6c32d4fce90d19c4",
     "880345ae70cd4042755b",
+    "893e96d34afa04a57163",
     "8db28f7188508c711ec4",
     "8ee1ff58fc43f40b0dcd",
     "900def9afed460c82dd1",
@@ -142,6 +144,7 @@
     "e7da80748e7b93d97a6d",
     "e83995a0911bb9d31093",
     "eb6d4f7930a1b6f4e897",
+    "ebc86660cd2182e947ec",
     "ec3ab18ec51c9fae2b93",
     "ee42be7e3fa331efd7d6",
     "f13ad16ad78cb59fba8a",
@@ -150,7 +153,7 @@
     "fddfc5f1298ddbb86b03",
     "ff539430c1952a8df1ca"
   ],
-  "content_hash": "0873e84b4c598b19a60ad2f4cac12cdb7a3a9d84b9e0ac2b0f0605ccd02f59eb",
+  "content_hash": "a90ae59afe4da869faaaefe383ee21b4a0ae6d3b30f2314f3abfbdf8c9a5357d",
   "dependencies": [],
   "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
   "file_location": "skills/agentforce/agent-testing-and-evaluation",
@@ -174,7 +177,8 @@
     "Agentforce Developer Guide \u2014 Test Your Agent (Agentforce DX) \u2014 test spec YAML generation, agent test create metadata sync, VS Code Agent Tests panel requirements",
     "Agentforce Developer Guide \u2014 Run Agent Tests (Agentforce DX) \u2014 sf agent test run flags (--wait, --result-format, --output-dir), async default, resume/results/list commands",
     "Agentforce Developer Guide \u2014 Run Testing API Tests Using Salesforce CLI \u2014 project deploy start for AiEvaluationDefinition, sf api request rest against Connect API endpoints",
-    "Salesforce CLI Command Reference \u2014 agent commands (agent generate test-spec, agent test create/run/resume/results/list, agent test run-eval Beta)"
+    "Salesforce CLI Command Reference \u2014 agent commands (agent generate test-spec, agent test create/run/resume/results/list, agent test run-eval Beta)",
+    "Agentforce Developer Guide \u2014 Testing API (POST /services/data/vXX.0/einstein/ai-evaluations/runs; GET .../runs/{runId}; GET .../runs/{runId}/results) \u2014 https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-connect.html"
   ],
   "outputs": [
     "AiEvaluationDefinition metadata file with structured test cases",
@@ -208,11 +212,6 @@
     "skills/agentforce/agent-testing-and-evaluation/templates/agent-testing-and-evaluation-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "agentforce/agent-testing-and-evaluation"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

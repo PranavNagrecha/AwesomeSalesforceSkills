@@ -163,11 +163,6 @@
     "skills/data/analytics-external-data/templates/analytics-external-data-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "data/analytics-external-data"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

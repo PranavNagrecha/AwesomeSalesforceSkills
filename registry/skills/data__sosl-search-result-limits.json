@@ -108,11 +108,6 @@
     "skills/data/sosl-search-result-limits/templates/sosl-search-result-limits-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "data/sosl-search-result-limits"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

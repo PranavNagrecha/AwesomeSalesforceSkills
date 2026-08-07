@@ -156,11 +156,6 @@
     "skills/devops/cpq-deployment-administration/templates/cpq-deployment-administration-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "devops/cpq-deployment-administration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

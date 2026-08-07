@@ -124,11 +124,6 @@
     "skills/architect/case-deflection-strategy/templates/case-deflection-strategy-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "architect/case-deflection-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

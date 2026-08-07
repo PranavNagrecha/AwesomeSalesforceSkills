@@ -126,11 +126,6 @@
     "skills/admin/queues-and-public-groups/templates/queues-and-public-groups-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "admin/queues-and-public-groups"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

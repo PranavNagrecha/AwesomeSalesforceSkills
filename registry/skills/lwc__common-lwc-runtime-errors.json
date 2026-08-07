@@ -42,12 +42,14 @@
     "4343ec26ab1a813b4f56",
     "4aaeac5bb9116f5da355",
     "4c4b03b83c5fb93262e5",
+    "4c58281ce2e40b7f4f25",
     "4dd7bf94b4f00f0f8445",
     "52722f3aec4a3f771fae",
     "560aca68182b97911401",
     "57e2a30b161486e8e9d2",
     "591f4601be62d3c76baf",
     "5b9d9583f00239c14f22",
+    "5c663cd722d457222e0c",
     "5df51cdbcde5bbc9eb5b",
     "5f7237c6b37ba58adceb",
     "61f7ba3f73e791601733",
@@ -127,12 +129,13 @@
     "e6650faaf75c0f37f2ce",
     "e95c5835548fe1200e43",
     "e9c20b69f9b505ef16c2",
+    "ecbb4f6e55a76a267d42",
     "ef1a238fcf5bd20ef14a",
     "ef76d5c380972640dcb3",
     "f9ccc57bf300ce568e3a",
     "fdbce9da4cac62e6b85b"
   ],
-  "content_hash": "e4502f83147b66c98b0e6626e7d1e2f2937be42ff2a11ba780600e0622d43590",
+  "content_hash": "0f45b21545b2da9f7728a079ad8159c74eef79cb31e70c971e7b329caf4446f5",
   "dependencies": [],
   "description": "Diagnose and fix runtime errors in Lightning Web Components including wire adapter failures, shadow DOM boundary violations, event propagation mistakes, async rendering timing bugs, NavigationMixin errors, Lightning Locker vs Lightning Web Security conflicts, and slot projection problems. Triggers: 'wire adapter returns undefined', 'querySelector returns null in LWC', 'custom event not received by parent', 'LWC component not rendering after connected callback', 'NavigationMixin page reference error'. NOT for LWC fundamentals, build/deployment errors, or Aura component debugging.",
   "file_location": "skills/lwc/common-lwc-runtime-errors",
@@ -151,6 +154,8 @@
     "LWC Developer Guide: Property Errors \u2014 https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.js_props_errors",
     "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
     "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "Lightning Component Library \u2014 base component index (checked 2026-08-01: no `lightning-iframe` entry) \u2014 https://developer.salesforce.com/docs/component-library/overview/components",
+    "Lightning Components Security \u2014 Compare LWS and Lightning Locker \u2014 https://developer.salesforce.com/docs/platform/lightning-components-security/guide/get-started-compare-lws-locker.html",
     "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
@@ -187,11 +192,6 @@
     "skills/lwc/common-lwc-runtime-errors/templates/common-lwc-runtime-errors-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/common-lwc-runtime-errors"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

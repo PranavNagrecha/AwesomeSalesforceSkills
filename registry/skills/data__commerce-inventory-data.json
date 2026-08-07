@@ -102,11 +102,6 @@
     "skills/data/commerce-inventory-data/templates/commerce-inventory-data-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/commerce-inventory-data"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

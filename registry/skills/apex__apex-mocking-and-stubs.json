@@ -97,11 +97,6 @@
     "skills/apex/apex-mocking-and-stubs/templates/apex-mocking-and-stubs-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/apex-mocking-and-stubs"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

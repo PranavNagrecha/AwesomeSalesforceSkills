@@ -118,11 +118,6 @@
     "skills/architect/mulesoft-anypoint-architecture/templates/mulesoft-anypoint-architecture-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "architect/mulesoft-anypoint-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

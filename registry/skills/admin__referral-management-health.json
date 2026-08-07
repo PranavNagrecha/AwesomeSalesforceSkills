@@ -1,7 +1,10 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "05e4cccfe9252d80a9a4",
+    "06608aefb0177c33ebe4",
     "08687f06899206c4ed22",
+    "121ced1ffe9b43e8977e",
     "21fd2cc0524ddf4c7a52",
     "227a26eaaddae72ea073",
     "252c2d9e080d9d00a896",
@@ -9,6 +12,7 @@
     "295fd42fa08436ba349b",
     "2ae7d0993b887ab02cbe",
     "2c481ce203df472a28ff",
+    "2c6f919bdf7dd0922e6f",
     "334cf8120f3eea497edc",
     "395423f89d1f619e62f4",
     "3d26d3e859457bb1334b",
@@ -27,6 +31,8 @@
     "7e9a018a5d0cdd4e71c2",
     "841d5ea70d53645617f2",
     "843acb44a0f7ca9eb259",
+    "8cef0ea11111f6b8eea0",
+    "8e8027bdb921c79258e5",
     "9491f686d713b3e88493",
     "996ef0106ea54e9c5286",
     "a37a73ae996e68510813",
@@ -57,7 +63,7 @@
     "fb60b9644b99adc550cb",
     "ffa8ef22f55e142923a3"
   ],
-  "content_hash": "917fbee9a9c36d11de1ece845ccf6a66dde432afa5a5f8ba7a63c1c3188734ec",
+  "content_hash": "ce718ffe90db003c3d3cf304a3c58552f72081acca2a9b27e655e4b42290eaa5",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
@@ -75,6 +81,8 @@
   "official_sources": [
     "Health Cloud Administration Guide \u2014 Configure Referral Management: https://help.salesforce.com/s/articleView?id=ind.hc_referral_management.htm",
     "Health Cloud Developer Guide \u2014 Provider Network Management Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_care_provider.htm",
+    "Health Cloud Object Reference \u2014 Provider Data Model Overview: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hc_provider_data_model_overview.htm \u2014 HealthcareProvider is a standard object (\"Represents business-level details about the healthcare organization or the practitioner\"); \"Account: Represents a healthcare facility or location\"; \"Contact: Represents physicians and other licensed practitioners\" \u2014 no HealthcareProvider/HealthcarePractitioner record types exist",
+    "Health Cloud Object Reference \u2014 CareProviderSearchableField: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/sforce_api_objects_careprovidersearchablefield.htm \u2014 holds denormalised data from the Provider Relationship Management data model; provider search APIs query this object instead of multiple objects",
     "ClinicalServiceRequest Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_clinicalservicerequest.htm",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
@@ -105,11 +113,6 @@
     "skills/admin/referral-management-health/templates/referral-management-health-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/referral-management-health"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

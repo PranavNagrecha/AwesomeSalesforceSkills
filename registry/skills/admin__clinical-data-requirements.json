@@ -107,11 +107,6 @@
     "skills/admin/clinical-data-requirements/templates/clinical-data-requirements-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/clinical-data-requirements"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

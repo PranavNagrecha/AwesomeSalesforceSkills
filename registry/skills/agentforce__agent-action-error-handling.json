@@ -70,11 +70,6 @@
     "skills/agentforce/agent-action-error-handling/templates/agent-action-error-handling-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-action-error-handling"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

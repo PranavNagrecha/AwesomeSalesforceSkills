@@ -141,11 +141,6 @@
     "skills/agentforce/einstein-discovery-development/templates/einstein-discovery-development-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "agentforce/einstein-discovery-development"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

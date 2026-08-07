@@ -140,11 +140,6 @@
     "skills/apex/commerce-extension-points/templates/commerce-extension-points-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "apex/commerce-extension-points"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

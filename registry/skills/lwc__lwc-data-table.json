@@ -94,11 +94,6 @@
     "skills/lwc/lwc-data-table/templates/lwc-data-table-template.md"
   ],
   "updated": "2026-03-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-15",
-    "vector_id": "lwc/lwc-data-table"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

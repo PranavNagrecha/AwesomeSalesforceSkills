@@ -105,11 +105,6 @@
     "skills/architect/architecture-decision-records/templates/adr-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "architect/architecture-decision-records"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

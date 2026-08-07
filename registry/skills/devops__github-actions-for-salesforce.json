@@ -164,11 +164,6 @@
     "skills/devops/github-actions-for-salesforce/templates/github-actions-for-salesforce-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "devops/github-actions-for-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

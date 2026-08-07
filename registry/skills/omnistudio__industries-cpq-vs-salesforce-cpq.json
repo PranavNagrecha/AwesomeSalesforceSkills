@@ -138,11 +138,6 @@
     "skills/omnistudio/industries-cpq-vs-salesforce-cpq/templates/industries-cpq-vs-salesforce-cpq-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/industries-cpq-vs-salesforce-cpq"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -1,33 +1,46 @@
 {
   "category": "agentforce",
   "chunk_ids": [
+    "003166fbce309d5a31f1",
     "02a7817be76d79f2af0f",
-    "0ad1fd892d57ea53be52",
+    "0338ec19e3718d9048a5",
+    "03862e182c18c076b5c8",
     "1063e6ba3ed96f46f9d5",
     "1450cdedd46a5ff9a37f",
+    "238ca6bb19c2227d9578",
     "2c2cb3d85e8f4bd34127",
+    "2dd655889251afa44f99",
     "39fba50576ee38c423a9",
+    "3aa8581e4b454ad8e3a0",
     "3deb7328e58117b2d483",
     "3f2fd8db1d07c6da8106",
     "4145ae9ce3ea7e0f0c6a",
     "43b2cff78cf2c8aeb15f",
+    "460bc5ce8549a468f025",
     "4a4e40fba75806b7b724",
     "4e2b35787eb77bc081c2",
+    "4e7ef2375ad8c268bdda",
+    "56aa3b0f0403cc34ffa7",
+    "584c042f3c681e786f29",
+    "5884df979e359831ef10",
     "666301daadc61954b61d",
     "6fdb1c1df6aeebb039fe",
     "703ecce46965d529c918",
     "713ac9a67d1d67c1e697",
     "8ff05685e4e171b6b411",
+    "92598bba878fe09d2f78",
     "9557c11c0e571703135c",
     "bd8daac00d0211e9aabe",
+    "c550c49a09b6c4bb2ddb",
     "cf8455a204b3901a46a2",
     "d3b1e25d536bd912f1a2",
     "d97605c6f196626706d7",
     "d9b26393fe56e54ed470",
     "e51e37ac6169e797d71e",
-    "f4cddb9bff8000403595"
+    "f4cddb9bff8000403595",
+    "facac88269e22271aa18"
   ],
-  "content_hash": "8917a4c891ea0fe7d3e07bdacf5fd7be0ad7953425e5993b6b55a50f8a3d1280",
+  "content_hash": "3910e12319e53fab011a2130c0d16eaed8c86f14b26e4961698197244b2b6734",
   "dependencies": [],
   "description": "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check).",
   "file_location": "skills/agentforce/agent-security-review",
@@ -39,10 +52,11 @@
   ],
   "name": "agent-security-review",
   "official_sources": [
-    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
-    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
-    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
-    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+    "Using the with sharing, without sharing, and inherited sharing Keywords \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm",
+    "Enforcing Object and Field Permissions in Apex \u2014 WITH USER_MODE and AccessLevel.USER_MODE \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm",
+    "PermissionSetAssignment object reference \u2014 querying effective access, including profile-owned permission sets \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_permissionsetassignment.htm",
+    "EventLogFile object reference \u2014 ApexExecution, API and ContentTransfer event types \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_eventlogfile.htm",
+    "Agentforce Developer Guide \u2014 agent, topic and action configuration surface \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html"
   ],
   "outputs": [
     "Signed-off review doc",
@@ -67,12 +81,7 @@
   "templates": [
     "skills/agentforce/agent-security-review/templates/agent-security-review-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-security-review"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

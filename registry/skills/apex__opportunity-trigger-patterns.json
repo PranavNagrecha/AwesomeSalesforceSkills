@@ -132,11 +132,6 @@
     "skills/apex/opportunity-trigger-patterns/templates/opportunity-trigger-patterns-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "apex/opportunity-trigger-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

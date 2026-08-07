@@ -154,11 +154,6 @@
     "skills/admin/fsl-shifts-and-crew/templates/fsl-shifts-and-crew-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/fsl-shifts-and-crew"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

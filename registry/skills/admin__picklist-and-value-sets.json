@@ -5,6 +5,7 @@
     "03ca9cbf41a6810f370b",
     "04052169af4dd0324841",
     "07253d054f1497d65c5d",
+    "0bacd80ebfb465c4d571",
     "0f5e7fb0dea524a28230",
     "11015bd78bb6063b830a",
     "122672dd1c9d730d1b18",
@@ -52,6 +53,7 @@
     "9d907543bcabbe2c441b",
     "9de8bb636d1f58beb747",
     "9e14c62d1a61de371c42",
+    "a540eefb9af469dd058e",
     "afacfdc76090128af78e",
     "b10919b843c8db9f2f52",
     "b68ba37dbee87b36730d",
@@ -64,6 +66,7 @@
     "c136a11f91a3924d7d41",
     "cbf576126895c7c93793",
     "d08829b7ab684bbd4da2",
+    "d0f18bbf40d75048508e",
     "d1f3328a3858a43d0f2d",
     "d4f9a9b845892a5655e1",
     "da91e213a79018efa2e6",
@@ -76,7 +79,7 @@
     "fc2fa3ce866d5cdc7b35",
     "fc8a6d4a575b59c9f2f1"
   ],
-  "content_hash": "d2778c841c14bc78c9c2b1767022ac9ffd7a19940c53441b9ce081f11d61b6a1",
+  "content_hash": "2348fe2a70e20e8ab4718a1e866db8ffb8f95edf688c0c38ba0075eb300b2586",
   "dependencies": [],
   "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
   "file_location": "skills/admin/picklist-and-value-sets",
@@ -90,6 +93,7 @@
   "name": "picklist-and-value-sets",
   "official_sources": [
     "Salesforce Help \u2014 Picklist Limitations: https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm&language=en_US&type=5",
+    "Salesforce Help (KB 000386685) \u2014 Increase Salesforce Multi-Select Picklist Values Limit: https://help.salesforce.com/s/articleView?id=000386685&type=1 \u2014 default and maximum are both 500 values; orgs below 500 can request an increase up to 500; \"the maximum number of selectable values at one time is limited to 100 and cannot be increased\"",
     "Salesforce Help \u2014 Create a Global Picklist Value Set: https://help.salesforce.com/s/articleView?id=platform.fields_creating_global_picklists.htm&language=en_US&type=5",
     "Salesforce Help \u2014 Dependent Picklist Considerations: https://help.salesforce.com/s/articleView?id=platform.fields_dependent_field_considerations.htm&language=en_US&type=5",
     "Salesforce Help \u2014 Define a Dependent Picklist (Field Dependencies): https://help.salesforce.com/s/articleView?id=platform.fields_defining_field_dependencies.htm&language=en_US&type=5",
@@ -129,11 +133,6 @@
     "skills/admin/picklist-and-value-sets/templates/picklist-and-value-sets-template.md"
   ],
   "updated": "2026-04-03",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-03",
-    "vector_id": "admin/picklist-and-value-sets"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

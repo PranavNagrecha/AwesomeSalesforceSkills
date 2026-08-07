@@ -1,33 +1,54 @@
 {
   "category": "devops",
   "chunk_ids": [
+    "0487a5a127344e1db17a",
+    "05b0e326ad0edb4c4721",
     "099026eb85f5c4cdb11f",
     "0f775c58d969762898a1",
     "109814649f7fb852a3e5",
+    "149d53bbad4242804c5e",
     "1d4646a3b22e390466bb",
     "35432ca211164836a6bd",
     "37e0b8b33cbae20d264b",
     "38ab0fb119e032074ab4",
     "3e9aa1f8e2a154cc1587",
+    "3ec0a0ba95e3eddfd384",
+    "3f7eeb6850c8077bbdc7",
+    "472fb266264117ad64b3",
+    "4b05c1ead7ae1c95a59d",
     "4b8b6c575873312e62a8",
     "4b9b707b599c24b2f120",
-    "6920441115bbfc6f23bd",
+    "5bddc4f80d9bf63910bb",
     "6d33332dbb64885bfabd",
+    "7134c4d912eb6ca99c68",
+    "73f7fa8095084f1ecfe0",
     "786759c0109fa205b201",
     "7c7c0c7894e84e06c1b0",
     "7e5ffc86b85e7de061de",
+    "7fd4fbbfcc30804171fe",
+    "8d39557b37332c034dbb",
+    "916a1757e8c01c3f8ad1",
     "9a66244b3297d5181b83",
     "9d0548eb35b5983b605e",
+    "a4f41c0f835374532f0a",
     "a889f1ff7692968c9dac",
+    "a968fbed254debe78bb0",
     "b560138f681e7543a5df",
-    "cb8dcbfac16e352620ec",
+    "c11ded7464542ba4f1da",
+    "c197a86038ab42798dd7",
+    "cc995c50525b51038836",
+    "cf0503aa834b9e99f75a",
+    "d6412b78a66f22d55518",
     "dcfa08c18c7b17450a16",
     "dd08580521669f0ef2f7",
     "de1d83df15f717ce1569",
+    "de81f5a919f51afbdde3",
+    "e12032a5aec46f9b8f70",
     "f822c567068878b3d09d",
-    "f9d50a5a1b960a878be6"
+    "f9d50a5a1b960a878be6",
+    "fc3b898b0851ef32e9c8"
   ],
-  "content_hash": "f4034e3946e226fe28b2b11d2906c8a3d7f3253265b938c457d6c54a547c54ea",
+  "content_hash": "b694e6b73eecfb55e07f38dd3a2bf72f4a6446fc0fde7e4021b4bbc8fd67b49e",
   "dependencies": [],
   "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages.",
   "file_location": "skills/devops/packaging-dependency-graph",
@@ -38,12 +59,13 @@
   ],
   "name": "packaging-dependency-graph",
   "official_sources": [
-    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
-    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
-    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
-    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
-    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
-    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+    "Project Configuration File for Unlocked Packages \u2014 the `dependencies` array shape, `packageAliases`, and the `LATEST` / `NEXT` build keywords \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_config_file.htm",
+    "Unlocked Packaging Keywords \u2014 what each keyword resolves to \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_config_keywords.htm",
+    "Considerations for Promoting Packages with Dependencies \u2014 why promotion runs bottom-up \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/dev2gp_considerations_pkg_dependency.htm",
+    "Which Package Types Can Your Package Depend On? \u2014 the legal edges in the graph \u2014 https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_dependency_overview.htm",
+    "Specify a Package Ancestor in the Project File \u2014 `ancestorId` / `ancestorVersion`, the managed-released rule, and `HIGHEST` \u2014 https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_config_ancestors.htm",
+    "Salesforce CLI Reference \u2014 unified `package` commands (confirms `sf package version displaydependencies`; there is no `sf package dependencies` topic; verified 2026-08-01) \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm",
+    "package Commands \u2014 `sf package version create`, `promote`, `install`, `version list` \u2014 https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_package.html"
   ],
   "outputs": [
     "dependency diagram, pinning strategy, promotion runbook"
@@ -66,12 +88,7 @@
   "templates": [
     "skills/devops/packaging-dependency-graph/templates/packaging-dependency-graph-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "devops/packaging-dependency-graph"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

@@ -96,11 +96,6 @@
     "skills/omnistudio/omnistudio-error-handling-patterns/templates/fault-routing-matrix.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-error-handling-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

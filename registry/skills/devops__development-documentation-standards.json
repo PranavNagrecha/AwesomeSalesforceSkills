@@ -122,11 +122,6 @@
     "skills/devops/development-documentation-standards/templates/development-documentation-standards-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "devops/development-documentation-standards"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

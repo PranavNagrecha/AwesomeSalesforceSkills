@@ -2,33 +2,52 @@
   "category": "omnistudio",
   "chunk_ids": [
     "034e2cb8a11f10939227",
+    "05070806dde4c6345c5b",
     "0c868d51640ab5858387",
     "1522d8a25c818b6630ab",
     "15c0977221fa1714191d",
+    "16e99420d1da3e36d704",
+    "176730137b2f437c777e",
     "1d23b4d53b0b3ade072c",
     "2aab05feb8b73968828c",
+    "30b140037ca49c9a8642",
     "312195e9bb775ae77fcf",
+    "323a308b72175415873f",
+    "3d82ca9b91013362dc15",
     "3e074912dbb1bc69a6d6",
     "42ed33444a98ef8ee908",
     "4afdf93dd53c970c449e",
+    "5fd3472ae15f0e8cc4f8",
+    "66bb3bd0789a853652b9",
     "6dfdc3d731d26852670a",
     "7421da0355cd4de7f845",
-    "7485cba55e3dcb9901b2",
     "7e293c993873edcaaba4",
     "81d98540e899aa9d1a3e",
+    "862af710a8941aec040f",
     "895ce0826c157d45888d",
     "8f6bc1f896386b1b44df",
+    "93de5c55c4b822b8d9a1",
+    "95da200e7af74dcb86d2",
     "9fd32b03a1fafa11e331",
     "a054d81df4d8ad697362",
+    "a42523942626600ca55f",
+    "a8fc8cd6d4dc1af95efb",
+    "aac8ea656bfb7ce663d8",
     "b7e09560db122245e660",
+    "b9e6469125541685d8de",
+    "bca972631558d7cf92f5",
     "bfe9738b1245ae757515",
     "d2d1b264b70abde9277a",
-    "ec8f5f8d87e4f7e0496a",
+    "d42d3773f2b54e178c79",
+    "d488eb3c9aba1c8e1c01",
+    "e1316b74228533ba800b",
+    "e3c875ba622c2e93a175",
     "ee0fd01d81f4354a2214",
     "f49a66c143bfa9b11f96",
-    "f578e5f8556b7ad30330"
+    "f578e5f8556b7ad30330",
+    "fe6282282f30061882f3"
   ],
-  "content_hash": "3bec39c70e1d1c42addab413c08f7f6feb070e3bfce3f8879c9c2da27b172101",
+  "content_hash": "ee33bc71b6bde7e976c246d85330fdabf5fd9c5fe9a8c2bb3d78d563daf38f36",
   "dependencies": [],
   "description": "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads.",
   "file_location": "skills/omnistudio/omnistudio-asynchronous-data-operations",
@@ -38,9 +57,12 @@
   ],
   "name": "omnistudio-asynchronous-data-operations",
   "official_sources": [
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
-    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
-    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+    "Callout Limits and Limitations \u2014 the 10-second default, 120,000 ms per-callout maximum, cumulative 120-second transaction allowance and 100-callout ceiling that bound an Integration Procedure's HTTP actions \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm",
+    "Settings for Long-Running Integration Procedures \u2014 the configuration surface for procedures that exceed a synchronous budget \u2014 https://help.salesforce.com/s/articleView?id=sf.os_settings_for_long_running_integration_procedures_56206.htm&type=5",
+    "Invoke a Chainable Integration Procedure with REST Calls \u2014 the chaining mechanism and what the caller receives \u2014 https://help.salesforce.com/s/articleView?id=sf.os_invoke_a_chainable_integration_procedure_with_rest_calls_56330.htm&type=5",
+    "Cache for Omnistudio Data Mappers and Integration Procedures \u2014 the caching surface and what it applies to \u2014 https://help.salesforce.com/s/articleView?id=sf.os_cache_for_dataraptors_and_integration_procedures_48057.htm&type=5",
+    "Integration Procedure Actions \u2014 the action types, and the blocks used for conditional execution, caching, list processing and error handling \u2014 https://help.salesforce.com/s/articleView?id=sf.os_integration_procedure_actions_50165.htm&type=5",
+    "Common Integration Procedure Action Properties \u2014 the per-action properties that govern execution \u2014 https://help.salesforce.com/s/articleView?id=sf.os_common_integration_procedure_action_properties_50188.htm&type=5"
   ],
   "outputs": [
     "IP design with queued steps + error handling"
@@ -63,12 +85,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-asynchronous-data-operations/templates/omnistudio-asynchronous-data-operations-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-asynchronous-data-operations"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

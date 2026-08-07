@@ -127,11 +127,6 @@
     "skills/admin/einstein-discovery-setup/templates/einstein-discovery-setup-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "admin/einstein-discovery-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -122,11 +122,6 @@
     "skills/apex/fsl-scheduling-api/templates/fsl-scheduling-api-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/fsl-scheduling-api"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

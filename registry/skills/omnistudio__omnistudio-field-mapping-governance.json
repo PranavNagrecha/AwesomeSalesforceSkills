@@ -5,6 +5,13 @@
     "143e74c5a9348b647f87",
     "18df40ce4ee2f1784603",
     "256898c388bc24885041",
+    "280b8b4d21a1e8db3f25",
+    "28124716c4e56d2c7d8a",
+    "35e6ed261e45e32ff907",
+    "37c1fdf4c78a7c45dea0",
+    "3d049684ec9014f584a5",
+    "3e353fa0a96495b76854",
+    "421aa3a4b9fad336a04c",
     "42e9213ae152a307edec",
     "4452b81e803aa986ff17",
     "5233e4e35091723a9864",
@@ -12,23 +19,34 @@
     "607e94ce2b7fa9f54417",
     "6696fb53a2569aecaf8f",
     "6a72d0490b8736710afa",
+    "6d8ec964b40abf30e67a",
+    "6ea6ab6adbe5b21c30d4",
     "70b2dd98ba50b07b559c",
     "762cee0b91be84e49983",
     "7df9ff9d35be03741dd3",
+    "7fc8bfdc0941ffcb3e18",
+    "81ea75668d8286679d2c",
     "836ceb5a0b1ff638260c",
+    "86790f5702738370bdbf",
+    "885e1cb9bdf74ef353b1",
+    "88e121ab948e54798fab",
+    "9a2412e1a8658fe81fc7",
+    "9cd4117374400f3b7643",
     "a76e86ffbbffe6e98f07",
-    "b4a9af2f652090fa8120",
-    "b5372faafdeda578b20f",
     "b5a35a9b2b65ccf221de",
+    "bdfdbef87f180eda558c",
+    "becc4501d5dd252965fd",
+    "c704dfa5ce48b8c675ac",
     "cc329227cd00149d817c",
     "db8e4970500ebd486f75",
     "ddc9edb7311c9ba82b29",
+    "e5b6a84d275242b4adf3",
     "e90a50396866775180b2",
     "f0f490dc69951fea2c48",
     "fdd027f0207a188833e4",
     "febaf6d6912708d3c44e"
   ],
-  "content_hash": "27c0106980b666161a5ab07d01e92d206b03216672bd5f12933b36e06a604654",
+  "content_hash": "37d9f0c1f8a84a8f4fc440a734584d960c0369cdc09ac513caad420bcf64a1d7",
   "dependencies": [],
   "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
   "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",
@@ -38,9 +56,11 @@
   ],
   "name": "omnistudio-field-mapping-governance",
   "official_sources": [
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
-    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
-    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+    "Omnistudio Data Mappers \u2014 the current component name and the Extract / Turbo Extract / Transform / Load types \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_omnistudio_dataraptors_45587.htm&type=5",
+    "Omnistudio Data Mapper Turbo Extract Overview \u2014 single-object scope and the exclusion of formulas, custom JSON, default values and transformations \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_dataraptor_turbo_extract_overview.htm&type=5",
+    "Omnistudio Data Mapper Extract Overview \u2014 the capabilities Turbo Extract trades away \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_extract_overview.htm&type=5",
+    "Related Object Fields in Omnistudio Data Mapper Turbo Extracts \u2014 the relationship paths that a schema change can invalidate \u2014 https://help.salesforce.com/s/articleView?id=sf.os_related_object_fields_in_dataraptor_turbo_extracts.htm&type=5",
+    "Omnistudio Data Mapper Transform Data Mappings \u2014 where transformation logic belongs when it cannot live in a Turbo Extract \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_transform_data_mappings.htm&type=5"
   ],
   "outputs": [
     "naming standard + dependency report + CI check"
@@ -63,12 +83,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-field-mapping-governance/templates/omnistudio-field-mapping-governance-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-field-mapping-governance"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

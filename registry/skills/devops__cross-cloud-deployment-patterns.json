@@ -139,11 +139,6 @@
     "skills/devops/cross-cloud-deployment-patterns/templates/cross-cloud-deployment-patterns-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "devops/cross-cloud-deployment-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

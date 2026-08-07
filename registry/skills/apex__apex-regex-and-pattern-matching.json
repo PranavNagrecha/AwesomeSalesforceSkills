@@ -116,11 +116,6 @@
     "skills/apex/apex-regex-and-pattern-matching/templates/apex-regex-and-pattern-matching-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "apex/apex-regex-and-pattern-matching"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

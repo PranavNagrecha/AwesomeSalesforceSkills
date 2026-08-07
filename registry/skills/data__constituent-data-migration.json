@@ -120,11 +120,6 @@
     "skills/data/constituent-data-migration/templates/constituent-data-migration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "data/constituent-data-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

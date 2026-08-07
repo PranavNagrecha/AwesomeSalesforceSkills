@@ -100,11 +100,6 @@
     "skills/data/salesforce-files-architecture/templates/salesforce-files-architecture-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "data/salesforce-files-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

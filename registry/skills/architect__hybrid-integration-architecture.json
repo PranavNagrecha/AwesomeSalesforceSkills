@@ -106,11 +106,6 @@
     "skills/architect/hybrid-integration-architecture/templates/hybrid-integration-architecture-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "architect/hybrid-integration-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

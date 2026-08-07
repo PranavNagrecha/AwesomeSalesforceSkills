@@ -178,11 +178,6 @@
     "skills/apex/commerce-order-api/templates/commerce-order-api-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "apex/commerce-order-api"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

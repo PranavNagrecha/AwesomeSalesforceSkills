@@ -164,11 +164,6 @@
     "skills/admin/data-cloud-identity-resolution/templates/data-cloud-identity-resolution-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-15",
-    "vector_id": "admin/data-cloud-identity-resolution"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

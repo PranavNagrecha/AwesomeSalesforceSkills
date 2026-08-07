@@ -112,11 +112,6 @@
     "skills/admin/user-management/templates/user-management-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/user-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

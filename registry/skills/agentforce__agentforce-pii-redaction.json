@@ -89,11 +89,6 @@
     "skills/agentforce/agentforce-pii-redaction/templates/redaction-register.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agentforce-pii-redaction"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

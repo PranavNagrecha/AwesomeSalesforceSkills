@@ -10,6 +10,7 @@
     "23a7717882afedbe8c69",
     "2d4d02f1bc1bc3937eb0",
     "2e2cac801d3206ca4e8e",
+    "33b7cad891501f072c8c",
     "376c7e8d91d6879ce6e7",
     "399597ae0f4bc7f07893",
     "401c19e1fe8b05ec89ad",
@@ -40,6 +41,7 @@
     "acec6200d94bb7bf98dd",
     "aef048cb59475db9ac3f",
     "b354748d9d52f318086c",
+    "b39e45a84488dc22f8a4",
     "b3c8c9e9a08d66594f40",
     "b892d6abd8b2e4397b84",
     "b945581432f3d493d55b",
@@ -48,6 +50,7 @@
     "c480686d62ed62297bad",
     "ca491411d59c39453ccd",
     "d299be40680082188e9d",
+    "d2b808e0239ef3daecb6",
     "d4b7d53594ea5e886e02",
     "d695926b066631802914",
     "d76a30482088ea25cf9f",
@@ -63,7 +66,7 @@
     "f9833190ad4e9de670dd",
     "fe6930daac9af13fefdb"
   ],
-  "content_hash": "d7e6e2013adffa6f8431f67b7d9d194f958fcacac1ad973b3e5ca47455a920a5",
+  "content_hash": "6379e3d91f599ae2bc38e9158a463c054a7c08b9ccc25f04e16e8f09997e5b48",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for screen-flow UX or pure bulkification work when the trigger model is already correct.",
   "file_location": "skills/flow/record-triggered-flow-patterns",
@@ -77,7 +80,9 @@
   "official_sources": [
     "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
     "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
-    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Metadata API Developer Guide: Flow (`triggerOrder`, API 54.0+) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm",
+    "Apex Developer Guide: Triggers and Order of Execution (20-step list; before-save Flows step 3, before triggers step 4, after-save Flows step 14) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm"
   ],
   "outputs": [
     "record-triggered flow design recommendation",
@@ -105,11 +110,6 @@
     "skills/flow/record-triggered-flow-patterns/templates/record-triggered-flow-patterns-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-17",
-    "vector_id": "flow/record-triggered-flow-patterns"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

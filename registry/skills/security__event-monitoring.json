@@ -55,14 +55,18 @@
     "a25f8d945ec70b58bccd",
     "ad31e74e520811bd6c89",
     "b18b98ae09a010139458",
+    "b2870b9a59b9911b547a",
     "b4bf8090eac9962d261a",
+    "b5981c94fc19ba67474b",
     "b60e72923b228655d9ae",
     "b6fb910dedab21cac5e0",
     "b81bf0e551262d32d8a3",
     "bb2b929945b5d4941042",
+    "bc954afa4b78c20a13e3",
     "bca88723bd33875382f9",
     "bd40947615d39bf821dd",
     "c1cc7d9954ad06cbf4db",
+    "c1fb8b8d55eb6fdb5800",
     "c26aea143cd26f6d921c",
     "c4bca2a07b0de92a3dd1",
     "c6ad3e599c60d19864bb",
@@ -72,6 +76,7 @@
     "d3b90fe6ecac326de5f7",
     "d68fef9e53b8463b8b62",
     "dbcfff58e0fcac60c33d",
+    "dcb29d5ce25b16f4b1e1",
     "e325437b1a03bcc35ba6",
     "e3a263dbafead87b10b5",
     "e5e976cf305d7b65d2b6",
@@ -81,10 +86,11 @@
     "f26469736cb2f225d39d",
     "f346b4c03b88bf32aaea",
     "f39dbe5bcf7fc3b29605",
+    "f920decee36334886175",
     "fadcb86095f76edd96e9",
     "fe59d2f1a1a642f4fad0"
   ],
-  "content_hash": "4fe262c61be8a7a5ef49e97048b94637c63a8878dbb6fb7907818e6216972db9",
+  "content_hash": "cbd44bf12385eff8cbed15109887e6acb3752fa101db06201c3432083c9242e4",
   "dependencies": [],
   "description": "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). NOT for custom platform event publishing/subscribing (use platform-events-apex).",
   "file_location": "skills/security/event-monitoring",
@@ -100,7 +106,9 @@
     "Salesforce Well-Architected Overview \u2014 architecture quality framing (trusted/easy/adaptable)",
     "Platform Events Developer Guide \u2014 Real-Time Event Monitoring objects, channel configuration, RTEM event types, and Transaction Security Policy support matrix",
     "REST API Developer Guide \u2014 EventLogFile resource, log download endpoint, SOQL query patterns",
-    "Salesforce Security Guide \u2014 Event Monitoring overview, Shield licensing context"
+    "Salesforce Security Guide \u2014 Event Monitoring overview, Shield licensing context",
+    "Platform Events Object Reference \u2014 LoginEventStream (supported call: describeSObjects() only; consumed via Pub/Sub API or CometD on /event/LoginEventStream) \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_logineventstream.htm",
+    "Platform Events Object Reference \u2014 LoginEvent (big object storing LoginEventStream data; supported calls describeSObjects(), query()) \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_loginevent.htm"
   ],
   "outputs": [
     "SOQL queries for EventLogFile retrieval",
@@ -131,11 +139,6 @@
     "skills/security/event-monitoring/templates/event-monitoring-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "security/event-monitoring"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

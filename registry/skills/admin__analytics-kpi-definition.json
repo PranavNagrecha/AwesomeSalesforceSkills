@@ -94,11 +94,6 @@
     "skills/admin/analytics-kpi-definition/templates/analytics-kpi-definition-template.md"
   ],
   "updated": "2026-04-14",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-14",
-    "vector_id": "admin/analytics-kpi-definition"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

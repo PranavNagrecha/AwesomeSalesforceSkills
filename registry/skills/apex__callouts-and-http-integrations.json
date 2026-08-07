@@ -97,11 +97,6 @@
     "skills/apex/callouts-and-http-integrations/templates/callouts-and-http-integrations-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/callouts-and-http-integrations"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

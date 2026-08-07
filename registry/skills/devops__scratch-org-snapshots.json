@@ -2,33 +2,52 @@
   "category": "devops",
   "chunk_ids": [
     "1024ac893fd5a845a1ff",
+    "1bd1fc0baca910d86f7f",
     "245af9eedac8b5108b64",
+    "2698f0e0a88ee4e7cc36",
     "27654ab417220ba9c53c",
-    "2aedc075df0c93dba303",
+    "281fe2ebc888cafb94b1",
+    "29b3a4c63a7f9013c8c0",
     "2bf86ed8af2faf3f174c",
+    "357e2bd9af743d39d08f",
     "37d8dc827a4b8553cd31",
     "3a5097bd26aab13fbe7f",
     "41e666b439053f5c8d56",
+    "47bb0f817e0f0336bba4",
+    "47d4c88e21af45c5d8a4",
     "4bb553959f39a204537e",
     "4c1132ed45339521a21f",
     "4c67bd9d12ad59c94281",
+    "4d071cd3be82f8086b48",
     "576f1d6925a49b11a17e",
+    "5df5116019b6b98d3b9c",
+    "5e014727307f5ec538d0",
     "638746587abda4d4fc24",
     "6ab15250b55eaff2b525",
     "6cdc9c267725935df652",
     "7372c7d048e6244f2b86",
     "7dbf9bc9cbc45b53611f",
-    "90550f1c72c467cec203",
+    "8216c7652c6ee285f562",
     "909bf7d144a458224139",
+    "9388139f5d7819fc461e",
+    "93c9084754da49a4d528",
+    "b24bab9dfa212db48b0e",
     "b5eb7474f90ad93f49e5",
+    "b878f56ea31c13fb787e",
     "ba484326a7ed2608866b",
+    "c0f73b8a0007209b6fcf",
     "c92ff61a39abb822f329",
     "c9cb6711da317097482c",
     "e353f21f7a10bc0365d7",
+    "eae18d4cb55641fa9f99",
+    "f046e740232c4d35144e",
+    "f0e95e005ce9c1c63e72",
+    "f2485273903d1bbfbda3",
     "f62836efc48f0e1b35c0",
-    "fab836e38e0f23bd5dfe"
+    "fab836e38e0f23bd5dfe",
+    "ffd6450ebf4a18673042"
   ],
-  "content_hash": "a8cd11725ea1e6d1181a5b557f802e99f9dc7b17d5dce53641f353823af661d1",
+  "content_hash": "94138722e928ade7da7a5e4054d07e46c05a63d8dd13efc12a76fff977581160",
   "dependencies": [],
   "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
   "file_location": "skills/devops/scratch-org-snapshots",
@@ -40,12 +59,12 @@
   ],
   "name": "scratch-org-snapshots",
   "official_sources": [
-    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
-    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
-    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
-    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
-    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
-    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+    "Scratch Org Snapshots \u2014 what a snapshot captures, the exclusions (connected apps, external credentials, named credentials), the per-edition allocations, and the 90-day expiry \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_intro.htm",
+    "Create a Scratch Org Snapshot \u2014 `sf org create snapshot`, the 15-character name limit, and the asynchronous `InProgress` \u2192 `Active` transition \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_create.htm",
+    "Create a Scratch Org Based on a Snapshot \u2014 the `snapshot` key in the definition file and the `--snapshot` flag \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_create_scratch_org.htm",
+    "Create a Snapshot for Use with Namespaced Scratch Orgs \u2014 the namespace restriction on the source org \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_namespace_limitations.htm",
+    "Salesforce CLI Snapshot Commands \u2014 the command surface including snapshot deletion \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_cli_commands.htm",
+    "Build Your Own Scratch Org Definition File \u2014 the fallback path a snapshot pipeline must retain \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file.htm"
   ],
   "outputs": [
     "Snapshot + nightly refresh job + CI consumption pattern"
@@ -68,12 +87,7 @@
   "templates": [
     "skills/devops/scratch-org-snapshots/templates/scratch-org-snapshots-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "devops/scratch-org-snapshots"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

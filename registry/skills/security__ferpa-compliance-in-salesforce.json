@@ -119,11 +119,6 @@
     "skills/security/ferpa-compliance-in-salesforce/templates/ferpa-compliance-in-salesforce-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "security/ferpa-compliance-in-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

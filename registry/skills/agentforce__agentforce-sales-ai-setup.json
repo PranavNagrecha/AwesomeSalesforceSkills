@@ -5,6 +5,7 @@
     "0abfccca41e3c1251802",
     "0b1649d98b2f3d7970b4",
     "0cf51ce3b0c7a53f003d",
+    "0d588f3e9d7093b42bf5",
     "0e979cf31c1f46b64705",
     "126d1de443b8267227e8",
     "12d79dc420e1da853547",
@@ -12,6 +13,7 @@
     "1c662cb080d430f77da0",
     "1ca615f9f657aefc8872",
     "21dfc0f4082a69670de4",
+    "26a3cfcffe06247555cd",
     "2834c40c93eca56c6431",
     "28d6d08e74cb0e796911",
     "291d863d0d20d27705af",
@@ -62,6 +64,8 @@
     "b0547e7079c90fc00cf7",
     "b2cb9049791b2d87ae2e",
     "b2d47e0660ac2a97fcfd",
+    "b7cdc0863db4059686c6",
+    "bd61dd529bfeca5308b0",
     "c234b3d6df9ba5b0c19b",
     "c6475f34657f08b53a05",
     "c9d6adc269d1d6db5268",
@@ -85,7 +89,7 @@
     "fb9e06e8fdf392f53efc",
     "fe3506cebd7c84e94a8e"
   ],
-  "content_hash": "0c7fdf4fc2e2828e2a31b8297fa2fe972723176a65fb001a2050b83770150a65",
+  "content_hash": "a7fc0c13c2d9272664ed40126a76046f2f591ac450b311df6250e1446b29feeb",
   "dependencies": [],
   "description": "Step-by-step setup and configuration of Einstein for Sales AI features: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI. Covers prerequisites, license checks, feature sequencing, and data readiness validation. NOT for core Agentforce agent creation, agent topic design, Einstein Trust Layer configuration, or Einstein Activity Capture troubleshooting.",
   "file_location": "skills/agentforce/agentforce-sales-ai-setup",
@@ -103,7 +107,9 @@
     "Einstein Opportunity Scoring \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_sales_oppty_scoring.htm",
     "Pipeline Inspection Guidelines and Limits \u2014 https://help.salesforce.com/s/articleView?id=sf.pipeline_inspection_guidelines_and_limits.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html"
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Salesforce Help \u2014 Data Requirements for Sales Cloud Einstein (200 closed-won AND 200 closed-lost in the last 24 months, each with a lifespan of at least 2 days; standard Stage field required) \u2014 https://help.salesforce.com/s/articleView?id=einstein_sales_data_requirements.htm&language=en_US&type=5",
+    "Salesforce Help \u2014 Understand How Einstein Scores Your Opportunities \u2014 https://help.salesforce.com/s/articleView?id=einstein_sales_opportunity_scoring_how_it_works.htm&language=en_US&type=5"
   ],
   "outputs": [
     "Ordered enablement sequence with explicit prerequisite gates",
@@ -136,11 +142,6 @@
     "skills/agentforce/agentforce-sales-ai-setup/templates/agentforce-sales-ai-setup-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "agentforce/agentforce-sales-ai-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

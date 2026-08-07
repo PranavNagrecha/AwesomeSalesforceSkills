@@ -4,6 +4,7 @@
     "01c3a354edad43b0ce85",
     "056426277fd4db869de5",
     "086275c9431a7378fbbf",
+    "0ce4d26a9d174cdfe33b",
     "0dc8a168aaa83e56478b",
     "144a0dda8b4a7c67ed8b",
     "1733324e61249a2bb4c4",
@@ -11,6 +12,7 @@
     "1bd3ed60d2b073c09125",
     "1d2a0d0bab93af8e50c2",
     "21ee371c041a6e000d6c",
+    "225ffe666e9381912fec",
     "232c4eb6855fb6e7adb3",
     "240ee83f958b0d8e3b98",
     "24174e8b266cba1acee5",
@@ -34,6 +36,7 @@
     "51def4ed8687ee30e345",
     "566859f276d133167849",
     "57f0556a3d58a3e372ec",
+    "5abee26d406c8647725d",
     "5dfb961d8588bb402329",
     "62372ccd5cad1e1a3a09",
     "66346d2f060c0a7fe556",
@@ -67,8 +70,10 @@
     "b17e3372914c1df7cb50",
     "b4d2bd4b8656854d42dc",
     "b541a9061aeb8edbbb1a",
+    "b6d2a4a4b97a58b3159c",
     "b7ea4bd168c9074bc052",
     "babed194617b331973c0",
+    "bdfad0ebc0e75abeb30f",
     "c39481cf4cd7718fb54a",
     "c3c8d357089297742a90",
     "cb34f9e5144775457f00",
@@ -89,7 +94,7 @@
     "fc591b75eb67b193335b",
     "fff45c556b5f4d3f7932"
   ],
-  "content_hash": "c345593724e804b8d0a2bda45511a9d68f208b8f2a739707b7d96537eb396fea",
+  "content_hash": "370cce4727c07157cbfb64c2498d08e74c21b30205cc4550cefcf7146f952e2c",
   "dependencies": [],
   "description": "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud \u2014 including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities (Build Your Own Aura template). NOT for standard Experience Builder drag-and-drop configuration without code.",
   "file_location": "skills/lwc/lwr-site-development",
@@ -105,7 +110,9 @@
     "LWR Sites for Experience Cloud Developer Guide v66.0 (Spring '26) \u2014 `knowledge/imports/exp-cloud-lwr.md` \u2014 primary authority for LWR template behavior, limitations, publish model, LWS, component targets, and --dxp theming",
     "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html \u2014 LWC design guidelines, composition, and coding best practices",
     "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide \u2014 base component behavior and supported usage in LWR context",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 Trusted/Easy/Adaptable framing for architectural decisions"
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 Trusted/Easy/Adaptable framing for architectural decisions",
+    "Lightning Web Security in LWR Sites (LWR sites have their own LWS instance, set by a site-level toggle independently of the org setting; verified 2026-08-01) \u2014 https://developer.salesforce.com/docs/atlas.en-us.exp_cloud_lwr.meta/exp_cloud_lwr/template_differences_locker.htm",
+    "Experience Builder Sites and LWS \u2014 https://developer.salesforce.com/docs/platform/lightning-components-security/guide/lws-lms-ec.html"
   ],
   "outputs": [
     "Compliant LWC component bundle with correct js-meta.xml targets for LWR",
@@ -136,11 +143,6 @@
     "skills/lwc/lwr-site-development/templates/lwr-site-development-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwr-site-development"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

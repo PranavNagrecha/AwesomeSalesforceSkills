@@ -92,11 +92,6 @@
     "skills/integration/outbound-webhook-from-salesforce/templates/webhook-design.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "integration/outbound-webhook-from-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

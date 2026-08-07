@@ -168,11 +168,6 @@
     "skills/devops/salesforce-code-analyzer/templates/salesforce-code-analyzer-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "devops/salesforce-code-analyzer"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

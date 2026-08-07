@@ -2,12 +2,16 @@
   "category": "security",
   "chunk_ids": [
     "01049ae9decd05dec7e0",
+    "021cbbbf233681018d1e",
     "021ffc886ee97ed2c299",
     "03b079c381fad5b937b8",
     "043e90e8da6a59c1874d",
+    "0aafcf074f0c49a0f1be",
     "140f658aa3043f826338",
     "1423b209a399f3c883a5",
+    "1588a6171fe3d27b909c",
     "18648ac9a9dc3535b18f",
+    "18806d73140511e3803c",
     "1b6bd36c137ef9c8a4f7",
     "1f888c014eba3c7c5da1",
     "205372800bce401c13e2",
@@ -32,6 +36,7 @@
     "45b248641a04f72716e0",
     "49bf4228809f3b27c03f",
     "4e5a2b6e6bf746b7fd0b",
+    "4ed704a721f6824de7c7",
     "50d94a4914b7f3c66348",
     "50dfb20a27faa09d95c6",
     "558df5472b6fd0ea5f29",
@@ -42,6 +47,7 @@
     "5b4eaadfb0b9ca2dfcc6",
     "5f63ff0d6a907e7f6422",
     "60fa15951b217aa1afb7",
+    "64a53e4f158c11509465",
     "6504db3f7b66ad3e183c",
     "65dfd676417daef8f199",
     "6a30be65dbc4f418bbd7",
@@ -50,6 +56,7 @@
     "758a402802458cdd217f",
     "76b6ef3dbc6ca185c0ad",
     "7715d897b6f265b0032c",
+    "779e0bee3ca1f9d29217",
     "7a3f4799a58b20bc7ac8",
     "7abc7f2567788530c07d",
     "7da82266cdd850a458cf",
@@ -57,8 +64,10 @@
     "82d6525ca821f50a3774",
     "8522f2cc989a69bccd58",
     "874ba4ac31ff46a236a9",
+    "87552ce16a5a9776dc02",
     "8b87b9db5bdf8b7f65ac",
     "8d98460a02a9751985e6",
+    "8fc16835f7813f926570",
     "922aad6476068badbc80",
     "9d57d22f478d80d7ac40",
     "a02512dfc5d4fa9d132a",
@@ -94,12 +103,13 @@
     "ec29cab8686547f33432",
     "f22838dab5b4f0563271",
     "f37c6e1675ed64b35784",
+    "f3a36263ca675d0e7f12",
     "f3dd6ec7bd2102b071c2",
     "f461bbd9a93f58503042",
     "f90db0221faba67edeec",
     "ffb01a309d9fa64edb44"
   ],
-  "content_hash": "bc87d4ce73907f8378b9e69d3a4773f2e4d0b4a8bfe54bb8c9a896368915331f",
+  "content_hash": "5f7b8e96dd5e085bd6b59607815fc7f60a281786a450c177ac57f0e492c93464",
   "dependencies": [],
   "description": "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry in JWT OAuth flows, or understanding which certificate types Salesforce supports and how to migrate them between orgs. NOT for Named Credential configuration (use named-credentials-setup skill), NOT for Shield Platform Encryption key management. Trigger keywords: Certificate and Key Management, self-signed certificate, CA-signed certificate, mutual TLS, mTLS, keystore, JKS, PKCS12, certificate rotation, certificate expiry, JWT certificate.",
   "file_location": "skills/security/certificate-and-key-management",
@@ -118,7 +128,11 @@
     "Salesforce Help: Import from a Keystore \u2014 https://help.salesforce.com/s/articleView?id=sf.security_keys_importing.htm&type=5",
     "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Metadata API Developer Guide: Certificate Metadata Type \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_certificate.htm"
+    "Metadata API Developer Guide: Certificate Metadata Type \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_certificate.htm",
+    "Salesforce Help \u2014 SSL Certificate Expiration Warning in Salesforce (KB 000385781: notifications at 60, 30 and 10 days before expiry and on the day of expiry) \u2014 https://help.salesforce.com/s/articleView?id=000385781&language=en_US&type=1",
+    "Salesforce Help \u2014 Set Expired Certificate Notification Permission \u2014 https://help.salesforce.com/s/articleView?id=xcloud.security_keys_set_expired_certificate_notification_permission.htm&language=en_US&type=5",
+    "Salesforce Help \u2014 About Certificates / Generate a Self-Signed Certificate (validity derived from key size: 2048 and 3072-bit = 1 year, 4096-bit = 2 years) \u2014 https://help.salesforce.com/apex/HTViewHelpDoc?id=security_keys_about.htm",
+    "Salesforce Release Notes \u2014 Prepare for Shorter Certificate Lifespans \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_general_certificate_lifespans.htm&language=en_US&type=5"
   ],
   "outputs": [
     "Step-by-step certificate creation or upload procedure",
@@ -153,11 +167,6 @@
     "skills/security/certificate-and-key-management/templates/certificate-and-key-management-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "security/certificate-and-key-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

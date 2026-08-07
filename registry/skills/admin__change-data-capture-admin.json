@@ -105,11 +105,6 @@
     "skills/admin/change-data-capture-admin/templates/change-data-capture-admin-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/change-data-capture-admin"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -143,11 +143,6 @@
     "skills/architect/sales-cloud-architecture/templates/sales-cloud-architecture-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "architect/sales-cloud-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

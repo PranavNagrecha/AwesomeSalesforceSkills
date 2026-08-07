@@ -23,6 +23,7 @@
     "5bff64dd817f2bf5b9bf",
     "5c75be81b36649017c3e",
     "5d7f48ec1bbef1aa42f0",
+    "60dfcd24e2da560a7a77",
     "6b0b2b003bd76d278386",
     "719a677492b575e11dcd",
     "765f4f86f90c32deae90",
@@ -52,9 +53,10 @@
     "e4cfce714ac6632be381",
     "e68945983a143b09f2b5",
     "e9614e053bd032f45853",
+    "f75e97461d57a1eaf9b0",
     "f8dd97790ee28ae14464"
   ],
-  "content_hash": "33849e8e4b9ebe75bcac56d36c5110984a33e0151137961bfb8ad21343301c28",
+  "content_hash": "f94a15c9e29d994105503a54b9709966337c839007b828b6aca7cd8a140ab80d",
   "dependencies": [],
   "description": "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability', 'how to encode output in Apex', 'JSENCODE Visualforce', 'open redirect prevention'. NOT for Apex CRUD/FLS enforcement (use soql-security or apex-crud-and-fls), NOT for Shield encryption (use shield-encryption-key-management), NOT for AppExchange security review process (use secure-coding-review-checklist).",
   "file_location": "skills/security/xss-and-injection-prevention",
@@ -69,7 +71,8 @@
     "Salesforce Secure Coding Guide \u2014 Cross-Site Scripting \u2014 https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_cross_site_scripting.htm",
     "Apex Developer Guide \u2014 Security Tips for Apex and Visualforce \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_xss.htm",
     "Visualforce Developer Guide \u2014 Security Tips \u2014 https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_security_tips_xss.htm",
-    "Salesforce Security Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview_applications.htm"
+    "Salesforce Security Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview_applications.htm",
+    "Salesforce Secure Coding Guide \u2014 Cross-Site Scripting (JSENCODE for JavaScript contexts, HTMLENCODE for HTML contexts) \u2014 https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_cross_site_scripting.htm"
   ],
   "outputs": [
     "Identified encoding gaps and the correct encoding function for each context",
@@ -98,11 +101,6 @@
     "skills/security/xss-and-injection-prevention/templates/xss-and-injection-prevention-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "security/xss-and-injection-prevention"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

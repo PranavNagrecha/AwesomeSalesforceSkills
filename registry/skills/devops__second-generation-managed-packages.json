@@ -156,11 +156,6 @@
     "skills/devops/second-generation-managed-packages/templates/second-generation-managed-packages-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "devops/second-generation-managed-packages"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

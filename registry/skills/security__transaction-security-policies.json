@@ -9,6 +9,7 @@
     "0a9e603fa9188d6f1c33",
     "0c120a67f7e39720dd86",
     "117c0f05b1b10091afec",
+    "13a4f031b8a6feb32b57",
     "18420d5696be7400b52f",
     "1e9fad485d7a15cfee36",
     "1ed7a0a7d28e436c97c3",
@@ -35,6 +36,7 @@
     "5889759380b0bc965937",
     "5d18fb2d55108017ed4f",
     "616593027ca8b44a7227",
+    "627e28e2dd9305e92239",
     "64960d7f043b4f55166e",
     "64ac862e856653372f09",
     "656ca50f0d2310dbc5cc",
@@ -69,6 +71,7 @@
     "a3b21bb11efd0ea06d9f",
     "a5940617af41d315aa9e",
     "ad000174895602a0f8a2",
+    "ad9e863f40ad371697b2",
     "b1547c34f1e219344498",
     "b4268a418640aad3df23",
     "b5b94cb5e296ab83d2c8",
@@ -105,7 +108,7 @@
     "fb83d9a5d4f27e0bf163",
     "fd19470bba19ecbc790a"
   ],
-  "content_hash": "f1f8e2bef9a32b4dd900aaacb43b01f76c455a2f255d408292d45dc202612221",
+  "content_hash": "f4cb0d245b05a214f632243bd490c0909352b016147ff4e88c043df98af9299e",
   "dependencies": [],
   "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monitoring). NOT for Apex testing or debug-log analysis.",
   "file_location": "skills/security/transaction-security-policies",
@@ -123,7 +126,9 @@
     "Salesforce Help: Create Transaction Security Policies \u2014 condition builder, event types, action configuration: https://help.salesforce.com/s/articleView?id=sf.transaction_security_create_policies.htm&type=5",
     "Platform Events Developer Guide \u2014 RTEM event types, policy-support flags, field references for LoginEvent, ReportEvent, ApiEvent: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro_emp.htm",
     "Salesforce Well-Architected Overview \u2014 Security pillar framing, behavioral enforcement patterns: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Metadata API Developer Guide \u2014 TransactionSecurityPolicy metadata type reference: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+    "Metadata API Developer Guide \u2014 TransactionSecurityPolicy metadata type reference: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Platform Events Object Reference \u2014 LoginEventStream (supported call: describeSObjects() only; consumed via Pub/Sub API or CometD on /event/LoginEventStream) \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_logineventstream.htm",
+    "Platform Events Object Reference \u2014 LoginEvent (big object storing LoginEventStream data; supported calls describeSObjects(), query()) \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_loginevent.htm"
   ],
   "outputs": [
     "Transaction Security Policy configuration steps (Setup UI or Metadata API XML)",
@@ -154,11 +159,6 @@
     "skills/security/transaction-security-policies/templates/transaction-security-policies-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "security/transaction-security-policies"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

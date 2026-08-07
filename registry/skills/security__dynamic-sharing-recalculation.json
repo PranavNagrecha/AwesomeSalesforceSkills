@@ -68,11 +68,6 @@
     "skills/security/dynamic-sharing-recalculation/templates/dynamic-sharing-recalculation-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "security/dynamic-sharing-recalculation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

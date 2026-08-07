@@ -114,11 +114,6 @@
     "skills/apex/trigger-framework/templates/trigger_handler.cls"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "apex/trigger-framework"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

@@ -59,7 +59,7 @@
     "ec850792eca826307d7f",
     "f6bab45612875b226943"
   ],
-  "content_hash": "84c8906c3a5d5983668bd619064fbd810a1cbfdc6e744e9299dae775e926f1dc",
+  "content_hash": "95ddebbf221e37e46ce4472360f92a64dd21702875c2ddceb98122a3a21ba7a7",
   "dependencies": [],
   "description": "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. NOT for general bulkification (use flow-bulkification). NOT for Apex limits (use apex-governor-limits).",
   "file_location": "skills/flow/flow-governor-limits-deep-dive",
@@ -74,6 +74,7 @@
   "official_sources": [
     "Salesforce Developer \u2014 Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
     "Salesforce Help \u2014 Flow Limits and Considerations: https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm",
+    "Salesforce Developer Documentation \u2014 \"Configure the User and Batch Size for Your Platform Event Trigger\" (2,000-message maximum and default): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm",
     "Salesforce Architects \u2014 Performance Engineering: https://architect.salesforce.com/",
     "Salesforce Developer \u2014 Trigger Order of Execution: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm"
   ],
@@ -106,11 +107,6 @@
     "skills/flow/flow-governor-limits-deep-dive/templates/flow-governor-limits-deep-dive-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-governor-limits-deep-dive"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

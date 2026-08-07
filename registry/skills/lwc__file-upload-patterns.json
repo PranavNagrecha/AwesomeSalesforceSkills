@@ -2,33 +2,53 @@
   "category": "lwc",
   "chunk_ids": [
     "0270ae7cc563ce616349",
+    "03615c27db99af28d202",
     "06e98cd6968061540604",
     "08e566ce5da331ea2513",
     "0bdb94117b3e09ac2df6",
+    "1c16c1400789cbadadfc",
     "1ddda3191b064bfac5a8",
+    "21e3ba2667d039a22692",
+    "29db3749be4819843a80",
     "2b817145b623cb928c83",
+    "303ee18b547281cd4b95",
+    "330e4239ee24378b75fa",
     "3498987196404c87afab",
+    "3a69a21321ef04af6d35",
+    "3bd038594e2708ea206c",
     "3deddd8816a8cd7430d4",
-    "3e04cf9c3a067dd93211",
     "4183f2ff8a5aac49d72c",
     "475496462f933110c232",
+    "494e2e604a1862031b50",
+    "5119da7674915f23b24c",
     "5825a933d8cb0652d48c",
+    "5c43ba45e1e063102e9d",
+    "5fa169f1a3c11d15e9f3",
     "61b94c9f0561624580ee",
+    "6947306d87589c8a5fe0",
+    "698a6c831ec2eb9a8514",
+    "86219b022a2c34c4e565",
+    "87137027ae237c34c176",
     "8c12342f70f136e056dc",
     "8f6d587f26ec0c53b19a",
     "987c97b84fc265dfa218",
+    "9a4bd769c7c9c4f7fda0",
     "9fe41c3c6a6421d7bf82",
     "b7772439f83d43a456aa",
     "bf41bdabcdd0c1bd3896",
+    "d6b5c4155fe743a0c162",
     "db37808dc77377465800",
     "db6b1159d25fa7614a76",
     "e281b068dca824b933b5",
+    "e4f94d3391cf688508ad",
     "e5122520355e331fd6f0",
-    "efcf44d553d741b88fd9",
+    "ebd83fd34ec54a1dee6c",
+    "f1fedb5da14f31748643",
     "f4e3abe795804219c990",
+    "f814d093f3316c66fe90",
     "f8cd41234b742e678e97"
   ],
-  "content_hash": "0af9d9c1c49730cbd8bda20f987d9a4ac06d03a74ea64f36993958a3b534e86a",
+  "content_hash": "93b6bebf84aec4275bae3c74446cfe439a448d92a8e1bcc0cee57a1e1c0d6546",
   "dependencies": [],
   "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
   "file_location": "skills/lwc/file-upload-patterns",
@@ -39,10 +59,11 @@
   ],
   "name": "file-upload-patterns",
   "official_sources": [
-    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
-    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
-    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
+    "lightning-file-upload component reference \u2014 maximum file size, Experience Builder site limits (128 MB / 500 MB), simultaneous upload limits, guest user behaviour, and the Lightning Out / standalone restriction \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-file-upload.html",
+    "Apex Governor Limits \u2014 total heap size, 6 MB synchronous and 12 MB asynchronous \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "ContentDocumentLink object reference \u2014 `ShareType` and `Visibility` values and semantics \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentdocumentlink.htm",
+    "ContentVersion object reference \u2014 `VersionData`, `PathOnClient`, `FirstPublishLocationId` \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentversion.htm",
+    "File Size and Sharing Limits \u2014 platform-wide file limits, which differ from the component's own ceiling \u2014 https://help.salesforce.com/s/articleView?id=sf.collab_files_size_limits.htm"
   ],
   "outputs": [
     "component with appropriate upload strategy + server-side Apex"
@@ -65,12 +86,7 @@
   "templates": [
     "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/file-upload-patterns"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

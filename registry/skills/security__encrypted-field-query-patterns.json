@@ -11,6 +11,7 @@
     "15f327105d36eeb3877a",
     "1613fef1588657130e35",
     "188c6e453f3fff036198",
+    "1dfe6e63fd9775966b05",
     "1ff878b46dbf8a92498d",
     "2738774b73b69eecf01c",
     "2aa00a1b0cf226582b34",
@@ -18,7 +19,10 @@
     "34d0d62ea4975661435d",
     "3790feeebed7106ae5b1",
     "39cebc597f6c15b19ff7",
+    "3de83d214724dbbf4fcf",
     "41da7f5453d91c415580",
+    "453fb7359e56fe1bb293",
+    "47877cad855f7da1adda",
     "5346aad1253dd4fd07b6",
     "53d0a6b23ccd0fdc8488",
     "5439ab692ea7a091e454",
@@ -27,19 +31,19 @@
     "66634c3d1adfb9986540",
     "6978fb3ba3c3ec5accc6",
     "6f078c43cdb008718767",
-    "6f875f2f1816b18f2de4",
     "748f82be9a5b192cac77",
     "76894fcdea3fe2556921",
-    "788f2f0506670e8e9c0c",
     "7db0a2f34af62c9dd5f2",
     "829515364d56f4ddaa46",
     "885557140d24be4506de",
     "93f541eb45b2ddcf9bb7",
+    "9d5e7d3f96bfa762df92",
     "9dd7f63bdd45c1bbb4e2",
     "a3a578a8cd24c71fa5e2",
     "a70993c0dc9ac4155ffc",
     "a74c29716954137445e7",
     "a8e9951bb71a06cbf30f",
+    "b6c8a3ea3ef6924bd9a8",
     "c9ea4639e62aeafb5648",
     "c9fd02ae82275cff7ddc",
     "d5c7eba05a955b916616",
@@ -48,7 +52,7 @@
     "fa7ebc88fe8d029baa58",
     "fc1699fd93755b496642"
   ],
-  "content_hash": "20a886f8a202676425e7b41b38d6dc1e98a74feab3cb30648d3a3718da2a3c75",
+  "content_hash": "ed706a6037c040a4cf38d000e3b2b1fed9ff65f39c5a557e01e9dcba11a5c5bf",
   "dependencies": [],
   "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation.",
   "file_location": "skills/security/encrypted-field-query-patterns",
@@ -61,7 +65,10 @@
   "name": "encrypted-field-query-patterns",
   "official_sources": [
     "Shield Platform Encryption Overview \u2014",
-    "Deterministic Encryption \u2014"
+    "Deterministic Encryption \u2014",
+    "Use Field-Level, Event Bus, and Search Encryption (Trailhead) \u2014",
+    "View Encrypted Data Permission Not Needed with Shield Platform",
+    "Classic Encryption for Custom Fields \u2014"
   ],
   "outputs": [
     "Encryption scheme choice per field (probabilistic / deterministic / case-sensitive deterministic)",
@@ -88,11 +95,6 @@
     "skills/security/encrypted-field-query-patterns/templates/encryption-plan.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "security/encrypted-field-query-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

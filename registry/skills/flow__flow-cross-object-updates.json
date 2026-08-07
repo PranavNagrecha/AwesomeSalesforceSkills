@@ -60,7 +60,7 @@
     "f6f560781a2d38c74da4",
     "fe3eff3b3df73f2d2098"
   ],
-  "content_hash": "6afcecbe86499d02fcbe21773f229e3ee9ff33249ed25e45c817f2474f632c1f",
+  "content_hash": "f44c68585e1dc22066619e7ec418ef398b49bf467478df71624822186811a21e",
   "dependencies": [],
   "description": "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates. NOT for Process Builder (migrate-workflow-pb covers migration). Use when building flows that must write to a related record.",
   "file_location": "skills/flow/flow-cross-object-updates",
@@ -103,11 +103,6 @@
     "skills/flow/flow-cross-object-updates/templates/flow-cross-object-updates-template.md"
   ],
   "updated": "2026-05-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-15",
-    "vector_id": "flow/flow-cross-object-updates"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

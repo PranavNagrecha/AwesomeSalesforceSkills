@@ -107,11 +107,6 @@
     "skills/admin/activity-and-task-patterns/templates/activity-and-task-patterns-template.md"
   ],
   "updated": "2026-05-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-15",
-    "vector_id": "admin/activity-and-task-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

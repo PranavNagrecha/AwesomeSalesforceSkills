@@ -122,11 +122,6 @@
     "skills/devops/deployment-error-diagnosis/templates/deployment-error-diagnosis-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "devops/deployment-error-diagnosis"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

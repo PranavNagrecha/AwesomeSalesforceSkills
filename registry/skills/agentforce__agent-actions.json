@@ -105,11 +105,6 @@
     "skills/agentforce/agent-actions/templates/agent-actions-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-actions"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

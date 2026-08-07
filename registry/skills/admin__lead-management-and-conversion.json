@@ -130,11 +130,6 @@
     "skills/admin/lead-management-and-conversion/templates/lead-management-and-conversion-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/lead-management-and-conversion"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

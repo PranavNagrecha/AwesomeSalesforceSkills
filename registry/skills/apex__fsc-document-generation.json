@@ -146,11 +146,6 @@
     "skills/apex/fsc-document-generation/templates/fsc-document-generation-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "apex/fsc-document-generation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

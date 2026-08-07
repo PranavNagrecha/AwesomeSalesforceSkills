@@ -121,11 +121,6 @@
     "skills/flow/flow-resource-patterns/templates/flow-resource-patterns-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "flow/flow-resource-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

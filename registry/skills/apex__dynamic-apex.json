@@ -5,6 +5,7 @@
     "080ee1b4514ecdbc980f",
     "0895b078ba227bf6092d",
     "0b27ffc71024839d80c3",
+    "10a0e1ec4b1269f41cff",
     "1115768a4a27a9e355ef",
     "1529a4fdfe3397bda9f9",
     "1582b9a8e64aa499b333",
@@ -33,6 +34,7 @@
     "47c48013b11526e34c2d",
     "49fb3f5642a1efbcf942",
     "4ac516ee55e940c662cf",
+    "4b3322bc3ebcae7ab702",
     "4c3c8f79a845fb5cb307",
     "53e0c7e04f390572a13a",
     "54b6005a3bb6b2f84205",
@@ -55,6 +57,7 @@
     "7d69ad8054500873b50b",
     "81f68dfbeadb613557a8",
     "828c6e11c9a144e70772",
+    "856724e8b6fd1174678d",
     "86ea6d7bccda97e27f0a",
     "86f9bdb33195e27ef164",
     "89dcc329d9b0f64ca452",
@@ -74,6 +77,7 @@
     "b9f9445c65c1e87dc637",
     "ba1d8b5fa09985553e0d",
     "ba7d562bb0e62f375277",
+    "bb44522f809158d2b053",
     "bcec9b839d5125a3b701",
     "be592840435173cbf7da",
     "c057652644cba6718e9d",
@@ -89,6 +93,7 @@
     "d5ace84d705731b6095c",
     "da002683bbe65cbd7f05",
     "ddf6a103366f7cb0e61d",
+    "e627ab8e85c9f21740b8",
     "e792b240bde933ef2ad2",
     "e85ed9c16d91aea7220a",
     "ef96f9dc0e7c3730d522",
@@ -100,7 +105,7 @@
     "fb12c22e3e6c74603533",
     "fef7438835dbb6db00eb"
   ],
-  "content_hash": "9abedf85cd0f5b7d3e713df5c224c32316cc0d03d9a376f38501ff576906a968",
+  "content_hash": "7ef1c45b8722405f771abe1725cd0b979b4a5a16feac01d1eea8673807b976b8",
   "dependencies": [],
   "description": "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries or query performance tuning \u2014 use soql-fundamentals or soql-query-optimization.",
   "file_location": "skills/apex/dynamic-apex",
@@ -115,6 +120,8 @@
   "official_sources": [
     "Apex Developer Guide \u2014 Dynamic SOQL, Schema namespace, Describe methods, SOQL injection guidance",
     "Apex Reference Guide \u2014 Schema.DescribeSObjectResult, Schema.DescribeFieldResult, Database.query, String.escapeSingleQuotes",
+    "Apex Reference Guide \u2014 Limits Class (\"Because describe limits are no longer enforced in any API version, this method is no longer available\")",
+    "Apex Developer Guide \u2014 Execution Governors and Limits (no describe-count limit; CPU-time and heap limits)",
     "Secure Apex Classes \u2014 FLS enforcement patterns, dynamic field access security model",
     "Salesforce Well-Architected Overview \u2014 Security and Scalability pillar framing"
   ],
@@ -146,11 +153,6 @@
     "skills/apex/dynamic-apex/templates/dynamic-apex-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "apex/dynamic-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -158,11 +158,6 @@
     "skills/architect/aml-kyc-process-architecture/templates/aml-kyc-process-architecture-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "architect/aml-kyc-process-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

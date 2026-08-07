@@ -96,11 +96,6 @@
     "skills/admin/flow-orchestration-admin/templates/flow-orchestration-admin-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-21",
-    "vector_id": "admin/flow-orchestration-admin"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

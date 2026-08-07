@@ -11,6 +11,7 @@
     "138c4585da1da069bdb1",
     "16dcf8b8e1c3c483374c",
     "16edf3c377529e046209",
+    "16ee36820a16d2383593",
     "18d018489bdefc446172",
     "1df318c6f5779c1f4696",
     "22d882f33651405945f7",
@@ -19,6 +20,7 @@
     "292ebff5fc75aec10a8a",
     "29ea90b37cb98d52456b",
     "2af3a4ffadc23d7712fa",
+    "2dec1a1a86a9029f5b29",
     "2e7962275159c25a4668",
     "2ff633fdffb3a613fd4f",
     "310133ec81fd5c6fb578",
@@ -33,6 +35,7 @@
     "4620c2f6adbb577eb3eb",
     "48c0dc3983278cabac96",
     "4956d3881644c961a9e5",
+    "49a2e4338270c3306879",
     "4a435c54d1e68ca74ecc",
     "53347a4eefd0d2c2fbf7",
     "53f41b8868917c1bcc54",
@@ -65,6 +68,7 @@
     "786019aa355c34b9e354",
     "7b4e269b361d0a499168",
     "7c52d1e82b0759020701",
+    "7d18897f620a82dc823d",
     "83511fa95a05f09f6c9b",
     "85d21d319417ebcfe649",
     "883dc2ef36db882436a8",
@@ -72,11 +76,13 @@
     "8b37bee9697599a8fc49",
     "908044687d542513c95a",
     "920840e24bad5b894ea0",
+    "95716f4fd72e4922b53a",
     "95a5c1bc5aecb211d50e",
     "96bc475bf16778970b88",
     "96c0efb891e2f84bddc2",
     "98546e9040c076e4257d",
     "9da236a32a908b7e482c",
+    "a033ae6c967b1639cbc9",
     "a2eb8fbfe5b3f72a19f3",
     "a434f81a193024bf3688",
     "a598f16016ef8a9e3f77",
@@ -125,7 +131,7 @@
     "f4b80f10be8e35cecb2a",
     "fbb90f8a57ab145ed134"
   ],
-  "content_hash": "c1e66c51950358f1d5da86bb0c30403d9a046ee9c6ef15b92dd6f29bbd324e42",
+  "content_hash": "ea7788dd5a6b36686d1c95c3a569eadcbbe253d9d98a966a7e1aa599ed94a629",
   "dependencies": [],
   "description": "Use when configuring, auditing, or troubleshooting API rate limits, Connected App OAuth scope restriction, Connected App IP restrictions, API session policies, or API usage monitoring in a Salesforce org. Trigger keywords: 'API rate limit', '429 error', 'OAuth scope restriction', 'Connected App IP restriction', 'API usage monitoring', 'concurrent API limits', 'Bulk API limits'. NOT for OAuth flow implementation, token exchange mechanics, or general Connected App setup \u2014 use security/oauth-flows-and-connected-apps for those.",
   "file_location": "skills/security/api-security-and-rate-limiting",
@@ -144,7 +150,9 @@
     "Salesforce Well-Architected Overview \u2014 Security pillar (least privilege, credential protection) and Operational Excellence pillar (monitoring, resilience): https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Event Monitoring documentation \u2014 EventLogFile object, API event type, and monitoring patterns: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_resources_event_log_files.htm",
     "Salesforce Help: API Request Limits and Allocations \u2014 https://help.salesforce.com/s/articleView?id=sf.integrate_api_rate_limiting.htm&type=5",
-    "Salesforce Help: Connected App OAuth Policies \u2014 https://help.salesforce.com/s/articleView?id=sf.connected_app_manage_oauth.htm&type=5"
+    "Salesforce Help: Connected App OAuth Policies \u2014 https://help.salesforce.com/s/articleView?id=sf.connected_app_manage_oauth.htm&type=5",
+    "REST API Developer Guide \u2014 Status Codes and Error Responses (REQUEST_LIMIT_EXCEEDED returned with HTTP 403 for API request-limit exhaustion) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm",
+    "Salesforce Help \u2014 Enhanced Transaction Security Metering (the subsystem TXN_SECURITY_METERING_ERROR actually belongs to) \u2014 https://help.salesforce.com/s/articleView?id=sf.enhanced_transaction_security_metering.htm&language=en_US&type=5"
   ],
   "outputs": [
     "Connected App scope restriction configuration guidance",
@@ -178,11 +186,6 @@
     "skills/security/api-security-and-rate-limiting/templates/api-security-and-rate-limiting-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "security/api-security-and-rate-limiting"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -5,6 +5,7 @@
     "0ec681f0247282f02f43",
     "1203d3d8c8631126d6de",
     "16ed62a3188e355b8363",
+    "18f3da97152c2c216712",
     "1e932743464edfa4a7ee",
     "23252efdc6db824abebc",
     "26913770906bd996bb21",
@@ -57,7 +58,7 @@
     "f9d23f0ade7253c8960d",
     "fc5c8ec9b3605dccd0bd"
   ],
-  "content_hash": "b5ba282ba10822cc224b7eac6c272982bd6cc16e3d90a96298e49704a5399f6d",
+  "content_hash": "dd8dd39f74331db44a65d44d7e8bb963ddc8a62810b9672449d8b838306476f4",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
   "file_location": "skills/flow/flow-bulkification",
@@ -69,7 +70,10 @@
   ],
   "name": "flow-bulkification",
   "official_sources": [
+    "Flow Bulkification in Transactions \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_concepts_bulkification.htm&type=5",
+    "Schedule-Triggered Flow Considerations (\"some records fail, all records are rolled back\") \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_trigger_schedule.htm&type=5",
     "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Salesforce Developer Documentation \u2014 \"Platform Event Allocations\" (per-edition publish/delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm",
     "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
   ],
@@ -99,11 +103,6 @@
     "skills/flow/flow-bulkification/templates/flow-bulkification-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-bulkification"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

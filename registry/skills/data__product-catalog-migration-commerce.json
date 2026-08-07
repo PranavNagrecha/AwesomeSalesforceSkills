@@ -97,11 +97,6 @@
     "skills/data/product-catalog-migration-commerce/templates/product-catalog-migration-commerce-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/product-catalog-migration-commerce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

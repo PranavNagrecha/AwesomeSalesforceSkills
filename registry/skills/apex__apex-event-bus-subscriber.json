@@ -121,11 +121,6 @@
     "skills/apex/apex-event-bus-subscriber/templates/apex-event-bus-subscriber-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-04",
-    "vector_id": "apex/apex-event-bus-subscriber"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

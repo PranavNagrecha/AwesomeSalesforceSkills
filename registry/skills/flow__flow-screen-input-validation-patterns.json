@@ -146,11 +146,6 @@
     "skills/flow/flow-screen-input-validation-patterns/templates/flow-screen-input-validation-patterns-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-27",
-    "vector_id": "flow/flow-screen-input-validation-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -112,11 +112,6 @@
     "skills/security/session-management-and-timeout/templates/session-management-and-timeout-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "security/session-management-and-timeout"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -107,11 +107,6 @@
     "skills/data/revenue-cloud-data-model/templates/revenue-cloud-data-model-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/revenue-cloud-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

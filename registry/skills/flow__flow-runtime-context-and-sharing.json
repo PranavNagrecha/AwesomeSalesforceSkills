@@ -164,11 +164,6 @@
     "skills/flow/flow-runtime-context-and-sharing/templates/flow-runtime-context-and-sharing-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-27",
-    "vector_id": "flow/flow-runtime-context-and-sharing"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

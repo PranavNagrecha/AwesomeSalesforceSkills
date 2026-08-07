@@ -106,11 +106,6 @@
     "skills/integration/loyalty-management-setup/templates/loyalty-management-setup-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "integration/loyalty-management-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

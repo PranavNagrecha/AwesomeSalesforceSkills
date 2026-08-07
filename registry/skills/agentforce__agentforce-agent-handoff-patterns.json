@@ -97,11 +97,6 @@
     "skills/agentforce/agentforce-agent-handoff-patterns/templates/handoff-design.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agentforce-agent-handoff-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

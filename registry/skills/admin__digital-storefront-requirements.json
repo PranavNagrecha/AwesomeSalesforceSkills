@@ -166,11 +166,6 @@
     "skills/admin/digital-storefront-requirements/templates/digital-storefront-requirements-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/digital-storefront-requirements"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

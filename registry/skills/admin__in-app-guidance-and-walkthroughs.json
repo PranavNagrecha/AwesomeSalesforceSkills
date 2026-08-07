@@ -118,11 +118,6 @@
     "skills/admin/in-app-guidance-and-walkthroughs/templates/in-app-guidance-and-walkthroughs-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/in-app-guidance-and-walkthroughs"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

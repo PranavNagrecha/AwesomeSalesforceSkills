@@ -137,11 +137,6 @@
     "skills/data/lead-data-import-and-dedup/templates/lead-data-import-and-dedup-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "data/lead-data-import-and-dedup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

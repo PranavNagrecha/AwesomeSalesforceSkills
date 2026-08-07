@@ -2,6 +2,7 @@
   "category": "lwc",
   "chunk_ids": [
     "008d3b38bc78654bddde",
+    "016da58074f1c11600ee",
     "01f16d94f22b58bbe530",
     "0815c3d656d079b5ad79",
     "0841560c0bd018acc3ae",
@@ -16,7 +17,6 @@
     "1ad547e38c656cb58d02",
     "1c90384cb4977eea2d85",
     "1cea7dc8e42132c6d881",
-    "1f88edb4e451a1144e1c",
     "200e6404503bbede8017",
     "26fcb74d728d029333bb",
     "29c65d6886a0b74ae8ec",
@@ -31,15 +31,18 @@
     "45565f1b5fc8710a6adc",
     "45f1b76a4d5e31ecaa2a",
     "462c6e52ab8bae7c9965",
+    "47b0fe32f65f1425946d",
     "47dcccfd052b8d6dee8d",
+    "4858adaa5a087a3c5675",
     "4c7d0fcff728a4a85650",
     "4d4893ba1d876ad1a88c",
     "4f50e75b7184915e689b",
     "55a517367ba012a88321",
     "573daf7fc141b9488ebc",
-    "576d6ef995e092eb61b4",
+    "59061be025993a5c60d2",
     "5bb3add8b0a1a6bd4e47",
     "5ce2dd3e126543db9aaf",
+    "61180f52f5ad43a3621f",
     "65cd6f223530018a4877",
     "662e9845bb8e0e546f0d",
     "668538d8a5bbb19d6a69",
@@ -57,6 +60,7 @@
     "87962a137d6361ce3a90",
     "893a454294fac4465fa8",
     "909f442a87def86910ef",
+    "943863d182f9fe52f118",
     "96ae80446b44a6c5af56",
     "98b06187c2fc4790ea9b",
     "9a69107008fbf71981db",
@@ -78,6 +82,7 @@
     "cd947a98f9b31033bb2a",
     "d72aba245a0e7b1ff538",
     "d8b2dd4cc3519b539f8f",
+    "dfc924a06a190a347f50",
     "dfe099addd615a672190",
     "e8bc00a3ab74223052aa",
     "e8d4223658048282d4d5",
@@ -85,6 +90,7 @@
     "eba972ba543ef8406928",
     "eeb43c9a6e39c6117a59",
     "ef9d462a3dc9835a6437",
+    "f0497e65b0c29b6e3101",
     "f05643cfbdf1ccd13436",
     "f326f12e762ea23e7877",
     "f64fc4f7ea4808fb51cd",
@@ -92,7 +98,7 @@
     "fb36f19f99db5e2f8384",
     "fce42042299e66ceaa23"
   ],
-  "content_hash": "ac846d7b541d01321d1f6498bb9e4297676e3d43407b7c9c4be565ff7442aab9",
+  "content_hash": "c1f4b3e5f1f878a1dfdc10563fb644fe19d7ba90677dfb0ba4e1deb51d0a1b83",
   "dependencies": [],
   "description": "Use when implementing or reviewing user feedback patterns in Lightning Web Components \u2014 specifically toast messages, lightning-alert, lightning-confirm, lightning-prompt, and platform notifications. Trigger keywords: 'ShowToastEvent', 'toast in lwc', 'lightning-alert lwc', 'lightning-confirm promise', 'Experience Cloud notification'. NOT for modal overlays (use lwc-modal-and-overlay).",
   "file_location": "skills/lwc/lwc-toast-and-notifications",
@@ -109,7 +115,9 @@
     "lightning-confirm component documentation \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-confirm/documentation",
     "LWC Salesforce modules reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.lwc.meta/lwc/reference_salesforce_modules.htm",
     "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
-    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide"
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "Toast Notifications (`lightning/toast`, and the unsupported contexts for `lightning/platformShowToastEvent`) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-toast.html",
+    "lightning-toast component documentation \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-toast/documentation"
   ],
   "outputs": [
     "implementation of the correct notification primitive for the scenario",
@@ -140,11 +148,6 @@
     "skills/lwc/lwc-toast-and-notifications/templates/lwc-toast-and-notifications-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "lwc/lwc-toast-and-notifications"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

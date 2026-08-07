@@ -132,11 +132,6 @@
     "skills/admin/opportunity-management/templates/opportunity-management-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/opportunity-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -21,6 +21,7 @@
     "3ddb8a1d82511c85dbfa",
     "3ea742fd71344f59bf13",
     "3ed7d56bd76b92570973",
+    "4936dd6336f1aa85be85",
     "4d3813d78853e0013de4",
     "4d40e7971aba98e6d457",
     "4dffc1c9e78b3d9bacb9",
@@ -30,6 +31,7 @@
     "5921b6291efc4c8f7e0b",
     "59ca27e9fabd49bce215",
     "5db2fcda61c8dc87832d",
+    "5e0b2a8ae6272e250853",
     "5e5f582768cc9ff35805",
     "5e7817007d2e2bd4c47a",
     "5fadc7c846730e6c41ef",
@@ -46,6 +48,7 @@
     "7ac73dd3fc14d17400dc",
     "7e2abd336380379e8404",
     "830ce9569a935e9f9811",
+    "83b8118c7b284425bdad",
     "84919774f6cabac8a306",
     "8587037fb14f694a36df",
     "86366174722d41fc74cb",
@@ -57,8 +60,10 @@
     "8d6c2d441894b122ed7f",
     "8f091b9df0da89cf958e",
     "8fc763ed620829c691d8",
+    "9019db118360a671999a",
     "9080c936e9ca85d3acdc",
     "90a36d18365d659deccd",
+    "94101936246d66777e56",
     "980a59aa82d427694c85",
     "98f06ceb8c2b52fb3660",
     "9aa219815c289e78b861",
@@ -97,7 +102,7 @@
     "faf822ff3cc163cb6343",
     "fd0c7e8f9c043f87677a"
   ],
-  "content_hash": "6cf57b17be57e9ad950e2feddb5f7827d3fd51a10919c3e8b2875808db1e5baf",
+  "content_hash": "6bd4b0aa868d04e09bf7797218a59e2703a20a278c82d33dadbbd99d39479e29",
   "dependencies": [],
   "description": "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for Apex CPU or heap governor limit issues (use apex-cpu-and-heap-optimization) or for writing basic SOQL (use soql-fundamentals).",
   "file_location": "skills/data/soql-query-optimization",
@@ -114,7 +119,9 @@
     "SOQL and SOSL Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm",
     "Salesforce Help: Custom Indexes \u2014 https://help.salesforce.com/s/articleView?id=sf.custom_indexes.htm",
     "Salesforce Large Data Volumes Best Practices: Indexes \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_infrastructure_indexes.htm",
-    "Salesforce Large Data Volumes Best Practices: Skinny Tables \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_infrastructure_skinny_tables.htm"
+    "Salesforce Large Data Volumes Best Practices: Skinny Tables \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_infrastructure_skinny_tables.htm",
+    "Salesforce Help: Non-Selective Query Error \"System.QueryException\" \u2014 https://help.salesforce.com/s/articleView?id=000386468&type=1",
+    "Salesforce Help: Developer Console Query Plan Tool FAQ \u2014 https://help.salesforce.com/s/articleView?id=000386864&type=1"
   ],
   "outputs": [
     "Optimized query or rewrite recommendation",
@@ -142,12 +149,7 @@
   "templates": [
     "skills/data/soql-query-optimization/templates/soql-query-optimization-template.md"
   ],
-  "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "data/soql-query-optimization"
-  },
+  "updated": "2026-08-01",
+  "vector_embedding": null,
   "version": "1.0.0"
 }

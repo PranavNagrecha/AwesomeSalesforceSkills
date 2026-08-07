@@ -3,32 +3,51 @@
   "chunk_ids": [
     "078d79102800c6764fbb",
     "0aa16bf5f5519b29e245",
+    "0fb53f51f1598ceea72a",
+    "10ab2c91021e8591da9f",
     "16dc414c31b649785f10",
+    "2245b4c3d6faa829e738",
+    "26beed08f69bded3a6f3",
     "285739d7b394204d0223",
     "2a12ffac819496e4c278",
+    "316d4547d2f59fd2c0a0",
     "34f34ba024c9ba046f22",
     "3b7203d6208a66394dc7",
-    "44792d3f2a0876d7aa33",
     "45e6e8404183b75f8410",
     "4b509a5a0f5eafa87218",
     "4b87715cd274b8ded5a5",
     "5299e9277ae3fde05f72",
     "5406eab6ad19960aefa5",
+    "57c7968c0c3ce1ac6cea",
     "594b55e2b73e8d93a0b6",
+    "5f7e8226a0ddb13664cf",
+    "5fc9fbe871dca07c06f8",
+    "6c5e888e07475bbec8e4",
+    "71ded4fdaf12d2c608e0",
+    "7a0d07f681d8e5c90c6d",
     "7cf9b7f550007073e634",
+    "80c09314df70d10bebb7",
     "882415be07fcc3641bf0",
     "8a3501c2c0fe60fd8731",
+    "8bcb8404a6d8cf0f29db",
     "8e36811c2c3f0dbc06d1",
-    "9556e75784c1ee0db4a1",
+    "9cd4449c83a43a281d1f",
     "a2be547e36f747c1f5e2",
     "ae9641aef4ae876eba43",
     "b5e37127201c8824aeb2",
+    "bc09d3a488faf316ae36",
+    "bcfbc074fd9e04541ff1",
     "bdc418fe80229b29e55e",
+    "c5daa228a366ee1a8c27",
     "c73dc59f076373dc6f30",
     "cd9836a0e65f0889891b",
-    "e19a7a866a1b7406b445"
+    "e19a7a866a1b7406b445",
+    "e69854026a36375122be",
+    "eccc543261bd8cb79f59",
+    "edd6dc1c6ecf67c28aa8",
+    "fc0d648ffe8613b93998"
   ],
-  "content_hash": "63c83b0000f0229138b626db1e5f5e7dcafda8a3f0f8a1e28270d7a2c948d955",
+  "content_hash": "1ba2253e0a17594eed22415550ff246c66e21529e4aee4f4a93b79e0c218be2d",
   "dependencies": [],
   "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
   "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",
@@ -39,9 +58,13 @@
   ],
   "name": "omnistudio-lwc-omniscript-migration",
   "official_sources": [
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
-    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
-    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+    "Lightning Web Component OmniScripts \u2014 the LWC runtime and the statement that OmniScripts built on AngularJS are no longer supported \u2014 https://help.salesforce.com/s/articleView?id=sf.os_lwc_omniscripts.htm&type=5",
+    "Disable the Managed Package Runtime and Deploy Custom Lightning Web Components \u2014 the org-level runtime settings \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_enable_standard_omnistudio_runtime.htm&type=5",
+    "Create a Custom Lightning Web Component for Omniscript \u2014 the contract a replacement component must satisfy \u2014 https://help.salesforce.com/s/articleView?id=sf.os_create_a_custom_lightning_web_component_for_omniscript_17512.htm&type=5",
+    "Add Custom Lightning Web Components to an Omniscript \u2014 wiring the rebuilt component into the script \u2014 https://help.salesforce.com/s/articleView?id=sf.os_add_custom_lightning_web_components_to_an_omniscript.htm&type=5",
+    "Omnistudio Lightning Web Components \u2014 the component set the migrated scripts render with \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_lightning_web_components_58153.htm&type=5",
+    "lightning-omnistudio-omniscript \u2014 the wrapper for surfacing an OmniScript in Lightning App Builder and Experience Builder \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-omnistudio-omniscript.html",
+    "Omnistudio release notes \u2014 the only acceptable source for release timing and deprecation dates; check the current release rather than recalling one \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_omnistudio.htm&type=5"
   ],
   "outputs": [
     "migration plan + parity matrix + rollout runbook"
@@ -64,12 +87,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-lwc-omniscript-migration/templates/omnistudio-lwc-omniscript-migration-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-lwc-omniscript-migration"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

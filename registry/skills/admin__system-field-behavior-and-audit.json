@@ -110,11 +110,6 @@
     "skills/admin/system-field-behavior-and-audit/templates/system-field-behavior-and-audit-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/system-field-behavior-and-audit"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

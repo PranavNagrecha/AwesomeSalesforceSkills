@@ -1,9 +1,11 @@
 {
   "category": "security",
   "chunk_ids": [
+    "008e613510e563999f12",
     "022e4a7f73be79511140",
     "0307b3ef83bd4841d2e2",
     "035a21e3ed92ff170e58",
+    "0a0398f58e0a6a5f12a1",
     "109449faa0dbb2271041",
     "11c8eeeb7435f8a8bed0",
     "1691cf26c3c1ccd95d37",
@@ -18,6 +20,7 @@
     "36159ce12ef2ec6fd813",
     "3735ebd56ee49f82617a",
     "3fe1f9dac405aead6f10",
+    "42fc743df75c2a15f632",
     "4712ec1520cb33ca7b3e",
     "4a44a9c8d714820cabae",
     "4ce1087d25fb860d4429",
@@ -33,14 +36,18 @@
     "7376321bf24ef0f0e6a2",
     "77bd9573082c585846fc",
     "780e55c34b0486e5da09",
+    "85277999269cfa5adc7c",
     "8d9455aace6c3f1d59cd",
     "954ebe6ea618012bed20",
     "9f0d5dacd129cb0c12c8",
     "a003d073de96c9105035",
     "a0c98bfba05dcd7d7aa5",
+    "aad9479b8d17b8c17027",
+    "ac28274faf14a17016ec",
     "acb733aca68f99b96502",
     "b5e9bf3f7a07bc9d03c9",
     "b6adc7a779748fda6d6e",
+    "b985224fc8d9a95a2c23",
     "bad97444be129b397811",
     "be0995c3a33d8170021b",
     "c9f8e46e517fbfdf0e36",
@@ -48,9 +55,11 @@
     "cef7f0a107bf66fb93c8",
     "cfb1f4c8701263e3f136",
     "d00cf399b4d3a53f701a",
+    "d04717fc806ac9a1fc84",
     "d20ad440fcb298a31bcd",
     "d213ea33a97579c6fa15",
     "d64ec648bbf38cd7ff99",
+    "d6d2ba1922b10c7fb167",
     "d9246ca5b543d5b1dbab",
     "dce209b9152a35fd5147",
     "e0f37785b04c87e22032",
@@ -64,11 +73,12 @@
     "ef0d16034dd225932df5",
     "f08c0dbc55229c75cccf",
     "f252b0141f47e6e22c57",
+    "f2f6bdf23f6faeb5a93b",
     "f39ab6509e6b6d04e3b7",
     "f75752a86a53800c3c0c",
     "f85eb60c1454f3ef237e"
   ],
-  "content_hash": "c44de5bb154cf2b9216ecc66d1185038f033f492e3c81270d8372304f1f77174",
+  "content_hash": "ac1aac107c8e2ce89a9428e8de3737964a0f9ec4253ab2529167856df516d94b",
   "dependencies": [],
   "description": "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness \u2014 covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing, Shield Platform Encryption key management, or general org permission set design.",
   "file_location": "skills/security/secure-coding-review-checklist",
@@ -84,7 +94,11 @@
     "Salesforce Well-Architected \u2014 Security: https://architect.salesforce.com/well-architected/trusted/security",
     "Shield Platform Encryption Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5",
     "Secure Apex Classes \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security",
-    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5",
+    "Apex Developer Guide \u2014 Dynamic SOQL (bind variables in Database.query; queryWithBinds introduced in API v57) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm",
+    "Apex Reference \u2014 Database.queryWithBinds(query, bindMap, accessLevel) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
+    "Salesforce Developers \u2014 Write Simplified and Secure Apex with Spring '23 Updates (USER_MODE / queryWithBinds release attribution) \u2014 https://developer.salesforce.com/blogs/2023/05/write-simplified-and-secure-apex-with-spring-23-updates",
+    "Secure Coding Guide \u2014 SOQL Injection \u2014 https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_soql_injection.htm"
   ],
   "outputs": [
     "Prioritized list of security findings with line-level remediation guidance",
@@ -113,11 +127,6 @@
     "skills/security/secure-coding-review-checklist/templates/secure-coding-review-checklist-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "security/secure-coding-review-checklist"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -121,11 +121,6 @@
     "skills/data/marketing-cloud-sql-queries/templates/marketing-cloud-sql-queries-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "data/marketing-cloud-sql-queries"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

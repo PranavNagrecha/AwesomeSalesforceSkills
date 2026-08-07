@@ -191,11 +191,6 @@
     "skills/data/data-loader-batch-window-sizing/templates/data-loader-batch-window-sizing-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "data/data-loader-batch-window-sizing"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

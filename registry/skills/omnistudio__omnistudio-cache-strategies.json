@@ -65,11 +65,6 @@
     "skills/omnistudio/omnistudio-cache-strategies/templates/omnistudio-cache-strategies-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/omnistudio-cache-strategies"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -99,11 +99,6 @@
     "skills/security/guest-user-security-audit/templates/guest-user-security-audit-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "security/guest-user-security-audit"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -72,10 +72,9 @@
     "f43677cd49fbb407cedb",
     "f64d4cd7af896b35559b",
     "fb732312757a971bc2b2",
-    "feec123b7d052f441c7c",
     "ff43a22798b94fa450d8"
   ],
-  "content_hash": "9cf6fd201bbdfcb6268df913bb1caa2b5d0e7462d0ebc25c6a43e1266c48a071",
+  "content_hash": "5d30925cc2223d1cae25de3115b45bbe4b2d95b67bfbcb8af3fccc5fd571434b",
   "dependencies": [],
   "description": "Use when embedding a custom Lightning web component into an external, non-Salesforce web app (React, Angular, Vue, or plain JavaScript) with Lightning Out 2.0 \u2014 the Winter '26 GA feature built on Lightning Web Runtime that renders each LWC inside a closed-shadow-DOM iframe, authenticated by a UI Bridge frontdoor URL. Covers the <lightning-out-application> markup (frontdoor-url, app-id, components), the host-page script tag, the token\u2192frontdoor auth exchange, lifecycle events, and the documented limitations. NOT for the legacy Aura-based Lightning Out (beta) or its $Lightning.use() API, NOT for embedding LWCs on Salesforce-hosted surfaces (Lightning pages, Experience Cloud, Flow \u2014 use lwc/* or flow/* skills), and NOT for guest/unauthenticated access (not supported yet).",
   "file_location": "skills/lwc/lightning-out-2-embedding",
@@ -122,11 +121,6 @@
     "skills/lwc/lightning-out-2-embedding/templates/lightning-out-2-embedding-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "lwc/lightning-out-2-embedding"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

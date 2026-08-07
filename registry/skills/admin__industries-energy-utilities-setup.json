@@ -145,11 +145,6 @@
     "skills/admin/industries-energy-utilities-setup/templates/industries-energy-utilities-setup-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "admin/industries-energy-utilities-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

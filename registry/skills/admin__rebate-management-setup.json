@@ -95,11 +95,6 @@
     "skills/admin/rebate-management-setup/templates/rebate-management-setup-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-21",
-    "vector_id": "admin/rebate-management-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

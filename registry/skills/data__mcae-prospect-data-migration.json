@@ -147,11 +147,6 @@
     "skills/data/mcae-prospect-data-migration/templates/mcae-prospect-data-migration-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "data/mcae-prospect-data-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

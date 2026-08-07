@@ -87,11 +87,6 @@
     "skills/agentforce/agentforce-testing-strategy/templates/test-plan.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agentforce-testing-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

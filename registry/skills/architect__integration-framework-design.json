@@ -123,11 +123,6 @@
     "skills/architect/integration-framework-design/templates/integration-framework-design-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "architect/integration-framework-design"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

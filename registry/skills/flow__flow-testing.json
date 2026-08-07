@@ -97,11 +97,6 @@
     "skills/flow/flow-testing/templates/flow-testing-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-testing"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

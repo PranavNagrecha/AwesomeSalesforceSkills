@@ -113,11 +113,6 @@
     "skills/lwc/lwc-quick-actions/templates/lwc-quick-actions-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "lwc/lwc-quick-actions"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

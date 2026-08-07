@@ -97,11 +97,6 @@
     "skills/apex/health-cloud-apis/templates/health-cloud-apis-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/health-cloud-apis"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

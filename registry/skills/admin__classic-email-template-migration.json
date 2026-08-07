@@ -137,11 +137,6 @@
     "skills/admin/classic-email-template-migration/templates/classic-email-template-migration-template.md"
   ],
   "updated": "2026-04-29",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-29",
-    "vector_id": "admin/classic-email-template-migration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

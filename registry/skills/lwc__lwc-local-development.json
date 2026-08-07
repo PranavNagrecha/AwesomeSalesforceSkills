@@ -121,11 +121,6 @@
     "skills/lwc/lwc-local-development/templates/lwc-local-development-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "lwc/lwc-local-development"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

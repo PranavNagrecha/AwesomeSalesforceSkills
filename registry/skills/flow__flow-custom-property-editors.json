@@ -95,11 +95,6 @@
     "skills/flow/flow-custom-property-editors/templates/flow-custom-property-editors-template.md"
   ],
   "updated": "2026-07-31",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-31",
-    "vector_id": "flow/flow-custom-property-editors"
-  },
+  "vector_embedding": null,
   "version": "2.0.1"
 }

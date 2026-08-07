@@ -81,7 +81,7 @@
     "fc1fc330117e2ac027bc",
     "fdba1803204366cf8de1"
   ],
-  "content_hash": "6879b68804907ed91df461449cce9bacd33cd0ef8dedb9e7f776a1f6658b06cf",
+  "content_hash": "05e27877072df20d4b85476649a31424bad29cca7874183874596ad5556b2cba",
   "dependencies": [],
   "description": "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design).",
   "file_location": "skills/admin/requirements-gathering-for-sf",
@@ -100,6 +100,7 @@
     "Trailhead: Business Process Mapping module \u2014 UPN notation, 8\u201310 box limit per level, As-Is/To-Be/Transition State methodology \u2014 https://trailhead.salesforce.com/content/learn/modules/business-process-mapping",
     "Trailhead: Explore Techniques for Information Discovery \u2014 BABOK-aligned elicitation, stakeholder discovery \u2014 https://trailhead.salesforce.com/content/learn/modules/business-analyst_skills-strategies/explore-techniques--information-discovery",
     "Salesforce Help: Field-Level Security \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm",
+    "Salesforce Help: Custom Fields Allowed Per Object + Edition Allocations \u2014 https://help.salesforce.com/s/articleView?id=platform.custom_field_allocations.htm&type=5 \u2014 the allocation is per object, not per data type: Professional 100, Enterprise 500, Performance/Unlimited 800, Developer 500; \"An org can't have more than 900 custom fields on most object types, regardless of the edition or source of those fields.\"",
     "Salesforce Help: Sharing Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.security_about_sharing.htm"
   ],
   "outputs": [
@@ -130,11 +131,6 @@
     "skills/admin/requirements-gathering-for-sf/templates/requirements-gathering-for-sf-template.md"
   ],
   "updated": "2026-04-03",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-03",
-    "vector_id": "admin/requirements-gathering-for-sf"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

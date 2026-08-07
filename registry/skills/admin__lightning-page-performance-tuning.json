@@ -138,11 +138,6 @@
     "skills/admin/lightning-page-performance-tuning/templates/lightning-page-performance-tuning-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/lightning-page-performance-tuning"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

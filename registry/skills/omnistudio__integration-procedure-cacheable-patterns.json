@@ -90,11 +90,6 @@
     "skills/omnistudio/integration-procedure-cacheable-patterns/templates/cache-design.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/integration-procedure-cacheable-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

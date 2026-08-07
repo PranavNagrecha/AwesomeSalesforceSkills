@@ -109,11 +109,6 @@
     "skills/apex/apex-schema-describe/templates/apex-schema-describe-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "apex/apex-schema-describe"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

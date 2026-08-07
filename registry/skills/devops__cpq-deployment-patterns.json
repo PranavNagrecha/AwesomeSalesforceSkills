@@ -103,11 +103,6 @@
     "skills/devops/cpq-deployment-patterns/templates/cpq-deployment-patterns-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "devops/cpq-deployment-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

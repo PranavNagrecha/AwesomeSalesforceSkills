@@ -88,11 +88,6 @@
     "skills/flow/flow-dynamic-choices/templates/flow-dynamic-choices-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "flow/flow-dynamic-choices"
-  },
+  "vector_embedding": null,
   "version": "1.2.1"
 }

@@ -122,11 +122,6 @@
     "skills/flow/flow-time-based-patterns/templates/flow-time-based-patterns-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-04",
-    "vector_id": "flow/flow-time-based-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

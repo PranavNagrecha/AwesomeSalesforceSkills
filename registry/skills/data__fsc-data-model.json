@@ -142,11 +142,6 @@
     "skills/data/fsc-data-model/templates/fsc-data-model-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "data/fsc-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

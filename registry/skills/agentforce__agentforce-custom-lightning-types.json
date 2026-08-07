@@ -109,11 +109,6 @@
     "skills/agentforce/agentforce-custom-lightning-types/templates/agentforce-custom-lightning-types-template.md"
   ],
   "updated": "2026-06-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-06-15",
-    "vector_id": "agentforce/agentforce-custom-lightning-types"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

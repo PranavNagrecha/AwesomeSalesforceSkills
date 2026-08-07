@@ -90,11 +90,6 @@
     "skills/apex/apex-system-runas/templates/apex-system-runas-template.md"
   ],
   "updated": "2026-04-22",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-22",
-    "vector_id": "apex/apex-system-runas"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

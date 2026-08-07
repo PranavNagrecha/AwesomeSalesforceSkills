@@ -135,11 +135,6 @@
     "skills/admin/messaging-and-chat-setup/templates/messaging-and-chat-setup-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/messaging-and-chat-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

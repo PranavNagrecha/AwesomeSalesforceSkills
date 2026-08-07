@@ -172,11 +172,6 @@
     "skills/admin/financial-account-setup/templates/financial-account-setup-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/financial-account-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

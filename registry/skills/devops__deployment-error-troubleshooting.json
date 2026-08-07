@@ -18,6 +18,7 @@
     "3291c5d08acfaadd8f35",
     "39e89dac0f353ad4e2d4",
     "3b141b4c1640a7f0adef",
+    "3c98bb20abb1a3374d9f",
     "3f734682336a39232eb8",
     "3fbf01fc3ea534fa7e7b",
     "4471f8ca97ccef0248e1",
@@ -29,6 +30,7 @@
     "612e3cdd6f0606e58f41",
     "616f86f85e474c2c67f6",
     "6c15b8f6d06c0691352f",
+    "6ca36d75a991419d1dac",
     "6dff35e717794d63b9ae",
     "6ec92c548f942692b0c3",
     "73d437ee9801e0908d2d",
@@ -75,7 +77,7 @@
     "ec0efb0e6131d9213032",
     "f9b2fdcc3f82a0a6b8a5"
   ],
-  "content_hash": "52c455aa874e9fa5d4cf9cd74247e1ad7e1999eeb1b157e57478ad4d12f8c3a3",
+  "content_hash": "fc6e7166fe6d94db99f56523f498442f07faea3857213bc8eb376643003fc49e",
   "dependencies": [],
   "description": "Use when a Salesforce metadata deployment fails and you need to diagnose and fix the error. Trigger keywords: 'deployment failed', 'component failure', 'dependent class is invalid', 'code coverage failed', 'UNSUPPORTED_API_VERSION', 'deploy error', 'test failure blocking deploy', 'rollbackOnError', 'missing dependency deploy'. NOT for authoring destructive changes manifests (use destructive-changes-deployment). NOT for CI/CD pipeline setup (use github-actions-for-salesforce or gitlab-ci-for-salesforce). NOT for change set mechanics (use change-set-deployment).",
   "file_location": "skills/devops/deployment-error-troubleshooting",
@@ -93,7 +95,8 @@
     "Salesforce Help \u2014 Troubleshoot Deployment Failures: https://help.salesforce.com/s/articleView?id=sf.code_deploy_troubleshoot.htm",
     "Salesforce Help \u2014 Dependent Class Is Invalid: https://help.salesforce.com/s/articleView?id=000382702",
     "Salesforce CLI Troubleshooting Guide: https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_troubleshoot.htm",
-    "Metadata API Developer Guide \u2014 deploy() Options: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm"
+    "Metadata API Developer Guide \u2014 deploy() Options: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm",
+    "Salesforce Help \u2014 Versioned Updates in Flow Builder (\"Summer '25 (API Version 64.0)\"; anchor for the release-to-API-version mapping): https://help.salesforce.com/s/articleView?language=en_US&id=platform.automate_flow_versioned_updates_64.htm"
   ],
   "outputs": [
     "root cause diagnosis for the deployment failure",
@@ -122,11 +125,6 @@
     "skills/devops/deployment-error-troubleshooting/templates/deployment-error-troubleshooting-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "devops/deployment-error-troubleshooting"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -196,11 +196,6 @@
     "skills/data/data-loader-picklist-validation-pre-load/templates/data-loader-picklist-validation-pre-load-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "data/data-loader-picklist-validation-pre-load"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

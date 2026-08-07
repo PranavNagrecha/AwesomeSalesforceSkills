@@ -167,11 +167,6 @@
     "skills/architect/health-cloud-multi-cloud-strategy/templates/health-cloud-multi-cloud-strategy-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "architect/health-cloud-multi-cloud-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

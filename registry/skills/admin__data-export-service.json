@@ -122,11 +122,6 @@
     "skills/admin/data-export-service/templates/data-export-service-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "admin/data-export-service"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

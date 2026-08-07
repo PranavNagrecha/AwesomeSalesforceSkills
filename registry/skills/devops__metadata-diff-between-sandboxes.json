@@ -6,6 +6,7 @@
     "1bd35f11a86ccf5ef8a9",
     "1bdb2de1a1941c18135c",
     "262df37a7b0cbbc8e286",
+    "26bdbf0d5128f8182555",
     "286ed65505b0b3cfa032",
     "2cad87f773e89d06bb66",
     "3694aa3dde40d98fa0b3",
@@ -21,6 +22,7 @@
     "7496b3faf7e69dcecb98",
     "76689d1d372065c8e867",
     "767a71e23bd62cf50dd7",
+    "80d0cdbd4833a77089cc",
     "89a7eb5699201d064c1c",
     "8baedfe0035513643dde",
     "8e3d643d439f9d8eacbc",
@@ -55,7 +57,7 @@
     "fdb341f99febf85a1642",
     "ff33e5535d6d902c4897"
   ],
-  "content_hash": "635e1f0c272884804703bfd56e4d3284ccb432490937435d1ec6a8000f64b8f4",
+  "content_hash": "82db96b67bf00936ab338ea7b28bf23154505d9eaaa5b9ae9516fccbb82c2eec",
   "dependencies": [],
   "description": "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two sandboxes', 'org diff tool', 'metadata drift between UAT and prod', 'find missing metadata in target org'. NOT for code-level diffs in version control or for deploying packages.",
   "file_location": "skills/devops/metadata-diff-between-sandboxes",
@@ -69,6 +71,8 @@
   "official_sources": [
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce CLI Reference \u2014 unified `org` commands (`sf org list metadata`, `sf org list metadata-types`; verified 2026-08-01) \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm",
+    "Salesforce CLI Reference \u2014 unified `project` commands (the only `sf project list` subcommand is `list ignored`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm",
     "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
     "Metadata Coverage Report \u2014 https://developer.salesforce.com/docs/metadata-coverage",
     "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
@@ -98,11 +102,6 @@
     "skills/devops/metadata-diff-between-sandboxes/templates/metadata-diff-between-sandboxes-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-30",
-    "vector_id": "devops/metadata-diff-between-sandboxes"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

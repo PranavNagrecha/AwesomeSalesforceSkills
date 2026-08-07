@@ -146,11 +146,6 @@
     "skills/architect/omnistudio-vs-standard-architecture/templates/omnistudio-vs-standard-architecture-template.md"
   ],
   "updated": "2026-07-31",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-31",
-    "vector_id": "architect/omnistudio-vs-standard-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.1"
 }

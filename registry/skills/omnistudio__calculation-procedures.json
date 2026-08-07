@@ -1,6 +1,7 @@
 {
   "category": "omnistudio",
   "chunk_ids": [
+    "03fca6788cb065d77879",
     "074d27ac2d7632bab1c1",
     "089fc1df5a79171b84d0",
     "0b65bc594e18fef07390",
@@ -14,6 +15,7 @@
     "14d7f5f5af32449561f4",
     "1e24ce604c1ce5ea9b68",
     "1e7af79fb4df6a4568d1",
+    "2195f266995cb3ee7d2c",
     "22d27ee95b17ed0dceb3",
     "281ea6a70b5f993a9ec3",
     "282a4905561ae80d32a9",
@@ -22,13 +24,17 @@
     "30f3660129e37324f277",
     "37814b3401e126e9f2ce",
     "3c1861e7b4e30d9753a3",
+    "3e1fa2a8759ef68aae01",
     "457bbc2300f74fc27f12",
+    "499b6a933c175265da4d",
     "4b88a43a4e1b072e24b5",
+    "4f97bd12a3b7fc229e90",
     "54e3de031ba3910bbb2b",
     "55acbdb6a45faf46a638",
     "56658969350cddc47738",
     "59663c1b52a37fae9dd0",
     "65f03d306eb85cf8f372",
+    "66f7ee9d3c9108be78a2",
     "69e59ca7bffbd4728aae",
     "6ac167ff0ad140c42dc2",
     "6c22d6a812ba2c097f23",
@@ -37,6 +43,7 @@
     "7ae489e03ba34d965294",
     "7af25f011f3ffdfbf0f1",
     "7d2fc7f6d674af940c0f",
+    "8015ba227b231f58c0ab",
     "812092ae545ba4f7af25",
     "832535bb3581f01f6566",
     "832a00313161f812169c",
@@ -67,11 +74,13 @@
     "acdf85cfc33fff121a12",
     "ae8ff78a697bbdf255cb",
     "aebf45e955ed218784b4",
+    "b3a7ca2b9955a01fc95d",
     "b3d658a920b761d215ef",
     "b445513b6827011f68d8",
     "b9677873f6fc7601ec74",
     "bafc846b5a933627952f",
     "c0d050cce57023a348ca",
+    "c4dec18d17a957832083",
     "c6278008d789d01a1bd0",
     "c723663c49ef33f753bc",
     "c97f31cad1d39b5b75c0",
@@ -95,7 +104,7 @@
     "f3e51630fde2360bdbea",
     "f408ab8dc1b939655e48"
   ],
-  "content_hash": "6a9ce193e44330eeb849c01bdff44f549e561e792746f1189c21ac868ffc0f85",
+  "content_hash": "8375cf0a250aaec85d763d816977ac466f3d306ddc60eb578661257d1a6f1415",
   "dependencies": [],
   "description": "Use when building, reviewing, or troubleshooting OmniStudio Calculation Procedures (also called Expression Sets) and Calculation Matrices (also called Decision Matrices). Triggers: 'calculation procedure', 'expression set', 'calculation matrix', 'decision matrix', 'pricing calculation', 'lookup step', 'matrix versioning'. NOT for DataRaptor transforms or DataRaptor-based field mapping.",
   "file_location": "skills/omnistudio/calculation-procedures",
@@ -109,7 +118,9 @@
   "official_sources": [
     "Salesforce Industries Developer Guide (local import: `knowledge/imports/salesforce-industries-dev-guide.md`) \u2014 ExpressionSet object, ExpressionSetVersion object, CalculationMatrix object, CalculationMatrixVersion object, CalculationMatrixRow object, step type reference, and migration service documentation",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 Reliability, Scalability, and Trusted pillar framing",
-    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm \u2014 OmniStudio integration patterns and component design"
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm \u2014 OmniStudio integration patterns and component design",
+    "ConnectApi Namespace (Apex Reference Guide) \u2014 the exhaustive `ConnectApi` class list; checked 2026-08-01 and it contains **no** `EvaluationService` class, so `ConnectApi.EvaluationService.executeExpression()` is not a real Apex entry point \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm",
+    "Business Rules Engine Business APIs (Salesforce Industries Reference) \u2014 the documented Connect REST surface for expression sets, decision matrices and decision tables; resolve exact resource paths here per API version \u2014 https://developer.salesforce.com/docs/atlas.en-us.industries_reference.meta/industries_reference/business_rules_engine_connect_apis.htm"
   ],
   "outputs": [
     "Calculation Procedure design with step sequence and variable contract",
@@ -138,11 +149,6 @@
     "skills/omnistudio/calculation-procedures/templates/calculation-procedures-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "omnistudio/calculation-procedures"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

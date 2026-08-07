@@ -108,11 +108,6 @@
     "skills/data/data-cloud-consent-and-privacy/templates/data-cloud-consent-and-privacy-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-16",
-    "vector_id": "data/data-cloud-consent-and-privacy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

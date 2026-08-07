@@ -97,11 +97,6 @@
     "skills/lwc/lwc-pubsub-patterns/templates/lwc-pubsub-patterns-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "lwc/lwc-pubsub-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

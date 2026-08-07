@@ -153,11 +153,6 @@
     "skills/admin/fsl-capacity-planning/templates/fsl-capacity-planning-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/fsl-capacity-planning"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

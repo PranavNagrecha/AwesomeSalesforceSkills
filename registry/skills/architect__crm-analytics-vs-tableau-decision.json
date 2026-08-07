@@ -149,11 +149,6 @@
     "skills/architect/crm-analytics-vs-tableau-decision/templates/crm-analytics-vs-tableau-decision-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "architect/crm-analytics-vs-tableau-decision"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

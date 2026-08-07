@@ -130,11 +130,6 @@
     "skills/admin/contract-and-renewal-management/templates/contract-and-renewal-management-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/contract-and-renewal-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

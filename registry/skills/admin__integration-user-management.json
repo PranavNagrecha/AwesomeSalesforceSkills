@@ -107,11 +107,6 @@
     "skills/admin/integration-user-management/templates/integration-user-management-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/integration-user-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -129,11 +129,6 @@
     "skills/admin/lightning-app-builder-advanced/templates/lightning-app-builder-advanced-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/lightning-app-builder-advanced"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

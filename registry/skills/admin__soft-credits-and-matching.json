@@ -157,11 +157,6 @@
     "skills/admin/soft-credits-and-matching/templates/soft-credits-and-matching-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/soft-credits-and-matching"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

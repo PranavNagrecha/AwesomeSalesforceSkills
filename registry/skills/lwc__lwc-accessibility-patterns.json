@@ -145,11 +145,6 @@
     "skills/lwc/lwc-accessibility-patterns/templates/lwc-accessibility-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwc-accessibility-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

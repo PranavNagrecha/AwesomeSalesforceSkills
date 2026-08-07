@@ -160,11 +160,6 @@
     "skills/admin/commerce-checkout-configuration/templates/commerce-checkout-configuration-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "admin/commerce-checkout-configuration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

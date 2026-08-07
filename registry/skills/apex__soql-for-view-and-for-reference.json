@@ -111,11 +111,6 @@
     "skills/apex/soql-for-view-and-for-reference/templates/soql-for-view-and-for-reference-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/soql-for-view-and-for-reference"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

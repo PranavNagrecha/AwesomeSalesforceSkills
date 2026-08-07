@@ -119,11 +119,6 @@
     "skills/apex/soql-using-scope-clause/templates/soql-using-scope-clause-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/soql-using-scope-clause"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

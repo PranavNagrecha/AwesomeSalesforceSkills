@@ -9,6 +9,7 @@
     "115c25460758cf4476e1",
     "1567f35780a468804922",
     "1669932b4331292079bc",
+    "1a5283377d3c45abff7a",
     "2319ef61a91bb73e7617",
     "2d16c951ed83114d9c5d",
     "2e00cecb6e879140e7f4",
@@ -26,6 +27,7 @@
     "51ac63a7ed133ce9caa4",
     "5264707db9ef998badd2",
     "5389dfaf61a77e799abc",
+    "5458a41108c208191518",
     "56005b8402e0e6fa6ff3",
     "5b2beee78212e0fb3ca2",
     "5b3183c7f4a99acbcbb0",
@@ -103,13 +105,15 @@
     "f739e37916260e11522b",
     "f75c83f6944cec067ff0",
     "f9cfc562b5c7995dab86",
+    "f9e675ce21717d4eb248",
     "fa407bb1c6a8245c3c3b",
     "fa4840c562ef431a1ba9",
     "fe2b6f5f7ddbfea8f0e6",
     "feaf30af9344a5ed8c81",
-    "ff155b62243b9ff8165e"
+    "ff155b62243b9ff8165e",
+    "ff900f0d01b308158474"
   ],
-  "content_hash": "afc1e2a663c0f5357890264d5898b5b0308cbaf6c5363b53b4bdc833218a5673",
+  "content_hash": "4c93aadda4c645f968ae8958822e488ce22ef7a394548f185435358e8de93ad5",
   "dependencies": [],
   "description": "Use when choosing between Salesforce event-driven mechanisms \u2014 Platform Events, Change Data Capture (CDC), Streaming API (PushTopic), and Outbound Messages \u2014 to determine which pattern fits a given integration requirement. Trigger keywords: platform events vs CDC, choose event pattern, event-driven integration design, streaming API vs platform events, outbound message vs platform event, event architecture comparison. NOT for implementing any single pattern (use platform-events-integration, change-data-capture-integration, or streaming-api-and-pushtopic for that), and NOT for automation tool selection between Flow and Apex.",
   "file_location": "skills/integration/event-driven-architecture-patterns",
@@ -125,6 +129,9 @@
   "name": "event-driven-architecture-patterns",
   "official_sources": [
     "Platform Events Developer Guide \u2014 event bus, allocations, replay, High-Volume Platform Events, transaction behavior",
+    "Platform Event Allocations \u2014 high-volume publish allocation 250,000/hour (EE/Perf/Unlimited), 50,000/hour (Developer), +25,000/hour add-on; retention 72 hours high-volume / 24 hours standard-volume; no retention field exists",
+    "Salesforce Help 002280033: Standard-Volume Platform Events Retirement \u2014 \"After Spring '19, you can't define new standard-volume platform events\"; publish/subscribe retired in Winter '27",
+    "Streaming API Message Durability \u2014 replayId `-1` (default) new events only; `-2` all events within the retention window",
     "Change Data Capture Developer Guide \u2014 CDC entity selection, allocations, gap events, supported objects, ChangeEventHeader structure",
     "Pub/Sub API Developer Guide \u2014 gRPC subscription model for Platform Events and CDC, replay ID management",
     "Integration Patterns (Salesforce Architects) \u2014 asynchronous vs synchronous integration pattern selection, fire-and-forget, at-least-once delivery patterns",
@@ -158,11 +165,6 @@
     "skills/integration/event-driven-architecture-patterns/templates/event-driven-architecture-patterns-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "integration/event-driven-architecture-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

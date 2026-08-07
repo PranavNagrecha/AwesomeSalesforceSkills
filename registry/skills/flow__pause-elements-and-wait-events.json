@@ -58,6 +58,7 @@
     "98c4a779d10f10ac428a",
     "a282aa141523f85ae156",
     "a3e3392944fd355811a4",
+    "a62ca99481e785eeb34b",
     "a6570ea704cbb62fa6ce",
     "a9df97f67cf7dc5bb809",
     "ab19d720af3852504315",
@@ -69,12 +70,14 @@
     "b95351b9eb7f97eb8c9c",
     "bc181709c44c6611e406",
     "c08ce25681e8ca6b86b9",
+    "c1f8b8ec1f791f4a267b",
     "c2dfb8b03d1e9897e8ba",
     "c33162cd414019b72f07",
     "c57d904675da0649c462",
     "ca162f30e3648ab0b610",
     "cc83400e1726add9f869",
     "cca9a1e110dd18ad407e",
+    "ccb94bcefe3e6c2c58ee",
     "cd1d9fa3866ed6b7e100",
     "ce2a75e20a1352171a8d",
     "d07b173796148a156df8",
@@ -96,7 +99,7 @@
     "f9e769a4cccb3d79d3e2",
     "fcb3ad053b62a7b5233f"
   ],
-  "content_hash": "e6849ab648bf6a6a5f44ae4a6071726c6c574f1b1bf12ba8d0083d951984736c",
+  "content_hash": "b2d23c06ccf005308bdfaa4755c6f5f77e18de2d3009ed7730f32e66a87cd7a4",
   "dependencies": [
     "scheduled-flows",
     "auto-launched-flow-patterns",
@@ -121,7 +124,9 @@
     "Paused Flow Interview Considerations \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_considerations_design_pause.htm&type=5",
     "General Flow Limits \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm&type=5",
     "Wait for Conditions Element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_wait_for_conditions.htm&type=5",
-    "Have Unlimited Paused and Waiting Flows (Summer '25 release notes) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_remove_paused_interview_limit.htm&release=250&type=5",
+    "Have Unlimited Paused and Waiting Flows (Spring '24 release notes, release=248) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_mgmt_remove_paused_interview_limit.htm&language=en_US&release=248&type=5",
+    "Paused Flow Interview Considerations \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_considerations_design_pause.htm&language=en_US&type=5",
+    "Flow Usage-Based Entitlements (the pre-removal 50,000 pending-schedules-and-paused-interviews allocation and the \"Your org has too many waiting flow interviews\" exception) \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_considerations_usage_entitlements.htm&language=en_US&type=5",
     "Sample Flow That Pauses Until a Platform Event Message Is Received \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_wait_examples_platformevent.htm&type=5",
     "Salesforce Well-Architected: Reliability \u2014 https://architect.salesforce.com/well-architected/reliable",
     "Salesforce Well-Architected: Performance \u2014 https://architect.salesforce.com/well-architected/performant"
@@ -157,11 +162,6 @@
     "skills/flow/pause-elements-and-wait-events/templates/pause-elements-and-wait-events-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "flow/pause-elements-and-wait-events"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

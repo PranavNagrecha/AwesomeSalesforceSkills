@@ -94,11 +94,6 @@
     "skills/integration/oauth-flows-and-connected-apps/templates/oauth-flows-and-connected-apps-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "integration/oauth-flows-and-connected-apps"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -109,11 +109,6 @@
     "skills/agentforce/agent-topic-design/templates/agent-topic-design-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/agent-topic-design"
-  },
+  "vector_embedding": null,
   "version": "2.0.0"
 }

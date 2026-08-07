@@ -142,11 +142,6 @@
     "skills/admin/related-list-configuration/templates/related-list-configuration-template.md"
   ],
   "updated": "2026-05-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-21",
-    "vector_id": "admin/related-list-configuration"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

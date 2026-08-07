@@ -145,11 +145,6 @@
     "skills/flow/auto-launched-flow-patterns/templates/auto-launched-flow-patterns-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "flow/auto-launched-flow-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -112,11 +112,6 @@
     "skills/apex/apex-limits-monitoring/templates/apex-limits-monitoring-template.md"
   ],
   "updated": "2026-04-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-19",
-    "vector_id": "apex/apex-limits-monitoring"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -142,11 +142,6 @@
     "skills/admin/salesforce-release-preparation/templates/salesforce-release-preparation-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-06",
-    "vector_id": "admin/salesforce-release-preparation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

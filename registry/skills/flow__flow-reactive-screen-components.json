@@ -1,34 +1,47 @@
 {
   "category": "flow",
   "chunk_ids": [
+    "00f5d82971ed8b5924fd",
+    "0218aaa40cbeafb41774",
     "060df1c6d887b6f8f23b",
     "0a698731bda6b0ab9f80",
     "0b14fa9833117529329e",
     "16aa8bc499be9e790e1e",
+    "1902ce5b65f3ec8c2a12",
+    "1d09cba9f34e3b1f418d",
+    "34c1a12a844fe33f568b",
     "457c4616d208fefbfae7",
     "4b7c4426eb51599491e1",
     "4c20276965aacdad8afc",
     "5a77a78bbd332cd4d179",
     "601abfd9412e9f73e2f8",
     "611be536775981433175",
-    "86b80d83c8ca5c8888ee",
+    "6fe8f01752382e799c52",
+    "73b57ad30cb83ab4092d",
+    "7ff45e6abf26e0c413a8",
+    "86950b937fc0b4021090",
     "88d96b57e8818a8f4947",
     "89a068decca1a738e7f1",
     "97765277fb05025129d6",
     "9c8c342d7248569b114a",
+    "9cd590ecc4bb5cb8e7a3",
+    "abe913fea55c658ec1f6",
     "af0caad8f10a3b90fb11",
     "af39c6c0d6dfa6f4feea",
     "b4517af8159a1f34186a",
+    "b89306c976d7f1acf4cf",
     "ba9b16b180a234c1ad2b",
     "d06ef0854c82888709a5",
     "d127350c825834345094",
-    "dba00a7cf1634fefe611",
+    "d14e1638eb2fd4273aa1",
     "e4f2c4043f5ef9e91041",
     "e72ac5cdee45d09f4ddb",
     "ed9cedb031e235689121",
-    "f45db7fb7d281ac41ba2"
+    "f45db7fb7d281ac41ba2",
+    "f9c7025ca7825325dcf9",
+    "fba96690cc5820d52ff9"
   ],
-  "content_hash": "142a78f657ee8889bbb23366458c712bd4ec731903183fd57bed88e5575a8864",
+  "content_hash": "06ec01a3b25b1f7804918ec2a699b01c0ad034dc893ffee0a3cde2418a6f54ad",
   "dependencies": [],
   "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
   "file_location": "skills/flow/flow-reactive-screen-components",
@@ -39,10 +52,11 @@
   ],
   "name": "flow-reactive-screen-components",
   "official_sources": [
-    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
-    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
-    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
-    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+    "Flow screen component reference \u2014 which attributes support reactive values \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp.htm",
+    "Build reactive screens in Flow Builder \u2014 referencing a component's attribute rather than the screen's output \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_build_screen_reactive.htm",
+    "lightning/flowSupport module \u2014 FlowAttributeChangeEvent and FlowNavigationNextEvent \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-flow-support/documentation",
+    "Configure a Lightning Web Component for Flow Screens \u2014 targetConfig, role=\"inputAndOutput\" and the validate() contract \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-screens.html",
+    "LightningComponentBundle metadata \u2014 targets, targetConfigs and property roles \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_lightningcomponentbundle.htm"
   ],
   "outputs": [
     "reactive screen with live formula outputs"
@@ -65,12 +79,7 @@
   "templates": [
     "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-reactive-screen-components"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

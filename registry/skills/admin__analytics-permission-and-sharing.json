@@ -134,11 +134,6 @@
     "skills/admin/analytics-permission-and-sharing/templates/analytics-permission-and-sharing-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "admin/analytics-permission-and-sharing"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

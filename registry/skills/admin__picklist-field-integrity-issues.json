@@ -120,11 +120,6 @@
     "skills/admin/picklist-field-integrity-issues/templates/picklist-field-integrity-issues-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "admin/picklist-field-integrity-issues"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

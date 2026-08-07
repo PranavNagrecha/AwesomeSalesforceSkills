@@ -175,11 +175,6 @@
     "skills/architect/commerce-integration-patterns/templates/commerce-integration-patterns-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "architect/commerce-integration-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

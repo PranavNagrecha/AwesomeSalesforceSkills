@@ -158,11 +158,6 @@
     "skills/agentforce/rag-patterns-in-salesforce/templates/rag-patterns-in-salesforce-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "agentforce/rag-patterns-in-salesforce"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

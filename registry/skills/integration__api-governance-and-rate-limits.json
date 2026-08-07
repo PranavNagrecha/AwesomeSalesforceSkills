@@ -2,21 +2,28 @@
   "category": "integration",
   "chunk_ids": [
     "087a64f332dd1e4c0e6b",
+    "11000da4fdc6e605812f",
     "11328f7945b72ec81408",
-    "2012d4727af0c144575b",
+    "15abcde8b6af4c1ab810",
     "267630ac7f82af00417b",
+    "2b4ae4ab63f4d70de0c9",
     "2e7e9c9865d77d8191fb",
     "2ea106153e70d805b334",
+    "3336b420debfa7d300e2",
     "3ea28316e1cf74ca35ec",
+    "493f4bb1a4686b51793c",
     "517279db84d427fdf543",
-    "5405ba76b79fccf14637",
     "69e10d5759b9c3611468",
     "6ac1861df978e3ea3c7c",
     "6f43775eaaf088b8cf8e",
+    "701bcf060b67a40cb3df",
     "75499791da3fa37aa51d",
     "75c396499e61b2f7c6a8",
     "785ed6f48e84c38e68ab",
+    "7cbbb4dc6341b82685d5",
     "80cc31c675e3c639fab3",
+    "84e709d36b9351b885bd",
+    "851162142c2e2e771809",
     "935ad8ec67b711896662",
     "9883b30476e05de0455f",
     "98ce682b3dd34bd49386",
@@ -25,10 +32,19 @@
     "9ecdc87629304b71af65",
     "a7b73161f440e7abec66",
     "b4e8cc3b75732ed3e697",
+    "bd7f3fd69e9c6862f8b8",
+    "be319f7e60a08d8e0501",
     "c05ec37c900d9841a55d",
+    "c6e2084febeabb736fb7",
+    "dc248e6580b5f088351e",
+    "e0dec94e72e07834eb6f",
+    "e9817e120897910cc63f",
+    "eb89fa09b5d19e5140b4",
+    "eed5968f7492ca1c24d2",
+    "f482876dbaebc6ced173",
     "f496d72018651e8cb1cb"
   ],
-  "content_hash": "b2c38e8c1be2a8f2d586e70ed53e7738ad6066cb63865c20e76f259def0a6a79",
+  "content_hash": "d038bdf10a548b3537599fb647e6ea4babdeaf3205dd78de13bfa72e0f9cb1f8",
   "dependencies": [],
   "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints.",
   "file_location": "skills/integration/api-governance-and-rate-limits",
@@ -39,12 +55,11 @@
   ],
   "name": "api-governance-and-rate-limits",
   "official_sources": [
-    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
-    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
-    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
-    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
-    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
-    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+    "Salesforce Platform API limits \u2014 daily API request allocations by edition, the concurrent long-running request allocation (25 production/sandbox, 5 Developer Edition and Trial), and the REQUEST_LIMIT_EXCEEDED exception code \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm",
+    "/limits REST resource \u2014 Max and Remaining semantics, and \"Tabulated limits returned by the API are accurate within five minutes of resource consumption\" \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_limits.htm",
+    "REST API Developer Guide \u2014 request and response headers, including the API usage header \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest_headers.htm",
+    "Bulk API 2.0 Developer Guide \u2014 the volume path that stops consumption scaling with row count \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "EventLogFile object reference \u2014 the ApiTotalUsage event type used for per-consumer attribution \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_eventlogfile.htm"
   ],
   "outputs": [
     "governance dashboard + per-consumer throttling + allocation plan"
@@ -67,12 +82,7 @@
   "templates": [
     "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "integration/api-governance-and-rate-limits"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

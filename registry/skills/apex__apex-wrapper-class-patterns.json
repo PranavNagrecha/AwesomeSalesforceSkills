@@ -113,11 +113,6 @@
     "skills/apex/apex-wrapper-class-patterns/templates/apex-wrapper-class-patterns-template.md"
   ],
   "updated": "2026-04-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-19",
-    "vector_id": "apex/apex-wrapper-class-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

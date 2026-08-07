@@ -108,11 +108,6 @@
     "skills/apex/soql-security/templates/soql-security-review.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/soql-security"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

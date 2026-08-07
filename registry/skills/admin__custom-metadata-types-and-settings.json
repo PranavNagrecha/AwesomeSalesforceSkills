@@ -139,11 +139,6 @@
     "skills/admin/custom-metadata-types-and-settings/templates/custom-metadata-types-and-settings-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "admin/custom-metadata-types-and-settings"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

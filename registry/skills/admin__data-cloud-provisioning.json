@@ -148,11 +148,6 @@
     "skills/admin/data-cloud-provisioning/templates/data-cloud-provisioning-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-15",
-    "vector_id": "admin/data-cloud-provisioning"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

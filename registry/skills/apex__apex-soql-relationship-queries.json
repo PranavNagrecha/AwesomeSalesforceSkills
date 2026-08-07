@@ -3,6 +3,7 @@
   "chunk_ids": [
     "0300b95c982675033048",
     "055c70ac7dc0a7e0261f",
+    "05630c6c9b98945c2d53",
     "07ea77dfd540ef611178",
     "0a0ad8bc9db40837b471",
     "116bc7a9add27134fc6e",
@@ -35,6 +36,7 @@
     "55bdb6a81f84157f423b",
     "5630fc2efa97080d6375",
     "66108c771778f654838d",
+    "675d7b874527f67384dc",
     "676f5953655b658b18ff",
     "7065a403f9fd5d1cf182",
     "70d988ac843b8580c7f8",
@@ -47,6 +49,7 @@
     "8b3b01e27a35d6bfcb1c",
     "91a3e4d25897e77a8614",
     "931fad3955d2a680bec3",
+    "a3738c17880324816376",
     "a389d70d763f25425d96",
     "a4a43b7fccc0b172c3ba",
     "a7836ea916917e6c3932",
@@ -77,7 +80,7 @@
     "fe49271f4802ad199abf",
     "fff8e087f2fa7bac2943"
   ],
-  "content_hash": "7e661ef1ada5949ba4570d0c6b9897510c55275d2f5e74ac4c7be31b367361f9",
+  "content_hash": "f27515eb7c721ff265e86e50f560d607290294f19dee45ed9a74502e5356bb00",
   "dependencies": [],
   "description": "Use this skill when writing or debugging SOQL relationship queries in Apex \u2014 child-to-parent dot notation traversal, parent-to-child subqueries, polymorphic TYPEOF projection and `.Type` type filtering, and FROM-clause alias notation for implicit-join filtering. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, What.Type filter, WhatId, WhoId, alias notation. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there).",
   "file_location": "skills/apex/apex-soql-relationship-queries",
@@ -98,6 +101,8 @@
     "SOQL and SOSL Reference \u2014 TYPEOF: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_typeof.htm",
     "Apex Developer Guide \u2014 Polymorphic Relationships: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm",
     "Apex Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Bulk API 2.0 and Bulk API Developer Guide \u2014 Query Jobs: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/queries.htm \u2014 unsupported SOQL in bulk query jobs includes \"Parent-to-child relationship queries\" (child-to-parent is supported), `GROUP BY`, `OFFSET`, `TYPEOF`, aggregate functions such as `COUNT()`, and compound address/geolocation fields; no dedicated status code is published for the rejection",
+    "SOAP API Developer Guide \u2014 StatusCode enumeration: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm \u2014 used to confirm no `QUERY_WITH_SELECTIVITY_HINT_ONLY_ALLOWED_IN_SUBQUERY` code exists",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [
@@ -130,11 +135,6 @@
     "skills/apex/apex-soql-relationship-queries/templates/apex-soql-relationship-queries-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/apex-soql-relationship-queries"
-  },
+  "vector_embedding": null,
   "version": "1.2.1"
 }

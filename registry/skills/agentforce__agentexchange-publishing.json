@@ -135,11 +135,6 @@
     "skills/agentforce/agentexchange-publishing/templates/agentexchange-publishing-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "agentforce/agentexchange-publishing"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

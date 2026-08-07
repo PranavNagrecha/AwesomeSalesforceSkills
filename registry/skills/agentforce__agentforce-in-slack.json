@@ -175,11 +175,6 @@
     "skills/agentforce/agentforce-in-slack/templates/agentforce-in-slack-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-17",
-    "vector_id": "agentforce/agentforce-in-slack"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

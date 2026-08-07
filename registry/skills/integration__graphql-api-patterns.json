@@ -99,11 +99,6 @@
     "skills/integration/graphql-api-patterns/templates/graphql-api-patterns-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "integration/graphql-api-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

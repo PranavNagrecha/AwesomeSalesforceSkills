@@ -4,6 +4,7 @@
     "0a9a93b8987f5c8d5777",
     "101964cc837cd673bf0f",
     "117b160b9904dbe68711",
+    "1744832571ca3aaacf90",
     "1b38caab56912ff7d4d8",
     "234c68ce9548d6d434ee",
     "254cf85bd650fbbab525",
@@ -19,6 +20,7 @@
     "3b49331dd142230d7586",
     "40d3df82ad901b02ea05",
     "4d06433510acfe2b98ce",
+    "4dec9a4e397c3f5b6644",
     "536e44837f2a09d87ce1",
     "5567a76c0d984bacfaf6",
     "560dcbec2120cd9ed106",
@@ -29,6 +31,7 @@
     "61b2ba53a776f5907683",
     "636f1cc447fb75d868a8",
     "659fda68b6bef5d5585e",
+    "67649c368617d5d1e7eb",
     "682bdc25e77c2349f225",
     "6f471c67ab67b0a707ba",
     "7088c70379ed3fb5641a",
@@ -46,6 +49,7 @@
     "8fa1004a8f76bf2be8b2",
     "8fca25a8414e66478e0f",
     "90358987f72a80052d91",
+    "966f5a905ab992804b29",
     "97f1960b49d8398a5dc5",
     "a80d3bfc435cf18a2ab1",
     "ac9336f432adf6751209",
@@ -56,6 +60,7 @@
     "c31b00293ed75ea12fb0",
     "c3c8f875b91dd739db34",
     "c576b63a649e5a7cd872",
+    "c663e4b2cd45945e5bec",
     "c6d02001c48a3a59de71",
     "c764ada0387c6b902b23",
     "cb6e22e4cca1b5f5d36f",
@@ -70,9 +75,10 @@
     "ed5525a90c53828d29e4",
     "ee41db9eabc5c0a9acb0",
     "f46c232a213e8aeceb4c",
-    "f4c0f883b700d95b47a9"
+    "f4c0f883b700d95b47a9",
+    "f6e5c66498af07d4f168"
   ],
-  "content_hash": "d8f9fac685c1d095aab5315b527f605df113115b67c5e2c9bda6a9cb6867e812",
+  "content_hash": "f02ec5299a6102485dcdeeba970cf1838a550f2f041e948050f3fc8af1185b2c",
   "dependencies": [],
   "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
   "file_location": "skills/admin/reports-and-dashboards",
@@ -86,7 +92,10 @@
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 operational reporting quality framing",
     "Metadata API Developer Guide \u2014 report and dashboard metadata deployment behavior",
-    "Object Reference \u2014 object semantics that affect report design and completeness"
+    "Object Reference \u2014 object semantics that affect report design and completeness",
+    "[Limitations on Historical Trend Reporting](https://help.salesforce.com/s/articleView?id=sf.reports_historical_limits.htm&type=5) \u2014 supported field types, 5 snapshot dates, 4 historical filters, 100 fields, 5M-row storage cap, 3-months-plus-current-month retention",
+    "[Export a Report](https://help.salesforce.com/s/articleView?id=analytics.reports_export.htm&type=5) \u2014 Formatted Report 100,000 x 100 (2,000 x 100 for matrix); Details Only .xlsx 100,000 x 100; Details Only .xls/.csv uncapped by Salesforce",
+    "[Reports and Dashboards Limits](https://help.salesforce.com/s/articleView?id=analytics.rd_reports_dashboards_limits.htm&type=5) \u2014 25 widgets per dashboard, 1,000 groupings per widget, 2,000 on-screen rows, 2,000 report chart groups, joined-report block and subscription allocations"
   ],
   "outputs": [
     "report design guidance",
@@ -114,11 +123,6 @@
     "skills/admin/reports-and-dashboards/templates/dashboard-design-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "admin/reports-and-dashboards"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

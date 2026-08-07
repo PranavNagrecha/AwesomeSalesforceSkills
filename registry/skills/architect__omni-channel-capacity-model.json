@@ -116,11 +116,6 @@
     "skills/architect/omni-channel-capacity-model/templates/omni-channel-capacity-model-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "architect/omni-channel-capacity-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

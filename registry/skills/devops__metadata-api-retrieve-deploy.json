@@ -121,11 +121,6 @@
     "skills/devops/metadata-api-retrieve-deploy/templates/metadata-api-retrieve-deploy-template.md"
   ],
   "updated": "2026-05-19",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-19",
-    "vector_id": "devops/metadata-api-retrieve-deploy"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

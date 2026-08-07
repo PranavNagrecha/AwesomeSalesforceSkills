@@ -115,11 +115,6 @@
     "skills/apex/record-locking-and-contention/templates/record-locking-and-contention-template.md"
   ],
   "updated": "2026-07-08",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-08",
-    "vector_id": "apex/record-locking-and-contention"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

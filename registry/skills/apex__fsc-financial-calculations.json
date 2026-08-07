@@ -154,11 +154,6 @@
     "skills/apex/fsc-financial-calculations/templates/fsc-financial-calculations-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "apex/fsc-financial-calculations"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

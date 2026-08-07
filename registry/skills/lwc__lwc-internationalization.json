@@ -2,33 +2,50 @@
   "category": "lwc",
   "chunk_ids": [
     "0da84891ff0e4be4a52e",
+    "15aae12f1c2133a3f819",
+    "22ab271ac12a585e2cb7",
     "28d003c44253e562eca2",
+    "2e890a441e031eb4ee9f",
     "2ff98f6a704b2abceec0",
     "3a8f8cc437aca8794e4a",
     "48e76728a426f9875b8a",
+    "49041f935b746bf1a6ee",
     "4f2544a79a5d7ee8c3e3",
+    "4f5802824bdc6e003fa7",
+    "56b1122b3328f40afbdc",
     "59ea20aec0afc66e321d",
     "604155523af1bf0e36f1",
     "6464ce869c87d235f394",
+    "66a7591b63bd3958f96c",
+    "6d994874f63dc43ef2bd",
+    "6e4ad04264cfe49e8c14",
     "750759762080a7c8b2da",
     "751b9330ade4d26cdb01",
     "79e63a4750cc11ff46e4",
+    "7b4191ee7125b9a11d04",
+    "7e0c273000ff20130d51",
     "7e4193d4df1791e253d9",
     "86d64c04640813b83c55",
+    "8bdf3dcc5ddd5f29e658",
+    "8bf209bcdb9071f4022a",
+    "8d3272ac498f63efd09c",
+    "9635f764ca0a5080c533",
     "968e9ad0868c7f78da61",
+    "a7d71c1ead1c4d0b3e64",
     "b44bd6c01f80d0f45b68",
     "b6d8946a285d330f4c58",
     "b90649429152b64b2ec0",
-    "c6ac5f2b5f55ae88e2ba",
+    "bd2338c7a1ce37c08954",
+    "bf5f15797369988af353",
     "d4997357d2c32633941c",
+    "d5ca0d9576bf632503ce",
     "d9673ea29863740d468e",
     "e0bbeb691df1249f8f1b",
-    "e242857ea1de8019a8f9",
     "e389c11caa546b5e6c4d",
     "e8a3e984e0bb72804234",
     "f2127ad24b8205401a01"
   ],
-  "content_hash": "07052f4599db4a8f50b5746545ad12be9321d6fc4f91bffcf1425122c0ba9824",
+  "content_hash": "d3093653ce447bc659012481328590d7b236270b23ea3231d2f9e00f62b59133",
   "dependencies": [],
   "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
   "file_location": "skills/lwc/lwc-internationalization",
@@ -39,10 +56,11 @@
   ],
   "name": "lwc-internationalization",
   "official_sources": [
-    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
-    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
-    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
+    "Access Labels in a Component \u2014 the `@salesforce/label` scoped module and the `namespace.labelName` reference format \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-labels.html",
+    "Internationalization \u2014 `@salesforce/i18n/locale`, and the recommendation to use base components that adapt to the user's language, locale and time zone \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-i18n.html",
+    "@salesforce Modules reference \u2014 the `@salesforce/i18n` identifiers including `lang` and `dir` \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/reference-salesforce-modules.html",
+    "Custom Labels \u2014 up to 5,000 labels per org, up to 1,000 characters each, managed-package labels excluded from the count \u2014 https://help.salesforce.com/s/articleView?id=platform.cl_about.htm&type=5",
+    "lightning-formatted-number component reference \u2014 `format-style` and `currency-code` \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-formatted-number"
   ],
   "outputs": [
     "component using custom labels + locale-aware components"
@@ -65,12 +83,7 @@
   "templates": [
     "skills/lwc/lwc-internationalization/templates/lwc-internationalization-template.md"
   ],
-  "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "lwc/lwc-internationalization"
-  },
-  "version": "1.0.0"
+  "updated": "2026-08-01",
+  "vector_embedding": null,
+  "version": "1.1.0"
 }

@@ -129,11 +129,6 @@
     "skills/data/npsp-data-model/templates/npsp-data-model-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "data/npsp-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

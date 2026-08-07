@@ -136,11 +136,6 @@
     "skills/apex/cpq-test-automation/templates/cpq-test-automation-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/cpq-test-automation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

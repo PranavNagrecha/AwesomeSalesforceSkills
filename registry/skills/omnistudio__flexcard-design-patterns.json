@@ -175,11 +175,6 @@
     "skills/omnistudio/flexcard-design-patterns/templates/flexcard-design-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "omnistudio/flexcard-design-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

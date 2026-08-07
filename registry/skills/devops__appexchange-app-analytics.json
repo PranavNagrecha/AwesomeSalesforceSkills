@@ -132,11 +132,6 @@
     "skills/devops/appexchange-app-analytics/templates/appexchange-app-analytics-template.md"
   ],
   "updated": "2026-07-06",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-06",
-    "vector_id": "devops/appexchange-app-analytics"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

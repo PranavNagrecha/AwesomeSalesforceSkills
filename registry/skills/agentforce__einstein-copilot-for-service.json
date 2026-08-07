@@ -182,11 +182,6 @@
     "skills/agentforce/einstein-copilot-for-service/templates/einstein-copilot-for-service-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "agentforce/einstein-copilot-for-service"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

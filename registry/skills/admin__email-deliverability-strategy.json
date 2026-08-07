@@ -157,11 +157,6 @@
     "skills/admin/email-deliverability-strategy/templates/email-deliverability-strategy-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/email-deliverability-strategy"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

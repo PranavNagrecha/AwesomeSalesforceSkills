@@ -151,11 +151,6 @@
     "skills/devops/continuous-integration-testing/templates/continuous-integration-testing-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "devops/continuous-integration-testing"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

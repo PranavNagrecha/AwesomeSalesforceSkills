@@ -139,11 +139,6 @@
     "skills/data/cpq-data-model/templates/cpq-data-model-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "data/cpq-data-model"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

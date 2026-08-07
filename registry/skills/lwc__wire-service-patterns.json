@@ -95,11 +95,6 @@
     "skills/lwc/wire-service-patterns/templates/wire-service-patterns-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "lwc/wire-service-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

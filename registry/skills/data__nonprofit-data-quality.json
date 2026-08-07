@@ -142,11 +142,6 @@
     "skills/data/nonprofit-data-quality/templates/nonprofit-data-quality-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-15",
-    "vector_id": "data/nonprofit-data-quality"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

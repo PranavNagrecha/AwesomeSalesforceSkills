@@ -115,11 +115,6 @@
     "skills/admin/mobile-publisher/templates/mobile-publisher-template.md"
   ],
   "updated": "2026-05-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-07",
-    "vector_id": "admin/mobile-publisher"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

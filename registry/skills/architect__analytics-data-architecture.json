@@ -159,11 +159,6 @@
     "skills/architect/analytics-data-architecture/templates/analytics-data-architecture-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "architect/analytics-data-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

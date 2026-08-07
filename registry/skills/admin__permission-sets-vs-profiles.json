@@ -113,11 +113,6 @@
     "skills/admin/permission-sets-vs-profiles/templates/permission-set-design-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "admin/permission-sets-vs-profiles"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

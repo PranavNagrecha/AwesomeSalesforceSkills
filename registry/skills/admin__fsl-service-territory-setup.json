@@ -137,11 +137,6 @@
     "skills/admin/fsl-service-territory-setup/templates/fsl-service-territory-setup-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-07",
-    "vector_id": "admin/fsl-service-territory-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

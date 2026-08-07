@@ -142,11 +142,6 @@
     "skills/apex/apex-hardcoded-id-elimination/templates/apex-hardcoded-id-elimination-template.md"
   ],
   "updated": "2026-07-07",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-07-07",
-    "vector_id": "apex/apex-hardcoded-id-elimination"
-  },
+  "vector_embedding": null,
   "version": "1.1.0"
 }

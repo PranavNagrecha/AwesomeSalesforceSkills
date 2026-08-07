@@ -13,6 +13,7 @@
     "3b884e012fa9d0a3cd59",
     "3c548cc2af71a9643649",
     "3e87aeb6c5ab859cc690",
+    "3ff878020725e76bd3b2",
     "415a47effd1b54519e48",
     "43fba5c4726195a95aa1",
     "4a072ad0f830f90200a9",
@@ -24,10 +25,10 @@
     "6721a177f2ec5a62d7e8",
     "6ea13b48f4e4ce05c46c",
     "6f05999bee4af24ab7ef",
-    "6f0ab4f4ce7352cae2bb",
     "6f709f3cd901b7ced8c6",
     "7040f6131860370bbfb6",
     "797def7861039d64b059",
+    "7ea11e59ec244fdc69b0",
     "83340c833b69befeca0b",
     "843103f7b8b6c9b11732",
     "867098d17106a9afbb7f",
@@ -35,6 +36,7 @@
     "913435f9b255f4de0e7f",
     "9174db3cad8d160c1527",
     "91ae4cc89166b1b4e7a6",
+    "957dd4b021d8b6c7a9df",
     "9911bab73ba8a24877d8",
     "9df68912208cc5eb22da",
     "9e285a56da1197f679b8",
@@ -54,22 +56,25 @@
     "c082cb26c8c1674460f2",
     "c285db0c04c9c231c797",
     "c57421903daac7f9c274",
+    "c5790c4749e12b916cb5",
     "ccc58f366053ed368a97",
     "cf15b7277ee84964d0f4",
     "cf9c2704ca27ab79376f",
     "d578cce48a923849ba0b",
     "da3b0f6523691d859430",
     "dbcd5f52510fe057fe79",
+    "deba45667ec837456513",
     "e6b6046c88e77b8f5af4",
     "e7072e733ad28dbf92cc",
     "eb3c8c56c8f0331111a2",
     "eb61d8eab8974642d1c5",
+    "ebf9b9865574d1039f5c",
     "ed8c664adc78eacacc0b",
     "f8064acb844091b3b513",
     "fa68fdfc1f1a9f39a795",
     "fb6da3883dc478bc23ca"
   ],
-  "content_hash": "3fd586e950003b8720c8f951a87ef0f091c1a1622715b0a840153f28f823fa4d",
+  "content_hash": "09579247fd2901e39da361c01a687607876c002a534f70b881b1ef8c867a7182",
   "dependencies": [],
   "description": "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation. NOT for OAuth flow implementation (use oauth-flows-and-connected-apps).",
   "file_location": "skills/security/connected-app-security-policies",
@@ -89,7 +94,8 @@
     "Salesforce REST API Developer Guide: OAuth 2.0 Authorization \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_oauth_and_connected_apps.htm",
     "Salesforce Metadata API Developer Guide: ConnectedApp \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_connectedapp.htm",
     "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5",
-    "Salesforce Well-Architected: Security \u2014 https://architect.salesforce.com/well-architected/secure/overview"
+    "Salesforce Well-Architected: Security \u2014 https://architect.salesforce.com/well-architected/secure/overview",
+    "Salesforce Help \u2014 OAuth 2.0 JWT Bearer Flow for Server-to-Server Integration (required claims iss/sub/aud/exp; \"Salesforce allows a 3-minute buffer for clock skew\") \u2014 https://help.salesforce.com/apex/HTViewHelpDoc?id=remoteaccess_oauth_jwt_flow.htm"
   ],
   "outputs": [
     "Configured OAuth access policies",
@@ -118,11 +124,6 @@
     "skills/security/connected-app-security-policies/templates/connected-app-security-policies-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "security/connected-app-security-policies"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

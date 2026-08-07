@@ -96,11 +96,6 @@
     "skills/omnistudio/omniscript-versioning/templates/omniscript-versioning-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-04",
-    "vector_id": "omnistudio/omniscript-versioning"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

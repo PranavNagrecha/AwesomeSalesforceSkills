@@ -98,11 +98,6 @@
     "skills/data/data-virtualization-patterns/templates/data-virtualization-patterns-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-05-05",
-    "vector_id": "data/data-virtualization-patterns"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

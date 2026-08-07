@@ -2,6 +2,7 @@
   "category": "security",
   "chunk_ids": [
     "011dc0e9b5dddf527d26",
+    "034a606b77a3ebe6475a",
     "0575c3640b4b42946e6c",
     "0604dec302af7092c38d",
     "06a92145fbebbccd406b",
@@ -37,6 +38,7 @@
     "3c55eda67a1014ae5a97",
     "3d0b89737a9cad23bd78",
     "3e9d463887f17bd33842",
+    "3f6536138686b8fd4fbf",
     "420766bf989a4a795abd",
     "435bcdd63b32814a4f5f",
     "488b931df0078b7f80f9",
@@ -95,6 +97,7 @@
     "b691d16f6223ded7a2b0",
     "b7d29ed8703e2923517d",
     "b7e623d6b433767f5203",
+    "b899e19018ddc3c78f9e",
     "b916c2cd19419cc322be",
     "c47bb1b30690c8d96877",
     "c7d860da2dc525d73a5a",
@@ -116,15 +119,18 @@
     "ecf91fdb7b1de00423d0",
     "ed50e0eaf946f75b74ea",
     "eeb53e31ccda3e828635",
+    "effb47aff66fd2ccbb91",
     "f17ed36a25f1b23c5c5d",
     "f2b30e0b65ac32a5197f",
     "f7f6954808032b3d09a4",
     "f80117fb4af30c74169d",
     "f9f19b9ffd11fa2434b8",
+    "fae3f326195e6c37b356",
     "fc09c088b06a076b1601",
+    "fea906821516afa30d45",
     "ffe70d34711a259013ad"
   ],
-  "content_hash": "1174d755796d539e3133786a7373c847b1c12e1aa79a90e72f2b12b70add15e2",
+  "content_hash": "a62c72d742b8596b9b46dbbd58a4708a7e072d424949229d5a22b41c7b2ca1b8",
   "dependencies": [
     "security/event-monitoring",
     "security/transaction-security-policies"
@@ -148,7 +154,8 @@
     "Salesforce Object Reference: AuthSession \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authsession.htm",
     "Salesforce Object Reference: SetupAuditTrail \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_setupaudittrail.htm",
     "Salesforce Architects: A Primer on Forensic Investigation of Salesforce Security Incidents \u2014 https://www.salesforce.com/blog/forensic-investigation-salesforce-security-incidents/",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Trailhead \u2014 Event Monitoring: Get Started with Event Monitoring (\"Apex Unexpected Exception, CORS Violation Record, CSP Violation, Hostname Redirects, Login, Logout and API Total Usage event log files with 1-day data retention\" free for EE/UE/PE; Developer Edition gets all types at 1-day retention) \u2014 https://trailhead.salesforce.com/content/learn/modules/event_monitoring/event_monitoring_intro"
   ],
   "outputs": [
     "Forensic evidence export (EventLogFile CSVs, LoginHistory SOQL results, SetupAuditTrail records)",
@@ -182,11 +189,6 @@
     "skills/security/security-incident-response/templates/security-incident-response-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "security/security-incident-response"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

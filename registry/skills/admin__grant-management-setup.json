@@ -137,11 +137,6 @@
     "skills/admin/grant-management-setup/templates/grant-management-setup-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "admin/grant-management-setup"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

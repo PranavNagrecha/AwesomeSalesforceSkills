@@ -155,11 +155,6 @@
     "skills/admin/fundraising-process-mapping/templates/fundraising-process-mapping-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-12",
-    "vector_id": "admin/fundraising-process-mapping"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

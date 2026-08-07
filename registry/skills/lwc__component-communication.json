@@ -95,11 +95,6 @@
     "skills/lwc/component-communication/templates/component-communication-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "lwc/component-communication"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

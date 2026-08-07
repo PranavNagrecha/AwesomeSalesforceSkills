@@ -64,6 +64,7 @@
     "c3b14b96cf4527c22cec",
     "c586b6bf40c7a6f20fc2",
     "c7477e171344025886b0",
+    "cc2e6bf50daf0d6290f8",
     "ce400152f1c1bb02afc7",
     "d0627ca4b48ffdf4fceb",
     "d6b7e8df5032d5b30091",
@@ -80,12 +81,13 @@
     "f0517759924534255fda",
     "f172a6db46708f6a0a31",
     "f2b40d9cd6323ce7f64f",
+    "f43215b41b54c6409d9b",
     "f66a132b66725289dc9f",
     "f847a2be0b53a238fff3",
     "f89285768b1ef0d6202c",
     "fb4a38250d0f89a8a926"
   ],
-  "content_hash": "20cb340efa447eebd99a1950c1ccffeda6ad3a619dfd540fa453e13808467298",
+  "content_hash": "3525f1866a29f22147ba63cc8596368c7c01579830bee9800d672acd477fa8d2",
   "dependencies": [],
   "description": "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the exact semantics of each Flow entry point. NOT for choosing Flow vs Apex (use automation-selection.md). NOT for Flow-to-Flow invocation contracts (use subflows-and-reusability).",
   "file_location": "skills/flow/flow-transactional-boundaries",
@@ -100,6 +102,8 @@
     "Salesforce Help \u2014 \"Flow Triggers: Before Save vs. After Save\": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_types.htm",
     "Salesforce Help \u2014 \"Scheduled Paths in Record-Triggered Flows\": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_scheduled_path.htm",
     "Salesforce Developer Documentation \u2014 \"Execution Governors and Limits\": https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_gov_limits.htm",
+    "Salesforce Developer Documentation \u2014 \"Platform Event Allocations\" (per-edition publish/delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm",
+    "Salesforce Developer Documentation \u2014 \"Configure the User and Batch Size for Your Platform Event Trigger\" (2,000-message maximum and default): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm",
     "Salesforce Help \u2014 \"Pause Element\" (Flow Builder reference): https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_pause.htm",
     "Salesforce Help \u2014 \"Flow Orchestration Overview\": https://help.salesforce.com/s/articleView?id=sf.orchestrator_overview.htm",
     "Salesforce Architects \u2014 \"Well-Architected: Resilient\": https://architect.salesforce.com/well-architected/trusted/resilient",
@@ -136,11 +140,6 @@
     "skills/flow/flow-transactional-boundaries/templates/flow-transactional-boundaries-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-28",
-    "vector_id": "flow/flow-transactional-boundaries"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

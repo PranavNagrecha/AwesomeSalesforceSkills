@@ -95,11 +95,6 @@
     "skills/architect/cloud-specific-deployment-architecture/templates/cloud-specific-deployment-architecture-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-21",
-    "vector_id": "architect/cloud-specific-deployment-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

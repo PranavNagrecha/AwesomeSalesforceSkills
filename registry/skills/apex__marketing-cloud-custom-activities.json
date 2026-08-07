@@ -144,11 +144,6 @@
     "skills/apex/marketing-cloud-custom-activities/templates/marketing-cloud-custom-activities-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/marketing-cloud-custom-activities"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

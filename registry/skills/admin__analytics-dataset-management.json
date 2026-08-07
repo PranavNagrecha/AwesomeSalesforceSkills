@@ -131,11 +131,6 @@
     "skills/admin/analytics-dataset-management/templates/analytics-dataset-management-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-11",
-    "vector_id": "admin/analytics-dataset-management"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

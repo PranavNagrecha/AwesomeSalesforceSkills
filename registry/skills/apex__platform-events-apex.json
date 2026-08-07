@@ -98,11 +98,6 @@
     "skills/apex/platform-events-apex/templates/platform-events-apex-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-03-13",
-    "vector_id": "apex/platform-events-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

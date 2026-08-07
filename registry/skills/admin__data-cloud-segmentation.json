@@ -127,11 +127,6 @@
     "skills/admin/data-cloud-segmentation/templates/data-cloud-segmentation-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-15",
-    "vector_id": "admin/data-cloud-segmentation"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

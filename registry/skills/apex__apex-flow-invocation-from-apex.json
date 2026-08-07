@@ -110,11 +110,6 @@
     "skills/apex/apex-flow-invocation-from-apex/templates/apex-flow-invocation-from-apex-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-23",
-    "vector_id": "apex/apex-flow-invocation-from-apex"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

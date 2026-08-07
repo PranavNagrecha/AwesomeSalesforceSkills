@@ -140,11 +140,6 @@
     "skills/architect/ai-governance-architecture/templates/ai-governance-architecture-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-13",
-    "vector_id": "architect/ai-governance-architecture"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

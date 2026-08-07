@@ -157,11 +157,6 @@
     "skills/omnistudio/omnistudio-custom-lwc-elements/templates/omnistudio-custom-lwc-elements-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-05",
-    "vector_id": "omnistudio/omnistudio-custom-lwc-elements"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }

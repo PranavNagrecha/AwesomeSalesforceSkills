@@ -176,11 +176,6 @@
     "skills/apex/fsl-apex-extensions/templates/fsl-apex-extensions-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": {
-    "backend": "fastembed",
-    "dimension": 384,
-    "updated": "2026-04-10",
-    "vector_id": "apex/fsl-apex-extensions"
-  },
+  "vector_embedding": null,
   "version": "1.0.0"
 }
