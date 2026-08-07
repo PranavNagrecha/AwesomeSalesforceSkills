@@ -20,7 +20,7 @@ tags:
   - email-automation
   - messaging
 inputs:
-  - "Salesforce org edition (limits differ)"
+  - "Salesforce org user license count (the daily inbound ceiling scales with it)"
   - "Use case: record creation, parsing, attachment handling, or routing"
   - "Whether the email comes from an external system, customer, or automated process"
   - "Expected email volume per day"
@@ -45,7 +45,7 @@ This skill activates when a practitioner needs to receive, parse, and act on inb
 
 Gather this context before working on anything in this domain:
 
-- Confirm the org edition — Email Services limits differ: Developer/Professional orgs get fewer daily processing slots than Enterprise/Unlimited. The standard limit is 1,000 email messages per day per service address; check the org's actual allocation.
+- Confirm the org's **user license count**, not its edition — the inbound processing ceiling scales with licenses. "Email Services: Maximum Number of Email Messages Processed" is *"Number of user licenses multiplied by 1,000; maximum 1,000,000"*, and Salesforce *"limits the total number of messages that all email services combined, including On-Demand Email-to-Case, can process daily."* So it is an **org-wide daily pool**, not a per-service-address allowance: every email service in the org, plus On-Demand Email-to-Case, draws from the same number. Ten licenses means 10,000 messages a day across all of them. Messages over the ceiling are bounced, discarded, or queued for the next day depending on each service's failure-response setting.
 - Identify whether you need text parsing, HTML parsing, or binary attachment processing — these require different handler branches.
 - The most common wrong assumption: practitioners expect `handleInboundEmail` to run as a specific user. It runs in **system context** — no user permission enforcement applies unless you explicitly switch context in your code.
 - Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation, not the 6 MB synchronous / 12 MB asynchronous figure that applies to ordinary Apex. Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once. The largest payload that can reach the handler is capped upstream: "Email Services: Maximum Size of Email Message (Body and Attachments)" is **25 MB**, measured across body text, HTML, and all attachments together.
@@ -191,7 +191,7 @@ Be precise about what deferring buys you. A `Queueable` runs under the ordinary 
 | Email has large binary attachments requiring custom parsing | Apex handler + Queueable for attachment processing | Avoids synchronous heap/CPU limits |
 | Need to reject or bounce specific senders at processing time | Apex handler returning `result.success = false` | Email Services Error Action controls bounce/discard behavior |
 | Outbound transactional emails to customers | `Messaging.SingleEmailMessage` or email templates + workflow | This skill covers inbound only |
-| Email volume exceeds 1,000/day limit | Platform architecture review — consider middleware or batching | Email Services daily limit is per org edition; cannot be raised in code |
+| Inbound volume approaches the org's daily ceiling (user licenses × 1,000, max 1,000,000) | Platform architecture review — consider middleware or batching | The ceiling is org-wide and shared with On-Demand Email-to-Case, scales with licenses rather than edition, and cannot be raised in code |
 
 ---
 
@@ -200,7 +200,7 @@ Be precise about what deferring buys you. A `Queueable` runs under the ordinary 
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
+1. Gather context — confirm the org's user license count, relevant objects, and current configuration state
 2. Review official sources — check the references in this skill's well-architected.md before making changes
 3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
 4. Validate — run the skill's checker script and verify against the Review Checklist below
@@ -219,7 +219,7 @@ Run through these before marking work in this area complete:
 - [ ] Attachment parsing handles null `textAttachments` and `binaryAttachments` lists defensively
 - [ ] Handler has a `try/catch` block and sets `result.success = false` on unexpected exceptions
 - [ ] Test class uses `Test.setFixedSearchResults` or constructs `InboundEmail` objects directly
-- [ ] Daily volume estimate confirmed within org edition limit (default 1,000/day)
+- [ ] Daily volume estimate confirmed against the **org-wide** ceiling (user licenses × 1,000, max 1,000,000), counting every email service **and** On-Demand Email-to-Case against the same pool
 - [ ] Large attachment flows enqueue a `Queueable` instead of processing synchronously
 - [ ] Error Action on the Email Service config is set intentionally (Bounce vs Discard)
 

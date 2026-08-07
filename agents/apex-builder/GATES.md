@@ -59,7 +59,7 @@ Skill / template / decision-tree citations resolve here too: if a cited path doe
 **Enforced by:** `scripts/run_builder.py --stage build`
 This is the reference implementation of the contract-level obligation in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents). Every code-emitting agent owes the same three checks; this one is harness-driven.
 
-**The compile check is org-side.** There is no offline Apex compiler in the `sf` CLI — no `sf apex` subcommand parses or compiles a local file. The group covers log retrieval (`get log`, `list log`, `tail log`), test execution and results (`run`, `run test`, `get test`) and scaffolding (`generate class`, `generate trigger`, which write a new file from a template rather than reading one); none of them type-checks source. Compilation is therefore:
+**The compile check is org-side.** There is no offline Apex compiler in the `sf` CLI. The *apex Commands* page lists six subcommands — `get log`, `list log`, `tail log` (log retrieval), `run test` and `get test` (test execution and results), and `run` (anonymous Apex) — while the two `sf apex generate` subcommands write a new file from a template rather than reading one. Only `sf apex run` reads a local file, via `--file` (*"Path to a local file that contains Apex code."*), and it **executes** that file as an anonymous block against a `--target-org` it requires. Nothing in the group type-checks a local `.cls` without an org. Compilation is therefore:
 
 ```bash
 sf project deploy start --dry-run --test-level RunLocalTests \

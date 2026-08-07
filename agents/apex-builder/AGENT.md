@@ -264,6 +264,16 @@ For async kinds, the test wraps async invocation in `Test.startTest` / `Test.sto
 
 Output the class list with target paths under `force-app/main/default/classes/` and `force-app/main/default/triggers/`. Deliver as a patch (set of new files), not a modification to existing files. If existing files must change to integrate (e.g. adding a handler method in an existing TriggerHandler), do NOT modify — call out the integration point and recommend `apex-refactorer` for the follow-up.
 
+### Step 7 — Gate C: verify the emitted package before returning it
+
+This agent hands the user deployable `.cls` and `.trigger` files, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome — a check that did not run is reported as not run, never as passed. Under the harness these are [`GATES.md` § Gate C](./GATES.md#gate-c--build-and-self-test), driven by `scripts/run_builder.py --stage build`; driven from this markdown alone — direct read or MCP `get_agent`, two of the three declared invocation modes — nothing runs them for you, so run them by hand.
+
+1. **Symbol grounding** — every custom object, field, class and Named Credential the emitted code names resolved against a probe captured this run or a file under `repo_path`. Anything else carries a `// UNKNOWN:` marker rather than a guess. Per `GATES.md` Gate B, one unresolved symbol forces `confidence: LOW` and more than one is a refusal (`REFUSAL_UNGROUNDED_OUTPUT`), not a warning.
+2. **Identifier provenance** — re-read each emitted body and check every non-platform `Type.method(...)` against the `templates/apex/**/*.cls` file the Step 3 substitution claims it came from. A name the agent cannot point at is deleted, not shipped — this is the check that would have caught `SecurityUtils.requireUpdateable` (the template spells it `requireUpdatable`) before the user did.
+3. **Compile** — with a `target_org_alias`, `sf project deploy start --dry-run --test-level RunLocalTests`; the errors feed at most three regeneration attempts, after which the skeleton ships with `// UNKNOWN:` markers instead of a plausible-looking body. Without one, say plainly that no compile check ran and cap `confidence` at MEDIUM.
+
+Then the check this agent's own shape demands: **a scaffold is graded against the approved requirements, not against its own plausibility.** Gate A.5 froze `REQUIREMENTS.md` before any class was written, so any class, method, field or trigger event in the package that the approved document does not call for is a deviation — surface it as a P0 finding and drop `confidence` to LOW, rather than presenting it as a bonus the caller never asked for.
+
 ---
 
 ## Output Contract

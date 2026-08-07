@@ -194,7 +194,7 @@ private class <Source>_Test {
 ```
 
 Fill in each test using:
-Every identifier below is copied from the template file named beside it — open the template and paste the signature rather than recalling it (`AGENT_CONTRACT.md` rule 11).
+Every identifier below is copied from the template file named beside it — open the template and paste the signature rather than recalling it (`AGENT_CONTRACT.md` rule 12).
 
 - `templates/apex/tests/TestDataFactory.cls` — `TestDataFactory.createAccounts(200, null)`, `TestDataFactory.createContacts(count, accountId, overrides)`, and the `createOpportunities` / `createCases` / `createLeads` siblings. Each takes a `Map<String, Object> overrides` (pass `null` for defaults), returns a `List`, and does **not** insert — the test inserts. `TestDataFactory.bulkInsertStandardSet(perType)` builds and inserts an Account/Contact/Opportunity set and returns a `Map<String, Id>`. Never hand-build data.
 - `templates/apex/tests/TestRecordBuilder.cls` — for shapes the factory does not cover: `new TestRecordBuilder(Account.SObjectType).set('Name', 'Edge case').build()`.

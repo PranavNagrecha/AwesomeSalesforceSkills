@@ -150,7 +150,9 @@ public class InvoiceCsvQueueable implements Queueable {
 }
 ```
 
-**Why it works:** The handler's only job is to accept the email and persist the attachment — both are fast, low-limit operations. All parsing and DML happens inside `InvoiceCsvQueueable`, which runs in its own governor limit budget (separate heap, CPU, and SOQL allocations). The ContentVersion record acts as a durable handoff point between the two transactions.
+**Why it works:** The handler's only job is to accept the email and persist the attachment — both are fast, low-limit operations. All parsing and DML happens inside `InvoiceCsvQueueable`, which runs as a separate transaction with a fresh CPU, SOQL and DML budget (and CPU goes *up*: 60,000 ms asynchronous vs 10,000 ms synchronous) plus a retry surface. The ContentVersion record is a durable handoff point between the two transactions.
+
+Heap is the exception, and it moves the wrong way. The Queueable runs under the ordinary **12 MB** asynchronous heap ceiling, *below* the handler's 50 MB email-services allocation — so deferring buys time and retries, never more heap. Size the deferred parse against 12 MB. If the work needs more heap than that, chunk it or keep it in the handler; moving it to a Queueable makes the heap problem worse, not better.
 
 ---
 

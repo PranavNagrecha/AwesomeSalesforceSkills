@@ -16,8 +16,8 @@ Use this template when implementing or reviewing an inbound Apex Email Service.
 
 Answer these before writing any code:
 
-- **Org edition:** (Developer / Professional / Enterprise / Unlimited — affects daily limit)
-- **Expected daily email volume:** (confirm it is within the 1,000/day default limit)
+- **Org user license count:** (the daily inbound ceiling is licenses × 1,000, max 1,000,000)
+- **Expected daily email volume:** (confirm it fits the **org-wide** ceiling above, shared with every other email service and with On-Demand Email-to-Case — not a per-address allowance)
 - **Sender identity:** (known internal system / external customer / unknown — drives Accept Email From policy)
 - **Email body format:** (plain text / HTML / both — drives null-guard strategy)
 - **Attachment types and sizes:** (none / small text CSV / large binary PDFs — drives sync vs async decision)
@@ -201,12 +201,13 @@ Work through this before marking the implementation complete:
 - [ ] `plainTextBody` and `htmlBody` null guards are in place
 - [ ] `textAttachments` null guard is in place before iteration
 - [ ] `binaryAttachments` null guard is in place before iteration
-- [ ] Large attachments (> 1 MB) use Queueable pattern — not processed inline
+- [ ] Attachment handling is sized against the **50 MB** email-services heap, counting *copies* (`EncodingUtil.base64Encode` ≈ 1.33× a second copy, `Blob.toString()` a third) rather than raw payload size — no arbitrary `att.body.size() > 1000000`-style guard, which is sized against the wrong ceiling and defers work that would have fit
+- [ ] Work is deferred to a Queueable for a fresh CPU/DML budget and a retry surface — **not** for more heap, since a Queueable *lowers* the ceiling from 50 MB to 12 MB; deferred work is sized against 12 MB
 - [ ] Email Service address is **Active** in Setup
 - [ ] `Accept Email From` is configured — not left blank for public-facing addresses
 - [ ] Error Action and Over Email Rate Limit settings are set intentionally
 - [ ] Test class covers success path, null body path, and attachment path
-- [ ] Daily volume estimate is within org edition limit
+- [ ] Daily volume estimate is within the org-wide ceiling (user licenses × 1,000, max 1,000,000), counting all email services plus On-Demand Email-to-Case
 
 ---
 
