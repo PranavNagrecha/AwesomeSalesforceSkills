@@ -60,6 +60,7 @@ dependencies:
     - apex/TriggerControl.cls
     - apex/TriggerHandler.cls
     - apex/cmdt/Trigger_Setting__mdt/
+    - apex/cmdt/Trigger_Setting__mdt/fields/
   decision_trees:
     - automation-selection.md
 ---
