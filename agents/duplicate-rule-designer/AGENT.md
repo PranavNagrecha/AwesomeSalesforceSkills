@@ -70,12 +70,12 @@ Given an sObject (typically Lead, Contact, Account, or a custom object with huma
 
 ### Duplicate-rule canon
 5. `skills/admin/duplicate-management` — canon
-6. `skills/data/data-quality-and-governance`
+6. `skills/data/data-quality-and-governance` — decides whether a duplicate rule is even the right instrument: many 'duplicate' problems are upstream data-entry or survivorship problems that a blocking rule converts into user-visible friction without fixing
 7. `agents/_shared/probes/matching-and-duplicate-rules.md` — competing-rule + active-rule shape
 
 ### Object + edge cases
 8. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior (Convert path)
-9. `skills/data/person-accounts`
+9. `skills/data/person-accounts` — on a PA org, Account carries both B2B and B2C records; a rule written for one shape fires wrongly on the other, and the match fields live on different API names
 10. `skills/data/duplicate-rule-person-account-edge-cases` — PA-specific match-key gotchas
 11. `skills/data/record-merge-implications` — what happens when block fails
 
@@ -86,13 +86,13 @@ Given an sObject (typically Lead, Contact, Account, or a custom object with huma
 15. `skills/data/bulk-api-and-large-data-loads` — load-side interaction
 
 ### CSV + load interactions (consumer pattern)
-16. `skills/data/data-loader-csv-column-mapping`
-17. `skills/data/data-loader-picklist-validation-pre-load`
+16. `skills/data/data-loader-csv-column-mapping` — the match fields have to survive the loader's column mapping; a rule keyed on a field the load never populates blocks nothing and silently passes duplicates
+17. `skills/data/data-loader-picklist-validation-pre-load` — picklist match fields interact with restricted value sets during a load; a value the loader cannot write makes the match key blank, which `blankValueBehavior` then decides the fate of
 
 ### Bypass posture
-18. `skills/admin/custom-permissions`
-19. `skills/admin/permission-set-architecture`
-20. `templates/admin/permission-set-patterns.md` — bypass is expressed via a Custom Permission
+18. `skills/admin/custom-permissions` — read this to know what a Custom Permission can and cannot gate. It is the reason Step 4 does *not* wire one to the duplicate rule: there is no such hook, and the bypass has to be a `duplicateRuleFilter` or a DML option instead
+19. `skills/admin/permission-set-architecture` — where the bypass principal's access actually lives, so the `$User` filter in Step 4 keys off something an admin can assign and audit
+20. `templates/admin/permission-set-patterns.md` — the permission-set shape the bypass principal is granted through
 21. `templates/admin/naming-conventions.md`
 
 ---
@@ -106,7 +106,7 @@ Given an sObject (typically Lead, Contact, Account, or a custom object with huma
 | `policy` | yes | `block` (hard block on exact match) \| `alert` (warn + allow) \| `block-on-create-only` \| `alert-on-create-only` |
 | `match_basis` | yes | `email` \| `phone` \| `name+company` \| custom: a comma-separated list of field API names |
 | `fuzziness` | no | `exact` (default) \| `fuzzy` (standard Salesforce match algo) — some match fields only support exact |
-| `integration_exempt` | no | default `true` — integration-user identities are exempt via Custom Permission |
+| `integration_exempt` | no | default `true` — integration principals are exempted via a `duplicateRuleFilter` on a `$User` field, or by the integration's Apex setting `Database.DMLOptions.DuplicateRuleHeader.allowSave`. Not via a Custom Permission: DuplicateRule has no such hook |
 
 ---
 
@@ -122,35 +122,53 @@ Given an sObject (typically Lead, Contact, Account, or a custom object with huma
 
 For each field in `match_basis`:
 
-- Fetch via `tooling_query("SELECT DataType, Length, Unique, ExternalId FROM FieldDefinition WHERE …")`.
-- **Email** fields support `Exact` and `Fuzzy: Standard`.
-- **Phone** supports `Exact` and `Fuzzy: Phonetic`.
-- **Name** and **Company/Account** support fuzzy + typo correction.
-- **Free-text** fields — warn: fuzzy matching on unbounded text produces false positives at scale.
-- **Picklist** — only exact, and only useful combined with another field.
-- **Number / ID / External ID** — only exact.
+- Fetch via `tooling_query("SELECT QualifiedApiName, DataType, Length FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName = '<object>'")` — note `Unique` and `ExternalId` are **not** FieldDefinition columns; read those from the Tooling `CustomField` object.
 
-If the user passed `fuzziness=fuzzy` on a field that doesn't support fuzzy, downgrade to exact and note it.
+**`matchingMethod` is a closed enum, and "fuzzy" is not one of its values.** The Setup UI shows *Exact* and *Fuzzy*; the metadata does not. The nine documented values are:
+
+`Exact`, `FirstName`, `LastName`, `CompanyName`, `Phone`, `City`, `Street`, `Zip`, `Title`
+
+Every value other than `Exact` **is** the fuzzy algorithm for that kind of data — `LastName` is not "the last-name field", it is the last-name matching method. There is no `Fuzzy: Standard` and no `Fuzzy: Phonetic`; emitting either produces a metadata deployment error. Choose per field:
+
+| Field being matched | `matchingMethod` |
+|---|---|
+| Email, custom text, number, picklist, External ID | `Exact` — email has no fuzzy method |
+| First name | `FirstName` |
+| Last name | `LastName` |
+| Account / company name | `CompanyName` |
+| Phone | `Phone` |
+| Billing/Shipping city, street, postal code | `City` / `Street` / `Zip` |
+| Job title | `Title` |
+
+`blankValueBehavior` takes `MatchBlanks` or `NullNotAllowed` (default). Two more judgement calls the enum does not make for you: fuzzy matching on unbounded free text produces false positives at scale, and a picklist match is only useful combined with another field.
+
+If the user passed `fuzziness=fuzzy` on a field with no corresponding named method, downgrade to `Exact` and say so in the output rather than picking the nearest-sounding value.
+
+Official source: *MatchingRule*, Metadata API Developer Guide.
 
 ### Step 3 — Design the Matching Rule
 
-Emit a `MatchingRule` XML stub:
+Emit a `.matchingRule` file. **The root element is `MatchingRules` — plural — and it wraps one or more `<matchingRules>` children.** A file whose root is `<MatchingRule>` does not deploy. The file is named for the object it applies to (`Lead.matchingRule`), which is how the object is declared; there is no `sobjectType` element inside the rule:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<MatchingRule xmlns="http://soap.sforce.com/2006/04/metadata">
-  <label>...</label>
-  <masterLabel>...</masterLabel>
-  <ruleStatus>Active</ruleStatus>
-  <sobjectType>...</sobjectType>
-  <matchingRuleItems>
-    <fieldName>Email</fieldName>
-    <matchingMethod>Exact</matchingMethod>
-  </matchingRuleItems>
-  <!-- repeat per field -->
-  <booleanFilter>1 OR (2 AND 3)</booleanFilter>
-</MatchingRule>
+<MatchingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+  <matchingRules>
+    <fullName>MR_Lead_Email</fullName>
+    <label>MR Lead Email</label>
+    <ruleStatus>Active</ruleStatus>
+    <matchingRuleItems>
+      <fieldName>Email</fieldName>
+      <matchingMethod>Exact</matchingMethod>
+      <blankValueBehavior>NullNotAllowed</blankValueBehavior>
+    </matchingRuleItems>
+    <!-- repeat matchingRuleItems per field -->
+    <booleanFilter>1 OR (2 AND 3)</booleanFilter>
+  </matchingRules>
+</MatchingRules>
 ```
+
+`ruleStatus` and `label` are required; `matchingRuleItems.fieldName` and `matchingMethod` are required per item.
 
 Name per `templates/admin/naming-conventions.md`: `MR_<Object>_<Basis>` e.g. `MR_Lead_Email`. Avoid shorthand.
 
@@ -165,7 +183,22 @@ Emit a `DuplicateRule` XML stub per `policy`:
 - **block-on-create-only** → `actionOnInsert=Block, actionOnUpdate=Allow`.
 - **alert-on-create-only** → `actionOnInsert=Allow, actionOnUpdate=Allow` + disable the rule on update.
 
-Include the **Bypass Custom Permission**: `Bypass_Duplicate_Rule_<Object>`. The rule references this permission on `operationsOnBypass`. The agent emits a stub for the Custom Permission if one doesn't exist (`list_permission_sets` + `tooling_query` on `CustomPermission`). This is what `data-loader-pre-flight` references when it verifies the loader's bypass.
+**There is no bypass field on DuplicateRule.** The documented fields are `actionOnInsert`, `actionOnUpdate`, `alertText`, `description`, `duplicateRuleFilter`, `duplicateRuleMatchRules`, `isActive`, `masterLabel`, `operationsOnInsert`, `operationsOnUpdate`, `securityOption` and `sortOrder` — `operationsOnBypass` is not among them, and a Custom Permission cannot be wired to a duplicate rule. Design the bypass with one of the two mechanisms that exist:
+
+1. **`duplicateRuleFilter` on a `$User` field** — the declarative bypass. Add a filter item whose `table` is `$User` and whose field is the flag the loader's user carries (a custom checkbox on User, or `Profile.Name`), so the rule simply does not evaluate for that principal. `duplicateRuleFilter` requires `booleanFilter` plus `duplicateRuleFilterItems`, each of which carries `sortOrder` and `table` on top of the standard `FilterItem` fields.
+2. **`Database.DMLOptions.DuplicateRuleHeader.allowSave`** — the Apex/integration bypass, set per-DML rather than per-user:
+
+   ```apex
+   Database.DMLOptions dml = new Database.DMLOptions();
+   dml.DuplicateRuleHeader.allowSave = true;
+   Database.SaveResult sr = Database.insert(record, dml);
+   ```
+
+Also set `securityOption` deliberately: `EnforceSharingRules` (the rule cannot see records the running user cannot see, so a duplicate outside their sharing scope lets the save proceed) or `BypassSharingRules` (duplicates are detected org-wide). For a data load this is the difference between silently admitting duplicates and blocking on records the loader's user cannot read — pick it explicitly and put the reason in the output.
+
+Whichever bypass is chosen, name it in the deliverable so `data-loader-pre-flight` can verify the loader's path against something real.
+
+Official sources: *DuplicateRule*, Metadata API Developer Guide; *DMLOptions.DuplicateRuleHeader Class*, Apex Reference Guide.
 
 ### Step 5 — Lead.Convert + Merge behavior
 
@@ -181,11 +214,12 @@ For Contact and Account:
 
 ### Step 6 — Integration exemption pattern
 
-If `integration_exempt=True` (default):
+If `integration_exempt=True` (default), pick one of the two real mechanisms from Step 4 and emit it — not a Custom Permission, which the duplicate rule cannot reference:
 
-- Emit a Custom Permission stub: `Bypass_Duplicate_Rule_<Object>`.
-- Recommend assigning it via the dedicated Integration PSG (from `permission-set-architect`).
-- Include the permission in the duplicate rule's bypass list.
+- **Declarative (preferred when the integration writes as a known user).** Add a `duplicateRuleFilter` item whose `table` is `$User` and whose field distinguishes the integration principal — a custom checkbox on User such as `Is_Integration_User__c`, or `Profile.Name`. Emit the User field stub if it does not exist, and recommend setting it via the dedicated Integration PSG (from `permission-set-architect`). The rule then does not evaluate for that principal at all.
+- **Programmatic (when the writer is Apex you control).** Specify `Database.DMLOptions.DuplicateRuleHeader.allowSave = true` on the integration's DML. Note the trade-off in the spec: this is per-call, so it is invisible to an admin reading Setup, and every new code path has to remember it.
+
+Also state the `securityOption` choice here, because it decides what "exempt" means in practice: under `EnforceSharingRules`, an integration user with narrow sharing does not see the duplicate and the save proceeds anyway — an accidental exemption nobody configured.
 
 If `integration_exempt=False`, explicitly note this in the spec and flag the implication: every integration row will be dup-checked. At scale this is a performance finding.
 
@@ -208,14 +242,14 @@ The user runs the tests manually or via a test class — the agent does not gene
 1. **Summary** — object, policy, match_basis, fuzziness, confidence.
 2. **Matching Rule XML** — fenced block, labelled with target path.
 3. **Duplicate Rule XML** — fenced block, labelled with target path.
-4. **Custom Permission stub** — fenced block (only if new).
+4. **Bypass artefacts** — the `duplicateRuleFilter` block and/or the User-field stub, or the Apex `DMLOptions` snippet, whichever Step 6 chose. Never a Custom Permission wired to the rule.
 5. **Interaction notes** — Convert behavior, Merge behavior, Person Accounts caveat if applicable.
 6. **Test plan** — table from Step 7.
 7. **Process Observations** — per `AGENT_CONTRACT.md`:
-   - **What was healthy** — existing clean match fields, existing Integration PSG with bypass permission.
+   - **What was healthy** — existing clean match fields, an existing integration-user flag already usable as a `$User` filter.
    - **What was concerning** — competing active dup rules, policies that conflict with Lead Convert semantics, fields with poor data quality that make fuzzy match unreliable.
    - **What was ambiguous** — custom objects with no obvious natural key (the agent made a choice).
-   - **Suggested follow-up agents** — `permission-set-architect` (if the bypass Custom Permission is new), `data-loader-pre-flight` (if integrations will hit the rule), `field-impact-analyzer` (to understand what else uses the matched fields).
+   - **Suggested follow-up agents** — `permission-set-architect` (if the integration principal's flag or PSG is new), `data-loader-pre-flight` (if integrations will hit the rule), `field-impact-analyzer` (to understand what else uses the matched fields).
 8. **Citations**.
 
 ---

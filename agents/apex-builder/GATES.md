@@ -57,14 +57,26 @@ Skill / template / decision-tree citations resolve here too: if a cited path doe
 ## Gate C — Build and self-test
 
 **Enforced by:** `scripts/run_builder.py --stage build`
-**Pass condition (HIGH):** every emitted `.cls` and `.trigger` passes `sf apex parse` with no errors, AND `sf project deploy validate` returns a successful check-only against `target_org_alias`, AND the emitted test class runs with ≥85% coverage on the new classes.
+This is the reference implementation of the contract-level obligation in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents). Every code-emitting agent owes the same three checks; this one is harness-driven.
 
-**Pass condition (MEDIUM):** parse is clean but deploy-validate is skipped (no `target_org_alias`) or coverage is 75–84%.
+**The compile check is org-side.** There is no offline Apex compiler in the `sf` CLI — no `sf apex` subcommand parses or compiles a local file. The group covers log retrieval (`get log`, `list log`, `tail log`), test execution and results (`run`, `run test`, `get test`) and scaffolding (`generate class`, `generate trigger`, which write a new file from a template rather than reading one); none of them type-checks source. Compilation is therefore:
+
+```bash
+sf project deploy start --dry-run --test-level RunLocalTests \
+    --source-dir docs/reports/apex-builder/<run_id>/emitted/ \
+    --target-org <target_org_alias>
+```
+
+*"Validate deploy and run Apex tests but don't save to the org"* — nothing is written, so this stays inside `AGENT_CONTRACT.md` rule 7. Use `sf project deploy validate` only when `target_org_alias` is a **production** org: it mandates Apex tests, returns a job ID for a later `sf project deploy quick`, and Salesforce documents it as not for sandboxes.
+
+**Pass condition (HIGH):** the dry-run deploy returns success against `target_org_alias`, AND the emitted test class runs with ≥85% coverage on the new classes.
+
+**Pass condition (MEDIUM):** no `target_org_alias` was supplied, so **no compile check ran at all** — the envelope says exactly that rather than implying the code was checked — or coverage is 75–84%.
 
 **Fail conditions:**
 
-- Parse returns any error → iterate up to 3 times, feeding each error back to the generator. After the third failure, emit a skeleton with `// UNKNOWN:` markers in place of the failing region and force `confidence: LOW`.
-- Deploy-validate returns compile errors from the target org (e.g., missing field the requirements claimed existed) → Gate B is retroactively failed and the run refuses with `REFUSAL_UNGROUNDED_OUTPUT`.
+- The dry-run returns compile errors → iterate up to 3 times, feeding each error back to the generator. After the third failure, emit a skeleton with `// UNKNOWN:` markers in place of the failing region and force `confidence: LOW`.
+- The errors are *unresolved-symbol* errors (e.g. a missing field the requirements claimed existed) → Gate B is retroactively failed and the run refuses with `REFUSAL_UNGROUNDED_OUTPUT` rather than iterating; no amount of regeneration invents the field.
 - Coverage < 75% → the test class is regenerated once with an explicit prompt to cover named uncovered methods; second failure forces `confidence: LOW`.
 
 The harness keeps **every** intermediate attempt under `docs/reports/apex-builder/<run_id>/attempts/<n>/` so the iteration is auditable.
@@ -78,13 +90,14 @@ The harness keeps **every** intermediate attempt under `docs/reports/apex-builde
 
 The computed-confidence rule is:
 
-| Gate B unresolved | Gate C parse | Gate C deploy-validate | Gate C coverage | → confidence |
-|---|---|---|---|---|
-| 0 | green | green | ≥85% | HIGH |
-| 0 | green | skipped | ≥75% | MEDIUM |
-| 1 | green | any | any | LOW |
-| ≥2 | any | any | any | **REFUSAL** |
-| any | red after 3 iter | any | any | LOW + skeleton-only |
+| Gate B unresolved | Gate C dry-run compile | Gate C coverage | → confidence |
+|---|---|---|---|
+| 0 | green | ≥85% | HIGH |
+| 0 | green | 75–84% | MEDIUM |
+| 0 | **not run** — no `target_org_alias`, so coverage is unknown too | n/a | MEDIUM, and the envelope states that no compile check ran |
+| 1 | any | any | LOW |
+| ≥2 | any | any | **REFUSAL** |
+| any | red after 3 iterations | any | LOW + skeleton-only |
 
 Self-declared HIGH with failing Gate B or C is a structural error — the harness overwrites the claimed value with the computed value and adds a `confidence_rationale` explaining the override.
 
@@ -138,4 +151,4 @@ For CI / eval fixtures, `--fixture path/to/fixture.yaml` runs all five gates aga
 
 - Not a replacement for `evals/agents/scripts/run_agent_evals.py`. That tool grades envelopes after they are produced; this one is what produces them.
 - Not model-specific. Any LLM that can follow `AGENT.md` can drive the gates; the harness is the model's compiler.
-- Not a deploy tool. Gate C's deploy-validate is a check-only call (`sf project deploy validate`); no metadata is written to the org.
+- Not a deploy tool. Gate C compiles with `sf project deploy start --dry-run`, which validates and runs tests but does not save to the org; no metadata is written.

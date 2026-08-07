@@ -42,10 +42,15 @@ LIMIT 2000
 
 `MatchingRuleItem.Field` (not `FieldName`) — the column name is just `Field`.
 
-For each DuplicateRule, check the bypass Custom Permission (if any) via the rule's metadata. The `tooling_query` API returns the rule body inside `Metadata` for DuplicateRule — parse the XML and look for:
+For each DuplicateRule, read the rule body from `Metadata` and parse it for:
 
-- `<actionOnInsert>` / `<actionOnUpdate>`
-- `<operationsOnBypass>` — the list of `CustomPermission` ids that bypass the rule
+- `<actionOnInsert>` / `<actionOnUpdate>` — Allow or Block
+- `<securityOption>` — `EnforceSharingRules` or `BypassSharingRules`. Consumers care: under `EnforceSharingRules` a duplicate the running user cannot see does not stop the save, so the same rule behaves differently for a restricted integration user than for an admin.
+- `<duplicateRuleFilter>` → `<duplicateRuleFilterItems>` — **this is where a bypass lives.** Filter items whose `table` is `$User` are how a rule is made not to apply to a loader or integration principal.
+
+**There is no `operationsOnBypass` element and no Custom-Permission bypass.** The documented DuplicateRule fields are `actionOnInsert`, `actionOnUpdate`, `alertText`, `description`, `duplicateRuleFilter`, `duplicateRuleMatchRules`, `isActive`, `masterLabel`, `operationsOnInsert`, `operationsOnUpdate`, `securityOption`, `sortOrder`. A probe that looks for `operationsOnBypass` finds nothing on every org and, worse, invites the consuming agent to report "no bypass configured" as a finding when the org's real bypass is sitting in `duplicateRuleFilter` or in an Apex `Database.DMLOptions.DuplicateRuleHeader.allowSave` call the probe never sees. Report the Apex path as unobservable from this probe rather than as absent.
+
+Official source: *DuplicateRule*, Metadata API Developer Guide.
 
 ## Post-processing — overlap detection
 

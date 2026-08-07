@@ -50,6 +50,7 @@ dependencies:
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -81,65 +82,66 @@ Breadth note (`AGENT_CONTRACT.md` Mandatory Reads rule 4): 34 skill reads, above
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
-3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Component shape & lifecycle
-4. `skills/lwc/component-communication` — audit the chosen channel: props/events/LMS misuse is the defect this agent finds most often
-5. `skills/lwc/lifecycle-hooks` — empty, misordered or DOM-touching hooks — a static read of the JS cannot judge them without this
-6. `skills/lwc/lwc-public-api-hardening` — `@api` typing audit
-7. `skills/lwc/lwc-template-refs` — for every DOM-lookup path
-8. `skills/lwc/lwc-conditional-rendering` — for every `.html` template
-9. `skills/lwc/lwc-slots-composition` — for `<slot>` content
-10. `skills/lwc/lwc-app-builder-config` — for every `.js-meta.xml`
+5. `skills/lwc/component-communication` — audit the chosen channel: props/events/LMS misuse is the defect this agent finds most often
+6. `skills/lwc/lifecycle-hooks` — empty, misordered or DOM-touching hooks — a static read of the JS cannot judge them without this
+7. `skills/lwc/lwc-public-api-hardening` — `@api` typing audit
+8. `skills/lwc/lwc-template-refs` — for every DOM-lookup path
+9. `skills/lwc/lwc-conditional-rendering` — for every `.html` template
+10. `skills/lwc/lwc-slots-composition` — for `<slot>` content
+11. `skills/lwc/lwc-app-builder-config` — for every `.js-meta.xml`
 
 ### Data binding
-11. `skills/lwc/wire-service-patterns` — wires whose parameters never change never re-fire; the audit has to recognise that shape
-12. `skills/lwc/lwc-wire-refresh-patterns` — refresh helper choice (`refreshApex` vs `refreshGraphQL`)
-13. `skills/lwc/lwc-async-patterns` — unawaited promises and work started in `connectedCallback` are silent correctness findings
-14. `skills/lwc/lwc-lds-writes` — audit LDS write call shapes (Id placement, .fieldApiName usage, dirty-field whitelisting) and error-handling depth
-15. `skills/lwc/lwc-graphql-wire` — the audit branch for bundles importing lightning/uiGraphQLApi — refresh and error handling differ from a UI API wire
+12. `skills/lwc/wire-service-patterns` — wires whose parameters never change never re-fire; the audit has to recognise that shape
+13. `skills/lwc/lwc-wire-refresh-patterns` — refresh helper choice (`refreshApex` vs `refreshGraphQL`)
+14. `skills/lwc/lwc-async-patterns` — unawaited promises and work started in `connectedCallback` are silent correctness findings
+15. `skills/lwc/lwc-lds-writes` — audit LDS write call shapes (Id placement, .fieldApiName usage, dirty-field whitelisting) and error-handling depth
+16. `skills/lwc/lwc-graphql-wire` — the audit branch for bundles importing lightning/uiGraphQLApi — refresh and error handling differ from a UI API wire
 
 ### Events, messaging, navigation
-16. `skills/lwc/lwc-custom-event-patterns` — event bubbling/composed audit
-17. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
-18. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
+17. `skills/lwc/lwc-custom-event-patterns` — event bubbling/composed audit
+18. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
+19. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
 
 ### Forms, datatables, surfaces
-19. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
-20. `skills/lwc/virtualized-lists` — render budget for >500-row lists
-21. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
-22. `skills/lwc/lwc-quick-actions` — the audit branch when .js-meta.xml declares lightning__RecordAction — headless vs screen action rules
+20. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
+21. `skills/lwc/virtualized-lists` — render budget for >500-row lists
+22. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
+23. `skills/lwc/lwc-quick-actions` — the audit branch when .js-meta.xml declares lightning__RecordAction — headless vs screen action rules
 
 ### Accessibility, i18n, focus
-23. `skills/lwc/lwc-accessibility` — the a11y rule set the audit's findings are graded against
-24. `skills/lwc/lwc-focus-management` — missing focus handling after render or navigation is invisible in code review without this
+24. `skills/lwc/lwc-accessibility` — the a11y rule set the audit's findings are graded against
+25. `skills/lwc/lwc-focus-management` — missing focus handling after render or navigation is invisible in code review without this
 
 ### Styling, DOM mode, interop
-25. `skills/lwc/lwc-styling-hooks` — for every `.css` file
-26. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
-27. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
-28. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
+26. `skills/lwc/lwc-styling-hooks` — for every `.css` file
+27. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
+28. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
+29. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
 
 ### Performance, errors, debugging
-29. `skills/lwc/lwc-performance` — the render-cost model behind every performance finding
-30. `skills/lwc/lwc-performance-budgets` — the thresholds that turn 'this feels heavy' into a scored finding
-31. `skills/lwc/lwc-error-boundaries` — a bundle with no `errorCallback` anywhere in the tree fails open to a blank page
-32. `skills/lwc/common-lwc-runtime-errors` — maps a suspicious code shape to the runtime error it will actually produce
-33. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
+30. `skills/lwc/lwc-performance` — the render-cost model behind every performance finding
+31. `skills/lwc/lwc-performance-budgets` — the thresholds that turn 'this feels heavy' into a scored finding
+32. `skills/lwc/lwc-error-boundaries` — a bundle with no `errorCallback` anywhere in the tree fails open to a blank page
+33. `skills/lwc/common-lwc-runtime-errors` — maps a suspicious code shape to the runtime error it will actually produce
+34. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
 
 ### Security
-34. `skills/lwc/lwc-security` — LWS constraints — flags code that only worked under Locker or only works with it off
-35. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
+35. `skills/lwc/lwc-security` — LWS constraints — flags code that only worked under Locker or only works with it off
+36. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
 
 ### Testing
-36. `skills/lwc/lwc-testing` — audits the bundle's own test coverage, which is part of the score
+37. `skills/lwc/lwc-testing` — audits the bundle's own test coverage, which is part of the score
 
 ### Templates (for skeleton-alignment audit)
-37. `templates/lwc/component-skeleton/`
-38. `templates/lwc/jest.config.js`
-39. `templates/lwc/patterns/`
-40. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
+38. `templates/lwc/component-skeleton/`
+39. `templates/lwc/jest.config.js`
+40. `templates/lwc/patterns/`
+41. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
 
 ---
 

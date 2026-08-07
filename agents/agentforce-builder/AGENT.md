@@ -35,6 +35,7 @@ dependencies:
     - apex/test-class-standards
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - agentforce/AgentActionSkeleton.cls
@@ -63,40 +64,41 @@ Takes a requirements statement — what the agent action should do, for whom, on
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ### Action, topic & agent authoring (Steps 1–4)
-3. `skills/agentforce/agent-actions` — the action contract Step 2 emits against — input/output slots, idempotency, what an action may not do
-4. `skills/agentforce/agent-topic-design` — Step 3's classifier prompt and scope boundary; a topic with a vague classifier routes the wrong action at runtime
-5. `skills/agentforce/agentforce-agent-creation` — the agent definition Step 4 fills in — how topics, actions and channels actually bind
-6. `skills/agentforce/custom-agent-actions-apex` — `@InvocableMethod` shape for an agent action: List-in / List-out, `callout=true` only when it really calls out
-7. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality — the label text is the thing the LLM actually reads
-8. `skills/agentforce/agent-action-error-handling` — Step 2 requires a user-readable error, never a stack trace; this is the pattern for turning an exception into one
-9. `skills/agentforce/prompt-builder-templates` — grounding-source syntax for the topic's declared sObject and fields
+4. `skills/agentforce/agent-actions` — the action contract Step 2 emits against — input/output slots, idempotency, what an action may not do
+5. `skills/agentforce/agent-topic-design` — Step 3's classifier prompt and scope boundary; a topic with a vague classifier routes the wrong action at runtime
+6. `skills/agentforce/agentforce-agent-creation` — the agent definition Step 4 fills in — how topics, actions and channels actually bind
+7. `skills/agentforce/custom-agent-actions-apex` — `@InvocableMethod` shape for an agent action: List-in / List-out, `callout=true` only when it really calls out
+8. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality — the label text is the thing the LLM actually reads
+9. `skills/agentforce/agent-action-error-handling` — Step 2 requires a user-readable error, never a stack trace; this is the pattern for turning an exception into one
+10. `skills/agentforce/prompt-builder-templates` — grounding-source syntax for the topic's declared sObject and fields
 
 ### Trust, grounding & guardrails
-10. `skills/agentforce/einstein-trust-layer` — why Step 1 forces a confirmation step on write actions, and what masking the Trust Layer does and does not do for you
-11. `skills/agentforce/agentforce-guardrails` — turns each `trust_constraints` entry into an enforceable scope-boundary line rather than a comment
-12. `skills/agentforce/agentforce-pii-redaction` — the concrete mechanism behind `no-pii-in-prompt` / `mask-email` constraints
-13. `skills/agentforce/prompt-injection-defense` — grounded record data is untrusted input; a retrieval action that concatenates it into the prompt is exploitable
-14. `skills/agentforce/rag-patterns-in-salesforce` — retrieval shape for read-only actions — what to ground on and how much
-15. `skills/agentforce/data-cloud-grounding-for-agentforce` — when the grounding source is Data Cloud rather than an sObject, the retrieval and permission model both change
+11. `skills/agentforce/einstein-trust-layer` — why Step 1 forces a confirmation step on write actions, and what masking the Trust Layer does and does not do for you
+12. `skills/agentforce/agentforce-guardrails` — turns each `trust_constraints` entry into an enforceable scope-boundary line rather than a comment
+13. `skills/agentforce/agentforce-pii-redaction` — the concrete mechanism behind `no-pii-in-prompt` / `mask-email` constraints
+14. `skills/agentforce/prompt-injection-defense` — grounded record data is untrusted input; a retrieval action that concatenates it into the prompt is exploitable
+15. `skills/agentforce/rag-patterns-in-salesforce` — retrieval shape for read-only actions — what to ground on and how much
+16. `skills/agentforce/data-cloud-grounding-for-agentforce` — when the grounding source is Data Cloud rather than an sObject, the retrieval and permission model both change
 
 ### Apex quality of the emitted action
-16. `skills/apex/invocable-methods` — the bulk semantics Step 5's `invoke-with-200-parents` test asserts
-17. `skills/apex/apex-security-patterns` — Step 2 requires `with sharing` / `USER_MODE` and `SecurityUtils`-guarded DML on every emitted path
-18. `skills/apex/test-class-standards` — Step 5's test class is held to the same bar as any other Apex; agent actions are not exempt
+17. `skills/apex/invocable-methods` — the bulk semantics Step 5's `invoke-with-200-parents` test asserts
+18. `skills/apex/apex-security-patterns` — Step 2 requires `with sharing` / `USER_MODE` and `SecurityUtils`-guarded DML on every emitted path
+19. `skills/apex/test-class-standards` — Step 5's test class is held to the same bar as any other Apex; agent actions are not exempt
 
 ### Testing, evaluation & readiness (Steps 5–6)
-19. `skills/agentforce/agentforce-testing-strategy` — what is worth asserting about a non-deterministic action, beyond the four named Apex cases
-20. `skills/agentforce/agentforce-eval-harness` — the golden-eval file Step 6 emits — case shape, assertions, rubric
-21. `skills/agentforce/agentforce-production-readiness-checklist` — the gap list between a scaffold and something that can face a customer; belongs in the output, not discovered later
+20. `skills/agentforce/agentforce-testing-strategy` — what is worth asserting about a non-deterministic action, beyond the four named Apex cases
+21. `skills/agentforce/agentforce-eval-harness` — the golden-eval file Step 6 emits — case shape, assertions, rubric
+22. `skills/agentforce/agentforce-production-readiness-checklist` — the gap list between a scaffold and something that can face a customer; belongs in the output, not discovered later
 
 ### Templates & eval framework
-22. `templates/agentforce/AgentActionSkeleton.cls`
-23. `templates/agentforce/AgentTopic_Template.md`
-24. `templates/agentforce/AgentSkeleton.json`
-25. `evals/framework.md`
+23. `templates/agentforce/AgentActionSkeleton.cls`
+24. `templates/agentforce/AgentTopic_Template.md`
+25. `templates/agentforce/AgentSkeleton.json`
+26. `evals/framework.md`
 
 ---
 

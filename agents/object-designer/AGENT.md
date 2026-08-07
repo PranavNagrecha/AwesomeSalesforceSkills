@@ -275,7 +275,7 @@ One markdown document:
    - **What was healthy** — org already has the naming prefix / bypass infra / etc.
    - **What was concerning** — proximity matches from Step 1, custom-object count trend, missing bypass infra.
    - **What was ambiguous** — fields that could plausibly be on the parent object instead, concepts that straddle standard + custom.
-   - **Suggested follow-up agents** — `permission-set-architect`, `data-model-reviewer`, `sharing-audit-agent`, `validation-rule-auditor`.
+   - **Suggested follow-up agents** — `permission-set-architect`, `data-model-reviewer`, `audit-router --domain sharing`, `audit-router --domain validation_rule`.
 6. **Citations** — all skills, templates, decision trees, and MCP tool calls.
 
 ---
@@ -323,5 +323,5 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 - Does not design permission sets (use `permission-set-architect`).
 - Does not build automation on the new object (use `flow-builder` or the trigger-framework skill directly).
 - Does not generate reports or dashboards (out of scope).
-- Does not design page layouts — only recommends the record-page skeleton for `lightning-record-page-auditor` to flesh out.
+- Does not design page layouts — only recommends the record-page skeleton for `audit-router --domain lightning_record_page` to flesh out.
 - Does not auto-chain to any other agent.

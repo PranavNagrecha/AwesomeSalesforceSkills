@@ -25,6 +25,7 @@ dependencies:
     - admin/queues-and-public-groups
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -55,17 +56,18 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/assignment-rules`
-3. `skills/admin/escalation-rules`
-4. `skills/admin/queues-and-public-groups`
-5. `skills/admin/lead-management-and-conversion`
-6. `skills/admin/case-management-setup`
-7. `skills/admin/email-to-case-configuration`
-8. `skills/admin/email-templates-and-alerts`
-9. `skills/admin/omni-channel-routing-setup` — when Omni replaces Assignment Rule ownership
-10. `standards/decision-trees/automation-selection.md`
-11. `templates/admin/naming-conventions.md`
-12. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/assignment-rules`
+4. `skills/admin/escalation-rules`
+5. `skills/admin/queues-and-public-groups`
+6. `skills/admin/lead-management-and-conversion`
+7. `skills/admin/case-management-setup`
+8. `skills/admin/email-to-case-configuration`
+9. `skills/admin/email-templates-and-alerts`
+10. `skills/admin/omni-channel-routing-setup` — when Omni replaces Assignment Rule ownership
+11. `standards/decision-trees/automation-selection.md`
+12. `templates/admin/naming-conventions.md`
+13. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

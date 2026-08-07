@@ -149,7 +149,9 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 
 10. **The Apex security idiom is canonical here, not restated per agent.** Any agent that reads, writes, or scores Apex SOQL / SOSL / DML links [Apex security idiom by API version](#apex-security-idiom-by-api-version) rather than repeating the rule in its own Plan. The idiom is version-gated and changed in Summer '26; six divergent copies is exactly how the previous version went stale in-place.
 
-11. **Every Apex identifier in a Plan step is copied, never recalled.** Class names, method names, parameter lists, and enum values that appear in a Plan step must be pasted from the `templates/apex/**/*.cls` file the step cites, or from official Salesforce documentation named in the same step. Writing a plausible-sounding name from memory is worse than writing none: the agent hands it to the user as finished work, and it does not compile. This rule is mechanically checkable — extract every `Identifier.method` token from an AGENT.md's Plan sections and grep it against `templates/apex/**/*.cls` plus a short allowlist of platform namespaces (`System`, `Schema`, `Security`, `Database`, `Test`, `Limits`, `Messaging`, `ConnectApi`, `Http*`) — so a future validator can enforce it instead of leaving it to review. Names that reached shipped agents before this rule existed, none of which exist in Apex: `stripInaccessibleFields`, `SecurityUtils.requireUpdateable`, `TestDataFactory.accounts(200)`, `MockHttpResponseGenerator.forEndpoint(…)`, `TestUserFactory.standardUser()`, `Test.setMock(ConnectApi.ConnectApi.class, …)`.
+11. **Deployable code carries a self-verification gate.** Any agent whose Output Contract includes an emitted `.cls`, `.trigger`, or LWC bundle MUST have a final Plan step that verifies the artifact before it reaches the user, and MUST name the check. See [Gate C — self-verification for code-emitting agents](#gate-c--self-verification-for-code-emitting-agents) for what counts and what the harness-less form looks like. Rule 12 stops one class of fabrication at authoring time; this rule catches the rest at run time.
+
+12. **Every Apex identifier in a Plan step is copied, never recalled.** Class names, method names, parameter lists, and enum values that appear in a Plan step must be pasted from the `templates/apex/**/*.cls` file the step cites, or from official Salesforce documentation named in the same step. Writing a plausible-sounding name from memory is worse than writing none: the agent hands it to the user as finished work, and it does not compile. This rule is mechanically checkable — extract every `Identifier.method` token from an AGENT.md's Plan sections and grep it against `templates/apex/**/*.cls` plus a short allowlist of platform namespaces (`System`, `Schema`, `Security`, `Database`, `Test`, `Limits`, `Messaging`, `ConnectApi`, `Http*`) — so a future validator can enforce it instead of leaving it to review. Names that reached shipped agents before this rule existed, none of which exist in Apex: `stripInaccessibleFields`, `SecurityUtils.requireUpdateable`, `TestDataFactory.accounts(200)`, `MockHttpResponseGenerator.forEndpoint(…)`, `TestUserFactory.standardUser()`, `Test.setMock(ConnectApi.ConnectApi.class, …)`.
 
 ---
 
@@ -173,6 +175,31 @@ What follows from the table:
 - **`Security.stripInaccessible(AccessType, records)` returns an `SObjectAccessDecision`.** Operate on `.getRecords()`; DML on the original list is unenforced. There is no `stripInaccessibleFields`.
 
 Official sources: *Database Operations Run in User Mode by Default, Not System Mode* (`release-notes.rn_apex_default_user_mode.htm`, Summer '26); *The WITH SECURITY_ENFORCED SOQL Clause Is Removed* (`release-notes.rn_apex_removed_withSecurityEnforced.htm`, Summer '26); *Secure Apex Code with User Mode Database Operations (Generally Available)* (`release-notes.rn_apex_User_Mode_GA.htm`, Spring '23); *Enforcing Object and Field Permissions in Apex* (Lightning Web Components Developer Guide).
+
+---
+
+## Gate C — self-verification for code-emitting agents
+
+Canonical. Code-emitting agents cite this section; they do not restate it.
+
+**Who this binds:** every agent whose Output Contract includes an emitted `.cls`, `.trigger`, or LWC bundle — today `apex-builder`, `apex-refactorer`, `trigger-consolidator`, `test-class-generator`, `lwc-builder`. If a future agent hands the user a file they could deploy, it is bound too.
+
+**Why:** rule 12 stops fabricated identifiers at authoring time, inside the AGENT.md. It does nothing about what the model writes at run time. The fabricated names that reached users — `stripInaccessibleFields`, `TestDataFactory.accounts(200)`, `SecurityUtils.requireUpdateable` — were all caught by human review, months after shipping, precisely because five of six Apex agents ended their Plan at "emit the file". A code-emitting agent that does not check its own output is asking the user to be its compiler.
+
+The reference implementation is [`agents/apex-builder/GATES.md`](../apex-builder/GATES.md) Gate C, driven by `scripts/run_builder.py --stage build`. Every other code-emitting agent runs the same three checks, harness or no harness:
+
+| Check | With an org alias | Without an org alias |
+|---|---|---|
+| **1. Symbol grounding** | Every custom object, field, class, and Named Credential the emitted code names resolved against a `describe_org` / `list_custom_objects` / `get_apex_class` / `describe_object_full` response captured *this run*. | Every such symbol traces to a file under `repo_path`, or is marked `// UNKNOWN:` in the emitted code. |
+| **2. Identifier provenance** | Every non-platform `Type.method(...)` in the emitted code is quoted from the `templates/apex/**/*.cls` file the step cites, or from an official doc named in the step. A name the agent cannot point at is deleted, not shipped. | Same — this check needs no org. |
+| **3. Compile** | `sf project deploy start --dry-run --test-level RunLocalTests --target-org <alias>` — *"Validate deploy and run Apex tests but don't save to the org."* Compile errors feed back into at most **three** regeneration attempts; after the third, emit the skeleton with `// UNKNOWN:` markers rather than a plausible-looking body. | **Not possible.** There is no offline Apex compiler in the `sf` CLI — no `sf apex` subcommand parses or compiles a local file. The group covers log retrieval (`get log`, `list log`, `tail log`), test execution and results (`run`, `run test`, `get test`) and scaffolding (`generate class`, `generate trigger`, which write a new file from a template rather than reading one); none of them type-checks source. Say so in the output, in those words, and cap `confidence` at MEDIUM. |
+
+Two things this gate is not:
+
+- **Not a deploy.** `--dry-run` does not save to the org, so it stays inside rule 7. Use `sf project deploy validate` only against a **production** org: it requires Apex tests and returns a job ID for a later `sf project deploy quick`, and Salesforce documents it as not for sandboxes.
+- **Not a coverage number.** ≥75% coverage is a deployability floor, not evidence the test asserts anything. An agent that reports coverage without reporting what the assertions check has produced a coverage instrument, not a test.
+
+Official sources: *project deploy start* and *project deploy validate*, Salesforce CLI Command Reference; *apex Commands*, Salesforce CLI Command Reference; *Create an Apex Class* and *Create an Apex Trigger*, Salesforce DX Developer Guide — the two `sf apex generate` subcommands the *apex Commands* page does not list, which is why the enumeration above is by category rather than a count.
 
 ---
 

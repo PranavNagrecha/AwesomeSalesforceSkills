@@ -120,7 +120,7 @@ When `mode=audit`:
    - **Healthy** — skills granularity matches agent skill matrix; presence decline set to `Busy`.
    - **Concerning** — queue sprawl, mismatched service channel capacity, missing overflow.
    - **Ambiguous** — agent skills not documented anywhere queryable.
-   - **Suggested follow-ups** — `case-escalation-auditor` if SLAs are undefined; `permission-set-architect` for Omni-Channel user perms.
+   - **Suggested follow-ups** — `audit-router --domain case_escalation` if SLAs are undefined; `permission-set-architect` for Omni-Channel user perms.
 8. **Citations** — skills, templates, and MCP tools used.
 
 ---

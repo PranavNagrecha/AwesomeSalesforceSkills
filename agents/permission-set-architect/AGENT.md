@@ -202,7 +202,7 @@ Mode-specific structure, same envelope:
    - **What was healthy** — naming, minimum-access profile adoption, license alignment.
    - **What was concerning** — anti-patterns, concentration risk, gaps in muting usage.
    - **What was ambiguous** — PSes the agent couldn't classify into the taxonomy.
-   - **Suggested follow-up agents** — `sharing-audit-agent` (for OWD + role hierarchy context), `integration-catalog-builder` (if integration PSGs surface as findings), `field-impact-analyzer` (if FLS changes implied).
+   - **Suggested follow-up agents** — `audit-router --domain sharing` (for OWD + role hierarchy context), `integration-catalog-builder` (if integration PSGs surface as findings), `field-impact-analyzer` (if FLS changes implied).
 7. **Citations**.
 
 ---
@@ -241,5 +241,5 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 - Does not deploy metadata.
 - Does not modify an existing PS in place (refactors are always proposed as new PSes + migration plan).
 - Does not design Profile changes — the canonical answer is "stay on minimum access"; deviations go through a human.
-- Does not audit Sharing Rules / OWD — that's `sharing-audit-agent`.
+- Does not audit Sharing Rules / OWD — that's `audit-router --domain sharing`.
 - Does not auto-chain.

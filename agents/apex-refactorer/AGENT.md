@@ -242,6 +242,16 @@ validate_against_org(skill_id="apex/trigger-framework", target_org=...)
 ```
 If an existing `*TriggerHandler` / `*Handler` already exists in the org, add a note to the output recommending the user align with that rather than introducing a second framework. Do NOT fail the refactor — just warn.
 
+### Step 6 — Gate C: verify the emitted code before returning it
+
+This agent hands the user deployable `.cls`, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome in the envelope — a check that did not run is reported as not run, never as passed.
+
+1. **Symbol grounding** — every object, field and class the rewritten code names came from the input file, from a probe run this session, or from a `templates/apex/**/*.cls` file cited in Steps 2–4. Anything else is marked `// UNKNOWN:` rather than guessed.
+2. **Identifier provenance** — re-read the emitted body and check each non-platform `Type.method(...)` against the template it claims to come from. This is the check that would have caught `SecurityUtils.requireUpdateable` (the template spells it `requireUpdatable`) before the user did.
+3. **Compile** — with a `target_org_alias`, `sf project deploy start --dry-run --test-level RunLocalTests`; the errors feed at most three regeneration attempts. Without one, say plainly that no compile check ran and cap `confidence` at MEDIUM.
+
+A refactor carries one extra burden a scaffold does not: **the tests from Step 4 were written against the rewritten code, so passing them is not evidence that behaviour was preserved.** Say so in the output. Where the class had existing tests, run those instead — they are the only characterization signal available — and where it had none, flag that the refactor is unverified against prior behaviour rather than letting green coverage imply otherwise.
+
 ---
 
 ## Output Contract

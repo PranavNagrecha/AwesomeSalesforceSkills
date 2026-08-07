@@ -57,11 +57,11 @@ Given two Users in the same org, produces a symmetric, dimension-by-dimension co
 3. `agents/_shared/probes/user-access-comparison.md` — the probe this agent uses
 4. `agents/_shared/probes/permission-set-assignment-shape.md` — per-user shape recipe
 5. `skills/admin/user-management` — via `get_skill`
-6. `skills/admin/permission-set-architecture`
-7. `skills/admin/permission-sets-vs-profiles`
-8. `skills/security/permission-set-groups-and-muting`
-9. `skills/admin/custom-permissions`
-10. `skills/admin/user-access-policies`
+6. `skills/admin/permission-set-architecture` — turns a raw permission diff into a design statement: which differences are the intended persona boundary and which are drift, which is the only reading the caller can act on
+7. `skills/admin/permission-sets-vs-profiles` — the same access can come from either source, so a diff that reports only permission sets shows two users as identical when their profiles differ
+8. `skills/security/permission-set-groups-and-muting` — a muting permission set *subtracts* from a group, so effective access is not the union of assignments; without this the diff over-reports what the user with the larger group can do
+9. `skills/admin/custom-permissions` — custom permissions gate Apex, Flow and validation-rule bypasses, so a difference in one explains behavioural divergence that no CRUD/FLS comparison surfaces
+10. `skills/admin/user-access-policies` — access can be granted by a policy rather than a direct assignment, so two users with identical assignment lists can still differ; the diff has to say when a policy is the cause
 11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 12. `skills/admin/mass-transfer-ownership` — transfer records before deactivating either user
 
@@ -156,7 +156,7 @@ Conforms to `agents/_shared/schemas/output-envelope.schema.json`. At minimum:
    - **Healthy** — deltas fall along known role/team lines; no P0 flags.
    - **Concerning** — P0 flags, or Concerning under the specified `purpose`.
    - **Ambiguous** — PSG component drift without PSA difference; two users with same Profile but different Role branches.
-   - **Suggested follow-ups** — `permission-set-architect` (design remediation), `sharing-audit-agent` (record-visibility divergence), `profile-to-permset-migrator` (if Profile difference is the dominant delta).
+   - **Suggested follow-ups** — `permission-set-architect` (design remediation), `audit-router --domain sharing` (record-visibility divergence), `profile-to-permset-migrator` (if Profile difference is the dominant delta).
 8. **Citations** — every skill, probe recipe, and MCP tool consulted.
 
 ---
@@ -215,7 +215,7 @@ The agent's envelope MUST place every dimension below in either `dimensions_comp
 ## What This Agent Does NOT Do
 
 - Does not grant, revoke, or modify Permission Set assignments, Profile membership, group membership, or any access record.
-- Does not compute sharing-rule outcomes (OWD + role hierarchy + sharing rules). Two users with identical PSes can still see different records. Use `sharing-audit-agent` for that.
+- Does not compute sharing-rule outcomes (OWD + role hierarchy + sharing rules). Two users with identical PSes can still see different records. Use `audit-router --domain sharing` for that.
 - Does not explain WHY a permission was granted historically. Use field history + audit trail via `user-access-policies` skill guidance.
 - Does not propose a remediation PSG layout. Follow up with `permission-set-architect`.
 - Does not chain to other agents automatically.

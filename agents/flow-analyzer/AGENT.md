@@ -61,6 +61,7 @@ dependencies:
     - flow/screen-flow-accessibility
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -94,58 +95,59 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `standards/decision-trees/automation-selection.md`
-3. `skills/flow/flow-bulkification/SKILL.md`
-4. `skills/flow/flow-large-data-volume-patterns/SKILL.md`
-5. `templates/flow/FaultPath_Template.md`
-6. `templates/flow/Subflow_Pattern.md`
-7. `skills/apex/trigger-and-flow-coexistence/SKILL.md`
-8. `skills/flow/flow-collection-processing/SKILL.md` — collection bulkification + map-vs-loop signal for Step 3
-9. `skills/flow/flow-cross-object-updates/SKILL.md` — Update-Records-via-related-list footguns flagged in Step 3
-10. `skills/flow/flow-get-records-optimization/SKILL.md` — Get-Records-in-loop and selective-filter signals
-11. `skills/flow/flow-decision-element-patterns/SKILL.md` — decision branching anti-patterns and isChanged()/isNew() pitfalls
-12. `skills/flow/flow-resource-patterns/SKILL.md` — variable / formula / template usage signals
-13. `skills/flow/flow-record-save-order-interaction/SKILL.md` — before-save vs after-save ordering vs Apex triggers (Step 4 co-existence)
-14. `skills/flow/flow-transactional-boundaries/SKILL.md` — when an action commits / when DML rolls back, drives the fault-path verdict
-15. `skills/flow/flow-error-monitoring/SKILL.md` — org-level error-email-recipient + fault sink Healthy/Concerning observations
-16. `skills/flow/flow-runtime-error-diagnosis/SKILL.md` — symptoms-to-cause map cited in `MIGRATE_TO_APEX` and `FIX_IN_PLACE` rationale
-17. `skills/flow/flow-debugging/SKILL.md` — Flow Debug Logs / Interview Logs interpretation when target_org_alias is set
-18. `skills/flow/flow-loop-element-patterns/SKILL.md` — `dml-in-loop` / `soql-in-loop` / `subflow-with-DML-in-loop` signal definitions for Step 3 bulkification check
-19. `skills/flow/flow-record-locking-and-contention/SKILL.md` — `COEXISTENCE_RISK` / parent-lock signal for Step 4 + Process Observations under load
-20. `skills/flow/flow-runtime-context-and-sharing/SKILL.md` — without-sharing audit signal in Process Observations (FLS-bypass risk)
-21. `skills/flow/flow-formula-and-expression-patterns/SKILL.md` — picklist `=` vs ISPICKVAL bugs, NULL-propagation, lazy-re-eval-in-loop performance findings
-22. `skills/flow/flow-element-naming-conventions/SKILL.md` — naming-quality observation in Process Observations (Decision_1 / Get_Records_2 → maintainability concern)
-23. `skills/flow/flow-screen-input-validation-patterns/SKILL.md` — Screen Flows missing input validation = junk-data-in audit finding
-24. `skills/flow/flow-action-framework/SKILL.md` — invocable / Apex action element shape; finds wrong list-cardinality at the Flow–Apex boundary
-25. `skills/flow/flow-and-platform-events/SKILL.md` — Platform Event publisher / subscriber audit; publish-immediate vs publish-after-commit detection
-26. `skills/flow/flow-apex-defined-types/SKILL.md` — Apex-defined type drift in External Services / HTTP Callout payloads
-27. `skills/flow/flow-batch-processing-alternatives/SKILL.md` — flow that should have been Apex Queueable/Batch (LDV ceiling exceeded)
-28. `skills/flow/flow-data-tables/SKILL.md` — Data Table component misuse (unbounded rows; no column trim)
-29. `skills/flow/flow-deployment-and-packaging/SKILL.md` — packaging dependency cycles; missing FlowAccessPermission for the run-as persona
-30. `skills/flow/flow-dynamic-choices/SKILL.md` — Record / Picklist / Collection choice set misconfiguration (e.g. unbounded record choice on a 100k-row object)
-31. `skills/flow/flow-external-services/SKILL.md` — registered API specs without Named Credential, missing fault path on the generated invocable
-32. `skills/flow/flow-for-experience-cloud/SKILL.md` — Screen Flow on a guest user profile without the right Sharing Set / object-access guard
-33. `skills/flow/flow-governance/SKILL.md` — naming / ownership / version pinning / retirement signals (stale flows w/ no runs in 90 days)
-34. `skills/flow/flow-governor-limits-deep-dive/SKILL.md` — per-entry-point limit budget audit; finds flows that systematically blow CPU / SOQL ceilings
-35. `skills/flow/flow-http-callout-action/SKILL.md` — declarative HTTP callouts without Named Credential or fault path
-36. `skills/flow/flow-invocable-from-apex/SKILL.md` — invocable contract drift (one-list-in vs one-list-out, null handling)
-37. `skills/flow/flow-performance-optimization/SKILL.md` — perf signals (after-save where before-save would do, redundant Get Records)
-38. `skills/flow/flow-platform-events-integration/SKILL.md` — high-volume PE design issues; subscriber-side error handling
-39. `skills/flow/flow-reactive-screen-components/SKILL.md` — non-reactive screen components in a reactive design (Winter '24+) → UX inefficiency
-40. `skills/flow/flow-rollback-patterns/SKILL.md` — Rollback Records element misuse (publish-after-commit PE interaction; partial commit)
-41. `skills/flow/flow-screen-lwc-components/SKILL.md` — custom Flow screen LWC contract violations (`@api validate()` missing, FlowAttributeChangeEvent missing)
-42. `skills/flow/flow-testing/SKILL.md` — flow has no Flow Tests = test-coverage finding
-43. `skills/flow/flow-transaction-finalizer-patterns/SKILL.md` — post-commit work shape; finalizer audit
-44. `skills/flow/flow-versioning-strategy/SKILL.md` — version pinning gaps; obsolete versions still referenced by paused interviews
-45. `skills/flow/screen-flow-accessibility/SKILL.md` — Screen Flow a11y audit findings
-46. `standards/decision-trees/flow-pattern-selector.md` — within-Flow pattern audit (e.g. flow chose Auto-launched + Pause where Scheduled-Triggered would be cleaner)
-47. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes used in the Escalation section
-48. `agents/_shared/probes/automation-graph-for-sobject.md` — analyzer also runs the automation-graph probe to detect coexistence
-49. `agents/_shared/probes/flow-references-to-field.md` — used to map flow → field references in cross-object audits
-50. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-51. `skills/flow/recursion-and-re-entry-prevention` — Diagnose Flow loops via state-guard, hash, or lock pattern; tighten over-broad entry criteria
-52. `skills/admin/flow-orchestration-admin` — when the analysed flow is really an orchestration, the bulkification and fault-path rules change — classify before scoring
-53. `skills/flow/flow-open-a-page-action` — Summer '26 core action: an Open a Page element only works in the screen contexts it supports, so flagging it wrongly is a false positive
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `standards/decision-trees/automation-selection.md`
+4. `skills/flow/flow-bulkification/SKILL.md`
+5. `skills/flow/flow-large-data-volume-patterns/SKILL.md`
+6. `templates/flow/FaultPath_Template.md`
+7. `templates/flow/Subflow_Pattern.md`
+8. `skills/apex/trigger-and-flow-coexistence/SKILL.md`
+9. `skills/flow/flow-collection-processing/SKILL.md` — collection bulkification + map-vs-loop signal for Step 3
+10. `skills/flow/flow-cross-object-updates/SKILL.md` — Update-Records-via-related-list footguns flagged in Step 3
+11. `skills/flow/flow-get-records-optimization/SKILL.md` — Get-Records-in-loop and selective-filter signals
+12. `skills/flow/flow-decision-element-patterns/SKILL.md` — decision branching anti-patterns and isChanged()/isNew() pitfalls
+13. `skills/flow/flow-resource-patterns/SKILL.md` — variable / formula / template usage signals
+14. `skills/flow/flow-record-save-order-interaction/SKILL.md` — before-save vs after-save ordering vs Apex triggers (Step 4 co-existence)
+15. `skills/flow/flow-transactional-boundaries/SKILL.md` — when an action commits / when DML rolls back, drives the fault-path verdict
+16. `skills/flow/flow-error-monitoring/SKILL.md` — org-level error-email-recipient + fault sink Healthy/Concerning observations
+17. `skills/flow/flow-runtime-error-diagnosis/SKILL.md` — symptoms-to-cause map cited in `MIGRATE_TO_APEX` and `FIX_IN_PLACE` rationale
+18. `skills/flow/flow-debugging/SKILL.md` — Flow Debug Logs / Interview Logs interpretation when target_org_alias is set
+19. `skills/flow/flow-loop-element-patterns/SKILL.md` — `dml-in-loop` / `soql-in-loop` / `subflow-with-DML-in-loop` signal definitions for Step 3 bulkification check
+20. `skills/flow/flow-record-locking-and-contention/SKILL.md` — `COEXISTENCE_RISK` / parent-lock signal for Step 4 + Process Observations under load
+21. `skills/flow/flow-runtime-context-and-sharing/SKILL.md` — without-sharing audit signal in Process Observations (FLS-bypass risk)
+22. `skills/flow/flow-formula-and-expression-patterns/SKILL.md` — picklist `=` vs ISPICKVAL bugs, NULL-propagation, lazy-re-eval-in-loop performance findings
+23. `skills/flow/flow-element-naming-conventions/SKILL.md` — naming-quality observation in Process Observations (Decision_1 / Get_Records_2 → maintainability concern)
+24. `skills/flow/flow-screen-input-validation-patterns/SKILL.md` — Screen Flows missing input validation = junk-data-in audit finding
+25. `skills/flow/flow-action-framework/SKILL.md` — invocable / Apex action element shape; finds wrong list-cardinality at the Flow–Apex boundary
+26. `skills/flow/flow-and-platform-events/SKILL.md` — Platform Event publisher / subscriber audit; publish-immediate vs publish-after-commit detection
+27. `skills/flow/flow-apex-defined-types/SKILL.md` — Apex-defined type drift in External Services / HTTP Callout payloads
+28. `skills/flow/flow-batch-processing-alternatives/SKILL.md` — flow that should have been Apex Queueable/Batch (LDV ceiling exceeded)
+29. `skills/flow/flow-data-tables/SKILL.md` — Data Table component misuse (unbounded rows; no column trim)
+30. `skills/flow/flow-deployment-and-packaging/SKILL.md` — packaging dependency cycles; missing FlowAccessPermission for the run-as persona
+31. `skills/flow/flow-dynamic-choices/SKILL.md` — Record / Picklist / Collection choice set misconfiguration (e.g. unbounded record choice on a 100k-row object)
+32. `skills/flow/flow-external-services/SKILL.md` — registered API specs without Named Credential, missing fault path on the generated invocable
+33. `skills/flow/flow-for-experience-cloud/SKILL.md` — Screen Flow on a guest user profile without the right Sharing Set / object-access guard
+34. `skills/flow/flow-governance/SKILL.md` — naming / ownership / version pinning / retirement signals (stale flows w/ no runs in 90 days)
+35. `skills/flow/flow-governor-limits-deep-dive/SKILL.md` — per-entry-point limit budget audit; finds flows that systematically blow CPU / SOQL ceilings
+36. `skills/flow/flow-http-callout-action/SKILL.md` — declarative HTTP callouts without Named Credential or fault path
+37. `skills/flow/flow-invocable-from-apex/SKILL.md` — invocable contract drift (one-list-in vs one-list-out, null handling)
+38. `skills/flow/flow-performance-optimization/SKILL.md` — perf signals (after-save where before-save would do, redundant Get Records)
+39. `skills/flow/flow-platform-events-integration/SKILL.md` — high-volume PE design issues; subscriber-side error handling
+40. `skills/flow/flow-reactive-screen-components/SKILL.md` — non-reactive screen components in a reactive design (Winter '24+) → UX inefficiency
+41. `skills/flow/flow-rollback-patterns/SKILL.md` — Rollback Records element misuse (publish-after-commit PE interaction; partial commit)
+42. `skills/flow/flow-screen-lwc-components/SKILL.md` — custom Flow screen LWC contract violations (`@api validate()` missing, FlowAttributeChangeEvent missing)
+43. `skills/flow/flow-testing/SKILL.md` — flow has no Flow Tests = test-coverage finding
+44. `skills/flow/flow-transaction-finalizer-patterns/SKILL.md` — post-commit work shape; finalizer audit
+45. `skills/flow/flow-versioning-strategy/SKILL.md` — version pinning gaps; obsolete versions still referenced by paused interviews
+46. `skills/flow/screen-flow-accessibility/SKILL.md` — Screen Flow a11y audit findings
+47. `standards/decision-trees/flow-pattern-selector.md` — within-Flow pattern audit (e.g. flow chose Auto-launched + Pause where Scheduled-Triggered would be cleaner)
+48. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes used in the Escalation section
+49. `agents/_shared/probes/automation-graph-for-sobject.md` — analyzer also runs the automation-graph probe to detect coexistence
+50. `agents/_shared/probes/flow-references-to-field.md` — used to map flow → field references in cross-object audits
+51. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+52. `skills/flow/recursion-and-re-entry-prevention` — Diagnose Flow loops via state-guard, hash, or lock pattern; tighten over-broad entry criteria
+53. `skills/admin/flow-orchestration-admin` — when the analysed flow is really an orchestration, the bulkification and fault-path rules change — classify before scoring
+54. `skills/flow/flow-open-a-page-action` — Summer '26 core action: an Open a Page element only works in the screen contexts it supports, so flagging it wrongly is a false positive
 
 ---
 
@@ -172,11 +174,14 @@ If `target_org_alias` set:
 
 ### Step 2 — Decide the correct tool
 
-For each flow, walk `standards/decision-trees/automation-selection.md`:
-- Does the flow make a callout? (Only External Services can — most cases should be Apex.)
-- Does it loop > 100 elements? (Flow bulkification limits apply.)
-- Is it record-triggered and needs async? (Queueable > Flow async.)
-- Does it need custom error handling beyond Screen + Fault?
+**Actually walk `standards/decision-trees/automation-selection.md` — node by node — rather than answering the paraphrase below from memory.** The verdict this step produces is the agent's headline output; it has to be traceable to a branch a reader can go and check. Quote the Q-node the flow landed on verbatim in the citation, in the form `{"type":"decision_tree","id":"automation-selection","used_for":"<the node text>"}`. A verdict with no quoted node is not a routed decision, it is an opinion with a citation stapled to it.
+
+The questions the tree asks that most often decide a Flow-vs-Apex call, stated correctly:
+
+- **Callouts.** Flow *can* call out — via the HTTP Callout action and via External Services, as well as through invocable Apex. The question is not "can it" but "should it": what the error handling, retry, and mocking story looks like for this callout, which is usually what pushes it to Apex. (The agent's own Mandatory Read on Apex-defined types covers both the External Services and the HTTP Callout payload shapes.)
+- **Loop volume.** There is no "100 elements" Flow limit — that threshold was invented. The real constraints are the per-transaction flow limits and the shared governor limits the flow spends alongside everything else in the save order; read them from `skills/flow/flow-large-data-volume-patterns` and `skills/flow/flow-loop-element-patterns` rather than asserting a number here. What matters for the verdict is whether the loop performs DML or SOQL inside it, which is a Step 3 finding, not a headcount.
+- Is it record-triggered and needs async? (Queueable versus Flow's own async path.)
+- Does it need error handling beyond a Screen + Fault path?
 - Is it a user-facing decision agent? (Agentforce, not Flow.)
 
 Record which branch the flow lands on. If the branch says "use Apex", flag the flow as `SHOULD_MIGRATE`.
@@ -224,7 +229,18 @@ If the object has **both** triggers and record-triggered flows firing on the sam
 
 - Flag as `COEXISTENCE_RISK`.
 - Recommend consolidating per `skills/apex/trigger-and-flow-coexistence` — typically: do all work in Apex OR Flow, not both.
-- Cite the ordering rule: "For a given event, Flow executes after Apex before-triggers and after Apex after-triggers."
+- Cite the ordering, by save-order step number, and **do not compress it into a single sentence** — the two flow types sit on opposite sides of the Apex triggers, and treating "Flow" as one position produces the consolidation recommendation backwards:
+
+  | Save-order step | What runs |
+  |---|---|
+  | 3 | **Before-save record-triggered flows** |
+  | 4 | Apex **before** triggers |
+  | 8 | Apex **after** triggers |
+  | 14 | **After-save record-triggered flows** |
+
+  So a before-save flow runs *before* every Apex trigger on the object, and an after-save flow runs *after* every Apex trigger. Two consequences the coexistence verdict turns on: a field set by a before-save flow is already in `Trigger.new` when the Apex before trigger reads it, and an after-save flow observes the record as the Apex after trigger left it — including a recursive re-entry the flow itself then triggers.
+
+  Official source: *Triggers and Order of Execution*, Apex Developer Guide.
 
 ### Step 5 — Recommendations
 

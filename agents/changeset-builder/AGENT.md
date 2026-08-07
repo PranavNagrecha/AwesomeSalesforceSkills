@@ -26,6 +26,7 @@ dependencies:
     - devops/release-notes-automation
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -54,17 +55,18 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/devops/change-set-deployment` — Change Set canon
-3. `skills/devops/metadata-api-coverage-gaps` — what Change Sets cannot carry
-4. `skills/devops/pre-deployment-checklist`
-5. `skills/devops/deployment-error-troubleshooting`
-6. `skills/devops/destructive-changes-deployment`
-7. `skills/devops/permission-set-deployment-ordering`
-8. `skills/devops/migration-from-change-sets-to-sfdx` — the off-ramp
-9. `skills/admin/change-management-and-deployment`
-10. `templates/admin/naming-conventions.md`
-11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-12. `skills/devops/release-notes-automation` — post-deploy notes generated from change-set scope
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/devops/change-set-deployment` — Change Set canon
+4. `skills/devops/metadata-api-coverage-gaps` — what Change Sets cannot carry
+5. `skills/devops/pre-deployment-checklist`
+6. `skills/devops/deployment-error-troubleshooting`
+7. `skills/devops/destructive-changes-deployment`
+8. `skills/devops/permission-set-deployment-ordering`
+9. `skills/devops/migration-from-change-sets-to-sfdx` — the off-ramp
+10. `skills/admin/change-management-and-deployment`
+11. `templates/admin/naming-conventions.md`
+12. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+13. `skills/devops/release-notes-automation` — post-deploy notes generated from change-set scope
 
 ---
 

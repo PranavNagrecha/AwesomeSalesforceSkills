@@ -52,6 +52,7 @@ dependencies:
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -85,71 +86,72 @@ Breadth note (`AGENT_CONTRACT.md` Mandatory Reads rule 4): 36 skill reads, above
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
-3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Component shape & lifecycle
-4. `skills/lwc/component-communication` — picks parent→child props vs events vs LMS before any of the three is written into the bundle
-5. `skills/lwc/lifecycle-hooks` — never implement empty hooks
-6. `skills/lwc/lwc-base-component-recipes` — the base component that already does it — the first check before generating a hand-rolled equivalent
-7. `skills/lwc/lwc-public-api-hardening` — `@api` type-coercion, design-attribute typing, `targetConfig` rules
-8. `skills/lwc/lwc-template-refs` — `lwc:ref` over `this.template.querySelector` in new bundles
-9. `skills/lwc/lwc-conditional-rendering` — modern `lwc:if`/`lwc:elseif`/`lwc:else` only
-10. `skills/lwc/lwc-slots-composition` — for container / layout / wrapper bundles
-11. `skills/lwc/lwc-app-builder-config` — `.js-meta.xml` exposure / targets / targetConfigs
+5. `skills/lwc/component-communication` — picks parent→child props vs events vs LMS before any of the three is written into the bundle
+6. `skills/lwc/lifecycle-hooks` — never implement empty hooks
+7. `skills/lwc/lwc-base-component-recipes` — the base component that already does it — the first check before generating a hand-rolled equivalent
+8. `skills/lwc/lwc-public-api-hardening` — `@api` type-coercion, design-attribute typing, `targetConfig` rules
+9. `skills/lwc/lwc-template-refs` — `lwc:ref` over `this.template.querySelector` in new bundles
+10. `skills/lwc/lwc-conditional-rendering` — modern `lwc:if`/`lwc:elseif`/`lwc:else` only
+11. `skills/lwc/lwc-slots-composition` — for container / layout / wrapper bundles
+12. `skills/lwc/lwc-app-builder-config` — `.js-meta.xml` exposure / targets / targetConfigs
 
 ### Data binding (UI API / GraphQL / Apex)
-12. `skills/lwc/wire-service-patterns` — wire vs imperative, and the reactive-parameter rules that decide whether the wire ever re-fires
-13. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable`
-14. `skills/lwc/lwc-imperative-apex` — for the write and on-demand paths where a wire is the wrong shape
-15. `skills/lwc/lwc-async-patterns` — async work outside `connectedCallback`
-16. `skills/lwc/lwc-lds-writes` — writes via lightning/uiRecordApi (createRecord, updateRecord, deleteRecord) and lightning-record-edit-form: recordInput shape, error envelope, refresh strategy
-17. `skills/lwc/lwc-graphql-wire` — Step 1's data strategy: multi-entity reads in one round-trip, and the different refresh helper it needs
+13. `skills/lwc/wire-service-patterns` — wire vs imperative, and the reactive-parameter rules that decide whether the wire ever re-fires
+14. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable`
+15. `skills/lwc/lwc-imperative-apex` — for the write and on-demand paths where a wire is the wrong shape
+16. `skills/lwc/lwc-async-patterns` — async work outside `connectedCallback`
+17. `skills/lwc/lwc-lds-writes` — writes via lightning/uiRecordApi (createRecord, updateRecord, deleteRecord) and lightning-record-edit-form: recordInput shape, error envelope, refresh strategy
+18. `skills/lwc/lwc-graphql-wire` — Step 1's data strategy: multi-entity reads in one round-trip, and the different refresh helper it needs
 
 ### Events, messaging, navigation
-18. `skills/lwc/lwc-custom-event-patterns` — bubbles / composed / cancelable choices
-19. `skills/lwc/message-channel-patterns` — Lightning Message Service for cross-tree fan-out
+19. `skills/lwc/lwc-custom-event-patterns` — bubbles / composed / cancelable choices
+20. `skills/lwc/message-channel-patterns` — Lightning Message Service for cross-tree fan-out
 
 ### Forms, datatables, modals, files, charts
-20. `skills/lwc/lwc-forms-and-validation` — field-level validity, custom validity messages and submit gating for any generated form
-21. `skills/lwc/lwc-data-table` — column definitions, key-field and row-action wiring for `lightning-datatable` bundles
-22. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
-23. `skills/lwc/lwc-custom-datatable-types` — Step 3's static customTypes recipe when the bundle subclasses LightningDatatable
-24. `skills/lwc/file-upload-patterns` — when the feature summary involves attaching a document, the upload tier — lightning-file-upload vs custom input vs Apex chunking — is fixed by the surface's size ceiling (10 GB standard, 128 MB / 500 MB on Experience sites) and the 6 MB / 12 MB heap budget before the template is generated; switching tiers later rewrites both the component and its controller
+21. `skills/lwc/lwc-forms-and-validation` — field-level validity, custom validity messages and submit gating for any generated form
+22. `skills/lwc/lwc-data-table` — column definitions, key-field and row-action wiring for `lightning-datatable` bundles
+23. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
+24. `skills/lwc/lwc-custom-datatable-types` — Step 3's static customTypes recipe when the bundle subclasses LightningDatatable
+25. `skills/lwc/file-upload-patterns` — when the feature summary involves attaching a document, the upload tier — lightning-file-upload vs custom input vs Apex chunking — is fixed by the surface's size ceiling (10 GB standard, 128 MB / 500 MB on Experience sites) and the 6 MB / 12 MB heap budget before the template is generated; switching tiers later rewrites both the component and its controller
 
 ### Accessibility, i18n, focus, toasts
-25. `skills/lwc/lwc-accessibility` — the a11y contract every generated template must satisfy: labels, roles, live regions
-26. `skills/lwc/lwc-focus-management` — focus after render, modal focus trap and post-navigation focus — invisible in review, obvious to a screen-reader user
-27. `skills/lwc/lwc-internationalization` — locale-aware formatting and label imports, so the bundle is not hardcoded to en-US
+26. `skills/lwc/lwc-accessibility` — the a11y contract every generated template must satisfy: labels, roles, live regions
+27. `skills/lwc/lwc-focus-management` — focus after render, modal focus trap and post-navigation focus — invisible in review, obvious to a screen-reader user
+28. `skills/lwc/lwc-internationalization` — locale-aware formatting and label imports, so the bundle is not hardcoded to en-US
 
 ### Styling, DOM mode, interop
-28. `skills/lwc/lwc-shadow-vs-light-dom-decision` — `static renderMode` decision
-29. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
-30. `skills/lwc/lwc-light-dom` — Step 3 selects light DOM for SEO-indexable markup or third-party DOM libraries; the trade-offs are not reversible cheaply
-31. `skills/lwc/lwc-styling-hooks` — Step 5 styles base-component interiors through documented SLDS hooks instead of piercing shadow DOM
+29. `skills/lwc/lwc-shadow-vs-light-dom-decision` — `static renderMode` decision
+30. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
+31. `skills/lwc/lwc-light-dom` — Step 3 selects light DOM for SEO-indexable markup or third-party DOM libraries; the trade-offs are not reversible cheaply
+32. `skills/lwc/lwc-styling-hooks` — Step 5 styles base-component interiors through documented SLDS hooks instead of piercing shadow DOM
 
 ### Performance, errors, debugging
-32. `skills/lwc/lwc-performance` — the render-cost rules behind the bundle's performance budget
-33. `skills/lwc/lwc-error-boundaries` — `errorCallback` placement, so a child failure degrades instead of blanking the page
-34. `skills/lwc/lwc-debugging-devtools` — Step 3's diagnosability rules — bundle-scoped log tags, and never logging a @wire proxy directly
+33. `skills/lwc/lwc-performance` — the render-cost rules behind the bundle's performance budget
+34. `skills/lwc/lwc-error-boundaries` — `errorCallback` placement, so a child failure degrades instead of blanking the page
+35. `skills/lwc/lwc-debugging-devtools` — Step 3's diagnosability rules — bundle-scoped log tags, and never logging a @wire proxy directly
 
 ### Security
-35. `skills/lwc/lwc-security` — LWS constraints on the generated JS — what is actually available at runtime
+36. `skills/lwc/lwc-security` — LWS constraints on the generated JS — what is actually available at runtime
 
 ### Specialized surfaces
-36. `skills/lwc/lwc-quick-actions` — when `binding_kind=record-action`
-37. `skills/lwc/lwc-in-flow-screens` — when `binding_kind=flow-screen`
+37. `skills/lwc/lwc-quick-actions` — when `binding_kind=record-action`
+38. `skills/lwc/lwc-in-flow-screens` — when `binding_kind=flow-screen`
 
 ### Testing
-38. `skills/lwc/lwc-testing` — the Jest suite emitted alongside the bundle, and the mocks it needs to run at all
+39. `skills/lwc/lwc-testing` — the Jest suite emitted alongside the bundle, and the mocks it needs to run at all
 
 ### Templates (canonical building blocks)
-39. `templates/lwc/component-skeleton/`
-40. `templates/lwc/patterns/` — incl. `graphqlWirePattern.js`, `quickActionPattern.js`, `slotsCompositionPattern.html`, `datatableCustomTypePattern.html`
-41. `templates/lwc/jest.config.js`
-42. `templates/apex/BaseService.cls` — if a controller class is emitted
-43. `templates/apex/SecurityUtils.cls`
-44. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
+40. `templates/lwc/component-skeleton/`
+41. `templates/lwc/patterns/` — incl. `graphqlWirePattern.js`, `quickActionPattern.js`, `slotsCompositionPattern.html`, `datatableCustomTypePattern.html`
+42. `templates/lwc/jest.config.js`
+43. `templates/apex/BaseService.cls` — if a controller class is emitted
+44. `templates/apex/SecurityUtils.cls`
+45. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
 
 ---
 
@@ -287,7 +289,11 @@ Rules:
 - **Do not** place `<supportedFormFactors>` at the bundle root — it must live inside the relevant `<targetConfig>`.
 - For admin-configurable knobs, pair each `<target>` that needs config with a `<targetConfig targets="…">` containing `<property>` children. Valid `<property type="…">` values are `String`, `Integer`, `Boolean`, `Color` (+ community `ContentReference`) — **never** `Picklist` / `Reference` / `sObject`. For a bounded list, use `type="String"` with `datasource="val1,val2,val3"` (or `datasource="apex://MyPicklistClass"` for a dynamic list).
 - Remember that App Builder hands design-attribute values to the LWC as **strings**. Any `@api` property bound to a numeric / boolean knob must be cast in JS (`Number(this.maxRows) || 0`) before arithmetic or strict comparisons.
-- Default `apiVersion` to the current `API_VERSION_MIN` from `config/repo-config.yaml` (or 60.0 if not set).
+- Resolve `apiVersion` from the caller's project, in this order — never from a hardcoded default, which goes stale silently and produces a bundle several releases behind the org it deploys to:
+  1. An existing sibling bundle's `.js-meta.xml` under the same package directory. Matching the bundles already in the repo is almost always what the caller wants.
+  2. `sourceApiVersion` in the project's `sfdx-project.json`.
+  3. `describe_org(target_org=...)` if an org alias was supplied.
+  4. None of the above → state in the output which version was used and that it was assumed. An earlier version of this step read the value from a repo config file that does not exist, which left a model following it to either invent a version or stall.
 
 ### Step 7 — Tests
 
@@ -311,6 +317,16 @@ If `emit_controller=true`, emit `<componentName>Controller.cls` + `<componentNam
 - Test class: ≥85% coverage; `System.runAs` paths to verify negative permission flows.
 
 The controller class is sibling to the bundle, not inside it: `force-app/main/default/classes/<componentName>Controller.cls`.
+
+### Step 9 — Gate C: verify the emitted bundle before returning it
+
+This agent hands the user a deployable LWC bundle and, when `emit_controller=true`, a deployable `.cls`, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome — a check that did not run is reported as not run, never as passed. Under the harness these are the static and live checks in [`GATES.md` § Gate C](./GATES.md#gate-c--build-and-self-test); driven from this markdown alone — direct read or MCP `get_agent` — nothing runs them for you, so run them by hand.
+
+1. **Symbol grounding** — every object, field and Apex method the bundle imports (`@salesforce/schema/…`, `@salesforce/apex/…`) resolves against a probe run this session or a file under the caller's project. An unresolved import is marked `// UNKNOWN:` rather than guessed: it fails at deploy, not at review.
+2. **Identifier provenance** — every base-component tag, wire adapter and lifecycle hook is quoted from the `templates/lwc/` file or the skill the step cites. A `lightning-*` tag the agent cannot point at is deleted, not shipped.
+3. **Compile** — with a `target_org_alias`, the deploy-validate call in `GATES.md` § Gate C; without one, say plainly that no compile check ran and cap `confidence` at MEDIUM.
+
+The Jest suite from Step 7 is not a substitute for check 3. It runs against the `@salesforce/schema` and `@salesforce/apex` stubs that `@salesforce/sfdx-lwc-jest` supplies, so it passes on a bundle whose imports resolve to nothing in the target org — and `GATES.md` checks the test file for presence, not by executing it. Green Jest is evidence about the component's own logic and never about whether the bundle deploys; report the two separately.
 
 ---
 

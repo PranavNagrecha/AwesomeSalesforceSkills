@@ -59,7 +59,7 @@ dependencies:
   templates:
     - apex/TriggerControl.cls
     - apex/TriggerHandler.cls
-    - apex/cmdt/Trigger_Setting__mdt.object-meta.xml
+    - apex/cmdt/Trigger_Setting__mdt/
   decision_trees:
     - automation-selection.md
 ---
@@ -90,63 +90,63 @@ Finds every Apex trigger on a given sObject across the user's `force-app` tree, 
 4. `agents/_shared/REFUSAL_CODES.md`
 
 ### Trigger framework canon
-5. `skills/apex/trigger-framework`
-6. `skills/apex/recursive-trigger-prevention`
-7. `skills/apex/apex-trigger-context-variables`
-8. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
-9. `skills/apex/order-of-execution-deep-dive`
-10. `skills/apex/trigger-and-flow-coexistence`
+5. `skills/apex/trigger-framework` — the target shape. Without it "consolidate" has no definition and the agent invents a handler contract that the next class on the object will not match
+6. `skills/apex/recursive-trigger-prevention` — merging N triggers merges N re-entry guards, and the most common consolidation bug is keeping one static flag where each original trigger had its own. Says which guard survives
+7. `skills/apex/apex-trigger-context-variables` — `Trigger.oldMap` is null on insert and `Trigger.new` is read-only after-context; a method lifted out of a before trigger into an after slot fails on exactly this
+8. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — the deactivation plan in Step 5 depends on the bypass being real. Tells the agent what a working kill switch looks like as opposed to a commented-out block
+9. `skills/apex/order-of-execution-deep-dive` — Step 3's ordering adjudication: which of the merged bodies may safely mutate the record in place, and what a later step in the save order will overwrite regardless
+10. `skills/apex/trigger-and-flow-coexistence` — the Step 1 probe usually finds record-triggered Flows on the same object. Decides whether consolidation is the right move at all or whether the Flow is the duplicate
 
 ### Architecture
-11. `skills/apex/apex-design-patterns`
-12. `skills/apex/apex-collections-patterns`
+11. `skills/apex/apex-design-patterns` — where the merged logic lands once it leaves the trigger files: Domain vs Service vs Selector, so the handler stays a router rather than becoming the god class the consolidation was supposed to prevent
+12. `skills/apex/apex-collections-patterns` — N single-record trigger bodies concatenated into one handler is still N loops. These are the map/set idioms that turn the merge into one bulk pass
 
 ### Cross-automation visibility
 13. `agents/_shared/probes/automation-graph-for-sobject.md` — finds Flows / PB / WF on the same SObject
 14. `standards/decision-trees/automation-selection.md` — when consolidating reveals the wrong tier of automation
 
 ### Vertical-specific trigger patterns (object-aware mode)
-15. `skills/apex/case-trigger-patterns` — Case-specific
-16. `skills/apex/opportunity-trigger-patterns` — Opportunity-specific
-17. `skills/apex/lead-conversion-customization` — Lead-specific
-18. `skills/apex/entitlement-apex-hooks` — Case milestone hooks
-19. `skills/apex/npsp-trigger-framework-extension` — NPSP TDTM-specific (managed-package coexistence)
+15. `skills/apex/case-trigger-patterns` — on Case, escalation, entitlement and Email-to-Case each write back to the record; a naive merge re-fires them
+16. `skills/apex/opportunity-trigger-patterns` — Opportunity carries stage/amount roll-ups and OpportunityLineItem cascades whose ordering relative to the merged handler is the whole risk
+17. `skills/apex/lead-conversion-customization` — Lead triggers fire in a special sequence during Convert; a handler that assumes normal insert/update context misbehaves only on the conversion path, which no test written from the merged code will cover
+18. `skills/apex/entitlement-apex-hooks` — Case milestone completion is driven from Apex hooks that the original triggers may own; the consolidation must keep the hook attached
+19. `skills/apex/npsp-trigger-framework-extension` — NPSP orgs run TDTM, a second framework the agent must coexist with rather than replace. Consolidating NPSP-managed triggers into a custom handler breaks package upgrades
 
 ### Async offload (when triggers should defer work)
-20. `skills/apex/async-apex`
-21. `skills/apex/apex-future-method-patterns`
-22. `skills/apex/apex-queueable-patterns`
-23. `skills/apex/platform-events-apex`
-24. `skills/apex/change-data-capture-apex`
+20. `skills/apex/async-apex` — consolidation frequently reveals that the merged synchronous body no longer fits one transaction; this is the decision of what may move off the synchronous path at all
+21. `skills/apex/apex-future-method-patterns` — `@future` calls inside the merged bodies do not compose: limits are per-transaction, and two former triggers each calling one may exceed them once merged
+22. `skills/apex/apex-queueable-patterns` — the default landing place for deferred work, plus the chaining depth limits that decide whether the deferral is even legal from a trigger context
+23. `skills/apex/platform-events-apex` — publish-after-commit semantics, for merged logic that notified another system and must keep doing so at the same point in the transaction
+24. `skills/apex/change-data-capture-apex` — when the right answer is that the merged after-trigger work belongs in a CDC subscriber rather than in the handler at all
 
 ### DML / locking under consolidated triggers
-25. `skills/apex/apex-dml-patterns`
-26. `skills/apex/apex-savepoint-and-rollback`
-27. `skills/apex/mixed-dml-and-setup-objects`
-28. `skills/apex/record-locking-and-contention`
+25. `skills/apex/apex-dml-patterns` — partial-success vs all-or-none changes meaning when two former triggers' DML lands in one transaction: one failing row can now roll back work the other trigger used to commit
+26. `skills/apex/apex-savepoint-and-rollback` — whether the merged handler needs an explicit savepoint boundary that the separate triggers got for free
+27. `skills/apex/mixed-dml-and-setup-objects` — if any merged body touched User / permission-set objects, combining it with data DML in one transaction raises `MIXED_DML_OPERATION` where the split triggers never did
+28. `skills/apex/record-locking-and-contention` — merging serialises what used to interleave; the parent-record lock window gets longer, which is where consolidation shows up as `UNABLE_TO_LOCK_ROW` under load
 
 ### Error handling / governance
-29. `skills/apex/error-handling-framework`
-30. `skills/apex/exception-handling`
-31. `skills/apex/common-apex-runtime-errors`
-32. `skills/apex/custom-logging-and-monitoring` — Application_Log__c
-33. `skills/apex/custom-metadata-in-apex` — Trigger_Setting__mdt access pattern
-34. `skills/apex/feature-flags-and-kill-switches`
-35. `skills/apex/governor-limits`
+29. `skills/apex/error-handling-framework` — one handler means one failure surface: the framework that keeps a failure in one merged concern from taking down the others
+30. `skills/apex/exception-handling` — which exceptions the handler may catch versus must let propagate, so consolidation does not silently swallow an error the original trigger surfaced to the user
+31. `skills/apex/common-apex-runtime-errors` — the symptom-to-cause map for the errors a consolidation actually produces in the first week
+32. `skills/apex/custom-logging-and-monitoring` — `Application_Log__c`; Step 5's 24-hour monitoring window is meaningless without the logging the merged handler is supposed to write
+33. `skills/apex/custom-metadata-in-apex` — `Trigger_Setting__mdt` access pattern, and why the CMDT read must not itself consume a SOQL query per record
+34. `skills/apex/feature-flags-and-kill-switches` — the rollback story for Step 5: flipping `Is_Active__c` only works if the flag is read where the skill says it should be
+35. `skills/apex/governor-limits` — the merged handler inherits the sum of the old triggers' SOQL, DML and CPU. This is the budget the consolidation has to fit inside, and the reason a naive merge fails at bulk size
 
 ### SOQL inside trigger handlers
-36. `skills/apex/soql-fundamentals`
-37. `skills/apex/apex-aggregate-queries`
+36. `skills/apex/soql-fundamentals` — relationship and bind syntax for the queries being hoisted out of the merged bodies into a single bulk query
+37. `skills/apex/apex-aggregate-queries` — where two former triggers each rolled up child records, the merge should do it once as an aggregate rather than twice in a loop
 
 ### Tests after consolidation
-38. `skills/apex/test-class-standards`
-39. `skills/apex/test-data-factory-patterns`
-40. `skills/apex/apex-test-setup-patterns`
+38. `skills/apex/test-class-standards` — what the post-consolidation test must assert, given that coverage alone cannot show behaviour was preserved
+39. `skills/apex/test-data-factory-patterns` — the merged handler needs one bulk fixture rather than each old trigger's ad-hoc setup
+40. `skills/apex/apex-test-setup-patterns` — `@TestSetup` vs per-method setup for a handler whose methods now share state, where a shared fixture can hide the recursion bug the tests exist to catch
 
 ### Templates
 41. `templates/apex/TriggerHandler.cls`
 42. `templates/apex/TriggerControl.cls`
-43. `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml`
+43. `templates/apex/cmdt/Trigger_Setting__mdt/` — the CMDT the framework switches on. Read the whole folder, not just the object file: `fields/` holds `Object_API_Name__c`, `Handler_Class__c` and `Is_Active__c`, and Step 4 emits a record against all three. An `.object-meta.xml` with no field files does not deploy.
 
 ---
 
@@ -213,6 +213,16 @@ Order matters — give the user an explicit sequence:
 4. Monitor `Application_Log__c` for 24 hours.
 
 Emphasize: the CMDT switch must come LAST so the rollback is "flip `Is_Active__c` to false".
+
+### Step 6 — Gate C: verify the emitted code before returning it
+
+This agent hands the user a deployable trigger + handler, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome — a check that did not run is reported as not run.
+
+1. **Symbol grounding** — every field the handler reads or writes appeared in the Step 1 discovery output, not in the model's picture of the object.
+2. **Identifier provenance** — each non-platform `Type.method(...)` is quoted from `templates/apex/TriggerHandler.cls` or `templates/apex/TriggerControl.cls`, and the CMDT field names in Step 4 match `templates/apex/cmdt/Trigger_Setting__mdt/fields/`.
+3. **Compile** — with a `target_org_alias`, `sf project deploy start --dry-run --test-level RunLocalTests`; without one, state that no compile check ran and cap `confidence` at MEDIUM.
+
+Then the check specific to this agent: **consolidation replaces a platform-nondeterministic execution order with a fixed one.** N triggers on an sObject fire in an order Salesforce does not guarantee; one handler runs its methods in the order you wrote them. If the plan never asked which order is intended, the output is a silent behaviour change, and Gate C is the last place to catch it — confirm the ordering was adjudicated in Step 3 with the user, and refuse to present the consolidation as behaviour-preserving if it was not.
 
 ---
 

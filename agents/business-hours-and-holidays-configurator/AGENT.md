@@ -23,6 +23,7 @@ dependencies:
     - admin/omni-channel-routing-setup
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -48,14 +49,15 @@ Designs and audits the Business Hours and Holidays configuration that every time
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/entitlements-and-milestones`
-3. `skills/admin/escalation-rules`
-4. `skills/admin/case-management-setup`
-5. `skills/admin/omni-channel-routing-setup`
-6. `skills/admin/email-to-case-configuration`
-7. `skills/admin/approval-processes`
-8. `templates/admin/naming-conventions.md`
-9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/entitlements-and-milestones`
+4. `skills/admin/escalation-rules`
+5. `skills/admin/case-management-setup`
+6. `skills/admin/omni-channel-routing-setup`
+7. `skills/admin/email-to-case-configuration`
+8. `skills/admin/approval-processes`
+9. `templates/admin/naming-conventions.md`
+10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -160,7 +162,7 @@ For orgs already in production, recommend a change-freeze window for the cutover
    - **What was healthy** — existing BH records that can be reused unchanged, holidays already covering the coming year, time-zone settings aligned with the region's users.
    - **What was concerning** — multiple default BHs, Escalation Rules referencing a BH that no longer aligns with the region's staffing, floating holidays handled manually without a reminder process, Apex hard-coding BH names.
    - **What was ambiguous** — overnight coverage hand-offs between regions (does the Americas 18:00 hand-off to APAC start-of-day the next morning?), whether country-standard holidays include state / provincial days.
-   - **Suggested follow-up agents** — `entitlement-and-milestone-designer` (if BH changes affect SLAs), `case-escalation-auditor` (Escalation Rule rebinding verification), `omni-channel-routing-designer` (if channel presence keyed off BH).
+   - **Suggested follow-up agents** — `entitlement-and-milestone-designer` (if BH changes affect SLAs), `audit-router --domain case_escalation` (Escalation Rule rebinding verification), `omni-channel-routing-designer` (if channel presence keyed off BH).
 10. **Citations**.
 
 ---

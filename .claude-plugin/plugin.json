@@ -25,5 +25,8 @@
   ],
   "skills": [
     "./.claude/skills/"
+  ],
+  "commands": [
+    "./commands/"
   ]
 }

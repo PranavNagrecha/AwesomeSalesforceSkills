@@ -217,6 +217,16 @@ Verify:
 - Every assertion has a failure message.
 - `@TestSetup` only contains data creation, no business logic.
 
+### Step 6 — Gate C: verify the emitted test class before returning it
+
+This agent hands the user a deployable `.cls`, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome — a check that did not run is reported as not run.
+
+1. **Symbol grounding** — every object and field the test constructs exists in the source class under test or in a probe result from this run.
+2. **Identifier provenance** — every factory call is quoted from the actual file: open `templates/apex/tests/TestDataFactory.cls`, `TestRecordBuilder.cls`, `MockHttpResponseGenerator.cls` and `TestUserFactory.cls` and copy the signature. This is the check that exists because `TestDataFactory.accounts(200)`, `MockHttpResponseGenerator.forEndpoint(…)` and `TestUserFactory.standardUser()` — none of which are real methods — shipped to users as finished test classes.
+3. **Compile** — with a `target_org_alias`, `sf project deploy start --dry-run --test-level RunLocalTests`; without one, state that no compile check ran and cap `confidence` at MEDIUM.
+
+Then the check this agent exists to pass: **a coverage number is not a test.** If the expected outcomes in Step 2 were read off the implementation rather than elicited from the caller, the assertions can only restate what the code already does, and the class will pass on the day the code is wrong. Report which assertions came from a stated expected outcome and which were inferred — and if none were stated, say the deliverable is a coverage instrument, not a behaviour test.
+
 ---
 
 ## Output Contract

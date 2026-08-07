@@ -210,12 +210,12 @@ The 10 sections:
 
 1. **Org Profile** — header with license SKUs, edition, feature flags, time zone, currency. From Step 1 + `architect/license-optimization-strategy`.
 2. **Objects + Fields** — every net-new or modified object/field. Fit tier ≠ Standard implies a row here. Cite `admin/object-creation-and-design`, `admin/custom-field-creation`, `admin/standard-object-quirks` per row.
-3. **Record Types + Page Layouts** — RT decisions per `record-type-strategy-at-scale`; page-layout assignments by RT × Profile/PSG. Recommend `record-type-and-layout-auditor` for verification.
-4. **Validation Rules** — every VR with bypass infra (Custom Setting + Custom Permission) per `admin/validation-rules`. Recommend `validation-rule-auditor` for post-deploy.
-5. **Permissions + Sharing** — PSG design per `permission-set-architecture`; sharing decisions per `sharing-selection.md` decision tree. Cite `user-access-comparison` probe to verify persona PSGs match the inventory. Recommend `permission-set-architect` and `sharing-audit-agent`.
-6. **Automation** — Flow / Apex / Approval / Platform Event rows. Each row cites `automation-selection.md`. Cross-reference process-flow handoffs (when supplied) by step_id. Recommend `flow-builder` / `apex-refactorer` / `flow-analyzer` per row.
-7. **UI + Lightning Pages** — apps, tabs, Lightning record pages, Dynamic Forms decisions, list views, dashboards entry tabs. Recommend `lightning-record-page-auditor`.
-8. **Reports + Dashboards** — report folders, dashboard set, sharing posture for analytics. Recommend `report-and-dashboard-auditor`.
+3. **Record Types + Page Layouts** — RT decisions per `record-type-strategy-at-scale`; page-layout assignments by RT × Profile/PSG. Recommend `audit-router --domain record_type_layout` for verification.
+4. **Validation Rules** — every VR with bypass infra (Custom Setting + Custom Permission) per `admin/validation-rules`. Recommend `audit-router --domain validation_rule` for post-deploy.
+5. **Permissions + Sharing** — PSG design per `permission-set-architecture`; sharing decisions per `sharing-selection.md` decision tree. Cite `user-access-comparison` probe to verify persona PSGs match the inventory. Recommend `permission-set-architect` and `audit-router --domain sharing`.
+6. **Automation** — Flow / Apex / Approval / Platform Event rows. Each row cites `automation-selection.md`. Cross-reference process-flow handoffs (when supplied) by step_id. Recommend per row: `flow-builder` for net-new Flow, `apex-builder` for net-new Apex, `apex-refactorer` only when the row modifies an *existing* class, `flow-analyzer` when the row lands on an object that already carries automation.
+7. **UI + Lightning Pages** — apps, tabs, Lightning record pages, Dynamic Forms decisions, list views, dashboards entry tabs. Recommend `audit-router --domain lightning_record_page`.
+8. **Reports + Dashboards** — report folders, dashboard set, sharing posture for analytics. Recommend `audit-router --domain report_dashboard`.
 9. **Data Migration** — for every object with an integration or migration story, the row names: source, External ID strategy per `data/external-id-strategy`, batch-window strategy per `data/data-loader-and-tools`, dup-rule per `admin/duplicate-management`. Recommend `data-loader-pre-flight` and `duplicate-rule-designer`.
 10. **UAT + Cutover** — UAT script set per `admin/uat-test-case-design`; cutover task list (refresh, deploy, smoke); deferred row table (Step 3 outputs); training-impact rollup per `change-management-and-training`.
 
@@ -241,7 +241,13 @@ Tag each row with `deploy_order_position`. Surface order conflicts (a Section 6 
 
 ### Step 6 — Validate `recommended_agent` per row
 
-For every row: confirm the `recommended_agent` exists in `agents/_shared/RUNTIME_VS_BUILD.md`. If not (typo, deprecated, freelanced) → refuse with `REFUSAL_RECOMMENDED_AGENT_INVALID` + the offending row_ids. The workbook's value evaporates if it routes to phantom agents.
+For every row, resolve `recommended_agent` in three steps — presence alone is not enough, because the deprecated stubs are still present on disk and still listed in the roster:
+
+1. **Strip the arguments.** `audit-router --domain record_type_layout` resolves to the agent id `audit-router`. Everything after the first space is invocation args, not part of the id.
+2. **Confirm the id exists** as `agents/<id>/AGENT.md` and appears in `agents/_shared/RUNTIME_VS_BUILD.md`.
+3. **Read that file's frontmatter and assert `status` is not `deprecated`.** This is the load-bearing check. The 14 Wave-3b auditors still have AGENT.md files and are still named in the roster, so a presence-only check passes them and the user is routed to a stub. `agents/_shared/AGENT_DISAMBIGUATION.md` carries the deprecated-name → `audit-router --domain=<x>` mapping; use it to rewrite the row rather than refusing on it.
+
+Refuse with `REFUSAL_RECOMMENDED_AGENT_INVALID` + the offending row_ids only when a row names an agent that does not resolve at all, or a deprecated agent with no mapping in AGENT_DISAMBIGUATION.md. A deprecated agent that *does* have a mapping is a rewrite, not a refusal — refusing there would block essentially every real workbook, since most releases touch record types, validation rules, sharing, UI or reports.
 
 ### Step 7 — Run user-access-comparison probe
 

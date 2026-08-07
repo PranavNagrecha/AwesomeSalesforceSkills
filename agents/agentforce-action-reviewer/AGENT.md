@@ -3,7 +3,7 @@ id: agentforce-action-reviewer
 class: runtime
 version: 1.0.0
 status: stable
-requires_org: true
+requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
@@ -61,12 +61,12 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/agentforce/agent-actions` — via `get_skill`
-4. `skills/agentforce/agent-topic-design`
-5. `skills/agentforce/agent-testing-and-evaluation`
-6. `skills/agentforce/agentforce-guardrails`
-7. `skills/agentforce/agentforce-observability`
-8. `skills/agentforce/einstein-trust-layer`
-9. `skills/agentforce/agentforce-persona-design`
+4. `skills/agentforce/agent-topic-design` — Step 3's coherence rubric; without it 'is this topic scoped correctly?' collapses into counting actions
+5. `skills/agentforce/agent-testing-and-evaluation` — what counts as a real agent test rather than an invocable unit test, which is the Step 2 'test coverage' dimension
+6. `skills/agentforce/agentforce-guardrails` — Step 4 is a direct cross-check against this list; a guardrail gap the reviewer cannot name is a guardrail gap it will not report
+7. `skills/agentforce/agentforce-observability` — Step 6 distinguishes an action that logs from one whose failure is invisible in production, which is the difference between an A and an F on that dimension
+8. `skills/agentforce/einstein-trust-layer` — which masking and retention behaviours the platform already provides, so the review does not raise a P0 for a control the Trust Layer applies by default
+9. `skills/agentforce/agentforce-persona-design` — Step 5 judges tone-to-audience fit and the handoff path; without it persona review degrades into a style opinion
 10. `skills/agentforce/agent-action-error-handling` — typed response envelopes
 11. `skills/agentforce/prompt-injection-defense` — input sanitization
 12. `skills/agentforce/agent-action-unit-tests` — Invocable test patterns
@@ -86,8 +86,9 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 
 | Input | Required | Example |
 |---|---|---|
-| `agent_id` OR `agent_developer_name` | yes | `Service_Agent_v2` |
-| `target_org_alias` | yes | `uat` |
+| `agent_metadata_path` | yes | `force-app/main/default` — the retrieved `bots/`, `genAiPlannerBundles/`, `genAiPlugins/` and `genAiFunctions/` directories. This is the agent's only data surface; there is no MCP probe for Agentforce metadata |
+| `agent_developer_name` | yes | `Service_Agent_v2` — selects which agent under that path is reviewed |
+| `target_org_alias` | no | `uat` — used only to resolve the Apex/Flow implementations behind actions (`get_apex_class`, `list_flows_on_object`). The review runs without it, at reduced confidence |
 | `review_depth` | no | `topic_only` \| `per_action` (default `per_action`) |
 
 ---
@@ -96,9 +97,24 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 
 ### Step 1 — Fetch the agent and its surface
 
-- `get_agent(agent_developer_name)` (MCP) to pull the definition.
-- For each Topic: instructions, example utterances, actions assigned.
-- For each Action: input schema, output schema, implementation (Apex invocable / Flow / Prompt Template / external), auth, documented side effects.
+**Do not call `get_agent(...)` here.** That MCP tool belongs to this library — it returns the `AGENT.md` body of an SfSkills run-time agent, not an Agentforce agent from the user's org (see the tool's own description: *"Fetch the full AGENT.md body for a named agent"*). Calling it with an Agentforce developer name returns the wrong document or nothing, and a review written on top of that result is a scorecard about an agent the model never read.
+
+There is no Agentforce probe on this agent's declared tool surface, so the definition comes from **retrieved metadata in the caller's repo**. Agentforce agents are ordinary DX metadata:
+
+| Component | What it is |
+|---|---|
+| `Bot` + `BotVersion` | the agent shell; a Bot becomes an agent once a planner bundle is attached |
+| `GenAiPlannerBundle` | the planner — one per agent, the container for its subagents and actions |
+| `GenAiPlugin` | a subagent — one category of related actions (what this agent's review calls a Topic) |
+| `GenAiFunction` | a single agent action |
+
+If `agent_metadata_path` was not supplied, stop and ask the caller to retrieve it first — `sf project retrieve start` with a manifest at **API 66.0 or later**, which is the floor for `GenAiPlannerBundle` and the current agent metadata types. Retrieval is the caller's action, not this agent's: writing files into their project is outside `AGENT_RULES.md`'s scope rule.
+
+Then read, per component:
+- Each `GenAiPlugin` (Topic): instructions, example utterances, the `GenAiFunction`s assigned to it.
+- Each `GenAiFunction` (Action): input schema, output schema, implementation (Apex invocable / Flow / Prompt Template / external), auth, documented side effects.
+
+Official source: *Agent Metadata*, Agentforce DX Developer Guide.
 
 ### Step 2 — Score each Action (A–F)
 
@@ -153,7 +169,7 @@ Cross-check against `skills/agentforce/agentforce-guardrails`:
    - **Healthy** — actions with structured IO; topics scoped; refusal-intents present.
    - **Concerning** — typeless inputs; prompt templates without grounding citation; topic with > 8 actions; no observability.
    - **Ambiguous** — test plan exists but never executed; action side effects undeclared.
-   - **Suggested follow-ups** — `prompt-library-governor` for template sprawl; `integration-catalog-builder` if actions do callouts.
+   - **Suggested follow-ups** — `audit-router --domain prompt_library` for template sprawl; `integration-catalog-builder` if actions do callouts.
 8. **Citations**.
 
 ---

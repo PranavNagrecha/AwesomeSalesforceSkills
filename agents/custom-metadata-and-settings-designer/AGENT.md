@@ -24,6 +24,7 @@ dependencies:
     - devops/environment-specific-value-injection
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -53,16 +54,17 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/custom-metadata-types`
-3. `skills/admin/custom-metadata-types-and-settings`
-4. `skills/apex/custom-metadata-in-apex`
-5. `skills/devops/environment-specific-value-injection`
-6. `skills/apex/feature-flags-and-kill-switches`
-7. `skills/admin/picklist-and-value-sets` — CMT entity references to pickups
-8. `templates/apex/cmdt/` — if CMT query patterns are emitted
-9. `templates/admin/naming-conventions.md`
-10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-11. `skills/admin/custom-label-management` — custom labels are the third config store; a design that ignores them ends up with translatable text stranded in CMDT rows
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/custom-metadata-types`
+4. `skills/admin/custom-metadata-types-and-settings`
+5. `skills/apex/custom-metadata-in-apex`
+6. `skills/devops/environment-specific-value-injection`
+7. `skills/apex/feature-flags-and-kill-switches`
+8. `skills/admin/picklist-and-value-sets` — CMT entity references to pickups
+9. `templates/apex/cmdt/` — if CMT query patterns are emitted
+10. `templates/admin/naming-conventions.md`
+11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+12. `skills/admin/custom-label-management` — custom labels are the third config store; a design that ignores them ends up with translatable text stranded in CMDT rows
 
 ---
 

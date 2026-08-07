@@ -219,7 +219,7 @@ Emit:
    - **What was healthy** — bypass provisioning, dedicated integration PSG, indexed External ID, under-utilized storage.
    - **What was concerning** — VR bypass gaps not specific to this load (fix once, benefits every future load), data-skew hotspots, orphaned active flows.
    - **What was ambiguous** — source row volume estimate vs reality, CSV column → API name mapping that the agent couldn't verify.
-   - **Suggested follow-up agents** — `validation-rule-auditor` (if bypass gaps surfaced), `duplicate-rule-designer` (if dup-rule blocks surfaced), `sharing-audit-agent` (if OWD + volume are dangerous), `org-drift-detector` (post-load verification).
+   - **Suggested follow-up agents** — `audit-router --domain validation_rule` (if bypass gaps surfaced), `duplicate-rule-designer` (if dup-rule blocks surfaced), `audit-router --domain sharing` (if OWD + volume are dangerous), `audit-router --domain org_drift` (post-load verification).
 8. **Citations**.
 
 ---

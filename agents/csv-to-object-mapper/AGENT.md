@@ -3,7 +3,7 @@ id: csv-to-object-mapper
 class: runtime
 version: 1.0.0
 status: stable
-requires_org: false
+requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
@@ -49,10 +49,10 @@ Given a CSV file header (or a schema description), produces a mapping to an exis
 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
-3. `skills/admin/object-creation-and-design`
-4. `skills/admin/custom-field-creation`
-5. `skills/admin/data-import-and-management`
-6. `skills/data/external-id-strategy`
+3. `skills/admin/object-creation-and-design` — `create-new-object` mode designs a real object; without this the agent proposes a shape that fails on standard-object collisions, sharing defaults and the Name-field choice
+4. `skills/admin/custom-field-creation` — the legal type/length combinations a proposed field must land on, and which of them are immutable after creation. A mapping that proposes an illegal length is discovered at deploy time, after the admin has committed to it
+5. `skills/admin/data-import-and-management` — what the loader will actually do with the mapping: required-field behaviour, date/locale parsing, and the failure modes the Step 6 pre-check exists to catch
+6. `skills/data/external-id-strategy` — the External ID choice is the one decision in this deliverable that is expensive to reverse; upsert keys off it and a wrong pick duplicates the whole load
 7. `templates/admin/naming-conventions.md`
 8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 9. `skills/data/etl-vs-api-data-patterns` — decides whether the mapping should be a CSV load at all, or whether the source belongs behind an API
@@ -65,15 +65,24 @@ Given a CSV file header (or a schema description), produces a mapping to an exis
 |---|---|---|
 | `csv_header` | yes | comma-separated header line, OR a bullet list of column names with 1-2 sample values |
 | `target_object` | no | `Account` \| `new:<ProposedName>` (if creating a new object) |
-| `target_org_alias` | yes |
+| `target_org_alias` | yes | `uat` — Step 1 describes the target object against it; the mapping table is not produced without one |
 | `mode` | no | `map` (default — map to existing fields, create missing ones) \| `create-new-object` (design a new object from the CSV) |
 
 ---
 
 ## Plan
 
-1. **Parse the header** — split into columns, normalize whitespace, detect common separators.
-2. **Column type inference** (using up to 3 sample values per column if provided):
+1. **Fetch the target object's real schema — before any mapping decision.** The deliverable is a column-to-field table an admin pastes into a load; generated from the model's recollection of an object it never read, it is a fabrication with a filename. So:
+
+   - `describe_object_full(target_org=..., object=<target_object>)` — field API names, labels, types, lengths, required-ness, and the picklist value sets Step 2 checks membership against.
+   - `list_custom_fields(target_org=..., object=<target_object>)` — the custom-field surface, including which are External ID or Unique.
+
+   In `create-new-object` mode there is no target to describe, but still call `list_custom_objects()` so the proposed API name does not collide with an object that already exists.
+
+   If `target_org_alias` was not supplied, **stop and ask**. Do not proceed against remembered standard-object schemas: this agent is `requires_org: true` precisely because its central output cannot be honest without a describe.
+
+2. **Parse the header** — split into columns, normalize whitespace, detect common separators.
+3. **Column type inference** (using up to 3 sample values per column if provided):
    - Columns matching `/email/i` or sample values matching email regex → Email type.
    - Columns matching `/phone|tel/i` → Phone.
    - Columns with only digits + length 8-15 → numeric candidate (but check: could be phone, could be external id; prefer Text unless sample strongly implies numeric computation).
@@ -81,18 +90,26 @@ Given a CSV file header (or a schema description), produces a mapping to an exis
    - Columns matching `/date|_dt$/i` or sample values matching ISO-8601 → DateTime.
    - Columns matching `/id|external/i` → External ID candidate (Text + unique).
    - Columns matching a known picklist on the target → Picklist (verify values are a subset).
-   - Default → Text, length inferred from longest sample value × 2 (rounded up to standard length: 80, 255, 1000, 32768).
-3. **Mode: map** — for each column, propose a target field:
+   - Default → Text, length inferred from the longest sample value × 2 and rounded up — but onto a ladder that respects the type boundary. **Text tops out at 255.** Anything longer is a different field type, not a longer Text field:
+
+     | Rounded length | Field type to propose |
+     |---|---|
+     | ≤ 80 | Text(80) |
+     | 81 – 255 | Text(255) |
+     | > 255 | Long Text Area — a separate type, not on layouts by default, not filterable in reports, and not usable in a WHERE clause. Say so in the justification, because it changes what the admin can do with the column afterwards |
+
+     `1000` and `32768` are Long Text Area sizes; proposing `Text(1000)` produces a field that cannot be created.
+4. **Mode: map** — for each column, propose a target field:
    - If `target_object` has a field whose label or API name matches (fuzzy) → map.
    - If no match → propose creating a new custom field, named per `templates/admin/naming-conventions.md`.
    - Fields already flagged as deprecated (naming convention or `Deprecated_` prefix) → warn.
-4. **Mode: create-new-object** — invoke the logic of `object-designer` inline (do NOT auto-chain; just apply the same rules):
+5. **Mode: create-new-object** — invoke the logic of `object-designer` inline (do NOT auto-chain; just apply the same rules):
    - Propose object API name + label.
    - Propose Name field (Auto Number if no natural name, else Text).
-   - Propose each field per Step 2.
+   - Propose each field per Step 3.
    - Identify the External ID (the column most likely to be the primary key — usually named `*_id`, `uuid`, or a column with 100% unique non-null sample values).
-5. **Emit the Data Loader mapping file** — the standard `.sdl` format that maps CSV header → field API name.
-6. **Emit a pre-check** — required fields on the target that have no CSV column mapping (the user must provide defaults or fail the load); PII columns that require field-level encryption or restricted access.
+6. **Emit the Data Loader mapping file** — the standard `.sdl` format that maps CSV header → field API name.
+7. **Emit a pre-check** — required fields on the target that have no CSV column mapping (the user must provide defaults or fail the load); PII columns that require field-level encryption or restricted access.
 
 ---
 

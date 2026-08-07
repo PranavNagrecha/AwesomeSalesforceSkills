@@ -177,18 +177,18 @@ For each story, decide which run-time agent best executes it. Use this routing t
 | Identity-data dedup needs | `duplicate-rule-designer` (`/design-duplicate-rule`) |
 | Field added/removed/changed | `field-impact-analyzer` (`/analyze-field-impact`) |
 | Cross-cloud / integration story | `bulk-migration-planner` (`/plan-bulk-migration`) or `catalog-integrations` |
-| Sharing change | `sharing-audit-agent` (`/audit-sharing`) |
-| Validation rule or VR change | `validation-rule-auditor` (the canonical audit-router slash) |
+| Sharing change | `audit-router` (`/audit-router --domain sharing`) |
+| Validation rule or VR change | `audit-router` (`/audit-router --domain validation_rule`) |
 | Sales-stage / pipeline change | `sales-stage-designer` (`/design-sales-stages`) |
 | Lead routing / SLA change | `lead-routing-rules-designer` (`/design-lead-routing`) |
 | Service queue / routing | `omni-channel-routing-designer` (`/design-omni-channel`) |
 | Knowledge / KCS / channel | `knowledge-article-taxonomy-agent` (`/design-knowledge-taxonomy`) |
 | Email template work | `email-template-modernizer` (`/modernize-email-templates`) |
 | AI / Agentforce action | `agentforce-builder` (`/build-agentforce-action`) |
-| Reports / dashboards | `report-and-dashboard-auditor` (`/audit-reports`) |
-| Lightning record page change | `lightning-record-page-auditor` (`/audit-record-page`) |
-| Record types / page layout | `record-type-and-layout-auditor` (`/audit-record-types`) |
-| Picklist work (esp. multi-RT) | `picklist-governor` (`/govern-picklists`) |
+| Reports / dashboards | `audit-router` (`/audit-router --domain report_dashboard`) |
+| Lightning record page change | `audit-router` (`/audit-router --domain lightning_record_page`) |
+| Record types / page layout | `audit-router` (`/audit-router --domain record_type_layout`) |
+| Picklist work (esp. multi-RT) | `audit-router` (`/audit-router --domain picklist`) |
 
 Multiple agents are allowed per story when the work genuinely spans surfaces (e.g. new object + new PSG + new flow → `object-designer`, `permission-set-architect`, `flow-builder`). Order them by build sequence: data model → permissions → automation → UI → reports.
 
@@ -281,7 +281,7 @@ The JSON envelope MUST embed every story as a structured object per `skills/admi
   "moscow_overridden": false,
   "wsjf_score": 7.4,
   "recommended_agents": ["flow-builder", "permission-set-architect"],
-  "recommended_skills": ["admin/account-team-management", "admin/permission-set-architecture", "flow/record-triggered-flow-design"],
+  "recommended_skills": ["admin/permission-set-architecture", "flow/record-triggered-flow-patterns"],
   "rtm_req_ids": ["REQ-014", "REQ-015"]
 }
 ```

@@ -178,16 +178,16 @@ For each handoff, recommend the build agent that owns the seam:
 | Seam shape | Recommend |
 |---|---|
 | `[FLOW]` ↔ `[FLOW]` chain | `flow-builder` (`/build-flow`) — for the chain |
-| `[FLOW]` → `[APEX]` | `flow-builder` AND `apex-refactorer` (`/refactor-apex`) — explicit invocable Apex action |
+| `[FLOW]` → `[APEX]` | `flow-builder` AND `apex-builder` (`/build-apex`) — the invocable Apex action is net-new, so it is a scaffold job; route to `apex-refactorer` only when the seam lands on an existing class |
 | `[FLOW]` ↔ `[APPROVAL]` | `flow-builder` (`/build-flow`) — Flow-driven approvals |
-| `[FLOW]` → `[PLATFORM_EVENT]` | `bulk-migration-planner` (`/plan-bulk-migration`) — confirm pub-sub vs PE pattern |
+| `[FLOW]` → `[PLATFORM_EVENT]` | In-org fan-out: `standards/decision-trees/automation-selection.md` for the publish/subscribe-vs-direct call, then `flow-builder` for the publishing element and `apex-builder` (`/build-apex`) for a platform-event subscriber. Route to `bulk-migration-planner` only when the event crosses the org boundary (external subscriber, Pub/Sub API) — it plans *data integrations*, not in-org decoupling |
 | `[FLOW]` → `[INTEGRATION]` | `bulk-migration-planner` (`/plan-bulk-migration`) — confirm pattern; `agentforce-builder` if AI-shaped |
 | `[INTEGRATION]` ↔ `[INTEGRATION]` | `bulk-migration-planner` (`/plan-bulk-migration`) AND `catalog-integrations` (`/catalog-integrations`) — register the integration |
 | `[MANUAL]` → `[FLOW]` | `flow-builder` for the entry trigger; `lwc-builder` (`/build-lwc`) if a UI is the trigger surface |
 | `[MANUAL]` ↔ `[APPROVAL]` | `flow-builder` for the launch path |
-| `[INTEGRATION]` → `[APEX]` | `apex-refactorer` for inbound shape; `bulk-migration-planner` for the integration design |
+| `[INTEGRATION]` → `[APEX]` | `apex-builder` (`/build-apex`) for a net-new inbound REST resource or subscriber; `apex-refactorer` when an existing class is being reshaped; `bulk-migration-planner` for the integration design |
 | `[*]` ↔ `[*]` involving record creation across objects | `field-impact-analyzer` (`/analyze-field-impact`) for the field-set involved |
-| `[*]` ↔ `[*]` involving sharing change | `sharing-audit-agent` (`/audit-sharing`) |
+| `[*]` ↔ `[*]` involving sharing change | `audit-router` (`/audit-router --domain sharing`) |
 | `[*]` ↔ `[*]` cross-cloud | also recommend ADR via `architect/architecture-decision-records` |
 
 A handoff can recommend multiple agents — `flow-builder` for the action and `field-impact-analyzer` for the field-set is normal.
@@ -239,7 +239,7 @@ One markdown document:
    - **What was healthy** — clean lane separation, every integration has a pattern, every approval has an A, no over-stretching of `[FLOW]`.
    - **What was concerning** — missing accountable role, tier mismatches, integrations without patterns, cross-cloud without ADR, > 60% as-is/to-be delta.
    - **What was ambiguous** — steps where two tiers are plausible, integration patterns where two trees apply.
-   - **Suggested follow-up agents** — `/build-flow` for `[FLOW]` lanes, `/plan-bulk-migration` for integration handoffs, `/catalog-integrations` to register external systems, `/audit-sharing` for sharing crossings, `/architect-perms` for new persona PSGs, `/author-config-workbook` to compile final admin handoff.
+   - **Suggested follow-up agents** — `/build-flow` for `[FLOW]` lanes, `/plan-bulk-migration` for integration handoffs, `/catalog-integrations` to register external systems, `/audit-router --domain sharing` for sharing crossings, `/architect-perms` for new persona PSGs, `/author-config-workbook` to compile final admin handoff.
 7. **Citations** — every skill, decision tree, probe, and MCP probe call.
 
 ---

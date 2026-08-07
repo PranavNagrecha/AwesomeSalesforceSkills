@@ -23,6 +23,7 @@ dependencies:
     - admin/service-console-configuration
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -51,14 +52,15 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/entitlements-and-milestones` — canon
-3. `skills/admin/case-management-setup`
-4. `skills/admin/escalation-rules` — coexistence with escalation rules
-5. `skills/admin/assignment-rules` — case-to-queue
-6. `skills/admin/omni-channel-routing-setup` — if milestones feed Omni-based escalation
-7. `skills/admin/service-console-configuration`
-8. `templates/admin/naming-conventions.md`
-9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/entitlements-and-milestones` — canon
+4. `skills/admin/case-management-setup`
+5. `skills/admin/escalation-rules` — coexistence with escalation rules
+6. `skills/admin/assignment-rules` — case-to-queue
+7. `skills/admin/omni-channel-routing-setup` — if milestones feed Omni-based escalation
+8. `skills/admin/service-console-configuration`
+9. `templates/admin/naming-conventions.md`
+10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -216,7 +218,7 @@ Design mode:
    - **What was healthy** — existing BH records reusable, clean product-to-entitlement binding, existing Case queues well-named.
    - **What was concerning** — SLA tiers that would overlap at edge conditions (e.g. 2h response for Gold but clock starts at Case creation regardless of channel latency), renewal model implied but not specified, tier targets that violate the posted Business Hours coverage (24x7 SLA on a 9x5 BH record).
    - **What was ambiguous** — "business hours" interpretation across regions, whether case re-open resets the clock.
-   - **Suggested follow-up agents** — `flow-builder` (Milestone action flows), `omni-channel-routing-designer` (if Omni integrates), `case-escalation-auditor` (post-design verification).
+   - **Suggested follow-up agents** — `flow-builder` (Milestone action flows), `omni-channel-routing-designer` (if Omni integrates), `audit-router --domain case_escalation` (post-design verification).
 10. **Citations**.
 
 Audit mode:

@@ -57,10 +57,10 @@ Designs or audits the sandbox + scratch-org strategy for a Salesforce program: w
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/sandbox-strategy` — via `get_skill`
-4. `skills/devops/environment-strategy`
-5. `skills/devops/sandbox-refresh-and-templates`
-6. `skills/devops/scratch-org-management`
-7. `skills/devops/scratch-org-pools`
+4. `skills/devops/environment-strategy` — maps the delivery model onto the environment ladder; without it the agent proposes a sandbox per team rather than a sandbox per stage of the pipeline
+5. `skills/devops/sandbox-refresh-and-templates` — the refresh interval floors and what a sandbox template can and cannot seed. A proposed cadence that violates a refresh floor is not a strategy, it is a wish
+6. `skills/devops/scratch-org-management` — the alternative to buying another sandbox: scratch orgs cover most feature-branch work, and a strategy that reaches for a Developer Pro where a scratch org fits is expensive for no benefit
+7. `skills/devops/scratch-org-pools` — pre-warmed pools are what make the scratch-org recommendation survive contact with CI wait times; without it the recommendation is rejected on first use
 8. `skills/devops/scratch-org-snapshots` — GA snapshot-based fast bring-up
 9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 10. `skills/admin/data-export-service` — Data Export role and limits in sandbox-seeding workflows; honest framing of what it does and doesn't cover

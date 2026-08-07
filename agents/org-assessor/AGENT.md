@@ -143,6 +143,6 @@ Headline score, top risk, top opportunity.]
 ## What This Agent Does NOT Do
 
 - Does not deploy remediations or modify the org — output is a report with a roadmap.
-- Does not replace domain-specific run-time agents (e.g. `security-scanner`, `sharing-audit-agent`); it scopes findings broadly and recommends the specialist when one domain needs depth.
+- Does not replace domain-specific run-time agents (e.g. `security-scanner`, `audit-router --domain sharing`); it scopes findings broadly and recommends the specialist when one domain needs depth.
 - Does not execute against a live org without an explicit SFDX project path or metadata export — speculative assessments are refused.
 - Does not author new skills; if the assessment surfaces a coverage gap, it flags the gap for `/request-skill` rather than freestyling guidance.

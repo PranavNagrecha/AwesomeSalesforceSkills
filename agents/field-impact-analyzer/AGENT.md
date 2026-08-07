@@ -82,33 +82,33 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 4. `AGENT_RULES.md`
 
 ### Field shape & data model
-5. `skills/admin/custom-field-creation`
+5. `skills/admin/custom-field-creation` — which field attributes are mutable in place and which force a delete-and-recreate; a rename plan that assumes the type can change alongside it is wrong before Step 1 finishes
 6. `skills/admin/formula-fields` — formula dependencies fan out transitively
 7. `skills/admin/field-dependency-and-controlling` — controlling/dependent picklist chains
 8. `skills/admin/picklist-field-integrity-issues` — restricted picklist + record-type implications
 9. `skills/admin/compound-field-patterns` — Address / Name / Geolocation special handling
 10. `skills/admin/lookup-filter-cross-object-patterns` — fields cited in lookup filters; deletion silently breaks the picker
 11. `skills/admin/system-field-behavior-and-audit` — standard system field constraints (`Id`, `OwnerId`, etc.)
-12. `skills/data/data-model-design-patterns`
+12. `skills/data/data-model-design-patterns` — tells the agent whether the field is load-bearing for the object's relationships (junction keys, denormalised copies) or incidental, which is the difference between a P0 and a P2 on the same reference count
 13. `skills/data/external-id-strategy` — External ID + Unique flag implications on rename
 14. `skills/data/roll-up-summary-alternatives` — RSF dependencies on the field
-15. `skills/data/field-history-tracking`
-16. `skills/data/record-merge-implications`
+15. `skills/data/field-history-tracking` — history rows do not follow a renamed field's label and are lost outright on delete; the `IsFieldHistoryTracked` flag from Step 1 only matters if the agent knows what it costs
+16. `skills/data/record-merge-implications` — merge behaviour differs for fields that are master-record-only, so deleting one changes what survives a future merge in a way no reference scan surfaces
 
 ### Access / sharing
-17. `skills/admin/permission-set-architecture`
-18. `skills/admin/permission-sets-vs-profiles`
+17. `skills/admin/permission-set-architecture` — the FLS surface to enumerate: how many permission sets grant access to this field, which is the population whose access silently changes on rename
+18. `skills/admin/permission-sets-vs-profiles` — FLS can live in either, and an audit that scans only permission sets under-reports on an org still carrying profile-based FLS
 19. `skills/admin/permission-set-group-composition` — PSG composition affecting FLS coverage
-20. `skills/admin/sharing-and-visibility`
-21. `skills/admin/custom-permissions`
+20. `skills/admin/sharing-and-visibility` — a field used in a criteria-based sharing rule is a P0 for delete: removing it silently changes who can see records, and no Apex or Flow scan finds it
+21. `skills/admin/custom-permissions` — bypass and gating patterns that reference the field indirectly, which the reference scan reports as zero usage
 22. `skills/admin/integration-user-management` — integration-user FLS surface
 23. `standards/decision-trees/sharing-selection.md`
 
 ### Apex / SOQL impact
-24. `skills/apex/soql-fundamentals`
+24. `skills/apex/soql-fundamentals` — distinguishes a field in a SELECT list (read, safe to rename with the API name) from one in a WHERE or ORDER BY, where a rename changes selectivity and index behaviour
 25. `skills/apex/dynamic-apex` — dynamic SOQL = rename-brittle
-26. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-27. `skills/apex/apex-user-and-permission-checks`
+26. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — code paths that strip the field on the way through behave differently after an FLS change, so an access-shape finding needs this to be scored honestly
+27. `skills/apex/apex-user-and-permission-checks` — hard-coded `Schema.sObjectType.<Object>.fields.<Field>.isAccessible()` checks break on rename in a way that compiles and then fails at runtime
 
 ### LWC impact
 28. `skills/lwc/lwc-public-api-hardening` — `@api recordId` + design-attribute coercion
@@ -136,6 +136,7 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 | `target_org_alias` | yes | `prod`, `uat`, `mydevsandbox` |
 | `repo_path` | no | path to the sfdx project root; default `force-app/main/default` |
 | `intent` | no | `rename` / `delete` / `audit` — changes severity thresholds |
+| `integration_principals` | no | usernames or permission-set names the org treats as integrations, e.g. `["MuleSoft Integration", "Boomi_API_User@acme.com"]` — consumed by the Step 4 rename P0 criterion, which cannot be evaluated without it |
 
 If `target_org_alias` is missing, STOP and ask — live-org metadata is required for an honest score.
 
@@ -146,8 +147,23 @@ If `target_org_alias` is missing, STOP and ask — live-org metadata is required
 ### Step 1 — Confirm the field exists and capture its type
 
 - `describe_org(target_org=...)` — confirm connection.
-- `tooling_query("SELECT QualifiedApiName, DataType, Length, Custom, InlineHelpText, ExternalId, Unique FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName = '<object>' AND QualifiedApiName = '<object>.<field>' LIMIT 1")`.
-- If the row is absent, STOP with a clear error. Never fabricate the field.
+```
+tooling_query("SELECT QualifiedApiName, DurableId, Label, DataType, Length, Precision, Scale,
+                      IsIndexed, IsFieldHistoryTracked, IsNillable, IsCalculated, NamespacePrefix
+               FROM FieldDefinition
+               WHERE EntityDefinition.QualifiedApiName = '<object>'
+                 AND QualifiedApiName = '<field>' LIMIT 1")
+```
+
+Three things about that query, each of which the previous version got wrong and each of which made the step return zero rows on every invocation — which then fired `REFUSAL_FIELD_NOT_FOUND` for fields that exist:
+
+- **`QualifiedApiName` on FieldDefinition is the bare field name** — `Industry`, `My_Field__c` — **not** `Account.Industry`. The object is selected by the `EntityDefinition.QualifiedApiName` filter, which is *required*: "When querying or searching the FieldDefinition object, you must filter using the following syntax: `WHERE EntityDefinition.QualifiedApiName = '[ObjectAPIName]'`."
+- **`Custom`, `InlineHelpText`, `ExternalId` and `Unique` are not FieldDefinition columns.** Selecting them is a `No such column` error that fails the whole query, not just those fields. Derive custom-ness from the `__c` / `__e` suffix plus `NamespacePrefix`; fetch `InlineHelpText`, `ExternalId` and `Unique` separately from the Tooling `CustomField` object, keyed on the `DurableId` this query returns.
+- **Ask for the attributes that actually drive the score.** `IsIndexed` decides whether a rename invalidates a custom index; `IsFieldHistoryTracked` decides whether history rows survive the change; `NamespacePrefix` drives `REFUSAL_MANAGED_PACKAGE`. The old projection asked for none of them.
+
+If the row is absent, STOP with a clear error. Never fabricate the field — but do not conclude "absent" from a query that errored: a `No such column` failure and a zero-row result are different outcomes, and only the second one is `REFUSAL_FIELD_NOT_FOUND`.
+
+Official source: *FieldDefinition*, Tooling API Developer Guide.
 
 ### Step 2 — Enumerate repo references
 
@@ -189,9 +205,16 @@ Derive a score per `intent`:
 
 | Scenario | P0 | P1 | P2 |
 |---|---|---|---|
-| **Rename** | Any integration user (identified via `list_permission_sets`) has `PermissionsEdit` on the field AND any Apex class uses dynamic SOQL referencing the field | Apex / Flow write references found; formula fields depend on the field | Only page-layout / permission-set / report references |
+| **Rename** | An integration principal has edit access to the field AND any Apex class uses dynamic SOQL referencing the field — see the note below on how to establish the first half | Apex / Flow write references found; formula fields depend on the field | Only page-layout / permission-set / report references |
 | **Delete** | Any active Flow or Apex class writes to the field | Active VRs / approval steps reference the field; field is an External ID or `Unique`; field feeds a roll-up summary on the same object | Only read-only references remain |
 | **Audit** | Field history tracking enabled + field is PII-classified — heightened scrutiny needed | Field is used by integrations but undocumented | Informational only |
+
+**On "integration principal".** `list_permission_sets` returns permission sets; it does not tell you which *users* are integrations. There is no metadata flag for "this is an integration user" — the designation is organisational, not platform. So establish it one of two ways, and say which one you used:
+
+1. The caller names the integration users or their permission sets in `integration_principals` (optional input). Preferred — it is the only source that is actually authoritative.
+2. Absent that, list the permission sets that grant `PermissionsEdit` on the field via `describe_permission_set`, present them to the caller, and ask which are integration-held. Do not guess from names.
+
+If neither is available, this P0 criterion is recorded in `dimensions_skipped[]` with `state: not-run` and the rename score is capped at P1 — a criterion that cannot be evaluated must not silently read as "not triggered."
 
 Set a single overall confidence:
 - **HIGH** — repo + org probes both completed with no pagination errors.
@@ -271,7 +294,7 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 | `REFUSAL_OBJECT_NOT_FOUND` | `EntityDefinition` query returned zero rows for `<object_name>`. |
 | `REFUSAL_STANDARD_SYSTEM_FIELD` | Field is a standard system field (`Id`, `Name`, `OwnerId`, `CreatedById`, `CreatedDate`, `LastModifiedById`, `LastModifiedDate`, `SystemModstamp`, `IsDeleted`, `MasterRecordId`) and `intent` is `rename` or `delete` — these cannot be renamed or deleted. Report the fact and stop. |
 | `REFUSAL_MANAGED_PACKAGE` | Field is on a managed-package object (`NamespacePrefix` non-null) AND `intent` is `rename` or `delete` — refuse the structural change; `audit` is still allowed but warn that package upgrades may add references. |
-| `REFUSAL_OVER_SCOPE_LIMIT` | Over 100 referencing Apex classes detected by the probe — return partial results with `dimensions_skipped[apex-references].state=partial` and recommend running `detect-drift` first to scope the blast. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Over 100 referencing Apex classes detected by the probe — return partial results with `dimensions_skipped[apex-references].state=partial` and recommend running `/audit-router --domain org_drift` first to scope the blast. |
 | `REFUSAL_OUT_OF_SCOPE` | Request to rename/delete the field on the agent's behalf — agent produces an evidence pack, never modifies repo or org. |
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | Risk score lands as P0 with `intent=delete` AND any active integration user has `PermissionsEdit` on the field — escalate to a human approver before any downstream action. |
 

@@ -35,6 +35,7 @@ dependencies:
     - devops/source-tracking-and-conflict-resolution
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   decision_trees:
     - sharing-selection.md
@@ -61,40 +62,41 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ### The scoring rules
-3. `skills/devops/code-review-checklist-salesforce` — the rule set the static half of the score is computed from
-4. `skills/devops/pre-deployment-checklist` — the go/no-go items a score has to cover, so 'LOW risk' means checked rather than merely quiet
-5. `skills/devops/salesforce-code-analyzer` — the static-analysis signal behind the code-quality component of the score
+4. `skills/devops/code-review-checklist-salesforce` — the rule set the static half of the score is computed from
+5. `skills/devops/pre-deployment-checklist` — the go/no-go items a score has to cover, so 'LOW risk' means checked rather than merely quiet
+6. `skills/devops/salesforce-code-analyzer` — the static-analysis signal behind the code-quality component of the score
 
 ### What actually fails at deploy time
-6. `skills/devops/deployment-error-diagnosis` — the deploy-time error taxonomy — the score is a prediction of which of these will fire
-7. `skills/devops/deployment-error-troubleshooting` — maps a predicted failure to the error string the user will really see, which is what makes the finding actionable
-8. `skills/devops/metadata-api-retrieve-deploy` — what the Metadata API will and will not carry, so the manifest is scored for completeness and not just content
-9. `skills/devops/api-version-management` — an API version downgrade is one of this agent's named breaking changes; this is why it breaks
-10. `skills/devops/flow-deployment-activation-ordering` — a Flow that arrives inactive is the most common silent post-deploy regression and never shows up as a deploy error
+7. `skills/devops/deployment-error-diagnosis` — the deploy-time error taxonomy — the score is a prediction of which of these will fire
+8. `skills/devops/deployment-error-troubleshooting` — maps a predicted failure to the error string the user will really see, which is what makes the finding actionable
+9. `skills/devops/metadata-api-retrieve-deploy` — what the Metadata API will and will not carry, so the manifest is scored for completeness and not just content
+10. `skills/devops/api-version-management` — an API version downgrade is one of this agent's named breaking changes; this is why it breaks
+11. `skills/devops/flow-deployment-activation-ordering` — a Flow that arrives inactive is the most common silent post-deploy regression and never shows up as a deploy error
 
 ### Diffing source against the live org
-11. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
-12. `skills/devops/source-tracking-and-conflict-resolution` — drift in the target org since the branch was cut is risk the manifest diff alone cannot show
+12. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
+13. `skills/devops/source-tracking-and-conflict-resolution` — drift in the target org since the branch was cut is risk the manifest diff alone cannot show
 
 ### Data the metadata depends on
-13. `skills/data/deployment-data-dependencies` — record types, CMDT rows and reference data do not travel with metadata — a deploy that assumes them fails on arrival
-14. `skills/devops/data-seeding-for-testing` — a required-field addition on a populated table cannot deploy unless the target has conforming data
+14. `skills/data/deployment-data-dependencies` — record types, CMDT rows and reference data do not travel with metadata — a deploy that assumes them fails on arrival
+15. `skills/devops/data-seeding-for-testing` — a required-field addition on a populated table cannot deploy unless the target has conforming data
 
 ### Coverage & regression surface
-15. `skills/devops/automated-regression-testing` — the test surface that would actually catch the breakages the score predicts
-16. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as the alternative to rescuing coverage with stub tests
-17. `skills/apex/apex-schema-describe` — Schema describe is how the agent proves a referenced field or picklist value still exists in the target
+16. `skills/devops/automated-regression-testing` — the test surface that would actually catch the breakages the score predicts
+17. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as the alternative to rescuing coverage with stub tests
+18. `skills/apex/apex-schema-describe` — Schema describe is how the agent proves a referenced field or picklist value still exists in the target
 
 ### If it goes wrong
-18. `skills/devops/rollback-and-hotfix-strategy` — a HIGH score is only actionable if the report can state what rollback would cost
-19. `skills/devops/go-live-cutover-planning` — sequencing when the change set is one step of a cutover rather than a routine deploy
-20. `skills/devops/isv-license-management-and-trialforce` — flag risk on managed-package deployments that change LMA wiring, alter Feature Parameter direction, or attempt FP propagation testing on beta versions
+19. `skills/devops/rollback-and-hotfix-strategy` — a HIGH score is only actionable if the report can state what rollback would cost
+20. `skills/devops/go-live-cutover-planning` — sequencing when the change set is one step of a cutover rather than a routine deploy
+21. `skills/devops/isv-license-management-and-trialforce` — flag risk on managed-package deployments that change LMA wiring, alter Feature Parameter direction, or attempt FP propagation testing on beta versions
 
 ### Decision trees
-21. `standards/decision-trees/sharing-selection.md` — for profile / permission-set delta analysis
+22. `standards/decision-trees/sharing-selection.md` — for profile / permission-set delta analysis
 
 ---
 

@@ -46,6 +46,7 @@ dependencies:
     - security/session-management-and-timeout
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -74,48 +75,49 @@ Given one profile (or a set of profiles scoped by name filter) in the target org
 
 ### Contract
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Architecture model (canonical)
-4. `skills/admin/permission-set-architecture` — canonical model
-5. `skills/admin/permission-sets-vs-profiles`
-6. `skills/admin/permission-set-group-composition` — PSG layering, mute, deletion order
-7. `skills/security/permission-set-groups-and-muting`
-8. `templates/admin/permission-set-patterns.md`
-9. `templates/admin/naming-conventions.md`
+5. `skills/admin/permission-set-architecture` — canonical model
+6. `skills/admin/permission-sets-vs-profiles`
+7. `skills/admin/permission-set-group-composition` — PSG layering, mute, deletion order
+8. `skills/security/permission-set-groups-and-muting`
+9. `templates/admin/permission-set-patterns.md`
+10. `templates/admin/naming-conventions.md`
 
 ### Permission categories
-10. `skills/admin/custom-permissions`
-11. `skills/admin/delegated-administration`
-12. `skills/admin/user-access-policies`
-13. `skills/admin/user-management`
-14. `skills/admin/integration-user-management` — integration profiles migrate differently
-15. `skills/admin/mass-transfer-ownership` — transfer ownership before deactivating profile-bound user
+11. `skills/admin/custom-permissions`
+12. `skills/admin/delegated-administration`
+13. `skills/admin/user-access-policies`
+14. `skills/admin/user-management`
+15. `skills/admin/integration-user-management` — integration profiles migrate differently
+16. `skills/admin/mass-transfer-ownership` — transfer ownership before deactivating profile-bound user
 
 ### Sharing + visibility (decisions surfaced when residual policy touches OWD/role hierarchy)
-16. `skills/admin/sharing-and-visibility`
-17. `skills/admin/compliant-data-sharing-setup`
-18. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
+17. `skills/admin/sharing-and-visibility`
+18. `skills/admin/compliant-data-sharing-setup`
+19. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
 
 ### Security posture (residual session/IP/MFA must match license + license tier)
-19. `skills/security/session-management-and-timeout`
-20. `skills/security/session-high-assurance-policies`
-21. `skills/security/ip-range-and-login-flow-strategy`
-22. `skills/security/mfa-enforcement-patterns`
-23. `skills/security/api-only-user-hardening` — integration_mode=true path
-24. `skills/security/privileged-access-management` — Setup_* PS posture
-25. `skills/security/guest-user-security` — guest profile residue rules
-26. `skills/security/record-access-troubleshooting` — diff residue vs current
+20. `skills/security/session-management-and-timeout`
+21. `skills/security/session-high-assurance-policies`
+22. `skills/security/ip-range-and-login-flow-strategy`
+23. `skills/security/mfa-enforcement-patterns`
+24. `skills/security/api-only-user-hardening` — integration_mode=true path
+25. `skills/security/privileged-access-management` — Setup_* PS posture
+26. `skills/security/guest-user-security` — guest profile residue rules
+27. `skills/security/record-access-troubleshooting` — diff residue vs current
 
 ### Deployment ordering
-27. `skills/devops/permission-set-deployment-ordering`
-28. `skills/devops/pre-deployment-checklist`
-29. `skills/devops/post-deployment-validation`
+28. `skills/devops/permission-set-deployment-ordering`
+29. `skills/devops/pre-deployment-checklist`
+30. `skills/devops/post-deployment-validation`
 
 ### Probes
-30. `agents/_shared/probes/permission-set-assignment-shape.md`
-31. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
+31. `agents/_shared/probes/permission-set-assignment-shape.md`
+32. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
 
 ---
 
@@ -225,7 +227,7 @@ Include the rollback shape: un-assign the PSG, restore profile from version cont
    - **What was healthy** — existing Feature PSes reusable, minimum-access baseline already in place, users already on PSG supplements.
    - **What was concerning** — users assigned to the profile who are on different licenses (requires splitting into multiple PSGs), custom profiles with >100 system permissions (legacy drift), profile-embedded Custom Metadata access that other profiles implicitly depend on.
    - **What was ambiguous** — session settings that might be profile-scoped vs org-wide (User Access Policy migration candidates), profiles whose IP ranges are "temporary."
-   - **Suggested follow-up agents** — `permission-set-architect` (if the resulting PSG composition hits anti-patterns), `sharing-audit-agent` (profile residuals touching OWD/sharing), `security-scanner` (post-migration FLS sanity check).
+   - **Suggested follow-up agents** — `permission-set-architect` (if the resulting PSG composition hits anti-patterns), `audit-router --domain sharing` (profile residuals touching OWD/sharing), `security-scanner` (post-migration FLS sanity check).
 10. **Citations**.
 
 ---

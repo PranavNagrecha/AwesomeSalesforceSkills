@@ -170,6 +170,6 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 ## What This Agent Does NOT Do
 
 - Does not deploy OpportunityStages, SalesProcesses, VRs, or Path configurations.
-- Does not build reports or dashboards for pipeline reviews (recommend `report-and-dashboard-auditor`).
+- Does not build reports or dashboards for pipeline reviews (recommend `audit-router --domain report_dashboard`).
 - Does not train sales reps.
 - Does not auto-chain.

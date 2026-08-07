@@ -2,35 +2,39 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sfskills.local/agents/agentforce-action-reviewer/inputs.schema.json",
   "title": "agentforce-action-reviewer inputs",
-  "description": "Typed inputs for the agentforce-action-reviewer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. At least one of `agent_id`, `agent_developer_name` must be provided.",
+  "description": "Typed inputs for the agentforce-action-reviewer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
   "type": "object",
   "properties": {
-    "agent_id": {
+    "agent_metadata_path": {
       "type": "string",
-      "description": "Example from AGENT.md: `Service_Agent_v2` Required column: 'yes'. One of a mutually-exclusive group: agent_id, agent_developer_name.",
-      "example": "Service_Agent_v2"
+      "minLength": 1,
+      "description": "Path to the DX package directory holding the retrieved Agentforce metadata — bots/, genAiPlannerBundles/, genAiPlugins/, genAiFunctions/. This is the agent's only data surface: there is no MCP probe for Agentforce metadata, and the library's own get_agent tool returns SfSkills AGENT.md bodies, not org agents.",
+      "example": "force-app/main/default"
     },
     "agent_developer_name": {
       "type": "string",
-      "description": "Example from AGENT.md: `Service_Agent_v2` Required column: 'yes'. One of a mutually-exclusive group: agent_id, agent_developer_name.",
+      "minLength": 1,
+      "description": "Developer name of the agent to review; selects which Bot / GenAiPlannerBundle under agent_metadata_path is in scope when the directory holds more than one.",
       "example": "Service_Agent_v2"
     },
     "target_org_alias": {
       "type": "string",
-      "description": "Example from AGENT.md: `uat` Required column: 'yes'.",
+      "description": "Optional. Used only to resolve the Apex classes and Flows behind actions (get_apex_class, list_flows_on_object). The review runs without it; omitting it caps confidence at MEDIUM because action implementations are then unread.",
       "example": "uat"
     },
     "review_depth": {
       "type": "string",
-      "description": "Example from AGENT.md: `topic_only` | `per_action` (default `per_action`) Required column: 'no'.",
+      "description": "topic_only scores Topic coherence and guardrails alone; per_action additionally scores every GenAiFunction on the eight Step 2 dimensions.",
       "enum": [
         "topic_only",
         "per_action"
       ],
-      "example": "topic_only"
+      "default": "per_action",
+      "example": "per_action"
     }
   },
   "required": [
-    "target_org_alias"
+    "agent_metadata_path",
+    "agent_developer_name"
   ]
 }

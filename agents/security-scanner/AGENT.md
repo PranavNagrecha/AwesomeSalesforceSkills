@@ -228,7 +228,7 @@ If `target_org_alias` is set:
    - **Healthy** — e.g. `SecurityUtils` consistently invoked across the codebase, Named Credentials used uniformly, all `without sharing` declarations carry `// reason:` comments.
    - **Concerning** — e.g. mixed sharing posture across handlers for the same SObject, repeated `escapeSingleQuotes`-only patterns, secret-shaped values found in Custom Metadata XML, REST endpoints lacking permission gates.
    - **Ambiguous** — e.g. `without sharing` with a comment that doesn't actually justify the choice; SOQL using `USER_MODE` but downstream DML in `SYSTEM_MODE`; class with mixed Setup + non-Setup DML where `runAs` boundary is unclear.
-   - **Suggested follow-ups** — recommend (do not auto-chain) `/refactor-apex` for `SecurityUtils` rollout, `/audit-sharing` for OWD/role decisions, `/architect-perms` for permission-set redesign when REST/Aura endpoints have no gate.
+   - **Suggested follow-ups** — recommend (do not auto-chain) `/refactor-apex` for `SecurityUtils` rollout, `/audit-router --domain sharing` for OWD/role decisions, `/architect-perms` for permission-set redesign when REST/Aura endpoints have no gate.
 
 ---
 

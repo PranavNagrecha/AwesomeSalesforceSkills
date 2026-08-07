@@ -25,6 +25,7 @@ dependencies:
     - admin/validation-rules
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -53,16 +54,17 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/path-and-guidance`
-3. `skills/admin/opportunity-management` — when object is Opportunity
-4. `skills/admin/case-management-setup` — when object is Case
-5. `skills/admin/lead-management-and-conversion` — when object is Lead
-6. `skills/admin/picklist-and-value-sets`
-7. `skills/admin/record-types-and-page-layouts`
-8. `skills/admin/validation-rules`
-9. `skills/admin/dynamic-forms-and-actions`
-10. `templates/admin/naming-conventions.md`
-11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/path-and-guidance` — the canon for what a Path is and is not: which objects support it, the Key Fields / Guidance-for-Success split, and the per-step limits the design has to fit
+4. `skills/admin/opportunity-management` — when object is Opportunity
+5. `skills/admin/case-management-setup` — when object is Case
+6. `skills/admin/lead-management-and-conversion` — when object is Lead
+7. `skills/admin/picklist-and-value-sets` — a Path renders one step per active value of the driver picklist, including record-type-restricted values; without this the agent designs steps that do not exist for half the users
+8. `skills/admin/record-types-and-page-layouts` — Paths are configured per record type, and the Key Fields must be present on the layout for that record type or the step renders empty
+9. `skills/admin/validation-rules` — the step-gating harness is written as validation rules; this covers the bypass infrastructure and, critically, what happens to records already sitting past the new gate
+10. `skills/admin/dynamic-forms-and-actions` — on a Dynamic Forms page the field-visibility rules, not the layout, decide whether the driver field is editable; a Path over a read-only driver renders but cannot advance
+11. `templates/admin/naming-conventions.md`
+12. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -107,7 +109,7 @@ When the object is Opportunity, coordinate with `sales-stage-designer` — the s
 - `tooling_query("SELECT Id, DeveloperName FROM RecordType WHERE SobjectType = '<object>' AND DeveloperName = '<rt>'")` → confirm record type.
 - `describe_sobject("<object>")` → pull picklist values for the driver field, per record type (picklists can be record-type-restricted).
 
-Verify that the active picklist values form a coherent progression. If two values are semantically equivalent ("Closed-Won" and "ClosedWon"), flag and delegate to `picklist-governor`. If a value is inactive, confirm it shouldn't appear as a Path step.
+Verify that the active picklist values form a coherent progression. If two values are semantically equivalent ("Closed-Won" and "ClosedWon"), flag and delegate to `audit-router --domain picklist`. If a value is inactive, confirm it shouldn't appear as a Path step.
 
 Confirm that the driver field is visible and editable on the page layout / Dynamic Forms layout. If it's read-only for the audience, the Path will render but won't allow users to advance — `REFUSAL_INPUT_AMBIGUOUS` and surface the remediation.
 
@@ -206,7 +208,7 @@ Design mode:
    - **What was healthy** — clean stage model, existing validation rules covering most gates, Knowledge articles linkable.
    - **What was concerning** — driver field hidden on layout, overlapping existing validation rules, Key Fields not on layout, stale Guidance on existing Path.
    - **What was ambiguous** — inactive picklist values that may be intentionally retained for historical records.
-   - **Suggested follow-up agents** — `sales-stage-designer` (Opportunity), `picklist-governor` (if picklist is messy), `validation-rule-auditor` (to reconcile the harness with existing rules), `record-type-and-layout-auditor` (to ensure layout exposes the Key Fields).
+   - **Suggested follow-up agents** — `sales-stage-designer` (Opportunity), `audit-router --domain picklist` (if picklist is messy), `audit-router --domain validation_rule` (to reconcile the harness with existing rules), `audit-router --domain record_type_layout` (to ensure layout exposes the Key Fields).
 8. **Citations**.
 
 Audit mode:
@@ -251,8 +253,8 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 ## What This Agent Does NOT Do
 
-- Does not edit page layouts — delegates to `record-type-and-layout-auditor`.
-- Does not modify picklist values — delegates to `picklist-governor`.
+- Does not edit page layouts — delegates to `audit-router --domain record_type_layout`.
+- Does not modify picklist values — delegates to `audit-router --domain picklist`.
 - Does not design the stage model itself — delegates to `sales-stage-designer`.
 - Does not deploy metadata.
 - Does not create Knowledge articles linked from Guidance.

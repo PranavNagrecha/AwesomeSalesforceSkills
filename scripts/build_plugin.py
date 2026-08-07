@@ -8,7 +8,13 @@ Generates every artifact needed to install SfSkills as a Claude Code plugin:
   .claude-plugin/marketplace.json     repo-as-its-own-marketplace manifest
   .claude/skills/salesforce/          Tier-1 top-level router
   .claude/skills/salesforce-<domain>/ Tier-1 domain routers (11) + rosters
-  .claude/agents/<agent-id>.md        Tier-3 project-scope subagent wrappers
+  .claude/agents/<agent-id>.md        Tier-3 subagent loaders, PROJECT scope
+  agents/<agent-id>.md                Tier-3 subagent loaders, PLUGIN scope
+
+The two subagent loader sets are byte-identical by construction: one
+``render_subagent()`` call is written to both paths. They are needed for two
+different mechanisms and neither substitutes for the other — see
+``PLUGIN_AGENT_SCAN_DIR`` below.
 
 Why a tiered layout: the 1,027 skill packages carry ~536 KB of name +
 description text. Claude Agent Skills load every skill's name + description
@@ -27,6 +33,7 @@ Usage:
   python3 scripts/build_plugin.py --check         # drift gate, exit 1 on diff
   python3 scripts/build_plugin.py --measure       # token-budget JSON
   python3 scripts/build_plugin.py --verify-seeds  # resolve the curated seeds
+  python3 scripts/build_plugin.py --audit-install # what an INSTALL exposes
 
 Stdlib only. Deterministic: sorted iteration, "\\n" line endings, no
 timestamps, no hostnames — so ``--check`` is a true drift gate.
@@ -54,6 +61,23 @@ PLUGIN_MANIFEST_DIR = Path(".claude-plugin")
 ROUTER_ROOT = Path(".claude/skills")
 SUBAGENT_ROOT = Path(".claude/agents")
 
+# Where Claude Code's default subagent scan actually looks: flat `*.md`
+# directly under `<plugin root>/agents/`. Nothing else loads — see
+# `AGENT_LOADING_MATRIX` below. This repo's `agents/` also holds the
+# `<id>/AGENT.md` playbook packages, which that scan skips (variant A'), so
+# the flat loaders sit BESIDE them rather than replacing them.
+#
+# The same loader body is written twice, to two different mechanisms:
+#   agents/<id>.md          plugin scope  — what an INSTALL exposes
+#   .claude/agents/<id>.md  project scope — what a CLONE exposes
+# Per https://code.claude.com/docs/en/plugins, a project-local
+# `.claude/agents/` definition OVERRIDES a same-named plugin agent. Inside a
+# clone the project copy therefore always wins and the plugin copy is never
+# exercised, so drift between the two would be invisible from the inside.
+# Generating both from one `render_subagent()` call is what makes drift
+# impossible; `--check` is what proves it stayed that way.
+PLUGIN_AGENT_SCAN_DIR = Path("agents")
+
 PLUGIN_NAME = "sfskills"
 MARKETPLACE_NAME = "sfskills"
 PLUGIN_VERSION = "1.0.0"
@@ -67,6 +91,54 @@ REPO_URL = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
 # it. That exception is what keeps the 1,027 Tier-2 packages out of the
 # always-on index. Do not drop either half of the (source, skills) pair.
 PLUGIN_SKILLS_PATH = "./.claude/skills/"
+
+# `commands` REPLACES the default `commands/` scan. Naming the default folder
+# explicitly is the documented way to declare it without losing it
+# (plugins-reference, "Path behavior rules": Claude Code "doesn't warn when
+# the manifest key points into the default folder, for example
+# `"commands": ["./commands/deploy.md"]`, because that path names the folder
+# explicitly"). Measured on 2.1.209: loads all 66 command files.
+PLUGIN_COMMANDS_PATH = "./commands/"
+
+# ── Why there is no `agents` key ──────────────────────────────────────────────
+#
+# Measured on Claude Code 2.1.209 (2026-08-01) with a throwaway probe plugin
+# installed into an isolated CLAUDE_CONFIG_DIR, read back with
+# `claude plugin details`. Reproduce with the probe procedure in
+# docs/installing-the-plugin.md, "Known limitation 1".
+#
+#   variant                                            validate   Agents()
+#   A  no `agents` key, flat agents/foo.md              pass       1  foo
+#   A' no `agents` key, nested agents/x/AGENT.md only   pass       0
+#   B  plugin.json  agents: ["./custom-agents/"]        ERROR      —   dir rejected
+#   C  plugin.json  agents: ["./custom-agents/a.md"]    pass       0
+#   D  plugin.json  agents: ["./.claude/agents/a.md"]   pass       0
+#   E  plugin.json  agents: ["./agents/foo.md"]         pass       0  suppresses A
+#   F  marketplace  agents: ["./.claude/agents/a.md"]   pass       0  (the 1 seen
+#                                                                     was still A)
+#   G  marketplace  agents: [dir]                       ERROR      —   dir rejected
+#   H  strict:false + marketplace components            pass       load failure:
+#                                                          "conflicting manifests"
+#
+# Conclusion: on this version the ONLY mechanism that ships a subagent is a
+# flat `.md` directly inside `<plugin root>/agents/`. Every custom path form
+# loads zero, and variant E shows the key also suppresses the one scan that
+# works. So declaring `agents` is strictly worse than omitting it, and the
+# generated manifests deliberately omit it.
+#
+# The corollary used to be an open defect: this repo's `agents/` holds
+# `<id>/AGENT.md` packages, which variant A' shows the flat scan skips, and
+# the generated loaders lived ONLY at `.claude/agents/` — a PROJECT-LOCAL
+# path Claude Code reads for anyone sitting in this repo, plugin or not. That
+# is why the plugin appeared to ship agents when it never did, and it shipped
+# `Agents (0)`.
+#
+# Closed by variant A: this build now also emits the loaders to
+# `agents/<id>.md`, beside (never instead of) the `<id>/AGENT.md` packages.
+# Re-measured on this repository, installed from a local-path marketplace
+# source into an isolated CLAUDE_CONFIG_DIR from outside the working tree:
+# `claude plugin details sfskills` reports `Agents (48)`.
+AGENT_LOADING_MATRIX_VERSION = "2.1.209"
 
 # Token model: ceil(chars / 4), applied to name + description for skills and
 # to stem + first heading for commands. Calibrated against Claude Code's own
@@ -449,6 +521,47 @@ def _command_title(stem: str, heading: str) -> str:
 
 
 DOMAIN_REF_RE = re.compile(r"\b(" + "|".join(DOMAIN_ORDER) + r")/[a-z0-9][a-z0-9-]*")
+
+
+def shipped_agents_on_disk() -> list[str]:
+    """Agent names the INSTALLED plugin exposes given the WORKING TREE as it
+    stands right now, sorted.
+
+    Not the repo's roster — the roster is what `runtime_agents()` returns and
+    it is what the plugin *would* ship if the loaders were in the right place.
+    This is the subset Claude Code's default scan can see: flat ``*.md``
+    directly under ``<plugin root>/agents/``. See ``AGENT_LOADING_MATRIX``.
+
+    Keeping the two apart is the whole point, and it is why this reads the
+    filesystem rather than the roster: it is the ``--audit-install`` gate's
+    view, so "you edited the roster but never re-ran the build" shows up as a
+    gap instead of being papered over.
+
+    The manifest renderers deliberately do NOT call this — they use
+    ``shipped_agents_in_build()`` over the output map, because a manifest
+    rendered from pre-build disk state would describe the previous build and
+    ``--check`` would report drift on the very next run.
+    """
+    base = REPO_ROOT / PLUGIN_AGENT_SCAN_DIR
+    if not base.is_dir():
+        return []
+    return sorted(p.stem for p in base.glob("*.md"))
+
+
+def shipped_agents_in_build(out: dict[Path, str]) -> list[str]:
+    """Same question as ``shipped_agents_on_disk``, asked of the artifacts
+    THIS build emits: flat ``*.md`` directly under ``agents/`` in the output
+    map, sorted.
+
+    Derived from the output map rather than from ``runtime_agents()`` on
+    purpose. If the loader emit is ever dropped, this returns ``[]`` and the
+    manifest description loses its agent clause automatically — the manifest
+    still cannot advertise a component the plugin does not ship.
+    """
+    return sorted(
+        rel.stem for rel in out
+        if rel.parent == PLUGIN_AGENT_SCAN_DIR and rel.suffix == ".md"
+    )
 
 
 def runtime_agents() -> list[dict]:
@@ -897,21 +1010,42 @@ def render_subagent(agent: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_plugin_manifest(registry: dict, agents: list[dict], commands: list[tuple[str, str]]) -> str:
+def _inventory_phrase(
+    registry: dict, commands: list[tuple[str, str]], shipped: list[str]
+) -> str:
+    """The one sentence every manifest description is built from.
+
+    Every number here is DERIVED from what an install actually exposes:
+    `registry['skill_count']` for the on-demand packages, `len(commands)` for
+    the files the declared `commands` path loads, and `shipped` — the flat
+    `agents/*.md` loaders this build emits, per
+    `shipped_agents_in_build()` — for the agents the default scan can see.
+    The agent clause is omitted entirely while that set is empty, so the
+    manifest never claims a component the plugin cannot deliver.
+    `--audit-install` is the gate.
+    """
+    parts = [f"{registry['skill_count']:,} grounded Salesforce skill packages"]
+    if shipped:
+        parts.append(f"{len(shipped)} run-time agents")
+    parts.append(f"{len(commands)} slash commands")
+    return ", ".join(parts[:-1]) + f" and {parts[-1]}"
+
+
+def render_plugin_manifest(registry: dict, shipped: list[str], commands: list[tuple[str, str]]) -> str:
     """`.claude-plugin/plugin.json`.
 
-    Deliberately omits `agents` and `commands`:
+    Declares `skills` and `commands`. Deliberately omits `agents`:
 
-    - `agents` REPLACES the default `agents/` scan (plugins-reference, "Path
-      behavior rules"). Measured on Claude Code v2.1.209 with a throwaway
-      probe plugin: omitting the key loads the flat `agents/*.md` scan
-      correctly; a custom file path loads ZERO agents; a directory value is
-      rejected with `agents: Invalid input`; and pointing the key at the very
-      file the default scan just loaded still yields zero. So declaring it is
-      strictly worse than omitting it. The subagents ship to `.claude/agents/`
-      instead, per https://code.claude.com/docs/en/sub-agents.
-    - `commands` also REPLACES its default scan; omitting it lets the default
-      `commands/` scan pick up every existing command file unchanged.
+    - `commands` REPLACES the default `commands/` scan, so naming `./commands/`
+      explicitly is a no-op behaviourally and a statement of intent
+      editorially — the manifest now says what it ships instead of relying on
+      an implicit default. Measured on 2.1.209: all 66 files still load.
+    - `agents` also REPLACES its default scan, and on Claude Code 2.1.209
+      every custom-path form loads ZERO agents while suppressing the one scan
+      that works. See the `AGENT_LOADING_MATRIX` comment at the top of this
+      file for the full probe results. Declaring it is strictly worse than
+      omitting it — the 48 loaders ship through the DEFAULT scan of the flat
+      `agents/*.md` files this build emits, which no manifest key improves on.
     """
     manifest = {
         "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
@@ -919,9 +1053,8 @@ def render_plugin_manifest(registry: dict, agents: list[dict], commands: list[tu
         "displayName": "SfSkills — Salesforce AI Skill Library",
         "version": PLUGIN_VERSION,
         "description": (
-            f"{registry['skill_count']:,} grounded Salesforce skill packages, "
-            f"{len(agents)} run-time agents and {len(commands)} slash commands, "
-            "reached through 12 lightweight router skills instead of a flat index."
+            f"{_inventory_phrase(registry, commands, shipped)}, reached through 12 "
+            "lightweight router skills instead of a flat index."
         ),
         "author": {"name": AUTHOR_NAME, "url": REPO_URL},
         "homepage": f"{REPO_URL}#readme",
@@ -940,11 +1073,12 @@ def render_plugin_manifest(registry: dict, agents: list[dict], commands: list[tu
             "well-architected",
         ],
         "skills": [PLUGIN_SKILLS_PATH],
+        "commands": [PLUGIN_COMMANDS_PATH],
     }
     return json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
 
 
-def render_marketplace_manifest(registry: dict, agents: list[dict], commands: list[tuple[str, str]]) -> str:
+def render_marketplace_manifest(registry: dict, shipped: list[str], commands: list[tuple[str, str]]) -> str:
     """`.claude-plugin/marketplace.json` — the repo is its own marketplace.
 
     `source: "./"` plus an entry-level `skills` override is the documented
@@ -964,9 +1098,8 @@ def render_marketplace_manifest(registry: dict, agents: list[dict], commands: li
         "source": "./",
         "displayName": "SfSkills — Salesforce AI Skill Library",
         "description": (
-            f"Tiered Salesforce library: 12 router skills up front, "
-            f"{registry['skill_count']:,} skill packages and {len(agents)} run-time "
-            "agents reached on demand."
+            "Tiered Salesforce library: 12 router skills up front, "
+            f"{_inventory_phrase(registry, commands, shipped)} reached on demand."
         ),
         # Must equal plugin.json's version — `claude plugin tag` enforces it.
         "version": PLUGIN_VERSION,
@@ -978,8 +1111,9 @@ def render_marketplace_manifest(registry: dict, agents: list[dict], commands: li
         "keywords": ["salesforce", "apex", "flow", "lwc", "agentforce", "well-architected"],
         "tags": ["salesforce", "crm", "apex", "soql", "admin", "architecture"],
         # LOAD-BEARING — see the docstring. Do not remove, and do not add an
-        # `agents` key alongside it.
+        # `agents` key alongside it (variants F/G in AGENT_LOADING_MATRIX).
         "skills": [PLUGIN_SKILLS_PATH],
+        "commands": [PLUGIN_COMMANDS_PATH],
     }
     manifest = {
         "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
@@ -1078,11 +1212,23 @@ def build_outputs() -> dict[Path, str]:
     agents = runtime_agents()
     commands = command_index()
 
-    out: dict[Path, str] = {
-        PLUGIN_MANIFEST_DIR / "plugin.json": render_plugin_manifest(registry, agents, commands),
-        PLUGIN_MANIFEST_DIR / "marketplace.json": render_marketplace_manifest(registry, agents, commands),
-        ROUTER_ROOT / "salesforce" / "SKILL.md": render_top_router(registry, agents, commands),
-    }
+    out: dict[Path, str] = {}
+
+    # Subagent loaders FIRST: the manifest description is derived from the
+    # flat `agents/*.md` set this build emits, so that set has to exist before
+    # the manifests are rendered. One render, two destinations, byte-identical
+    # — see PLUGIN_AGENT_SCAN_DIR for why both are needed and why generating
+    # them together is the only thing that makes drift detectable.
+    for agent in agents:
+        loader = render_subagent(agent)
+        out[SUBAGENT_ROOT / f"{agent['id']}.md"] = loader
+        out[PLUGIN_AGENT_SCAN_DIR / f"{agent['id']}.md"] = loader
+
+    shipped = shipped_agents_in_build(out)
+    out[PLUGIN_MANIFEST_DIR / "plugin.json"] = render_plugin_manifest(registry, shipped, commands)
+    out[PLUGIN_MANIFEST_DIR / "marketplace.json"] = render_marketplace_manifest(registry, shipped, commands)
+    out[ROUTER_ROOT / "salesforce" / "SKILL.md"] = render_top_router(registry, agents, commands)
+
     for domain in DOMAIN_ORDER:
         base = ROUTER_ROOT / f"salesforce-{domain}"
         out[base / "SKILL.md"] = render_domain_router(domain, registry, agents)
@@ -1094,8 +1240,6 @@ def build_outputs() -> dict[Path, str]:
                 f"{MAX_ROSTER_BYTES}-byte cap"
             )
         out[base / "references" / "skill-index.md"] = roster
-    for agent in agents:
-        out[SUBAGENT_ROOT / f"{agent['id']}.md"] = render_subagent(agent)
 
     _self_check(out, registry)
     return out
@@ -1154,10 +1298,63 @@ def _self_check(out: dict[Path, str], registry: dict) -> None:
         if listed != count:
             problems.append(f"{rel}: lists {listed} skills, registry says {count}")
 
+    # The two subagent loader sets must stay the same set, with the same
+    # bytes. They are consumed by two different mechanisms (plugin scope vs
+    # project scope) and the project copy overrides the plugin copy inside a
+    # clone, so a divergence would be invisible to anyone testing from the
+    # repo. Catch it here rather than in the field.
+    project_scope = {p.stem for p in out if p.parent == SUBAGENT_ROOT and p.suffix == ".md"}
+    plugin_scope = {p.stem for p in out if p.parent == PLUGIN_AGENT_SCAN_DIR and p.suffix == ".md"}
+    for missing in sorted(project_scope - plugin_scope):
+        problems.append(f"agents/{missing}.md: project-scope loader has no plugin-scope twin")
+    for missing in sorted(plugin_scope - project_scope):
+        problems.append(f"{SUBAGENT_ROOT}/{missing}.md: plugin-scope loader has no project-scope twin")
+    for agent_id in sorted(project_scope & plugin_scope):
+        if out[SUBAGENT_ROOT / f"{agent_id}.md"] != out[PLUGIN_AGENT_SCAN_DIR / f"{agent_id}.md"]:
+            problems.append(
+                f"{agent_id}: the project-scope and plugin-scope loaders differ; "
+                "they must be byte-identical"
+            )
+
     if problems:
         raise SystemExit(
             "ERROR: generated output failed self-check:\n  " + "\n  ".join(problems)
         )
+
+
+# Directories this script owns OUTRIGHT: everything under them is generated,
+# so anything the build did not just write is stale and gets pruned.
+FULLY_MANAGED_DIRS = (PLUGIN_MANIFEST_DIR, ROUTER_ROOT, SUBAGENT_ROOT)
+
+# `agents/` is NOT fully managed. It is shared: the build owns the flat
+# `agents/<id>.md` loaders, while the hand-authored `agents/<id>/AGENT.md`
+# packages and `agents/_shared/` belong to humans. So the sweep here is
+# deliberately non-recursive and restricted to top-level `*.md` — a
+# `rglob("*")` prune over this directory would delete the entire agent
+# library.
+SHARED_MANAGED_GLOBS = ((PLUGIN_AGENT_SCAN_DIR, "*.md"),)
+
+
+def _stale_managed_files(root: Path, keep: set[Path]) -> list[Path]:
+    """Every file under a managed location that this build did not produce."""
+    stale: list[Path] = []
+    for managed in FULLY_MANAGED_DIRS:
+        base = root / managed
+        if not base.exists():
+            continue
+        stale += [
+            p for p in sorted(base.rglob("*"))
+            if p.is_file() and p.relative_to(root) not in keep
+        ]
+    for managed, pattern in SHARED_MANAGED_GLOBS:
+        base = root / managed
+        if not base.is_dir():
+            continue
+        stale += [
+            p for p in sorted(base.glob(pattern))
+            if p.is_file() and p.relative_to(root) not in keep
+        ]
+    return stale
 
 
 def write_outputs(out: dict[Path, str], root: Path) -> tuple[int, int]:
@@ -1171,15 +1368,18 @@ def write_outputs(out: dict[Path, str], root: Path) -> tuple[int, int]:
 
     keep = set(out)
     pruned = 0
-    for managed in (PLUGIN_MANIFEST_DIR, ROUTER_ROOT, SUBAGENT_ROOT):
+    for path in _stale_managed_files(root, keep):
+        path.unlink()
+        pruned += 1
+
+    # Only the fully-managed trees get their empty directories reaped;
+    # `agents/` keeps its package dirs.
+    for managed in FULLY_MANAGED_DIRS:
         base = root / managed
         if not base.exists():
             continue
         for path in sorted(base.rglob("*"), reverse=True):
-            if path.is_file() and path.relative_to(root) not in keep:
-                path.unlink()
-                pruned += 1
-            elif path.is_dir() and not any(path.iterdir()):
+            if path.is_dir() and not any(path.iterdir()):
                 path.rmdir()
     return written, pruned
 
@@ -1193,9 +1393,11 @@ def run_build() -> int:
     routers = sum(1 for p in out if p.name == "SKILL.md")
     rosters = sum(1 for p in out if p.name == "skill-index.md")
     subagents = sum(1 for p in out if p.parent == SUBAGENT_ROOT)
+    plugin_agents = len(shipped_agents_in_build(out))
     print(f"  {routers} router skill(s)   → {ROUTER_ROOT}/")
     print(f"  {rosters} domain roster(s)  → {ROUTER_ROOT}/salesforce-*/references/")
-    print(f"  {subagents} subagent(s)       → {SUBAGENT_ROOT}/")
+    print(f"  {subagents} subagent(s)      → {SUBAGENT_ROOT}/          (project scope)")
+    print(f"  {plugin_agents} subagent(s)      → {PLUGIN_AGENT_SCAN_DIR}/<id>.md    (plugin scope, identical bytes)")
     print(f"  2 manifest(s)       → {PLUGIN_MANIFEST_DIR}/")
     if pruned:
         print(f"  pruned {pruned} stale file(s)")
@@ -1219,14 +1421,8 @@ def run_check() -> int:
             elif live.read_bytes() != fresh.read_bytes():
                 drift.append(f"differs: {rel}")
 
-        keep = set(out)
-        for managed in (PLUGIN_MANIFEST_DIR, ROUTER_ROOT, SUBAGENT_ROOT):
-            base = REPO_ROOT / managed
-            if not base.exists():
-                continue
-            for path in sorted(base.rglob("*")):
-                if path.is_file() and path.relative_to(REPO_ROOT) not in keep:
-                    drift.append(f"unmanaged: {path.relative_to(REPO_ROOT)}")
+        for path in _stale_managed_files(REPO_ROOT, set(out)):
+            drift.append(f"unmanaged: {path.relative_to(REPO_ROOT)}")
 
     if not drift:
         print(f"OK: {len(out)} plugin artifact(s) match a fresh build — no drift")
@@ -1238,9 +1434,29 @@ def run_check() -> int:
     return 1
 
 
+def _frontmatter_always_on(content: str) -> int:
+    """Token cost of one component's `name` + `description` frontmatter — the
+    only part Claude Code loads up front."""
+    meta = content.split("---")[1]
+    name = (re.search(r"^name: *(.+)$", meta, re.M) or [None, ""])[1].strip()
+    desc = (re.search(r"^description: *(.+)$", meta, re.M) or [None, ""])[1].strip()
+    # Strip the YAML quoting: the model sees the value, not the delimiters.
+    if len(desc) >= 2 and desc[0] == '"' and desc[-1] == '"':
+        desc = desc[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+    return tokens(name + desc)
+
+
 def measure() -> dict:
+    """Model the always-on cost of an install.
+
+    Subagents are NOT free. Their `name` + `description` frontmatter loads up
+    front exactly like a skill's — measured on 2.1.209, `claude plugin
+    details` bills each of the 48 loaders ~60-70 always-on tokens and its
+    total rose from ~2,889 to ~6,118 when they started shipping. So the agent
+    loaders are counted in `tier1_tokens` here; leaving them out would make
+    this gate cheerfully report half the real bill.
+    """
     registry = load_registry()
-    agents = runtime_agents()
     commands = command_index()
     out = build_outputs()
 
@@ -1249,17 +1465,17 @@ def measure() -> dict:
     for rel, content in sorted(out.items()):
         if rel.parent.parent != ROUTER_ROOT or rel.name != "SKILL.md":
             continue
-        meta = content.split("---")[1]
-        name = (re.search(r"^name: *(.+)$", meta, re.M) or [None, ""])[1].strip()
-        desc = (re.search(r"^description: *(.+)$", meta, re.M) or [None, ""])[1].strip()
-        # Strip the YAML quoting: the model sees the value, not the delimiters.
-        if len(desc) >= 2 and desc[0] == '"' and desc[-1] == '"':
-            desc = desc[1:-1].replace('\\"', '"').replace("\\\\", "\\")
-        router_tokens += tokens(name + desc)
+        router_tokens += _frontmatter_always_on(content)
         router_skills += 1
 
+    agent_ids = shipped_agents_in_build(out)
+    agent_tokens = sum(
+        _frontmatter_always_on(out[PLUGIN_AGENT_SCAN_DIR / f"{agent_id}.md"])
+        for agent_id in agent_ids
+    )
+
     command_tokens = sum(tokens(stem + heading) for stem, heading in commands)
-    tier1 = router_tokens + command_tokens
+    tier1 = router_tokens + command_tokens + agent_tokens
 
     flat_chars = sum(len(s["name"]) + len(s["description"]) for s in registry["skills"])
     flat_tokens = tokens_from_chars(flat_chars)
@@ -1270,7 +1486,8 @@ def measure() -> dict:
         "router_tokens": router_tokens,
         "commands": len(commands),
         "command_tokens": command_tokens,
-        "agents": len(agents),
+        "agents": len(agent_ids),
+        "agent_tokens": agent_tokens,
         "tier1_tokens": tier1,
         "flat_export_skills": registry["skill_count"],
         "flat_export_tokens": flat_tokens,
@@ -1288,6 +1505,106 @@ def run_measure() -> int:
     result = measure()
     print(json.dumps(result, indent=2))
     return 0 if result["within_budget"] else 1
+
+
+def audit_install() -> dict:
+    """What an INSTALLED plugin exposes vs what this repo contains.
+
+    Answers the only question that matters for shippability: after
+    `claude plugin install sfskills@sfskills`, which components does Claude
+    Code actually load? Each projection below is the mechanism proven by the
+    `AGENT_LOADING_MATRIX` probe, not an inference from the manifest.
+    """
+    registry = load_registry()
+    commands = command_index()
+    routers = 1 + len(DOMAIN_ORDER)
+    shipped = shipped_agents_on_disk()
+    projected = {
+        # `skills` on a marketplace-root entry replaces the default scan, so
+        # only the routers load — the 1,027 packages stay on-demand by path.
+        "skills_routers": routers,
+        # `commands` names ./commands/, one flat skill per file.
+        "skills_from_commands": len(commands),
+        # Only flat agents/*.md load. Custom paths load zero.
+        "agents": len(shipped),
+    }
+    projected["skills_total"] = projected["skills_routers"] + projected["skills_from_commands"]
+    repo = {
+        "skill_packages": registry["skill_count"],
+        "runtime_agents": len(runtime_agents()),
+        "commands": len(commands),
+    }
+    gaps: list[str] = []
+    if projected["agents"] != repo["runtime_agents"]:
+        gaps.append(
+            f"agents: the repo defines {repo['runtime_agents']} run-time agent(s) but an "
+            f"install exposes {projected['agents']}. Only flat "
+            f"`{PLUGIN_AGENT_SCAN_DIR}/<id>.md` files load — the `<id>/AGENT.md` packages "
+            f"are skipped, and `{SUBAGENT_ROOT}/` is PROJECT-LOCAL state Claude Code reads "
+            "for anyone whose cwd is this repo, not a plugin component. Fix: re-run "
+            "`python3 scripts/build_plugin.py`, which emits both loader sets."
+        )
+    if projected["skills_from_commands"] != repo["commands"]:
+        gaps.append(
+            f"commands: {repo['commands']} file(s) in {COMMANDS_DIR.name}/ but "
+            f"{projected['skills_from_commands']} projected."
+        )
+    # The plugin-scope and project-scope loaders must be the same set with the
+    # same bytes. Inside a clone the project copy overrides the plugin copy
+    # (https://code.claude.com/docs/en/plugins), so a divergence cannot be
+    # noticed by testing from the repo — only by comparing the files.
+    project_side = sorted(
+        p.stem for p in (REPO_ROOT / SUBAGENT_ROOT).glob("*.md")
+    ) if (REPO_ROOT / SUBAGENT_ROOT).is_dir() else []
+    if project_side != shipped:
+        only_plugin = sorted(set(shipped) - set(project_side))
+        only_project = sorted(set(project_side) - set(shipped))
+        gaps.append(
+            f"loader sets diverge: {len(only_plugin)} only under "
+            f"{PLUGIN_AGENT_SCAN_DIR}/ ({', '.join(only_plugin) or '—'}), "
+            f"{len(only_project)} only under {SUBAGENT_ROOT}/ "
+            f"({', '.join(only_project) or '—'}). Re-run the build."
+        )
+    else:
+        differing = [
+            name for name in shipped
+            if (REPO_ROOT / PLUGIN_AGENT_SCAN_DIR / f"{name}.md").read_bytes()
+            != (REPO_ROOT / SUBAGENT_ROOT / f"{name}.md").read_bytes()
+        ]
+        if differing:
+            gaps.append(
+                f"loader bytes diverge for {len(differing)} agent(s) "
+                f"({', '.join(differing[:5])}{', …' if len(differing) > 5 else ''}). "
+                f"The {SUBAGENT_ROOT}/ copy overrides the {PLUGIN_AGENT_SCAN_DIR}/ copy "
+                "inside a clone, so this is invisible from here. Re-run the build."
+            )
+    return {"projected": projected, "repo": repo, "gaps": gaps}
+
+
+def run_audit_install() -> int:
+    result = audit_install()
+    projected, repo = result["projected"], result["repo"]
+    print("Projected inventory of an INSTALLED sfskills plugin")
+    print(f"  Skills  {projected['skills_total']:>5}   "
+          f"({projected['skills_routers']} router(s) from {PLUGIN_SKILLS_PATH} + "
+          f"{projected['skills_from_commands']} command(s) from {PLUGIN_COMMANDS_PATH})")
+    print(f"  Agents  {projected['agents']:>5}   "
+          f"(flat *.md under {PLUGIN_AGENT_SCAN_DIR}/, the only form that loads)")
+    print("\nRepo inventory")
+    print(f"  skill packages    {repo['skill_packages']:>5}   reached on demand by path, not loaded up front")
+    print(f"  run-time agents   {repo['runtime_agents']:>5}")
+    print(f"  slash commands    {repo['commands']:>5}")
+    print(f"\nProbe baseline: Claude Code {AGENT_LOADING_MATRIX_VERSION}. Verify against the "
+          "real CLI with:\n"
+          "  claude plugin validate .\n"
+          "  claude plugin details sfskills   # run from OUTSIDE this repo")
+    if not result["gaps"]:
+        print("\nOK: every component this repo defines is reachable through the plugin.")
+        return 0
+    print(f"\n{len(result['gaps'])} component(s) the plugin cannot deliver:")
+    for gap in result["gaps"]:
+        print(f"  - {gap}")
+    return 1
 
 
 def run_verify_seeds() -> int:
@@ -1314,8 +1631,10 @@ Examples:
   python3 scripts/build_plugin.py --check         # drift gate; exit 1 on any diff
   python3 scripts/build_plugin.py --measure       # token-budget JSON; exit 1 if over
   python3 scripts/build_plugin.py --verify-seeds  # resolve the curated seed table
+  python3 scripts/build_plugin.py --audit-install # what an INSTALL exposes; exit 1 on a gap
 
-After a build, verify against the real CLI:
+After a build, verify against the real CLI (from OUTSIDE this repo, so a pass
+cannot come from project-local .claude/ loading):
   claude plugin validate .
   claude plugin details sfskills
         """,
@@ -1340,6 +1659,13 @@ After a build, verify against the real CLI:
              "seed against the registry and the filesystem. Exit 1 on any "
              "unresolved reference.",
     )
+    mode.add_argument(
+        "--audit-install",
+        action="store_true",
+        help="Report the component inventory an INSTALLED plugin exposes, "
+             "beside the repo's own inventory. Exit 1 when the repo defines a "
+             "component the plugin cannot deliver.",
+    )
     args = parser.parse_args()
 
     if args.check:
@@ -1348,6 +1674,8 @@ After a build, verify against the real CLI:
         return run_measure()
     if args.verify_seeds:
         return run_verify_seeds()
+    if args.audit_install:
+        return run_audit_install()
     return run_build()
 
 

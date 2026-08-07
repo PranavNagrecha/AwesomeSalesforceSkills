@@ -22,6 +22,7 @@ dependencies:
     - integration/named-credentials-setup
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - apex/HttpClient.cls
@@ -49,13 +50,14 @@ Takes a data-integration requirement — volume, latency, source system, directi
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `standards/decision-trees/integration-pattern-selection.md`
-3. `skills/integration/bulk-api-2-patterns/SKILL.md`
-4. `skills/integration/named-credentials-setup/SKILL.md`
-5. `skills/apex/callouts-and-http-integrations/SKILL.md`
-6. `templates/apex/HttpClient.cls`
-7. `skills/architect/large-data-volume-architecture/SKILL.md`
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `standards/decision-trees/integration-pattern-selection.md`
+4. `skills/integration/bulk-api-2-patterns/SKILL.md`
+5. `skills/integration/named-credentials-setup/SKILL.md`
+6. `skills/apex/callouts-and-http-integrations/SKILL.md`
+7. `templates/apex/HttpClient.cls`
+8. `skills/architect/large-data-volume-architecture/SKILL.md`
+9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

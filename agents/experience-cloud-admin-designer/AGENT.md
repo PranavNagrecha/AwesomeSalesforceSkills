@@ -33,6 +33,7 @@ dependencies:
     - security/guest-user-security
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
@@ -62,26 +63,27 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/experience-cloud-site-setup` — the setup sequence the design output has to be orderable against
-3. `skills/admin/experience-cloud-member-management` — member profiles and licence assignment — the step that most often blocks go-live
-4. `skills/admin/experience-cloud-guest-access` — guest access is the default-open surface; a design that omits it ships an exposure
-5. `skills/admin/experience-cloud-moderation` — moderation rules and criteria, required wherever the site accepts user-generated content
-6. `skills/admin/experience-cloud-cms-content` — CMS workspaces and channels, which decide whether content is reusable across sites or trapped in one
-7. `skills/admin/experience-cloud-seo-settings` — public sites only: indexing, sitemap and object-page exposure, which are irreversible once crawled
-8. `skills/security/experience-cloud-security` — the site-level security posture the design must declare rather than inherit
-9. `skills/security/guest-user-security` — the guest user's own record access — the 2021 model, and why sharing sets are not optional
-10. `skills/architect/experience-cloud-licensing-model` — licence type constrains what the design may even propose; get it wrong and the whole design is unbuildable
-11. `skills/architect/experience-cloud-integration-patterns` — how the site reaches org data and external systems, which decides the sharing design
-12. `skills/admin/queues-and-public-groups` — the grouping primitives sharing sets and moderation assignments are built from
-13. `skills/admin/sharing-and-visibility` — external OWD and sharing sets behave differently from internal sharing — the single most common design error here
-14. `templates/admin/permission-set-patterns.md`
-15. `templates/admin/naming-conventions.md`
-16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-17. `skills/admin/community-engagement-strategy` — engagement mechanics (reputation, recognition, gamification) that decide whether the site is used at all
-18. `skills/admin/partner-community-requirements` — partner sites carry channel-manager, lead-distribution and account-relationship requirements no customer site has
-19. `skills/admin/mobile-publisher` — if the site will ship as a branded app, Mobile Publisher constraints bind the design up front, not after launch
-20. `skills/admin/lightning-bolt-template-authoring` — when the site should be a reusable template rather than a one-off build
-21. `skills/admin/permission-set-architecture` — external personas ride a PSG on top of a licence-matched baseline profile; the design output is unbuildable without that shape
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/admin/experience-cloud-site-setup` — the setup sequence the design output has to be orderable against
+4. `skills/admin/experience-cloud-member-management` — member profiles and licence assignment — the step that most often blocks go-live
+5. `skills/admin/experience-cloud-guest-access` — guest access is the default-open surface; a design that omits it ships an exposure
+6. `skills/admin/experience-cloud-moderation` — moderation rules and criteria, required wherever the site accepts user-generated content
+7. `skills/admin/experience-cloud-cms-content` — CMS workspaces and channels, which decide whether content is reusable across sites or trapped in one
+8. `skills/admin/experience-cloud-seo-settings` — public sites only: indexing, sitemap and object-page exposure, which are irreversible once crawled
+9. `skills/security/experience-cloud-security` — the site-level security posture the design must declare rather than inherit
+10. `skills/security/guest-user-security` — the guest user's own record access — the 2021 model, and why sharing sets are not optional
+11. `skills/architect/experience-cloud-licensing-model` — licence type constrains what the design may even propose; get it wrong and the whole design is unbuildable
+12. `skills/architect/experience-cloud-integration-patterns` — how the site reaches org data and external systems, which decides the sharing design
+13. `skills/admin/queues-and-public-groups` — the grouping primitives sharing sets and moderation assignments are built from
+14. `skills/admin/sharing-and-visibility` — external OWD and sharing sets behave differently from internal sharing — the single most common design error here
+15. `templates/admin/permission-set-patterns.md`
+16. `templates/admin/naming-conventions.md`
+17. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+18. `skills/admin/community-engagement-strategy` — engagement mechanics (reputation, recognition, gamification) that decide whether the site is used at all
+19. `skills/admin/partner-community-requirements` — partner sites carry channel-manager, lead-distribution and account-relationship requirements no customer site has
+20. `skills/admin/mobile-publisher` — if the site will ship as a branded app, Mobile Publisher constraints bind the design up front, not after launch
+21. `skills/admin/lightning-bolt-template-authoring` — when the site should be a reusable template rather than a one-off build
+22. `skills/admin/permission-set-architecture` — external personas ride a PSG on top of a licence-matched baseline profile; the design output is unbuildable without that shape
 
 ---
 
@@ -228,7 +230,7 @@ Design mode:
     - **What was healthy** — existing Feature PSes reusable across audiences, clean license alignment, existing SSO tenant.
     - **What was concerning** — site template choices that will limit future requirements (Aura where LWR is warranted), sharing sets that imply Contact-Account chains the customer data doesn't always populate, moderation coverage gaps.
     - **What was ambiguous** — self-registration target profile when multiple audiences could accept new members, CMS workspace ownership.
-    - **Suggested follow-up agents** — `permission-set-architect` (PSG review), `sharing-audit-agent` (external sharing verification), `my-domain-and-session-security-auditor` (login posture), `lwc-builder` (site-specific components), `security-scanner` (guest-user code review).
+    - **Suggested follow-up agents** — `permission-set-architect` (PSG review), `audit-router --domain sharing` (external sharing verification), `audit-router --domain my_domain_session_security` (login posture), `lwc-builder` (site-specific components), `security-scanner` (guest-user code review).
 11. **Citations**.
 
 Audit mode:

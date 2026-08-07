@@ -60,6 +60,7 @@ dependencies:
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -91,74 +92,75 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
-3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Diagnosis methodology
-4. `skills/lwc/lwc-debugging-devtools` — console-first workflow, Lightning Inspector, source maps, proxy-dump wrap
-5. `skills/lwc/common-lwc-runtime-errors` — symptom-to-root-cause map for the top runtime crashes
+5. `skills/lwc/lwc-debugging-devtools` — console-first workflow, Lightning Inspector, source maps, proxy-dump wrap
+6. `skills/lwc/common-lwc-runtime-errors` — symptom-to-root-cause map for the top runtime crashes
 
 ### Data axis
-6. `skills/lwc/wire-service-patterns` — reactive-param / `$` prefix gotchas
-7. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable` mismatch
-8. `skills/lwc/lwc-graphql-wire` — refresh helper mismatch, non-reactive interpolation, `pageInfo` loss
-9. `skills/lwc/lwc-imperative-apex` — unhandled rejection, cacheable violation
-10. `skills/lwc/lwc-async-patterns` — Promise rejection silently swallowed in lifecycle hooks
-11. `skills/lwc/lwc-state-management` — stale state across re-renders
-12. `skills/lwc/lwc-lds-writes` — diagnose LDS write failures (INVALID_FIELD_FOR_INSERT_UPDATE, DUPLICATES_DETECTED, INSUFFICIENT_ACCESS_OR_READONLY) and post-write cache misses
+7. `skills/lwc/wire-service-patterns` — reactive-param / `$` prefix gotchas
+8. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable` mismatch
+9. `skills/lwc/lwc-graphql-wire` — refresh helper mismatch, non-reactive interpolation, `pageInfo` loss
+10. `skills/lwc/lwc-imperative-apex` — unhandled rejection, cacheable violation
+11. `skills/lwc/lwc-async-patterns` — Promise rejection silently swallowed in lifecycle hooks
+12. `skills/lwc/lwc-state-management` — stale state across re-renders
+13. `skills/lwc/lwc-lds-writes` — diagnose LDS write failures (INVALID_FIELD_FOR_INSERT_UPDATE, DUPLICATES_DETECTED, INSUFFICIENT_ACCESS_OR_READONLY) and post-write cache misses
 
 ### Render axis
-13. `skills/lwc/lifecycle-hooks` — `connectedCallback` vs `renderedCallback` race
-14. `skills/lwc/lwc-conditional-rendering` — `lwc:elseif` / `lwc:else` sibling rules, complex-expression silent-false
-15. `skills/lwc/lwc-template-refs` — `this.refs.<name>` returns `undefined` when the element is in a `template:if` branch not currently rendered
-16. `skills/lwc/lwc-dynamic-components` — `<lwc:component>` resolution failure
-17. `skills/lwc/lwc-slots-composition` — empty-slot fallback / default-content shadowing
-18. `skills/lwc/lwc-error-boundaries` — uncaught errors in nested children
-19. `skills/lwc/lwc-public-api-hardening` — design-attribute string-vs-number coercion bug
+14. `skills/lwc/lifecycle-hooks` — `connectedCallback` vs `renderedCallback` race
+15. `skills/lwc/lwc-conditional-rendering` — `lwc:elseif` / `lwc:else` sibling rules, complex-expression silent-false
+16. `skills/lwc/lwc-template-refs` — `this.refs.<name>` returns `undefined` when the element is in a `template:if` branch not currently rendered
+17. `skills/lwc/lwc-dynamic-components` — `<lwc:component>` resolution failure
+18. `skills/lwc/lwc-slots-composition` — empty-slot fallback / default-content shadowing
+19. `skills/lwc/lwc-error-boundaries` — uncaught errors in nested children
+20. `skills/lwc/lwc-public-api-hardening` — design-attribute string-vs-number coercion bug
 
 ### Event axis
-20. `skills/lwc/lwc-custom-event-patterns` — bubbles/composed flag wrong → event lost across shadow boundary
-21. `skills/lwc/component-communication` — parent never sees child event
-22. `skills/lwc/message-channel-patterns` — LMS subscriber not unsubscribed on disconnect
-23. `skills/lwc/lwc-quick-actions` — missing `@api invoke()`, missing `CloseActionScreenEvent`, screen-vs-headless mix-up
-24. `skills/lwc/lwc-toast-and-notifications` — toast fires but is never visible
+21. `skills/lwc/lwc-custom-event-patterns` — bubbles/composed flag wrong → event lost across shadow boundary
+22. `skills/lwc/component-communication` — parent never sees child event
+23. `skills/lwc/message-channel-patterns` — LMS subscriber not unsubscribed on disconnect
+24. `skills/lwc/lwc-quick-actions` — missing `@api invoke()`, missing `CloseActionScreenEvent`, screen-vs-headless mix-up
+25. `skills/lwc/lwc-toast-and-notifications` — toast fires but is never visible
 
 ### Style / DOM mode axis
-25. `skills/lwc/lwc-styling-hooks` — styles that "don't apply" because they pierce shadow DOM
-26. `skills/lwc/lwc-light-dom` — shadow vs light DOM lookup boundaries
-27. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode mismatch with consumer
-28. `skills/lwc/lwc-web-components-interop`
-29. `skills/lwc/static-resources-in-lwc` — load order / 404 / CSP
+26. `skills/lwc/lwc-styling-hooks` — styles that "don't apply" because they pierce shadow DOM
+27. `skills/lwc/lwc-light-dom` — shadow vs light DOM lookup boundaries
+28. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode mismatch with consumer
+29. `skills/lwc/lwc-web-components-interop`
+30. `skills/lwc/static-resources-in-lwc` — load order / 404 / CSP
 
 ### Surface / exposure axis
-30. `skills/lwc/lwc-app-builder-config` — `isExposed=false` hiding the component; string-typed design attributes breaking arithmetic
-31. `skills/lwc/navigation-and-routing` — `NavigationMixin.Navigate` opening blank page
-32. `skills/lwc/lwc-record-picker` — `lookup` not returning expected sObject
-33. `skills/lwc/lightning-navigation-dead-link-handling` — blank-tab-after-navigation diagnosis
+31. `skills/lwc/lwc-app-builder-config` — `isExposed=false` hiding the component; string-typed design attributes breaking arithmetic
+32. `skills/lwc/navigation-and-routing` — `NavigationMixin.Navigate` opening blank page
+33. `skills/lwc/lwc-record-picker` — `lookup` not returning expected sObject
+34. `skills/lwc/lightning-navigation-dead-link-handling` — blank-tab-after-navigation diagnosis
 
 ### Datatable / forms / files axis
-34. `skills/lwc/lwc-data-table` — datatable smells (lazy-load misfire, blank rows)
-35. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
-36. `skills/lwc/lwc-forms-and-validation` — `reportValidity()` returns false silently
+35. `skills/lwc/lwc-data-table` — datatable smells (lazy-load misfire, blank rows)
+36. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
+37. `skills/lwc/lwc-forms-and-validation` — `reportValidity()` returns false silently
 
 ### Performance axis
-37. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
-38. `skills/lwc/lwc-performance-budgets` — render budget exceeded for declared surface
-39. `skills/lwc/virtualized-lists` — > 500-row scroll perf
+38. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
+39. `skills/lwc/lwc-performance-budgets` — render budget exceeded for declared surface
+40. `skills/lwc/virtualized-lists` — > 500-row scroll perf
 
 ### A11y / i18n axis
-40. `skills/lwc/lwc-accessibility` — focus trap regressions / keyboard activation lost
-41. `skills/lwc/lwc-focus-management` — focus jumps on async re-render
-42. `skills/lwc/lwc-internationalization` — locale-format edge cases
+41. `skills/lwc/lwc-accessibility` — focus trap regressions / keyboard activation lost
+42. `skills/lwc/lwc-focus-management` — focus jumps on async re-render
+43. `skills/lwc/lwc-internationalization` — locale-format edge cases
 
 ### Security axis
-43. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
-44. `skills/lwc/lwc-locker-to-lws-migration` — code that worked on Locker now fails on LWS
+44. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
+45. `skills/lwc/lwc-locker-to-lws-migration` — code that worked on Locker now fails on LWS
 
 ### Templates
-45. `templates/lwc/component-skeleton/`
-46. `templates/lwc/patterns/`
-47. `skills/lwc/lwc-local-development` — reproduce the reported failure locally before touching the org, so the diagnosis is testable rather than inferred
+46. `templates/lwc/component-skeleton/`
+47. `templates/lwc/patterns/`
+48. `skills/lwc/lwc-local-development` — reproduce the reported failure locally before touching the org, so the diagnosis is testable rather than inferred
 
 ---
 

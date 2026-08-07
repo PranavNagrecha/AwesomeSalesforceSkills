@@ -136,7 +136,7 @@ Reviews the data model of a target domain (a parent object + its descendants, or
    - **What was healthy** — clean External ID usage, consistent relationship naming, rollup discipline.
    - **What was concerning** — objects on the growth curve without partitioning strategy, MD-lookup confusion, 4+ hop queries implied by downstream flows.
    - **What was ambiguous** — relationships the agent couldn't confirm are used (ChildRelationships with no SOQL references).
-   - **Suggested follow-up agents** — `object-designer` (for new objects suggested by consolidation), `field-impact-analyzer` for the External ID rollout, `sharing-audit-agent` if cascade behavior is unclear.
+   - **Suggested follow-up agents** — `object-designer` (for new objects suggested by consolidation), `field-impact-analyzer` for the External ID rollout, `audit-router --domain sharing` if cascade behavior is unclear.
 8. **Citations**.
 
 ---
@@ -184,5 +184,5 @@ The agent's envelope MUST place every dimension below in either `dimensions_comp
 
 - Does not modify relationships.
 - Does not design new objects (that's `object-designer`).
-- Does not analyze sharing cascading (that's `sharing-audit-agent`).
+- Does not analyze sharing cascading (that's `audit-router --domain sharing`).
 - Does not auto-chain.

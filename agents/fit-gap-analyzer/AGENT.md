@@ -241,7 +241,7 @@ Walk for these signals and surface in Process Observations:
 - **Story routes to `flow-builder` but the target object already has 5+ flows** — recommend `flow-analyzer` for consolidation first (cite `automation-selection.md`).
 - **Story routes to `lwc-builder` but Dynamic Forms / Lightning Page composition would suffice** — Low-Code, not Custom.
 - **Story is fit tier Custom but `automation-selection.md` resolves to declarative** — escalate fit-tier review.
-- **Story is fit tier Standard but the org has heavily customized that standard object** — flag for `record-type-and-layout-auditor` follow-up.
+- **Story is fit tier Standard but the org has heavily customized that standard object** — flag for `audit-router --domain record_type_layout` follow-up.
 - **Backlog references AI/agent/Einstein but ai_use_case_assessment is absent** — recommend that skill as a precondition.
 
 ### Step 8 — Emit RTM-shaped traceability rows
@@ -267,7 +267,7 @@ One markdown document:
    - **What was healthy** — license fit overall, persona reuse opportunities, automation already in place that stories can extend, mature naming convention, etc.
    - **What was concerning** — license gaps, > 30% Unfit stories, > 5 net-new objects in one release, missing AI use-case assessment, story-fit-tier vs decision-tree mismatch, missing automation governance.
    - **What was ambiguous** — stories where two tiers are plausible (Config vs Low-Code), persona anchors that don't yet exist as PSGs, gap items that could be solved by extending vs creating.
-   - **Suggested follow-up agents** — `/architect-perms`, `/design-object`, `/build-flow`, `/audit-record-page`, `/audit-sharing`, `/plan-bulk-migration`, `/audit-record-types`, `/govern-picklists` per gap category; `/author-config-workbook` once the project commits to descope/rescope decisions.
+   - **Suggested follow-up agents** — `/architect-perms`, `/design-object`, `/build-flow`, `/audit-router --domain lightning_record_page`, `/audit-router --domain sharing`, `/plan-bulk-migration`, `/audit-router --domain record_type_layout`, `/audit-router --domain picklist` per gap category; `/author-config-workbook` once the project commits to descope/rescope decisions.
 7. **Citations** — every skill, decision tree, probe, and MCP probe call.
 
 ---

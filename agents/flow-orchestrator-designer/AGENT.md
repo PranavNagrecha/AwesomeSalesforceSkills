@@ -50,6 +50,7 @@ dependencies:
     - flow/subflows-and-reusability
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -83,44 +84,45 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/flow/orchestration-flows` — canonical Orchestrator model
-3. `skills/flow/subflows-and-reusability` — stages call subflows
-4. `skills/flow/pause-elements-and-wait-events` — work-item waiting semantics
-5. `skills/flow/screen-flows` — interactive steps are Screen Flows
-6. `skills/flow/auto-launched-flow-patterns` — background steps
-7. `skills/flow/fault-handling`
-8. `skills/admin/approval-processes` — when Orchestrator is the right target vs Approval Process
-9. `skills/admin/queues-and-public-groups` — work-item routing
-10. `standards/decision-trees/automation-selection.md`
-11. `skills/flow/scheduled-flows` — Schedule-Triggered Flow shape used for the SLA-escalation subflow (Orchestrator does not auto-escalate)
-12. `skills/flow/flow-transactional-boundaries` — what commits between stages and within a step; informs fault-path placement
-13. `skills/flow/flow-resource-patterns` — variable / template / formula naming for stage-level vars passed to subflows
-14. `skills/flow/flow-versioning-strategy` — orchestrations are versioned; activation/deactivation behaviour for in-flight instances
-15. `skills/flow/flow-error-monitoring` — org-level error-email-recipient observation in audit mode + healthy/concerning signals in design mode
-16. `skills/flow/flow-runtime-error-diagnosis` — symptoms-to-cause map cited in audit findings
-17. `skills/flow/screen-flow-accessibility` — every interactive step's Screen Flow must satisfy a11y requirements before activation
-18. `skills/flow/flow-element-naming-conventions` — Stage / Step / Subflow naming policy applied to every emitted orchestration design
-19. `skills/flow/flow-runtime-context-and-sharing` — orchestration runs as the work-item assignee; per-stage run-mode decision required
-20. `skills/flow/flow-record-locking-and-contention` — long-running stages can hold parent-record locks; cited in design-mode Process Observations
-21. `skills/flow/flow-screen-input-validation-patterns` — every interactive step's Screen Flow must validate inputs before completing the work item
-22. `skills/flow/flow-screen-lwc-components` — when a stage's interactive step needs an LWC the screen-flow contract applies (`@api validate()`, FlowAttributeChangeEvent)
-23. `skills/flow/flow-deployment-and-packaging` — orchestration + 5 subflows must deploy together with FlowAccessPermission for each persona
-24. `skills/flow/flow-bulkification` — every stage's subflow that does DML must follow the collect-then-DML idiom
-25. `skills/flow/flow-loop-element-patterns` — loops in stage subflows have the same DML-in-loop / SOQL-in-loop P0 hazards as a plain flow
-26. `skills/flow/flow-decision-element-patterns` — branching inside a stage subflow + transition condition expressions on the orchestration
-27. `skills/flow/flow-formula-and-expression-patterns` — assignee resolution formulas, due-date offset formulas, transition condition expressions
-28. `skills/flow/flow-get-records-optimization` — Get Records inside background steps must follow the indexed-filter / loop-lift / field-trim rules
-29. `skills/flow/flow-cross-object-updates` — when a stage subflow updates related records (parent contract from child task), parent-record-update rules apply
-30. `skills/flow/flow-and-platform-events` — when an orchestration stage waits on an external signal (Pause + PE Wait Event), Platform Event semantics apply
-31. `skills/flow/flow-large-data-volume-patterns` — orchestrations operating on long-lived parent records (Contracts, Cases) hit LDV when the parent has many child records
-32. `skills/flow/flow-action-framework` — when a stage step calls an `@InvocableMethod` for routing / SLA computation, the Flow–Apex invocable contract applies
-33. `skills/flow/flow-rollback-patterns` — Rollback Records element inside a stage subflow only undoes that subflow's DML, not previous stages' commits
-34. `skills/flow/flow-testing` — every stage subflow needs Flow Tests; orchestration ships with subflow-level test design
-35. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes
-36. `templates/flow/FaultPath_Template.md` — every stage subflow's fault path follows this template
-37. `templates/flow/Subflow_Pattern.md` — every stage step is a subflow per this contract
-38. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-39. `skills/flow/flow-orchestration-patterns` — the stage / step / work-item vocabulary and the interactive-vs-background step rules this design is composed from
+2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+3. `skills/flow/orchestration-flows` — canonical Orchestrator model
+4. `skills/flow/subflows-and-reusability` — stages call subflows
+5. `skills/flow/pause-elements-and-wait-events` — work-item waiting semantics
+6. `skills/flow/screen-flows` — interactive steps are Screen Flows
+7. `skills/flow/auto-launched-flow-patterns` — background steps
+8. `skills/flow/fault-handling`
+9. `skills/admin/approval-processes` — when Orchestrator is the right target vs Approval Process
+10. `skills/admin/queues-and-public-groups` — work-item routing
+11. `standards/decision-trees/automation-selection.md`
+12. `skills/flow/scheduled-flows` — Schedule-Triggered Flow shape used for the SLA-escalation subflow (Orchestrator does not auto-escalate)
+13. `skills/flow/flow-transactional-boundaries` — what commits between stages and within a step; informs fault-path placement
+14. `skills/flow/flow-resource-patterns` — variable / template / formula naming for stage-level vars passed to subflows
+15. `skills/flow/flow-versioning-strategy` — orchestrations are versioned; activation/deactivation behaviour for in-flight instances
+16. `skills/flow/flow-error-monitoring` — org-level error-email-recipient observation in audit mode + healthy/concerning signals in design mode
+17. `skills/flow/flow-runtime-error-diagnosis` — symptoms-to-cause map cited in audit findings
+18. `skills/flow/screen-flow-accessibility` — every interactive step's Screen Flow must satisfy a11y requirements before activation
+19. `skills/flow/flow-element-naming-conventions` — Stage / Step / Subflow naming policy applied to every emitted orchestration design
+20. `skills/flow/flow-runtime-context-and-sharing` — orchestration runs as the work-item assignee; per-stage run-mode decision required
+21. `skills/flow/flow-record-locking-and-contention` — long-running stages can hold parent-record locks; cited in design-mode Process Observations
+22. `skills/flow/flow-screen-input-validation-patterns` — every interactive step's Screen Flow must validate inputs before completing the work item
+23. `skills/flow/flow-screen-lwc-components` — when a stage's interactive step needs an LWC the screen-flow contract applies (`@api validate()`, FlowAttributeChangeEvent)
+24. `skills/flow/flow-deployment-and-packaging` — orchestration + 5 subflows must deploy together with FlowAccessPermission for each persona
+25. `skills/flow/flow-bulkification` — every stage's subflow that does DML must follow the collect-then-DML idiom
+26. `skills/flow/flow-loop-element-patterns` — loops in stage subflows have the same DML-in-loop / SOQL-in-loop P0 hazards as a plain flow
+27. `skills/flow/flow-decision-element-patterns` — branching inside a stage subflow + transition condition expressions on the orchestration
+28. `skills/flow/flow-formula-and-expression-patterns` — assignee resolution formulas, due-date offset formulas, transition condition expressions
+29. `skills/flow/flow-get-records-optimization` — Get Records inside background steps must follow the indexed-filter / loop-lift / field-trim rules
+30. `skills/flow/flow-cross-object-updates` — when a stage subflow updates related records (parent contract from child task), parent-record-update rules apply
+31. `skills/flow/flow-and-platform-events` — when an orchestration stage waits on an external signal (Pause + PE Wait Event), Platform Event semantics apply
+32. `skills/flow/flow-large-data-volume-patterns` — orchestrations operating on long-lived parent records (Contracts, Cases) hit LDV when the parent has many child records
+33. `skills/flow/flow-action-framework` — when a stage step calls an `@InvocableMethod` for routing / SLA computation, the Flow–Apex invocable contract applies
+34. `skills/flow/flow-rollback-patterns` — Rollback Records element inside a stage subflow only undoes that subflow's DML, not previous stages' commits
+35. `skills/flow/flow-testing` — every stage subflow needs Flow Tests; orchestration ships with subflow-level test design
+36. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes
+37. `templates/flow/FaultPath_Template.md` — every stage subflow's fault path follows this template
+38. `templates/flow/Subflow_Pattern.md` — every stage step is a subflow per this contract
+39. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+40. `skills/flow/flow-orchestration-patterns` — the stage / step / work-item vocabulary and the interactive-vs-background step rules this design is composed from
 
 ---
 
