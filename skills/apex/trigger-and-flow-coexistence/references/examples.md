@@ -4,7 +4,7 @@
 
 **Context:** A financial services org has a before-insert trigger on Opportunity that sets `Risk_Rating__c` based on Amount and Account industry. Six months later, an admin creates a before-save Flow on Opportunity that also sets `Risk_Rating__c` using a different formula that includes the opportunity's product family.
 
-**Problem:** After the Flow is activated, some Opportunities have incorrect `Risk_Rating__c` values. The bug is intermittent -- sometimes the trigger's value wins, sometimes the Flow's value wins. No error is thrown. Debug logs show both automations executing but the final field value depends on which ran second.
+**Problem:** After the Flow is activated, the admin's new `Risk_Rating__c` values never appear -- the trigger's value is saved on every record. No error is thrown, and debug logs show the Flow executing successfully, which sends the admin looking for a Flow bug that does not exist. The Flow runs at step 3; the trigger runs at step 4 and unconditionally overwrites the field one step later.
 
 **Solution:**
 
@@ -16,7 +16,8 @@ Automation Inventory — Opportunity (Before-Save timing)
 | OpportunityTrigger  | Before Trigger    | Risk_Rating__c    |
 | Set Risk Rating     | Before-Save Flow  | Risk_Rating__c    |
 
-CONFLICT: Risk_Rating__c is written by two automations at Before-Save timing.
+CONFLICT: Risk_Rating__c is written by the Flow at step 3 and by the trigger
+at step 4. The trigger runs later, so the trigger's value always wins.
 
 Resolution: Remove the Risk_Rating__c assignment from the before trigger.
 Consolidate all Risk_Rating__c logic into the before-save Flow, which the
@@ -24,7 +25,7 @@ admin team can maintain without deployments. Update the trigger handler to
 skip Risk_Rating__c and document the ownership in the automation inventory.
 ```
 
-**Why it works:** The conflict is resolved by assigning a single owner to the field at the before-save timing. The choice of Flow over trigger is a governance decision based on who maintains the logic. The critical step was building the inventory that revealed the collision.
+**Why it works:** The conflict is resolved by assigning a single owner to the field. Removing the *trigger's* write is what actually changes the outcome, because the trigger is the later writer (step 4) -- had the team instead added a condition to the Flow, nothing would have changed. The choice of Flow over trigger as the surviving owner is a governance decision based on who maintains the logic. The critical step was building the inventory that revealed the collision, since the platform reports nothing.
 
 ---
 
@@ -84,10 +85,12 @@ Step 7: Deploy trigger handler change and activate Flow in production together.
 
 ---
 
-## Anti-Pattern: Relying on Deployment Order to Control Execution Sequence
+## Anti-Pattern: Believing Deployment Order Controls Execution Sequence
 
-**What practitioners do:** A developer deploys the trigger first and the Flow second, assuming the trigger will always run before the Flow at the before-save timing because it was "registered first."
+**What practitioners do:** A developer deploys the trigger first and the Flow second, assuming the trigger will run before the Flow at before-save timing because it was "registered first."
 
-**What goes wrong:** Salesforce does not use deployment order, creation date, or alphabetical order to determine the relative execution of a before trigger and a before-save Flow. The order is indeterminate and can change across releases, sandboxes, or even between transactions. The assumption silently breaks.
+**What goes wrong:** Deployment order, creation date, and alphabetical order have no bearing on this. The platform fixes the sequence by step number: before-save Flows at step 3, before triggers at step 4. The developer's assumption happens to land on the right answer for the wrong reason -- the trigger does run second, but the Flow-then-trigger order would be identical if the Flow had been deployed first. Reasoning that produces a right answer by accident produces a wrong one as soon as the situation shifts.
 
-**Correct approach:** Never rely on relative ordering between a trigger and a Flow at the same timing slot. Instead, ensure they write to disjoint fields or consolidate the logic into a single automation. If they must coexist, use a field-value guard: the second automation checks the field value before writing and only writes if the value does not match expectations.
+**Correct approach:** Read the ordering off the documented step list, not off deployment history. The Flow runs first, the trigger runs second, always. Then ensure the two write disjoint fields or consolidate into one automation. If they must both write a field, put the guard in the **trigger** -- the later writer -- so it checks the current value and defers when the Flow has already set it.
+
+Note also what deployment order *does* control, so the correction is not over-applied: nothing here. The one ordering that *is* configurable is among multiple record-triggered Flows of the same type on the same object, via the Flow `triggerOrder` field (Metadata API 54.0+, surfaced as Flow Trigger Explorer).

@@ -208,7 +208,8 @@ def check_trigger_and_flow_coexistence(manifest_dir: Path) -> list[str]:
             flow_names = ", ".join(f["name"] for f in before_flows)
             issues.append(
                 f"FIELD-CONFLICT-RISK: {obj} has before trigger(s) AND before-save Flow(s) "
-                f"({flow_names}). Both run at step 3 with no guaranteed order. "
+                f"({flow_names}). Flows run at step 3, before triggers at step 4, "
+                f"so the trigger overwrites the Flow on any shared field. "
                 f"Verify they write to disjoint field sets."
             )
 

@@ -94,10 +94,11 @@ A record-triggered flow that runs on every update without clear entry criteria b
 
 Record-triggered flows participate in Salesforce's documented order of execution. Key points:
 
-- **Before-save record-triggered flows run BEFORE Validation Rules.** Fields you set in before-save get validated. An enrichment flow that sets an invalid value will be blocked by a Validation Rule — sometimes with a confusing error message.
-- **After-save record-triggered flows run AFTER Apex after-triggers.** Apex triggers see the record as-saved; after-save flows see the record AFTER Apex has had a chance to modify it.
-- **After-save flows run AFTER Workflow Rules (for orgs still running them)** and AFTER Process Builder (deprecated but still active in some orgs). Layered automation on the same object creates order-of-execution chains that are hard to trace.
-- **Multiple record-triggered flows on the same object run in unspecified order.** Salesforce has introduced "Flow Trigger Explorer" and ordering controls, but the canonical guidance is: one record-triggered flow per object per save context.
+- **Before-save record-triggered flows run at step 3 — first in the save.** Fields you set in before-save get validated at step 5. An enrichment flow that sets an invalid value will be blocked by a Validation Rule — sometimes with a confusing error message.
+- **Before-save flows run BEFORE Apex before-triggers (step 3 vs step 4).** These are separate, consecutively numbered steps, so the ordering is documented and fixed — not a race. If a flow and a before-trigger write the same field, the **trigger's value is what saves**, every time. Fix that by giving the field one owner, or by conditioning the trigger; a condition on the flow changes nothing, because the flow has already finished.
+- **After-save record-triggered flows run at step 14, AFTER Apex after-triggers at step 8.** Apex after-triggers see the record as-saved; after-save flows see the record after Apex has had a chance to modify it. A record created by an after-trigger is visible to the after-save flow; the reverse is not true.
+- **After-save flows run AFTER Workflow Rules (step 11, for orgs still running them)** and AFTER Process Builder (step 13, deprecated but still active in some orgs). Layered automation on the same object creates order-of-execution chains that are hard to trace.
+- **Multiple record-triggered flows of the same type on one object are ordered by `triggerOrder`.** Set it (Metadata API 54.0+, surfaced as Flow Trigger Explorer) rather than leaving the sequence to chance. The canonical guidance is still one record-triggered flow per object per save context.
 
 When designing a new flow, ALWAYS check existing automation on the object first (`list_flows_on_object`, `tooling_query` on `ApexTrigger`, `list_validation_rules`). Not knowing what's already there is a scale-invariant mistake.
 

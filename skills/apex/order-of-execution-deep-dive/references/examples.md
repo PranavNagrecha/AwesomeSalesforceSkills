@@ -6,7 +6,7 @@
 
 **Problem:** When a rep changes the Account Type to "Customer", two `Audit_Log__c` records are created instead of one. No one changed the trigger logic.
 
-**Root cause:** The workflow field update at step 12 causes before and after triggers to re-run once. The before trigger runs a second time and creates a second audit log.
+**Root cause:** The workflow field update at step 11 causes before update and after update triggers to re-run once (and only once). The before trigger runs a second time and creates a second audit log.
 
 **Solution:**
 
@@ -42,7 +42,7 @@ public class AccountTriggerHandler {
 
 **Context:** A before-save record-triggered Flow sets `Description` to a formatted summary. A before Apex trigger also writes to `Description` to append a timestamp. After save, only the timestamp appears — the Flow's summary is gone.
 
-**Problem:** Both run at step 3. The Apex trigger runs after the Flow (execution order within step 3 is not guaranteed, but in practice the trigger overwrote the Flow's value by doing an unconditional assignment).
+**Problem:** The before-save Flow runs at step 3; the before trigger runs at step 4. The trigger therefore runs **after** the Flow, and its unconditional assignment overwrites the Flow's value. This is not intermittent and not a race — it happens on every save, by documented step order.
 
 **Solution:**
 
@@ -58,7 +58,7 @@ trigger AccountTrigger on Account (before insert, before update) {
 }
 ```
 
-**Why it works:** The trigger now acts as a fallback rather than an unconditional writer. The Flow's value, written earlier in step 3, is preserved because the trigger only writes when the field is empty.
+**Why it works:** The trigger now acts as a fallback rather than an unconditional writer. The Flow's value, written at step 3, is preserved because the trigger at step 4 only writes when the field is empty. Note the direction: the fix has to go in the *later* automation (the trigger), because the earlier one (the Flow) cannot defend a value it has already written.
 
 ---
 
@@ -66,11 +66,11 @@ trigger AccountTrigger on Account (before insert, before update) {
 
 **Context:** A developer builds an after-save Flow to send a notification email when a Case is closed. A workflow rule also sends an email when a Case is closed. Operations reports two emails being sent.
 
-**Problem:** This is actually correct behavior, not a bug. The workflow email fires at step 11; the after-save Flow fires at step 15. Both fire independently. The developer assumed the Flow would suppress the workflow email.
+**Problem:** This is actually correct behavior, not a bug. The workflow email fires at step 11; the after-save Flow fires at step 14. Both fire independently. The developer assumed the Flow would suppress the workflow email.
 
-**Solution:** Deactivate the workflow rule email alert and manage all email logic from the after-save Flow (step 15), or vice versa. Do not assume one automation will prevent another from firing.
+**Solution:** Deactivate the workflow rule email alert and manage all email logic from the after-save Flow (step 14), or vice versa. Do not assume one automation will prevent another from firing.
 
-**Why it works:** Understanding the order removes the incorrect assumption. Both step 11 (workflow) and step 15 (after-save Flow) are independent execution points. Consolidating to one tool removes the duplicate.
+**Why it works:** Understanding the order removes the incorrect assumption. Both step 11 (workflow) and step 14 (after-save Flow) are independent execution points. Consolidating to one tool removes the duplicate.
 
 ---
 
@@ -78,7 +78,7 @@ trigger AccountTrigger on Account (before insert, before update) {
 
 **Context:** An Opportunity after trigger updates a field on the parent Account. The Account also has an after trigger that sends an email. The email is sent on every Opportunity update, even when nothing Account-related changed.
 
-**Problem:** The Opportunity is in a master-detail relationship with Account via a roll-up summary. At step 17 of the Opportunity save, the roll-up summary causes the Account record to be updated, firing the Account after trigger — which sends the email.
+**Problem:** The Opportunity is in a master-detail relationship with Account via a roll-up summary. At step 16 of the Opportunity save, the roll-up summary causes the Account record to be updated and the Account goes through its own save procedure, firing the Account after trigger — which sends the email.
 
 **Solution:**
 
@@ -102,8 +102,8 @@ trigger AccountTrigger on Account (after update) {
 
 ## Anti-Pattern: Treating After-Save Flow as Equivalent to After Trigger in Timing
 
-**What practitioners do:** Assume an after-save Flow (step 15) and an after Apex trigger (step 8) run at roughly the same time and can be used interchangeably for writing related records.
+**What practitioners do:** Assume an after-save Flow (step 14) and an after Apex trigger (step 8) run at roughly the same time and can be used interchangeably for writing related records.
 
-**What goes wrong:** An after-save Flow creates a related record at step 15. An after trigger that queries for that related record runs at step 8 — before the Flow has created it. The query returns zero rows, and the trigger logic silently skips processing.
+**What goes wrong:** An after-save Flow creates a related record at step 14. An after trigger that queries for that related record runs at step 8 — before the Flow has created it. The query returns zero rows, and the trigger logic silently skips processing.
 
-**Correct approach:** If trigger logic depends on a Flow-created record, move the creation into the after trigger (step 8) and remove the Flow creation step, or restructure so the trigger does not depend on a Flow side effect.
+**Correct approach:** If trigger logic depends on a Flow-created record, move the creation into the after trigger (step 8) and remove the Flow creation step, or restructure so the trigger does not depend on a Flow side effect. The six steps between 8 and 14 (assignment, auto-response, workflow, escalation, legacy Flow automations) are the reason the two are not interchangeable.

@@ -50,24 +50,32 @@ updated: 2026-04-23
 - Platform-event-triggered or schedule-triggered flows — they are not
   part of the DML save order.
 
-## The Save Order (canonical, abridged)
+## The Save Order (canonical, 20 steps)
 
-1. System validation (required / field type / max length).
-2. Before-save Flows (record-triggered "Fast Field Updates").
-3. Before triggers.
-4. Duplicate rules.
-5. System + custom validation rules.
-6. DML save (record not committed yet).
-7. After triggers.
-8. Assignment rules.
-9. Auto-response rules.
-10. Workflow rules / field updates (legacy).
-11. Processes + record-triggered Flows on after-save.
-12. Escalation rules.
-13. Entitlement rules.
-14. Roll-ups + sharing rule recalculations.
-15. Commit.
-16. Post-commit logic (platform events, `@future`, async Apex).
+Numbering matches the Apex Developer Guide, *Triggers and Order of Execution*. Use these numbers verbatim — several superseded 16-, 18-, and 19-step numberings are still in wide circulation and do not line up.
+
+1. Load the original record from the database (or initialize it for an upsert).
+2. Overwrite with the new field values from the request; run request-type system validation.
+3. **Before-save Flows** (record-triggered, "Fast Field Updates").
+4. **Before triggers.**
+5. System validation re-run (required / field type / max length) **and** custom validation rules.
+6. Duplicate rules (a block action stops the save here).
+7. DML save (record not committed yet).
+8. After triggers.
+9. Assignment rules (Lead / Case only).
+10. Auto-response rules (Lead / Case only).
+11. Workflow rules. A workflow **field update** re-runs system validations and before update / after update triggers one more time, and only one more time.
+12. Escalation rules (Case only).
+13. Process Builder and workflow-launched Flows — not in a guaranteed order.
+14. **After-save Flows** (record-triggered).
+15. Entitlement rules.
+16. Roll-up summary on the parent; the parent then goes through its own save procedure.
+17. Roll-up summary on the grandparent.
+18. Criteria-based sharing evaluation.
+19. Commit.
+20. Post-commit logic (email, `@future` / Queueable / Batch, asynchronous Flow paths).
+
+**Before-save Flow vs before trigger is determinate.** Step 3 and step 4 are separate, consecutive steps. The Flow always runs first; the trigger always runs second. If both write the same field, the trigger's value is what saves — every time, in every org. Older guidance that puts both at "step 3" and calls the outcome indeterminate is describing a superseded version of the docs page.
 
 ## Decision: Before-Save Flow vs Before Trigger
 
@@ -95,7 +103,10 @@ updated: 2026-04-23
 
 ## Official Sources Used
 
-- Triggers and Order of Execution —
+- Triggers and Order of Execution (20-step list; before-save Flows step 3, before
+  triggers step 4) —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Metadata API Developer Guide — Flow (`triggerOrder`, API 54.0+) —
+  https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
 - Before-Save Flows —
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_before_save.htm

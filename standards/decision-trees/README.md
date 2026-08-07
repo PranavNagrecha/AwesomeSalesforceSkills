@@ -13,6 +13,8 @@ even opens.
 | Tree | Routes between | Read before |
 |---|---|---|
 | [`automation-selection.md`](./automation-selection.md) | Flow, Apex, Agentforce, Approvals, Platform Events, Batch | Any skill in `apex/`, `flow/`, `agentforce/` |
+| [`flow-pattern-selector.md`](./flow-pattern-selector.md) | Before-save, after-save, scheduled path, autolaunched, screen, schedule-triggered, orchestration, platform-event-triggered | After `automation-selection.md` resolves to Flow, before any skill in `flow/` |
+| [`agentforce-capability-selector.md`](./agentforce-capability-selector.md) | Agentforce Agent, Prompt Builder, Next Best Action, Model Builder / BYOLLM, Einstein Discovery, Einstein Bots | Any skill in `agentforce/` |
 | [`async-selection.md`](./async-selection.md) | `@future`, Queueable, Batch, Schedulable, Platform Events, Scheduled Flow | Any skill in `apex/async-*`, `apex/batch-*`, `apex/queueable-*`, `apex/scheduled-*` |
 | [`integration-pattern-selection.md`](./integration-pattern-selection.md) | REST, Bulk API, Platform Events, CDC, Pub/Sub, Salesforce Connect, Named Credentials, MuleSoft | Any skill in `integration/` |
 | [`sharing-selection.md`](./sharing-selection.md) | OWD, Role Hierarchy, Sharing Rules, Teams, Manual, Apex Managed, Restriction, Scoping | Any skill in `security/*sharing*`, `apex/apex-managed-sharing`, or when designing a new object's access model |
@@ -62,9 +64,18 @@ Output
 
 1. Trees are opinion-heavy; that is their purpose. State the default clearly.
 2. Every branch must resolve to either another question, a skill path, a
-   template path, or a cross-tree link. No dead ends.
+   template path, or a cross-tree link. No dead ends — and no dead *starts*
+   either: walk the graph and confirm every question is reachable. An earlier
+   question that hard-escalates on a condition a later question also tests
+   makes the later one unreachable, and unreachable advice is worse than no
+   advice because it reads as covered. If a question is a standalone
+   follow-up rather than a routed branch, say so where it sits.
 3. Trees reference official Salesforce docs for any quantitative claim
-   (governor limits, edition feature availability).
+   (governor limits, edition feature availability) and carry an
+   `## Official Sources Used` section with the URLs. Every skill path a tree
+   names must resolve to a real `skills/<domain>/<slug>/SKILL.md`.
+   A tree is read *before* the skill, so a wrong number here overrides a
+   correct one there.
 4. Every anti-pattern gets a short "do this instead" — never just "don't."
 5. Keep each tree under ~400 lines. If it grows past that, split it.
 

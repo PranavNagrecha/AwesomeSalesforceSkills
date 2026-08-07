@@ -3,21 +3,33 @@
 Common mistakes AI coding assistants make when generating or advising on trigger and Flow coexistence.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Claiming before triggers always run before before-save Flows
+## Anti-Pattern 1: Getting before-save Flow vs. before trigger order wrong (either direction)
 
-**What the LLM generates:** "The before trigger fires first, then the before-save Flow runs, so you can set default values in the trigger and override them in the Flow."
+Two variants, both wrong, both common:
 
-**Why it happens:** Many older blog posts and StackExchange answers state that triggers run before Flows. This was partially true before Spring '22 when before-save Flows were introduced. LLMs trained on this data repeat the claim as fact.
+**Variant A — reversed order.** "The before trigger fires first, then the before-save Flow runs, so you can set default values in the trigger and override them in the Flow."
+
+**Variant B — the indeterminacy claim.** "Before-save Flows and before triggers both run at step 3, and Salesforce doesn't guarantee which goes first, so the outcome is indeterminate — never rely on their relative order."
+
+**Why it happens:** Before-save updates in record-triggered Flows arrived in **Spring '20**; before that, only triggers existed at before-save timing, and a large body of blog and StackExchange content states flatly that "triggers run first." Variant B has a different origin: for a period the Apex Developer Guide's order-of-execution list did not enumerate before-save Flows as their own numbered step, and writers filled the gap by declaring the order unspecified. The current list resolves it explicitly. Models trained on either era repeat the stale claim as fact.
 
 **Correct pattern:**
 
 ```text
-Before-save Flows and before triggers both execute at step 3 of the order of
-execution. Salesforce does not guarantee their relative order. Do not rely on
-one running before the other. Assign each field to a single automation owner.
+Step 3: Execute record-triggered flows configured to run BEFORE the record is saved
+Step 4: Execute all before triggers
+
+Separate, consecutive, documented steps. The order is DETERMINATE:
+  the before-save Flow always runs first; the before trigger always runs second.
+
+If both write the same field, the BEFORE TRIGGER wins -- every transaction,
+every org, regardless of deployment order or which was created first.
+
+Fix by field ownership. If both must write, make the TRIGGER conditional
+(it is the later writer). Making the FLOW conditional does nothing.
 ```
 
-**Detection hint:** Look for phrases like "trigger runs first," "trigger fires before the Flow," or "Flow runs after the trigger" when discussing before-save timing.
+**Detection hint:** Flag "trigger runs first," "trigger fires before the Flow," or "Flow runs after the trigger" (Variant A). Flag "indeterminate," "no guaranteed order," "unpredictable," "whichever runs second," or "race" alongside before-save Flow and before trigger (Variant B). Flag any claim that both occupy step 3, any total step count other than 20, and any claim that before-save Flows postdate Spring '20.
 
 ---
 
@@ -83,22 +95,25 @@ and FLOW_START_INTERVIEWS events in the execution log.
 
 ---
 
-## Anti-Pattern 5: Generating trigger code that validates fields a Flow might overwrite
+## Anti-Pattern 5: Generating trigger validation code, then justifying it with a backwards ordering claim
 
-**What the LLM generates:** "In the before trigger, validate that Priority__c is not blank and add an error if it is. This ensures data quality."
+**What the LLM generates:** "In the before trigger, validate that Priority__c is not blank and add an error if it is." Often paired with the reasoning "a before-save Flow could run after the trigger and null the field."
 
-**Why it happens:** LLMs generate trigger validation code without considering that a before-save Flow running after the trigger could set the field to null, bypassing the trigger's check. The LLM does not model the full order of execution.
+**Why it happens:** LLMs generate trigger validation code without modelling the full order of execution, and then reach for the stale ordering claim to explain the risk. The reasoning is backwards: a before-save Flow runs at step 3, one step **before** the trigger at step 4, so it cannot undo a check the trigger performed. The real exposure is later-step automation -- most commonly a workflow field update at step 11.
 
 **Correct pattern:**
 
 ```text
-Use declarative validation rules for field-level validation. Validation rules
-execute at step 4, after both before triggers and before-save Flows complete.
-This ensures the validation sees the final field state regardless of which
-automation wrote last.
+Use declarative validation rules for field-level validation. Custom validation
+rules execute at step 5, after the before-save Flow (step 3) and the before
+trigger (step 4) have both finished writing. They see the final pre-save state
+regardless of which automation wrote it.
+
+An addError() check in a before trigger cannot be undone by a before-save Flow
+(the Flow already ran). It CAN be undone by a workflow field update at step 11.
 ```
 
-**Detection hint:** Field validation logic inside a before trigger's `Trigger.new` loop on an object that also has before-save Flows. Look for `addError()` calls that check field values a Flow might subsequently change.
+**Detection hint:** Field validation logic inside a before trigger's `Trigger.new` loop, especially when the surrounding rationale claims a before-save Flow runs "after" the trigger or could overwrite the validated value.
 
 ---
 
@@ -106,15 +121,22 @@ automation wrote last.
 
 **What the LLM generates:** "The after-save Flow runs at step 8, before the after trigger at step 10, so you can use the Flow to set up data that the trigger will process."
 
-**Why it happens:** LLMs hallucinate step numbers or confuse different versions of the order-of-execution documentation. The actual step numbers vary by documentation version, but after-save Flows consistently run after workflow field updates, not before after triggers in the initial pass.
+**Why it happens:** LLMs mix step numbers drawn from different generations of the order-of-execution page. Several superseded numberings are in circulation (18-step and 19-step variants), so a model can produce internally consistent nonsense.
 
 **Correct pattern:**
 
 ```text
-After-save Flows run at step 15, which is after workflow field updates (step 9)
-and after the re-evaluation of triggers caused by those field updates. After
-triggers in the initial save cycle run at step 4. Do not assume a specific
-relative order without consulting the current order-of-execution documentation.
+After Apex triggers      step 8
+Assignment rules         step 9
+Auto-response rules      step 10
+Workflow rules           step 11   (field updates re-fire before/after
+                                    update triggers once, and only once)
+Escalation rules         step 12
+Process Builder etc.     step 13   (not in a guaranteed order)
+After-save Flows         step 14
+
+After triggers run SIX steps before after-save Flows. A record created by an
+after trigger IS visible to the after-save Flow; the reverse is not true.
 ```
 
-**Detection hint:** Specific step numbers cited without a documentation link, or claims about after-save Flow timing that contradict the Apex Developer Guide's Triggers and Order of Execution page.
+**Detection hint:** Any after-save Flow step number other than 14 (15 is the most common stale value; 15 is now entitlement rules), any after-trigger step number other than 8, or any total step count other than 20. Also flag step numbers cited without a documentation link.

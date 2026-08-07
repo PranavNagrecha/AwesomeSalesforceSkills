@@ -2,19 +2,23 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Before-Save Flow and Before Trigger Have No Guaranteed Relative Order
+## Gotcha 1: The Before Trigger Silently Overwrites the Before-Save Flow
 
-**What happens:** Both before-save Flows and before Apex triggers execute at step 3 of the order of execution. Salesforce does not document or guarantee which one runs first. If both write the same field, the result is indeterminate. The "winner" can change between transactions, sandbox refreshes, or platform releases without any notification.
+**What happens:** Before-save record-triggered Flows execute at step 3 of the order of execution; Apex before triggers execute at step 4. They are separate, consecutively numbered steps, so the order is documented and fixed -- the Flow runs first and the trigger runs second. If both write the same field, the **trigger's value is the one that persists**, on every transaction and in every org.
 
-**When it occurs:** Any object where a before-save Flow and a before trigger both exist and write to at least one overlapping field. The bug is silent -- no error is thrown, no debug log entry flags the conflict.
+The gotcha is not unpredictability, it is invisibility: nothing surfaces the collision. No error is thrown, no debug log entry flags it, and the Flow appears in the log to have run successfully -- because it did. Its write was simply superseded one step later.
 
-**How to avoid:** Ensure that before-save Flows and before triggers on the same object write to completely disjoint field sets. Use the field ownership registry pattern to document and enforce this. If field overlap is unavoidable, consolidate the logic into a single automation type.
+**Beware the stale version of this claim.** A great deal of older material (and AI-generated guidance trained on it) says both run at "step 3" with no guaranteed relative order, and that the result is indeterminate. That was written against a superseded numbering of the docs page. Acting on it leads teams to chase a phantom race condition -- adding retries, guards, or ordering hacks -- instead of fixing field ownership.
+
+**When it occurs:** Any object where a before-save Flow and a before trigger both exist and write to at least one overlapping field.
+
+**How to avoid:** Ensure that before-save Flows and before triggers on the same object write to completely disjoint field sets. Use the field ownership registry pattern to document and enforce this. If field overlap is unavoidable, make the **trigger** (the later writer, step 4) conditional -- e.g. assign only when the field is blank -- so it defers to the Flow instead of clobbering it. Adding the condition to the Flow accomplishes nothing, because the Flow has already finished by the time the trigger runs.
 
 ---
 
 ## Gotcha 2: Workflow Field Updates Re-Fire Triggers But Not Before-Save Flows
 
-**What happens:** When a workflow rule performs a field update (step 9), the platform re-evaluates before and after triggers (returning to steps 3-4). However, before-save Flows do not re-execute during this re-evaluation pass. This means a before-save Flow will never see a value written by a workflow field update in the same transaction, but a before trigger will.
+**What happens:** When a workflow rule performs a field update (step 11), the platform updates the record again, re-runs system validations, and executes before update and after update triggers "one more time (and only one more time)." Before-save Flows do not re-execute during this pass -- nor do custom validation rules, duplicate rules, or escalation rules. This means a before-save Flow will never see a value written by a workflow field update in the same transaction, but a before trigger will.
 
 **When it occurs:** Orgs that still have active workflow rules with field updates alongside both triggers and before-save Flows. The asymmetry is especially confusing when migrating from workflow rules to Flows, because the trigger behavior changes (it no longer re-fires if the workflow rule is replaced by a Flow that does not perform a field update the same way).
 
@@ -42,10 +46,12 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Before-Save Flow Field Assignments Bypass Apex Trigger.new Validation
+## Gotcha 5: In-Trigger Field Validation Can Be Undone Later in the Same Save
 
-**What happens:** A before-save Flow can write to fields on the record without going through the trigger's `Trigger.new` validation logic, because the Flow may execute after the before trigger at step 3. If the before trigger validates that `Priority__c` is not null and a before-save Flow subsequently sets `Priority__c` to null, no error is thrown because validation rules run at step 4 (after both before triggers and before-save Flows have completed) and the trigger's in-code validation already passed.
+**What happens:** An Apex before trigger at step 4 that validates `Priority__c` with `addError()` only sees the record as it stands at step 4. Anything that writes the field later in the save -- most commonly a workflow field update at step 11, whose re-fire pass reaches before update triggers again but not the original insert-time validation path -- can change the value the trigger approved.
 
-**When it occurs:** Orgs that rely on Apex before-trigger code for field validation instead of declarative validation rules. A before-save Flow can undo the trigger's work without being caught.
+Note the direction carefully: a **before-save Flow cannot** undo a before trigger's validation, because the Flow runs at step 3, one step *earlier*. The classic phrasing of this gotcha ("a Flow can write after the trigger validated") is backwards and comes from the superseded numbering that put both at a shared step 3.
 
-**How to avoid:** Use declarative validation rules for field-level validation rather than trigger code. Validation rules execute at step 4, after both before triggers and before-save Flows have finished writing fields. This ensures validation sees the final field state regardless of which automation wrote last.
+**When it occurs:** Orgs that rely on Apex before-trigger code for field validation instead of declarative validation rules, and that still have workflow field updates or other later-step automation writing the same fields.
+
+**How to avoid:** Use declarative validation rules for field-level validation rather than trigger code. Custom validation rules execute at step 5, after both the before-save Flow (step 3) and the before trigger (step 4) have finished writing fields, so they see the final pre-save state regardless of which automation wrote it.

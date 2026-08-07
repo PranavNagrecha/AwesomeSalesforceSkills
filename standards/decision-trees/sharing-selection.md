@@ -38,8 +38,10 @@ the most common cause of unauditable orgs.
       ↓
 5. Manual / Apex    (case-by-case — manual from UI, Apex Managed for programmatic)
       ↓
-6. Restriction /    (narrow back down — Restriction Rules trump sharing;
-   Scoping Rules     Scoping Rules affect default UI filters only)
+6. Restriction /    (narrow back down — Restriction Rules filter what sharing
+   Scoping Rules     granted, but only on supported objects and only outside
+                     System Mode; Scoping Rules set default list-view/report
+                     scope and grant or remove nothing)
       ↓
 7. Implicit         (parent-child automatic sharing you cannot disable for
                      standard parent-child relationships)
@@ -86,15 +88,26 @@ Q5. Apex Managed Sharing prerequisites
 Q6. Is this for a Salesforce sales/service team context?
     ├── Sales → use Account / Opportunity Teams
     ├── Service → use Case Team with Predefined Case Team
-    └── Other → continue
+    └── Other → Q7
 
-Q7. Does U need access to read only, and only when looking at the record
-    (not in list views or reports)?
-    ├── Yes → Scoping Rules (UI-level filter; NOT a security boundary)
-    └── No  → Continue
+Q7–Q9 run in sequence after the grant is settled: scope the default view,
+then narrow access, then handle external users.
+
+Q7. Do we just want a tidier default record set in list views and reports,
+    without changing who can reach what?
+    ├── Yes → Scoping Rules (default scope only; grants and removes nothing)
+    └── No  → Q8
 
 Q8. Do we need to REMOVE access that some other layer is granting?
-    ├── Yes → Restriction Rule (trumps sharing; evaluated per-query)
+    ├── Is the object one of: custom, external, contract, event, quote, task,
+        time sheet, time sheet entry?
+    │   ├── Yes → Restriction Rule (filters at query time across list views,
+    │             lookups, related lists, reports, search, SOQL and SOSL —
+    │             but NOT in System Mode, and not for View All / Modify All
+    │             holders). Max 2 active per object (EE/DE), 5 (PE/UE).
+    │   └── No (Account, Opportunity, Case, Lead, …) → restriction rules are
+    │             not available. Tighten OWD and remove the sharing layer
+    │             that granted the access — go back to Q1.
     └── No  → Done
 
 Q9. External users (Experience Cloud)?
@@ -110,7 +123,7 @@ Q9. External users (Experience Cloud)?
 |---|---|---|
 | Maintained by | Admin (declarative) | Developer (code) |
 | Evaluated on | Criteria match at DML time | Whatever code you write |
-| Limit | Total sharing rules per object (~300 by edition) | None from sharing count; bounded by `__Share` row count |
+| Limit | 300 sharing rules per object (raisable to 500 via a Support case), of which at most 50 may be criteria-based (raisable to 200) | None from sharing count; bounded by `__Share` row count |
 | Recalculation on owner change | Automatic | You must handle it |
 | Audit story | Clear in setup | Requires reading Apex |
 | Cost to change | Admin edits a rule | Deploy code |
@@ -141,8 +154,24 @@ Rules:
 5. Review gate: a second reviewer must explicitly approve the `without sharing`
    declaration in PR.
 
-Default in this repo is `with sharing`. Use `WITH USER_MODE` in SOQL
-(Summer '23+) — see `templates/apex/BaseSelector.cls`.
+Default in this repo is `with sharing`. Use `WITH USER_MODE` in SOQL — GA
+since Spring '23 — see `templates/apex/BaseSelector.cls`.
+
+Two platform defaults changed in **API version 67.0** (Summer '26), and they
+change what "no keyword" means:
+
+- A class with no sharing declaration now runs **`with sharing`**. In API 66.0
+  and earlier it fell through to `without sharing` unless it was an entry
+  point, an Aura controller, or inherited from a newer class.
+- Apex database operations now run in **user mode by default** — the running
+  user's sharing, FLS, and object permissions apply. In 66.0 and earlier the
+  default was system mode.
+
+Both are per-class and keyed to the class's API version, so a legacy class
+pinned at 66.0 keeps the old behaviour. That is a trap when auditing: read the
+class's API version before you conclude anything about its access posture.
+Keep declaring `with sharing` and `WITH USER_MODE` explicitly anyway — an
+audit should not have to look up an API version to know the answer.
 
 ---
 
@@ -186,13 +215,27 @@ Rules:
 
 | | Restriction Rule | Scoping Rule |
 |---|---|---|
-| Enforcement | Security boundary — user cannot see excluded records via any entry point | UI filter — user can still access excluded records via API or direct URL |
-| Use case | "Compliance: sales users may not see Legal's records" | "Declutter: default list view hides inactive records" |
-| Report impact | Excluded records not counted | Records still in reports if report filter allows |
-| API impact | Excluded records not returned | No impact |
+| What it does | Filters, at query time, the records the user could otherwise reach through sharing | Sets the default record set a user sees; does not change access |
+| Sharing rows | Leaves `__Share` rows untouched — evaluated as an access policy at run time, never materialised into the sharing tables | Leaves `__Share` rows untouched |
+| Enforced on | Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL | List views and reports |
+| Bypassed by | Code executed in **System Mode**; users with View All / Modify All Records or Data; Calendar "Show Details" | Anything that changes the filter — plus the user's underlying access is unchanged |
+| `UserRecordAccess` | **Still reports access.** "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule." | Not applicable |
+| Available on | Custom objects, external objects, contracts, events, quotes, tasks, time sheets, time sheet entries — **not** Account / Opportunity / Case / Lead | Custom objects plus account, case, contact, event, lead, opportunity, task |
+| Active rules per object | 2 (Enterprise, Developer) · 5 (Performance, Unlimited) | 2 (Developer) · 5 (Performance, Unlimited) |
+| Use case | "Compliance: sales users may not see Legal's contracts" | "Declutter: default list view hides inactive records" |
 
 Choose Restriction Rules for compliance and data segregation. Choose Scoping
-Rules for usability only.
+Rules for usability only — Salesforce is explicit that "scoping rules don't
+restrict the record access that your users already have."
+
+**Do not call a restriction rule an absolute security boundary.** It is a
+run-time filter with three documented ways around it: system-mode code, the
+View All / Modify All permissions, and the fact that `UserRecordAccess` will
+still say the user has access. If you need an answer that survives an
+`without sharing` class or an integration user with Modify All Data, the
+restriction rule is not it — fix OWD and the sharing layers underneath.
+And check the object list first: on Account, Opportunity, Case, or Lead there
+is no restriction rule to reach for at all.
 
 ---
 
@@ -238,12 +281,13 @@ If you can't answer each of these in 30 seconds, the model is too complex.
 ## Related skills
 
 - `admin/sharing-and-visibility`
-- `admin/permission-sets`
-- `admin/permission-set-groups`
+- `admin/permission-sets-vs-profiles`
+- `admin/permission-set-architecture`
+- `admin/permission-set-group-composition`
 - `apex/apex-managed-sharing`
 - `apex/apex-security-patterns`
 - `apex/soql-security`
-- `security/org-hardening`
+- `security/org-hardening-and-baseline-config`
 - `security/experience-cloud-security`
 - `architect/security-architecture-review`
 
@@ -252,3 +296,13 @@ If you can't answer each of these in 30 seconds, the model is too complex.
 - `templates/apex/SecurityUtils.cls` — CRUD/FLS enforcement helpers
 - `templates/apex/BaseSelector.cls` — defaults to `WITH USER_MODE` (respects sharing + FLS)
 - `templates/apex/tests/TestUserFactory.cls` — run-as-user tests for sharing
+
+## Official Sources Used
+
+- Restriction Rules Developer Guide — Considerations (supported objects; enforced on Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL; "Restriction rules aren't applied for code executed in System Mode"; "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule"; 2 active per object in EE/DE, 5 in PE/UE): https://developer.salesforce.com/docs/atlas.en-us.restriction_rules.meta/restriction_rules/restriction_rules_considerations.htm
+- Salesforce Engineering — "Restriction Rules: Complementing Salesforce's Record Access Control Mechanism" (evaluated as a run-time access-control policy rather than stored in the sharing tables): https://engineering.salesforce.com/restriction-rules-820f2218a51b/
+- Scoping Rules Developer Guide — Introduction ("Scoping rules don't restrict the record access that your users already have"; supported objects): https://developer.salesforce.com/docs/atlas.en-us.scoping_rules.meta/scoping_rules/scoping_rules_intro.htm
+- Scoping Rules Developer Guide — Considerations (applies to list views and reports; active-rule limits per edition): https://developer.salesforce.com/docs/atlas.en-us.scoping_rules.meta/scoping_rules/scoping_rules_considerations.htm
+- Salesforce Help — Increase the Maximum Number of Sharing Rules per Entity (default 300 per object, raisable to 500; criteria-based default 50, raisable to 200): https://help.salesforce.com/HTViewSolution?id=000231052
+- Apex Developer Guide — Using the with sharing, without sharing, and inherited sharing Keywords ("In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm
+- Apex Developer Guide — Set an Access Mode for Database Operations ("In API version 67.0 and later, Apex runs in user context by default … In API version 66.0 and earlier, system mode is the default"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm

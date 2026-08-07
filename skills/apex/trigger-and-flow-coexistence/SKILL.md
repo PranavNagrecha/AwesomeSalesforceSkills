@@ -51,13 +51,17 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-### Before-Save Timing Ambiguity
+### Before-Save Timing Is Determinate
 
-Before-save Flows and before Apex triggers both execute at step 3 of the order of execution (after initial record load and before system validation). Salesforce does not guarantee a fixed relative order between a before-save Flow and a before trigger on the same object. If both write to the same field, the result is indeterminate -- whichever runs second silently wins. This is the single most common source of coexistence bugs.
+Before-save record-triggered Flows execute at **step 3** of the order of execution. Apex before triggers execute at **step 4**. These are separate, consecutively numbered steps in the Apex Developer Guide, so the relative order is fixed and documented: the Flow runs first, the trigger runs second.
+
+The practical consequence for coexistence: if a before-save Flow and a before trigger both write the same field, **the before trigger's value is the one that persists** — on every transaction, in every org, regardless of deployment order. The symptom "the Flow's value keeps disappearing" is fully explained by step order; it is not intermittent and not environment-dependent.
+
+This still makes overlapping field writes the most common source of coexistence bugs — but the bug is a silent, *predictable* overwrite, not a race. Diagnose it by reading the step map, and fix it by giving the field one owner (or by making the later writer conditional). Do not add guards, retries, or ordering hacks intended to defeat nondeterminism that does not exist.
 
 ### After-Save Flow Placement
 
-After-save Flows run at step 15 in the order of execution, after workflow rules, workflow field updates, and any re-invocation of before/after triggers caused by those field updates. This means an after-save Flow sees field values that may have been modified by a workflow field update that re-fired triggers. Conversely, DML performed inside an after-save Flow will re-enter the order of execution and fire triggers again, creating a recursion path that is invisible to trigger-only recursion guards.
+After-save Flows run at step 14 in the order of execution, after workflow rules (step 11), escalation rules (step 12), and Process Builder / workflow-launched Flows (step 13) — including any re-invocation of before update and after update triggers caused by a workflow field update. This means an after-save Flow sees field values that may have been modified by a workflow field update that re-fired triggers. Conversely, DML performed inside an after-save Flow will re-enter the order of execution and fire triggers again, creating a recursion path that is invisible to trigger-only recursion guards.
 
 ### Single Entry-Point Principle
 
@@ -82,7 +86,7 @@ Each writeable field on an object should have at most one automation that sets i
 3. Flag any field with more than one writer at the same timing as a conflict.
 4. Resolve conflicts by moving one writer to a different timing, consolidating both writes into a single automation, or using a guard clause to ensure only one writer executes.
 
-**Why not the alternative:** Without an explicit registry, developers add automations that silently overwrite each other. The bug only surfaces intermittently because the relative execution order is not guaranteed.
+**Why not the alternative:** Without an explicit registry, developers add automations that silently overwrite each other. Nothing in the platform reports the collision — the later step simply wins and no error is raised. The registry is what makes an otherwise invisible conflict visible.
 
 ### Pattern 2: Cross-Automation Recursion Guard
 
@@ -127,7 +131,7 @@ In the trigger handler, set `AutomationControl.triggerOriginatedSave = true` bef
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Before trigger and before-save Flow both write the same field | Move one to a different timing or consolidate into a single automation | No guaranteed relative order at step 3; last writer wins silently |
+| Before trigger and before-save Flow both write the same field | Give the field a single owner, or make the trigger's write conditional | Step 4 (trigger) always runs after step 3 (Flow), so the trigger silently wins every time |
 | After trigger DML re-fires Flows that re-fire triggers | Implement cross-automation recursion guard with InvocableMethod bridge | Static variables alone do not cross the Apex-to-Flow boundary |
 | New Flow being added to an object with existing triggers | Build automation inventory first; confirm no field-write collisions | Prevents introducing a silent overwrite bug in production |
 | Org has process builder, workflow rules, triggers, and Flows on the same object | Prioritize consolidation; use Flow Trigger Explorer to sequence Flows | Four automation types on one object is unmaintainable at scale |
@@ -167,8 +171,8 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Before-save Flow and before trigger order is indeterminate** -- Salesforce documentation states both run at step 3 but does not specify which executes first. This means a before-save Flow and a before trigger that both set `Status__c` will produce unpredictable results. The field value after step 3 depends on internal platform scheduling, not deployment order.
-2. **Workflow field updates re-fire before and after triggers but not before-save Flows** -- When a workflow rule performs a field update at step 9, the system re-evaluates before and after triggers (steps 3-4 again). However, before-save Flows do not re-run during this re-evaluation. This asymmetry means a trigger can see a value set by a workflow field update, but a before-save Flow cannot.
+1. **The before trigger always overwrites the before-save Flow, silently** -- The Apex Developer Guide lists before-save Flows at step 3 and before triggers at step 4. The order is documented, not indeterminate. If a Flow and a trigger both set `Status__c`, the trigger's value is what saves, every time. The gotcha is that nothing surfaces the conflict: no error, no warning, no debug-log flag. Beware older guidance (including AI-generated guidance) that describes this as an unpredictable race — acting on that belief leads people to add guards instead of fixing field ownership.
+2. **Workflow field updates re-fire before and after triggers but not record-triggered Flows** -- When a workflow rule performs a field update at step 11, the platform updates the record again, re-runs system validations, and executes before update and after update triggers "one more time (and only one more time)." Record-triggered Flows, custom validation rules, duplicate rules, and escalation rules are not re-run. This asymmetry means a trigger can see a value set by a workflow field update, but a before-save Flow cannot.
 3. **After-save Flow DML is invisible to trigger recursion guards** -- A typical trigger recursion guard uses a static Boolean like `hasRun`. This prevents the trigger from running twice in the same transaction. However, DML performed by an after-save Flow enters a fresh save cycle that resets the trigger context. The static variable is still true, so the trigger skips -- but the Flow may not skip, causing a one-sided infinite loop.
 
 ---
@@ -185,7 +189,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- order-of-execution-deep-dive -- Use when you need the full 18-step order of execution reference rather than coexistence governance
+- order-of-execution-deep-dive -- Use when you need the full 20-step order of execution reference rather than coexistence governance
 - trigger-framework -- Use when designing or refactoring the trigger handler pattern itself
 - record-triggered-flow-patterns -- Use when designing Flows in isolation without trigger coexistence concerns
 - recursive-trigger-prevention -- Use when the recursion problem is trigger-to-trigger only, without Flow involvement

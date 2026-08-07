@@ -1,0 +1,122 @@
+name: tests
+
+# Unit tests. This workflow is the single owner of every `unittest` invocation
+# in CI — the repo-level suite under tests/ and the MCP server suite under
+# mcp/sfskills-mcp/tests/. validate.yml owns skill/agent VALIDATION; it should
+# not also own test execution.
+#
+# Both jobs use `unittest discover`, never a hand-written module list. A named
+# list is how 233 of the MCP suite's 248 tests came to gate nothing: only
+# test_agent_frontmatter, test_tools and test_export_parity were ever invoked,
+# so both security modules for a server that talks to live orgs
+# (test_tooling_query_blocklist, test_sf_cli_redaction) ran in zero CI jobs.
+# Discovery means a new module is covered the moment it lands.
+#
+# FOLLOW-UP FOR THE validate.yml OWNER (not editable from this item's file
+# ownership): once this workflow is green on main, delete the now-duplicated
+# test execution from validate.yml —
+#   - the whole `mcp-tests` job                       (superseded by mcp-suite below)
+#   - `frontmatter round-trip test` in validate-agents
+#   - `probe + mcp tool tests` in validate-agents
+#   - `export parity unittests` in export-parity-matrix
+# and the `round-trip every AGENT.md frontmatter` step in pr-lint.yml.
+# Leaving them costs a duplicated ~2 min of runner time per PR; it is not a
+# correctness problem, so it is safe to land this workflow first.
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  # -----------------------------------------------------------------------
+  # Repo tooling — pipelines/ and scripts/.
+  #
+  # Hermetic by construction: every fixture is built in a temp dir, nothing
+  # reads the skills/ corpus and nothing opens vector_index/. So this job
+  # needs no index build and no editable install, and finishes in seconds.
+  #
+  # Measured 2026-08-01 on a clean HEAD tree: 233 tests, 0.56s, 0 skips,
+  # 6 expected failures (the documented FTS5 query-sanitisation defect in
+  # pipelines/lexical_index.py — see tests/test_lexical_index.py's
+  # UnsanitisedQueryCrashTest). An expected failure that starts PASSING fails
+  # this job, which is the signal to delete the decorators.
+  #
+  # `-t tests` is load-bearing: tests/ has no __init__.py, so `-t .` raises
+  # "Start directory is not importable", and `-s . -p 'test_*.py'` discovers
+  # 0 tests while still exiting 0.
+  # -----------------------------------------------------------------------
+  repo-tooling:
+    name: repo tooling (pipelines + scripts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # PyYAML (frontmatter parsing) and jsonschema (the frontmatter and
+      # registry-record gates). Nothing else — the suite is otherwise stdlib.
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: repo test suite
+        run: python3 -m unittest discover -s tests -t tests -v
+
+  # -----------------------------------------------------------------------
+  # MCP server — the FULL suite, by discovery.
+  #
+  # Measured 2026-08-01 against a clean HEAD tree on a loaded dev Mac:
+  # 248 tests, 169.7s, 0 skips, 0 failures. (validate.yml's superseded
+  # mcp-tests job quotes ~113s; that number was measured on the same tree
+  # under less load and has not been re-verified on a GitHub runner. Budget
+  # for the larger figure.) This job — not repo-tooling — is the long pole in
+  # the workflow; the two run in parallel, so wall-clock is whatever this one
+  # costs plus the index build.
+  #
+  # No org, no credentials and no network are required. The org-touching
+  # modules are hermetic: test_dev_org (29) patches `dev_org._run_soql` with
+  # unittest.mock, and test_sf_cli (4) points SFSKILLS_SF_BIN at a generated
+  # stub script. Live-org probes stay in org-validation.yml, which is
+  # manual/cron and needs SFDX_AUTH_URL.
+  # -----------------------------------------------------------------------
+  mcp-suite:
+    name: mcp server (full suite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      # tests/test_skills.py asserts real retrieval results (has_coverage for
+      # "trigger recursion") and vector_index/lexical.sqlite is gitignored
+      # (>50 MB, past GitHub's file limit), so the index has to be rebuilt
+      # from the committed chunks before the suite runs.
+      - name: build local retrieval index
+        run: python3 scripts/build_index.py
+
+      # Installs the mcp SDK so the server-registration tests execute instead
+      # of raising SkipTest.
+      #
+      # PREREQUISITE, not a fact about HEAD: this needs the
+      # `mcp>=1.7.0,<2.0` ceiling in mcp/sfskills-mcp/pyproject.toml. Without
+      # a ceiling pip resolves mcp 2.0.0, which removed `mcp.server.fastmcp`,
+      # and this job dies at import with ModuleNotFoundError instead of
+      # skipping.
+      - name: install sfskills-mcp
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m pip install -e . --quiet
+
+      - name: full mcp test suite
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest discover -s tests -t tests -v

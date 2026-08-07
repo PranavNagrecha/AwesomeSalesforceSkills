@@ -157,7 +157,7 @@ Q13. Component-level hotspot — which dimension?
     └── DOM mutation thrash from reactive state      → lwc-performance (rerender debug + stable `key=` on iterators)
 
 Q14. Page-level slowness across components?
-    ├── Lightning page has 20+ components            → lwc-performance (page audit) + admin/record-page-performance if it exists
+    ├── Lightning page has 20+ components            → lwc-performance (page audit) + lwc/lwc-app-builder-config (component placement + visibility rules)
     ├── Page is in Experience Cloud                  → architect/experience-cloud-performance (CDN + page layers)
     └── Page slow only for some users (perm-based)   → admin/data-skew-and-sharing-performance (sharing-driven query cost)
 ```
@@ -290,6 +290,7 @@ LWC / page render:
 
 - [`lwc/lwc-performance`](../../skills/lwc/lwc-performance/SKILL.md)
 - [`lwc/lwc-performance-budgets`](../../skills/lwc/lwc-performance-budgets/SKILL.md)
+- [`lwc/lwc-app-builder-config`](../../skills/lwc/lwc-app-builder-config/SKILL.md)
 
 Experience Cloud:
 

@@ -14,7 +14,7 @@ Use this template when working on tasks in this area.
 
 List every automation active on the target object.
 
-### Before-Save Timing (Step 3)
+### Before-Save Timing (Flows step 3, Apex before triggers step 4 — the trigger writes last)
 
 | # | Automation Name | Type (Trigger/Flow) | Fields Read | Fields Written | Owner (Team/Person) |
 |---|-----------------|---------------------|-------------|----------------|---------------------|
@@ -22,7 +22,7 @@ List every automation active on the target object.
 | 2 | _______________ | __________________ | ___________ | ______________ | ___________________ |
 | 3 | _______________ | __________________ | ___________ | ______________ | ___________________ |
 
-### After-Save Timing (Steps 4 / 15)
+### After-Save Timing (Apex after triggers step 8, after-save Flows step 14)
 
 | # | Automation Name | Type (Trigger/Flow/WFR/PB) | DML Performed | Target Object | Fields Written on Target |
 |---|-----------------|---------------------------|---------------|---------------|--------------------------|

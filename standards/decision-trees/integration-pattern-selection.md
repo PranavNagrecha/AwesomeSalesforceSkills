@@ -5,6 +5,11 @@ Which integration pattern should I use?
 
 Use this tree BEFORE proposing a specific integration pattern to the user.
 
+Read it differently from the other trees: pick your **direction** first, then
+work that direction's questions top to bottom as a checklist. Q1–Q14 are not a
+branching graph — each question narrows a different axis (latency, auth,
+payload, volume, idempotency) and they all apply.
+
 ---
 
 ## Strategic defaults
@@ -28,7 +33,9 @@ Use this tree BEFORE proposing a specific integration pattern to the user.
 START: Salesforce needs data from / needs to send data to an external system.
 
 Q1. Is the call synchronous to a user action?
-    ├── Yes, < 120s, user watches a spinner     → Continuation (see apex/continuation-callouts)
+    ├── Yes, < 120s, user watches a spinner     → Continuation (see apex/continuation-callouts).
+                                                  Hard ceilings: 120s max timeout, 3 parallel
+                                                  callouts, 3 chained continuations, 1MB response.
     ├── Yes, under 10s, LWC imperative call     → @AuraEnabled Apex → HttpClient (Named Credential)
     ├── No, fire-and-forget                     → Queueable with AllowsCallouts
     └── No, bulk ingest/egress                  → Batch Apex or MuleSoft / iPaaS
@@ -137,7 +144,7 @@ Q14. Does Salesforce + external need to stay replicated?
 | Pub/Sub API (gRPC) | External subscriber to SF events | External can only consume REST |
 | Salesforce Connect (OData) | Surface external data without copying | Users need to write back frequently at scale |
 | Streaming API (PushTopic) | Legacy — prefer Pub/Sub API | Any new work (PushTopic is maintenance-mode) |
-| Outbound Messages | Legacy SOAP webhook from workflow | Any new work (Workflow Rules retired) |
+| Outbound Messages | Legacy SOAP webhook from workflow | Any new work (Workflow Rules hit end of support 31 Dec 2025) |
 | MuleSoft / iPaaS | Multi-system orchestration, transformations, long-running | Single point-to-point integrations you already own |
 
 ---
@@ -153,8 +160,8 @@ Rules enforced across this repo:
 4. Test callouts with `MockHttpResponseGenerator` (see
    `templates/apex/tests/`) — NEVER hit a real endpoint from an Apex test.
 
-See `skills/integration/oauth-flows` and `standards/security/*` for deeper
-treatment.
+See `skills/integration/oauth-flows-and-connected-apps` and
+`skills/integration/named-credentials-setup` for deeper treatment.
 
 ---
 
@@ -167,8 +174,10 @@ treatment.
 - **Bulk API inside a trigger.** Bulk API calls are meant for async / external
   ingestion, not the synchronous DML path.
 - **PushTopic for new work.** Pub/Sub API replaces it; PushTopic is legacy.
-- **Outbound Messages.** Workflow Rules are retired. Every Outbound Message is
-  technical debt to be migrated to Platform Events or Flow + Apex.
+- **Outbound Messages.** Their host — Workflow Rules — reached end of support
+  on 31 December 2025 and gets no further fixes. Existing outbound messages
+  still fire, so nothing breaks loudly; every one of them is technical debt to
+  be migrated to Platform Events or Flow + Apex.
 - **"We'll just sync everything nightly."** Almost always wrong. Real-time is
   cheaper than the bug-report cycles from stale data.
 - **Custom REST that duplicates a standard sObject endpoint.** The standard
@@ -191,20 +200,29 @@ treatment.
 
 ## Related skills
 
-- `integration/callouts-and-http-integrations`
+- `apex/callouts-and-http-integrations`
+- `apex/continuation-callouts`
 - `integration/rest-api-patterns`
 - `integration/bulk-api-2-patterns`
 - `integration/platform-events-integration`
-- `integration/change-data-capture-for-external-subscribers`
+- `integration/change-data-capture-integration`
 - `integration/pub-sub-api-patterns`
-- `integration/named-credentials`
-- `integration/oauth-flows`
-- `integration/graphql`
-- `integration/salesforce-connect`
-- `architect/event-driven-salesforce-architecture`
+- `integration/named-credentials-setup`
+- `integration/oauth-flows-and-connected-apps`
+- `integration/graphql-api-patterns`
+- `integration/salesforce-connect-external-objects`
+- `architect/event-driven-architecture`
 
 ## Related templates
 
 - `templates/apex/HttpClient.cls` — Named-Credential-aware callout wrapper
 - `templates/apex/tests/MockHttpResponseGenerator.cls` — callout mocks (required in tests)
 - `templates/apex/ApplicationLogger.cls` — correlate request IDs across systems
+
+## Official Sources Used
+
+- Apex Developer Guide — Asynchronous Callout Limits (Continuation: 120 s max timeout, 3 parallel callouts, 3 chained callouts, 1 MB max HTTP response): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_limits.htm
+- Apex Developer Guide — Execution Governors and Limits (100 callouts per transaction, 120 s cumulative callout timeout): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Platform Events Developer Guide — Platform Event Allocations (publish and delivery allocations by edition): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Streaming API Developer Guide — PushTopic Events (Legacy): https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/pushtopic_events_intro.htm
+- Salesforce Help — Workflow Rules & Process Builder End of Support (31 December 2025): https://help.salesforce.com/s/articleView?id=001096524&language=en_US&type=1

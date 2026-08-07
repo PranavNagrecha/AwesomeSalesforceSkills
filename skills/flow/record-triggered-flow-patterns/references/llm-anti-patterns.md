@@ -86,17 +86,29 @@ Or use the built-in option: "Only when a record is updated to meet the condition
 // Does not consider that an Apex before-trigger on Account may also set Rating
 ```
 
-**Why it happens:** LLMs design flows in isolation. In the Salesforce order of execution, before-save flows run before Apex before-triggers. If both modify the same field, the Apex trigger's value wins.
+**Why it happens:** LLMs design flows in isolation. In the Salesforce order of execution, before-save flows (step 3) run before Apex before-triggers (step 4). If both modify the same field, the Apex trigger's value wins — deterministically, on every save.
 
 **Correct pattern:**
 
 Before creating a record-triggered flow:
 1. Check for existing Apex triggers on the same object
-2. Understand the order: Before-save flow --> Validation rules --> Before triggers --> After triggers --> After-save flow
-3. Document which fields are managed by which automation
-4. Avoid having both a flow and a trigger modify the same field
+2. Understand the order (Apex Developer Guide, *Triggers and Order of Execution*):
 
-**Detection hint:** Record-triggered flow advice that does not mention checking for existing Apex triggers or order of execution.
+```text
+step 3   before-save flow
+step 4   before triggers
+step 5   system validation + custom validation rules
+step 7   save (not committed)
+step 8   after triggers
+step 11  workflow rules
+step 14  after-save flow
+step 19  commit
+```
+
+3. Document which fields are managed by which automation
+4. Avoid having both a flow and a trigger modify the same field. If you cannot, put the guard in the **trigger** — it is the later writer, so a condition on the flow accomplishes nothing.
+
+**Detection hint:** Record-triggered flow advice that does not mention checking for existing Apex triggers or order of execution. Also flag any ordering that places validation rules *before* before-triggers (they run at step 5, after step 4), or that describes the before-save-flow vs before-trigger sequence as unguaranteed or indeterminate — it is documented and fixed.
 
 ---
 
@@ -134,7 +146,7 @@ Flow 2: Account After Save - Create Task
 Flow 3: Account After Save - Send Notification
 ```
 
-**Why it happens:** LLMs create one flow per requirement because it is modular. But multiple record-triggered flows on the same object and trigger type increase complexity, make order of execution unpredictable, and consume more governor limits.
+**Why it happens:** LLMs create one flow per requirement because it is modular. But multiple record-triggered flows on the same object and trigger type increase complexity and consume more governor limits, and their relative order is left to chance unless each one is given an explicit `triggerOrder` value (Metadata API 54.0+, surfaced as Flow Trigger Explorer) — which is one more thing to maintain.
 
 **Correct pattern:**
 

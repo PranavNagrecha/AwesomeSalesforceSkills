@@ -11,9 +11,11 @@
 
 - **Before-save vs after-save Flow:** before is ~10× cheaper for
   same-record field writes; after is the only option for related-DML.
-- **Flow vs Trigger on same step:** a single trigger handler wins on
-  complex control; flow wins on declarative readability for simple
-  field-update rules.
+- **Flow vs Trigger at before-save timing:** they occupy adjacent steps
+  (Flow 3, trigger 4), so a shared field always resolves to the
+  trigger's value. Choose one owner per field. A single trigger handler
+  wins on complex control; flow wins on declarative readability for
+  simple field-update rules.
 - **Consolidate vs isolate:** "one flow per concern" helps discovery but
   can blow up CPU if each flow re-queries the same record. A dispatcher
   flow pattern trades modularity for performance.
@@ -28,7 +30,11 @@
 
 ## Official Sources Used
 
-- Triggers and Order of Execution —
+- Triggers and Order of Execution (20-step list; before-save Flows step 3,
+  before triggers step 4) —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Apex Developer Guide — Execution Governors and Limits (recursive trigger
+  stack depth 16) —
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Before-Save Flows —
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_before_save.htm

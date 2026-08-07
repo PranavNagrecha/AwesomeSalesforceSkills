@@ -31,3 +31,5 @@ Well-scoped entry criteria and explicit trigger context make record-triggered au
 - Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5
 - Flow Builder — https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Metadata API Developer Guide: Flow (`triggerOrder`, API 54.0+) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
+- Apex Developer Guide: Triggers and Order of Execution (20-step list; before-save Flows step 3, before triggers step 4, after-save Flows step 14) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm

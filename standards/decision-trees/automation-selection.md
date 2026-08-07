@@ -13,10 +13,12 @@ which async Apex once you've decided on Apex).
 
 ## Strategic defaults (Salesforce's own guidance)
 
-> Salesforce has retired Workflow Rules and Process Builder. New automation
-> should be built in Flow, escalating to Apex only when Flow cannot meet the
-> requirement. Agentforce replaces conversational user interfaces where the
-> user's intent is ambiguous.
+> Workflow Rules and Process Builder reached **end of support on 31 December
+> 2025**. Existing rules and processes still run and can still be activated,
+> deactivated, and edited — but they get no fixes and no enhancements, so build
+> nothing new in them. New automation should be built in Flow, escalating to
+> Apex only when Flow cannot meet the requirement. Agentforce replaces
+> conversational user interfaces where the user's intent is ambiguous.
 
 Defaults ranked most-to-least preferred for *new* work:
 
@@ -47,14 +49,20 @@ Q2. Does the logic run in under ~10s and touch only fields on the record itself?
     └── No   → Q3
 
 Q3. Does the logic require any of:
-      - loops over 2,000+ records in-transaction
-      - HTTP callouts
-      - complex exception handling with rollback
+      - a loop whose per-record work would breach the per-transaction
+        governor limits Flow shares with Apex (10 s CPU, 100 SOQL,
+        150 DML statements, 10,000 DML rows, 50,000 rows queried)
+      - callouts that need retry/backoff, chaining, or binary payloads
+      - complex exception handling with rollback (savepoints)
       - recursive DML on the same object
-      - unit tests with 90%+ coverage requirements
+      - a deployable unit under an enforced coverage gate with
+        assertion-style tests (Apex needs 75% org-wide to deploy; Flow
+        has no coverage gate at all)
       - custom exception types exposed to calling code
     ├── Yes  → Apex (trigger + handler + service layer)
     └── No   → Q4
+    NOTE: one straightforward callout is NOT on this list. A single callout
+    keeps you in Flow and resolves at Q6.
 
 Q4. Does the logic need to cross objects (DML on related records, send email, create tasks)?
     ├── No   → After-save record-triggered Flow
@@ -84,13 +92,17 @@ Q9. Does it need per-row input from the user?
 Q10. Scheduled job. Does it process > 50k records or run > 5 minutes?
      ├── Yes  → Batch Apex (see skills/apex/batch-apex-patterns)
      ├── 10k–50k, stateless, deterministic → Queueable with chained dispatch
-     └── No   → Scheduled Flow (simpler, but 2,000 record cap per interview)
+     └── No   → Schedule-triggered Flow (simpler; one interview per record
+                returned by the flow's query, org-wide cap of 250,000
+                interviews per 24 h — or user licenses × 200, whichever is
+                greater. The 50k routing line is this repo's opinion, not a
+                platform limit; see flow-pattern-selector Q6.)
 
 Q11. External system → Salesforce data flow. Producer-controlled?
      ├── Must write into standard objects with logic     → REST API + Apex custom endpoint
      ├── Producer can publish events                     → Platform Event subscriber (Apex or Flow)
      ├── Large volume, one-way replication               → Bulk API 2.0 + ETL
-     └── Producer is Salesforce itself → "Data I don't own" → External Objects / Salesforce Connect
+     └── Producer keeps ownership; Salesforce only reads → External Objects / Salesforce Connect
 
 Q12. Internal event fan-out. Same-transaction or decoupled?
      ├── Same transaction, same object → Record-triggered Flow
@@ -112,7 +124,7 @@ Q12. Internal event fan-out. Same-transaction or decoupled?
 | Natural-language user request | Agentforce topic + action | Chatbot with custom LWC | Hard-coded button tree |
 | Process 2M records nightly | Batch Apex | Queueable chain | Scheduled Flow |
 | React to a record commit from 2 clouds | Platform Event | CDC + Apex trigger | Flow subscribing to CDC (supported but limited) |
-| Mass reparent / reassign | Apex batch + `Database.setOptions` | Data Loader for one-offs | Flow (record limit will bite) |
+| Mass reparent / reassign | Apex batch + `Database.DMLOptions` (set per record via `sObject.setOptions(...)`) | Data Loader for one-offs | Flow (the 24 h interview allocation will bite) |
 | Approval chain | Approval Process → Flow post-approval | Flow with branching | Apex custom approval |
 
 ---
@@ -122,7 +134,10 @@ Q12. Internal event fan-out. Same-transaction or decoupled?
 You graduate from Flow to Apex when ANY of these is true:
 
 - You would write > 15 Flow elements before reaching the first decision.
-- You need a testable unit with > 75% coverage and assertion-style tests.
+- You need a testable unit under an enforced coverage gate with
+  assertion-style tests. Apex will not deploy to production below 75%
+  org-wide coverage; Flow has no equivalent gate. (Same gate as Q3 — the
+  two must not disagree.)
 - You need a transaction rollback on a specific error class.
 - You need to produce platform events conditionally on DML success.
 - You need to do any cryptographic, regex, or binary operation.
@@ -139,8 +154,10 @@ Do NOT graduate to Apex because:
 
 ## Anti-patterns
 
-- **Workflow Rules / Process Builder for anything new.** Both are retired.
-  Migrate on the next touch of the object.
+- **Workflow Rules / Process Builder for anything new.** Both hit end of
+  support on 31 December 2025 — no fixes, no enhancements. They still
+  execute, which is exactly why they rot silently. Migrate on the next
+  touch of the object.
 - **"One Flow per field."** Scales badly. Consolidate into one record-triggered
   flow per object with entry criteria decisions.
 - **Apex for pure field defaulting.** Before-save Flow does this cheaper.
@@ -154,10 +171,10 @@ Do NOT graduate to Apex because:
 ## Related skills
 
 - `admin/flow-for-admins` — declarative-first automation decisions
-- `flow/record-triggered-flows` — the Flow of choice for this tree
+- `flow/record-triggered-flow-patterns` — the Flow of choice for this tree
 - `apex/trigger-framework` — where to go when Flow isn't enough
 - `apex/async-apex` — paired with the async selection tree below
-- `agentforce/agent-creation` — conversational automation
+- `agentforce/agentforce-agent-creation` — conversational automation
 - `architect/platform-selection-guidance` — org-wide strategic defaults
 
 ## Related templates
@@ -165,3 +182,12 @@ Do NOT graduate to Apex because:
 - `templates/apex/TriggerHandler.cls` — when the tree resolves to Apex
 - `templates/flow/RecordTriggered_Skeleton.flow-meta.xml` — when it resolves to Flow
 - `templates/agentforce/AgentActionSkeleton.cls` — when it resolves to Agentforce
+
+## Official Sources Used
+
+- Apex Developer Guide — Execution Governors and Limits (10 s sync CPU, 100 SOQL, 150 DML statements, 10,000 DML rows, 50,000 query rows): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Apex Developer Guide — Code Coverage ("unit tests must cover at least 75% of your Apex code, and those tests must pass"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_code_coverage_intro.htm
+- Salesforce Help — General Flow Limits (the 2,000 executed-elements limit was removed in API version 57.0; it applied in 56.0 and earlier): https://help.salesforce.com/s/articleView?language=en_US&id=sf.flow_considerations_limit.htm&type=5
+- Salesforce Help — Schedule-Triggered Flow Considerations (250,000 interviews per 24 hours, or user licenses × 200, whichever is greater; one interview per queried record; batch size 200): https://help.salesforce.com/s/articleView?language=en_US&id=platform.flow_considerations_trigger_schedule.htm&type=5
+- Salesforce Help — Workflow Rules & Process Builder End of Support (31 December 2025; existing automation keeps running): https://help.salesforce.com/s/articleView?id=001096524&language=en_US&type=1
+- Apex Developer Guide — Setting DML Options (`Database.DMLOptions` applied with `sObject.setOptions(...)`): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_database_dmloptions.htm

@@ -28,7 +28,7 @@ Q1. Is the interaction CONVERSATIONAL (multi-turn natural language)?
     └── No   → Q4
 
 Q2. Is the conversation with an END USER (customer, agent, internal user)?
-    ├── Yes  → Agentforce Agent (or Einstein Copilot for internal Salesforce users)
+    ├── Yes  → Q3
     └── No — it's an internal system dialog → Reconsider; probably not AI
 
 Q3. Does the agent need to TAKE ACTIONS (create records, call APIs, update data)?
