@@ -108,7 +108,7 @@ storage, use Big Objects.
 
 The inverted framing makes it worse. Because the model also learned "standard SOQL on Big Objects has surprising restrictions," it presents Async SOQL as the sophisticated fix for a naive mistake. That framing survives code review — it reads as someone who knows the platform.
 
-**Correct version:** Async SOQL does not exist. `/services/data/vXX.0/async-queries/` returns 404 and there is no `AsyncQueryJob` resource. Per Salesforce Help article 000394892: "You must use the Bulk API or batch Apex to query or report on custom Big Objects."
+**Correct version:** Async SOQL was real, and was retired in **Summer '23** — it is not a hallucinated API, it is a decommissioned one, which is why the generated code looks so plausible. Do not reach for it today: the `/services/data/vXX.0/async-queries/` endpoint is no longer available. Per Salesforce Help article 000394892: "You must use the Bulk API or batch Apex to query or report on custom Big Objects."
 
 ```text
 Big Object read paths (post Summer '23):

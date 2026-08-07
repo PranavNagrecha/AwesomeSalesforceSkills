@@ -48,7 +48,7 @@ Gather this context before working on anything in this domain:
 - Confirm the org edition — Email Services limits differ: Developer/Professional orgs get fewer daily processing slots than Enterprise/Unlimited. The standard limit is 1,000 email messages per day per service address; check the org's actual allocation.
 - Identify whether you need text parsing, HTML parsing, or binary attachment processing — these require different handler branches.
 - The most common wrong assumption: practitioners expect `handleInboundEmail` to run as a specific user. It runs in **system context** — no user permission enforcement applies unless you explicitly switch context in your code.
-- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation, not the 6 MB synchronous / 12 MB asynchronous figure that applies to ordinary Apex. Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once.
+- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation, not the 6 MB synchronous / 12 MB asynchronous figure that applies to ordinary Apex. Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once. The largest payload that can reach the handler is capped upstream: "Email Services: Maximum Size of Email Message (Body and Attachments)" is **25 MB**, measured across body text, HTML, and all attachments together.
 - The Email Service address must be **activated** in Setup. An inactive address silently drops all inbound mail.
 
 ---
@@ -101,7 +101,7 @@ Two attachment types exist, mapped separately:
 
 CSV, plain text, and XML files arrive as `TextAttachment` when the MIME type is text-based. Images, PDFs, and binary formats arrive as `BinaryAttachment`. Handlers must check both lists and apply defensive null checks — either list can be null if no attachments of that type exist.
 
-Attachments are processed **synchronously** inside your handler's governor limit budget. A 25 MB binary attachment parsed into a `Blob` and then into a `String` (e.g., `EncodingUtil.base64Encode`) can exhaust heap quickly. Use chunked processing or consider deferring heavy attachment work to a `Queueable` called from within the handler.
+Attachments are processed **synchronously** inside your handler's governor limit budget. The inbound message as a whole — body plus all attachments — is capped at **25 MB**, so that is the ceiling on what can arrive, against the 50 MB email-services heap allocation. Heap is consumed by *transforming* the payload rather than by receiving it: converting a `Blob` to a `String` (e.g., `EncodingUtil.base64Encode`, `Blob.toString()`) allocates a fresh full-size copy each time, and two or three copies of a large attachment will exhaust 50 MB. Use chunked processing, or persist the Blob and defer the heavy work to a `Queueable` called from within the handler — sizing that Queueable's work against the 12 MB asynchronous heap limit rather than the handler's 50 MB.
 
 ---
 
@@ -167,7 +167,9 @@ global class OrderEmailHandler implements Messaging.InboundEmailHandler {
 3. The Queueable performs the expensive parsing (CSV, base64 decode, PDF text extraction stubs, etc.) in a separate transaction with its own governor limits.
 4. Return `result.success = true` from the handler immediately — the email is accepted, processing continues asynchronously.
 
-**Why not synchronous:** A 10–15 MB binary attachment parsed in-line regularly hits the 12 MB heap limit for synchronous Apex. Moving the heavy work to a `Queueable` avoids the timeout and gives a separate 12 MB heap budget.
+**Why not synchronous:** The email-services heap ceiling is **50 MB**, not the 6 MB synchronous / 12 MB asynchronous figure for ordinary Apex — a 10–15 MB attachment does not blow heap by arriving. What exhausts it is in-line *transformation*: `EncodingUtil.base64Encode` allocates a second, ~33%-larger copy, `Blob.toString()` a third, and a parse loop one per iteration.
+
+Be precise about what deferring buys you. A `Queueable` runs under the ordinary **12 MB** asynchronous heap limit, so moving work there *lowers* your heap ceiling from 50 MB — "defer it for more heap" is backwards. Defer for a fresh transaction with its own CPU and DML budget and a retry surface, and size the Queueable's work against 12 MB.
 
 ### Pattern: Sender-Based Routing with Multiple Service Addresses
 

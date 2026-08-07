@@ -53,7 +53,7 @@ Get the number right in both directions. Under-stating it (12 MB) makes teams de
 
 **When it occurs:** When emails arrive with large PDFs, images, or binary files. The problem is invisible during unit tests because test `InboundEmail` objects use synthetic small payloads that never approach real attachment sizes.
 
-**How to avoid:** Store the attachment Blob to a `ContentVersion` immediately (this operation is fast and uses minimal heap for the DML statement itself), then enqueue a `Queueable` to perform any expensive processing. The Queueable runs in a separate transaction with its own heap budget.
+**How to avoid:** Store the attachment Blob to a `ContentVersion` immediately (this operation is fast and uses minimal heap for the DML statement itself), then enqueue a `Queueable` to perform any expensive processing. The Queueable runs in a separate transaction with a fresh CPU and DML budget and a retry surface — but its heap ceiling is the ordinary 12 MB asynchronous limit, *lower* than the handler's 50 MB, so size the deferred work against 12 MB.
 
 ---
 

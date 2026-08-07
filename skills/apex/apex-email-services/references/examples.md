@@ -72,7 +72,7 @@ global class WarehouseAlertEmailHandler implements Messaging.InboundEmailHandler
 
 **Context:** A finance team receives a daily CSV export from their ERP system, emailed to a Salesforce address. Each CSV has up to 500 rows of invoice data. The team wants these rows automatically inserted as `Invoice__c` records.
 
-**Problem:** Parsing 500 rows of CSV inline inside `handleInboundEmail` risks hitting CPU time limits (10,000 ms for synchronous Apex) and heap limits (12 MB). A naive synchronous approach fails under production load.
+**Problem:** Parsing 500 rows of CSV inline inside `handleInboundEmail` risks hitting CPU time limits (10,000 ms for synchronous Apex) and the email-services heap limit (50 MB — not the 6 MB synchronous / 12 MB asynchronous figure for ordinary Apex; note the Queueable this example enqueues runs under the 12 MB asynchronous ceiling). A naive synchronous approach fails under production load.
 
 **Solution:**
 

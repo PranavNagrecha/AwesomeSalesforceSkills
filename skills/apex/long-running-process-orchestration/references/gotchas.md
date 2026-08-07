@@ -54,7 +54,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 6: Continuation Is Not Available Outside LWC/Aura/Visualforce Controller Context
 
-**What happens:** A developer tries to use the `Continuation` class to make a long-running async callout from a Queueable, a trigger, or a `@future` method. The code compiles but throws a runtime exception: `System.CalloutException: Continuation is only supported from Visualforce/Aura/LWC controllers`.
+**What happens:** A developer tries to use the `Continuation` class to make a long-running async callout from a Queueable, a trigger, or a `@future` method. The code compiles, then fails at runtime. The Apex documentation states the context restriction but does not publish the exception type or message text for this violation, and there is no `ContinuationException` among the System-namespace built-in exceptions — so do not write a `catch` clause or a test assertion against a specific type or string here. Reproduce it once in a scratch org and log what your org actually emits.
 
 **When it occurs:** Continuation is a UI-layer mechanism. It is valid only when the method is invoked as an action from a Lightning Web Component, Aura component, or Visualforce page controller. Attempting to use it in any server-side async context is always a runtime failure.
 

@@ -172,13 +172,17 @@ public class SafeEmailSender {
         Messaging.SendEmailResult[] results = Messaging.sendEmail(msgs, false);
         for (Integer i = 0; i < results.size(); i++) {
             if (results[i].isSuccess()) { continue; }
+            // One failed message can carry several errors. Decide once per
+            // message, or a message with two limit errors is enqueued twice.
+            Boolean retryable = false;
             for (Messaging.SendEmailError err : results[i].getErrors()) {
                 if (err.getStatusCode() == StatusCode.SINGLE_EMAIL_LIMIT_EXCEEDED) {
-                    retry.add(msgs[i]);
+                    retryable = true;
                 } else {
                     Logger.error('Email send failed: ' + err.getMessage());
                 }
             }
+            if (retryable) { retry.add(msgs[i]); }
         }
         if (!retry.isEmpty()) {
             Logger.warn('Daily limit hit; queueing ' + retry.size() + ' for retry');

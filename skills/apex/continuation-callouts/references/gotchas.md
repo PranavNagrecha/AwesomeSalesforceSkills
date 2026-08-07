@@ -4,7 +4,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Continuation Cannot Be Used Outside a User-Initiated UI Request Context
 
-**What happens:** Instantiating `new Continuation(n)` inside a trigger, Batch Apex `execute` method, Scheduled Apex `execute` method, `@future` method, or any other asynchronous Apex context throws `System.ContinuationException` at runtime. The class is only valid when the originating transaction is a Visualforce page action request or an LWC `@AuraEnabled(continuation=true)` method invoked from the Lightning runtime.
+**What happens:** Returning a `Continuation` from a trigger, Batch Apex `execute` method, Scheduled Apex `execute` method, `@future` method, or any other asynchronous Apex context fails at **runtime**, not at compile time. The class is only valid when the originating transaction is a Visualforce page action request or an Aura/LWC `@AuraEnabled(continuation=true)` method invoked from the Lightning runtime.
+
+The Apex documentation states the context restriction but does not name the exception type thrown when it is violated, and there is no `ContinuationException` in the System-namespace built-in exception list. Do not code against a specific type here — catch broadly, log the message the org actually produces, and treat the design rule (Continuation belongs only to UI entry points) as the thing to enforce.
 
 **When it occurs:** When a developer tries to "simplify" the integration by moving a Continuation call into a helper method that gets reused across both UI and async contexts, or when copying a Continuation pattern into a Queueable class for batch-mode use.
 

@@ -48,12 +48,18 @@ CONFIG_SELF_REG_PATTERN = re.compile(
 )
 
 # Identifiers that do not exist on any Salesforce Auth interface.
+#
+# `registerUser` on its own is NOT a fabrication signal — it is an ordinary
+# English method name and a user's own private helper may legitimately be
+# called that. Only flag it when it is bound to the Auth namespace, i.e. when
+# its first parameter is an Auth.* type. That is the fabricated interface
+# shape; a standalone helper named registerUser() is left alone.
 FABRICATED_HANDLER_PATTERNS = (
     (re.compile(r"Auth\s*\.\s*SelfRegistrationContext\b"),
      "references 'Auth.SelfRegistrationContext', which is not a Salesforce "
      "class"),
-    (re.compile(r"\bregisterUser\s*\("),
-     "declares or calls 'registerUser(...)', which is not a method on any "
+    (re.compile(r"\bregisterUser\s*\(\s*(?:final\s+)?Auth\s*\.\s*\w+"),
+     "declares 'registerUser(Auth....)', which is not a method on any "
      "Auth registration interface"),
 )
 

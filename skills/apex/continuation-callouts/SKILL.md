@@ -351,7 +351,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `apex/callouts-and-http-integrations` — use for synchronous HTTP callouts under 10 seconds, Named Credential setup, and `HttpRequest`/`HttpResponse` fundamentals.
+- `apex/callouts-and-http-integrations` — use for ordinary synchronous HTTP callouts, Named Credential setup, and `HttpRequest`/`HttpResponse` fundamentals. There is no duration threshold that hands a callout over to Continuation; choose on request-thread occupancy, not elapsed seconds.
 - `apex/async-apex` — use when the core design choice is whether the callout belongs in `@future`, Queueable, Batch, or Scheduled Apex (none of which support Continuation).
 - `apex/exception-handling` — use when callback error handling and retry logic need a structured pattern.
 - `apex/test-class-standards` — use for mocking Continuation responses in test classes with `Test.setContinuationResponse()`.
