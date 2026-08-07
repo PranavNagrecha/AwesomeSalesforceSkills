@@ -61,15 +61,56 @@ def _load_skill_embeddings(path: Path) -> dict[str, dict]:
 # Keep query_enrichment.py available for ad-hoc CLI use.
 
 
-def load_chunks(path: Path) -> dict[str, dict]:
+# The exact bytes `json.dumps(chunk, sort_keys=True)` emits for a chunk that
+# carries no official sources. `pipelines/sync_engine.build_chunks_jsonl` uses
+# default separators, so an empty list serialises with one space after the
+# colon. See `load_official_source_chunks` for why this is safe to trust.
+_EMPTY_OFFICIAL_SOURCE_IDS = '"official_source_ids": []'
+
+
+def load_official_source_chunks(path: Path) -> dict[str, dict]:
+    """Load ONLY the chunks that carry a non-empty ``official_source_ids``.
+
+    This is deliberately not "load chunks". ``chunks.jsonl`` is 126 MB /
+    130,151 records, and the single consumer of this mapping —
+    ``pipelines.ranking.collect_official_sources`` — reads exactly one field
+    off it, ``official_source_ids``, for the <=30 rows the lexical pass
+    returned. On the current corpus 30 records out of 130,151 have a non-empty
+    value; the other 130,121 map to ``[]``.
+
+    Dropping the empty ones cannot change the result. ``collect_official_sources``
+    skips a chunk it cannot find (``if not chunk: continue``) and iterates an
+    empty list for a chunk it does find, so both paths contribute nothing to
+    the output and nothing to the insertion order of its ``seen`` dict.
+
+    Two properties matter for memory, and they are separate:
+
+    * We iterate the file handle rather than ``read_text().splitlines()``. The
+      old form materialised the whole 126 MB file as one ``str`` and then split
+      it into 130,151 more, before a single record was parsed.
+    * We keep 30 dicts instead of 130,151.
+
+    The ``_EMPTY_OFFICIAL_SOURCE_IDS`` skip is a pure speed optimisation
+    (1.48s -> 0.13s) and is fail-safe by construction: it can only ever cause
+    us to PARSE a line we could have skipped, never to SKIP a line we needed.
+    A line whose field is non-empty cannot contain the marker, because JSON
+    escapes the quotes of any string value (an occurrence inside chunk text
+    reads ``\\"official_source_ids\\": []``, which does not match). If the
+    serialisation ever changes, the marker simply stops matching and every
+    line falls through to ``json.loads`` — slower, still correct.
+    """
     chunks: dict[str, dict] = {}
     if not path.exists():
         return chunks
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        item = json.loads(line)
-        chunks[item["id"]] = item
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            if _EMPTY_OFFICIAL_SOURCE_IDS in line:
+                continue
+            if not line.strip():
+                continue
+            item = json.loads(line)
+            if item.get("official_source_ids"):
+                chunks[item["id"]] = item
     return chunks
 
 
@@ -133,10 +174,27 @@ def dedupe_official_sources(items: list[dict], limit: int) -> list[dict]:
 class SearchContext:
     """Pre-loaded resources that are reused across many queries.
 
-    Build ONCE via :func:`build_search_context`, reuse for N queries. The
-    expensive loads are ``chunks.jsonl`` (~100 MB) and the source manifest;
-    holding them in memory means a 744-fixture validation run goes from
-    ~16 minutes (subprocess-per-fixture) to ~15 seconds.
+    Build ONCE via :func:`build_search_context`, reuse for N queries. That is
+    what makes in-process fixture validation viable at all: a 1,356-fixture run
+    pays the load once instead of spawning 1,356 subprocesses.
+
+    What is actually expensive here has changed, and the old docstring's claim
+    that ``chunks.jsonl`` (~100 MB) is the cost was wrong in both directions:
+
+    * ``embeddings.jsonl`` was the larger half — 535 MB on disk, ~2 GB resident
+      — and it is loaded only when ``embeddings.enabled`` is true. With it
+      false, ``embed_query`` returns ``None`` and ``pipelines.ranking``
+      never reads the mapping, so loading it was pure waste. See
+      :func:`build_search_context`.
+    * ``chunks.jsonl`` is 126 MB, but only 30 of its 130,151 records are ever
+      read. ``official_source_chunks`` holds those 30. See
+      :func:`load_official_source_chunks`.
+
+    ``official_source_chunks`` is named for what it holds, NOT ``chunks``. The
+    rename is load-bearing: code that assumed a full chunk mapping and wrote
+    ``ctx.chunks.get(cid, {}).get("text", "")`` would now silently get an empty
+    string for 130,121 of 130,151 ids. An ``AttributeError`` on the old name is
+    the outcome we want instead.
     """
 
     root: Path
@@ -148,7 +206,7 @@ class SearchContext:
     embedding_config: object  # parse_embedding_config's opaque return
     embeddings: dict
     skill_embeddings: dict
-    chunks: dict
+    official_source_chunks: dict
     registry_skills: dict
     source_manifest_by_id: dict
     source_manifest_by_title: dict
@@ -170,6 +228,30 @@ def build_search_context(root: Path) -> SearchContext:
         item for item in load_sources_manifest(root) if item.get("type") == "official-doc"
     ]
     registry_skills = load_registry_skills(root / "registry" / "skills.json")
+    embedding_config = parse_embedding_config(config)
+    # Load the 535 MB chunk-vector file ONLY when it can be read.
+    # `embed_query` returns None whenever `enabled` is false
+    # (pipelines/embedding_backends.py), and `rerank_results` gates every read
+    # of this mapping behind `if query_vector is not None`
+    # (pipelines/ranking.py). So with embeddings disabled the dict was loaded,
+    # held at ~2 GB for the life of the process, and never once consulted.
+    #
+    # This does NOT change behaviour in either branch: enabled -> identical
+    # load, disabled -> a mapping that provably nothing reads.
+    #
+    # NOTE the asymmetry this leaves behind. config/retrieval-config.yaml sets
+    # `enabled: false` "TEMPORARILY ... for build-agent memory safety" and says
+    # to restore it before release. Flipping that flag back to true silently
+    # restores ~2 GB of resident memory per search process, with no code review
+    # and no other change. The real fix is the one that config file names —
+    # fetch the ~30 candidate vectors by key after the lexical pass instead of
+    # loading the whole file — which needs a keyed vector store that does not
+    # exist yet. Until then, treat the flag as memory-affecting.
+    embeddings = (
+        load_embeddings(root / "vector_index" / "embeddings.jsonl")
+        if embedding_config.enabled
+        else {}
+    )
     return SearchContext(
         root=root,
         config=config,
@@ -177,10 +259,10 @@ def build_search_context(root: Path) -> SearchContext:
         result_limit=int(retrieval_config.get("result_limit", 10)),
         snippet_length=int(retrieval_config.get("snippet_length", 220)),
         min_skill_score=float(retrieval_config.get("min_skill_score", 0.0)),
-        embedding_config=parse_embedding_config(config),
-        embeddings=load_embeddings(root / "vector_index" / "embeddings.jsonl"),
+        embedding_config=embedding_config,
+        embeddings=embeddings,
         skill_embeddings=_load_skill_embeddings(root / "vector_index" / "skill_embeddings.jsonl"),
-        chunks=load_chunks(root / "vector_index" / "chunks.jsonl"),
+        official_source_chunks=load_official_source_chunks(root / "vector_index" / "chunks.jsonl"),
         registry_skills=registry_skills,
         source_manifest_by_id={item["id"]: item for item in source_manifest_entries},
         source_manifest_by_title={item["title"]: item for item in source_manifest_entries},
@@ -256,7 +338,7 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
         if s["max_score"] >= ctx.min_skill_max_score or s["score"] >= ctx.min_skill_score
     ]
     has_coverage = len(skills) > 0
-    raw_official_sources = collect_official_sources(ranked, ctx.chunks, ctx.result_limit)
+    raw_official_sources = collect_official_sources(ranked, ctx.official_source_chunks, ctx.result_limit)
     official_sources = dedupe_official_sources(
         [
             canonicalize_official_source(item, ctx.source_manifest_by_id, ctx.source_manifest_by_title)
