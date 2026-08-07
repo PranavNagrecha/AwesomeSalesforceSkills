@@ -1,6 +1,6 @@
 ---
 name: entitlement-and-milestone-designer
-description: "Design or audit Entitlement Processes + Milestones. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Entitlement Processes + Milestones. SfSkills admin workflow agent, /design-entitlements: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # entitlement-and-milestone-designer

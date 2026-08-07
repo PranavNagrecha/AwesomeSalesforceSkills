@@ -1,6 +1,6 @@
 ---
 name: lwc-builder
-description: "Generate a Lightning Web Component bundle. SfSkills lwc run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Generate a Lightning Web Component bundle. SfSkills lwc workflow agent, /build-lwc: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # lwc-builder

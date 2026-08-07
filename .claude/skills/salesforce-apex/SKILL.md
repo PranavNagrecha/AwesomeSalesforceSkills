@@ -1,11 +1,11 @@
 ---
 name: salesforce-apex
-description: "Router for the 158 SfSkills `apex` skill packages. Apex and SOQL: triggers, governor limits, async processing, callouts, security enforcement, and the test patterns that keep them deployable. Use when the request mentions Apex, trigger, SOQL, SOSL, governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 158 SfSkills `apex` skill packages. Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction. Use when the request mentions Apex, trigger, SOQL, SOSL, Apex governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible, callout, HTTP callout, HttpRequest, call an external API, consume a REST API from Apex, Named Credential in Apex, HttpCalloutMock, Apex REST service. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce apex — SfSkills domain router
 
-Apex and SOQL: triggers, governor limits, async processing, callouts, security enforcement, and the test patterns that keep them deployable.
+Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction.
 
 **158 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/apex/<slug>/SKILL.md`. They are not

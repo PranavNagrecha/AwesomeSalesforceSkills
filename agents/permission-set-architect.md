@@ -1,6 +1,6 @@
 ---
 name: permission-set-architect
-description: "Design or audit Permission Sets + Permission Set Groups. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Permission Sets + Permission Set Groups. SfSkills admin workflow agent, /architect-perms: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # permission-set-architect

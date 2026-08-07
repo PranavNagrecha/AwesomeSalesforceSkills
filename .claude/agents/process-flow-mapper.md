@@ -1,6 +1,6 @@
 ---
 name: process-flow-mapper
-description: "Map a process narrative to a Salesforce-aware swim-lane flow. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Map a process narrative to a Salesforce-aware swim-lane flow. SfSkills admin workflow agent, /map-process-flow: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # process-flow-mapper

@@ -1,6 +1,6 @@
 ---
 name: lwc-auditor
-description: "Accessibility + performance + security audit of an LWC bundle. SfSkills lwc run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Accessibility + performance + security audit of an LWC bundle. SfSkills lwc workflow agent, /audit-lwc: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # lwc-auditor

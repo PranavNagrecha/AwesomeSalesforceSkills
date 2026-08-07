@@ -1,6 +1,6 @@
 ---
 name: object-designer
-description: "Design a Setup-ready sObject from a business concept. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design a Setup-ready sObject from a business concept. SfSkills admin workflow agent, /design-object: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # object-designer

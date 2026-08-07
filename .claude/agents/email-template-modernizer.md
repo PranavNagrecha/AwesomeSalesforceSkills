@@ -1,6 +1,6 @@
 ---
 name: email-template-modernizer
-description: "Audit and plan email template modernization. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Audit and plan email template modernization. SfSkills admin workflow agent, /modernize-email-templates: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # email-template-modernizer

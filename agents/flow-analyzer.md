@@ -1,6 +1,6 @@
 ---
 name: flow-analyzer
-description: "Flow vs Apex routing + bulkification review. SfSkills flow run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Flow vs Apex routing + bulkification review. SfSkills flow workflow agent, /analyze-flow: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # flow-analyzer

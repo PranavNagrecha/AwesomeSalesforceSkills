@@ -1,6 +1,6 @@
 ---
 name: flow-orchestrator-designer
-description: "Design or audit a Flow Orchestration. SfSkills flow run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit a Flow Orchestration. SfSkills flow workflow agent, /design-flow-orchestrator: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # flow-orchestrator-designer

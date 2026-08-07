@@ -5,9 +5,12 @@
 `python3 scripts/build_plugin.py --check`.
 **Verified against:** Claude Code 2.1.209 (`claude --version`), re-measured
 2026-08-07, by a real `marketplace add` → `install` → `details` cycle run from
-**outside** this repository against an isolated `CLAUDE_CONFIG_DIR`. **The
-marketplace source in every measured run was a local path; the GitHub source is
-documented but untested.** Read
+**outside** this repository against an isolated `CLAUDE_CONFIG_DIR`. Every
+probe plugin in this document is named `sfskills`, matching the real plugin —
+[a name mismatch is what corrupted the previous
+calibration](#what-the-previous-constants-got-wrong-and-why-it-is-instructive).
+**The marketplace source in every measured run was a local path; the GitHub
+source is documented but untested.** Read
 [Verify the plugin path](#verify-the-plugin-path) before trusting any check —
 "it works when I'm in the repo" proves nothing about the plugin.
 
@@ -170,7 +173,7 @@ Component inventory
   LSP servers (0)
 
 Projected token cost
-  Always-on:   ~6,118 tok   added to every session
+  Always-on:   ~5,387 tok   added to every session
 ```
 
 Read it like this:
@@ -185,11 +188,12 @@ Read it like this:
   default scan. No manifest key is involved, and none would help; see
   [Known limitation 1](#1-the-agents-manifest-key-does-not-work-in-any-form).
   This number was `0` until 2026-08-07.
-- **`Always-on: ~6,118 tok`** — Claude Code's own accounting for what the
-  install adds to every session. It was `~2,889` before the agents shipped:
-  each loader's `name` + `description` costs ~60-70 always-on tokens, so the
-  48 agents more than doubled the bill. That is the price of the fix, and
-  [Measured cost](#measured-cost) carries it.
+- **`Always-on: ~5,387 tok`** — Claude Code's own accounting for what the
+  install adds to every session. It was `~2,889` before the agents shipped and
+  peaked at `~6,118` just after: each loader's `name` + `description` is
+  always-on, so the 48 agents more than doubled the bill and pushed it over
+  budget. Cutting the shared boilerplate out of those descriptions brought it
+  back under. [Measured cost](#measured-cost) carries the breakdown.
 
 `claude plugin list` should report `Status: ✔ enabled` alongside this. Tear the
 experiment down when you are finished — the last block in this section.
@@ -249,25 +253,28 @@ python3 -c "import json,math; d=json.load(open('registry/skills.json')); \
 ```
 
 134k tokens of index before the first question. So the library ships in three
-tiers, and only the frontmatter of Tier 1 is always-on. The per-tier figures
-below come from `--measure`; Claude Code's own accounting reports a slightly
-higher 6,118 (both are in the [table](#measured-cost) that follows).
+tiers, and only the frontmatter of Tier 1 is always-on. Every per-tier figure
+below is what Claude Code itself reports for that tier installed on its own
+(2.1.209, re-measured 2026-08-07 after the gloss and boilerplate rework).
 
 An agent's `name` + `description` is always-on too. Only its *body* is
 deferred, the same as a skill's. Calling Tier 3 "0 tok until invoked" was
 wrong, and it stopped being harmless the moment the 48 loaders started
-shipping: measured always-on went from ~2,889 to ~6,118.
+shipping: measured always-on went from ~2,889 to ~6,118, and only came back
+down when the loader boilerplate was cut.
 
 ```
-Tier 1  ALWAYS ON      12 router skills           1,470 tok
-        (5,956 tok)    66 slash commands          1,253 tok
-                       48 agent loaders           3,233 tok  ← frontmatter only
+Tier 1  ALWAYS ON      12 router skills           1,835 tok
+        (5,387 tok)    66 slash commands          1,394 tok
+                       48 agent loaders           2,157 tok  ← frontmatter only
                               │
                               │  router teaches the model to look up,
                               │  then read by path
                               ▼
 Tier 2  ON DEMAND      1,027 skill packages      0 tok until opened
                        ${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/SKILL.md
+                       11 domain rosters         0 tok until read
+                       (largest is admin, 253 entries, 68 KB ≈ 17k tok)
                               │
                               ▼
 Tier 3  ON INVOCATION  48 agent playbooks        0 tok until invoked
@@ -276,33 +283,164 @@ Tier 3  ON INVOCATION  48 agent playbooks        0 tok until invoked
                         is Tier 3 — ~370 tok each, on invoke)
 ```
 
+The three tiers sum to 5,386 and the whole plugin reports 5,387 — additive to
+within the single rounding step. An earlier version of this document reported
+the tiers as **sub-additive by 75 tokens** and called that "unexplained". It
+was not a property of Claude Code; it was a defect in the measurement. See
+[Re-calibrating the token model](#re-calibrating-the-token-model).
+
 ### Measured cost
 
 | | Skills loaded | Always-on tokens | Share of a flat export |
 |---|---:|---:|---:|
-| Flat export of all 1,027 packages | 1,027 | 134,164 | 100% |
-| **This plugin (Claude Code's own accounting)** | **78 + 48 agents** | **~6,118** | **4.56%** — a 22x reduction |
-| This plugin (`--measure`, `ceil(chars/4)` model) | 78 + 48 agents | 5,956 | 4.44% — a 22x reduction |
-| Same plugin before the agents shipped | 78 | ~2,889 | 2.15% |
+| Flat export of all 1,027 packages | 1,027 | 136,731 | 100% |
+| **This plugin (Claude Code's own accounting)** | **78 + 48 agents** | **5,387** | **3.94%** — a 25x reduction |
+| This plugin (`--measure`, closed-form prediction) | 78 + 48 agents | 5,387 | 3.94% |
+| Same plugin before the 2026-08-07 rework | 78 + 48 agents | 6,118 | 4.47% |
+| Same plugin before the agents shipped | 78 | ~2,889 | 2.11% |
 
-Reproduce the first two rows with:
+The flat-export figure is billed under the same model as everything else —
+1,027 packages each namespaced `sfskills:<name>` — so the comparison is like
+for like. Reproduce the first two rows with:
 
 ```bash
-claude plugin details sfskills          # reads "Always-on:  ~6,118 tok"
+claude plugin details sfskills          # reads "Always-on:  ~5,387 tok"
 python3 scripts/build_plugin.py --measure
 ```
 
-`--measure` exits 1 if Tier 1 crosses 6,000 tokens or 5% of the flat-export
-cost, so a router that grows a paragraph fails the build rather than quietly
-taxing every session. **Headroom is now 44 tokens**, and the agent loaders are
-54% of the budget. Adding a 49th run-time agent will fail the gate. When that
-happens, shorten the generated loader `description` in `render_subagent()` —
-do not raise `BUDGET_TIER1_TOKENS`, because the budget is the only thing
-standing between this plugin and the flat export it exists to avoid.
+#### The budget, and why it is not raised
 
-The two rows disagree by 2.6% (5,956 modelled vs ~6,118 measured), the same
-order as the 8% gap the pre-agent build showed. `ceil(chars/4)` is a model,
-not the tokenizer; treat `plugin details` as the number of record.
+`--measure` exits 1 if Tier 1 crosses 6,000 tokens or 5% of the flat-export
+cost. It exits **0** today, at 5,387 predicted / 5,441 after the safety margin,
+with 559 tokens of headroom.
+
+It did not always. On 2026-08-07 the plugin measured 6,118 — 118 over the cap —
+and the fix was the cost, not the ceiling. Do not reach for
+`BUDGET_TIER1_TOKENS`: the budget is the only thing standing between this
+plugin and the flat export it exists to avoid, and a ceiling raised to meet the
+cost measures nothing. What was actually cut:
+
+1. **The 48 generated agent descriptions: 3,229 → 2,157 tok.** All 48 shared a
+   **188-character longest common suffix** ("reads its full AGENT.md playbook,
+   cites every skill consulted, returns a confidence score, and never deploys
+   to an org. Invoke for the whole workflow, not a single lookup."). That is
+   188 × 48 = 9,024 characters ≈ 2,256 tok — **37% of the entire always-on
+   bill**, spent on text identical across every loader and therefore
+   discriminating between none of them. (An earlier revision of this document
+   said 203 chars / 9,744 / 2,436 tok. Those figures were never measured; 188
+   is the longest common suffix, and it is a *suffix* rather than a
+   byte-identical string because the `{domain}` token takes 10 distinct
+   values.) The boilerplate is now 64 characters, and part of the saving was
+   spent back on discrimination — each description now names its slash command,
+   because `/refactor-apex` and the agent id `apex-refactorer` are different
+   strings and the command is what a user types. Median description length went
+   247 → 159 characters.
+2. **The correction to the command model: 1,519 → 1,394 tok.** Not a saving —
+   the old figure was simply wrong. See below.
+
+The 66 commands remain the obvious next lever if one is ever needed: an
+allowlist in `PLUGIN_COMMANDS_PATH` would drop the 9 deprecated aliases and the
+build-time commands that mean nothing to someone who installed the library to
+*use* it. That is now optional rather than urgent.
+
+#### The token model
+
+`--measure` no longer estimates. It computes:
+
+```
+always_on(component) = 0.25 × (len(qualified_name) + len(description)) + 0.25
+```
+
+summed over every component, rounded **once** at the end. Where:
+
+- `qualified_name` is `"<plugin>:<name>"` for **skills and commands**, and the
+  bare `"<name>"` for **agents** — agents are not namespaced.
+- `description` is the frontmatter `description` for skills and agents; for a
+  command it is the **full H1 text** (everything after `# `), hard-truncated at
+  **100 characters**.
+
+Nine probe plugins, Claude Code 2.1.209, 2026-08-07, each installed from a
+local-path marketplace into a throwaway `CLAUDE_CONFIG_DIR` from outside this
+repository. Every prediction was written down before the probe ran:
+
+| Probe | Predicted | Measured | What it establishes |
+|---|---:|---:|---|
+| 10 skills, plugin `sfskills` (8 ch), desc 100 | 280 | **280** | baseline |
+| 10 skills, plugin `sfskillsabcd` (12 ch), desc 100 | 290 | **290** | skills **are** namespaced (+4 name chars × 10 × 0.25) |
+| 10 skills, plugin `sfskills`, desc 300 | 780 | **780** | slope is exactly 0.25 tok/char |
+| 10 agents, plugin `sfskills`, desc 100 | 258 | **258** | bare name (namespaced would be 280) |
+| 10 agents, plugin `sfskillsabcd`, desc 100 | 258 | **258** | agents are **not** namespaced — unchanged by plugin name |
+| 10 commands, H1 = `/cN — ` + 50 chars | 170 | **170** | the **full H1** is billed (stripped subtitle would be 155) |
+| 10 commands, H1 length 146 | 280 | **280** | truncated |
+| 10 commands, H1 length 100 | 280 | **280** | cap is exactly |
+| 10 commands, H1 length 101 | 280 | **280** | 100 characters |
+| **replica of this plugin's real Tier-1 files** | **5386.8** | **5,387** | 126 real components, variable-length |
+
+The last row is the one that matters: 126 components with real descriptions,
+predicted to a tenth of a token.
+
+#### What the previous constants got wrong, and why it is instructive
+
+The superseded model hard-coded `SKILL_OVERHEAD_TOKENS = 3`,
+`AGENT_OVERHEAD_TOKENS = 1`, `COMMAND_OVERHEAD_TOKENS = 9` as "measured
+per-tier intercepts", and this document presented a per-tier table built from
+them. Both were wrong, in a way worth recording:
+
+- **Each tier was probed under a different plugin name.** The router probe was
+  called `tierrouters` (11 chars) and the command probe `tiercommands` (12),
+  while the real plugin is `sfskills` (8). Since skills and commands are billed
+  as `<plugin>:<name>`, those extra name characters were absorbed into what
+  looked like per-component structural overhead. It is exactly why the "agent
+  overhead" came out near zero — agents are not namespaced, so their probe had
+  no qualifier to misattribute.
+- **The same artifact produced the "unexplained 75-token sub-additivity."**
+  12 skills × 3 extra name chars × 0.25 = 9, plus 66 commands × 4 × 0.25 = 66,
+  plus 0 for agents = **75 exactly**. Re-measured with all three tiers under
+  the name `sfskills`, they sum to 5,386 against a whole-plugin 5,387. There is
+  no sub-additivity.
+- **The command cap was reported as "~90 characters."** It is exactly 100 — the
+  earlier probe only swept 100/120/160/200/400, which cannot distinguish 90
+  from 100. And commands are billed against the **whole H1**, not the
+  `/slug — `-stripped subtitle; charging the subtitle under-reads by ~1.5 tok
+  per command.
+
+The lesson is not "those numbers were off." It is that a probe whose *name*
+differs from the subject measures the name.
+
+#### Re-calibrating the token model
+
+The model lives at the top of `scripts/build_plugin.py` (`TOKENS_PER_CHAR`,
+`COMPONENT_INTERCEPT_TOKENS`, `COMMAND_DESCRIPTION_CHARS`, `MEASURED_REFERENCE`).
+If a Claude Code upgrade changes the accounting, **re-derive it, do not nudge
+it**:
+
+```bash
+# STEP 1, AND DO NOT SKIP IT: name the probe plugin exactly "sfskills".
+# Skills and commands are billed as "<plugin>:<name>", so a probe under any
+# other name measures the name difference and reports it as per-component
+# overhead. This is the specific mistake that produced the constants this
+# section replaced.
+export CLAUDE_CONFIG_DIR="$(mktemp -d)"
+cd /somewhere/outside/the/repo
+claude plugin marketplace add /absolute/path/to/probe-plugin
+claude plugin install sfskills@sfskills --scope user
+claude plugin details sfskills        # the "Always-on:" line is the answer
+rm -rf "$CLAUDE_CONFIG_DIR"; unset CLAUDE_CONFIG_DIR
+```
+
+Sweep one variable at a time, holding the others fixed, and read the slope off
+two points rather than fitting an intercept to one. Then build a **replica**
+probe from the real Tier-1 files and confirm the model predicts the whole
+install — a model that fits every synthetic sweep and misses the replica is
+still wrong. The per-component table `plugin details` prints is rounded to the
+nearest 10 and cannot be used for any of this; it was tried, and the rounding
+bands are wide enough to admit both a correct and an incorrect model.
+
+`SAFETY_MARGIN_RATIO` is the **one** explicit margin, applied once to the
+total. It replaced three fitted per-tier intercepts. It is headroom against a
+future accounting change, not a correction for a model that does not fit —
+`--measure` reports the exact prediction and the padded figure separately, and
+gates on the padded one.
 
 ---
 
@@ -392,10 +530,17 @@ generated, and so are the flat `agents/*.md` loaders at the repository root.
 Do not hand-edit any of it.
 
 Note the split inside `agents/`: the build owns the flat `agents/<id>.md`
-files and nothing else there. The `agents/<id>/AGENT.md` packages and
-`agents/_shared/` are hand-authored and are never touched — the stale-file
-sweep over that directory is deliberately non-recursive and `*.md`-only, since
-a recursive prune would delete the agent library.
+loaders **that it wrote**, and nothing else there. The `agents/<id>/AGENT.md`
+packages and `agents/_shared/` are hand-authored and are never touched — the
+stale-file sweep over that directory is deliberately non-recursive and
+`*.md`-only, since a recursive prune would delete the agent library.
+
+The sweep is narrower than that glob, because the glob alone would make the
+build own every top-level `agents/*.md` — a hand-authored `agents/README.md`
+would then be silently unlinked by the next build. So a candidate is pruned
+only if it carries the marker line `render_subagent()` stamps into every
+loader (`GENERATED_MARKER` in `scripts/build_plugin.py`). A hand-authored file
+dropped into `agents/` survives, and is not reported as drift by `--check`.
 
 ```bash
 python3 scripts/build_plugin.py                 # build in place
@@ -499,8 +644,8 @@ The duplication is deliberate, not redundancy to clean up. Deleting
 `.claude/agents/` would break the clone workflow; deleting `agents/*.md` would
 put `Agents (0)` back.
 
-**What this still costs.** The 48 loaders add ~3,200 always-on tokens, 54% of
-the Tier-1 budget — see [Measured cost](#measured-cost). And the manifest can
+**What this still costs.** The 48 loaders add 2,157 always-on tokens, 40% of
+the Tier-1 bill — see [Measured cost](#measured-cost). And the manifest can
 never advertise them: the `agents` key stays absent, so anyone reading
 `plugin.json` alone sees no agent declaration at all. The `description` string
 names them; the component list does not.
@@ -560,12 +705,44 @@ one-line gloss each, generated from `registry/skills.json` (which *is*
 tracked). The routers list it first for exactly this reason, ahead of the
 `sfskills-mcp` `search_skill` tool and the search CLI.
 
+Because the roster is the primary lookup path rather than a fallback, the
+gloss is generated to discriminate rather than to summarise. The package id is
+already on the line, so a gloss that restates the name is dead weight; instead
+each gloss carries, in priority order, the package's own **trigger
+vocabulary**, its **`NOT for X - use Y` redirect**, and a scope phrase if there
+is room. The previous rule — "first sentence, truncated to 120 characters" —
+kept the least useful third: measured over all 1,027 packages it cut 923
+(89.9%) of them **mid-word** and opened 673 (65.5%) with "Use when" boilerplate.
+It also dropped, among much else, the literal trigger
+`'why can user see too much'` from `admin/sharing-and-visibility` and the
+`(use admin/duplicate-management)` redirect from
+`data/large-scale-deduplication` — both of which had been observed causing a
+wrong pick in a fresh-clone routing test.
+
+The current budget is 220 characters per gloss, with mid-word truncation
+eliminated (0 of 1,027) and every cut placed on a word, keyword or
+whole-clause boundary and marked with `…`. Rosters are Tier 2, so this costs
+nothing always-on; it costs more to *read* one. The worst case is `admin` at
+253 packages:
+
+| | admin roster | ~tok to read it |
+|---|---:|---:|
+| old rule (120 chars, first sentence) | 43.8 KB | 11.2k |
+| current (220 chars, prioritised) | 68.2 KB | 17.2k |
+
+All 11 rosters total 280 KB, but only one is ever read for a given question.
+The constants and the length/quality measurements behind 220 are in the
+`MAX_GLOSS_CHARS` block in `scripts/build_plugin.py`.
+
 ### 4. The clone is heavy
 
-| What | Size |
+Measured 2026-08-07 on `overhaul/2026-08-01-checkpoint`. These drift with every
+commit — re-run the commands below rather than trusting the table.
+
+| What | Size (as of 2026-08-07) |
 |---|---|
-| Tracked working tree | 80.7 MB across 9,229 files |
-| `.git` | 524 MB (`size-pack` 389.86 MiB) |
+| Tracked working tree | 85.55 MB across 9,347 files |
+| `.git` | 537 MB (`size-pack` 389.86 MiB) |
 | Plugin cache after a **local** install | 1.7 GB |
 
 A **local-path** install copies the entire working tree — including gitignored
@@ -577,8 +754,11 @@ instead. Neither number is small, but GitHub is the cheaper of the two.
 Reproduce:
 
 ```bash
+git ls-files | wc -l                                    # 9347
 git ls-files -z | xargs -0 stat -f '%z' | awk '{s+=$1} END {print s/1048576" MB"}'
-git count-objects -vH | grep size-pack
+                                                        # 85.5511 MB
+git count-objects -vH | grep size-pack                  # size-pack: 389.86 MiB
+du -sh .git                                             # 537M
 ```
 
 ### 5. All 66 commands ship, including deprecated aliases
@@ -588,13 +768,16 @@ files are not owned by this change. So 1.0.0 ships all 66, including the 9
 files marked `LEGACY ALIAS` (`grep -lc 'LEGACY ALIAS' commands/*.md`) and the
 build-time commands (`/new-skill`, `/new-agent`, `/build-skills`,
 `/onboard-source`, `/sync-upstream-skills`, …) that are meaningless to someone
-who installed the plugin to *use* the library. Collectively the commands are
-1,253 of the 5,956 tokens `--measure` attributes to Tier 1 — 21% of the
-budget, behind the 48 agent loaders at 54%.
+who installed the plugin to *use* the library. Collectively the commands cost
+1,394 of the 5,387 always-on tokens Claude Code bills for this plugin — 26%,
+behind the 48 agent loaders at 2,157 (40%) and ahead of the routers at 1,835
+(34%).
 
-Trimming them is follow-up work, and it got more urgent once the agents
-started shipping: Tier 1 now sits 44 tokens under its 6,000 cap, and the
-commands are the largest block that can be cut without losing a component.
+Trimming them is follow-up work rather than urgent: Tier 1 is back **under**
+its 6,000 cap with 559 tokens of headroom (see
+[The budget, and why it is not raised](#the-budget-and-why-it-is-not-raised)).
+The commands remain the largest block that could be cut without losing a
+component anyone installed the plugin for.
 The mechanism is known rather than untested: the field accepts a mixed array
 of directories and individual files
 (`["./commands/core/", "./commands/enterprise/", "./commands/experimental/preview.md"]`
@@ -626,6 +809,32 @@ decision trees from `standards/decision-trees/`, the canonical templates from
 `templates/<domain>/` where one exists (admin, agentforce, apex, flow, lwc),
 and the run-time agents that cover it. A router is a map, not the territory —
 it never answers a Salesforce question itself.
+
+### A router's keyword list is a promise about its roster
+
+A router's `description` is always-on, and it is the only thing Claude reads
+before choosing which of the 11 rosters to open. So a router that advertises a
+keyword whose packages live in a *different* domain sends the reader to a
+roster that cannot answer them — and the reader has no way to know, because
+they scan the wrong file and conclude the library has no coverage. Three such
+mis-routes were measured on 2026-08-07:
+
+| Keyword | Advertised by | Where the package actually is | Fixed by |
+|---|---|---|---|
+| sharing / record access | `salesforce-security` only | `admin/sharing-and-visibility` (admin 7 packages vs security 4) | admin now claims the *design* of the access model; security keeps *troubleshooting a live denial* |
+| REST API | `salesforce-integration` only | `apex/callouts-and-http-integrations` (apex 17 callout packages vs integration 8) | integration = **inbound**; apex = **outbound**, both stated in both descriptions |
+| duplicate | `salesforce-data` only | `admin/duplicate-management` owns *prevention* (data 11 / admin 4) | admin = matching + duplicate rules; data = cleanup at volume |
+
+Two more concepts genuinely span two domains and are now named as split in
+both, rather than silently claimed by one: **Bulk API** (data owns the
+load/extract, integration owns the job API) and **governor limits** (apex owns
+Apex limits, flow owns Flow limits and "my flow is hitting SOQL limits").
+
+The rule when editing `DOMAIN_META` in `scripts/build_plugin.py`: count where
+the packages actually are first, in `registry/skills.json`, and make the
+keyword list match. Do not move skills between domains to resolve an overlap —
+that churns paths for no retrieval gain. Name the split in both descriptions
+instead.
 
 ## Uninstall
 

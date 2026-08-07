@@ -1,11 +1,11 @@
 ---
 name: salesforce-data
-description: "Router for the 101 SfSkills `data` skill packages. Data model, data movement and data quality: migrations, bulk loads, query optimisation, deduplication, archival and storage. Use when the request mentions data model, data migration, data load, Data Loader, Bulk API, external id, duplicate, deduplication, skinny table, custom index, archival, data storage. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 101 SfSkills `data` skill packages. Data model, data movement and data quality: migrations, bulk data loads and extracts, query optimisation, cleaning up duplicates that already exist, archival and storage. For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead. Use when the request mentions data model, data migration, data load, Data Loader, Bulk API data load, load millions of records, external id, deduplication at volume, merge existing duplicates, skinny table, custom index, archival, data storage, storage limit. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce data — SfSkills domain router
 
-Data model, data movement and data quality: migrations, bulk loads, query optimisation, deduplication, archival and storage.
+Data model, data movement and data quality: migrations, bulk data loads and extracts, query optimisation, cleaning up duplicates that already exist, archival and storage. For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead.
 
 **101 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/data/<slug>/SKILL.md`. They are not

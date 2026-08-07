@@ -1,6 +1,6 @@
 ---
 name: bulk-migration-planner
-description: "Pick the right Salesforce integration pattern. SfSkills integration run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Pick the right Salesforce integration pattern. SfSkills integration workflow agent, /plan-bulk-migration: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # bulk-migration-planner

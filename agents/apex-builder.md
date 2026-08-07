@@ -1,6 +1,6 @@
 ---
 name: apex-builder
-description: "Generate an Apex scaffold for any canonical surface. SfSkills apex run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Generate an Apex scaffold for any canonical surface. SfSkills apex workflow agent, /build-apex: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # apex-builder

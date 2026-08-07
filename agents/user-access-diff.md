@@ -1,6 +1,6 @@
 ---
 name: user-access-diff
-description: "Side-by-side access comparison between two Salesforce users. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Side-by-side access comparison between two Salesforce users. SfSkills admin workflow agent, /diff-users: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # user-access-diff

@@ -1,6 +1,6 @@
 ---
 name: integration-catalog-builder
-description: "Build the org's integration catalog. SfSkills integration run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Build the org's integration catalog. SfSkills integration workflow agent, /catalog-integrations: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # integration-catalog-builder

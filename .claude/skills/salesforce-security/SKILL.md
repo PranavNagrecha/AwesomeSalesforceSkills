@@ -1,11 +1,11 @@
 ---
 name: salesforce-security
-description: "Router for the 48 SfSkills `security` skill packages. Platform security and compliance: org hardening, sharing troubleshooting, encryption, session policy, MFA, monitoring and incident response. Use when the request mentions security, org hardening, Shield, platform encryption, field audit trail, MFA, SSO, SAML, session policy, guest user, event monitoring, GDPR, XSS, injection. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 48 SfSkills `security` skill packages. Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin. Use when the request mentions security, org hardening, Shield, platform encryption, field audit trail, MFA, SSO, SAML, session policy, guest user, event monitoring, GDPR, XSS, injection, why can this one user see this record, Apex managed sharing, sharing recalculation. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce security — SfSkills domain router
 
-Platform security and compliance: org hardening, sharing troubleshooting, encryption, session policy, MFA, monitoring and incident response.
+Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin.
 
 **48 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/security/<slug>/SKILL.md`. They are not

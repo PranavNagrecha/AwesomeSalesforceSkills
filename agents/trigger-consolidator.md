@@ -1,6 +1,6 @@
 ---
 name: trigger-consolidator
-description: "Consolidate N triggers on an sObject into one handler. SfSkills apex run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Consolidate N triggers on an sObject into one handler. SfSkills apex workflow agent, /consolidate-triggers: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # trigger-consolidator

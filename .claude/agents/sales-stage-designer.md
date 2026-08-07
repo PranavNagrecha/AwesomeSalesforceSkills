@@ -1,6 +1,6 @@
 ---
 name: sales-stage-designer
-description: "Design or audit Opportunity sales stages. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Opportunity sales stages. SfSkills admin workflow agent, /design-sales-stages: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # sales-stage-designer

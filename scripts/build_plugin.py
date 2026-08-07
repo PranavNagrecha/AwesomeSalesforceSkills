@@ -140,22 +140,164 @@ PLUGIN_COMMANDS_PATH = "./commands/"
 # `claude plugin details sfskills` reports `Agents (48)`.
 AGENT_LOADING_MATRIX_VERSION = "2.1.209"
 
-# Token model: ceil(chars / 4), applied to name + description for skills and
-# to stem + first heading for commands. Calibrated against Claude Code's own
-# "Always-on" accounting, where 12 routers carrying 450-char descriptions
-# measured ~1,290 tokens (~107 each).
-CHARS_PER_TOKEN = 4
+# ── Token model — an exact closed form, not a fit ─────────────────────────────
+#
+# Claude Code's always-on charge for one plugin component is:
+#
+#     always_on = 0.25 * (len(qualified_name) + len(description)) + 0.25
+#
+# where
+#
+#     qualified_name = "<plugin>:<name>"  for skills and commands
+#     qualified_name = "<name>"           for agents  (NOT namespaced)
+#     description    = the frontmatter `description` for skills and agents,
+#                      and for a command the FULL H1 text (everything after
+#                      "# "), hard-truncated at COMMAND_DESCRIPTION_CHARS.
+#
+# The install total is `round(sum over components)` — the rounding happens
+# once, at the end, which is why per-component halves cancel.
+#
+# HOW THIS WAS DERIVED, and why the previous three constants were wrong.
+#
+# The superseded model hard-coded SKILL_OVERHEAD_TOKENS=3, AGENT_OVERHEAD=1 and
+# COMMAND_OVERHEAD=9 as "measured per-tier intercepts". They were an artifact of
+# the probe METHOD: each tier was probed under a plugin named differently from
+# this one ("tierrouters", 11 chars; "tiercommands", 12) rather than "sfskills"
+# (8). Because skills and commands are billed as `<plugin>:<name>`, the extra
+# plugin-name characters were absorbed into what looked like a per-component
+# overhead — and that is exactly why the "agent overhead" came out near zero:
+# agents are not namespaced, so their probe had no qualifier to misattribute.
+# The same artifact produced the "unexplained 75-token sub-additivity" the docs
+# used to report: 12 skills x 3 extra name chars x 0.25 = 9, plus 66 commands
+# x 4 x 0.25 = 66, plus 0 for agents = 75 exactly. There is no sub-additivity.
+#
+# Re-derived 2026-08-07 on Claude Code 2.1.209 with nine controlled probes,
+# each installed from a local-path marketplace into a throwaway
+# CLAUDE_CONFIG_DIR outside this repository and read with `claude plugin
+# details`. Every prediction below was written down BEFORE the probe ran:
+#
+#   probe                                                  predicted  measured
+#   A1  plugin "sfskills"(8),     10 skills,  desc 100          280      280
+#   A2  plugin "sfskillsabcd"(12),10 skills,  desc 100          290      290   <- +4 name chars x 10 x 0.25 = +10: skills ARE namespaced
+#   A3  plugin "sfskills",        10 skills,  desc 300          780      780   <- slope exactly (780-280)/2000 = 0.25
+#   B1  plugin "sfskills",        10 agents,  desc 100          258      258   <- bare name (namespaced would be 280)
+#   B2  plugin "sfskillsabcd",    10 agents,  desc 100          258      258   <- UNCHANGED by plugin name: agents are NOT namespaced
+#   C1  10 commands, H1 = "/cN — " + 50 chars                   170      170   <- full H1 billed (stripped subtitle would be 155)
+#   C2  10 commands, H1 length 146                              280      280   <- truncated to 100
+#   C3  10 commands, H1 length 100 exactly                      280      280   } cap is exactly
+#   C4  10 commands, H1 length 101                              280      280   } 100 characters
+#
+#   R   replica of this plugin's real Tier-1 files (12 routers +
+#       48 agent loaders + 66 commands, unmodified, plugin "sfskills")
+#                                                            6117.8     6,118
+#
+# R is the acid test: 126 components with real, variable-length descriptions,
+# predicted to a tenth of a token. Reproduce any row with the procedure in
+# docs/installing-the-plugin.md, "Re-calibrating the token model" — and note
+# that step 1 there is to name the probe plugin "sfskills", because getting
+# that wrong is what produced the constants this block replaced.
+TOKENS_PER_CHAR = 0.25
+COMPONENT_INTERCEPT_TOKENS = 0.25
+COMMAND_DESCRIPTION_CHARS = 100
+
+# The ONE safety margin. The closed form above is exact on 2.1.209, so this is
+# not a fudge factor covering a bad model — it is headroom against a future
+# Claude Code changing its accounting slightly, and it is applied once, to the
+# total, where it can be seen. `--measure` reports the exact prediction AND the
+# padded figure, and gates on the padded one.
+SAFETY_MARGIN_RATIO = 0.01
+
+# The install this model is checked against. Reported by `--measure` so the
+# estimate always travels with the measurement that validates it.
+MEASURED_REFERENCE = {
+    "claude_code_version": "2.1.209",
+    "measured_on": "2026-08-07",
+    "method": "nine probe plugins (parameter sweeps + a full-replica acid "
+              "test) installed from a local-path marketplace into a throwaway "
+              "CLAUDE_CONFIG_DIR outside the repo, read with "
+              "`claude plugin details`",
+    "model": "0.25 * (len(qualified_name) + len(description)) + 0.25 per "
+             "component, summed then rounded once",
+    "replica_predicted_tokens": 6117.8,
+    "replica_measured_tokens": 6118,
+    "note": "the replica carried the Tier-1 files as they stood BEFORE the "
+            "2026-08-07 gloss/boilerplate rework; re-run the replica probe to "
+            "re-validate against the current build",
+}
+
 BUDGET_TIER1_TOKENS = 6000
 BUDGET_TIER1_RATIO = 0.05
 
 # Max characters for a router `description:` value. Claude Code has no hard
-# cap, but every character here is always-on cost.
+# cap, but every character here is always-on cost: 0.25 tok/char, forever, in
+# every session. Keyword lists earn their place or they come out.
 MAX_DESCRIPTION_CHARS = 900
-# Max characters for a roster gloss (first sentence of the registry
-# description).
-MAX_GLOSS_CHARS = 120
-# Roster files are on-invoke cost only, but keep them readable.
-MAX_ROSTER_BYTES = 60 * 1024
+
+# ── Roster gloss budget ───────────────────────────────────────────────────────
+#
+# A gloss sits beside the skill id, which is ALREADY PRINTED on the same line.
+# So a gloss that restates the name is dead weight, and the generator's job is
+# to carry what the name cannot: the trigger vocabulary and the NOT-for
+# redirect. The old rule ("first sentence, truncated to 120 chars") kept
+# exactly the wrong third — measured over all 1,027 packages, 923 (89.9%) of
+# its glosses were cut MID-WORD and 673 (65.5%) opened with "Use when"
+# boilerplate that discriminates nothing.
+#
+# Registry descriptions are written in three parts, and the generator splits on
+# them (see `split_description`):
+#
+#   lead      generic purpose, usually "Use when <gerund phrase>"   1,027 have
+#   triggers  `Triggers:` / `Trigger keywords:` <quoted phrases>      571 have
+#   NOT-for   `NOT for <X> - use <Y> for that.`                       995 have
+#
+# Allocation order is PRIORITY order, and the lead is paid LAST, out of
+# whatever is left. Measured over all 1,027 packages at MAX_GLOSS_CHARS=220,
+# paying the lead first vs last:
+#
+#   lead floor   full trigger list kept   cross-reference kept   admin roster
+#   90 chars                       25%                    38%        68.3 KB
+#   60 chars                       54%                    41%        68.4 KB
+#   0  (last)                      54%                    67%        67.3 KB
+#
+# Paying the lead last is better on every axis at the same cost, which is the
+# measurement behind "the name is already printed".
+#
+# COST OF THE LENGTH CHOICE. Rosters are Tier 2 — read on demand, one domain at
+# a time — so they do not touch the 6,000-token always-on budget. The cost that
+# matters is reading ONE roster, and the worst case is `admin` at 253 entries.
+# Measured, per-domain-file, over the full corpus:
+#
+#   MAX_GLOSS_CHARS   admin roster   ~tok to read it   full triggers   xref kept
+#   120 (the old rule)     43.8 KB           11.2k            n/a           n/a
+#   180                    57.0 KB           14.6k            54%           55%
+#   220  (chosen)          67.3 KB           17.2k            54%           67%
+#   240                    71.8 KB           18.4k            54%           79%
+#
+# 220 is where the two measured routing failures both resolve: the literal
+# trigger 'why can user see too much' survives in admin/sharing-and-visibility
+# (it did not at 180), and data/large-scale-deduplication keeps its
+# "(use admin/duplicate-management)" redirect. Past 220 the curve is still
+# rising but no longer buys a known failure, so it stops here.
+MAX_GLOSS_CHARS = 220
+# Sub-caps, so no one part can starve the others. TRIGGER_CAP is what makes
+# `full triggers` plateau at 54% — lists longer than this clip at a comma, on
+# purpose. NOTFOR_CAP costs 4 points of cross-reference retention and buys 11
+# points of lead retention, which matters because for the 456 packages with no
+# trigger line the lead is the only subject matter there is.
+GLOSS_TRIGGER_CAP = 150
+GLOSS_NOTFOR_CAP = 140
+GLOSS_LEAD_CAP = 150
+# A lead shorter than this is a stub, not a phrase ("designing …."). Below the
+# threshold the lead is dropped outright rather than shipped as noise.
+GLOSS_LEAD_MIN = 40
+# Visible, unambiguous, one character. Truncation is always on a word, comma or
+# whole-clause boundary — never mid-word.
+GLOSS_ELLIPSIS = "…"
+
+# Roster files are on-invoke cost only, but a runaway roster is still a bill
+# someone pays. Sized to leave headroom above the current worst case
+# (`admin`, 253 packages, ~67 KB) without leaving room for another doubling.
+MAX_ROSTER_BYTES = 80 * 1024
 
 DOMAIN_ORDER = [
     "admin",
@@ -181,14 +323,42 @@ DOMAIN_ORDER = [
 # `python3 scripts/build_plugin.py --verify-seeds` is the standalone gate.
 
 # domain -> (one-line scope, trigger vocabulary)
+#
+# THESE LISTS ARE A PROMISE ABOUT WHAT THE ROSTER CONTAINS. A router that
+# advertises a keyword whose packages live in a different domain sends the
+# reader to a roster that cannot answer them, and the reader has no way to
+# know that — they scan the wrong 60 KB and conclude the library has no
+# coverage. Three such mis-routes were measured on 2026-08-07 and all three
+# are fixed below by naming the SPLIT in both descriptions rather than by
+# moving skills (moving them would churn 1,027 paths for no retrieval gain):
+#
+#   concept        counted in the registry              how it is split now
+#   sharing        admin 7 / security 4 / data 4        admin = design the model
+#                  (admin/sharing-and-visibility is     security = troubleshoot
+#                   the design-level package)                     a live denial
+#   REST/callouts  apex 17 / integration 8 (callout)    integration = inbound
+#                  apex/callouts-and-http-integrations  apex = outbound
+#                  is the outbound package
+#   duplicates     data 11 / admin 4                    admin = prevention
+#                  (admin/duplicate-management)         data = cleanup at volume
+#   Bulk API       data 13 / integration 11             data = the load/extract
+#                                                       integration = the API
+#   governor lim.  apex 5 / flow 2                      each names its own
+#
+# Counts reproduce with a case-insensitive search of registry/skills.json over
+# name + description. Re-run it before editing a list: the honest keyword list
+# is the one that matches where the packages actually are.
 DOMAIN_META: dict[str, tuple[str, str]] = {
     "admin": (
         "Declarative Salesforce configuration: objects, fields, record types, "
-        "page layouts, permission sets, reports, and the requirements work "
-        "that precedes them.",
+        "page layouts, permission sets, reports, the record-access model "
+        "(OWD, role hierarchy, sharing rules), and the requirements work that "
+        "precedes them.",
         "custom object, custom field, picklist, record type, page layout, "
         "permission set, profile, validation rule, report, dashboard, queue, "
-        "approval process, user setup",
+        "approval process, user setup, sharing rule, org-wide default, OWD, "
+        "role hierarchy, record access, record visibility, who can see this "
+        "record, duplicate rule, matching rule, duplicate prevention",
     ),
     "agentforce": (
         "Agentforce and Einstein: agents, topics, actions, prompt templates, "
@@ -198,12 +368,15 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
         "prompt injection",
     ),
     "apex": (
-        "Apex and SOQL: triggers, governor limits, async processing, "
-        "callouts, security enforcement, and the test patterns that keep "
-        "them deployable.",
-        "Apex, trigger, SOQL, SOSL, governor limit, batch, queueable, "
+        "Apex and SOQL: triggers, Apex governor limits, async processing, "
+        "OUTBOUND HTTP callouts, security enforcement, and the test patterns "
+        "that keep them deployable. Owns calling an external API FROM "
+        "Salesforce; salesforce-integration owns the inbound direction.",
+        "Apex, trigger, SOQL, SOSL, Apex governor limit, batch, queueable, "
         "@future, schedulable, test class, CPU time, heap, with sharing, "
-        "StripInaccessible",
+        "StripInaccessible, callout, HTTP callout, HttpRequest, call an "
+        "external API, consume a REST API from Apex, Named Credential in "
+        "Apex, HttpCalloutMock, Apex REST service",
     ),
     "architect": (
         "Solution and platform architecture: multi-org strategy, scalability "
@@ -214,11 +387,14 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
         "HA/DR, technical debt",
     ),
     "data": (
-        "Data model, data movement and data quality: migrations, bulk loads, "
-        "query optimisation, deduplication, archival and storage.",
-        "data model, data migration, data load, Data Loader, Bulk API, "
-        "external id, duplicate, deduplication, skinny table, custom index, "
-        "archival, data storage",
+        "Data model, data movement and data quality: migrations, bulk data "
+        "loads and extracts, query optimisation, cleaning up duplicates that "
+        "already exist, archival and storage. For PREVENTING duplicates with "
+        "matching and duplicate rules, use salesforce-admin instead.",
+        "data model, data migration, data load, Data Loader, Bulk API data "
+        "load, load millions of records, external id, deduplication at "
+        "volume, merge existing duplicates, skinny table, custom index, "
+        "archival, data storage, storage limit",
     ),
     "devops": (
         "Salesforce delivery: source tracking, packaging, branching, CI/CD "
@@ -229,17 +405,24 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
     ),
     "flow": (
         "Flow Builder: record-triggered, screen, scheduled and orchestration "
-        "flows, plus bulkification, fault handling, testing and versioning.",
+        "flows, plus bulkification, fault handling, Flow-side limits, testing "
+        "and versioning. Anything phrased as \"my flow\" belongs here even "
+        "when the symptom is a limit that salesforce-apex also names.",
         "Flow, Flow Builder, record-triggered flow, screen flow, scheduled "
         "flow, subflow, fault path, flow element, orchestration, "
-        "Process Builder migration, Workflow Rule migration",
+        "Process Builder migration, Workflow Rule migration, flow limit, "
+        "flow hitting SOQL limit, too many SOQL queries in a flow, flow "
+        "bulkification, Get Records performance",
     ),
     "integration": (
-        "Inbound and outbound integration: REST and SOAP APIs, Bulk API 2.0, "
-        "Platform Events, CDC, Pub/Sub, Named Credentials and middleware.",
-        "integration, REST API, SOAP API, Bulk API, Platform Event, Change "
-        "Data Capture, Pub/Sub, webhook, Named Credential, OAuth, MuleSoft, "
-        "Salesforce Connect",
+        "INBOUND integration and the API surface itself: the Salesforce REST "
+        "and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, "
+        "Named Credentials and middleware. For calling OUT to someone else's "
+        "API from Apex, use salesforce-apex instead.",
+        "integration, Salesforce REST API, composite API, SOAP API, Bulk API "
+        "2.0 job, Platform Event, Change Data Capture, Pub/Sub, inbound "
+        "webhook, Named Credential, OAuth, connected app, MuleSoft, "
+        "Salesforce Connect, external system calling Salesforce",
     ),
     "lwc": (
         "Lightning Web Components: reactivity, wire adapters, component "
@@ -257,12 +440,14 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
         "Vlocity",
     ),
     "security": (
-        "Platform security and compliance: org hardening, sharing "
-        "troubleshooting, encryption, session policy, MFA, monitoring and "
-        "incident response.",
+        "Platform security and compliance: org hardening, encryption, session "
+        "policy, MFA, monitoring, incident response, and TROUBLESHOOTING a "
+        "specific record-access denial. Designing the sharing model itself "
+        "(OWD, role hierarchy, sharing rules) is salesforce-admin.",
         "security, org hardening, Shield, platform encryption, field audit "
         "trail, MFA, SSO, SAML, session policy, guest user, event "
-        "monitoring, GDPR, XSS, injection",
+        "monitoring, GDPR, XSS, injection, why can this one user see this "
+        "record, Apex managed sharing, sharing recalculation",
     ),
 }
 
@@ -513,11 +698,32 @@ def _command_title(stem: str, heading: str) -> str:
     ``# /refactor-apex — Refactor an Apex class`` -> ``Refactor an Apex class``.
     A handful of commands (``/audit-router``) have no subtitle; those fall
     back to a derived phrase so no wrapper ships an empty description.
+
+    The separator must be a dash *surrounded by whitespace*. An earlier
+    ``^/\\S+\\s*[—–-]\\s*(.+)$`` allowed a bare hyphen with no spaces, and
+    since ``\\S+`` backtracks, ``# /audit-router`` matched with ``/audit`` as
+    the slug and ``router`` as the title. Two agents therefore shipped with the
+    description "router." — a routing signal of nothing at all. Requiring the
+    surrounding whitespace makes the no-subtitle case fall through to the
+    derived phrase, which is what it was always supposed to do.
     """
-    match = re.match(r"^/\S+\s*[—–-]\s*(.+)$", heading)
+    match = re.match(r"^/\S+\s+[—–-]\s+(.+)$", heading)
     if match:
         return match.group(1).strip()
-    return f"Run the SfSkills {stem} run-time agent"
+    return UNTITLED_COMMAND.format(stem=stem)
+
+
+# What `_command_title` returns when a command H1 carries no subtitle at all.
+# Two commands are in that state today (`/audit-router`,
+# `/automation-migration-router`); `commands/*.md` is hand-authored, so the
+# generator has nothing better to say and must not pretend otherwise. Callers
+# that would read awkwardly with a placeholder check for it — see
+# `render_subagent`.
+UNTITLED_COMMAND = "Run the SfSkills {stem} run-time agent"
+
+
+def _is_untitled(title: str) -> bool:
+    return title.startswith("Run the SfSkills ")
 
 
 DOMAIN_REF_RE = re.compile(r"\b(" + "|".join(DOMAIN_ORDER) + r")/[a-z0-9][a-z0-9-]*")
@@ -609,19 +815,162 @@ def runtime_agents() -> list[dict]:
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def tokens(text: str) -> int:
-    """Token estimate: ceil(chars / 4)."""
-    return math.ceil(len(text) / CHARS_PER_TOKEN)
+def always_on_tokens(qualified_name: str, description: str) -> float:
+    """Claude Code's always-on charge for ONE component, in tokens.
+
+    The closed form derived at the top of this file. Returns a float on
+    purpose: the install total is the sum rounded ONCE, so rounding here would
+    accumulate error across 126 components.
+    """
+    return (
+        TOKENS_PER_CHAR * (len(qualified_name) + len(description))
+        + COMPONENT_INTERCEPT_TOKENS
+    )
 
 
-def first_sentence(text: str, limit: int = MAX_GLOSS_CHARS) -> str:
-    """First sentence of a description, collapsed and truncated to ``limit``."""
+def qualified_skill_name(name: str) -> str:
+    """Skills and commands are billed as ``<plugin>:<name>``."""
+    return f"{PLUGIN_NAME}:{name}"
+
+
+# ── Roster gloss construction ─────────────────────────────────────────────────
+
+# "Use when …" / "Use this skill when …" — 673 of 1,027 descriptions open with
+# one of these and none of them discriminates anything. Stripped, not kept.
+_LEAD_BOILERPLATE_RE = re.compile(
+    r"^(?:Use\s+this\s+skill\s+(?:when|for)|Use\s+this\s+when|Use\s+when|Use\s+for)\s+",
+    re.IGNORECASE,
+)
+# `Triggers:` / `Trigger keywords:` / `Trigger phrases:` — the vocabulary block.
+_TRIGGER_RE = re.compile(
+    r"\b(?:Trigger\s+keywords?|Trigger\s+phrases?|Triggers?)\s*:\s*", re.IGNORECASE
+)
+# A NOT-for clause, only where it STARTS a sentence — so an incidental "… is
+# NOT for production" inside prose does not split the description.
+_NOTFOR_RE = re.compile(r"(?:^|(?<=[.;]\s))NOT\s+for\b")
+
+
+def split_description(text: str) -> tuple[str, str, str]:
+    """Split a registry description into (lead, triggers, not-for).
+
+    Any part may be empty. The lead has its "Use when" boilerplate stripped and
+    its trailing punctuation removed, so the caller can re-punctuate.
+    """
     flat = " ".join(text.split())
-    match = re.match(r"^(.*?\.)(?:\s|$)", flat)
-    sentence = match.group(1) if match else flat
-    if len(sentence) > limit:
-        sentence = sentence[: limit - 3] + "..."
-    return sentence
+    match = _NOTFOR_RE.search(flat)
+    notfor = flat[match.start():].strip() if match else ""
+    head = (flat[: match.start()] if match else flat).strip()
+
+    trigger_match = _TRIGGER_RE.search(head)
+    if trigger_match:
+        lead = head[: trigger_match.start()]
+        triggers = head[trigger_match.end():]
+    else:
+        lead, triggers = head, ""
+    lead = _LEAD_BOILERPLATE_RE.sub("", lead.strip())
+    return lead.strip(" .;,"), triggers.strip(" .;,"), notfor.strip()
+
+
+def _clip_words(text: str, limit: int) -> str:
+    """Truncate at a WORD boundary, marked. Never mid-word."""
+    if len(text) <= limit:
+        return text
+    if limit < 12:
+        return ""
+    cut = text[: limit - 2].rsplit(" ", 1)[0].rstrip(" ,;:-—")
+    return f"{cut} {GLOSS_ELLIPSIS}" if cut else ""
+
+
+def _clip_keywords(text: str, limit: int) -> str:
+    """Truncate a comma-separated keyword list at a KEYWORD boundary, marked.
+
+    Dropping whole trailing keywords keeps every surviving trigger phrase
+    intact and matchable, which a character cut would not.
+    """
+    if len(text) <= limit:
+        return text
+    if limit < 12:
+        return ""
+    kept: list[str] = []
+    used = 0
+    for part in (p for p in re.split(r",\s*", text) if p):
+        cost = len(part) + (2 if kept else 0)
+        if used + cost + 2 > limit:
+            break
+        kept.append(part)
+        used += cost
+    if not kept:
+        return _clip_words(text, limit)
+    return ", ".join(kept) + f", {GLOSS_ELLIPSIS}"
+
+
+def _clip_clauses(text: str, limit: int) -> str:
+    """Truncate a run of `NOT for …` clauses at a WHOLE-CLAUSE boundary.
+
+    A half-clause redirect ("NOT for duplicate rule config (use admin/dup…")
+    is worse than none: it names a destination the reader cannot resolve. So
+    clauses are kept whole or dropped whole.
+    """
+    if len(text) <= limit:
+        return text
+    if limit < 20:
+        return ""
+    bounds = [m.start() for m in _NOTFOR_RE.finditer(text)] + [len(text)]
+    clauses = [text[bounds[i]: bounds[i + 1]].strip() for i in range(len(bounds) - 1)]
+    kept: list[str] = []
+    used = 0
+    for clause in clauses:
+        cost = len(clause) + (1 if kept else 0)
+        if used + cost > limit:
+            break
+        kept.append(clause)
+        used += cost
+    if not kept:
+        # Even the first clause overflows; a word-clipped redirect still names
+        # its subject, which is more than dropping it entirely.
+        return _clip_words(clauses[0], limit)
+    return " ".join(kept)
+
+
+def build_gloss(description: str, limit: int = MAX_GLOSS_CHARS) -> str:
+    """The one-line roster gloss for a skill package.
+
+    Priority order — triggers, then the NOT-for redirect, then the lead out of
+    whatever is left. See the MAX_GLOSS_CHARS block for the measurements behind
+    that order and behind `limit`.
+    """
+    lead, triggers, notfor = split_description(description)
+    remaining = limit
+
+    trigger_part = ""
+    if triggers:
+        # 11 = len("Triggers: ") + the joining space.
+        trigger_part = _clip_keywords(
+            triggers, min(GLOSS_TRIGGER_CAP, max(0, remaining - 11))
+        )
+        if trigger_part:
+            remaining -= len(trigger_part) + 11
+
+    notfor_part = ""
+    if notfor:
+        notfor_part = _clip_clauses(
+            notfor, min(GLOSS_NOTFOR_CAP, max(0, remaining - 1))
+        )
+        if notfor_part:
+            remaining -= len(notfor_part) + 1
+
+    lead_part = ""
+    if lead and remaining - 1 >= GLOSS_LEAD_MIN:
+        lead_part = _clip_words(lead, min(GLOSS_LEAD_CAP, remaining - 1))
+
+    parts = []
+    if lead_part:
+        parts.append(lead_part.rstrip(" .") + ".")
+    if trigger_part:
+        parts.append("Triggers: " + trigger_part.rstrip(" .") + ".")
+    if notfor_part:
+        parts.append(notfor_part)
+    return " ".join(parts)
 
 
 def yaml_quote(value: str) -> str:
@@ -938,24 +1287,57 @@ def render_roster(domain: str, registry: dict) -> str:
         "package from the repository root under `${CLAUDE_PLUGIN_ROOT}`.",
         "",
         "Generated from `registry/skills.json` by `scripts/build_plugin.py`.",
-        "Do not hand-edit. Glosses are the first sentence of each package's",
-        f"own description, truncated to {MAX_GLOSS_CHARS} characters.",
+        "Do not hand-edit.",
+        "",
+        f"**How to read a gloss.** The package id is on the line already, so the",
+        "gloss does not repeat it. It carries what the id cannot, in this order:",
+        "the package's own **trigger vocabulary** (the phrasings that should",
+        f"land here), then its **`NOT for …` redirect** (which names the package",
+        "to use instead), then a short scope phrase if there is room. A",
+        f"`{GLOSS_ELLIPSIS}` marks a truncation, always at a word, keyword or",
+        f"whole-clause boundary. Budget: {MAX_GLOSS_CHARS} characters.",
+        "",
+        "**A `NOT for X - use Y` clause is the most useful thing on the line.**",
+        "If your question is X, stop and open Y instead of this package.",
         "",
     ]
     for skill in entries:
-        gloss = first_sentence(skill.get("description", ""))
+        gloss = build_gloss(skill.get("description", ""))
         lines.append(f"- `skills/{domain}/{skill['name']}/SKILL.md` — {gloss}")
     lines.append("")
     return "\n".join(lines) + "\n"
 
 
 def render_subagent(agent: dict) -> str:
+    """One flat subagent loader. Also the single largest always-on line item.
+
+    THE DESCRIPTION IS A BUDGET DECISION. An agent's `name` + `description` is
+    always-on, at 0.25 tok/char, in every session — 48 of these were 3,229 of
+    the plugin's 6,118 tokens (53%). Measured on the previous wording, the 48
+    descriptions shared a 188-character longest-common-suffix: 188 x 48 = 9,024
+    chars = 2,256 tok = 37% of the ENTIRE always-on bill, spent on text that is
+    the same on every line and therefore discriminates between nothing.
+    (The docs previously said 203 chars / 9,744 / 2,436; 188 is the measured
+    figure. It is a suffix, not a byte-identical string, because `{domain}`
+    takes 10 distinct values.)
+
+    So the boilerplate is cut to the shortest form that still states the
+    contract, and part of the saving is spent BACK on discrimination: the slash
+    command is now named. `/refactor-apex` and the agent id `apex-refactorer`
+    are different strings, and the command is what a user actually types, so
+    naming it makes the agent findable by a phrasing the name does not carry.
+    Shortening all 48 into interchangeability would trade a budget win for a
+    routing loss; the title, domain and command are what keep them apart.
+    """
     domain = agent["domain"] or "platform"
+    invocation = f", /{agent['command']}" if agent["command"] else ""
+    # A placeholder title ("Run the SfSkills audit-router run-time agent")
+    # would only restate the agent id and the sentence that follows it, so it
+    # is dropped rather than shipped as filler.
+    lead = "" if _is_untitled(agent["title"]) else f"{agent['title']}. "
     description = (
-        f"{agent['title']}. SfSkills {domain} run-time agent: reads its full "
-        f"AGENT.md playbook, cites every skill consulted, returns a confidence "
-        f"score, and never deploys to an org. Invoke for the whole workflow, "
-        f"not a single lookup."
+        f"{lead}SfSkills {domain} workflow agent{invocation}: "
+        f"reads its AGENT.md playbook, cites its sources, never deploys."
     )
     lines = [
         "---",
@@ -1332,7 +1714,26 @@ FULLY_MANAGED_DIRS = (PLUGIN_MANIFEST_DIR, ROUTER_ROOT, SUBAGENT_ROOT)
 # deliberately non-recursive and restricted to top-level `*.md` — a
 # `rglob("*")` prune over this directory would delete the entire agent
 # library.
+#
+# The glob alone is still too wide: it would make the build own EVERY
+# top-level `agents/*.md`, so a hand-authored `agents/README.md` would be
+# silently unlinked by the next build. Nothing is at risk today (no such file
+# exists) and the docs already describe the narrower ownership the build was
+# supposed to have — so the code is narrowed to match, rather than the doc
+# widened to excuse it. Silently deleting a contributor's file is a far worse
+# failure mode than leaving a stale loader behind, which `--check` reports
+# anyway. A candidate is therefore pruned only if it carries the marker line
+# that render_subagent() stamps into every loader it writes.
 SHARED_MANAGED_GLOBS = ((PLUGIN_AGENT_SCAN_DIR, "*.md"),)
+GENERATED_MARKER = "**Generated by `scripts/build_plugin.py`. Do not hand-edit.**"
+
+
+def _is_build_output(path: Path) -> bool:
+    """True only for a file this script wrote, identified by its own marker."""
+    try:
+        return GENERATED_MARKER in path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
 
 
 def _stale_managed_files(root: Path, keep: set[Path]) -> list[Path]:
@@ -1352,7 +1753,9 @@ def _stale_managed_files(root: Path, keep: set[Path]) -> list[Path]:
             continue
         stale += [
             p for p in sorted(base.glob(pattern))
-            if p.is_file() and p.relative_to(root) not in keep
+            if p.is_file()
+            and p.relative_to(root) not in keep
+            and _is_build_output(p)  # never touch a hand-authored file here
         ]
     return stale
 
@@ -1434,77 +1837,122 @@ def run_check() -> int:
     return 1
 
 
-def _frontmatter_always_on(content: str) -> int:
-    """Token cost of one component's `name` + `description` frontmatter — the
-    only part Claude Code loads up front."""
+def _frontmatter(content: str) -> tuple[str, str]:
+    """A component's `name` and `description` — the only part loaded up front."""
     meta = content.split("---")[1]
     name = (re.search(r"^name: *(.+)$", meta, re.M) or [None, ""])[1].strip()
     desc = (re.search(r"^description: *(.+)$", meta, re.M) or [None, ""])[1].strip()
     # Strip the YAML quoting: the model sees the value, not the delimiters.
     if len(desc) >= 2 and desc[0] == '"' and desc[-1] == '"':
         desc = desc[1:-1].replace('\\"', '"').replace("\\\\", "\\")
-    return tokens(name + desc)
+    return name, desc
 
 
 def measure() -> dict:
-    """Model the always-on cost of an install.
+    """The always-on cost of an install, from the closed form at the top.
 
     Subagents are NOT free. Their `name` + `description` frontmatter loads up
-    front exactly like a skill's — measured on 2.1.209, `claude plugin
-    details` bills each of the 48 loaders ~60-70 always-on tokens and its
-    total rose from ~2,889 to ~6,118 when they started shipping. So the agent
-    loaders are counted in `tier1_tokens` here; leaving them out would make
-    this gate cheerfully report half the real bill.
+    front exactly like a skill's — the total rose from ~2,889 to ~6,118 when
+    the 48 loaders started shipping. So they are counted in `tier1_tokens`;
+    leaving them out would make this gate cheerfully report half the bill.
+
+    Three billing details, each established by a probe rather than assumed:
+    skills and commands are billed under their `<plugin>:<name>` qualified
+    name while agents are billed bare; a command's description is its FULL H1,
+    not the `/slug — ` stripped subtitle; and that H1 is hard-truncated at 100
+    characters. `tier1_tokens` is the model's exact prediction of what
+    `claude plugin details` will print — the gate runs against
+    `tier1_tokens_padded`, which adds the single SAFETY_MARGIN_RATIO.
     """
     registry = load_registry()
     commands = command_index()
     out = build_outputs()
 
-    router_tokens = 0
+    router_tokens = 0.0
     router_skills = 0
     for rel, content in sorted(out.items()):
         if rel.parent.parent != ROUTER_ROOT or rel.name != "SKILL.md":
             continue
-        router_tokens += _frontmatter_always_on(content)
+        name, desc = _frontmatter(content)
+        router_tokens += always_on_tokens(qualified_skill_name(name), desc)
         router_skills += 1
 
+    # Agents are NOT namespaced — probes B1/B2 at the top of this file: the
+    # same 10 agents billed 258 tok under an 8-char and a 12-char plugin name.
     agent_ids = shipped_agents_in_build(out)
-    agent_tokens = sum(
-        _frontmatter_always_on(out[PLUGIN_AGENT_SCAN_DIR / f"{agent_id}.md"])
-        for agent_id in agent_ids
+    agent_tokens = 0.0
+    for agent_id in agent_ids:
+        name, desc = _frontmatter(out[PLUGIN_AGENT_SCAN_DIR / f"{agent_id}.md"])
+        agent_tokens += always_on_tokens(name, desc)
+
+    # The WHOLE H1, truncated at 100 — probes C1-C4. Charging the stripped
+    # subtitle (as this did until 2026-08-07) under-reads by ~1.5 tok/command.
+    command_tokens = sum(
+        always_on_tokens(qualified_skill_name(stem), heading[:COMMAND_DESCRIPTION_CHARS])
+        for stem, heading in commands
     )
-
-    command_tokens = sum(tokens(stem + heading) for stem, heading in commands)
     tier1 = router_tokens + command_tokens + agent_tokens
+    tier1_rounded = round(tier1)
+    padded = math.ceil(tier1 * (1 + SAFETY_MARGIN_RATIO))
 
-    flat_chars = sum(len(s["name"]) + len(s["description"]) for s in registry["skills"])
-    flat_tokens = tokens_from_chars(flat_chars)
-    ratio = round(tier1 / flat_tokens, 4) if flat_tokens else 0.0
+    # Apples to apples: a flat export would be billed under the same model,
+    # every package namespaced, so compare it that way rather than by chars/4.
+    flat_tokens = round(sum(
+        always_on_tokens(qualified_skill_name(s["name"]), s["description"])
+        for s in registry["skills"]
+    ))
+    ratio = round(padded / flat_tokens, 4) if flat_tokens else 0.0
 
     return {
+        "model": "0.25 * (len(qualified_name) + len(description)) + 0.25 per "
+                 "component; skills and commands qualified as "
+                 f"'{PLUGIN_NAME}:<name>', agents bare; a command's description "
+                 f"is its full H1 truncated at {COMMAND_DESCRIPTION_CHARS} chars",
         "router_skills": router_skills,
-        "router_tokens": router_tokens,
+        "router_tokens": round(router_tokens, 1),
         "commands": len(commands),
-        "command_tokens": command_tokens,
+        "command_tokens": round(command_tokens, 1),
         "agents": len(agent_ids),
-        "agent_tokens": agent_tokens,
-        "tier1_tokens": tier1,
+        "agent_tokens": round(agent_tokens, 1),
+        "tier1_tokens": tier1_rounded,
+        "tier1_tokens_exact": round(tier1, 1),
+        "safety_margin_ratio": SAFETY_MARGIN_RATIO,
+        "tier1_tokens_padded": padded,
         "flat_export_skills": registry["skill_count"],
         "flat_export_tokens": flat_tokens,
         "ratio": ratio,
         "budget_tier1_tokens": BUDGET_TIER1_TOKENS,
-        "within_budget": tier1 <= BUDGET_TIER1_TOKENS and ratio <= BUDGET_TIER1_RATIO,
+        "over_budget_by_tokens": max(0, padded - BUDGET_TIER1_TOKENS),
+        "within_budget": padded <= BUDGET_TIER1_TOKENS and ratio <= BUDGET_TIER1_RATIO,
+        "measured_reference": MEASURED_REFERENCE,
     }
-
-
-def tokens_from_chars(chars: int) -> int:
-    return math.ceil(chars / CHARS_PER_TOKEN)
 
 
 def run_measure() -> int:
     result = measure()
     print(json.dumps(result, indent=2))
-    return 0 if result["within_budget"] else 1
+    if result["within_budget"]:
+        return 0
+    print(
+        f"\nOVER BUDGET by {result['over_budget_by_tokens']} tok "
+        f"({result['tier1_tokens_padded']} padded, {result['tier1_tokens']} "
+        f"predicted, vs {result['budget_tier1_tokens']}).\n"
+        f"This is not a modelling artifact. The model is the closed form at "
+        f"the top of scripts/build_plugin.py, validated against a full-replica "
+        f"install on Claude Code {result['measured_reference']['claude_code_version']} "
+        f"to within a tenth of a token — verify it yourself with the probe "
+        f"procedure in docs/installing-the-plugin.md.\n"
+        f"Fix the COST, not the ceiling. Largest line items: agent loaders "
+        f"{result['agent_tokens']} tok, commands {result['command_tokens']} "
+        f"tok, routers {result['router_tokens']} tok. Look first for text that "
+        f"is REPEATED across components — identical text carries no routing "
+        f"signal and is pure always-on cost.\n"
+        f"Raising BUDGET_TIER1_TOKENS is not a fix; the budget is the only "
+        f"thing standing between this plugin and the flat export it exists "
+        f"to avoid.",
+        file=sys.stderr,
+    )
+    return 1
 
 
 def audit_install() -> dict:

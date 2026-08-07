@@ -1,11 +1,11 @@
 ---
 name: salesforce-admin
-description: "Router for the 253 SfSkills `admin` skill packages. Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, and the requirements work that precedes them. Use when the request mentions custom object, custom field, picklist, record type, page layout, permission set, profile, validation rule, report, dashboard, queue, approval process, user setup. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 253 SfSkills `admin` skill packages. Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them. Use when the request mentions custom object, custom field, picklist, record type, page layout, permission set, profile, validation rule, report, dashboard, queue, approval process, user setup, sharing rule, org-wide default, OWD, role hierarchy, record access, record visibility, who can see this record, duplicate rule, matching rule, duplicate prevention. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce admin — SfSkills domain router
 
-Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, and the requirements work that precedes them.
+Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 
 **253 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/admin/<slug>/SKILL.md`. They are not
@@ -89,8 +89,8 @@ Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
 - `assignment-and-auto-response-rules-designer` — Design or audit Assignment + Auto-Response rules
-- `audit-router` — router
-- `automation-migration-router` — router
+- `audit-router` — Run the SfSkills audit-router run-time agent
+- `automation-migration-router` — Run the SfSkills automation-migration-router run-time agent
 - `business-hours-and-holidays-configurator` — Design or audit Business Hours + Holidays
 - `config-workbook-author` — Compile the canonical 10-section Salesforce Configuration Workbook
 - `csv-to-object-mapper` — Map a CSV to an sObject for a data load

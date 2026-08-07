@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-admin-designer
-description: "Design or audit an Experience Cloud site admin setup. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit an Experience Cloud site admin setup. SfSkills admin workflow agent, /design-experience-cloud: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # experience-cloud-admin-designer

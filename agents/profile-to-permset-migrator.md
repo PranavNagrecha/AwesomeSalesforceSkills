@@ -1,6 +1,6 @@
 ---
 name: profile-to-permset-migrator
-description: "Decompose a Profile into Permission Sets + PSGs. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Decompose a Profile into Permission Sets + PSGs. SfSkills admin workflow agent, /migrate-profile-to-permset: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # profile-to-permset-migrator

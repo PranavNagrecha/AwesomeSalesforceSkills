@@ -1,6 +1,6 @@
 ---
 name: assignment-and-auto-response-rules-designer
-description: "Design or audit Assignment + Auto-Response rules. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Assignment + Auto-Response rules. SfSkills admin workflow agent, /design-assignment-rules: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # assignment-and-auto-response-rules-designer

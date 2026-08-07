@@ -1,6 +1,6 @@
 ---
 name: business-hours-and-holidays-configurator
-description: "Design or audit Business Hours + Holidays. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Business Hours + Holidays. SfSkills admin workflow agent, /configure-business-hours: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # business-hours-and-holidays-configurator

@@ -1,6 +1,6 @@
 ---
 name: lead-routing-rules-designer
-description: "Design or audit lead routing. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit lead routing. SfSkills admin workflow agent, /design-lead-routing: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # lead-routing-rules-designer

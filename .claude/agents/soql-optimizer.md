@@ -1,6 +1,6 @@
 ---
 name: soql-optimizer
-description: "Find and fix SOQL anti-patterns. SfSkills apex run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Find and fix SOQL anti-patterns. SfSkills apex workflow agent, /optimize-soql: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # soql-optimizer

@@ -81,17 +81,17 @@ it is a map, not the territory.
 Hand off to the router for the domain the request lands in. Each one
 carries that domain's featured skills, decision trees and templates.
 
-- **`salesforce-admin`** (253 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, and the requirements work that precedes them.
+- **`salesforce-admin`** (253 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 - **`salesforce-agentforce`** (53 skills) — Agentforce and Einstein: agents, topics, actions, prompt templates, grounding, guardrails, evaluation and production readiness.
-- **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, governor limits, async processing, callouts, security enforcement, and the test patterns that keep them deployable.
+- **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction.
 - **`salesforce-architect`** (104 skills) — Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
-- **`salesforce-data`** (101 skills) — Data model, data movement and data quality: migrations, bulk loads, query optimisation, deduplication, archival and storage.
+- **`salesforce-data`** (101 skills) — Data model, data movement and data quality: migrations, bulk data loads and extracts, query optimisation, cleaning up duplicates that already exist, archival and storage. For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead.
 - **`salesforce-devops`** (70 skills) — Salesforce delivery: source tracking, packaging, branching, CI/CD pipelines, environment strategy and deployment troubleshooting.
-- **`salesforce-flow`** (63 skills) — Flow Builder: record-triggered, screen, scheduled and orchestration flows, plus bulkification, fault handling, testing and versioning.
-- **`salesforce-integration`** (61 skills) — Inbound and outbound integration: REST and SOAP APIs, Bulk API 2.0, Platform Events, CDC, Pub/Sub, Named Credentials and middleware.
+- **`salesforce-flow`** (63 skills) — Flow Builder: record-triggered, screen, scheduled and orchestration flows, plus bulkification, fault handling, Flow-side limits, testing and versioning. Anything phrased as "my flow" belongs here even when the symptom is a limit that salesforce-apex also names.
+- **`salesforce-integration`** (61 skills) — INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead.
 - **`salesforce-lwc`** (82 skills) — Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
 - **`salesforce-omnistudio`** (34 skills) — OmniStudio: OmniScripts, FlexCards, DataRaptors, Integration Procedures, Business Rules Engine and DataPack deployment.
-- **`salesforce-security`** (48 skills) — Platform security and compliance: org hardening, sharing troubleshooting, encryption, session policy, MFA, monitoring and incident response.
+- **`salesforce-security`** (48 skills) — Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin.
 
 ## Decision trees — read before choosing a technology
 

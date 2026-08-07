@@ -1,6 +1,6 @@
 ---
 name: omni-channel-routing-designer
-description: "Design or audit Omni-Channel routing. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit Omni-Channel routing. SfSkills admin workflow agent, /design-omni-channel: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # omni-channel-routing-designer

@@ -1,6 +1,6 @@
 ---
 name: omnistudio-designer
-description: "Design or audit an OmniStudio capability. SfSkills omnistudio run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit an OmniStudio capability. SfSkills omnistudio workflow agent, /design-omnistudio: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # omnistudio-designer

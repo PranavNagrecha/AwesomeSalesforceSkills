@@ -1,6 +1,6 @@
 ---
 name: waf-assessor
-description: "Well-Architected Framework assessment. SfSkills architect run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Well-Architected Framework assessment. SfSkills architect workflow agent, /assess-waf: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # waf-assessor

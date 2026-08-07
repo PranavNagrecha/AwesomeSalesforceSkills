@@ -1,6 +1,6 @@
 ---
 name: data-model-reviewer
-description: "Review a data-model domain. SfSkills data run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Review a data-model domain. SfSkills data workflow agent, /review-data-model: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # data-model-reviewer

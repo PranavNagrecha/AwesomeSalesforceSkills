@@ -78,44 +78,107 @@ it, the correct pattern, and a detection hint.
 
 ## Install
 
+Full setup reference, with captured transcripts and every flag:
+[`docs/installing.md`](./docs/installing.md).
+
+### 1. Clone it and start asking — no build step
+
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
 cd AwesomeSalesforceSkills
-python3 -m pip install -r requirements.txt
-python3 scripts/build_index.py                          # one-time — see note below
-python3 scripts/search_knowledge.py "trigger recursion"
 ```
 
-That last command should print:
+Open that directory in Claude Code and ask a Salesforce question. That is the
+whole setup for the main path.
 
-```text
-Top skills:
-- apex/recursive-trigger-prevention (2.505)
-```
+A clone carries everything the AI needs to find a skill: `CLAUDE.md`, the **12
+router skills** under `.claude/skills/`, and the **48 run-time agent loaders**
+under `.claude/agents/`. Selection is model-driven, not search-driven — Claude
+reads the router descriptions, opens that router's `references/skill-index.md`
+(a flat roster of one-line glosses covering all 1,027 packages), and opens the
+package it picks. No index is consulted.
 
-**The index build is not optional.** The retrieval artefacts
-(`vector_index/lexical.sqlite`, `chunks.jsonl`, `embeddings.jsonl`) total
-roughly 800 MB and are gitignored, so a fresh clone ships without them and has
-to build once. Budget 15+ minutes — the embedding encode dominates. Embeddings
-are optional (`config/retrieval-config.yaml` → `embeddings.enabled`); set it to
-`false` for a lexical-only index that builds far faster. Skip the build
-entirely and `search_knowledge.py` reports `Coverage: NONE` for every query
-instead of erroring, which looks like an empty library rather than a missing
-index.
+Two things are *not* in a clone, because both are generated:
+`.claude/commands/` (the 66 slash commands) and the retrieval index under
+`vector_index/`. Step 2 builds both.
 
-Claude Code picks the repo up automatically via `CLAUDE.md`. For Cursor,
-Windsurf, Aider, Augment, or Codex CLI, run
+**As a Claude Code plugin** — namespaced skills plus the slash commands,
+without adding this repo to your project:
+[`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md). Read its
+prerequisite note first; the marketplace manifests under `.claude-plugin/` are
+not on the default branch yet, so the GitHub install path is blocked until they
+land (`git ls-tree origin/main .claude-plugin/` returns nothing today).
+
+**For Cursor, Windsurf, Aider, Augment, or Codex CLI** — run
 `python3 scripts/export_skills.py --target cursor` and copy the generated
 `exports/cursor/.cursor/` directory into your project root (the export writes
 one subdirectory per target, so copying `exports/` wholesale puts the rules in
 the wrong place).
 
-To let the AI read your real org as well:
+### 2. Optional — build the local index, for CLI and MCP search
+
+```bash
+python3 -m pip install -r requirements.txt
+python3 scripts/bootstrap.py
+python3 scripts/search_knowledge.py "trigger recursion"
+```
+
+The only entry under `Top skills:` should be
+`apex/recursive-trigger-prevention`. The number beside it is a ranking output
+that moves whenever the ranker is retuned — assert the skill id, never the
+score.
+
+This builds the FTS5 index behind the *keyword-search* way of finding a skill —
+`search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents
+that maintain the library. Skip it and `search_knowledge.py` reports `Coverage: NONE` for every
+query and still exits 0, which looks like an empty library rather than a missing
+index. Skipping it does **not** stop Claude from reaching a skill package
+through the routers above.
+
+Bootstrap also installs the 66 slash commands into `.claude/commands/`; restart
+Claude Code afterwards, since it loads commands at session start.
+
+Cost, per the captured first-run transcript in
+[`docs/installing.md` §1](./docs/installing.md#1-one-command): about **9 s** on
+a `git clone --depth 1` (macOS, Apple silicon), writing roughly **290 MB** into
+the gitignored `vector_index/` — 126 MB of `chunks.jsonl` and 166 MB of
+`lexical.sqlite`. Those are one machine's numbers, not a guarantee. Lexical-only
+is the default because `fastembed` is commented out of `requirements.txt`.
+Semantic embeddings are opt-in behind `--with-embeddings`, cost **+535 MB and
+hours** of encode time, and bought 0.0pp on the curated fixtures — see
+[`docs/installing.md` §4](./docs/installing.md#4-embeddings-are-opt-in) before
+enabling them.
+
+> **Use `scripts/bootstrap.py`, not `scripts/build_index.py`.**
+> `build_index.py` reaches the same retrieval outcome through
+> `pipelines.sync_engine.write_state`, which rewrites every registry record. On
+> a fresh clone with no embedding backend installed it nulls `vector_embedding`
+> across all 1,027 records, leaving **1,029 modified tracked files** you then
+> have to recognise as noise and discard (`scripts/bootstrap.py:33-36`).
+> Bootstrap never calls `write_state`, so `git status` is clean when it
+> finishes.
+
+### 3. Optional — let the AI read your real org
 
 ```bash
 python3 -m pip install -e mcp/sfskills-mcp   # published as sfskills-mcp on PyPI
 sf org login web --alias my-dev              # auth stays in the sf CLI
 ```
+
+### What to expect
+
+All **1,027 of 1,027** skill packages are structurally complete — `SKILL.md`
+plus all four `references/` files, verified 2026-08-07 by walking `skills/*/*/`.
+
+Routing is a different question, and it is honest to say it is imperfect. Which
+package Claude opens is a model decision made from router descriptions and
+one-line glosses, so it is probabilistic and it does miss: a 12-question
+fresh-clone walkthrough on 2026-08-07 landed on the right package for 9,
+half-right for 1, and wrong for 2 — both misses traced to a gloss or a router
+keyword list, not to missing content. Twelve questions is a sample, not a hit
+rate. If Claude opens the wrong package, name the domain ("this is a sharing
+question") or run `python3 scripts/search_knowledge.py "<your question>"` after
+step 2.
 
 ---
 
@@ -203,6 +266,8 @@ Tool schemas and design notes: [`mcp/sfskills-mcp/README.md`](./mcp/sfskills-mcp
 
 ## More
 
+- [`docs/installing.md`](./docs/installing.md) — canonical setup reference: the one bootstrap command, every flag, what a fresh clone does and does not contain, embeddings cost, MCP install paths
+- [`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md) — install the library as a Claude Code plugin
 - [`docs/README.md`](./docs/README.md) — documentation hub: getting started, architecture, FAQ, troubleshooting
 - [`docs/positioning.md`](./docs/positioning.md) — what this project claims, and what it refuses to claim
 - [`docs/comparison.md`](./docs/comparison.md) — how it compares to the alternatives, including where it loses

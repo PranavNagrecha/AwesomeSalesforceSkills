@@ -1,6 +1,6 @@
 ---
 name: csv-to-object-mapper
-description: "Map a CSV to an sObject for a data load. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Map a CSV to an sObject for a data load. SfSkills admin workflow agent, /map-csv-to-object: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # csv-to-object-mapper

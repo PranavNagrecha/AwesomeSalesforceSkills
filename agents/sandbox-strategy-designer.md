@@ -1,6 +1,6 @@
 ---
 name: sandbox-strategy-designer
-description: "Design or audit sandbox + scratch-org strategy. SfSkills devops run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit sandbox + scratch-org strategy. SfSkills devops workflow agent, /design-sandbox-strategy: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # sandbox-strategy-designer

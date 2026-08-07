@@ -2,10 +2,28 @@
 
 Canonical setup reference for a fresh clone.
 
-`git clone` alone is **not** enough. Two artefacts the library cannot work
-without are deliberately not committed, and one command builds them.
+**What works with no setup at all.** A clone carries `CLAUDE.md`, the 12 router
+skills under `.claude/skills/` and the 48 run-time agent loaders under
+`.claude/agents/`. Open the directory in Claude Code and ask a Salesforce
+question: the model reads a router, opens that router's
+`references/skill-index.md` roster covering all 1,027 packages, and opens the
+one it picks. No index is involved in that path, which is why every router says
+the shipped rosters work with no setup.
 
-- New user, want it working: [1. One command](#1-one-command).
+**What bootstrap adds.** Three generated artefacts are deliberately not
+committed, and one command builds them:
+
+| Not committed | Unlocks |
+|---|---|
+| `vector_index/chunks.jsonl` | `scripts/search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents that maintain the library |
+| `vector_index/lexical.sqlite` | same — this is the FTS5 index search reads |
+| `.claude/commands/` | the 66 slash commands inside Claude Code |
+
+So bootstrap is required for the *search* and *slash-command* surfaces, not for
+the library to be reachable. Skipping it degrades library maintenance work and
+the CLI; it does not stop Claude from finding and reading a skill package.
+
+- New user, want search and slash commands: [1. One command](#1-one-command).
 - Wiring an AI client to the MCP server: [5. MCP install paths](#5-mcp-install-paths).
 - Repository owner cutting a release: [6. Cutting a GitHub release](#6-cutting-a-github-release-maintainer-only).
 
@@ -141,11 +159,22 @@ of which **29 MB** is `.git`.
 
 `vector_index/` ships only `manifest.json` (the integrity hashes),
 `query-fixtures.json` and `query-variants.json` (the retrieval test fixtures).
+Note that the committed `manifest.json` describes artefacts that are *not* in
+the clone — it reports a chunk count and an embedding count for an index you
+have not built yet. It is an integrity baseline for bootstrap phase 3, not a
+statement about your working tree.
+
 Under `.claude/`, three subtrees are tracked so a clone is plugin-usable:
-`.claude/agents/` (48 files), `.claude/skills/` (23) and `.claude/workflows/`
-(1). Everything else under `.claude/` is local session state.
+`.claude/agents/` (48 run-time agent loaders), `.claude/skills/` (23 files —
+12 router `SKILL.md` plus 11 `references/skill-index.md` rosters; the top-level
+`salesforce` router has no roster because it hands off to the domain routers)
+and `.claude/workflows/` (1). Everything else under `.claude/` is local session
+state.
 
 ### The failure mode if you skip bootstrap
+
+This is confined to the search surface. The router path in the header above
+still works without an index; `search_knowledge.py` does not.
 
 `search_knowledge.py` does not detect a missing index. It reports no coverage
 and **exits 0**, which is indistinguishable from a library that has nothing on

@@ -1,6 +1,6 @@
 ---
 name: deployment-risk-scorer
-description: "Risk-score a change set before deploy. SfSkills devops run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Risk-score a change set before deploy. SfSkills devops workflow agent, /score-deployment: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # deployment-risk-scorer

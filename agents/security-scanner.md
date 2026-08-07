@@ -1,6 +1,6 @@
 ---
 name: security-scanner
-description: "Security audit for Apex, callouts, and sharing. SfSkills apex run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Security audit for Apex, callouts, and sharing. SfSkills apex workflow agent, /scan-security: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # security-scanner

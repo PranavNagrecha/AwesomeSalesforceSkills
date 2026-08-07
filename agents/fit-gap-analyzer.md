@@ -1,6 +1,6 @@
 ---
 name: fit-gap-analyzer
-description: "Fit-gap a backlog against a target Salesforce org. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Fit-gap a backlog against a target Salesforce org. SfSkills admin workflow agent, /run-fit-gap: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # fit-gap-analyzer

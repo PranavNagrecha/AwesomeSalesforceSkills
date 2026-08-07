@@ -1,6 +1,6 @@
 ---
 name: changeset-builder
-description: "Build or validate a deployment Change Set manifest. SfSkills devops run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Build or validate a deployment Change Set manifest. SfSkills devops workflow agent, /build-changeset: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # changeset-builder

@@ -1,11 +1,11 @@
 ---
 name: salesforce-integration
-description: "Router for the 61 SfSkills `integration` skill packages. Inbound and outbound integration: REST and SOAP APIs, Bulk API 2.0, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. Use when the request mentions integration, REST API, SOAP API, Bulk API, Platform Event, Change Data Capture, Pub/Sub, webhook, Named Credential, OAuth, MuleSoft, Salesforce Connect. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 61 SfSkills `integration` skill packages. INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead. Use when the request mentions integration, Salesforce REST API, composite API, SOAP API, Bulk API 2.0 job, Platform Event, Change Data Capture, Pub/Sub, inbound webhook, Named Credential, OAuth, connected app, MuleSoft, Salesforce Connect, external system calling Salesforce. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce integration — SfSkills domain router
 
-Inbound and outbound integration: REST and SOAP APIs, Bulk API 2.0, Platform Events, CDC, Pub/Sub, Named Credentials and middleware.
+INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead.
 
 **61 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/integration/<slug>/SKILL.md`. They are not

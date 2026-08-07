@@ -1,6 +1,6 @@
 ---
 name: path-designer
-description: "Design or audit a Sales/Service Path. SfSkills admin run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Design or audit a Sales/Service Path. SfSkills admin workflow agent, /design-path: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # path-designer

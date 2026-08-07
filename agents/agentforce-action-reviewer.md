@@ -1,6 +1,6 @@
 ---
 name: agentforce-action-reviewer
-description: "Review Agentforce agent/action quality. SfSkills agentforce run-time agent: reads its full AGENT.md playbook, cites every skill consulted, returns a confidence score, and never deploys to an org. Invoke for the whole workflow, not a single lookup."
+description: "Review Agentforce agent/action quality. SfSkills agentforce workflow agent, /review-agentforce-action: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # agentforce-action-reviewer
