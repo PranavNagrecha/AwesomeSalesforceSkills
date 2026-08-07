@@ -296,3 +296,106 @@ it is on a branch and deliberately not in `main`.
 Re-run any workflow with:
 `Workflow({scriptPath: ".overhaul-2026-08/workflows/<name>.js"})` — update the REPO/SCRATCH
 constants at the top first, since they point at the old session's scratchpad.
+
+---
+
+# UPDATE 2026-08-01 (later) — TWO MORE WAVES LANDED. CORRECTIONS BELOW.
+
+Branch now has **7 commits**. New: `6b7dfca45` (security fabrications),
+`645243346` (decision trees + order-of-execution + tooling tests).
+
+## ⚠️ THREE CLAIMS IN THIS DOCUMENT WERE WRONG — CORRECTED
+
+Verified by the tooling-tests wave against HEAD:
+
+1. **"233 of 248 MCP tests never run in CI" — FALSE at HEAD.** Commit `282fd82ef`
+   already added an `mcp-tests` job using `unittest discover`. The three
+   hand-named module invocations still exist alongside it (duplicate execution,
+   not absence). Do not "fix" this again.
+2. **"ranking sorted on max_score while the gate compared the cumulative sum"
+   — FIXED at HEAD.** Both callers now gate on an OR over max_score and score.
+   It was a real historical bug; it is not a live one.
+3. **"aggregate_skill_scores positional back-compat at risk" — NEVER AT RISK.**
+   The signature is `(rows, limit, *, skill_meta=None, query=None, ...)` — every
+   added parameter is keyword-only with a default.
+
+## 🐞 TWO REAL BUGS FOUND, REPORTED, **NOT FIXED** (file was out of scope)
+
+`pipelines/lexical_index.py:9` — `_FTS5_SPECIAL` strips `'".,$@#!?()[]{}|\^~*:-`
+but NOT `%+&=<>;`:
+- **(a) Crash:** a query containing any of those raises an uncaught
+  `sqlite3.OperationalError: fts5: syntax error`. Seven crashing inputs were
+  reproduced.
+- **(b) Silent wrong results (worse):** `+` survives tokenization, so
+  `trigger+recursion` becomes the FTS5 expression `trigger+recursion*`, which is
+  **phrase concatenation (adjacency)**, not the documented OR. No error, wrong
+  answers.
+**The fix is one line** — add `%+&=<>;` to `_FTS5_SPECIAL` — and it was verified
+in a scratch copy to resolve all seven crashes and restore OR semantics.
+**Do this first next session; it is cheap and it is a live user-facing defect.**
+
+## WHAT THE TWO WAVES ACTUALLY FIXED
+
+**Security (`6b7dfca45`, 29 files)** — all four confirmed against official docs:
+Shield vs Classic encryption (the skill implied a permission gate that does not
+exist for Shield); `hmacSHA384` (Apex supports only MD5/SHA1/SHA256/SHA512, and
+HMAC-SHA-384 cannot even be hand-built since no SHA-384 digest exists); the guest
+access model (inverted in ~5 places; also corrected the release attribution to
+Winter '21, not Spring '21); and a fabricated Trust Layer endpoint (real
+mechanism is Data Cloud DMOs via Query Editor).
+**Plus an executable fabrication nobody had flagged:**
+`check_encrypted_field_query_patterns.py` raised an ISSUE on any plan that did
+NOT mention "View Encrypted Data" — it *penalised correct FLS-based plans and
+rewarded the dangerous one*. Now inverted.
+
+**Decision trees + order of execution (`645243346`, 37 files):**
+- The dominant tree defect was **UNREACHABLE QUESTIONS**, not wrong facts — and
+  only 1 of 4 instances was in the brief. `flow-pattern-selector` had **4 of 9
+  questions dead**, including the whole scheduled-path timing decision.
+- `sharing-selection` offered Restriction Rules for Account/Opportunity/Case/Lead
+  — objects where they do not exist.
+- `async-selection` understated Batch Apex callouts by **100x** ("1 per batch
+  scope"; start/execute/finish may each make 100), and quoted the **Developer
+  Edition** Platform Event allocation (50k/hr) as the default — production is
+  250k/hr, and *delivery* (25k/24h EE) is the binding constraint.
+- The before-save "10x" multiplier had a **relabelled baseline**: Salesforce
+  compares against a record-change process (Workflow Rule / Process Builder),
+  not against an after-save flow.
+- The "2,000 per interview" limit was **relabelling, not invention** — the real
+  2,000 was executed ELEMENTS, removed in API 57.0 (Spring '23).
+- **Workflow Rules / Process Builder are NOT retired** — end of support
+  31 Dec 2025; existing automation still runs and can still be edited.
+- Order of execution: the false claim sat in the **"Correct pattern" block** of
+  an anti-pattern file. Also corrected a causally-impossible mechanism (a
+  before-save Flow undoing a before-trigger's `addError()`), roll-ups described
+  as recalculating "after commit" (they are step 16, before the step-19 commit),
+  and a sequence that put validation rules before before-triggers (5 vs 4).
+- **Six claims that were already correct were verified and left alone.**
+
+**Tooling tests:** first suite for ~16.9k untested lines — 5 modules, 2,396
+lines. **Proven meaningful by mutation testing**: QA applied 63 of its own
+single-line mutations and every one was caught.
+
+## OPEN FOLLOW-UPS FROM THESE WAVES (all three returned REQUEST_CHANGES)
+
+- **Owner decision needed:** `skills/apex/order-of-execution-deep-dive/SKILL.md:3`
+  description says "all 18 steps"; it is 20. The house rule forbids editing
+  `description` frontmatter (retrieval keys off it). Either grant a one-token
+  exception or accept the staleness.
+- Several off-by-one prose counts ("eleven steps later" → thirteen; "six steps
+  between 8 and 14" → five).
+- 13 out-of-scope stale references reported with file:line — 8 stale "step 13"
+  roll-up refs in `skills/apex/cross-object-formula-and-rollup-performance/`,
+  4 indeterminacy claims in `skills/admin/workflow-field-update-patterns/`.
+- Tree follow-ups: an unreachable-path claim in the new `async-selection` divider
+  and an `automation-selection` NOTE that promises a route no path delivers.
+- A brittle test asserting on literal source formatting
+  (`tests/test_ranking.py:189-194`) should assert behaviour instead.
+- **Recommended new gate:** `scripts/check_decision_trees.py` — ERROR on an
+  unresolvable skill reference and on an unreachable question. A tree can break
+  without the tree file changing, so it must run on every pass, not
+  `--changed-only`.
+
+## HOUSEKEEPING
+`git worktree list` shows 10 prunable agent worktrees plus a detached one,
+consuming disk on a 16 GB machine. `git worktree prune` clears them.
