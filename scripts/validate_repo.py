@@ -57,6 +57,8 @@ from pipelines.agent_validators import validate_agents
 from pipelines.frontmatter import parse_markdown_with_frontmatter
 from scripts.search_knowledge import build_search_context, run_search
 from scripts.check_doc_counts import collect_doc_count_issues
+from scripts.check_decision_trees import collect_decision_tree_issues
+from scripts.check_agent_citation_parity import collect_citation_parity_issues
 # Single source of truth for "this description restates the slug". Imported,
 # never reimplemented: the writer (patch_agent_skill.py) rejects echo stubs at
 # creation time and this gate rejects them at review time, and the two must not
@@ -754,6 +756,28 @@ def main() -> int:
     # run_agent_validation(): the defect it guards is what the skill-side
     # orphan gate stopped ERRORing on, so a --skills-only run must still see it.
     issues.extend(_check_agent_citation_quality())
+
+    # Repo-level decision-tree gate. Runs on EVERY invocation, never under
+    # --changed-only gating, because a tree breaks without the tree file
+    # changing: `standards/decision-trees/README.md` tells run-time agents to
+    # consult a tree BEFORE activating any skill, so renaming or deleting a
+    # skill silently turns a live branch into a citation the agent cannot
+    # resolve. Seven small files; the cost is nil.
+    issues.extend(
+        ValidationIssue(level, path, message)
+        for level, path, message in collect_decision_tree_issues(ROOT)
+    )
+
+    # Repo-level AGENT_CONTRACT rule 5 gate: dependencies.skills: and the prose
+    # must agree. Runs on every invocation for the same reason as the two above
+    # — it is cheap and order-independent — and it closes the one asymmetry the
+    # rest of the citation gates cannot see: the coverage check reads the YAML
+    # block ONLY, so a skill listed there and never written into the body is
+    # counted as cited while being invisible to review and unread by the agent.
+    issues.extend(
+        ValidationIssue(level, path, message)
+        for level, path, message in collect_citation_parity_issues(ROOT)
+    )
 
     for issue in issues:
         print_issue(issue)

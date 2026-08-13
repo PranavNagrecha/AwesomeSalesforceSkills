@@ -161,6 +161,7 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 46. `templates/lwc/component-skeleton/`
 47. `templates/lwc/patterns/`
 48. `skills/lwc/lwc-local-development` — reproduce the reported failure locally before touching the org, so the diagnosis is testable rather than inferred
+49. `skills/lwc/lwc-testing` — shape the repro as a failing Jest test, so the proposed diff has a pass/fail check attached instead of resting on the diagnosis being right
 
 ---
 
@@ -297,6 +298,7 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 
 - Does not modify bundle files. Proposes diffs.
 - Does not run the bundle, deploy, or run Jest. Probes are user-executed.
+- Does not convert its output beyond `markdown` or `json` — if a consumer asks for another format, refer them to `skills/admin/agent-output-formats` for conversion paths.
 - Does not replace `lwc-auditor` for a full bundle audit.
 - Does not replace `lwc-builder` for net-new authoring.
 - Does not auto-chain to other agents.

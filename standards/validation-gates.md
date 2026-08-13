@@ -5,7 +5,7 @@ by `scripts/generate_validation_index.py`. **Do not hand-edit.** The
 drift check in `scripts/validate_repo.py` catches stale copies.
 
 
-- total gates: **72**  ·  errors: **57**  ·  warnings: **14**  ·  other: **1**
+- total gates: **74**  ·  errors: **57**  ·  warnings: **14**  ·  other: **3**
 
 Each gate links to its source line. The intent line is the first line of
 the enclosing function's docstring — read it for *why* the gate exists,
@@ -83,17 +83,19 @@ not just what it checks.
 
 | Line | Level | Function | Intent | Message |
 |---|---|---|---|---|
-| [101](scripts/validate_repo.py#L101) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
-| [111](scripts/validate_repo.py#L111) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
-| [135](scripts/validate_repo.py#L135) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
-| [310](scripts/validate_repo.py#L310) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
-| [319](scripts/validate_repo.py#L319) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
-| [361](scripts/validate_repo.py#L361) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
-| [381](scripts/validate_repo.py#L381) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
-| [392](scripts/validate_repo.py#L392) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
-| [472](scripts/validate_repo.py#L472) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill no run-time agent cites (advisory). | skill `{…}` is cited by no run-time agent (advisory). Wire it only if some agent's output would be wrong without it — a citation an agent w… |
-| [600](scripts/validate_repo.py#L600) | **ERROR** | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | Mandatory Reads entry for `skills/{…}` is an echo stub — its description ({…}) restates the slug and tells the agent nothing the path did n… |
-| [623](scripts/validate_repo.py#L623) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) carry no justification at all: {…}. A bare path tells the agent what to open but not why, so it cannot decide… |
-| [632](scripts/validate_repo.py#L632) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) restate the slug behind a bucketing label: {…}. Stripping the label leaves a description identical to the ski… |
-| [641](scripts/validate_repo.py#L641) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} numbered skill reads in this AGENT.md, over the advisory ceiling of {…}. Past that, the list stops being a reading list and becomes a c… |
-| [746](scripts/validate_repo.py#L746) | ? | `main` | — | — |
+| [103](scripts/validate_repo.py#L103) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
+| [113](scripts/validate_repo.py#L113) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
+| [137](scripts/validate_repo.py#L137) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
+| [312](scripts/validate_repo.py#L312) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
+| [321](scripts/validate_repo.py#L321) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
+| [363](scripts/validate_repo.py#L363) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
+| [383](scripts/validate_repo.py#L383) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
+| [394](scripts/validate_repo.py#L394) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
+| [474](scripts/validate_repo.py#L474) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill no run-time agent cites (advisory). | skill `{…}` is cited by no run-time agent (advisory). Wire it only if some agent's output would be wrong without it — a citation an agent w… |
+| [602](scripts/validate_repo.py#L602) | **ERROR** | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | Mandatory Reads entry for `skills/{…}` is an echo stub — its description ({…}) restates the slug and tells the agent nothing the path did n… |
+| [625](scripts/validate_repo.py#L625) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) carry no justification at all: {…}. A bare path tells the agent what to open but not why, so it cannot decide… |
+| [634](scripts/validate_repo.py#L634) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} Mandatory Reads entr(ies) restate the slug behind a bucketing label: {…}. Stripping the label leaves a description identical to the ski… |
+| [643](scripts/validate_repo.py#L643) | _WARN_ | `_check_agent_citation_quality` | Gate the quality and size of each run-time agent's reading list. | {…} numbered skill reads in this AGENT.md, over the advisory ceiling of {…}. Past that, the list stops being a reading list and becomes a c… |
+| [748](scripts/validate_repo.py#L748) | ? | `main` | — | — |
+| [767](scripts/validate_repo.py#L767) | ? | `main` | — | — |
+| [778](scripts/validate_repo.py#L778) | ? | `main` | — | — |
