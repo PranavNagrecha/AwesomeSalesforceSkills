@@ -120,3 +120,12 @@ jobs:
       - name: full mcp test suite
         working-directory: mcp/sfskills-mcp
         run: python3 -m unittest discover -s tests -t tests -v
+
+      # The coverage gate is implemented twice — scripts/search_knowledge.py
+      # and mcp/.../skills.py — against the same index. Both surfaces keep
+      # answering when they drift, they just stop agreeing about which skill
+      # covers a query, so nothing else in CI would notice. This job already
+      # has the index and the MCP package installed, which is everything the
+      # comparison needs.
+      - name: CLI/MCP retrieval parity
+        run: python3 evals/measurement/check_cli_mcp_parity.py --heldout

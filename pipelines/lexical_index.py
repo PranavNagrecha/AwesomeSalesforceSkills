@@ -127,7 +127,31 @@ def read_source_hash(path: Path) -> str | None:
         connection.close()
 
 
-def search_index(path: Path, query: str, domain: str | None, limit: int) -> list[dict]:
+def search_index(
+    path: Path,
+    query: str,
+    domain: str | None,
+    limit: int,
+    *,
+    skills_only: bool = False,
+) -> list[dict]:
+    """Return the top ``limit`` chunks for ``query``, best BM25 rank first.
+
+    ``skills_only`` restricts the result to chunks that belong to a skill
+    package. The index also holds ``knowledge/`` imports and official-source
+    chunks, which carry no ``skill_id``.
+
+    Why that switch exists: ``limit`` is a budget, and a chunk with no
+    ``skill_id`` can never be aggregated into a skill, so on a query whose
+    vocabulary the knowledge corpus happens to share it spends the budget
+    without ever being able to answer "which skill covers this". Measured on
+    the 154-query held-out set, non-skill chunks take 7.5% of a 30-chunk
+    window overall but up to 24 of 30 slots on the queries that returned no
+    coverage at all — "share data between two lightning web components" lost
+    24, "set up single sign on" 20. Callers that decide coverage should ask
+    for a skill-scoped window; callers that display chunks or collect
+    official sources want the unfiltered one.
+    """
     if not path.exists():
         return []
     fts_query = tokenize_query(query)
@@ -147,6 +171,9 @@ def search_index(path: Path, query: str, domain: str | None, limit: int) -> list
         if domain:
             sql += " AND domain = ?"
             params.append(domain)
+        if skills_only:
+            # skill_id is '' (not NULL) for knowledge/official-source chunks.
+            sql += " AND skill_id IS NOT NULL AND skill_id != ''"
         sql += " ORDER BY rank LIMIT ?"
         params.append(limit)
         rows = connection.execute(sql, params).fetchall()

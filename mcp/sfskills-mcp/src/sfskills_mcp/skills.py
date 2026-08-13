@@ -185,11 +185,12 @@ def search_skill(
     from pipelines.lexical_index import search_index  # type: ignore[import-not-found]
     from pipelines.ranking import aggregate_skill_scores, rerank_results  # type: ignore[import-not-found]
 
+    lexical_window = max(bounded_limit * 3, 30)
     lexical_rows = search_index(
         paths.lexical_index_path(),
         query,
         domain,
-        max(bounded_limit * 3, 30),
+        lexical_window,
     )
 
     # Vector parity, opportunistically. A DEV install (repo root on disk) has
@@ -221,9 +222,34 @@ def search_skill(
         skill_embeddings=skill_embeddings,
     )
 
+    # Parity with scripts/search_knowledge.run_search: the which-skill decision
+    # gets its own skill-scoped window. Chunks with no skill_id (knowledge/
+    # imports, official-source chunks) cannot aggregate into a skill, so
+    # sharing one window let them spend the budget without being able to
+    # answer. On the held-out set that cost 20 of 30 slots on "set up single
+    # sign on" and 24 of 30 on "share data between two lightning web
+    # components", both of which returned no coverage while the owning skill
+    # sat in the index. Skipped entirely when the window is already all-skill.
+    if any(not (row.get("skill_id") or "").strip() for row in lexical_rows):
+        skill_ranked = rerank_results(
+            query_vector,
+            search_index(
+                paths.lexical_index_path(),
+                query,
+                domain,
+                lexical_window,
+                skills_only=True,
+            ),
+            {},
+            domain,
+            skill_embeddings=skill_embeddings,
+        )
+    else:
+        skill_ranked = ranked
+
     config = _retrieval_config()
     aggregated = aggregate_skill_scores(
-        ranked,
+        skill_ranked,
         bounded_limit,
         skill_meta=_skill_meta(),
         query=query,

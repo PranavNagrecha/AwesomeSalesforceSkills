@@ -167,9 +167,12 @@ Consequences a user actually feels, all measured on this checkout on
   reads the 535 MB chunk-embedding file.
 
 Any change to the gate still has to be made in both places or the surfaces
-drift apart again, and nothing automated catches that today: the MCP module's
-own docstring names `evals/measurement/check_cli_mcp_parity.py` as the
-regression test, and that file does not exist on this checkout. Note also that
+drift apart again. `evals/measurement/check_cli_mcp_parity.py` now catches
+that: it runs both surfaces over the same queries and fails on any difference
+in the gated skill list or the `has_coverage` verdict. Run it with `--heldout`
+to compare across all 154 held-out queries. It deliberately does *not* compare
+payload shape (the MCP's registry enrichment is additive) or behaviour above
+the default limit (the MCP widens its window by design). Note also that
 `aggregate_skill_scores(ranked, bounded_limit)` is called positionally from
 the MCP module, so new parameters on that function must stay optional.
 

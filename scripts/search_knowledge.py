@@ -304,12 +304,8 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
     """Run one query against the pre-loaded context. Returns the same payload
     shape the CLI emits with ``--json``. Pure (no stdout/stderr, no exit)."""
     query = _sanitize_query_for_fts5(query)
-    lexical_rows = search_index(
-        ctx.root / "vector_index" / "lexical.sqlite",
-        query,
-        domain,
-        ctx.lexical_limit,
-    )
+    index_path = ctx.root / "vector_index" / "lexical.sqlite"
+    lexical_rows = search_index(index_path, query, domain, ctx.lexical_limit)
     query_vector = embed_query(query, ctx.embedding_config)
     ranked = rerank_results(
         query_vector,
@@ -318,8 +314,28 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
         domain,
         skill_embeddings=ctx.skill_embeddings,
     )
+    # Which-skill-covers-this gets its OWN window. `lexical_limit` is a budget,
+    # and chunks with no skill_id (knowledge/ imports, official-source chunks)
+    # can never aggregate into a skill — they spend slots without being able to
+    # answer the question. Sharing one window let them starve the answer on
+    # exactly the queries that already struggled: measured on the held-out set
+    # they take 7.5% of the window overall, but 20 of 30 slots on "set up
+    # single sign on" and 24 of 30 on "share data between two lightning web
+    # components", both of which returned Coverage: NONE while the owning skill
+    # sat in the index. Reuse `ranked` when it is already all-skill so the
+    # common query pays nothing extra.
+    if any(not (row.get("skill_id") or "").strip() for row in lexical_rows):
+        skill_ranked = rerank_results(
+            query_vector,
+            search_index(index_path, query, domain, ctx.lexical_limit, skills_only=True),
+            ctx.embeddings,
+            domain,
+            skill_embeddings=ctx.skill_embeddings,
+        )
+    else:
+        skill_ranked = ranked
     all_skills = aggregate_skill_scores(
-        ranked,
+        skill_ranked,
         ctx.result_limit,
         skill_meta=ctx.skill_meta,
         query=query,

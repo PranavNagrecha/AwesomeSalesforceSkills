@@ -339,11 +339,11 @@ scores are identical. The MCP server denies coverage too — verified,
 `search_skill("xylophone")` returns `has_coverage: false` with zero skills.
 
 What has *not* changed is the structure: two implementations of one gate, in
-two files, with nothing in CI comparing them. The MCP module's own docstring
-names `evals/measurement/check_cli_mcp_parity.py` as the regression test, and
-that file does not exist on this checkout. A PyPI install also diverges by
-construction, having no vector files to blend. See
-[architecture.md](architecture.md).
+two files. They are no longer unpoliced, though —
+`evals/measurement/check_cli_mcp_parity.py` runs both and fails on any
+disagreement about which skills clear the gate (154/154 held-out queries agree
+as of 2026-08-13). A PyPI install still diverges by construction, having no
+vector files to blend. See [architecture.md](architecture.md).
 
 **4. The roster changed under this document while it was being written.** The
 agent counts quoted here were read at different moments: the count lint

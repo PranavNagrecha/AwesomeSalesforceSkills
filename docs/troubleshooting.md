@@ -217,9 +217,9 @@ So if you see a disagreement today, it is one of these:
 - **Your query has punctuation.** See the next entry — the MCP path does not
   sanitise, and raises rather than disagreeing.
 - **One of them was changed and the other was not.** The gate lives in two
-  files by design and nothing in CI compares them; the MCP module's docstring
-  names `evals/measurement/check_cli_mcp_parity.py` as the regression test and
-  that file does not exist.
+  files by design. Run `python3 evals/measurement/check_cli_mcp_parity.py`
+  (add `--heldout` for all 154 held-out queries) — it compares the gated skill
+  list from both surfaces and names any query where they disagree.
 
 **Fix.** When either surface denies coverage:
 
