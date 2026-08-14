@@ -8,7 +8,7 @@ Common mistakes AI assistants make when generating or advising on Salesforce Rep
 
 **What the LLM generates:** "Since you need data from both Accounts and Opportunities, create a Joined Report with one block for Accounts and one block for Opportunities."
 
-**Why it happens:** LLMs pattern-match "two objects" to "joined report" because the name suggests combining data. In practice, joined reports are rarely the right answer and have significant limits (5-block maximum, 2,000 rows per block, no cross-block bucket fields, no chart dashboard components).
+**Why it happens:** LLMs pattern-match "two objects" to "joined report" because the name suggests combining data. Joined reports are rarely the right answer and carry hard limits: 5 blocks, 100 columns per block, 10 custom summary formulas per block (50 per report), 10 cross-block formulas. Bucketed fields, cross filters, and conditional highlighting are unavailable in a joined report *at all*. On dashboards the rule inverts what models usually assert: a joined report's **chart** can be a widget, the full report cannot, and "You can't filter data on a joined report in dashboard view or add a filter to a dashboard that only has joined reports."
 
 **Correct pattern:**
 
@@ -139,12 +139,16 @@ Treat them as a last resort, not a first response.
 **Correct pattern:**
 
 ```
-Report subscriptions run once as the report owner (or the specified
-running user) and send the same result set to all recipients.
+Each subscription runs once as ITS OWN running user and sends the
+same result set to every recipient. That running user defaults to
+"Me" — the person who created the subscription — NOT the report
+owner and NOT each recipient. If that person has View All Data,
+every recipient receives every matching record in the org.
 
-If Rep A owns 10 deals and Rep B owns 15 deals, and the report owner
-is the VP of Sales with 200 deals visible — all recipients receive
-the VP's 200-deal result set.
+Redirecting a subscription needs "Subscribe to Reports: Set Running
+User"; adding anyone but yourself needs "Subscribe to Reports: Add
+Recipients"; roles and public groups need "Subscribe to Reports:
+Send to Groups and Roles".
 
 For personalized scheduled delivery:
 - Have each rep subscribe themselves to the report individually

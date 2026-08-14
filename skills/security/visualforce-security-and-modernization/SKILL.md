@@ -53,7 +53,7 @@ Gather this context before proposing changes to any Visualforce page:
 - **Visualforce is not deprecated.** Salesforce has not announced a sunset date. Pages continue to be supported and CSRF / view state / iframe-in-LEX behaviors continue to receive platform-level fixes. Do not migrate to LWC just because LWC is newer — migrate when there is a real reason (security finding, broken UX in LEX, unmaintainable controller, performance regression). The default for a working page is *leave alone*.
 - **Who hits the page matters more than what it does.** A page accessible only to System Administrators with a sharing-aware controller is low risk. The same page accessible to Customer Community users is a different security profile entirely — guest and external users get no implicit record access, and FLS gaps that would never trip an admin trip them on first load.
 - **The CSRF token is on by default and you almost never want to turn it off.** Salesforce automatically embeds an anti-CSRF token in `<apex:form>` POST submissions. The `csrfProtection` page attribute exists, but disabling it is a security regression that needs a documented justification. If the team is "just trying to make a callback work," 95% of the time the right answer is to fix the callback to use POST, not to disable CSRF.
-- **`with sharing` does not enforce FLS or CRUD.** It only enforces record-level sharing. A `with sharing` controller class still happily reads and returns fields the user has no FLS access to. FLS must be enforced separately — either by binding to standard-controller `<apex:inputField>` / `<apex:outputField>`, or by calling `Schema.sObjectType.X.fields.Y.isAccessible()` / using `WITH USER_MODE`.
+- **`with sharing` does not enforce FLS or CRUD.** It only enforces record-level sharing. A `with sharing` controller class still happily reads and returns fields the user has no FLS access to. FLS must be enforced separately — either by binding to standard-controller `<apex:inputField>` / `<apex:outputField>`, or by calling `Schema.sObjectType.X.fields.Y.isAccessible()` / using `WITH USER_MODE`. **Read the `apiVersion` in the controller's `.cls-meta.xml` before scoring any of this.** Both Apex defaults inverted at 67.0 (Summer '26): a class with no sharing keyword runs `with sharing` there rather than `without sharing`, and database operations run in user mode with no clause at all. The gate is the class's pinned version, not the org's release — a Summer '26 org runs a controller pinned to 58.0 with the old behaviour. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 - **View state is encrypted, but encryption is not access control.** Salesforce encrypts the `__VIEWSTATE` payload before sending it to the browser. The user cannot read or tamper with it, but anything you put in a non-transient controller property is round-tripped to that user's browser on every postback. "Encrypted" does not mean "safe to put a list of all customer SSNs in a controller property."
 
 ---
@@ -85,7 +85,9 @@ Salesforce automatically enforces FLS on certain Visualforce bindings, but the r
 | `<apex:repeat var="r" value="{!myList}">` then `<apex:outputField value="{!r.SensitiveField__c}"/>` | **Partial** | FLS is enforced on the *outputField* binding only if the underlying SOQL was executed with FLS enforcement. If the controller used a permissive query, the field renders even though `outputField` is the binding. |
 | Formula field referenced via `<apex:outputField>` | Yes for the formula's read access, **but not for the underlying fields** | If the formula references `Salary__c` and the user has no FLS access to `Salary__c` but does have access to the formula, the formula's computed value is shown. This is documented platform behavior and a frequent surprise. |
 
-The reliable pattern: query with `WITH USER_MODE` (Summer '23+) or `WITH SECURITY_ENFORCED` (older), bind to `<apex:inputField>` / `<apex:outputField>`, and treat `<apex:outputText>` as user-supplied display text — never use it for sObject-field output.
+The reliable pattern: query with `WITH USER_MODE`, bind to `<apex:inputField>` / `<apex:outputField>`, and treat `<apex:outputText>` as user-supplied display text — never use it for sObject-field output.
+
+The **No** and **Partial** rows above describe a controller whose class is pinned below `apiVersion` 67.0, where an unqualified query runs in system mode. At 67.0+ that same query defaults to user mode and is already FLS-enforced, and `WITH SECURITY_ENFORCED` no longer compiles — so an unannotated query is a finding only after you have checked the version in the `.cls-meta.xml`. Write `WITH USER_MODE` either way: it is the read idiom at every version from 57.0 up, and at 67.0+ it states the intent explicitly instead of leaving the reader to infer it.
 
 ### Concept 3 — Modernization decision: retire vs harden vs leave alone
 
@@ -129,7 +131,7 @@ The interop pattern that does NOT work cleanly: passing complex objects between 
 
 ### Pattern 2 — Adding FLS guards to a custom-controller getter
 
-**When to use:** Audit finds a VF page where `{!myCustomMethod}` returns an sObject and the underlying controller does `[SELECT Salary__c FROM Employee WHERE Id = :id]` without `WITH USER_MODE`. External users see the field.
+**When to use:** Audit finds a VF page where `{!myCustomMethod}` returns an sObject and the underlying controller does `[SELECT Salary__c FROM Employee WHERE Id = :id]` without `WITH USER_MODE`, and the controller's `.cls-meta.xml` pins `apiVersion` at 66.0 or below. External users see the field. (At 67.0+ that query already runs in user mode; adding the clause there is a legibility fix, not a leak fix.)
 
 **How it works:** Switch the SOQL to `WITH USER_MODE`:
 
@@ -147,7 +149,7 @@ public Employee__c getEmployee() {
 }
 ```
 
-`WITH USER_MODE` enforces both CRUD and FLS for the running user — fields the user cannot read are returned as `null`. Combined with `<apex:outputField>` binding, the field will not render at all for users without read access.
+`WITH USER_MODE` enforces both CRUD and FLS for the running user, and it fails closed rather than filtering: one inaccessible field in the `SELECT` list throws `System.QueryException` and the getter returns no record at all. Budget for that — a user who could previously load the page will now see an error, so either narrow the `SELECT` to the fields that audience can read, or use `Security.stripInaccessible(AccessType.READABLE, records).getRecords()` when partial rendering is the better outcome.
 
 **Why not the alternative:** A `with sharing` class still returns FLS-restricted fields; the keyword only governs records. `Schema.sObjectType.X.fields.Y.isAccessible()` works but is verbose and easy to miss for the 17th field.
 

@@ -20,10 +20,18 @@ preserve audit history, and how the clone is traced after the fact.
   the org-level "Set Audit Fields upon Record Creation" feature
   enabled. Without both, the flag is silently ignored — there's no
   exception. Cloning operations exposed to community/portal users
-  through Lightning Actions or LWC must explicitly enforce CRUD/FLS
-  via `Security.stripInaccessible()` or `WITH SECURITY_ENFORCED` in
-  the cloning SOQL, because `.clone()` itself does not run any access
-  check.
+  through Lightning Actions or LWC must enforce CRUD/FLS explicitly,
+  because `.clone()` itself does not run any access check. Which idiom
+  applies is gated on the `apiVersion` in the class's `.cls-meta.xml`,
+  not the org's release: at 57.0+ query the source record
+  `WITH USER_MODE` (implicit at 67.0+, where user mode is the default),
+  then strip the copy before DML —
+  `Security.stripInaccessible(AccessType.CREATABLE, copies)` returns an
+  `SObjectAccessDecision`, so insert its `.getRecords()`; that drops
+  inaccessible fields rather than throwing and failing the whole insert
+  the way user mode does. `WITH SECURITY_ENFORCED` is the ≤56.0 idiom;
+  a class pinned at 57.0–66.0 still compiles it, but it is legacy there
+  and should be migrated. At 67.0 it is removed and no longer compiles.
 - **Operational Excellence** — Cloned records are
   *origin-anonymous* once the Apex transaction ends. Support engineers
   investigating "why does this record look weird" have no way to
@@ -118,5 +126,7 @@ source and copy."
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_json_json.htm
 - Salesforce Help — Set Audit Fields upon Record Creation (permission required for `preserveReadonlyTimestamps`):
   https://help.salesforce.com/s/articleView?id=sf.000334726.htm
+- Salesforce Release Notes — The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0):
+  https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
 - Salesforce Well-Architected — Trusted (Secure):
   https://architect.salesforce.com/well-architected/trusted/secure

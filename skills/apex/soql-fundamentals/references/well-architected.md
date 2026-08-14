@@ -2,7 +2,7 @@
 
 ## Relevant Pillars
 
-- **Security** — Every SOQL query in Apex runs in system mode by default, bypassing FLS and object-level security. Queries must explicitly enforce sharing and field permissions using `WITH USER_MODE` (preferred, fewer limitations) or `WITH SECURITY_ENFORCED`. Failing to enforce access in user-facing code is a common vulnerability.
+- **Security** — Whether a SOQL query enforces the running user's access is decided by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release. In a class saved at **API 66.0 or earlier**, every SOQL query runs in system mode by default, bypassing FLS and object-level security, so enforcement must be stated explicitly with `WITH USER_MODE` (preferred, fewer limitations) or, at ≤56.0, `WITH SECURITY_ENFORCED`. In a class saved at **API 67.0+** (Summer '26) that default inverted: SOQL, SOSL, DML, and `Database` methods run in user mode with no keyword at all, and `WITH SECURITY_ENFORCED` no longer compiles. The canonical version table is [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version) — read it rather than assuming from the org's release. Apex **triggers** are the exception at every version: they always run in system mode, cannot declare a sharing or access mode, and so must delegate queries that need enforcement to a handler class. Failing to enforce access in user-facing code is a common vulnerability.
 
 - **Reliability** — Queries without ORDER BY produce non-deterministic results that are consistent in sandbox but fail silently in production. OFFSET limitations (max 2,000 rows) and the 100 SOQL queries-per-transaction limit are reliability boundaries that must be designed for, not discovered in production.
 
@@ -22,7 +22,7 @@
 
 1. **SOQL inside a for-loop** — Placing a SOQL query inside an iteration loop multiplies the query count by the number of iterations, quickly exhausting the 100-query limit in synchronous Apex. Replace with a single query before the loop, loading results into a Map keyed by ID for efficient lookup inside the loop.
 
-2. **SELECT * simulation via dynamic field enumeration** — Dynamically building a field list from `Schema.getGlobalDescribe()` to retrieve all fields bypasses FLS, risks `QUERY_TOO_COMPLICATED` on large objects, and introduces SOQL injection risk if any user data is concatenated. Use `FIELDS(STANDARD)` / `FIELDS(CUSTOM)` with LIMIT, or enumerate specific needed fields.
+2. **SELECT * simulation via dynamic field enumeration** — Dynamically building a field list from `Schema.getGlobalDescribe()` to retrieve all fields bypasses FLS in a class saved at API 66.0 or earlier (at 67.0+ the query runs in user mode and throws `QueryException` on the first inaccessible field instead — a different failure, not a fixed one), risks `QUERY_TOO_COMPLICATED` on large objects, and introduces SOQL injection risk if any user data is concatenated. Use `FIELDS(STANDARD)` / `FIELDS(CUSTOM)` with LIMIT, or enumerate specific needed fields.
 
 3. **Unbounded queries in triggers** — Trigger code that queries related records without a selective WHERE clause or LIMIT can return 50,000 rows per transaction, blocking other DML and consuming the entire row budget. Always add WHERE conditions and LIMIT to trigger-context queries; use Batch Apex for bulk data operations.
 

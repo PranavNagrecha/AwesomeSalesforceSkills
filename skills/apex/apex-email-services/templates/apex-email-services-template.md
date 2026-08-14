@@ -29,7 +29,12 @@ Answer these before writing any code:
 ## Handler Class
 
 ```apex
-global class [YourHandlerName] implements Messaging.InboundEmailHandler {
+// Sharing keyword is deliberate, not decorative: at apiVersion 67.0+ a class with no
+// keyword runs `with sharing` and its SOQL/DML default to user mode (as the Email
+// Service's Context User); at 66.0 and below the same declaration is `without sharing`
+// in system mode. State the one you mean. Table: agents/_shared/AGENT_CONTRACT.md
+// § "Apex security idiom by API version".
+global with sharing class [YourHandlerName] implements Messaging.InboundEmailHandler {
 
     global Messaging.InboundEmailResult handleInboundEmail(
         Messaging.InboundEmail email,

@@ -35,6 +35,7 @@ Gather if not available:
 - Is the code internal-only, component-facing, Experience Cloud-facing, or API-facing?
 - Is the query static SOQL, dynamic SOQL, or both?
 - Does the class run `with sharing`, `without sharing`, or inherit sharing?
+- What `apiVersion` is the class pinned to in its `.cls-meta.xml`? That value, not the org's release, decides the default access mode and which idioms compile — see [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version* for the canonical table. If you cannot see it, say which row you assumed.
 - Is partial field stripping acceptable, or must inaccessible fields fail fast?
 
 ## How This Skill Works
@@ -43,7 +44,7 @@ Gather if not available:
 
 1. Start with static SOQL whenever possible.
 2. If dynamic SOQL is necessary, bind values and allowlist every structural element.
-3. Choose the security enforcement pattern up front: `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `stripInaccessible()`.
+3. Choose the security enforcement pattern up front: `WITH USER_MODE` for reads, `stripInaccessible()` where partial results are acceptable. Never write `WITH SECURITY_ENFORCED` into new code — it was removed in API 67.0 and does not compile there.
 4. Keep sharing, CRUD/FLS, and error behavior explicit for the caller.
 5. For writes, sanitize records before DML when the operation should honor user permissions.
 
@@ -70,7 +71,7 @@ Gather if not available:
 | Problem | What It Means | Default Fix |
 |---------|---------------|-------------|
 | SOQL injection | User input changes the query structure | Static SOQL, bind variables, allowlists |
-| CRUD/FLS bypass | Apex exposes fields or objects the running user should not access | `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `stripInaccessible()` |
+| CRUD/FLS bypass | Apex exposes fields or objects the running user should not access | `WITH USER_MODE` or `stripInaccessible()` (user mode is already the default from `apiVersion` 67.0 — state it anyway) |
 | Sharing bypass | Code sees records the user should not see | `with sharing` or explicit documented exception |
 
 ### Query Construction Rules
@@ -84,11 +85,11 @@ Gather if not available:
 
 | Scenario | Use |
 |----------|-----|
-| Component-facing or API-facing Apex | `WITH USER_MODE` |
-| All-or-nothing field access on read | `WITH SECURITY_ENFORCED` |
+| Component-facing or API-facing Apex | `WITH USER_MODE` — the default at `apiVersion` 67.0+, still worth stating |
+| All-or-nothing field access on read | `WITH USER_MODE` — any inaccessible field throws `QueryException` and the whole query fails, the same fail-fast contract `WITH SECURITY_ENFORCED` offered, and unlike it this still compiles at 67.0+ |
 | Partial read results are acceptable | `stripInaccessible(AccessType.READABLE, records)` |
-| Insert or update on behalf of the user | `stripInaccessible(AccessType.CREATABLE/UPDATABLE, records)` |
-| Intentional admin/system context | Document why the bypass is required and auditable |
+| Insert or update on behalf of the user | `stripInaccessible(AccessType.CREATABLE/UPDATABLE, records)` — still right at 67.0+, where default user mode throws and fails the whole DML instead |
+| Intentional admin/system context | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` on the statement, plus a comment: from 67.0 elevation is opt-in, so the bypass is written down and auditable |
 
 #
 ## Recommended Workflow
@@ -114,7 +115,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 ## Salesforce-Specific Gotchas
 
 - **`String.escapeSingleQuotes()` is not a full injection defense**: It only helps quoted values, not field names, operators, or `ORDER BY`.
-- **`WITH SECURITY_ENFORCED` fails the whole query**: One inaccessible field causes a `QueryException`, so use it only when fail-fast behavior is acceptable.
+- **`WITH SECURITY_ENFORCED` fails the whole query**: One inaccessible field causes a `QueryException`, so it suits only fail-fast paths — and at `apiVersion` 67.0+ it is gone entirely and will not compile. `WITH USER_MODE` has the same fail-fast behavior at every version from 57.0.
+- **Triggers run in system mode at every API version**: the 67.0 default-user-mode change does not reach the trigger body, which bypasses sharing, FLS, and object permissions, and a `.trigger` file cannot carry a class-level sharing keyword. Per-statement enforcement still works there (`WITH USER_MODE` on its SOQL, `as user` / `AccessLevel.USER_MODE` on its DML) — but since the default is system mode, delegate to a handler class and declare the keyword there. See `apex/apex-with-without-sharing-decision`.
 - **`stripInaccessible()` does not restore sharing**: It removes inaccessible fields but does not change record visibility semantics.
 - **Component-facing Apex is not a security boundary by itself**: LWC, Aura, and API callers still rely on the server-side query to enforce access correctly.
 - **`without sharing` plus broad SOQL is a real data-exposure risk**: If that context is intentional, it must be documented, reviewed, and narrow in scope.

@@ -306,7 +306,17 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
     query = _sanitize_query_for_fts5(query)
     index_path = ctx.root / "vector_index" / "lexical.sqlite"
     lexical_rows = search_index(index_path, query, domain, ctx.lexical_limit)
-    query_vector = embed_query(query, ctx.embedding_config)
+    # Embed the query only when there is something to compare it against.
+    # Both vector files are gitignored (they exceed GitHub's file limit and are
+    # rebuilt locally), so a fresh clone with `enabled: true` and fastembed
+    # installed would otherwise pay a ~7 s model load plus a per-query encode
+    # to produce a vector that `rerank_results` has no vectors to score
+    # against — pure latency for zero signal. The MCP surface has always had
+    # this guard; the CLI did not. `embed_query` already returns None when
+    # embeddings are disabled or fastembed is missing, so this covers the
+    # third case: enabled, installed, and nothing built.
+    has_vectors = bool(ctx.embeddings) or bool(ctx.skill_embeddings)
+    query_vector = embed_query(query, ctx.embedding_config) if has_vectors else None
     ranked = rerank_results(
         query_vector,
         lexical_rows,

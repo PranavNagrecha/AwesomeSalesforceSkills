@@ -9,11 +9,15 @@
   rows at 10-15 keeps the response payload small. Without these
   three measures, a lookup component can single-handedly exhaust
   per-org Apex CPU during a busy support shift.
-- **Security** — `WITH SECURITY_ENFORCED` is the floor.
-  `with sharing` on the controller class enforces record-level
-  visibility. The combination guarantees the lookup can never
+- **Security** — `WITH USER_MODE` (API 57.0+) is the floor; it
+  enforces FLS, object permissions, and sharing in one clause.
+  Keep `with sharing` on the controller class as well, so
+  record-level visibility still holds for any query that later
+  opts into system mode. The combination means the lookup cannot
   surface records or fields the user is not entitled to see —
-  even if the JS controller mis-routes the data later.
+  even if the JS controller mis-routes the data later. On a class
+  pinned below 57.0 the idiom is `WITH SECURITY_ENFORCED`; at
+  67.0+ that clause no longer compiles.
 
 ## Architectural Tradeoffs
 
@@ -40,14 +44,18 @@ Specifically:
    exhausts Apex CPU and produces visible lag.
 2. **`onclick` on result rows.** Closes the listbox before the
    click registers.
-3. **Forgetting FLS enforcement.** Without `WITH SECURITY_ENFORCED`,
-   the lookup leaks fields the user can't normally see.
+3. **Forgetting FLS enforcement.** On a class pinned below API
+   67.0 an unqualified query runs in system mode, so the lookup
+   leaks fields the user can't normally see — add `WITH USER_MODE`
+   (57.0+). At 67.0+ database operations default to user mode, so
+   the clause states the intent rather than adding the check.
 
 ## Official Sources Used
 
 - lightning-record-picker (LWC Component Reference) — https://developer.salesforce.com/docs/component-library/bundle/lightning-record-picker/documentation
 - SOSL Reference (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm
-- WITH SECURITY_ENFORCED in SOQL — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm
+- Enforce User Mode for Database Operations (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_user_mode.htm
+- WITH SECURITY_ENFORCED in SOQL (legacy, ≤ API 66.0) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm
 - @AuraEnabled cacheable=true — https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html
 - ARIA combobox role — https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
 - Salesforce Well-Architected: Performant — https://architect.salesforce.com/well-architected/performant/efficient

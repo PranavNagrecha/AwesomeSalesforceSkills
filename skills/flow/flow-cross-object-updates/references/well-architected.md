@@ -42,10 +42,21 @@ The defining tradeoff is **Flow vs Apex for the cross-object write**:
 | Time-to-build | Hours | Day+ (including tests) |
 | Auto-bulkification | Yes, with caveats | Manual but explicit |
 | Recursion guard | Manual (transient flag) | Static-bool / TriggerControl |
-| Mode (sharing/FLS) | Per-flow property | `with sharing` / `Security.stripInaccessible` |
+| Mode (sharing/FLS) | Per-flow property | Handler-class keyword + `Security.stripInaccessible` — version-gated, see note |
 | Debug-ability | Flow Debug log; reasonable | Apex Debug Log; gold standard |
 | Cross-team change risk | Lower (visible in Flow Builder) | Higher (requires code review) |
 | Best for | Single owner, well-bounded scope | Complex logic, high volume, deep nesting |
+
+**Note on the Apex "Mode" row.** The `.trigger` file itself always runs in
+system mode at every API version and cannot declare a sharing or access mode
+— the decision only exists in the handler class it delegates to. What a
+handler with *no* sharing keyword does is gated by the `apiVersion` in its
+`.cls-meta.xml`, not by the org's release: at **67.0+** (Summer '26) it runs
+`with sharing` and its SOQL/DML default to user mode; at **66.0 and below**
+both default the other way, so a handler pinned to 58.0 in a Summer '26 org
+keeps the old behavior. Canonical table:
+[`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md)
+§ *Apex security idiom by API version*.
 
 The "right" answer is rarely "Flow for everything" or "Apex for
 everything" — it's "Flow for the simple cases, Apex for the
@@ -104,6 +115,9 @@ exclude the changes the *other* flow produces.
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger.htm
 - Apex Developer Guide — Order of Execution:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Summer '26 Release Notes — Database Operations Run in User Mode by Default,
+  Not System Mode (API 67.0):
+  https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5
 - Flow Builder Reference — How a Flow Runs in System or User Context:
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_running_context.htm
 - Salesforce Well-Architected — Adaptable (Resilient):

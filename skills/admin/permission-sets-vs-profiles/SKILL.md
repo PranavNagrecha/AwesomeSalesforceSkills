@@ -1,6 +1,6 @@
 ---
 name: permission-sets-vs-profiles
-description: "Use when designing or auditing Salesforce access control — deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access — use security/fls-crud for that."
+description: "Use when designing or auditing Salesforce access control — deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access — use admin/sharing-and-visibility for that."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -144,6 +144,6 @@ Surface these WITHOUT being asked:
 
 ## Related Skills
 
-- **security/fls-crud**: Use when the issue is Apex-side CRUD/FLS enforcement (`WITH SECURITY_ENFORCED`, `stripInaccessible`, user mode). NOT for declarative permission architecture.
+- **apex/apex-stripinaccessible-and-fls-enforcement**: Use when the issue is Apex-side CRUD/FLS enforcement (`WITH USER_MODE`, `as user` DML, `Security.stripInaccessible(AccessType, records).getRecords()`; also legacy `WITH SECURITY_ENFORCED`, which no longer compiles at class `apiVersion` 67.0+ and is tech debt at 57.0–66.0 — the gate is the `.cls-meta.xml` version, not the org's release). NOT for declarative permission architecture.
 - **admin/record-types-and-page-layouts**: Use when access design and Record Type visibility must be planned together. NOT when the main problem is page UX rather than user access.
 - **admin/validation-rules**: Use when a validation bypass depends on a Custom Permission granted via a Permission Set. NOT for debugging sharing, CRUD, or profile sprawl.

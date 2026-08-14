@@ -165,8 +165,8 @@ Use this template when designing or documenting a report or dashboard in Salesfo
 |---------|-------|
 | Frequency | (Daily / Weekly / Monthly) |
 | Recipients | (List names or roles — confirm all are active employees) |
-| Running user | (Who owns the report — whose data do recipients receive?) |
-| Condition | (Send always / Send when condition is met: ___) |
+| Running user | (Defaults to whoever creates the subscription, NOT the report owner — whose data do recipients receive? Naming anyone else requires "Subscribe to Reports: Set Running User") |
+| Condition | (Send always / Send when condition is met: ___ — up to 5 conditions) |
 
 ---
 
@@ -182,7 +182,7 @@ Run through these before marking complete:
 - [ ] Report and dashboard assigned to a shared folder (not private)
 - [ ] Subscription recipients are current, active employees
 - [ ] No tabular report driving a Metric or Chart dashboard component without a row limit
-- [ ] Joined report block count is ≤ 5 and row count per block is ≤ 2,000
+- [ ] Joined report block count is ≤ 5 and column count per block is ≤ 100
 - [ ] Bucket field "Other" category reviewed — blank values accounted for
 - [ ] Dashboard does not exceed 20 source report components
 

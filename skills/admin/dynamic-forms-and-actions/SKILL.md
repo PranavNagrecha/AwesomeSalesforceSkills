@@ -79,7 +79,9 @@ Each Dynamic Form field or section component can have one or more visibility fil
 | Device | Desktop, phone, or tablet |
 | Advanced (formula) | Formula evaluates to true (available on select objects) |
 
-Visibility filters are evaluated client-side on page load and re-evaluated when field values change (for field-value filters). They do not replace FLS — a hidden field is merely not rendered; it is still accessible via API if the user has FLS access.
+Visibility filters are evaluated client-side on page load, but **field components and Field Section components re-evaluate on different schedules**. Rules on a *field* are assessed live: "Changes a user makes while editing a record can make fields appear and disappear as visibility rules are evaluated." Rules on a *Field Section* are not: "Visibility rules on field sections aren't dynamic and don't react to what a user does while editing. Field section visibility rules are evaluated only after a record is saved." Progressive-disclosure UX ("reveal the Shipping section once Type = Physical") must therefore be built from per-field rules — a section rule leaves the section hidden until the user saves. Field Section rules suit conditions that are stable for the whole edit session (record type, profile, custom permission, device).
+
+Visibility filters do not replace FLS — a hidden field is merely not rendered; it is still accessible via API if the user has FLS access.
 
 ### Dynamic Actions
 

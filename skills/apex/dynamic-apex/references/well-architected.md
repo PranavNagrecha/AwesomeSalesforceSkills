@@ -26,7 +26,7 @@ Dynamic SOQL enables admin-configurable field lists, generic utilities, and mult
 
 ### Graceful Degradation vs. Fail-Fast
 
-`WITH SECURITY_ENFORCED` fails the entire query if any field is inaccessible. Pre-filtering with `isAccessible()` degrades gracefully by omitting inaccessible fields. The right choice depends on the context: a system utility that should never run without full access should fail fast; a user-facing component that should show what the user can see should degrade gracefully. This decision must be explicit and documented.
+Strict enforcement fails the entire query if any field is inaccessible — that is what `AccessLevel.USER_MODE` on `Database.query` does at API 57.0+, and what `WITH SECURITY_ENFORCED` did in classes pinned at `apiVersion` 66.0 or below, where it still compiles; the clause was removed in 67.0 (Summer '26). Pre-filtering with `isAccessible()` degrades gracefully by omitting inaccessible fields. The right choice depends on the context: a system utility that should never run without full access should fail fast; a user-facing component that should show what the user can see should degrade gracefully. This decision must be explicit and documented.
 
 ## Anti-Patterns
 

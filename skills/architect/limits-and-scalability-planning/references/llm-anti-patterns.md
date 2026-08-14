@@ -131,15 +131,17 @@ Always verify the org's current entitlement using /services/data/vXX.0/limits/
 
 **What the LLM generates:** Data model recommendations that freely add custom objects, custom fields, and relationship fields without mentioning org-wide metadata limits. For example, proposing 10 new custom objects when the org is already at 2,900 of 3,000.
 
-**Why it happens:** LLMs treat the data model as infinitely extensible because most Salesforce examples involve a few objects. The hard limits on custom objects (varies by edition: 200 for PE, 2,000 for EE, 2,000+ for UE), custom fields per object (800 for Enterprise), and relationship fields (40 per object) are rarely mentioned in training data.
+**Why it happens:** LLMs treat the data model as infinitely extensible because most Salesforce examples involve a few objects. The hard limits on custom objects (varies by edition: 200 for PE, 2,000 for EE, 2,000+ for UE), custom fields per object (500 for Enterprise, 800 for Unlimited/Performance), and relationship fields (40 per object) are rarely mentioned in training data.
 
 **Correct pattern:**
 
 ```text
 Before proposing new custom objects or fields, check org metadata limits:
 - Custom objects: 200 (PE), 2,000 (EE/UE) — query via Tooling API or Setup
-- Custom fields per object: 500 (standard), 800 (with Shield/Platform)
+- Custom fields per object: 500 (Enterprise), 800 (Unlimited/Performance) — by
+  edition, NOT by Shield or any add-on
 - Relationship fields per object: 40 maximum
+- Roll-up summary fields per object: 25 maximum
 - Custom indexes: request via Salesforce Support for non-standard indexes
 
 Use the EntityDefinition and FieldDefinition Tooling API objects to audit
@@ -147,3 +149,32 @@ current consumption before proposing additions.
 ```
 
 **Detection hint:** Flag data model proposals that add 5+ custom objects without referencing current org metadata consumption or edition-specific limits.
+
+---
+
+## Anti-Pattern 7: Treating "Delete the Unused Fields" as an Immediate Fix for a Full Field Allocation
+
+**What the LLM generates:** Asked "we're at the 500-field limit on Account, what do we do?", the model answers "delete unused fields to free up slots" and stops there — implying the headroom is available as soon as the delete is confirmed.
+
+**Why it happens:** Deleting a field in Setup looks final and the field disappears from the field list, so the training signal is "deleted means gone." The soft-delete grace period lives in a separate help topic that code-centric content rarely quotes.
+
+**Correct pattern:**
+
+```text
+A deleted custom field is soft-deleted. Until hard delete completes (or 15 days
+elapse, whichever comes first) it still consumes:
+  - a slot in the object's 500/800 custom field allocation
+  - a slot in the allocation for its field type — 40 relationship fields,
+    25 roll-up summary fields
+
+Symptoms of an allocation exhausted by soft-deleted fields:
+  "Unable to access page"
+  "No clean data columns available for custom fields"
+
+To reclaim sooner: object's Deleted Fields page -> Erase (marks ready for the
+hard-delete background job), then Purge (starts it). Purge appears only at 75%+
+of the object's field allocation, Salesforce Classic, EE/PE/UE. Requires
+Customize Application; Purge also requires View All Data.
+```
+
+**Detection hint:** Flag any field-limit remediation that promises immediate headroom from deletion, or that omits the 15-day window from a release-timeline recommendation.

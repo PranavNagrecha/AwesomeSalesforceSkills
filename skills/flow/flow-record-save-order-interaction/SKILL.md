@@ -75,6 +75,8 @@ Numbering matches the Apex Developer Guide, *Triggers and Order of Execution*. U
 19. Commit.
 20. Post-commit logic (email, `@future` / Queueable / Batch, asynchronous Flow paths).
 
+**A recursive save runs a truncated list.** From the Note box above the list: "During a recursive save, Salesforce skips steps 9 (assignment rules) through 17 (roll-up summary field in the grandparent record)." A recursive save is a save that begins inside another save — the parent save the platform launches at step 16 ("Parent record goes through save procedure") is the documented case. Steps 1–8 and 18–20 still run; assignment, auto-response, workflow, escalation, **after-save Flows (14)**, entitlement rules and roll-ups do not.
+
 **Before-save Flow vs before trigger is determinate.** Step 3 and step 4 are separate, consecutive steps. The Flow always runs first; the trigger always runs second. If both write the same field, the trigger's value is what saves — every time, in every org. Older guidance that puts both at "step 3" and calls the outcome indeterminate is describing a superseded version of the docs page.
 
 ## Decision: Before-Save Flow vs Before Trigger
@@ -104,7 +106,7 @@ Numbering matches the Apex Developer Guide, *Triggers and Order of Execution*. U
 ## Official Sources Used
 
 - Triggers and Order of Execution (20-step list; before-save Flows step 3, before
-  triggers step 4) —
+  triggers step 4; recursive save skips steps 9–17) —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
 - Metadata API Developer Guide — Flow (`triggerOrder`, API 54.0+) —
   https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm

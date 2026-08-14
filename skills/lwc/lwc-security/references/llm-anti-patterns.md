@@ -94,7 +94,7 @@ public static List<Account> getAllAccounts() {
 
 Ensure the class uses `with sharing` and enforces FLS.
 
-**Detection hint:** `@AuraEnabled` on a method in a class declared `without sharing`, or SOQL queries without `Security.stripInaccessible` or `WITH SECURITY_ENFORCED`.
+**Detection hint:** `@AuraEnabled` on a method in a class declared `without sharing`, or SOQL queries with neither `WITH USER_MODE` nor `Security.stripInaccessible` (at API 67.0+ user mode is the default, so an unqualified query is already enforced). Do not score `WITH SECURITY_ENFORCED` as secure: it was removed in API 67.0 and no longer compiles there, and at 57.0–66.0 it is the weaker legacy construct to migrate.
 
 ---
 

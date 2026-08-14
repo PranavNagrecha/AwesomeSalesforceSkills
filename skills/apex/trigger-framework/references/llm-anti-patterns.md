@@ -40,8 +40,9 @@ trigger AccountTrigger on Account (before insert, after update) {
     if (Trigger.isAfter && Trigger.isUpdate) handler.afterUpdate(Trigger.new, Trigger.oldMap);
 }
 
-// Handler: testable logic
-public class AccountTriggerHandler {
+// Handler: testable logic. Sharing keyword written out on purpose — the .trigger
+// file cannot carry one, and what an absent keyword means is version-gated.
+public with sharing class AccountTriggerHandler {
     public void beforeInsert(List<Account> newAccounts) {
         AccountDomain.setDefaultDescription(newAccounts);
     }
@@ -108,7 +109,7 @@ public class AccountTriggerHandler {
 **Correct pattern:**
 
 ```apex
-public class AccountTriggerHandler {
+public with sharing class AccountTriggerHandler {
     public void afterUpdate(List<Account> newAccounts, Map<Id, Account> oldMap) {
         // Check bypass setting before running
         TriggerSetting__c settings = TriggerSetting__c.getInstance(UserInfo.getUserId());
@@ -199,7 +200,7 @@ public virtual class TriggerHandler {
 }
 
 // Per-object handler overrides only what it needs
-public class AccountTriggerHandler extends TriggerHandler {
+public with sharing class AccountTriggerHandler extends TriggerHandler {
     protected override void afterUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {
         // Account-specific logic
     }

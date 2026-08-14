@@ -30,6 +30,21 @@ def _tokens(value: str) -> set[str]:
     }
 
 
+def _prefix_overlap(query_tokens: set[str], target_tokens: set[str]) -> int:
+    """How many QUERY tokens prefix-match some target token.
+
+    Mirrors the FTS5 side, where every query token is submitted as ``token*``.
+    Counts query tokens, not pairs, so one query word matching both "omniscript"
+    and "omniscripts" still counts once and the ratio stays bounded by 1.0.
+    """
+    if not query_tokens or not target_tokens:
+        return 0
+    return sum(
+        1 for q in query_tokens
+        if q in target_tokens or any(t.startswith(q) for t in target_tokens)
+    )
+
+
 def _name_match_bonus(
     query_tokens: set[str],
     skill_id: str,
@@ -43,14 +58,26 @@ def _name_match_bonus(
     answers "is this skill ABOUT X" — the missing centrality signal. Overlap is
     a fraction of the QUERY's tokens (not the name's), so a long descriptive
     name is not penalised and a long query is not trivially satisfied.
+
+    Overlap is PREFIX-based, matching what the lexical layer already does:
+    ``pipelines.lexical_index.tokenize_query`` appends ``*`` to every token, so
+    FTS5 scores "omniscript" against "omniscripts". This function used exact
+    set intersection, and the mismatch inverted whole rankings. On the fixture
+    "translate omniscript" (domain-scoped to omnistudio),
+    ``omnistudio-multi-language`` — whose description is literally "Localize
+    OmniScripts ... translation" — scored 0.0 centrality, because its text says
+    "OmniScripts" and the query said "omniscript". Its sibling
+    ``omniscript-session-state`` took the full 1.0 on an exact title token, and
+    won the slot despite a third of the cumulative chunk score. Prefix matching
+    reads the plural, and the skill the fixture asks for ranks first again.
     """
     if not query_tokens:
         return 0.0
     name, description = skill_meta.get(skill_id, (skill_id.split("/")[-1], ""))
     name_tokens = _tokens(name.replace("-", " ")) | _tokens(skill_id.split("/")[-1].replace("-", " "))
     description_tokens = _tokens(description)
-    name_overlap = len(query_tokens & name_tokens) / len(query_tokens)
-    description_overlap = len(query_tokens & description_tokens) / len(query_tokens)
+    name_overlap = _prefix_overlap(query_tokens, name_tokens) / len(query_tokens)
+    description_overlap = _prefix_overlap(query_tokens, description_tokens) / len(query_tokens)
     return name_weight * name_overlap + description_weight * description_overlap
 
 

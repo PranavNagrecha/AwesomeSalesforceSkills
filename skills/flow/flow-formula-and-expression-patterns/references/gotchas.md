@@ -84,13 +84,15 @@ Non-obvious Salesforce platform behaviors in Flow Formula authoring that cause r
 
 ---
 
-## Gotcha 9: Percent fields are stored as the displayed number, not as a decimal
+## Gotcha 9: Percent fields are ALREADY divided by 100 inside a formula
 
-**What happens:** `Discount_Percent__c = 15` (meaning 15%). Multiplying `Amount * Discount_Percent__c` returns `Amount * 15`, not `Amount * 0.15`.
+**What happens:** `Discount_Percent__c` shows `15` in the UI for 15%, so authors "correct" for it with `Amount * (Discount_Percent__c / 100)`. In formula context the field already evaluates to `0.15`, so the extra division returns 1/100th of the intended discount — no deploy error, no runtime fault. Salesforce: "percent fields are expressed divided by 100 in formulas (100% is expressed as 1; 50% is expressed as 0.5)."
 
-**When it occurs:** Any formula that does arithmetic on a Percent field.
+**When it occurs:** Any Flow Formula resource, formula field, or validation rule that multiplies by or range-checks a Percent field.
 
-**How to avoid:** Always divide Percent fields by 100 before multiplying: `Amount * (Discount_Percent__c / 100)`.
+**How to avoid:** In formula context multiply directly — `{!opportunity.Amount} * {!opportunity.Discount_Percent__c}` — and compare against fractions (`> 0.5`, never `> 50`).
+
+**Outside a formula, Flow does the opposite, and this is the part that catches people.** Salesforce documents the two paths side by side: *reference* an sObject variable's percent field **into a formula** and it "Divides by 100 — 100 becomes 1"; *pass* a numerical value **into** an sObject variable's percent field and it "Doesn't change — 100 remains 100". So one Flow can hold both conventions at once: a Formula resource reading `Discount_Percent__c` sees `0.15`, while an Assignment writing that same field takes `15`. A Decision comparing the field directly is on the second path — bound it with `> 50`, not `> 0.5`. Mixing the two up is silent in both directions.
 
 ---
 

@@ -36,14 +36,25 @@ throws runtime exceptions that roll back the entire DML batch.
   cross-event helpers that take `Trigger.new`/`Trigger.old` as
   raw parameters) is the cheapest reliability gain in the area.
 - **Security** — Lower weight here. Sharing and FLS enforcement
-  belong to surrounding code (the handler class's `with sharing`
-  declaration, `Security.stripInaccessible` calls before DML), not
-  to the context variables themselves. The one security touchpoint
-  worth noting: trigger code runs in system context by default, so
-  the recursion guard *itself* (e.g., a static `Set<Id>` of
-  processed ids) is a security-adjacent concern — leaking it across
-  a single transaction can let a low-privilege user trigger
-  privileged operations the trigger meant to skip.
+  belong to the handler class the trigger delegates to (its
+  `with sharing` declaration, `Security.stripInaccessible` calls
+  before DML), not to the context variables themselves — **a
+  `.trigger` runs in system mode at every `apiVersion` and cannot
+  declare a sharing or access mode**, and Summer '26 did not change
+  that. What the *handler's* missing keyword means did change: at
+  **67.0+** a bare class runs `with sharing` with database
+  operations defaulting to user mode; at **66.0 and below** it runs
+  without sharing in system mode. The gate is the `.cls-meta.xml`,
+  not the org's release — and under a `TriggerHandler` base class
+  it is every link in the chain, not just the subclass you opened:
+  one class saved at 67.0+ pulls the rest to `with sharing`.
+  Canonical table in
+  [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md)
+  § *Apex security idiom by API version*. Because the trigger is
+  always system mode, the recursion guard *itself* (e.g., a static
+  `Set<Id>` of processed ids) is a security-adjacent concern —
+  leaking it across a single transaction can let a low-privilege
+  user trigger privileged operations the trigger meant to skip.
 
 ## Architectural Tradeoffs
 

@@ -66,6 +66,47 @@ _DML_OPTIONS_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Matches a read of MasterRecordId — valid only in after delete context.
+_MASTER_RECORD_ID_RE = re.compile(r"MasterRecordId", re.IGNORECASE)
+
+# Markers that put surrounding code in a BEFORE delete context.
+_BEFORE_DELETE_MARKER_RE = re.compile(
+    r"before\s+delete|onBeforeDelete|isBefore\s*&&\s*Trigger\.isDelete",
+    re.IGNORECASE,
+)
+
+# Markers that put surrounding code in an AFTER delete context.
+_AFTER_DELETE_MARKER_RE = re.compile(
+    r"after\s+delete|onAfterDelete|isAfter\s*&&\s*Trigger\.isDelete",
+    re.IGNORECASE,
+)
+
+# How far back to look for the governing delete-context marker.
+_CONTEXT_WINDOW = 600
+
+
+def _master_record_id_in_before_delete(content: str) -> bool:
+    """Heuristic: is MasterRecordId read inside a before-delete context?
+
+    MasterRecordId is populated by the platform between the before delete
+    and after delete events, so a before-delete read is always null. For
+    each MasterRecordId occurrence, look back a bounded window and take
+    whichever delete-context marker is nearest.
+    """
+    for match in _MASTER_RECORD_ID_RE.finditer(content):
+        window = content[max(0, match.start() - _CONTEXT_WINDOW):match.start()]
+
+        before_hits = list(_BEFORE_DELETE_MARKER_RE.finditer(window))
+        after_hits = list(_AFTER_DELETE_MARKER_RE.finditer(window))
+        if not before_hits:
+            continue
+        # Nearest marker wins; an after-delete marker closer to the read
+        # means this occurrence is in the correct context.
+        if after_hits and after_hits[-1].start() > before_hits[-1].start():
+            continue
+        return True
+    return False
+
 
 def _read_file(path: Path) -> str:
     try:
@@ -152,6 +193,18 @@ def check_case_trigger_patterns(manifest_dir: Path) -> list[str]:
             issues.append(
                 f"{rel}: Trigger.new referenced in a delete-context handler — "
                 "Trigger.new is null in before/after delete. Use Trigger.old instead."
+            )
+
+        # ----------------------------------------------------------------
+        # Check 3b: MasterRecordId read in a before-delete context
+        # ----------------------------------------------------------------
+        if _master_record_id_in_before_delete(content):
+            issues.append(
+                f"{rel}: MasterRecordId read in a before-delete context — "
+                "the platform sets MasterRecordId between the before delete and "
+                "after delete events, so this check always reads null and every "
+                "merged record falls through to the true-delete branch. "
+                "Move the merge guard to after delete."
             )
 
         # ----------------------------------------------------------------

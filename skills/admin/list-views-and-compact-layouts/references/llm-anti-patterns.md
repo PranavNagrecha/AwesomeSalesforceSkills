@@ -140,3 +140,31 @@ Configure search layouts for discoverability:
 ```
 
 **Detection hint:** If the output does not mention search layouts when discussing record discoverability, the search experience is left at defaults. Search for `search layout` or `Search Results` in the configuration instructions.
+
+---
+
+## Anti-Pattern 6: Granting Manage Public List Views just to let a user share a view
+
+**What the LLM generates:** "Assign the Manage Public List Views permission to the team lead so they can share their list view with their team."
+
+**Why it happens:** Until Summer '26 that really was the only option, and the training data reflects it. Manage Public List Views lets the holder edit or delete *any* public list view in the org — an admin-grade grant for a one-team request. Summer '26 (release 262) added the narrower Manage Shared List Views user permission, which lets a user share their personal list views with the roles, groups, and territories they're members of, and edit or delete the list views other users share with them.
+
+**Correct pattern:**
+
+```
+Letting a user share a list view (Lightning Experience, all editions):
+
+- Manage Shared List Views  (Summer '26+)  ← the right grant here.
+  Assign via permission set or profile.
+  Scope: share MY list views with roles, groups, and territories I am a
+  member of; edit and delete views others share with me.
+
+- Manage Public List Views  ← still works, but admin-grade over-grant.
+  Scope: edit or delete ANY public list view in the org.
+
+- Setup → User Interface → "Shared list view editing"
+  Org-wide setting that lets users WITHOUT Manage Shared List Views edit
+  the views shared with them (applied filters, list view name).
+```
+
+**Detection hint:** If the output answers "let this user share a list view" with `Manage Public List Views`, it is over-granting. Search for `Manage Public List Views` and confirm the user genuinely needs to administer other people's views.

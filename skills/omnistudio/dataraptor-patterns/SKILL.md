@@ -59,7 +59,7 @@ Gather this context before working on anything in this domain:
 
 ### Choose The DataRaptor Type Deliberately
 
-Extract is for reading Salesforce data with regular mapping flexibility. Turbo Extract is the simplified, faster option for single-object reads when you do not need formulas or complex field mappings. Transform is for reshaping payloads. Load is for inserting, updating, upserting, or deleting records.
+Extract is for reading Salesforce data with regular mapping flexibility. Turbo Extract is the simplified, faster option for single-object reads — and the simplification is a hard restriction, not a preference: it supports no formulas, and it has no Output tab, so it cannot use mappings to shape its output. Transform is for reshaping payloads. Load is for inserting, updating, upserting, or deleting records; neither Transform nor Load includes queries, because neither retrieves from Salesforce objects. See `references/gotchas.md` for the exact restrictions.
 
 ### DataRaptors Are Data Assets, Not Orchestration Engines
 

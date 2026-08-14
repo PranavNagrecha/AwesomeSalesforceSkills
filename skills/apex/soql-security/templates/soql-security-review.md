@@ -6,7 +6,8 @@
 |----------|-------|
 | **Class Name** | TODO |
 | **Class Type** | TODO: @AuraEnabled / REST / Batch / Trigger Handler / Service |
-| **Sharing Model** | TODO: `with sharing` / `without sharing` / `inherited sharing` |
+| **`apiVersion`** | TODO: from the `.cls-meta.xml`, not the org's release — it decides the default access mode and which idioms compile |
+| **Sharing Model** | TODO: `with sharing` / `without sharing` / `inherited sharing` (no keyword = without sharing at ≤ 66.0, with sharing at 67.0+) |
 | **Reviewed By** | TODO |
 | **Date** | TODO: YYYY-MM-DD |
 
@@ -26,7 +27,7 @@
 
 | Line | Method / Query | Issue | Remediation |
 |------|---------------|-------|-------------|
-| TODO | `@AuraEnabled` query without `WITH USER_MODE` | Medium | Add `WITH USER_MODE` |
+| TODO | `@AuraEnabled` query without `WITH USER_MODE` | Medium (≤ 66.0; at 67.0+ user mode is already the default) | Add `WITH USER_MODE` |
 | TODO | DML without `stripInaccessible` | Medium | Wrap in `stripInaccessible(UPDATABLE)` |
 | TODO | None found | — | — |
 
@@ -56,7 +57,7 @@ List every `Database.query()` call:
 
 - [ ] All `Database.query()` calls use bind variables for user-controlled values
 - [ ] All `ORDER BY`, `LIMIT`, field name, and object name dynamic values validated against allowlist
-- [ ] All `@AuraEnabled` methods use `WITH USER_MODE` or `WITH SECURITY_ENFORCED`
+- [ ] All `@AuraEnabled` methods use `WITH USER_MODE` (no `WITH SECURITY_ENFORCED` — legacy below `apiVersion` 67.0, a compile failure at or above it)
 - [ ] All `without sharing` classes have inline comment documenting why system context is required
 - [ ] PMD suppression annotations include justification
 - [ ] DML in service classes uses `stripInaccessible()` for user-initiated mutations

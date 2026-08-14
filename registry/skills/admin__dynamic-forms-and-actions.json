@@ -20,6 +20,7 @@
     "1ad22cb15c50afd031a9",
     "1c370f9a1def31e4011a",
     "1f10d16cc6ae861f96c7",
+    "1f29e7034955abf74f16",
     "20f384b90bdd7a9fe05b",
     "22342fcfb1bddc15813c",
     "23cfdd70320655456281",
@@ -32,6 +33,7 @@
     "40a1bef82d5e16e84004",
     "42ba2e358e5a773acae5",
     "44584efa98418d69e5c8",
+    "45778a3563eb6e91b4c7",
     "48d87d6b3f4151297735",
     "4993c3c2b9c0708340db",
     "4bb3c9ea22bf3bd22c18",
@@ -66,6 +68,7 @@
     "a343ddc6abd9a171f727",
     "ad1db40343961c802b7d",
     "af0f71525e9852a8939a",
+    "b1ebd78f1b2a7b2d5efd",
     "b2beb34838a1a79c8b63",
     "b4415ede39557092acc1",
     "b5e358fbebc6a56aac8c",
@@ -88,7 +91,7 @@
     "f55a764dc0d633bce59f",
     "f701273e8a68945df432"
   ],
-  "content_hash": "3180fa9248631ddb398cc552b1654175a6cc382abec080b9e20e49b29a0502f4",
+  "content_hash": "687fe582db74b20f21f0b6d07836dea676b0b8da19003268ecdf6b6738f94eb5",
   "dependencies": [
     "record-types-and-page-layouts"
   ],
@@ -107,7 +110,8 @@
     "Dynamic Forms (Lightning App Builder) \u2014 https://help.salesforce.com/s/articleView?id=sf.lightning_app_builder_dynamic_forms.htm",
     "Dynamic Actions (Lightning App Builder) \u2014 https://help.salesforce.com/s/articleView?id=sf.lightning_app_builder_dynamic_actions.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Field-Level Security \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm"
+    "Field-Level Security \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm",
+    "Enhancing Dynamic Pages with Visibility Rules (Trailhead, Lightning App Builder module) \u2014 https://trailhead.salesforce.com/content/learn/modules/lightning_app_builder/add-visibility-rules-for-dynamic-pages-lab"
   ],
   "outputs": [
     "Lightning record page with Dynamic Forms field components and visibility filters configured",

@@ -62,7 +62,7 @@ Step 3: Only after Step 2 succeeds, deploy ExperienceBundle
 
 **What the LLM generates:** "Once the deployment completes successfully, your Experience Cloud site will be available to users at https://yourdomain.my.site.com/sitename." or "After the change set deploys, the site will be live."
 
-**Why it happens:** LLMs generalize from standard metadata deployments where deploying a component makes it immediately active. They are not aware of the Experience Cloud-specific requirement that ExperienceBundle deployments always land in Draft status and require an explicit Publish action before end users can access the site.
+**Why it happens:** LLMs generalize from standard metadata deployments where deploying a component makes it immediately active. They are not aware of the Experience Cloud-specific requirement that an ExperienceBundle deployment never publishes — a first deployment leaves the site at `Network.Status = UnderConstruction`, and a later one leaves an already-`Live` site serving its last published version — so an explicit Publish action is always required before end users see the deployed site.
 
 **Correct pattern:**
 
@@ -78,7 +78,7 @@ POST /services/data/v63.0/connect/communities/{communityId}/publish
 Authorization: Bearer {accessToken}
 ```
 
-**Detection hint:** Flag any response that claims the site will be "live," "available," or "accessible" immediately after deployment without including an explicit Publish step. Also flag responses that do not mention Draft status after ExperienceBundle deployment.
+**Detection hint:** Flag any response that claims the site will be "live," "available," or "accessible" immediately after deployment without including an explicit Publish step. Also flag responses that do not state that the deployed content stays unpublished until Publish runs.
 
 ---
 
@@ -172,3 +172,27 @@ A single manifest does not guarantee commit ordering within the deploy.
 ```
 
 **Detection hint:** Flag any first-time Experience Cloud site deployment recommendation that uses a single manifest or single change set containing both `Network`/`CustomSite` and `ExperienceBundle` without an explicit sequencing note or confirmation that Network already exists in the target org.
+
+---
+
+## Anti-Pattern 7: Writing the Setup Label into `Network.Status`, or Inserting a Network Record to Create a Site
+
+**What the LLM generates:** Publish or maintenance automation such as `site.Status = 'Published';` (or `'Active'`, or `'Draft'` for the pre-publish state), and provisioning code that inserts a `Network` record to stand up the site in the target org.
+
+**Why it happens:** LLMs mirror the vocabulary of Experience Workspaces and the All Sites list, where the status column reads Published / Preview / Offline. They also assume every sObject supports full CRUD, so `Network` looks insertable — but its supported calls are `describeSObjects()`, `query()`, `retrieve()`, and `update()` only.
+
+**Correct pattern:**
+
+```apex
+// WRONG — 'Published' is the Setup label, not the API value, and Network is not insertable
+// insert new Network(Name = 'CustomerPortal', Status = 'Published');
+
+// CORRECT — query the existing record and update it with an API value
+Network site = [SELECT Id, Status FROM Network WHERE Name = 'CustomerPortal' LIMIT 1];
+site.Status = 'DownForMaintenance';   // takes a published site offline; 'Live' brings it back
+update site;
+```
+
+The first publish of an Experience Builder site is still done through Experience Builder or `POST /connect/communities/{communityId}/publish`; the `Status` update is how a published site is taken offline and brought back. New sites come from the Metadata API `Network` type or Setup, never from DML.
+
+**Detection hint:** Flag any SOQL filter or DML assignment that uses `'Published'`, `'Active'`, or `'Draft'` as a `Network.Status` value, and any `insert` or `delete` against `Network`.

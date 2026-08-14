@@ -43,4 +43,6 @@ Step numbers follow the Apex Developer Guide's 20-step list.
 - [ ] No field written by both the step-3 Flow and the step-4 before
       trigger (the trigger would silently win).
 - [ ] Before-save flow limited to same-record field updates.
+- [ ] No parent after-save Flow (step 14) relied on to fire from a child
+      roll-up — a recursive save skips steps 9–17.
 - [ ] Recursion guards documented.

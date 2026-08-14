@@ -28,14 +28,21 @@ public with sharing class PublicAccountController {
         return [
             SELECT Id, Name, Industry FROM Account
             WHERE Public_Accounts__c = true
-            WITH SECURITY_ENFORCED
+            WITH USER_MODE
         ];
     }
 }
 ```
 
-`with sharing` enforces the guest user's sharing; explicit filter
-restricts to a public flag; `WITH SECURITY_ENFORCED` enforces FLS.
+`with sharing` enforces the guest user's sharing across the whole
+class, including clause-less queries and DML; explicit filter
+restricts to a public flag; `WITH USER_MODE` enforces FLS, object
+permissions, and sharing on this query.
+Write `WITH USER_MODE`, not `WITH SECURITY_ENFORCED`: the gate is the
+class's `apiVersion` in its `.cls-meta.xml`, and at 67.0+ the older
+clause was removed and the class no longer compiles. `WITH USER_MODE`
+is GA from API 57.0, so it is correct on every version that still
+takes new code.
 
 **OWASP mapping.** A01 Broken Access Control.
 

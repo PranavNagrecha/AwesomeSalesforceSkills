@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Checker for Apex stripInaccessible / FLS enforcement skill.
 
-Scans .cls and .trigger files for three anti-patterns:
+Scans .cls and .trigger files for four anti-patterns:
 
   P0: Security.stripInaccessible(...).getRecords() / a SObjectAccessDecision is
       captured, then DML is performed on the ORIGINAL parameter rather than the
@@ -11,9 +11,15 @@ Scans .cls and .trigger files for three anti-patterns:
       list (records / userSupplied / input / payload) AND performs DML on it
       WITHOUT any Security.stripInaccessible call in the same method.
 
-  P2: Same method has WITH USER_MODE (or WITH SECURITY_ENFORCED) on a SOQL
-      query AND a Security.stripInaccessible(AccessType.READABLE, ...) on the
-      same path. Redundant double enforcement.
+  P2: Same method has WITH USER_MODE on a SOQL query AND a
+      Security.stripInaccessible(AccessType.READABLE, ...) on the same path.
+      Redundant double enforcement.
+
+  WITH SECURITY_ENFORCED: never counted as evidence of a secure query. It is
+      P2 tech debt on a class pinned below apiVersion 67.0 and P0 at 67.0+,
+      where the clause was removed and no longer compiles. The apiVersion read
+      from the sibling *-meta.xml is the gate, not the org's release. Scanned
+      per file rather than per method, so trigger bodies are covered.
 
 Exit code 1 if any P0 or P1 issue is found. Exit 0 otherwise. P2 issues are
 reported as warnings but do not change the exit code.
@@ -43,7 +49,9 @@ DECISION_ASSIGN = re.compile(
     r"SObjectAccessDecision\s+(\w+)\s*=\s*Security\.stripInaccessible",
 )
 DML = re.compile(r"\b(insert|update|upsert|delete)\s+([\w\.\(\)]+)\s*;")
-USER_MODE_SOQL = re.compile(r"WITH\s+(USER_MODE|SECURITY_ENFORCED)", re.IGNORECASE)
+USER_MODE_SOQL = re.compile(r"WITH\s+USER_MODE", re.IGNORECASE)
+SECURITY_ENFORCED_SOQL = re.compile(r"WITH\s+SECURITY_ENFORCED", re.IGNORECASE)
+API_VERSION = re.compile(r"<apiVersion>\s*([\d.]+)\s*</apiVersion>")
 USER_SUPPLIED_NAMES = re.compile(
     r"\b(records|userSupplied|input|payload|incoming|fromClient)\b",
     re.IGNORECASE,
@@ -91,6 +99,53 @@ def extract_method_bodies(text: str) -> list[tuple[str, str, int]]:
     return out
 
 
+def api_version_of(path: Path) -> float | None:
+    """apiVersion from the sibling *-meta.xml, or None when it cannot be read.
+
+    This is the gate for Apex default access mode, not the org's release: a
+    class pinned to 58.0 keeps the pre-Summer '26 defaults in a Summer '26 org.
+    """
+    meta = path.with_name(path.name + "-meta.xml")
+    try:
+        found = API_VERSION.search(meta.read_text(encoding="utf-8", errors="ignore"))
+    except OSError:
+        return None
+    if not found:
+        return None
+    try:
+        return float(found.group(1))
+    except ValueError:
+        # Malformed apiVersion. Unknown is the honest answer; never crash the scan.
+        return None
+
+
+def scan_security_enforced(
+    text: str, rel_path: str, api_version: float | None
+) -> list[str]:
+    """WITH SECURITY_ENFORCED findings for a whole file.
+
+    File-scoped on purpose: a `.trigger` body has no method headers, so a
+    method-scoped rule would report every trigger clean — the one place the
+    reader most needs the finding, since a trigger body runs in system mode at
+    every API version and enforces nothing on its own.
+    """
+    issues: list[str] = []
+    for em in SECURITY_ENFORCED_SOQL.finditer(text):
+        line = text[: em.start()].count("\n") + 1
+        if api_version is not None and api_version >= 67.0:
+            issues.append(
+                f"P0 {rel_path}:{line}: WITH SECURITY_ENFORCED does not compile at "
+                f"apiVersion {api_version:.1f} — removed in 67.0; use WITH USER_MODE"
+            )
+        else:
+            seen = "unknown apiVersion" if api_version is None else f"apiVersion {api_version:.1f}"
+            issues.append(
+                f"P2 {rel_path}:{line}: WITH SECURITY_ENFORCED ({seen}) is legacy and "
+                f"is removed at apiVersion 67.0 — migrate to WITH USER_MODE (57.0+)"
+            )
+    return issues
+
+
 def analyze_method(name: str, body: str, line_no: int, rel_path: str) -> list[str]:
     issues: list[str] = []
 
@@ -135,6 +190,9 @@ def analyze_method(name: str, body: str, line_no: int, rel_path: str) -> list[st
                     f"stripInaccessible(READABLE, ...) is redundant — pick one"
                 )
 
+    # WITH SECURITY_ENFORCED is handled file-scoped in scan_security_enforced()
+    # so that .trigger bodies, which have no method headers, are covered too.
+
     # Also flag unused decisions (decision assigned, never .getRecords())
     for dec in decisions:
         if f"{dec}.getRecords" not in body:
@@ -160,12 +218,15 @@ def check_apex(root: Path) -> tuple[list[str], list[str]]:
             rel = str(path.relative_to(root))
         except ValueError:
             rel = str(path)
+        version = api_version_of(path)
+        found = scan_security_enforced(text, rel, version)
         for name, body, line_no in extract_method_bodies(text):
-            for issue in analyze_method(name, body, line_no, rel):
-                if issue.startswith("P0") or issue.startswith("P1"):
-                    blocking.append(issue)
-                else:
-                    warning.append(issue)
+            found.extend(analyze_method(name, body, line_no, rel))
+        for issue in found:
+            if issue.startswith("P0") or issue.startswith("P1"):
+                blocking.append(issue)
+            else:
+                warning.append(issue)
     return blocking, warning
 
 

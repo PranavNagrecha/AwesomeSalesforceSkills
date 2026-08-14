@@ -130,7 +130,9 @@ These apply to the entire org and do not reset per transaction:
 | Resource | Limit (Enterprise/Unlimited) |
 |---|---|
 | Custom objects | 800 |
-| Custom fields per object | 500 (shared across all field types) |
+| Custom fields per object | 500 (Enterprise), 800 (Unlimited/Performance) — shared across all field types |
+| Relationship fields (lookup + master-detail) per object | 40 |
+| Roll-up summary fields per object | 25 |
 | Active flows (all types) | 4,000 |
 | Custom tabs | 25 |
 | Custom apps | 10 (Enterprise), unlimited (Unlimited) |
@@ -217,6 +219,8 @@ Calculate data storage: estimated records × average record size (roughly 2KB pe
 
 Count existing custom objects, fields per object, and active flows. Calculate headroom against org limits. Flag any object approaching 400 custom fields (80% of the 500 limit) for a field audit before adding new fields.
 
+Count deleted-but-not-yet-purged fields in that total. Setup > Object Manager > *object* > Fields & Relationships > Deleted Fields lists them; each one still consumes its slot in the 500/800 pool — and in the 40-relationship or 25-roll-up pool for its type — until the hard-delete process completes, which is up to 15 days after the delete. If the plan's remediation for a near-full object is "delete unused fields," schedule it 15 days ahead of the release that needs the headroom, or plan to Erase and Purge.
+
 ---
 
 ## Mode 2: Audit an Existing Org for Limit Risk
@@ -302,7 +306,7 @@ Use this mode when a production incident involves `System.LimitException`, timeo
 | Skinny tables | Read-heavy queries on objects > 5M records | Requires Salesforce support case; significant read performance gain |
 | Big Objects | Historical archival, cold storage | Async SOQL only; no standard DML; designed for write-once-read-rarely patterns |
 | Platform Events for decoupling | Callouts, downstream processing, cross-org messaging | Monitor 250K/24hr delivery ceiling; do not use as a high-frequency message bus without the add-on |
-| Field audit before adding fields | Object approaching 400 custom fields | Unused fields still count against the 500 limit; deprecate and delete rather than accumulate |
+| Field audit before adding fields | Object approaching 400 custom fields | Unused fields still count against the 500 limit — and so do deleted ones, until hard delete completes (up to 15 days) |
 
 ---
 

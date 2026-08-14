@@ -39,3 +39,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Granular locking allows concurrent operations only between groups that have no hierarchical relationship. Operations like role reparenting (moving a role to a different parent in the hierarchy) still block almost all other group updates, regardless of granular locking. During end-of-quarter realignments where role reparenting happens alongside mass user provisioning, lock errors remain common.
 
 **How to avoid:** Review the granular locking compatibility matrix in the *Designing Record Access for Enterprise Scale* guide. Do not assume parallel processing is safe for all group operations. Always sequence role-reparenting operations separately from user provisioning, and add retry logic to integration code for lock-error recovery.
+
+---
+
+## Gotcha 5: "Swap the Skewed Lookup for a Picklist" Is a One-Way Migration, Not a Field Edit
+
+**What happens:** Reading the documented lookup-skew fix — "when you have a relatively low number of lookup values, it's generally a good idea to use a picklist field rather than a lookup field" — teams plan it as a field type change. It is not. The lookup stores record IDs and the picklist stores values, so it means standing up a new field, backfilling it, and repointing every report filter, formula, flow, validation rule, and integration that references the relationship before the lookup can be deleted — deleting the lookup takes its stored IDs with it.
+
+**When it occurs:** Whenever remediation of `UNABLE_TO_LOCK_ROW` contention jumps straight to the picklist option. The same source states the precondition most teams skip: "In many cases, you cannot substitute a picklist for a lookup field if you have additional fields and other data on the lookup records." If the target object carries fields anyone reads or reports on, low cardinality is no longer sufficient justification — audit what else lives on those records before committing to the swap.
+
+**How to avoid:** Try distribution first — it is reversible and needs no schema change. Skew usually concentrates on a generic "catchall" target, so leaving the lookup blank on records where it genuinely does not apply beats pointing them all at a placeholder record. Also reduce lock duration before reshaping data: locks are held for the whole save, so moving non-critical trigger and flow logic out of the synchronous path shrinks the collision window. Reserve the picklist swap for value sets that are small, static, and backed by a target object holding nothing but a name.

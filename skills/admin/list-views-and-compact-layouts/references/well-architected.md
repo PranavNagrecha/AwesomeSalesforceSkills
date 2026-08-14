@@ -30,4 +30,5 @@ Reliable work routing is not only about automation. If the browse surface is noi
 
 - Compact Layouts (Help) - https://help.salesforce.com/s/articleView?id=sf.compact_layout_overview.htm&type=5
 - List Views (Help) - https://help.salesforce.com/s/articleView?id=sf.customviews.htm&type=5
+- Manage List View Sharing and Editing with Granular Permissions (Summer '26 Release Notes) - https://help.salesforce.com/s/articleView?id=release-notes.rn_listviews_share_private.htm&language=en_US&release=262&type=5
 - Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

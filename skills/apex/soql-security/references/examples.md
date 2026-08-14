@@ -34,13 +34,15 @@ public class AccountSearchController {
             throw new AuraHandledException('Invalid sort field.');
         }
 
-        // ✅ Bind variable for user value; WITH USER_MODE for FLS
+        // ✅ Bind variable for user value; AccessLevel.USER_MODE for FLS.
+        //    WITH USER_MODE is a compile-time clause for inline SOQL only — it
+        //    cannot be appended to a dynamic query string (see llm-anti-patterns
+        //    Anti-Pattern 3), so dynamic SOQL passes the access level instead.
         String likePattern = '%' + String.escapeSingleQuotes(searchTerm) + '%';
         String query = 'SELECT Id, Name, AnnualRevenue FROM Account '
             + 'WHERE Name LIKE :likePattern '
-            + 'ORDER BY ' + sortField + ' ASC '
-            + 'WITH USER_MODE';
-        return Database.query(query);
+            + 'ORDER BY ' + sortField + ' ASC';
+        return Database.query(query, AccessLevel.USER_MODE);
     }
 }
 ```
@@ -57,7 +59,9 @@ public with sharing class ContactController {
     @AuraEnabled(cacheable=true)
     public static List<Contact> getContactsForAccount(Id accountId) {
         // WITH USER_MODE: enforces sharing, CRUD, and FLS
-        // If user can't read SSN__c, the field is excluded from results (QueryException thrown)
+        // If the user can't read one of these fields, the whole query throws
+        // QueryException — nothing is returned and no field is silently dropped.
+        // Use Security.stripInaccessible when partial results are acceptable.
         return [
             SELECT Id, FirstName, LastName, Email, Phone
             FROM Contact
@@ -173,7 +177,7 @@ private class ContactControllerTest {
                         'Restricted user should not see sensitive fields');
                 }
             } catch (QueryException e) {
-                // Expected if WITH SECURITY_ENFORCED used — field inaccessible
+                // Expected: WITH USER_MODE throws when a selected field is inaccessible
                 System.assert(e.getMessage().contains('inaccessible'),
                     'Expected FLS exception');
             }

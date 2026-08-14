@@ -13,7 +13,7 @@ public with sharing class LookupController {
         List<Account> rows = [
             SELECT Id, Name, Industry
             FROM Account
-            WHERE Name LIKE :like WITH SECURITY_ENFORCED
+            WHERE Name LIKE :like WITH USER_MODE
             ORDER BY LastViewedDate DESC NULLS LAST
             LIMIT 10
         ];
@@ -36,8 +36,18 @@ public with sharing class LookupController {
 ```
 
 `@AuraEnabled(cacheable=true)` lets `@wire` cache identical
-queries. `WITH SECURITY_ENFORCED` enforces FLS without writing
-manual `Schema.DescribeFieldResult` checks.
+queries. `WITH USER_MODE` enforces FLS, object permissions, and
+sharing without writing manual `Schema.DescribeFieldResult`
+checks.
+
+The gate is the `apiVersion` in the class's `.cls-meta.xml`, not
+the org's release. At **67.0+** the older `WITH SECURITY_ENFORCED`
+does not compile — the compiler emits *"WITH SECURITY_ENFORCED is
+no longer supported, use WITH USER_MODE instead"*. At **57.0–66.0**
+it still compiles but is the weaker construct (it checks only the
+`SELECT` list), so treat it as tech debt. On a class pinned to
+**≤56.0** it is the idiom available; prefer raising the
+`apiVersion` over hardening in place.
 
 ---
 
@@ -205,6 +215,7 @@ public static List<LookupResult> searchMixed(String term) {
             Account(Id, Name, Industry),
             Contact(Id, Name, Email),
             Opportunity(Id, Name, StageName)
+        WITH USER_MODE
         LIMIT 15
     ];
     List<LookupResult> out = new List<LookupResult>();

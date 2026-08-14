@@ -39,6 +39,25 @@
 
 ---
 
+## Historical Trend Reports Are Matrix-Only, and Can't Be Exported or Subscribed To
+
+**What happens:** An admin builds the trend request as a Summary report grouped by owner, schedules it as a weekly subscription, and promises the VP a spreadsheet. All three steps are unsupported. Pulled through the Analytics REST API the format failure comes back as error 501: `Historical trend data is unavailable in the report format requested. Change the report format to matrix and try again.`
+
+**When it bites you:** Any historical trend requirement phrased like an ordinary report request — "trend it by rep, email it every Monday, export it to Excel."
+
+**What the feature refuses (verbatim from the limits doc):**
+- "The summary report format isn't supported." — build it as **Matrix**.
+- "Historical trending reports can't be exported."
+- "You can't subscribe to historical trend reports."
+- "Row limit filters aren't supported." and "Formula fields aren't supported."
+- "Dynamic exchange rates aren't supported. When you run a historical trend report, it uses a static exchange rate, which could be outdated."
+- "Historical trend reporting with charts is supported in Lightning Experience, but tabular views of historical trend reports aren't available."
+- In Lightning Experience "you must set the snapshot date as the primary row grouping" — any other primary grouping is rejected.
+
+**How to avoid it:** If the requirement includes an export, an email subscription, a formula column, or a row limit, historical trending is the wrong feature. Use a Reporting Snapshot into a custom object and report on that custom object normally — it has none of these restrictions.
+
+---
+
 ## Report Subscriptions Don't Respect Row-Level Security for Recipients
 
 **What happens:** An admin creates a report of all Opportunities over $1M. They set up a subscription to send this report every Monday to 15 sales reps. Each rep only has access to their own opportunities via the sharing model. But the subscription sends the full report — all 1M+ opportunities — because it runs as the report owner (a Manager with "View All"). Each rep receives everyone else's pipeline data in their inbox.

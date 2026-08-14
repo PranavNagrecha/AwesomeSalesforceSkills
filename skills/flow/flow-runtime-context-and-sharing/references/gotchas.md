@@ -53,7 +53,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:**
 - Send Email Alert respects FLS on merge fields it pulls into the email body.
 - Post to Chatter respects FLS on merge fields.
-- Apex Action elements enforce FLS per the called Apex class's own `with sharing` / `WITH SECURITY_ENFORCED` declarations.
+- Apex Action elements enforce FLS per the called Apex class's own declarations: `with sharing` for record access, and the class's query idiom for field access. That idiom is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release — at **67.0+** SOQL, SOSL, and DML enforce user mode by default (`WITH USER_MODE` states it explicitly on a query; DML says it with `as user`, or `AccessLevel.USER_MODE` on a `Database` method; `WITH SECURITY_ENFORCED` was removed and no longer compiles), at **57.0–66.0** `WITH USER_MODE` is the read idiom, and at **≤ 56.0** it is `WITH SECURITY_ENFORCED` or `Security.stripInaccessible(AccessType.READABLE, records).getRecords()`. A class pinned to 58.0 still enforces the old way inside a Summer '26 org, so read the meta file before judging the action.
 - Outbound Message actions enforce FLS for the field set sent.
 
 **How to avoid:**

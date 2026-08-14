@@ -63,7 +63,9 @@ When a Flow hits a Scheduled Path wait, it suspends as a Paused Flow Interview. 
 
 ### Execution context
 
-Scheduled path execution runs in system context by default (like other record-triggered Flow), with its own governor limit scope. Updates to records made in the scheduled branch are separate transactions from the trigger.
+Scheduled path execution runs in system context by default (like other record-triggered Flow), with its own governor limit scope. Updates to records made in the scheduled branch are separate transactions from the triggering transaction.
+
+That default is set by the Flow and is **not** changed by the Summer '26 Apex inversion — no class `apiVersion` moves a record-triggered Flow into user mode. The version gate applies only to Apex **invoked from** the scheduled branch, where each invocable class's own `.cls-meta.xml` `apiVersion` decides its *default* database mode: at **67.0+** its SOQL, SOSL, DML and `Database` calls enforce the running user's sharing rules, FLS and object permissions with no keyword at all, while the same class pinned at **66.0 or earlier** still defaults to system mode. So a scheduled path that worked can start throwing when that class's `apiVersion` is raised — upgrading the org's release does not, on its own, change anything. Canonical table: [`agents/_shared/AGENT_CONTRACT.md` § Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 
 ## Common Patterns
 

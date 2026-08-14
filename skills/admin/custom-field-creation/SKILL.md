@@ -69,9 +69,11 @@ The most common wrong assumption: creating a field is enough to make it visible 
 
 ## Core Concepts
 
-### 1. Field Type Is Permanent (Mostly)
+### 1. Field Type Changes Are Allowed — and That Is the Danger
 
-Once you save a custom field, the field type cannot be changed for most types. Text cannot become a Picklist. Number cannot become Currency. The exceptions Salesforce permits are: Text ↔ Text Area, Auto Number ↔ Text, and certain picklist conversions. Plan the field type before clicking Save — changing it later requires creating a new field, migrating data, and retiring the old field.
+Most conversions are permitted: Text → Picklist, Number → Currency, and Picklist → Multi-Select Picklist all go through. The risk is not that Salesforce refuses, it is that stored values disappear. Salesforce's rule is to convert only custom fields that hold no data. Conversions documented as data-losing: to or from Date or Date/Time; to Number, Percent, or Currency from any other type; from Checkbox to any other type; to or from Multi-Select Picklist; from Text to Picklist; from Auto Number to any other type except Text; to Auto Number from any type except Text; and from Long Text Area to any type except Email, Phone, Text, Text Area, or URL.
+
+A smaller set is blocked outright: Formula fields convert neither in nor out, Classic Encrypted Text converts neither in nor out, and no custom field referenced in Apex or on a Visualforce page can change type at all. Text ↔ Auto Number is the safe round trip, with Auto Number capped at 30 characters. Plan the type before clicking Save anyway — see `references/gotchas.md` Gotcha 6 for what a lossy conversion destroys beyond the field itself.
 
 ### 2. Three Separate Access Layers
 
@@ -213,7 +215,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Before marking field creation complete:
 
-- [ ] Field type chosen intentionally — type cannot be changed for most types after save.
+- [ ] Field type chosen intentionally — most conversions are allowed later, but the data-losing ones destroy stored values, and where data is lost every list view built on the field is deleted.
 - [ ] API name reviewed: clear, unique, under 40 characters, no trailing underscores.
 - [ ] Description and Help Text filled in — helps future admins and end users.
 - [ ] FLS configured for all profiles or permission sets that need Read and/or Edit access.

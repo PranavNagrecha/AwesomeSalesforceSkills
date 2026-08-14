@@ -57,6 +57,7 @@
 - Build a Flow Orchestration — https://help.salesforce.com/s/articleView?id=sf.flow_orchestrator_build.htm&type=5
 - Stages and Steps in Flow Orchestrator — https://help.salesforce.com/s/articleView?id=sf.flow_orchestrator_concepts.htm&type=5
 - Work Items in Flow Orchestration — https://help.salesforce.com/s/articleView?id=sf.flow_orchestrator_workitems.htm&type=5
+- Flow Orchestration Entitlements (runs included, no usage-based limitations) — https://help.salesforce.com/s/articleView?id=platform.orchestrator_considerations_entitlements.htm&type=5
 - Evaluation Flow reference — https://help.salesforce.com/s/articleView?id=sf.flow_concepts_evaluation_flow.htm&type=5
 - Sibling skill — `skills/flow/flow-error-notification-patterns/SKILL.md`
 - Sibling skill — `skills/flow/flow-time-based-patterns/SKILL.md`

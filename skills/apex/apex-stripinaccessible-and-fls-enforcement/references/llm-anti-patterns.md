@@ -95,9 +95,9 @@ return d.getRecords();
 
 **Why it happens:** Models pile on enforcement primitives "to be safe." `WITH USER_MODE` already throws on inaccessible read — the strip cannot strip anything that survived the query.
 
-**Correct pattern:** Use ONE primitive for the read path. `WITH USER_MODE` for new code; reserve `stripInaccessible(READABLE, ...)` for cases where the records came from somewhere other than a fresh query.
+**Correct pattern:** Use ONE primitive for the read path. `WITH USER_MODE` for new code; reserve `stripInaccessible(READABLE, ...)` for cases where the records came from somewhere other than a fresh query. The inverse error appears on classes saved at API 67.0+, where the query runs in user mode with no clause at all: that retires the *read* obligation, not the write one. `stripInaccessible(CREATABLE/UPDATABLE/UPSERTABLE, ...)` still belongs on DML assembled from user input, because user mode throws and fails the whole statement where the strip removes the field and continues — and an Apex trigger body runs in system mode at every API version, so the 67.0 default enforces nothing there.
 
-**Detection hint:** Same method has `WITH USER_MODE` (or `WITH SECURITY_ENFORCED`) on a SOQL query AND a downstream `stripInaccessible(AccessType.READABLE, ...)` on its result. Flagged P2 by the checker.
+**Detection hint:** Same method has `WITH USER_MODE` on a SOQL query AND a downstream `stripInaccessible(AccessType.READABLE, ...)` on its result. Flagged P2 by the checker. `WITH SECURITY_ENFORCED` does not count as the surviving primitive here — the checker flags the clause itself instead (P2 below apiVersion 67.0, P0 at 67.0+ where it no longer compiles).
 
 ---
 

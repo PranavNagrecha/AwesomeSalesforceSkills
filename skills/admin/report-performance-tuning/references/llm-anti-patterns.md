@@ -151,3 +151,37 @@ A 50,000-row compliance export downloaded via the UI silently contains only 4% o
 ```
 
 **Detection hint:** Recommendations to "export as CSV from the report" for integration or compliance use cases without mention of the 2,000-row cap should be flagged.
+
+---
+
+## Anti-Pattern 7: Specifying Reports That Exceed the Structural Caps on Columns and Filters
+
+**What the LLM generates:** A "data extract" report spec listing 120+ fields as columns, or a filter design with 30 numbered filters, or filter logic written as `1 AND (2 OR 3)` where condition 3 is a cross filter. None of the caps are mentioned, because the model treats the report builder as an unbounded query surface.
+
+**Why it happens:** LLMs model reports as SOQL with a UI attached, and SOQL has no comparable column or filter ceiling. Report performance guidance in training data is dominated by "add selective filters" advice, so the failure mode the model has learned to predict is *slow*, not *rejected*. It has no representation of a report that simply refuses to run.
+
+**Correct pattern:**
+
+```
+Report builder allocations, to check before proposing any report spec:
+
+  Field filters           20      (10 in the legacy report wizard)
+  Cross filters           3       (up to 5 subfilters each)
+  Summary formulas        5       (hard-coded; joined reports get 10 per
+                                   block, 50 per report)
+
+Analytics API processing limit — a separate cap from the allocations above:
+
+  Columns per report      < 100   (detail columns + summaries + custom
+                                   summary formulas, counted together)
+
+Exceeding the column cap is a hard refusal at run time, not slowness: the
+API returns HTTP 400 "Only a report with fewer than 100 columns can be
+run." For a >100-column extract, do not propose a report at all — use
+Bulk API 2.0 query against the object directly.
+
+See gotchas.md Gotcha 6 for the full error text, and Gotcha 7 for why
+filter logic never covers a cross filter.
+```
+
+**Detection hint:** Count the columns in any generated report spec. If the response proposes a wide extract, or writes filter logic that references a cross filter by number, it is describing a report the Analytics API will refuse to run.

@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Using DataRaptor Extract When Turbo Extract Is Sufficient
 
-**What the LLM generates:** "Use a DataRaptor Extract to retrieve Account data" for simple single-object queries without filters or transformations, when Turbo Extract is faster and requires no field mapping configuration.
+**What the LLM generates:** "Use a DataRaptor Extract to retrieve Account data" for simple single-object queries without filters or transformations, when Turbo Extract is faster and requires no output mapping configuration.
 
 **Why it happens:** DataRaptor Extract is the more commonly documented component. Turbo Extract is newer and has less training data. LLMs default to the more familiar option.
 
@@ -15,11 +15,12 @@ These patterns help the consuming agent self-check its own output.
 DataRaptor Extract vs Turbo Extract:
 
 Turbo Extract:
-- Single object, no mapping required
+- Single object (plus fields from related parent objects)
+- No formulas, and no Output tab: "it doesn't have formulas or mappings"
+- Also unsupported: custom JSON, default values, transformations
+- Whole config surface: extraction object, filters, fields to return, Options
 - Faster execution (no transformation overhead)
-- Supports basic WHERE clauses
 - Best for: simple record retrieval, prefill scenarios
-- Cannot transform or reshape data
 
 DataRaptor Extract:
 - Multi-object support with relationship queries
@@ -33,7 +34,7 @@ filter, use Turbo Extract. If you need joins, transformations,
 or formula-based mappings, use DataRaptor Extract.
 ```
 
-**Detection hint:** Flag DataRaptor Extract recommendations for simple single-object queries. Check whether Turbo Extract would be simpler and faster.
+**Detection hint:** Flag DataRaptor Extract recommendations for simple single-object queries. Check whether Turbo Extract would be simpler and faster. Conversely, flag any *Turbo* Extract configuration that shows formula rows, default values, or custom output JSON node mappings — a Turbo Extract supports no formulas and has no Output tab, so that config is not expressible and the answer should have been a standard Extract.
 
 ---
 

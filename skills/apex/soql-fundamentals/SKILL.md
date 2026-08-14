@@ -237,7 +237,7 @@ List<Contact> cons = [SELECT FIELDS(STANDARD) FROM Contact];
 // List<Account> accts = [SELECT FIELDS(ALL) FROM Account LIMIT 200];
 ```
 
-Adding `LIMIT 200` does **not** make `FIELDS(ALL)` work in Apex. The `LIMIT n where n <= 200` rule is what unlocks the unbounded forms in the REST/SOAP APIs and the CLI — contexts where they are supported in the first place. Apex is simply not one of those contexts. If you need every field of a record in Apex, enumerate the fields explicitly, or build the field list at run time from `Schema` describes and use `Database.query()` (see the `apex/dynamic-apex` skill, and note that a describe-built field list does *not* inherit FIELDS()'s automatic FLS filtering — you must enforce FLS yourself with `WITH USER_MODE` or `Security.stripInaccessible`).
+Adding `LIMIT 200` does **not** make `FIELDS(ALL)` work in Apex. The `LIMIT n where n <= 200` rule is what unlocks the unbounded forms in the REST/SOAP APIs and the CLI — contexts where they are supported in the first place. Apex is simply not one of those contexts. If you need every field of a record in Apex, enumerate the fields explicitly, or build the field list at run time from `Schema` describes and use `Database.query()` (see the `apex/dynamic-apex` skill, and note that a describe-built field list does *not* inherit FIELDS()'s automatic FLS filtering — in a class saved at API 66.0 or earlier you must enforce FLS yourself with `WITH USER_MODE` or `Security.stripInaccessible`, while at API 67.0+ `Database.query()` defaults to user mode and throws `QueryException` on the first inaccessible field rather than filtering it out).
 
 `FIELDS()` respects field-level security in every context where it is supported: the docs state it "only shows the fields that you have permission to access."
 
@@ -312,6 +312,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- soql-security — Use alongside this skill to add WITH USER_MODE or WITH SECURITY_ENFORCED to enforce FLS and CRUD in Apex queries
+- soql-security — Use alongside this skill to enforce FLS and CRUD in Apex queries with WITH USER_MODE (WITH SECURITY_ENFORCED is the legacy ≤56.0 idiom and does not compile at API 67.0+)
 - soql-query-optimization — Use when the query is correct but slow or hitting CPU limits due to non-selective filters or missing indexes
 - apex-cpu-and-heap-optimization — Use when SOQL governor limits (100 queries, 50,000 rows) are being hit in a transaction

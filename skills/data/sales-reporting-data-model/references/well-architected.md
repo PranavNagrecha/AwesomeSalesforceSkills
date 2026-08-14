@@ -4,9 +4,9 @@
 
 - **Performance** — Reporting Snapshots decouple data-intensive pipeline analysis from live Opportunity queries, preventing report timeout on large datasets. Historical Trend Reporting uses an internal data store that does not hit standard query limits. CRTs with "without" joins that span large object volumes can be slow; index filter fields and use date-scoped filters to maintain acceptable run times.
 
-- **Reliability** — Reporting Snapshot runs depend on: (1) the source report being below the 2,000-row cap, (2) the Running User being active, and (3) the schedule executing on time. Any of these failure modes silently corrupts the historical archive. Operational monitoring of snapshot run history is a reliability requirement, not optional.
+- **Reliability** — Reporting Snapshot runs depend on: (1) the run inserting no more than 2,000 new records into the target object, (2) the Running User being active and retaining Run Reports, source-folder access, and Create on the target object, and (3) the schedule executing on time. Salesforce surfaces all three as partial errors or failures in Run History, but nothing enforces that anyone reads them — the archive corrupts quietly only because the notification is unmonitored. Operational monitoring of snapshot run history is a reliability requirement, not optional.
 
-- **Scalability** — Reporting Snapshot target objects grow unboundedly. A daily snapshot of 1,500 records creates over half a million records per year. Storage limits, report performance on large target objects, and data retention policies must be planned at design time. HTR has a hard 8-field cap and 3-month retention — it does not scale to long-term history or high-cardinality field tracking. CRT multi-object chains of 4 objects with no indexed join fields degrade as object volumes grow.
+- **Scalability** — Reporting Snapshot target objects grow unboundedly. A daily snapshot of 1,500 records creates over half a million records per year. Storage limits, report performance on large target objects, and data retention policies must be planned at design time. HTR has a hard 8-field cap and retains only the previous 3 months plus the current month — it does not scale to long-term history or high-cardinality field tracking. CRT multi-object chains of 4 objects with no indexed join fields degrade as object volumes grow.
 
 - **Operational Excellence** — Each reporting mechanism requires ongoing operational care: monitoring Snapshot run success, maintaining HTR field priority as business requirements evolve, and keeping CRT deployed status current. Undocumented reporting architectures accumulate invisible debt — retention policies, Running User dependencies, and field-cap trade-offs must be documented for future admins.
 
@@ -14,7 +14,7 @@
 
 ## Architectural Tradeoffs
 
-**HTR vs. Reporting Snapshots:** HTR is lower-maintenance and zero storage cost, but is bounded by 3-month retention, 8 tracked fields, and no API access. Reporting Snapshots require ongoing operational management (monitoring, storage growth, Running User hygiene) but scale to multi-year history and arbitrary field breadth. For most production orgs, both are used in tandem: HTR for near-term operational trending, Snapshots for long-term archival.
+**HTR vs. Reporting Snapshots:** HTR is lower-maintenance and zero storage cost, but is bounded by a retention window of the previous 3 months plus the current month, 8 tracked fields, and no API access. Reporting Snapshots require ongoing operational management (monitoring, storage growth, Running User hygiene) but scale to multi-year history and arbitrary field breadth. For most production orgs, both are used in tandem: HTR for near-term operational trending, Snapshots for long-term archival.
 
 **Reporting Snapshots vs. CRM Analytics / Data Cloud:** Reporting Snapshots are native, declarative, and require no additional licenses. CRM Analytics and Data Cloud offer richer time-series modeling, larger data volumes, and real-time ingestion but require separate licensing and more implementation investment. For orgs already licensed for CRM Analytics, the native Snapshot approach may be redundant.
 
@@ -28,11 +28,17 @@
 
 3. **Activating HTR late in the org lifecycle and expecting historical data** — HTR data collection starts at activation. Enabling it after a business problem is discovered means the historical window for investigation pre-dates activation and is simply unavailable. The correct pattern is to activate HTR at org go-live or at the start of the Sales Cloud rollout.
 
+4. **Treating the Historical Trending toggle as reversible** — Turning trending off for an object deletes its historical data, its historical trending report type, and every report built on that report type. There is no restore path, so the toggle belongs behind change control alongside field deletion, not in routine Setup cleanup.
+
 ## Official Sources Used
 
 - Report on Historical Data with Reporting Snapshots — https://help.salesforce.com/s/articleView?id=sf.data_about_analytic_snap.htm&type=5
 - Historical Trending — https://help.salesforce.com/s/articleView?id=sf.reports_historical_trending_overview.htm&type=5
 - Opportunities with Historical Trending Report — https://help.salesforce.com/s/articleView?id=sf.reports_historical_trending_create.htm&type=5
 - Custom Report Types — https://help.salesforce.com/s/articleView?id=sf.reports_report_type_setup.htm&type=5
+- Troubleshoot Reporting Snapshots (2,000 new records per run, Run History error strings) — https://help.salesforce.com/s/articleView?id=sf.data_troubleshooting_snapshots.htm&language=en_US&type=5
+- Set Up Historical Trend Reporting (supported objects, destructive disable) — https://help.salesforce.com/s/articleView?id=xcloud.reports_historical_setup.htm&language=en_US&type=5
+- Historical Trend Reporting Limits (retention, 5M rows, 100 fields, 5 snapshot dates, 4 filters) — https://help.salesforce.com/s/articleView?id=analytics.reports_historical_limits.htm&language=en_US&type=5
+- Create a Custom Report Type in the Legacy Custom Report Type Builder (Deployment Status) — https://help.salesforce.com/s/articleView?id=xcloud.reports_defining_report_types.htm&language=en_US&type=5
 - Salesforce Well-Architected — https://architect.salesforce.com/well-architected/overview
 - Salesforce Object Reference (OpportunityHistory) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityhistory.htm

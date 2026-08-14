@@ -39,7 +39,7 @@ After Change Set 2 deploys successfully, the admin opens Experience Builder in p
 
 **Context:** A DevOps team uses Salesforce CLI with source-tracked sandboxes and wants a repeatable, automated release pipeline for an Experience Cloud customer portal. The pipeline must publish the site automatically after deployment without manual intervention.
 
-**Problem:** The team's single `package.xml` includes ExperienceBundle, Network, and Apex classes. When the CI pipeline runs `sf project deploy start --manifest package.xml`, the deploy occasionally fails with a dependency error. The team also discovers after each successful deploy that the site is in Draft status and end users cannot access it until someone manually publishes.
+**Problem:** The team's single `package.xml` includes ExperienceBundle, Network, and Apex classes. When the CI pipeline runs `sf project deploy start --manifest package.xml`, the deploy occasionally fails with a dependency error. The team also discovers that a successful deploy never publishes: the first release left the site at `Network.Status = UnderConstruction`, and every later release leaves the `Live` site serving its last published version until someone manually publishes.
 
 **Solution:**
 

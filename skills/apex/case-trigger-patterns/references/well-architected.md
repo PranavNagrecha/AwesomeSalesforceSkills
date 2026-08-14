@@ -24,9 +24,13 @@
 
 3. **Running merge cleanup logic unconditionally in a delete trigger** — Without checking `MasterRecordId`, all delete trigger logic runs for both merge deletes and true deletes. This can cause data loss (archival of records that should have migrated to the master) or double-processing (firing integration callouts for records that still exist under a different Id).
 
+4. **Placing the `MasterRecordId` guard in `before delete`** — A more dangerous variant of anti-pattern 3, because it looks fixed. `MasterRecordId` is set between the before and after delete events, so a before-context guard always reads null and every merged record takes the true-delete path. The code passes review and the org loses data anyway. Merge detection belongs in `after delete`; merging is irreversible, so this is not a defect a later cleanup can undo.
+
 ## Official Sources Used
 
 - Apex Developer Guide — Triggers and Merge Statements — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_merge_statements.htm
+- Apex Developer Guide — Merge Statements (supported objects) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_examples_merge.htm
+- SOAP API Developer Guide — merge() — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_merge.htm
 - Apex Developer Guide — Database.DmlOptions Class — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_database_dmloptions.htm
 - REST API Developer Guide — Assignment Rule Header — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/headers_assignmentrule.htm
 - Salesforce Help — Run Case Assignment Rule from Apex — https://help.salesforce.com/s/articleView?id=000386162&type=1

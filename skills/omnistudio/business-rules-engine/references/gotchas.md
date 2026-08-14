@@ -69,4 +69,27 @@ Row 2 was intended as a lower-priority fallback for a different region but was a
 **How to avoid:**
 - Use a dedicated Industries Cloud scratch org or partner developer org that has the Industries license feature enabled.
 - In `project-scratch-def.json`, include the relevant Industries feature flag (e.g., `"features": ["Industries"]`) and confirm the feature is available in your Dev Hub.
-- Confirm license availability in a target org before including BRE artifacts in a deployment package: run `SELECT Id, Name FROM PermissionSet WHERE Name LIKE '%IndustriesRules%'` to check whether the feature is provisioned.
+- Confirm license availability in a target org before including BRE artifacts in a deployment package: run `SELECT Id, Label FROM PermissionSet WHERE Label IN ('Rule Engine Runtime', 'Rule Engine Designer')` — these are the permission sets that ship with the Business Rules Engine permission set licenses, so their absence means the feature is not provisioned.
+
+---
+
+## Gotcha 6: BRE Access Comes from Permission Set Licenses, Not the Profile
+
+**What happens:** An admin builds and activates an Expression Set, tests it successfully from the BRE UI, then wires it into an Integration Procedure for service agents. Every agent invocation returns no result. The org has the Industries license; the users do not have the permission sets that come with it. The admin's own success proves nothing — the admin is the only user who can run the rule.
+
+**When it occurs:** Whenever a non-author identity executes a rule. BRE access is granted through the permission sets associated with the Business Rules Engine permission set licenses, not through the profile and not through the org's Industries license alone. The two core sets are:
+
+- **Rule Engine Runtime** — run expression sets and lookup tables, Read access to Business Rules Engine objects, read decision tables. This is what every executing identity needs: agents, Experience Cloud users, and the integration user behind an Integration Procedure.
+- **Rule Engine Designer** — all of the above plus Create, Update, Delete access to Business Rules Engine objects and decision tables, and use of context definition tags as list variables in expression sets.
+
+Three more are separately required and are the usual omission:
+
+- **Context Service Admin** — create and activate context definitions for use as list variables.
+- **Context Service Runtime** — execute expression sets that use context definition tags as list variables. Rule Engine Runtime alone does not cover this path.
+- **Decision Explainer Service Access** — configure explanations for expression set steps and capture action logs for each run.
+
+**How to avoid:**
+- Assign Rule Engine Runtime to every identity that executes rules and Rule Engine Designer only to authors. Do not grant Designer as a shortcut to make runtime work.
+- If any expression set uses context tags as list variables, pair Rule Engine Runtime with Context Service Runtime for runtime users, and Context Service Admin for authors.
+- Test as a runtime user, not as the author. The BRE Test tab runs under the author's permissions and will not reproduce a runtime access failure.
+- The five names above are the documented sets — there is no generic `Business Rules Engine User` or `BRE Admin`. Confirm the exact labels in Setup → Permission Sets before writing them into an access design.

@@ -22,7 +22,7 @@ SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE,
 List<Account> sanitized = decision.getRecords();
 ```
 
-**Detection hint:** SOQL query without `WITH USER_MODE` or `WITH SECURITY_ENFORCED` — regex: `\[SELECT.*FROM.*(?!WITH\s+(USER_MODE|SECURITY_ENFORCED))`
+**Detection hint:** SOQL query without `WITH USER_MODE` — regex: `\[SELECT.*FROM.*(?!WITH\s+USER_MODE)` — then read the class's `.cls-meta.xml` before scoring it. Below API 67.0 a bare query is unenforced and the finding stands; at 67.0+ the query already runs in user mode by default, so the finding drops to an advisory about stating intent — **for `.cls` files only**, since a `.trigger` body runs in system mode at every API version and a bare query there is still a hard finding. Never score `WITH SECURITY_ENFORCED` as clean: it is the weaker construct below 67.0 and does not compile at 67.0+.
 
 ---
 
@@ -95,7 +95,9 @@ public with sharing class AccountService {
 ```
 Use `with sharing` as the default. Only use `without sharing` with explicit justification (e.g., utility class that must see all records, wrapped in a `with sharing` caller).
 
-**Detection hint:** Class declaration without sharing keyword — regex: `public\s+class\s+\w+` without preceding `with sharing` or `without sharing` or `inherited sharing`
+The severity of the omission is version-gated: a bare class runs `without sharing` at API 66.0 and below (a real exposure) but `with sharing` at 67.0+ (implicit, not absent). Two mistakes follow. Stating "a class with no keyword runs without sharing" unqualified is wrong for 67.0+ code; extending the 67.0 defaults to **triggers** is wrong at every version — a trigger cannot declare a keyword and its body always runs in system mode. See [`AGENT_CONTRACT.md` § Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+
+**Detection hint:** Class declaration without sharing keyword — regex: `public\s+class\s+\w+` without preceding `with sharing` or `without sharing` or `inherited sharing`. Resolve `<apiVersion>` from the sibling `.cls-meta.xml` before assigning severity, and skip `.trigger` files entirely — they have no keyword to check.
 
 ---
 
@@ -190,6 +192,9 @@ WITH USER_MODE / WITH SYSTEM_MODE             Spring '23     (API v57)
 AccessLevel on Database.* methods             Spring '23     (API v57)
 Database.queryWithBinds / getQueryLocatorWithBinds
   / countQueryWithBinds                       Spring '23     (API v57)
+User mode as the DEFAULT access mode, and
+  `with sharing` as the default for a bare
+  class; WITH SECURITY_ENFORCED removed       Summer '26     (API v67)
 ```
 Below v57, use in-scope `:var` binding plus `WITH SECURITY_ENFORCED` and `stripInaccessible()`.
 

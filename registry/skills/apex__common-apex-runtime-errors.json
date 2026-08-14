@@ -38,6 +38,7 @@
     "5385a991bfb37cb9f0bf",
     "54e7c50ed539477124db",
     "554b62d2d46a72bf5f07",
+    "55bb4565d66c96194cd8",
     "57940a9d6d4c98a2a162",
     "59444560a192f8494aa3",
     "65297d69df4a536bf6ec",
@@ -105,7 +106,7 @@
     "feabb43d44cc2de977e2",
     "febd501b71175dd612f5"
   ],
-  "content_hash": "b690fb95b5a3a8055e1f131a35f8dbfbb9370c3c1ea2c1586063316ebcf2d5c3",
+  "content_hash": "c24c3b9e9ba809c5103f28c8385df35a1d99829a95494ecc3d2a822e066b4a16",
   "dependencies": [],
   "description": "Diagnosing and resolving common Apex runtime exceptions: NullPointerException, QueryException, DmlException, ListException, LimitException, TypeException. Use when debugging Apex runtime failures or writing defensive code. NOT for error handling framework design (use error-handling-framework). NOT for governor limit prevention strategies (use governor-limits). NOT for structuring try/catch blocks (use exception-handling).",
   "file_location": "skills/apex/common-apex-runtime-errors",
@@ -126,6 +127,7 @@
     "MIXED_DML_OPERATION error (Help) \u2014 https://help.salesforce.com/s/articleView?id=000382600&language=en_US&type=1",
     "\"Unable to lock row - Record currently unavailable\" error (Help) \u2014 https://help.salesforce.com/s/articleView?id=000387767&language=en_US&type=1",
     "Apex Governor Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the version qualifier on the Security pillar note above",
     "Apex Exception Statements \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_exception_statements.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],

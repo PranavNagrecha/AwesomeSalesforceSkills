@@ -34,6 +34,11 @@
 
 - Salesforce Help: Improve Report Performance — https://help.salesforce.com/s/articleView?id=sf.reports_improve_performance.htm
 - Salesforce Analytics API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_analytics.meta/api_analytics/sforce_analytics_rest_api_intro.htm
+- Salesforce Analytics API: Report Error Codes (100-column limit) — https://developer.salesforce.com/docs/atlas.en-us.api_analytics.meta/api_analytics/sforce_analytics_rest_api_report_error_codes.htm
+- Salesforce Analytics API: Requirements and Limitations (100-column processing limit, 2,000-row API cap) — https://developer.salesforce.com/docs/atlas.en-us.api_analytics.meta/api_analytics/sforce_analytics_rest_api_limits_limitations.htm
+- Salesforce Help: Reports and Dashboards Limits and Allocations — https://help.salesforce.com/s/articleView?id=rd_reports_dashboards_limits.htm&type=5
+- Salesforce Help: Cross Filter Considerations and Limits — https://help.salesforce.com/s/articleView?id=analytics.reports_cross_filters_overview.htm&type=5
+- Salesforce Metadata API: Report metadata type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_report.htm
 - Salesforce Help: Reports and Dashboards Overview — https://help.salesforce.com/s/articleView?id=sf.reports_overview.htm
 - Salesforce Help: Custom Report Types — https://help.salesforce.com/s/articleView?id=sf.reports_custom_report_types_overview.htm
 - Salesforce Help: Dynamic Dashboards — https://help.salesforce.com/s/articleView?id=sf.dashboards_dynamic_about.htm

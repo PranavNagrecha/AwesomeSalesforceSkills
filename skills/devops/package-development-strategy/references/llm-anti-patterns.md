@@ -73,3 +73,15 @@ Common mistakes AI coding assistants make when advising on Salesforce package ty
 **The correct pattern:** Salesforce 2GP beta package versions (created with `--skip-validation`) cannot be installed in production orgs. They can only be installed in sandbox orgs and scratch orgs. If a subscriber needs to test a pre-release version, use a patch version or a release candidate (full validation). Beta versions are for internal developer testing only.
 
 **Detection hint:** Any workflow that installs a beta package version (`--skip-validation`) in a subscriber's production org is not possible — the installation will fail.
+
+---
+
+## Anti-Pattern 7: Applying the Managed-Package Immutability Rule to Unlocked Packages
+
+**What the LLM generates:** "Package versions are immutable — a released version can never be deleted, so old unlocked versions are safe to leave in place." Or the inverse: "Delete the old unlocked betas and releases to clean up your package list."
+
+**Why it happens:** LLMs learn one blanket "package versions are immutable" rule from managed-package documentation and generalize it to every package type, so they never warn about deletion risk. When they do know deletion is possible, they present it as harmless housekeeping.
+
+**The correct pattern:** Immutability and deletability are different properties — a released version's *contents* never change, which says nothing about whether the version can be removed. The deletion rule is per-package-type: released 2GP managed versions cannot be deleted; released unlocked versions can. For unlocked, "Deletion is permanent" and "Attempts to install a deleted package version will fail" — so deleting a version is a breaking change for every pipeline or org that installs by `04t` ID, not a tidy-up. It requires the **Delete Second-Generation Packages** user permission, deletion of all package versions before the package itself, and confirmation that nothing references the package or version as a dependency.
+
+**Detection hint:** Any claim that released Salesforce package versions "can never be deleted" without naming the package type is wrong for unlocked packages. Any suggestion to delete an unlocked package version without a dependency check and a downstream-install warning is unsafe advice.

@@ -46,3 +46,4 @@ Tag findings as Reliability when:
 - Apex Developer Guide — Platform Cache overview
 - Apex Reference Guide — cache partition APIs
 - Platform Cache considerations guidance — limits, scope, and operational considerations
+- Salesforce Help — Cache for Omnistudio Data Mappers and Integration Procedures (VlocityMetadata partition requirement)

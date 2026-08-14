@@ -14,18 +14,18 @@
 
 ## 2. `with sharing` Does Not Enforce FLS — It Only Enforces Record Visibility
 
-**What happens:** A developer declares `with sharing` on a class and a reviewer marks all FLS checklist items as "pass" because the class "enforces sharing." The class still returns field values for fields the running user has no FLS read access to, because SOQL in a `with sharing` class retrieves all requested fields regardless of FLS unless an explicit FLS enforcement mechanism is used.
+**What happens:** A developer declares `with sharing` on a class and a reviewer marks all FLS checklist items as "pass" because the class "enforces sharing." The class still returns field values for fields the running user has no FLS read access to, because at API 66.0 or earlier SOQL in a `with sharing` class retrieves all requested fields regardless of FLS unless an explicit FLS enforcement mechanism is used.
 
 **When it occurs:** Consistently throughout orgs that learned Apex security from older training materials that equated sharing enforcement with security. The `with sharing` keyword controls record-level sharing only. FLS is entirely separate.
 
-**Why it matters:** A user with read access to an Account record but no FLS read on `Account.AnnualRevenue__c` will still receive that field value if the Apex query includes it and the class only declares `with sharing`.
+**Why it matters:** A user with read access to an Account record but no FLS read on `Account.AnnualRevenue__c` will still receive that field value if the Apex query includes it and the class, saved at API 66.0 or earlier, only declares `with sharing`.
 
 **What to do:** For every Apex class identified in the review, check for FLS enforcement separately from sharing enforcement. The valid mechanisms are:
-- `WITH SECURITY_ENFORCED` clause in SOQL (throws an exception if the user lacks field access; does not support sub-queries well)
-- `WITH USER_MODE` on the DML or query statement (API 56.0+, Summer '22; recommended for new code)
-- `Security.stripInaccessible(AccessType.READABLE, records)` before returning data
+- `WITH USER_MODE` on the query, or `as user` / `AccessLevel.USER_MODE` on DML and `Database` methods (GA in API 57.0, Spring '23; recommended for new code)
+- `Security.stripInaccessible(AccessType.READABLE, records)` before returning data — it returns an `SObjectAccessDecision`, so return `.getRecords()`, not the original list
+- `WITH SECURITY_ENFORCED` in SOQL — legacy only. It checks just the `SELECT` list, mishandles polymorphic fields, and reports one violation rather than all; at API 67.0+ it does not compile at all
 
-Mark any class that queries sensitive fields in `with sharing` without FLS enforcement as a High finding.
+Mark any class that queries sensitive fields in `with sharing` without FLS enforcement as a High finding — but read the class's `apiVersion` first, because at **67.0+** queries and DML run in user mode with no keyword at all and enforce FLS on their own, while at **66.0 and earlier** they do not. The gate is the `.cls-meta.xml`, not the org's release. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 
@@ -53,11 +53,11 @@ Mark any class that queries sensitive fields in `with sharing` without FLS enfor
 
 ---
 
-## 5. Apex Batch Jobs and Future Methods Default to System Context Regardless of the Submitting User's Sharing
+## 5. Below API 67.0, Apex Batch Jobs and Future Methods Default to System Context Regardless of the Submitting User's Sharing
 
-**What happens:** An Apex batch job is reviewed in isolation and appears safe — the calling Visualforce or LWC enforces sharing correctly. But the batch job itself is annotated with `Database.Batchable` and has no sharing declaration, meaning it runs in system context. Data exported or processed by the batch is not limited by the submitting user's role or sharing access.
+**What happens:** An Apex batch job is reviewed in isolation and appears safe — the calling Visualforce or LWC enforces sharing correctly. But the batch job itself is annotated with `Database.Batchable`, is saved at API 66.0 or earlier, and has no sharing declaration — so it runs in system context. Data exported or processed by the batch is not limited by the submitting user's role or sharing access.
 
-**When it occurs:** Batch jobs, future methods (`@future`), queueable Apex, and scheduled Apex all run without a user context unless explicitly declared with `with sharing`. Developers writing asynchronous Apex often do not consider sharing because the trigger that initiates the async work correctly enforces sharing.
+**When it occurs:** Batch jobs, future methods (`@future`), queueable Apex, and scheduled Apex saved at **API 66.0 or earlier** all run without a user context unless explicitly declared `with sharing`. At **67.0+** that default inverted — an undeclared class runs `with sharing` and its queries and DML run in user mode — so at that version the finding is an explicit `without sharing` or `as system`, not a missing keyword. The gate is the `apiVersion` in each class's `.cls-meta.xml`, not the org's release, so a Summer '26 org still has this exposure in every class pinned to an older version; see [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*. Developers writing asynchronous Apex often do not consider sharing at all, assuming the trigger that initiated the work enforced it — but Apex triggers run in system mode at **every** API version and cannot declare a sharing or access mode, so they never establish a user context for the async work to inherit.
 
 **Why it matters:** A user who can trigger a batch job export but should not have access to all records in the object can exploit the system-context execution to bypass sharing. This is particularly relevant for reporting jobs, data migration utilities, or integration batch classes that export records to external systems.
 

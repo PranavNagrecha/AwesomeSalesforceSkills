@@ -51,16 +51,31 @@ class.
 
 ## Gotcha 4: `WITH SECURITY_ENFORCED` does not protect against sharing bypass
 
-**What happens.** Apex uses `WITH SECURITY_ENFORCED`; the dev
+**What happens.** Legacy Apex uses `WITH SECURITY_ENFORCED`; the dev
 believes this addresses guest exposure. It does not — that clause
 enforces field-level security and CRUD, but a `without sharing`
 class still bypasses record-level sharing.
 
 **When it occurs.** Misunderstanding of what `WITH SECURITY_ENFORCED`
-covers.
+covers. Expect to find it in older guest-reachable classes: the gate
+is the `apiVersion` in the class's `.cls-meta.xml`, not the org's
+release, so a Summer '26 org runs a class pinned to 58.0 with the
+clause intact.
 
-**How to avoid.** Combine `with sharing` for record-level + `WITH
-SECURITY_ENFORCED` (or `Security.stripInaccessible`) for FLS / CRUD.
+**How to avoid.** Declare the class `with sharing` — it is what
+covers the queries and DML in it that carry no clause — and write
+`WITH USER_MODE` (GA at API 57.0), which enforces FLS, object
+permissions, and the running user's sharing rules on the query it
+sits on, or
+`Security.stripInaccessible(AccessType.READABLE, records)` — operate
+on the returned `SObjectAccessDecision`'s `.getRecords()` — where a
+result must be trimmed rather than throw. The audit **flags** every
+`WITH SECURITY_ENFORCED` it finds rather than scoring the query
+clean: on a class at `apiVersion` 67.0+ it is a P0 compile failure
+(`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE
+instead`); at 57.0–66.0 it is P2 tech debt with a named migration to
+`WITH USER_MODE`; at ≤ 56.0 it is the idiom available, and the fix is
+to raise the class's `apiVersion`.
 
 ---
 

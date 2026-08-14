@@ -29,6 +29,7 @@
     "7283ab269f2398931142",
     "746c93b51fcec53e15da",
     "74cf1554bda883902018",
+    "7686315574dce3336b06",
     "7c9dd9396d1d8080d06c",
     "8a43b8dbc158cf90621a",
     "8cf4a0fc532b18e85d75",
@@ -60,6 +61,7 @@
     "d72acb2143c8b420c378",
     "db5798611f0f7b167b45",
     "dfb0debb2a563a07b36a",
+    "e54c4e7be3515518d6fa",
     "e5fee8e0e14a021e40f4",
     "e95b81182fb514d0de75",
     "ed398158615f34ee7bfb",
@@ -70,7 +72,7 @@
     "f73711a3a77253b43ced",
     "fa7585652eb76db434d2"
   ],
-  "content_hash": "2b73a9db692686c65126f8d9c07e9e181be97538603c640abb0a1504d96a1a91",
+  "content_hash": "d295a288c4f176a6a3abe4a153c9466bef9196c00463beaa40834c7e51ec2a66",
   "dependencies": [],
   "description": "Author @InvocableMethod Apex classes that Flow can call as Actions. Design the input / output variable contract, bulk semantics (one list in, one list out), null handling, and error surfacing. Also covers the inverse direction: calling a flow from Apex via Flow.Interview. NOT for general Apex authoring (use apex-service-selector-domain). NOT for REST-exposed Apex (use apex-rest-resource-patterns).",
   "file_location": "skills/flow/flow-invocable-from-apex",
@@ -86,7 +88,9 @@
     "Salesforce Developer \u2014 `@InvocableVariable` Annotation: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_annotation_InvocableVariable.htm",
     "Salesforce Developer \u2014 Flow.Interview Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Flow_Interview.htm",
     "Salesforce Help \u2014 Customize Flow Behavior with Apex: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_apex.htm",
-    "Salesforce Architects \u2014 Well-Architected Framework: https://architect.salesforce.com/design/architecture-framework/well-architected"
+    "Salesforce Architects \u2014 Well-Architected Framework: https://architect.salesforce.com/design/architecture-framework/well-architected",
+    "Salesforce Release Notes \u2014 The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5",
+    "Salesforce Release Notes \u2014 Secure Apex Code with User Mode Database Operations (GA, Spring '23 / API 57.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5"
   ],
   "outputs": [
     "An @InvocableMethod class with input + output wrapper DTOs",

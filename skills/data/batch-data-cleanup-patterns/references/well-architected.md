@@ -29,5 +29,7 @@
   URL: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
 - Bulk API 2.0 Developer Guide — HARD_DELETE operation, ingest job lifecycle, permissions required for hard delete
   URL: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
+- Metadata API Developer Guide — Deleting Components from an Organization: `destructiveChanges.xml`, the `purgeOnDelete` option, and the roll-up summary field exception that bypasses the Recycle Bin unconditionally
+  URL: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy_deleting_files.htm
 - Salesforce Well-Architected Overview — Operational Excellence pillar framing, reliability and scalability guidance
   URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

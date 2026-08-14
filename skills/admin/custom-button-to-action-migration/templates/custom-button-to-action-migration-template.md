@@ -43,8 +43,10 @@ Patterns: `1=Headless LWC`, `2=Screen Flow`, `3=Mass Quick Action`, `4=URL Actio
 
 | Original Apex Method | Becomes | Visibility |
 |---|---|---|
-| (existing class).markAsHotProspect | `@AuraEnabled` static (cacheable=false) with `with sharing` + `WITH SECURITY_ENFORCED` | Public to LWC |
+| (existing class).markAsHotProspect | `@AuraEnabled` static (cacheable=false) with `with sharing` + `WITH USER_MODE` | Public to LWC |
 | | | |
+
+Read idiom by the class's `.cls-meta.xml` `apiVersion` (not the org's release): 57.0+ → `WITH USER_MODE`; ≤ 56.0 → `WITH SECURITY_ENFORCED`, which was removed in 67.0 and fails to compile there.
 
 ---
 

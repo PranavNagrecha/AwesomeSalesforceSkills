@@ -157,7 +157,7 @@ Regardless of invocation path, input attribute names are case-sensitive and must
 | Need to call rules from Apex trigger or batch job | Apex `ExpressionSetService.evaluate()` | Direct synchronous Apex call; no HTTP overhead |
 | Need to call rules from OmniScript journey | Integration Procedure with BusinessRules action | IP manages input/output mapping and context variable passing |
 | Future-effective rule version needed | Draft version + manual activation on go-live date | BRE does not support date-effective activation; activation is manual |
-| Rule has > 500 rows | Consider splitting into multiple Decision Tables by a primary key | Large tables have no hard limit but degrade lookup performance; partition by a high-cardinality key |
+| Rule has > 500 rows | Check the published row/column ceilings first, then split by a primary key | Standard decision tables have published default ceilings — 100,000 processable rows, 15 columns, 30 input conditions (Salesforce can extend all three); advanced tables process up to 20,000,000 rows. Partition for auditability, not because no limit exists (see `references/well-architected.md`) |
 | Rule returns wrong value after activation | Check input attribute name case sensitivity and verify only one version is Active | Most runtime mismatches are attribute name case or stale version activation |
 
 ---

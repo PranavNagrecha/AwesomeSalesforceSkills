@@ -32,9 +32,11 @@
 ## Anti-Patterns
 
 1. **Bare classes shipped to production.** A class with no sharing
-   keyword is a latent bug — its behavior depends on the calling
-   context. Even if it appears to work today, a future refactor that
-   changes the call path silently changes its security posture.
+   keyword defers its posture to a version default that inverted in API
+   67.0 — effectively `without sharing` below it, `with sharing` at and
+   above it — gated on the class's own `apiVersion`. Even if it appears
+   to work today, an `apiVersion` bump or a refactor that changes the
+   call path silently changes its behavior.
 2. **`without sharing` without a `// reason:` comment.** A reviewer
    has no way to tell whether the elevation is deliberate or a
    copy-paste mistake. The comment is mandatory in this repo's
@@ -57,3 +59,11 @@
   https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm
 - Salesforce Well-Architected — Trusted (Security) —
   https://architect.salesforce.com/well-architected/trusted/secure
+- Summer '26 Release Notes — *Database Operations Run in User Mode by Default, Not System Mode*
+  (page id `release-notes.rn_apex_default_user_mode.htm`) — grounds the API 67.0 default-mode
+  inversion used throughout this skill.
+- Summer '26 Release Notes — *The WITH SECURITY_ENFORCED SOQL Clause Is Removed*
+  (page id `release-notes.rn_apex_removed_withSecurityEnforced.htm`).
+- Repo canonical version table, quoting the two release notes above:
+  [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md)
+  § *Apex security idiom by API version*.

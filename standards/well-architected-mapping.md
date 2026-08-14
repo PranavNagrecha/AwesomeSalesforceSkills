@@ -13,7 +13,7 @@ Source: [Salesforce Well-Architected Framework](https://architect.salesforce.com
 **What it covers:** Protecting data from unauthorised access, ensuring FLS/CRUD/sharing rules are correctly applied, preventing injection attacks, managing credentials safely.
 
 **In practice — tag a finding as Security when:**
-- SOQL is missing `WITH SECURITY_ENFORCED` or `WITH USER_MODE`
+- SOQL in user-facing context does not enforce FLS — below API 67.0 that means no `WITH USER_MODE`; at 67.0+ user mode is the default, so the finding is an unjustified `WITH SYSTEM_MODE` opt-out instead. `WITH SECURITY_ENFORCED` is itself a finding at every version, not a pass
 - DML is performed without FLS checks (`stripInaccessible` or field-level `isUpdateable()` check)
 - Dynamic SOQL uses string concatenation instead of bind variables
 - Credentials, IDs, or sensitive values are hardcoded
@@ -130,7 +130,7 @@ Source: [Salesforce Well-Architected Framework](https://architect.salesforce.com
 
 | Finding | Primary Pillar | Why |
 |---------|---------------|-----|
-| SOQL without `WITH SECURITY_ENFORCED` | Security | Consequence is data exposure |
+| SOQL that does not enforce FLS (or opts out with `WITH SYSTEM_MODE` unjustified) | Security | Consequence is data exposure |
 | SOQL inside a for loop | Scalability | Consequence is governor limit failure at scale |
 | try/catch with no error handling | Reliability | Consequence is silent failure |
 | Missing loading spinner | User Experience | Consequence is user confusion |

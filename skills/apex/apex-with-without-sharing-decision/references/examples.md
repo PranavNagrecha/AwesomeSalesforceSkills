@@ -7,9 +7,12 @@ user. The data comes from an Apex `@AuraEnabled` controller.
 
 **Problem:** A previous version of the controller had no sharing keyword.
 QA reported that during one test, a low-privilege agent saw cases
-belonging to a different region. Root cause: the bare class was being
-called transitively from a `without sharing` async job and ran without
-sharing.
+belonging to a different region. Root cause: the class was pinned below
+API 67.0, where a bare class called transitively from a `without sharing`
+async job ran without sharing. (At 67.0+ the bare default is `with
+sharing` and this particular path would not have leaked — but the fix is
+the same, because the default is not what you want a perimeter to rest
+on.)
 
 **Solution:**
 

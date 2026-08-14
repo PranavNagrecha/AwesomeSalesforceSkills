@@ -53,7 +53,7 @@ Gather this context before working on anything in this domain:
 - Confirm that **Enable Experience Bundle Metadata API** is checked in Setup > Digital Experiences > Settings in both the source org and the target org. Without this flag, ExperienceBundle metadata cannot be retrieved or deployed.
 - Identify the full dependency chain: Apex classes used by the site, custom objects, profiles, permission sets, and any connected apps must be deployed before the site metadata.
 - The most common wrong assumption is that deploying ExperienceBundle alone is sufficient. The Network, CustomSite, and all Apex/class dependencies must already exist in the target org before the ExperienceBundle deploy step.
-- A successful deployment does not automatically publish the site. The deployed site remains in Draft status until an admin triggers Publish in Experience Builder or calls the Connect REST API.
+- A successful deployment does not automatically publish the site. A site that has never been published stays at `Network.Status = UnderConstruction` (Setup label **Preview**) until an admin triggers Publish in Experience Builder or calls the Connect REST API.
 
 ---
 
@@ -81,9 +81,9 @@ The required metadata deployment order for an Experience Cloud site is:
 
 Violating this sequence — for example, deploying ExperienceBundle and Network in the same change set in the wrong order — causes deployment failures that are difficult to diagnose because the Salesforce error messages reference the ExperienceBundle rather than the missing dependency.
 
-### Draft Status After Deployment
+### Unpublished Status After Deployment
 
-Every successfully deployed ExperienceBundle lands in **Draft** (unpublished) status regardless of the status it had in the source org. The site is not accessible to end users until a workspace admin explicitly triggers Publish in Experience Builder (Preview > Publish) or programmatically publishes it via the Connect REST API (`POST /connect/communities/{communityId}/publish`). This is a platform-enforced safety gate, not a bug.
+A successful ExperienceBundle deployment never publishes, regardless of the status the site had in the source org. `Network.Status` is a restricted picklist whose API values differ from the Setup labels — `UnderConstruction` is labelled **Preview** and `Live` is labelled **Published** — so a site that has never been published sits at `UnderConstruction`, not at a status named "Draft" or "Active". A target site that was already published stays at `Live` (`UnderConstruction` is one-way — a published site can never return to it) and keeps serving its last published version. In both cases the deployed content reaches members only after a workspace admin explicitly triggers Publish in Experience Builder (Preview > Publish) or programmatically publishes it via the Connect REST API (`POST /connect/communities/{communityId}/publish`). This is a platform-enforced safety gate, not a bug.
 
 ---
 
@@ -137,7 +137,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 3. **Identify and stage all Apex, LWC, and data model dependencies** the site references (Apex classes, triggers, custom objects, custom fields, record types, profiles, permission sets). Deploy these to the target org first and confirm success before proceeding.
 4. **Deploy Network and CustomSite** to the target org. Confirm that the Network record now exists in the target (visible in Setup > All Sites).
 5. **Deploy ExperienceBundle** in a separate deployment step after Network and CustomSite are confirmed present. Monitor deployment status and address any component-level errors before retrying.
-6. **Publish the site** in the target org. Either open Experience Builder > Publish, or call `POST /connect/communities/{communityId}/publish` via the Connect REST API. Confirm the site status changes to Active and the URL is reachable.
+6. **Publish the site** in the target org. Either open Experience Builder > Publish, or call `POST /connect/communities/{communityId}/publish` via the Connect REST API. Confirm `Network.Status` is now `Live` (Setup shows the label **Published**) and the URL is reachable.
 7. **Validate guest user access and profile permissions** in the target org. The Guest User Profile for the site does not automatically inherit permission changes from the source — verify Apex class access, object CRUD permissions, and field-level security match the source configuration.
 
 ---
@@ -151,7 +151,7 @@ Run through these before marking work in this area complete:
 - [ ] All Apex classes and LWC dependencies are deployed and accessible in the target before ExperienceBundle deploy
 - [ ] Network and CustomSite records exist in the target org before ExperienceBundle is deployed
 - [ ] Deployment completed without errors (checked in Setup > Deployment Status)
-- [ ] Site is Published (Active) and reachable at its expected URL in the target org
+- [ ] Site is published — `Network.Status = Live`, Setup label **Published** — and reachable at its expected URL in the target org
 - [ ] Guest User Profile permissions reviewed and confirmed correct in the target org
 
 ---
@@ -161,7 +161,7 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **SiteDotCom blob breaks ExperienceBundle deployment** — When retrieving an Experience Cloud site, Salesforce includes a `SiteDotCom` component in the retrieved package. If this component is included when deploying ExperienceBundle, the entire deployment fails, often with a misleading error. Always strip SiteDotCom from the deployment manifest before deploying.
-2. **Deployment does not publish the site** — A successful ExperienceBundle deployment leaves the site in Draft status. End users cannot access it until an admin publishes it. Teams frequently discover this only after release to production when users report the site is inaccessible.
+2. **Deployment does not publish the site** — A successful ExperienceBundle deployment never publishes: a never-published site stays at `Network.Status = UnderConstruction` (Setup label Preview), and an already-published site stays at `Live` but keeps serving its last published version. End users do not see the deployed site or the deployed changes until an admin publishes. Teams frequently discover this only after release to production when users report the site is inaccessible.
 3. **Enable Experience Bundle Metadata API must be set in both orgs independently** — This setting is org-specific and does not replicate via sandbox refresh or org copy. Every new sandbox or scratch org requires this checkbox to be enabled before ExperienceBundle can be retrieved or deployed.
 4. **Network record name must match exactly** — The `Network` metadata component is keyed by the site name. If the site was renamed in the source org, the target org must also have a Network record with the exact same name, or the ExperienceBundle deploy will fail to find its parent Network.
 5. **Guest User Profile changes require a separate profile deployment** — Changes made to the site's Guest User Profile (Apex class access, object permissions) are not included in ExperienceBundle. They must be retrieved and deployed separately as a `Profile` metadata component, otherwise the target site may behave differently from the source.

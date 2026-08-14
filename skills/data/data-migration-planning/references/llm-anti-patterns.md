@@ -162,3 +162,31 @@ Owner assignment during migration:
 ```
 
 **Detection hint:** Flag migration plans that map OwnerId without a step to verify user active status. Look for missing handling of inactive or missing users.
+
+---
+
+## Anti-Pattern 6: Misdiagnosing REQUIRED_FIELD_MISSING on a Master-Detail Field
+
+**What the LLM generates:** Given `REQUIRED_FIELD_MISSING: Required fields are missing: [Order__c]`, the assistant inspects the object's field metadata, finds nothing marked required on `Order__c`, and declares the error spurious — blaming a validation rule, a page layout, or a stale API version. It then proposes loading the children and parents in the same job, "since the field isn't actually required."
+
+**Why it happens:** A field describe has no `required` property. A master-detail field's requiredness appears only as `nillable: false` — never under the word "required". An assistant pattern-matching on that word finds no evidence and assumes the platform is wrong.
+
+**Correct pattern:**
+
+```text
+REQUIRED_FIELD_MISSING on a relationship field -> identify the relationship TYPE first:
+
+1. Master-detail (nillable: false; requiredness comes from the relationship type)
+   -> always required on the detail record; the row cannot load without a parent
+   -> fix: populate the 15/18-char parent Id or Parent__r.External_Id__c on every row
+   -> the parent job must be complete before the child job is submitted
+
+2. Lookup (nillable: true unless "Required" was explicitly checked)
+   -> a BLANK column is legal; the row loads with a null reference
+   -> a parent key that IS supplied but does not resolve still fails the row
+      (see gotchas.md Gotcha 2) — blank and unresolvable are not the same case
+
+Never "resolve" this by merging the parent and child loads into one job.
+```
+
+**Detection hint:** Flag any diagnosis of `REQUIRED_FIELD_MISSING` that reaches for validation rules or page layouts before the relationship type is established. Flag load plans that place a master-detail child in the same dependency tier as its parent.

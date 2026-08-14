@@ -20,9 +20,11 @@ A query returning `{"totalSize": 0, "records": []}` is a **successful** response
 
 ---
 
-## Gotcha 4: Field-level `SECURITY_ENFORCED` rewrites errors
+## Gotcha 4: Field-level `SECURITY_ENFORCED` rewrites errors (legacy clause — ≤ 66.0 only)
 
 A query with `WITH SECURITY_ENFORCED` that hits a field the running user can't see returns `INVALID_FIELD` for the field, not `INSUFFICIENT_ACCESS_OR_READONLY`. Strips the security signal. Diagnose by rerunning without `SECURITY_ENFORCED` — if it succeeds, the user is the problem, not the query.
+
+That diagnosis applies only to a query you inherited. In Apex the gate is the **`apiVersion` in the class's `.cls-meta.xml`**, not the org's release — a Summer '26 org runs a class pinned to 58.0 with the clause quite happily. At **67.0+** the clause is removed and the class does not compile: `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. At **57.0–66.0** it still compiles but is legacy — migrate to `WITH USER_MODE`. At **≤ 56.0** it is the idiom available. So never write it into a new query, and never read its presence as evidence a query is secure: a scanner flags it — P0 at 67.0+, P2 tech debt at 57.0–66.0. Canonical table: `agents/_shared/AGENT_CONTRACT.md` § *Apex security idiom by API version*.
 
 ---
 

@@ -48,9 +48,9 @@ before using a field in a guest-accessible Apex query.
 
 ## Anti-Pattern 3: Writing Guest-Accessible Apex `without sharing`
 
-**What the LLM generates:** An Apex class intended for an Experience Cloud guest page, declared `without sharing` (or not explicitly declared, which in a context inheriting from a `without sharing` class defaults to system mode).
+**What the LLM generates:** An Apex class intended for an Experience Cloud guest page, declared `without sharing` — or left with no sharing keyword at all, which on a class pinned at `apiVersion` 66.0 or below runs without sharing in system mode.
 
-**Why it happens:** LLMs often default to `without sharing` or omit the sharing keyword when demonstrating "make all data visible" scenarios. In internal contexts this is a performance or access shortcut. In a guest user context it is a security violation that exposes the entire org.
+**Why it happens:** LLMs often default to `without sharing` or omit the sharing keyword when demonstrating "make all data visible" scenarios. In internal contexts this is a performance or access shortcut. In a guest user context an explicit `without sharing` is a security violation that exposes the entire org. The omitted keyword is the version-gated half: at 67.0+ (Summer '26) the bare class runs `with sharing` with database operations defaulting to user mode, so the omission is no longer that hole — but it leaves the endpoint's posture decided by a version pin the reviewer cannot see in the `.cls`. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 **Correct pattern:**
 
@@ -70,7 +70,7 @@ public with sharing class GuestController {
 }
 ```
 
-**Detection hint:** Any `@AuraEnabled` class for an Experience Cloud page that is declared `without sharing` or that omits the sharing keyword should be flagged as a potential security issue.
+**Detection hint:** Any `@AuraEnabled` class for an Experience Cloud page declared `without sharing` is a security issue at every version. A class that omits the keyword is graded against its `.cls-meta.xml`: an exposure at 66.0 and below, and a declare-it-anyway note at 67.0+. `scripts/check_experience_cloud_api_access.py` reads the sibling meta file and grades it that way.
 
 ---
 

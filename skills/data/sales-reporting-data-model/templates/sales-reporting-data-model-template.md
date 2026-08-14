@@ -25,7 +25,7 @@ Complete before recommending or implementing:
   - [ ] Not enabled — note activation date if being enabled now
 - **Current tracked fields on Opportunity** (if HTR is active): list them here
 - **Open pipeline row count** (if Reporting Snapshots are under consideration): approximate count of Opportunities in the intended source report scope
-  - Count: _____ (must be < 2,000 for native Reporting Snapshot)
+  - Count: _____ (a run inserts at most 2,000 new records into the target object; the surplus is dropped with a partial error in Run History)
 - **Longest required history window**: _____ months / years
 - **Multi-currency org?** Yes / No
 - **Running User candidate for Reporting Snapshot** (should be a service/integration user, not an employee):
@@ -57,7 +57,7 @@ Complete before recommending or implementing:
 
 **Report type to use:** Opportunities with Historical Trending
 
-**Retention window:** ~90 days (Opportunity) — document for stakeholders
+**Retention window:** previous 3 months plus the current month (same for every trending-enabled object; Historical Trending in Pipeline Inspection extends Opportunity to 12 months) — document for stakeholders
 
 ---
 
@@ -66,8 +66,8 @@ Complete before recommending or implementing:
 **Source report:**
 - Report name:
 - Report type: Tabular / Summary
-- Filters applied (to scope rows below 2,000):
-- Confirmed row count at design time: _____
+- Filters applied (to keep new records per run below 2,000):
+- Confirmed new records per run at design time: _____
 
 **Target custom object:**
 
@@ -116,7 +116,7 @@ Copy from SKILL.md review checklist and tick items as complete:
 
 - [ ] HTR enabled and fields selected within 8-field cap
 - [ ] HTR not enabled retroactively for a period already needed
-- [ ] Reporting Snapshot source report row count confirmed < 2,000
+- [ ] Reporting Snapshot expected new records per run confirmed at or below 2,000 (target-object insert cap)
 - [ ] Snapshot target object uses Currency/Date/Percent types (not Text) for non-text fields
 - [ ] Snapshot schedule active; Running User is a service account
 - [ ] Snapshot run history checked after first execution
@@ -131,4 +131,4 @@ Copy from SKILL.md review checklist and tick items as complete:
 
 Record any deviations from the standard patterns and the rationale:
 
-(e.g., "Used Apex scheduled batch instead of Reporting Snapshot because pipeline scope exceeds 2,000 rows")
+(e.g., "Used Apex scheduled batch instead of Reporting Snapshot because pipeline scope exceeds 2,000 new records per run")

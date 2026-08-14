@@ -70,7 +70,7 @@ The sharing model defines who can see and modify which records. A misconfigured 
 
 2. **Sharing rules coverage** — Are sharing rules granting access beyond the role hierarchy? Review each sharing rule: criteria-based rules can grant overly broad access if the criteria are poorly designed. Role-and-subordinates sharing rules grow in scope as the role hierarchy expands.
 
-3. **With sharing / without sharing Apex** — Every Apex class that performs DML or queries should have an explicit sharing declaration. Classes using `without sharing` should be documented with a reason. Classes using `inherited sharing` should be traced to their caller chain to confirm the caller enforces sharing.
+3. **With sharing / without sharing Apex** — Every Apex class that performs DML or queries should have an explicit sharing declaration. Classes using `without sharing` should be documented with a reason. Classes using `inherited sharing` should be traced to their caller chain to confirm the caller enforces sharing. What a *missing* declaration means is version-gated on the `apiVersion` in the class's `.cls-meta.xml`, not the org's release: at **67.0+** (Summer '26) a bare `public class Foo` runs `with sharing`, and so does any class whose inheritance chain contains a 67.0+ class; at **66.0 and earlier** the same class runs without sharing. Read the meta file before scoring an absent keyword — on a 58.0 class it is a live exposure, on a 67.0 class it is a documentation gap. Apex **triggers** are the exception at every version: they always run in system mode and cannot declare a sharing or access mode, so review the handler class they delegate to instead. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 4. **Community / Experience Cloud external OWD** — External OWD settings are separate from internal OWD. An object set to "Private" internally can be "Public Read Only" externally if the external OWD was not set explicitly. Review all objects accessible in Experience Cloud sites against their external OWD.
 
@@ -86,11 +86,11 @@ Field-Level Security (FLS) controls which fields individual users can read and w
 
 **Checklist items:**
 
-7. **FLS enforcement in Apex** — Apex running in system context bypasses FLS by default. Review all Apex classes that read or write sensitive fields. Enforcement mechanisms: `WITH SECURITY_ENFORCED` in SOQL, `WITH USER_MODE` on DML statements (available in API 56.0+, Summer '22), or `Security.stripInaccessible()` before DML.
+7. **FLS enforcement in Apex** — Whether Apex bypasses FLS with no keyword at all is version-gated on the class's `apiVersion`: at **66.0 and earlier** SOQL, SOSL, DML, and `Database` methods run in system mode and bypass FLS and CRUD; at **67.0+** they run in **user mode** by default and enforce them. Review all Apex classes that read or write sensitive fields, checking the API version first. Enforcement mechanisms: `WITH USER_MODE` on the query (GA in API 57.0, Spring '23), `as user` or `AccessLevel.USER_MODE` on DML and `Database` methods, or `Security.stripInaccessible(AccessType.READABLE, records)` — which returns an `SObjectAccessDecision`, so operate on `.getRecords()`. `WITH SECURITY_ENFORCED` is legacy tech debt at 57.0–66.0 and does not compile at 67.0+; flag it rather than scoring it as clean. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
-8. **CRUD enforcement in Apex** — Before performing DML, Apex should verify the current user has create/read/update/delete permission on the object. Use `Schema.sObjectType.describe().isAccessible()` or rely on `WITH USER_MODE` DML.
+8. **CRUD enforcement in Apex** — Before performing DML, Apex should verify the current user has create/read/update/delete permission on the object. Use `Schema.sObjectType.Account.isAccessible()` (or `isCreateable()` / `isUpdateable()` on the describe for writes), or rely on user-mode DML — `as user` / `AccessLevel.USER_MODE`, which is also the default at `apiVersion` 67.0+. `WITH USER_MODE` is a SOQL clause and is not valid on a DML statement.
 
-9. **AuraEnabled and LWC wire methods** — `@AuraEnabled` methods and wire adapters backed by Apex run in system context if the class uses `with sharing` without FLS checks. Review all `@AuraEnabled` methods for FLS enforcement on fields returned to the UI.
+9. **AuraEnabled and LWC wire methods** — `with sharing` on the class does not by itself enforce FLS on what `@AuraEnabled` methods and wire adapters return; record-level sharing and field-level security are separate controls. Below 67.0 those queries bypass FLS unless one of the item-7 mechanisms is used; at 67.0+ they default to user mode. Review all `@AuraEnabled` methods for FLS enforcement on fields returned to the UI.
 
 10. **Integration user FLS** — Integration users (named credentials, connected app users) often have broad profiles because they "need access to everything." Review the integration user's profile and permission sets against the minimum necessary access principle. A CRUD-level over-permission on an integration user is a High finding.
 
@@ -112,7 +112,7 @@ Insecure Apex code can bypass the sharing model, enable data exfiltration, or al
 
 15. **Hardcoded credentials and sensitive strings** — Passwords, tokens, client secrets, and encryption keys must not be stored in Apex code, Custom Labels, or Custom Metadata that is accessible to all users. Use Named Credentials for endpoint authentication and Protected Custom Metadata for secrets.
 
-16. **System-context callouts** — Apex making callouts in system context (batch jobs, future methods, platform events) should be reviewed to confirm they do not relay data the calling user could not access directly.
+16. **System-context callouts** — Apex making callouts in system context (batch jobs, future methods, platform events) should be reviewed to confirm they do not relay data the calling user could not access directly. Below 67.0 an async class with no sharing declaration is in system context by default; at 67.0+ it is not, so the finding there is an explicit `without sharing`, `as system`, or `WITH SYSTEM_MODE` rather than an absent keyword.
 
 ---
 

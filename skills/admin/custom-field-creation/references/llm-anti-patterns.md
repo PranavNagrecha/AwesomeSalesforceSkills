@@ -106,7 +106,7 @@ When creating the field:
 
 **What the LLM generates:** "Change the field type from Text to Number to enable calculations."
 
-**Why it happens:** LLMs suggest field type changes without warning about data loss. Salesforce restricts which field type conversions are allowed, and some conversions cause irreversible data loss (e.g., converting from Text Area to Text truncates content, converting to Checkbox loses non-boolean values). Some conversions are blocked entirely.
+**Why it happens:** LLMs suggest field type changes without warning about data loss, then stop at "back up the data first." Salesforce allows most conversions — the failure mode is silent destruction, not refusal (e.g. Long Text Area → Text truncates to 255 characters, and changing from Checkbox to any other type loses the stored flag). A few conversions are blocked entirely, and the damage extends past the field to list views, rules, and mappings the model never mentions.
 
 **Correct pattern:**
 
@@ -115,18 +115,33 @@ Field type changes with data carry risks:
 1. Check the Field Type Conversion chart in Salesforce Help to confirm
    the conversion is allowed.
 2. Backup existing data before any type change.
-3. Conversions that may cause data loss:
-   - Rich Text → Text: formatting lost.
-   - Text → Number: non-numeric values become blank.
-   - Picklist → Text: loses picklist validation.
-4. If the conversion is not allowed or too risky:
+3. Conversions Salesforce documents as data-losing:
+   - to or from Date or Date/Time
+   - to Number, Percent, or Currency from any other type
+   - from Checkbox to any other type
+   - to or from Multi-Select Picklist (values not in the picklist
+     definition are deleted from the records holding them)
+   - from Text to Picklist
+   - from Auto Number to anything but Text; to Auto Number from
+     anything but Text
+   - from Long Text Area to anything but Email, Phone, Text, Text Area,
+     or URL — and those truncate to the first 255 characters
+4. Damage outside the field itself: where data is lost, every list view
+   based on the field is deleted and assignment and escalation rules may
+   be affected. Regardless of data loss, any lead-conversion mapping on
+   the field is deleted, and an External ID stops acting as one unless
+   the new type is Text, Number, or Email.
+5. Blocked outright (no conversion path at all): fields referenced in
+   Apex or on a Visualforce page, Formula fields, and Classic Encrypted
+   Text fields.
+6. If the conversion is not allowed or too risky:
    - Create a new field with the correct type.
    - Migrate data from the old field to the new field.
    - Update all references (formulas, flows, reports, code).
    - Deprecate the old field.
 ```
 
-**Detection hint:** If the output recommends changing a field type without mentioning data loss risks or the conversion compatibility chart, the advice is incomplete. Search for `change the field type` without `data loss` or `backup`.
+**Detection hint:** If the output recommends changing a field type without mentioning data loss risks or the conversion compatibility chart, the advice is incomplete. Search for `change the field type` without `data loss` or `backup`. A second, subtler tell: advice that mentions backing up the field's data but never mentions `list view`, `lead conversion`, or `Apex reference` is treating a migration as an edit.
 
 ---
 

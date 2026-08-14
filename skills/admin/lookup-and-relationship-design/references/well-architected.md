@@ -24,5 +24,7 @@ TODO: List 2–3 architectural anti-patterns this skill helps avoid.
 ## Official Sources Used
 
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
+- Metadata API `CustomField` — `relationshipOrder`, primary vs secondary master-detail — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customfield.htm
+- Relationships Among Standard Objects and Fields — master-detail Owner field and sharing constraints — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

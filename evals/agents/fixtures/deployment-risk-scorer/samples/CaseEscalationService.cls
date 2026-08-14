@@ -12,7 +12,7 @@ public with sharing class CaseEscalationService {
             return;
         }
         List<Case> toUpdate = [
-            SELECT Id, Status FROM Case WHERE Id IN :caseIds WITH SECURITY_ENFORCED
+            SELECT Id, Status FROM Case WHERE Id IN :caseIds WITH USER_MODE
         ];
         for (Case c : toUpdate) {
             c.Status = 'Escalated';

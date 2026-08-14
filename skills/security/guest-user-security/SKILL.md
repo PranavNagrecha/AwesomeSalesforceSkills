@@ -76,7 +76,8 @@ Legacy orgs do not auto-migrate their *stale* configuration: guest users previou
 
 Guest users have a dedicated profile per site. Permissions must be explicitly granted on this profile:
 - Grant only the minimum required object permissions (typically Read only on specific objects).
-- Never grant Modify All, View All, Create, Edit, or Delete to the guest profile.
+- "The only object permissions allowed for guest users are read and create." View All Records, Modify All Records, edit and delete are blocked at the platform, not merely discouraged; Create belongs on the guest profile only where a documented submission path needs it.
+- **View All Fields**, the per-object permission added in Spring '25 and enabled on the Object Settings page of a permission set, is on the same block list — "View All Data, Modify All Data, and View All Records, Modify All Records, or View All Fields for a given object can't be assigned to external users." Never design guest field access around it: it auto-grants read on every field added to the object later, so guest FLS has to stay enumerated field by field.
 - Check field permissions: even Read access to sensitive fields (SSN, birthdate, email) on public-facing records is a data exposure risk.
 - Permission sets can be assigned to guest users, and always could — this predates Spring '22. The Spring '21 / Spring '22 / Winter '23 releases each *narrowed* what those assignments may carry, they did not create the capability. Audit permission set assignments to the guest user regardless: the residual risk is a permission set that grants read or create on an object nobody intended to expose.
 
@@ -169,7 +170,7 @@ public with sharing class GuestCaseController {
 
 ## Review Checklist
 
-- [ ] Guest profile has no Create, Edit, Delete, View All, or Modify All on any object
+- [ ] Guest profile has no Edit, Delete, View All, or Modify All on any object, and Create only where a documented submission path requires it
 - [ ] Sensitive fields are removed from guest profile field permissions
 - [ ] All Apex reachable from guest sessions uses `with sharing` AND `WITH USER_MODE`
 - [ ] Every guest user sharing rule has a documented justification and criteria that match only public records

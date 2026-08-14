@@ -217,3 +217,43 @@ for (Integer i = 0; i < requests.size(); i += 200) {
 
 **Detection hint.** Any single Approval.process() call with a list
 larger than 200 entries hits the governor.
+
+---
+
+## Anti-Pattern 9: Apex batch to clear a backlog of stuck approvals
+
+**What the LLM generates.**
+
+```apex
+delete [SELECT Id FROM ProcessInstanceWorkitem WHERE ProcessInstance.Status = 'Pending'];
+// or
+Approval.unlock(stuckRecordIds);
+```
+
+**Why it happens.** "Hundreds of records are stuck pending after a
+bad load / a rule change / a departed approver" sounds like an Apex
+problem. `Approval.unlock()` per the Apex Reference only "unlocks
+an object" — the record is still in the process, so it still can't
+be resubmitted. `delete` on `ProcessInstanceWorkitem` is legal DML
+(`delete()` is a supported call) but is not a documented way to
+take a record out of a process.
+
+**Correct pattern.** The bulk tool is declarative. From Setup,
+enter **Mass Transfer Approval Requests** in the Quick Find box,
+click **Find**, then pick one of its two options:
+
+- **Mass remove records from an approval process** — unlocks the
+  records and takes them out of the process, so they drop off the
+  approvers' pending lists.
+- **Mass transfer outstanding approval requests to a new user** —
+  reassigns them instead (approver left, submission still valid);
+  the target user must have permission to edit those records.
+
+Comments entered on that screen land on the record's Approval
+History related list, so the cleanup is auditable.
+
+**Detection hint.** Backlog-clearing answers that reach for DML on
+`ProcessInstanceWorkitem` or `Approval.unlock` solve a different
+problem. Apex's removal path — `setAction('Removed')` per work
+item, recall permission required (Gotcha 5) — is for targeted
+recalls (Pattern D), not an admin backlog cleanup.

@@ -221,7 +221,7 @@ Three strategies, in order of preference:
 ## Well-Architected mapping
 
 - **Reliability** — bulk-safe contracts make invocables survive under load without mysterious `LimitException`s. Null-input handling avoids `NullPointerException`s when flows pass empty collections.
-- **Security** — invocables run with the `with sharing` posture declared on the class; default is inherited. Use `with sharing` unless you have a specific reason. Enforce FLS via `Schema.DescribeFieldResult.isAccessible()` or `WITH SECURITY_ENFORCED` in SOQL.
+- **Security** — invocables run with the `with sharing` posture declared on the class; default is inherited. Use `with sharing` unless you have a specific reason. Enforce FLS on reads with `WITH USER_MODE` (API 57.0+; at 67.0+ user mode is the default and no keyword is needed), and on writes with `Security.stripInaccessible(AccessType.CREATABLE, records).getRecords()`. `WITH SECURITY_ENFORCED` is the idiom for classes pinned at API ≤56.0 only — it was removed in API 67.0 and no longer compiles there. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release: a Summer '26 org still runs a 58.0-pinned class with the old clause.
 - **Performance** — a well-bulked invocable is cheaper per record than equivalent Flow logic because Apex can batch SOQL/DML more aggressively than Flow elements.
 
 ## Testing

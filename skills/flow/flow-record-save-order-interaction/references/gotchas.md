@@ -63,3 +63,31 @@ consumed in the same transaction.
 A before-save Flow writing back into the same record does not retrigger
 the same save. An after-save Flow doing a DML update does — this is the
 usual recursion trap.
+
+## 11. A Roll-Up-Driven Parent Save Never Reaches The After-Save Flow
+
+The parent save launched at step 16 is a recursive save, and the docs
+state: "During a recursive save, Salesforce skips steps 9 (assignment
+rules) through 17 (roll-up summary field in the grandparent record)."
+After-save Flows are step 14 — inside that skipped range. So a parent
+after-save Flow you expect a child roll-up to fire simply never
+executes, and neither do assignment, auto-response, workflow,
+escalation or entitlement rules on the parent. What *does* still run on
+that parent save: before-save Flows (3), before triggers (4),
+validation rules (5), duplicate rules (6), the save (7), after
+triggers (8) — so a parent before or after trigger does fire, and does
+see the recalculated roll-up. That is the in-transaction hook. A
+**child** after-save Flow is not a substitute for reading the value: it
+runs at step 14 of the child's save, before the parent recalculation at
+step 16, so it has to compute the number itself.
+
+## 12. After Triggers Cannot See The Assignment-Rule Owner
+
+Assignment rules are step 9; all after triggers are step 8. An
+after-insert trigger on Case or Lead that reads `OwnerId` sees the owner
+from the request or the object default — never the one the assignment
+rule is about to pick. Emailing "the assigned owner" from that trigger
+mails the wrong person. After-save Flows are step 14, so ordering alone
+does not rule them out — but the docs do not say whether the flow's
+record snapshot is refreshed with the assignment-rule owner, so verify
+in a debug log before depending on it.

@@ -18,7 +18,6 @@ Capture current state from Setup > Storage Usage before making any changes.
 |---|---|---|---|
 | Data Storage | | | |
 | File Storage | | | |
-| Recycle Bin | | | |
 
 **Top 5 objects by data storage consumption:**
 
@@ -49,7 +48,7 @@ Answer each question before planning any action:
 - **Allocated data storage (formula: base + per-user):**
 - **Allocated file storage (formula: base + per-user):**
 - **Which pool is the primary concern — data or file?**
-- **Is Recycle Bin holding significant storage?** Yes / No — Amount:
+- **Did a large delete or load run recently (storage recalculates asynchronously)?** Yes / No — When:
 - **Are Big Objects in use in this org?**
 - **Are Attachments or ContentDocuments the primary file pattern?**
 - **Known retention requirements for high-volume objects?**
@@ -62,7 +61,6 @@ Assess each opportunity and estimate the storage freed.
 
 | Action | Object / Target | Estimated Records | Estimated Storage Freed | Risk | Priority |
 |---|---|---|---|---|---|
-| Empty Recycle Bin | Recycle Bin | | | Low | |
 | Delete orphaned ContentDocuments | ContentDocument | | | Low | |
 | Delete old activity records | Task / Event | | | Medium | |
 | Archive to Big Object | Custom object | | | Medium | |
@@ -126,7 +124,7 @@ curl -H "Authorization: Bearer {ACCESS_TOKEN}" \
 ## 7. Review Checklist
 
 - [ ] Setup > Storage Usage reviewed and per-object breakdown captured
-- [ ] Recycle Bin storage checked and emptied if significant
+- [ ] Asynchronous recalculation ruled out after any recent large delete or load
 - [ ] Orphaned ContentDocuments queried and deleted or confirmed none exist
 - [ ] Attachment vs ContentDocument decision documented for any new file feature
 - [ ] Limits API monitoring confirmed or set up (alert threshold ≤25% remaining)

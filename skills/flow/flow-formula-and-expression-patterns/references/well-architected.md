@@ -66,7 +66,7 @@ This skill primarily serves Reliability and Performance, with strong Maintainabi
 8. **Flow formula that uses `PRIORVALUE` or `ISCHANGED`.** Deploy error — those are Validation Rule / Workflow primitives. The skill teaches the `$Record__Prior` substitute.
 9. **Composed formula chain 5+ layers deep.** Becomes opaque to reviewers and slow to evaluate. The skill caps composition at 3 layers and routes deeper logic to Apex Invocable.
 10. **Hand-formatting numbers with `LEFT/MID/RIGHT/TEXT/MOD` chains.** Hard to read, hard to maintain. The skill recommends pushing complex formatting to Apex.
-11. **Treating Percent fields as decimals.** `Amount * Discount_Percent__c` is wrong; must be `Amount * (Discount_Percent__c / 100)`.
+11. **Dividing a Percent field by 100 inside a formula.** `Amount * (Discount_Percent__c / 100)` returns 1/100th of the intended value — the platform already expresses percent fields divided by 100 in formulas. The skill enforces direct multiplication and fractional range bounds.
 12. **Relying on `TEXT(picklist)` to render labels.** Returns API names. The skill enforces an explicit label-mapping pattern.
 
 ## Maintainability Considerations
@@ -88,4 +88,6 @@ This skill primarily serves Reliability and Performance, with strong Maintainabi
 - Salesforce Help — BLANKVALUE Formula Function — https://help.salesforce.com/s/articleView?id=sf.functions_blankvalue.htm
 - Salesforce Help — TEXT Formula Function — https://help.salesforce.com/s/articleView?id=sf.functions_text.htm
 - Salesforce Help — Date and DateTime Formula Functions — https://help.salesforce.com/s/articleView?id=sf.formula_using_date_datetime.htm
+- Salesforce Developers — Examples of Validation Rules: Sample Number Validation Rules — https://developer.salesforce.com/docs/atlas.en-us.usefulValidationRules.meta/usefulValidationRules/fields_useful_validation_formulas_number.htm
+- Salesforce Help — Understanding Salesforce Percentage Fields in Flows — the table that separates the two conventions: referencing a percent field *into a formula* "Divides by 100 — 100 becomes 1", passing a value *into* the field "Doesn't change — 100 remains 100" (verified 2026-08-13) — https://help.salesforce.com/s/articleView?id=000380436&language=en_US&type=1
 - Salesforce Architects — Well-Architected Framework — https://architect.salesforce.com/well-architected

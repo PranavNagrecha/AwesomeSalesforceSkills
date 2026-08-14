@@ -34,7 +34,13 @@
 1. **`without sharing` on guest-reachable Apex.**
 2. **Sharing rule granting "All" records to Type = Guest.**
 3. **`@RestResource` exposed publicly without `with sharing`.**
-4. **`WITH SECURITY_ENFORCED` used as the sole control.**
+4. **`WITH SECURITY_ENFORCED` used as the sole control** — and in
+   any newly written query at all: the clause was removed at API
+   67.0, so a class pinned there fails to compile. Use
+   `WITH USER_MODE` (GA at API 57.0). The gate is the class's
+   `apiVersion`, not the org's release, so existing classes pinned
+   to ≤ 66.0 still compile it — flag those as tech debt, not as a
+   secure query.
 5. **Auditing only "the" Guest User instead of per-site Guest
    Users.**
 
@@ -43,6 +49,7 @@
 - Secure Your Experience Cloud Site (Spring '21 Secure-by-Default) — https://help.salesforce.com/s/articleView?id=sf.networks_security_overview.htm&type=5
 - Best Practices and Considerations When Configuring the Guest User Profile — https://help.salesforce.com/s/articleView?id=sf.guest_users_best_practice.htm&type=5
 - Apex Sharing Modes — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm
-- Field-Level Security via WITH SECURITY_ENFORCED — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm
+- Secure Apex Code with User Mode Database Operations (GA, Spring '23 / API 57.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5
+- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
 - OWASP Top 10 — https://owasp.org/www-project-top-ten/
 - Salesforce Well-Architected Trustworthy — https://architect.salesforce.com/well-architected/trusted/secure

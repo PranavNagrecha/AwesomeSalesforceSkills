@@ -83,3 +83,6 @@ Migration throughput determines cutover window duration. Performance failures ex
 
 - Object Reference: sObject Concepts — relationship types, referential integrity rules, master-detail behavior
   https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
+
+- Salesforce Help 000382856: Error "Required Fields Are Missing" When Importing Records with the Salesforce Data Import Wizard — master-detail fields are always required on child records; REQUIRED_FIELD_MISSING cause and resolution
+  https://help.salesforce.com/s/articleView?id=000382856&language=en_US&type=1

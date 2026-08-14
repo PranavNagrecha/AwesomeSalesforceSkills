@@ -6,7 +6,7 @@
 
 - **Operational Excellence** — JavaScript buttons are unsupported in Lightning Experience and silently render as nothing. The org accumulates "ghost" Page Layout entries that admins forget about. Migrating to supported Lightning action types removes a class of silent failures and aligns the action surface with the platform's supported, evolving APIs (Lightning Confirm, Toast Events, NavigationMixin, Lightning Message Service). Each migrated action becomes maintainable through Setup or LWC source rather than free-form HTML/JS in a button definition.
 
-- **Security** — Classic JavaScript buttons could call `sforce.connection.update()` to perform DML directly from the browser without going through Apex sharing rules — a subtle but real security gap if the user had API access but the Apex layer was the intended security boundary. Lightning Quick Actions force traffic through `@AuraEnabled` Apex methods that explicitly declare `with sharing` and FLS enforcement (`WITH SECURITY_ENFORCED`, `Security.stripInaccessible`). The migration is the moment to verify that security is enforced at the Apex layer, not assumed at the UI layer.
+- **Security** — Classic JavaScript buttons could call `sforce.connection.update()` to perform DML directly from the browser without going through Apex sharing rules — a subtle but real security gap if the user had API access but the Apex layer was the intended security boundary. Lightning Quick Actions force traffic through `@AuraEnabled` Apex methods that explicitly declare `with sharing` and FLS enforcement — `WITH USER_MODE` on reads for a class at `apiVersion` 57.0+ (`WITH SECURITY_ENFORCED` is the ≤ 56.0 idiom and does not compile at 67.0+), plus `Security.stripInaccessible(AccessType, records).getRecords()` on write paths that assemble records from user input. The migration is the moment to verify that security is enforced at the Apex layer, not assumed at the UI layer.
 
 ## Architectural Tradeoffs
 
@@ -45,3 +45,5 @@
 - Lightning Web Security — https://developer.salesforce.com/docs/platform/lwc/guide/security-lwsec-intro.html
 - Salesforce Mobile App Quick Actions — https://help.salesforce.com/s/articleView?id=sf.actions_in_salesforce_mobile.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 — grounds the version qualifier on the Security pillar note above
+- Secure Apex Code with User Mode Database Operations (Generally Available) (Spring '23 / API 57.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5

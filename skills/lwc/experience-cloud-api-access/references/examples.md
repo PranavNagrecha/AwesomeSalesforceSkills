@@ -36,7 +36,7 @@ System.runAs(communityUser) {
 
 **Context:** An e-commerce Experience Cloud site has a public product catalog page. An LWC component calls an Apex method to retrieve active products. After a security review, the team needs to confirm guest users cannot access pricing data from the Opportunity or Order objects.
 
-**Problem:** The Apex class was originally written `without sharing` because a developer wanted to ensure all products were always visible. This means the class runs in system context, bypassing the guest profile entirely. If the query were ever changed or extended, it could inadvertently expose sensitive records.
+**Problem:** The Apex class carries an explicit `without sharing` because a developer wanted to ensure all products were always visible, so it bypasses the guest user's record access, and at 66.0 and below the queries run in system context past guest profile FLS and object permissions as well. (What Summer '26 changed is the default for a class with *no* keyword: at 67.0+ that runs `with sharing`. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.) If the query were ever changed or extended, it could inadvertently expose sensitive records.
 
 **Solution:**
 
@@ -69,7 +69,7 @@ public with sharing class GuestProductController {
 }
 ```
 
-**Why it works:** `with sharing` ensures Apex respects the guest user's sharing context. `WITH USER_MODE` in SOQL enforces FLS and CRUD at the query level — it is the declarative enforcement complement to the programmatic `Schema.sObjectType` check. The external OWD and guest profile permissions together mean `Opportunity` and `Order` records are unreachable even if the query were modified.
+**Why it works:** `with sharing` ensures Apex respects the guest user's sharing context. `WITH USER_MODE` in SOQL enforces FLS and CRUD at the query level — it is the declarative enforcement complement to the programmatic `Schema.sObjectType` check. From `apiVersion` 67.0 user mode is the default for SOQL, SOSL, DML, and `Database` calls, so the clause states the intent rather than adding it; on a class pinned at 57.0–66.0 it is what supplies the enforcement. The external OWD and guest profile permissions together mean `Opportunity` and `Order` records are unreachable even if the query were modified.
 
 ---
 

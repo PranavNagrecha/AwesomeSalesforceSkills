@@ -28,32 +28,40 @@ When fixing ownership skew:
 
 ---
 
-## Anti-Pattern 2: Ignoring parent-child skew and focusing only on ownership skew
+## Anti-Pattern 2: Enumerating only ownership and parent-child skew, and dropping lookup skew
 
-**What the LLM generates:** "Data skew in Salesforce means one user owns too many records. Redistribute ownership to fix it."
+**What the LLM generates:** "Data skew in Salesforce means one user owns too many records. Redistribute ownership to fix it." Or, one step better: "There are two types — ownership skew and parent-child skew."
 
-**Why it happens:** LLMs anchor on ownership skew (the most commonly discussed type) and miss parent-child skew. When a single parent record (e.g., one Account) has more than 10,000 child records (Contacts, Cases, Opportunities), operations on those children -- updates, deletes, sharing changes -- cause row lock contention and slow queries.
+**Why it happens:** LLMs anchor on ownership skew (the most commonly discussed type) and stop at two types at best. Salesforce's *Large Data Volumes* module names **three**: account data skew, ownership skew, and lookup skew. Lookup skew is the one consistently dropped, and when it does appear it is mis-described as a query/report performance issue. It is not — it is a write-time row-lock issue, because "every time a record is inserted or updated, Salesforce must lock the target records that are selected for each lookup field."
 
 **Correct pattern:**
 
 ```
-Two types of data skew:
+Three types of data skew:
 
 1. Ownership skew: one user/queue owns > 10,000 records of an object.
    Impact: sharing recalculation slowness, role hierarchy lock contention.
 
-2. Parent-child skew: one parent record has > 10,000 children.
-   Impact: record locking during child DML, slow related list loading,
-   row lock errors during concurrent child updates.
+2. Account (parent-child) skew: one parent record has > 10,000 children.
+   Impact: implicit sharing scan on every child access change,
+   slow related list loading, row lock errors on concurrent child updates.
+
+3. Lookup skew: a very large number of records point at one target
+   record of a custom lookup field.
+   Impact: the lookup TARGET row is locked on every child insert/update,
+   so concurrent DML serialises and fails with UNABLE_TO_LOCK_ROW
+   ("A deadlock or timeout condition has been detected"). One unlockable
+   record fails the whole batch.
 
 Diagnosis:
-- Run a report on the child object grouped by parent, sorted descending.
+- Group the child object by parent, and separately by each custom lookup
+  field's value, sorted descending.
 - Flag any parent with > 10,000 children.
-- For parent-child skew: consider archiving old children, splitting the
-  parent into sub-accounts, or using async processing for child updates.
+- Weight the lookup finding by concurrent write volume: lookup skew under
+  low-concurrency usage patterns may cause no problem at all.
 ```
 
-**Detection hint:** If the output discusses only ownership skew without mentioning parent-child skew, the diagnosis is incomplete. Search for `parent-child` or `child records` in the analysis.
+**Detection hint:** If the output names only two skew types, or describes lookup skew as a slow-query problem rather than a locking problem, the diagnosis is incomplete. Search for `lookup skew` and `UNABLE_TO_LOCK_ROW` in the analysis.
 
 ---
 

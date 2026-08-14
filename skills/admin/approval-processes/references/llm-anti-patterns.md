@@ -125,3 +125,32 @@ Complete the full action set:
 ```
 
 **Detection hint:** If the output only covers approve and reject actions without mentioning `recall` or `delegate`, the design is incomplete.
+
+---
+
+## Anti-Pattern 7: Inventing a permission to delegate approval authoring
+
+**What the LLM generates:** "Give the business analyst the Manage Approval Processes permission" — or, failing that, "there is no middle ground, you have to grant Manage Flows."
+
+**Why it happens:** No `Manage Approval Processes` permission exists. And for **autolaunched flow approval processes** — the Approvals App / Flow-based ones, not the classic Approval Processes the rest of this skill covers — pre-Winter '26 training data is correct that Manage Flow was the only way in. Winter '26 added a named permission pair that delegates authoring of those without handing over Flow administration.
+
+**Correct pattern:**
+
+```
+Delegated author — Winter '26+, Lightning Experience, in
+Enterprise, Performance, Unlimited, and Developer editions:
+  - "Approval Designer" system permission
+  - "View Orchestration in Automation App" user permission
+  → can create, change, or view a flow approval process in the Approvals App.
+
+Activation is deliberately withheld — this is enforced separation of duties:
+  "Flow approval process activation still requires the Manage Flow
+   user permission."
+  - The author clicks Submit for Activation in Flow Builder and picks a
+    reviewer who holds Manage Flow. Status becomes Under Review.
+  - Reviewer approves → status Active. Reviewer rejects → status Draft.
+  - While under review the author can Recall Activation Request, or
+    Save as New Version to keep working.
+```
+
+**Detection hint:** If the output names a `Manage Approval Processes` permission, it is fabricated. If it says the delegated author can activate the process themselves, it is wrong — activation is a separate `Manage Flow` gate. Search for `Approval Designer` and `Submit for Activation`.

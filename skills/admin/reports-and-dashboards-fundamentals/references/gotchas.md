@@ -34,13 +34,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: Report Subscriptions Run as the Report Owner, Not the Subscriber
+## Gotcha 4: Each Subscription Has Its Own Running User — Defaulting to Whoever Created It, Not the Report Owner
 
-**What happens:** An admin sets up a report subscription and distributes it to 20 users. All 20 recipients receive the same rows — the rows visible to the report owner at the time the subscription runs. A user in the Eastern region receives deals owned by users in the Western region because the report owner is the VP of Sales with View All Data.
+**What happens:** An admin sets up a report subscription and adds 20 recipients. All 20 receive the same rows — the rows visible to *that subscription's* running user, which defaults to the admin who created it. A rep in the Eastern region receives Western-region deals because the admin has View All Data. The team expected Salesforce to re-run the report once per recipient. It does not.
 
-**When it occurs:** Report subscriptions always execute as the user who owns the report (or the specified running user, if different). The subscription sends the same result set to every recipient regardless of each recipient's individual record access. This is by design — Salesforce does not re-run the report once per recipient.
+**When it occurs:** Every Lightning subscription carries its own running user, defaulting to **Me** — the person creating the subscription — not the report's owner and not each recipient. Two users subscribing to the same report produce two subscriptions with two different running users. Salesforce Help: "Recipients see the same report data as the person running the report. It's possible that they see more or less data than they normally see in Salesforce." Pointing a subscription elsewhere is permission-gated: **Subscribe to Reports: Set Running User** to choose another person, **Subscribe to Reports: Add Recipients** to send to anyone but yourself, and **Subscribe to Reports: Send to Groups and Roles** to target roles, roles-and-subordinates, or public groups. Plain **Subscribe to Reports** only lets a user subscribe themselves.
 
-**How to avoid:** Do not use report subscriptions to send personalized data to individual contributors. Subscriptions are appropriate for aggregate metrics that all recipients are meant to see (e.g., "total open cases this week" sent to the whole support team). For personalized delivery, users must subscribe themselves to the report using their own running user, or use a dynamic dashboard with on-demand refresh instead.
+**How to avoid:** For personalized delivery, have each user create their own subscription so their own running user applies. Reserve **Set Running User** for aggregate metrics every recipient is cleared to see, and audit who holds that permission — it is the one that actually leaks rows. Then size the delivery against the real ceilings: an attachment is capped at 15,000 rows, 30 columns, and 3 MB; up to 5 conditions can gate whether the email sends at all; each user gets 15 report and 15 dashboard subscriptions on Unlimited Edition and 7 on other editions; and the org can schedule 500 report and 500 dashboard subscriptions in any given hour.
 
 ---
 
@@ -61,3 +61,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Bucket fields have an implicit "Other" category that captures any value not matched by the defined ranges, including null/blank values. If the field being bucketed can be blank (e.g., Amount is not required), blank records will silently fall into "Other" unless the admin explicitly defines a bucket for blanks.
 
 **How to avoid:** When creating a bucket field on a non-required field, always check the "Treat blank values as zeros" option if the field is numeric, or explicitly add a bucket for blank values. Review the "Other" bucket count in the preview to determine whether blank records are being captured there.
+
+---
+
+## Gotcha 7: A Report Referenced by Any Dashboard Cannot Be Deleted
+
+**What happens:** A cleanup plan says "delete every report not run in 12 months." The deletes fail partway through. In the UI the action is blocked; through the Analytics REST API it returns HTTP 403 with `The report can't be deleted because there are one or more dashboards referencing it.` The team treats a designed guard rail as an unexpected outage and stops the cleanup.
+
+**When it occurs:** Any time a dashboard component still points at the report — including dashboards sitting in folders the person running the cleanup cannot see. Report deletion is not a leaf operation; every dashboard in the org is a potential reference holder, so a usage report on "last run date" alone will never predict which deletes succeed.
+
+**How to avoid:** Make the platform's refusal the enforcement point rather than the surprise. Run a deprecate-then-delete cycle: rename the report with a `DEPRECATED_` prefix, leave it in place for one full reporting cycle, and delete only after nobody complains — at which point a successful delete is itself proof no dashboard depends on it. Deleted reports land in the Recycle Bin, so an over-eager delete is recoverable within the retention window.
+
+---
+
+## Gotcha 8: Folder Names Are Unique Across Reports AND Dashboards, and Subfolders Need Their Own Permission
+
+**What happens:** An admin building out a folder tree tries to create a dashboard folder named "Sales Ops" alongside an existing *report* folder of the same name, and the save fails. Later, a delegated admin with full access to every report in the tree still cannot create the subfolders the design calls for.
+
+**When it occurs:** The folder namespace is shared across both asset types — per Salesforce Help, "You can't have more than one report or dashboard folder with the same name as another report or dashboard folder." Separately, creating a subfolder requires the **Create Report Folders** user permission (or **Create Dashboard Folders** for dashboards) *plus* manage access on the root folder of that tree. Access to the reports inside the folder grants nothing here. Up to 3 subfolder levels are allowed.
+
+**How to avoid:** Prefix folder names by asset type ("RPT — Sales Ops", "DSH — Sales Ops") so the shared namespace never collides, and settle tree depth up front against the 3-level ceiling rather than discovering it mid-migration. When delegating folder maintenance, grant **Create Report Folders** / **Create Dashboard Folders** plus Manage access on the one specific root folder — not blanket "Manage Reports in Public Folders", which grants manage access to every public report folder in the org.

@@ -118,6 +118,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **Org cache is shared broadly** — do not place user-specific or sensitive data there.
 3. **Session cache is not the same thing as async-safe state** — background jobs generally should not depend on session-scoped cache behavior.
 4. **A cache hit can hide stale-data bugs** — invalidation strategy matters as much as the cache call itself.
+5. **TTL is capped per scope** — org cache accepts 300–172,800 seconds (5 minutes–48 hours) and defaults to 86,400 seconds (24 hours) when omitted; session cache accepts 300–28,800 seconds (5 minutes–8 hours), so data that must stay warm longer than 8 hours cannot be session-scoped.
 
 ## Output Artifacts
 

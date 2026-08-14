@@ -94,7 +94,7 @@ For each Batch Apex job in the org, complete one row.
 
 **Source:** Use `GET /services/data/v59.0/limits` (Salesforce Limits API) for authoritative current counts. Setup UI counts may lag.
 
-**Soft-deleted fields note:** Custom fields pending deletion are still counted against the 500 limit for up to 15 days. Hard-delete from Setup > Deleted Fields to reclaim immediately.
+**Soft-deleted fields note:** Custom fields pending deletion still count against the 500 limit — and against the allocation for their field type (40 relationship, 25 roll-up summary) — until the hard delete completes or 15 days elapse, whichever comes first. Include them in Current Count: they are listed on the object's Deleted Fields page (Setup > Object Manager > _object_ > Fields & Relationships > Deleted Fields). Erase only queues the hard-delete background job; the Purge button that starts it immediately appears only at 75%+ of the object's field allocation, in Salesforce Classic.
 
 ---
 

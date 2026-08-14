@@ -58,7 +58,7 @@ Package version lifecycle:
    sf package install --package 04tXXX --target-org production
 
 Beta versions CANNOT be installed in production orgs.
-Promoted versions CANNOT be deleted or unpromoted.
+Promoted versions CANNOT be unpromoted or returned to beta status.
 ```
 
 **Detection hint:** Flag production installation commands where the package version has not been promoted. Check for missing `sf package version promote` step in deployment workflows.
@@ -163,3 +163,33 @@ For truly protected components:
 ```
 
 **Detection hint:** Flag unlocked package recommendations that claim metadata protection or immutability. Look for "prevent changes" or "locked" language in unlocked package context.
+
+---
+
+## Anti-Pattern 6: Treating `package version promote` as a Reversible "Build Passed" Label
+
+**What the LLM generates:** A CI job that runs `sf package version promote --package MyPkg@1.3.0-7 --no-prompt` on every successful `main`-branch build, described as "marking the build as good." Follow-up advice usually claims the label can be moved — "un-promote by deleting the version and promoting the next one."
+
+**Why it happens:** In npm, Maven, and container registries, a release tag is a re-pointable pointer. LLMs transfer that mental model to Salesforce, where it is wrong in both directions: promotion is spend-once per version number, and deletion is not its inverse.
+
+**Correct pattern:**
+
+```text
+"You can promote and release only once for each package version number,
+ and you can't undo this change."  — SFDX Developer Guide
+
+WRONG — unconditional CI step on every green build:
+  sf package version promote --package MyPkg@1.3.0-7 --no-prompt
+
+RIGHT:
+  1. Every commit builds a BETA:  sf package version create ...
+  2. Install and test the beta in a sandbox
+  3. Promote once, at the release gate, behind manual approval, as a user
+     holding the Dev Hub permission "Promote a package version to released"
+  4. Bad promoted build? Roll FORWARD — build and promote 1.3.0-8.
+     sf package version delete is NOT an un-promote. It is permanent,
+     every later install of that 04t fails, and any package that
+     declares it as a dependency breaks.
+```
+
+**Detection hint:** Flag `sf package version promote` appearing in a CI step with no approval gate or manual trigger, and flag any prose containing "un-promote," "demote to beta," "revert the promotion," or "delete the version to undo."

@@ -141,3 +141,27 @@ Never rely on Dynamic Forms alone for data security.
 ```
 
 **Detection hint:** If the output uses Dynamic Forms visibility to "secure" or "protect" a field without also configuring FLS, the field is not actually secured. Search for `secure`, `protect`, or `restrict access` combined with `Dynamic Forms` without `FLS` or `Field-Level Security`.
+
+---
+
+## Anti-Pattern 6: Using Field Section visibility rules for progressive disclosure
+
+**What the LLM generates:** "Group the shipping fields into a 'Shipping Details' Field Section and set the section's visibility rule to Type = 'Physical'. The section appears as soon as the user selects Physical."
+
+**Why it happens:** Field components and Field Section components are configured through the same component visibility filter conditions in Lightning App Builder, so LLMs treat their rules as interchangeable. They are not evaluated on the same schedule. Salesforce: "Visibility rules on fields are assessed dynamically. Changes a user makes while editing a record can make fields appear and disappear as visibility rules are evaluated." But "Visibility rules on field sections aren't dynamic and don't react to what a user does while editing. Field section visibility rules are evaluated only after a record is saved." A section that qualifies mid-edit stays hidden until the record is saved — the exact opposite of progressive disclosure.
+
+**Correct pattern:**
+
+```
+Reveal-as-you-type (progressive disclosure):
+- Put the rule on each FIELD component. Field rules re-evaluate
+  live during edit, so fields appear/disappear mid-form.
+- If a whole group must appear live, repeat the rule on every field
+  in the section — do not put it on the section.
+
+Field SECTION rules (evaluated only after save) — use for conditions
+that are stable for the entire edit session:
+- Record type, profile, custom permission, device.
+```
+
+**Detection hint:** If the output attaches a Field Value condition to a Field Section and describes it appearing "as soon as" or "immediately when" the user changes a field, the behavior is wrong. Search for `Field Section` combined with a field-value condition.

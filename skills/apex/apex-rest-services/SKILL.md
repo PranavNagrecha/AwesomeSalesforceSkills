@@ -57,7 +57,7 @@ Versioning should be visible and explicit, often in the URL mapping or path cont
 
 ### Security Must Be Declared And Enforced
 
-REST classes still need explicit sharing decisions and secure data access patterns. Authentication into Salesforce is only one half of the problem; the Apex code must still enforce the right record, object, and field boundaries.
+REST classes still need explicit sharing decisions and secure data access patterns. Authentication into Salesforce is only one half of the problem; the Apex code must still enforce the right record, object, and field boundaries. Never infer that boundary from the org's release: what a resource class does with no sharing keyword and no query clause is set by the `apiVersion` in its `.cls-meta.xml`, and it inverted at 67.0 (Summer '26). Read [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version* before scoring an endpoint's posture.
 
 ## Common Patterns
 

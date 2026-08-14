@@ -30,3 +30,7 @@
 - Salesforce Help: Lead Conversion Field Mapping — https://help.salesforce.com/s/articleView?id=sf.customize_leadconv.htm
 - Salesforce Help: Web-to-Lead — https://help.salesforce.com/s/articleView?id=sf.setting_up_web-to-lead.htm
 - Salesforce Help: Lead Auto-Response Rules — https://help.salesforce.com/s/articleView?id=sf.customize_leadautoresponse.htm
+- Salesforce Help: Considerations for Converting Leads — https://help.salesforce.com/s/articleView?id=sales.leads_notes.htm&type=5
+- Salesforce Help: Validation rule not firing when converting Leads — https://help.salesforce.com/s/articleView?id=000386058&type=1
+- Salesforce Help: Enable Use Apex Lead Convert for Validation Rules — https://help.salesforce.com/s/articleView?id=000386851&type=1
+- Salesforce Help: Resolving Common Lead Conversion Errors in Salesforce — https://help.salesforce.com/s/articleView?id=000383660&type=1

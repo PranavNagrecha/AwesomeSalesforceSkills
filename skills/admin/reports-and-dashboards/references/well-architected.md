@@ -41,7 +41,7 @@ A Salesforce org accumulates reports over time. Reports in private folders, repo
 ## Pillars Not Addressed
 
 - **Performance** — Report performance is affected by filtering, grouping, and data volume. Very large reports (millions of records) benefit from async processing. This skill doesn't cover report query optimisation — that's in data/soql-optimisation.
-- **Scalability** — Report performance degrades with data volume. Beyond 2,000 records in Joined reports, or 50,000+ rows in standard reports, consider CRM Analytics. Not in scope here.
+- **Scalability** — Report performance degrades with data volume. When a requirement exceeds what report exports and groupings can carry (see llm-anti-patterns.md Anti-Pattern 5 for the sourced caps — 2,000 is the on-screen display cap, not an export or scalability threshold), consider CRM Analytics. Not in scope here.
 - **Reliability** — Reports are generally reliable once built. The "0 results" cases are sharing/filter issues, documented in gotchas.
 - **User Experience** — Dashboard design (chart types, layout, color) is touched but not deeply covered. Dashboard UX design is a broader topic.
 
@@ -66,6 +66,9 @@ These reports are operational health signals — schedule them as subscriptions 
 - Salesforce Well-Architected Overview — operational reporting quality framing
 - Metadata API Developer Guide — report and dashboard metadata deployment behavior
 - Object Reference — object semantics that affect report design and completeness
-- [Limitations on Historical Trend Reporting](https://help.salesforce.com/s/articleView?id=sf.reports_historical_limits.htm&type=5) — supported field types, 5 snapshot dates, 4 historical filters, 100 fields, 5M-row storage cap, 3-months-plus-current-month retention
+- [Limitations on Historical Trend Reporting](https://help.salesforce.com/s/articleView?id=sf.reports_historical_limits.htm&type=5) — supported field types, 5 snapshot dates, 4 historical filters, 100 fields, 5M-row storage cap, 3-months-plus-current-month retention, summary format / export / subscription / formula field / row-limit filter / dynamic exchange rate all unsupported, snapshot date as primary row grouping in Lightning
+- [Reports and Dashboards REST API Error Codes](https://developer.salesforce.com/docs/atlas.en-us.api_analytics.meta/api_analytics/sforce_analytics_rest_api_report_error_codes.htm) — error 501 "Historical trend data is unavailable in the report format requested. Change the report format to matrix and try again."
+- [Metadata API Developer Guide — Report](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_report.htm) — folder/report fullName, no wildcard support, nested-folder trailing slash and its failure message
+- [Metadata API Developer Guide — Dashboard](https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_dashboard.htm) — package.xml members must be developer names, not dashboard titles; listMetadata() with DashboardFolder
 - [Export a Report](https://help.salesforce.com/s/articleView?id=analytics.reports_export.htm&type=5) — Formatted Report 100,000 x 100 (2,000 x 100 for matrix); Details Only .xlsx 100,000 x 100; Details Only .xls/.csv uncapped by Salesforce
 - [Reports and Dashboards Limits](https://help.salesforce.com/s/articleView?id=analytics.rd_reports_dashboards_limits.htm&type=5) — 25 widgets per dashboard, 1,000 groupings per widget, 2,000 on-screen rows, 2,000 report chart groups, joined-report block and subscription allocations

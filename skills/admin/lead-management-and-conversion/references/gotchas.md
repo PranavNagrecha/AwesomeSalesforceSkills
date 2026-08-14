@@ -49,3 +49,16 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When the source and target picklist fields diverge over time (values added to Lead but not to the target field, or values renamed). Also common when a Lead picklist field is mapped to a target field of a different data type (e.g., Lead text field mapped to Contact picklist).
 
 **How to avoid:** Keep picklist value sets synchronized between Lead and target object fields when field mapping is in use. Use Global Value Sets (Setup > Picklist Value Sets) for picklist fields that are shared across Lead and its conversion targets — this ensures values stay in sync automatically. After any picklist value addition or rename on a mapped Lead field, immediately apply the same change to the target field.
+
+---
+
+## Gotcha 6: Validation Rules on Account, Contact, Opportunity, and Task Do Not Fire During Lead Conversion by Default
+
+**What happens:** Conversion creates Account, Contact, Opportunity, and Task records, but by default that path does not enforce validation rules or universally required custom fields on those objects. Salesforce's *Considerations for Converting Leads* states that when the **Require Validation for Converted Leads** checkbox on the Lead Settings page is disabled, "Salesforce ignores lookup filters when converting leads." A rule set that looks complete therefore has an unmarked hole at the single highest-value moment in the sales process — no error, no warning, and the resulting records are indistinguishable from compliant ones.
+
+**When it occurs:** In every org that has never touched Lead Settings — the checkbox ships unchecked. It typically surfaces during a data-quality or compliance audit, when the records violating an "always enforced" rule turn out to have all been created by lead conversion.
+
+**How to avoid:** Setup > Feature Settings > Marketing > Lead Settings (Classic: Setup > Customize > Leads > Lead Settings) > Edit > check **Require Validation for Converted Leads** > Save. If the checkbox is not on the page, the org first needs the **Use Apex Lead Convert** permission, which requires a System Administrator to raise an activation request with Salesforce Support. Two things to regression-test in a sandbox before releasing the change:
+
+1. Enabling it also switches on required-field settings and — per Salesforce's *Enable Use Apex Lead Convert for Validation Rules* article — Workflow Rules and Process Builder for the conversion path, so conversions that previously succeeded can start failing. Apex triggers are not part of this switch: *Considerations for Converting Leads* states plainly that during lead conversion, triggers fire. Validation failures surface as bold red text below the Converted Status picklist; required-field failures surface as `REQUIRED_FIELD_MISSING` and lookup-filter failures as `FIELD_FILTER_VALIDATION_EXCEPTION`.
+2. Enabling it can remove previously configured conversion field mappings — Salesforce's guidance is to document the existing mappings before the activation is applied. Re-verify Object Manager > Lead > Fields & Relationships > Map Lead Fields immediately afterward, or Gotcha 1 fires on every conversion from that point on.

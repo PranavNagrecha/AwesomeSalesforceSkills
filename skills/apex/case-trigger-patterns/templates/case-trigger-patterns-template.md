@@ -25,7 +25,7 @@ Which of the four patterns apply? (check all that apply)
 
 - [ ] Pattern 1 — Assignment rule invocation via `Database.DmlOptions`
 - [ ] Pattern 2 — Entitlement auto-association in Before Insert
-- [ ] Pattern 3 — Merge delete handling with `MasterRecordId` check
+- [ ] Pattern 3 — Merge delete handling with `MasterRecordId` check in `after delete`
 - [ ] Pattern 4 — Milestone completion on case close
 
 ## Implementation Plan
@@ -36,7 +36,7 @@ For each selected pattern, describe the class and method to add or modify:
 |---|---|---|---|
 | Assignment rules | `CaseService.cls` or handler | `insertCasesWithRouting()` | |
 | Entitlement association | `CaseTriggerHandler.cls` | `associateEntitlements()` | |
-| Merge handling | `CaseTriggerHandler.cls` | `onBeforeDelete()` | |
+| Merge handling | `CaseTriggerHandler.cls` | `onAfterDelete()` — `MasterRecordId` is null in `before delete` | |
 | Milestone completion | `CaseTriggerHandler.cls` | `completeMilestonesOnClose()` | |
 
 ## Checklist
@@ -45,7 +45,7 @@ Copy and complete before marking work done:
 
 - [ ] All Case DML requiring assignment rules uses `Database.insert()`/`Database.update()` with `Database.DmlOptions` — not the `insert`/`update` keyword
 - [ ] Entitlement association runs in `Before Insert` context (not After Insert) to avoid extra DML
-- [ ] Merge delete handler checks `MasterRecordId` on `Trigger.old` records, not `Trigger.new`
+- [ ] Merge delete handler checks `MasterRecordId` on `Trigger.old` records, not `Trigger.new`, and does so in `after delete` (the field is null in `before delete`)
 - [ ] Milestone completion sets `CaseMilestone.CompletionDate`, not `CaseMilestone.IsCompleted`
 - [ ] No second `CaseTrigger` created — logic added to existing handler
 - [ ] All handler methods are bulkified (no SOQL or DML inside loops)

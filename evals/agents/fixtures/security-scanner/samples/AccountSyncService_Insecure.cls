@@ -7,7 +7,16 @@
  *   2. callout-without-named-credential (P0) — literal HTTPS endpoint
  *   3. hardcoded-secret              (P0) — API key inline as a string literal
  *   4. no-flsd-on-dml                (P1) — update without SecurityUtils
- *   5. soql-no-security              (P1) — SOQL without WITH SECURITY_ENFORCED / USER_MODE
+ *   5. soql-no-security              (P1) — SOQL that does not enforce FLS
+ *
+ * Findings 1 and 5 are BOTH version-dependent, and this file deliberately ships
+ * without a .cls-meta.xml so a scanner has to notice that rather than assume.
+ * At API 67.0+ a class with no sharing keyword defaults to `with sharing` and
+ * SOQL already runs in user mode, so the correct scanner output is a stated
+ * assumption about apiVersion, not a flat P1. The remedy for finding 5 is
+ * `WITH USER_MODE` — never `WITH SECURITY_ENFORCED`, which was removed in 67.0
+ * and does not compile there. See agents/_shared/AGENT_CONTRACT.md
+ * "Apex security idiom by API version".
  */
 public class AccountSyncService {
 

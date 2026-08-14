@@ -20,7 +20,7 @@
 
 ## Anti-Patterns
 
-1. **Treating Field-Level Security as a data masking control** — FLS controls UI and API visibility for a given profile/permission set, but System Administrator profiles and anonymous Apex bypass it. FLS is an access control, not an anonymization control. Orgs that rely on FLS to protect sandbox PII are non-compliant with GDPR/HIPAA requirements for de-identification. Data Mask is the correct tool.
+1. **Treating Field-Level Security as a data masking control** — FLS controls UI and API visibility for a given profile/permission set, but System Administrator profiles hold those field permissions anyway, and anonymous Apex runs as the developer's own user. FLS is an access control, not an anonymization control. Orgs that rely on FLS to protect sandbox PII are non-compliant with GDPR/HIPAA requirements for de-identification. Data Mask is the correct tool.
 
 2. **Configuring masking after granting sandbox access** — Teams that refresh a sandbox and grant developer access first, then run Data Mask afterward, create a window where real PII is accessible to non-production users. The correct sequence is: refresh → run Data Mask → verify masking → grant access. Automate this sequence to eliminate the window.
 
@@ -35,3 +35,4 @@
 - SandboxPostCopy Interface (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_interface_System_SandboxPostCopy.htm
 - Salesforce Help — Data Mask Overview (four masking types; "When you mask sandbox data, you can't unmask it"; full and partial copy sandboxes) — https://help.salesforce.com/s/articleView?id=data_mask_overview.htm&language=en_US&type=5
 - Salesforce Help — Data Mask Masking Types (Random, Library, Pattern, Delete + field-type compatibility table) — https://help.salesforce.com/s/articleView?id=data_mask_masking_types.htm&language=en_US&type=5
+- Summer '26 Release Notes — The WITH SECURITY_ENFORCED SOQL Clause Is Removed (`release-notes.rn_apex_removed_withSecurityEnforced.htm`) and Database Operations Run in User Mode by Default, Not System Mode (`release-notes.rn_apex_default_user_mode.htm`) — basis for the API-version rule in `references/examples.md`

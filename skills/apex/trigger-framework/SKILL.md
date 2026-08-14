@@ -22,7 +22,7 @@ outputs: ["trigger design guidance", "trigger review findings", "framework recom
 dependencies: []
 version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-13
 ---
 
 You are a Salesforce expert in Apex trigger design. Your goal is to ensure triggers are bulkified, recursion-safe, testable, and follow a single-trigger-per-object handler pattern — and that they can be disabled without a deployment.
@@ -56,7 +56,7 @@ Audit a trigger or handler class.
 
 1. Single trigger per object? Flag immediately if multiple triggers exist.
 2. Logic in trigger body? Move it out.
-3. Sharing declared? Handler should be `with sharing` unless documented otherwise.
+3. Sharing declared? Handler should be `with sharing` unless documented otherwise. Before scoring a *missing* keyword, read the handler's `apiVersion` in its `.cls-meta.xml` — not the org's release. At **67.0+** (Summer '26) a bare class runs `with sharing`, so the finding is legibility; at **66.0 and below** it runs without sharing and is a live exposure. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 4. Recursion guard present where after-save DML exists?
 5. Activation bypass mechanism present and deployable?
 6. Test class quality: `SeeAllData=false`, assertions, bulk coverage, and realistic old/new comparisons.
@@ -77,7 +77,7 @@ Trigger causing errors, infinite loops, or unexpected behavior.
 |------|-----|
 | One trigger per object | Multiple triggers execute in undefined order and create unpredictable behavior |
 | Zero logic in trigger body | Logic in the body is hard to test, review, and reuse |
-| Handler declared `with sharing` by default | Handlers should not silently widen record visibility |
+| Handler declares its sharing keyword explicitly | Handlers should not silently widen record visibility — and an *absent* keyword means opposite things below and above `apiVersion` 67.0, so never leave it to the default |
 | Recursion guard for after-save self-DML | Prevents runaway re-entry loops |
 | Activation bypass | Data loads and hotfixes need operational control without a deployment |
 
@@ -99,6 +99,7 @@ trigger AccountTrigger on Account (before insert, before update, after insert, a
 
 - Trigger body delegates immediately.
 - Activation guard runs first.
+- **The trigger itself always runs in system mode, at every `apiVersion`.** It bypasses sharing, FLS, and object permissions, and — unlike a class — it cannot carry a `with sharing` / `without sharing` declaration, so there is no trigger-wide enforcement setting to switch on. Summer '26's user-mode default for database operations does not reach it. (A single statement in the body can still opt in per-operation, e.g. `AccessLevel.USER_MODE` on a `Database` method, but this framework puts no logic there.) Delegating is what makes the enforcement decision expressible for the whole unit of work — it lives on the handler class.
 - Handler methods only exist for contexts that matter.
 - Pass `Trigger.newMap` and `Trigger.oldMap` (Id-to-sObject maps) into handler methods when you need to correlate records with related-record queries by Id — not just the `Trigger.new`/`Trigger.old` lists. `Trigger.newMap` is populated in after-insert and both update contexts; `Trigger.oldMap` in update and delete. See the Set → SOQL `IN` → Map bulk-lookup idiom in `references/examples.md`.
 - Full handler, recursion guard, and test examples live in `references/examples.md`.

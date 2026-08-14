@@ -49,6 +49,9 @@ Identifying filter field candidates early and requesting custom indexes before d
 ## Official Sources Used
 
 - Salesforce Object Reference — Relationship Considerations — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_considerations.htm
+- Salesforce Object Reference — Relationships Among Objects (master-detail primary-object restrictions) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm
+- Metadata API Developer Guide — CustomField `deleteConstraint` — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customfield.htm
+- Salesforce Help — Enable 'cascade delete on custom lookup relationships' feature — https://help.salesforce.com/s/articleView?id=000382017&language=en_US&type=1
 - Salesforce Help — Relationship Considerations — https://help.salesforce.com/s/articleView?id=sf.relationships_considerations.htm
 - Apex Developer Guide — SOQL Indexes — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_indexes.htm
 - Salesforce Help — Custom Field Types — https://help.salesforce.com/s/articleView?id=sf.custom_field_types.htm

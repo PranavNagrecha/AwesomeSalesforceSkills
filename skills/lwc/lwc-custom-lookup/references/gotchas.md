@@ -31,13 +31,18 @@ database aren't cacheable". Search methods must be pure reads.
 
 ---
 
-## Gotcha 4: `WITH SECURITY_ENFORCED` is per-query
+## Gotcha 4: `WITH USER_MODE` is per-query, and it throws
 
-It enforces FLS for that one query. If your lookup also reads
-from a related object via subquery, FLS is enforced on the
-subquery too — but it raises `QueryException` if any field is
-denied. Catch and degrade rather than letting it crash the
+It enforces access for that one query. If your lookup also reads
+from a related object via subquery, the subquery is enforced too
+— and a denied field raises `QueryException`. Catch it and fall
+back to a narrower `SELECT` list rather than letting it crash the
 component.
+
+Version gate: `WITH USER_MODE` needs API 57.0+ and is the idiom
+from there up. `WITH SECURITY_ENFORCED` is the fallback only on a
+class pinned to ≤56.0 — it throws the same way but checks just
+the `SELECT` list, and at 67.0+ it no longer compiles.
 
 ---
 

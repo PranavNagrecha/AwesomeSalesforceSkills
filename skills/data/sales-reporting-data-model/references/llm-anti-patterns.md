@@ -11,36 +11,37 @@ These patterns help the consuming agent self-check its own output.
 **Why it happens:** LLMs see "historical" in the feature name and assume it stores indefinite history. Training data contains Salesforce HTR documentation without always surfacing the retention cap prominently. The LLM generalizes "HTR shows history" to "HTR shows all history."
 
 **Correct pattern:**
-HTR retains approximately 3 months of trending data on Opportunity (up to 4 months for some objects). Data older than the retention window is automatically purged. For multi-year comparisons, use Reporting Snapshots to a custom object — run daily or weekly, accumulate records indefinitely, and filter by `Snapshot_Date__c` to reconstruct prior-year pipeline state.
+Salesforce retains historical data for the previous 3 months plus the current month. That window is the same for every trending-enabled object — there is no longer retention for Cases or Forecasting Items. The one documented extension is Historical Trending in Pipeline Inspection, which stores up to 12 months of Opportunity history. Data older than the window is automatically purged. For multi-year comparisons, use Reporting Snapshots to a custom object — run daily or weekly, accumulate records indefinitely, and filter by `Snapshot_Date__c` to reconstruct prior-year pipeline state.
 
 ```
-HTR retention: ~90 days on Opportunity (not configurable)
-For > 90 days of history: use Reporting Snapshots
+HTR retention: previous 3 months + current month (not configurable)
+Exception: Historical Trending in Pipeline Inspection -> 12 months of Opportunity history
+For longer history: use Reporting Snapshots
 ```
 
 **Detection hint:** Any recommendation to use HTR with date ranges exceeding 3 months, or phrases like "HTR stores unlimited history" or "HTR gives you historical data going back years."
 
 ---
 
-## Anti-Pattern 2: Omitting the 2,000-Row Cap When Recommending Reporting Snapshots
+## Anti-Pattern 2: Omitting the 2,000-Record Per-Run Cap When Recommending Reporting Snapshots
 
 **What the LLM generates:**
 "Configure a Reporting Snapshot with your full open pipeline report as the source. This will write all your Opportunities into the snapshot target object each day."
 
 Or: "Reporting Snapshots can capture your entire pipeline regardless of size — just set up the source report and schedule it."
 
-**Why it happens:** The 2,000-row source report cap is a non-obvious platform constraint that is easy to miss in documentation. LLMs trained on general Salesforce content often describe the feature without surfacing this hard limit, especially in response to questions that imply large data volumes.
+**Why it happens:** The 2,000-record per-run cap is a non-obvious platform constraint that is easy to miss in documentation, and secondary sources routinely restate it as a source-report row cap. LLMs trained on general Salesforce content often describe the feature without surfacing the limit at all, especially in response to questions that imply large data volumes.
 
 **Correct pattern:**
-The Reporting Snapshot source report must return 2,000 rows or fewer at run time. Exceeding this cap causes silent truncation — the snapshot run appears successful but only the first 2,000 rows are written. For orgs with more than 2,000 open Opportunities, segment the source report into multiple views (by region, record type, or owner group) with separate Reporting Snapshot configurations each below the cap. Alternatively, use Apex scheduled logic or Data Cloud for large-volume point-in-time snapshots.
+The cap is on the target side and is stated as such: a snapshot run can add up to 2,000 *new records to the target object*, and if there are more than 2,000 new records the additional records are not recorded and the notification indicates that some rows failed. So the correct framing is a per-run insert cap with a partial-error notification — not a source-report row cap with a silent success. For orgs with more than 2,000 open Opportunities, segment the source report into multiple views (by region, record type, or owner group) with separate Reporting Snapshot configurations each below the cap. Alternatively, use Apex scheduled logic or Data Cloud for large-volume point-in-time snapshots.
 
 ```
-Reporting Snapshot source report row cap: 2,000 rows (hard limit)
-Silent truncation on excess — run appears "Successful"
+Cap dimension: 2,000 NEW RECORDS inserted into the target object per run
+Surplus rows are not recorded; notification + Run History show a partial error
 Workaround: segment into multiple source reports
 ```
 
-**Detection hint:** Any Reporting Snapshot recommendation that does not mention the 2,000-row cap or that suggests the mechanism can handle "all" Opportunities without row-count qualification.
+**Detection hint:** Any Reporting Snapshot recommendation that does not mention the 2,000-record per-run cap, that attaches the 2,000 to the source report instead of the target object, or that suggests the mechanism can handle "all" Opportunities without row-count qualification. Also flag "the run still shows as Successful" — the documented behavior is a partial-failure notification.
 
 ---
 
@@ -135,3 +136,23 @@ Reporting Snapshots: write to custom object — fully SOQL queryable
 ```
 
 **Detection hint:** "Query HTR data via SOQL," "OpportunityTrending object," "the HTR table has an API name ending in __hd," or any instruction to use a Data Loader export on HTR data.
+
+---
+
+## Anti-Pattern 7: Debugging an Invisible Custom Report Type Through Object Permissions and Folder Sharing
+
+**What the LLM generates:**
+Asked "why can't my users see the custom report type I just built?", the model works through object-level Read access, field-level security, profile permissions, and report folder sharing — and often suggests re-sharing the folder or granting View All Data.
+
+**Why it happens:** The model pattern-matches "users can't see X" to the record-and-folder visibility model it has seen most often. Report types are not shared by folder and are not FLS-gated, so none of that advice applies. Deployment Status is a single field on the report type itself, and it rarely appears in the training text next to visibility troubleshooting.
+
+**Correct pattern:**
+Check Setup > Report Types > [type] > **Deployment Status** first. While the value is **In Development**, "the report type and its reports are hidden from all users except those with the Manage Custom Report Types permission" — in most orgs that means only System Administrators, which is exactly why the author can see it and nobody else can. Set it to **Deployed** to release it. Then check the cascade: a custom report type's deployment status changes from Deployed back to In Development if its primary object is a custom or external object whose own deployment status changes the same way, so a report type that worked yesterday can disappear because someone flipped the primary object in Setup.
+
+```
+Report type invisible to users -> Deployment Status = In Development (not FLS, not folder sharing)
+Only "Manage Custom Report Types" can see In Development types
+Cascade: primary custom/external object -> In Development flips the report type back too
+```
+
+**Detection hint:** Any report-type visibility answer that names object permissions, field-level security, or folder sharing without first naming Deployment Status, or that calls the non-deployed value "Draft" (the actual value is "In Development").

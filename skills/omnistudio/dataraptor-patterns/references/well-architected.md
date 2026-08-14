@@ -23,3 +23,5 @@
 - OmniStudio Developer Guide - https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
 - OmniStudio Developer Guide — DataRaptors - https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/os_dataraptor_overview.htm
 - Integration Patterns - https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
+- Salesforce Help — Build an Omnistudio Data Mapper (type-by-type configuration availability) - https://help.salesforce.com/s/articleView?id=xcloud.os_build_data_mapper.htm&language=en_US&type=5
+- Salesforce Help — Omnistudio Data Mappers (Turbo Extract restrictions) - https://help.salesforce.com/s/articleView?id=xcloud.os_omnistudio_dataraptors_45587.htm&language=en_US&type=5

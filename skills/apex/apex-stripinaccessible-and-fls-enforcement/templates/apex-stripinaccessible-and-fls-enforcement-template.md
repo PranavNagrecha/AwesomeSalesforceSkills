@@ -72,7 +72,7 @@ public with sharing class CaseIntakeService {
 
 ## Verification — System.runAs Test
 
-The strip is a no-op under default test context. Wrap the assertion in `System.runAs` to prove enforcement.
+With no `System.runAs`, the running user is the admin executing the test and the strip is a no-op — at every API version, including 67.0+ where database operations default to user mode. Wrap the assertion in `System.runAs` to prove enforcement.
 
 ```apex
 @IsTest
@@ -115,7 +115,7 @@ private class CaseIntakeServiceTest {
             Internal_Notes__c = 'admin notes'
         );
         Test.startTest();
-        // No runAs — runs as system test user with full FLS.
+        // No runAs — runs as the admin executing the test, who has full FLS.
         List<Case> result = new CaseIntakeService().ingest(new List<Case>{ c });
         Test.stopTest();
 

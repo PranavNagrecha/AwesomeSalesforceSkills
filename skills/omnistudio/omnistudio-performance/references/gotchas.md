@@ -49,3 +49,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** OmniScripts that use lazy loading as a blanket optimization without addressing the per-step data performance. Users see a fast initial load but then encounter step-level waits that feel arbitrary and inconsistent.
 
 **How to avoid:** Apply lazy loading and per-step data consolidation together. Lazy loading is most effective when the deferred steps themselves are fast (cached DataRaptors, bundled IP calls). Profile each lazy-loaded step individually to confirm the step-entry latency is acceptable before releasing. The goal is to spread fast calls across navigation events, not to defer slow calls until the user notices them.
+
+---
+
+## Gotcha 6: Preview Bypasses The Cache By Default, So Designer Testing Never Proves Caching Works
+
+**What happens:** Top-level Integration Procedure caching — a different mechanism from the DataRaptor session cache in Gotcha 1 — is configured in Procedure Configuration with "Salesforce Platform Cache Type" and "Time To Live In Minutes". But in the Preview tab, the Options JSON setting `ignoreCache` defaults to `true` — it "Doesn't clear or save data to the cache" — and `resetCache` defaults to `false`. A default preview run therefore never saves to the cache, and the runtime returns `vlcCacheEnabled` set to false because `ignoreCache` disabled caching for that run. Timing two preview runs proves nothing about the cache.
+
+**When it occurs:** Any time caching is validated in the designer rather than in the consuming OmniScript or FlexCard. It also hides a second behavior: "If an Integration Procedure that has top-level caching enabled fails, its data isn't cached." An IP that intermittently fails looks like a permanent cache miss with no error surfaced in the timing.
+
+**How to avoid:** Set `ignoreCache` to false in the Preview Options JSON (and `resetCache` to true when you want to force a save), then assert on the JSON nodes the runtime adds to the response root rather than on elapsed time: `vlcCacheKey` (the key data was stored under), `vlcCacheResult` (true when the response came from cache), `vlcCacheEnabled`, and `vlcCacheException` (caching errors). Between test runs, clear state with `ConnectApi.OmniDesignerConnect.ClearIntegrationProcedureCache(input)` (Summer '25 and later) instead of waiting out the TTL. `input` is a `ConnectApi.IntegrationProcedureCacheInputRepresentation` whose `cacheStorageType` is `ConnectApi.CacheStorageType.Session`, `.Org`, or `.All` — the method takes that input representation, not a bare enum.
+
+---
+
+## Gotcha 7: "Calculation Matrix: Not Found" On Export Is Expected And Safe To Ignore
+
+**What happens:** Exporting an Integration Procedure that calls a Decision Matrix Action emits a `Calculation Matrix: Not Found` error. The export is not broken and the matrix is not missing. Salesforce documents the message explicitly: "You can ignore a Calculation Matrix: Not Found error when exporting an Integration Procedure that calls a Decision Matrix."
+
+**When it occurs:** DataPack export or migration of any IP containing a Decision Matrix Action — the action configured with "Input Parameters: Data Source" (the IP data JSON node holding the value), "Input Parameters: Filter Value" (the matching Decision Matrix input parameter), and "Decision Matrix Name" (shown as "Matrix Name" in the managed package designer).
+
+**How to avoid:** Do not spend a deployment cycle re-importing or reactivating the matrix in response to this message. Treat the export as successful and verify resolution at runtime instead: set a Default Matrix Result on the action so a null return surfaces as a known value, and use the `executionDateTime` Remote Option to pin the matrix Effective Date when testing dated rate tables. If the action returns the default at runtime, the matrix genuinely is not resolving — that, not the export message, is the real signal.

@@ -46,16 +46,21 @@ Implementation:
 ```text
 Integration Procedure caching options:
 
-1. IP-level caching:
-   - Enable "Use Data Cache" in IP properties
-   - Set cache duration (minutes)
-   - Cache key: based on input parameters
+1. Top-level IP caching (set in Procedure Configuration):
+   - "Salesforce Platform Cache Type" — which cache partition to use
+   - "Time To Live In Minutes" — how long cached data persists
+   - Assert on the telemetry nodes the runtime adds to the IP JSON root,
+     never on wall-clock timing:
+       vlcCacheKey       key for any data stored in the cache
+       vlcCacheResult    set to true if data is retrieved from the cache
+       vlcCacheEnabled   set to false if the ignoreCache setting disabled caching
+       vlcCacheException any caching errors
    - Best for: reference data, picklist values, rate tables
 
-2. Platform Cache:
-   - Store IP results in Salesforce Platform Cache
-   - Org-level or session-level partition
-   - Requires Platform Cache allocation
+2. Platform Cache allocation (prerequisite for option 1, not an alternative):
+   - The partition that "Salesforce Platform Cache Type" points at
+   - Org-level or session-level scope
+   - Requires a Platform Cache allocation in Setup
 
 3. Client-side caching:
    - OmniScript data JSON persists between steps
@@ -68,7 +73,7 @@ When NOT to cache:
 - Data from external APIs with their own caching headers
 ```
 
-**Detection hint:** Flag Integration Procedures called from FlexCards without caching enabled. Check for repeated IP calls with the same input parameters.
+**Detection hint:** Flag Integration Procedures called from FlexCards without caching enabled. Check for repeated IP calls with the same input parameters. Also flag caching advice that never names `vlcCacheResult` — guidance with no assertable signal cannot be verified by whoever implements it.
 
 ---
 

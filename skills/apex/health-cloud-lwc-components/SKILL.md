@@ -134,12 +134,13 @@ Custom LWCs that need to display clinical data must query Health Cloud clinical 
        return [SELECT Id, Name, ConditionSeverity, OnsetDate 
                FROM HealthCondition 
                WHERE PatientId = :accountId 
+               WITH USER_MODE
                ORDER BY OnsetDate DESC LIMIT 10];
    }
    ```
 2. In the LWC, retrieve the Account ID from the record context and call the Apex controller.
 3. Render the clinical data in the component.
-4. Apply appropriate FLS checks in Apex — clinical data is PHI and requires field-level security enforcement.
+4. `WITH USER_MODE` enforces the running user's FLS, object permissions, and sharing on the query (API 57.0+) — clinical data is PHI, so this is not optional. It replaces `WITH SECURITY_ENFORCED`, which was removed in API 67.0 (Summer '26) and no longer compiles; the gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release.
 
 **Why not the alternative:** Using custom Account fields for clinical summaries means the data is not in the Health Cloud clinical data model and cannot be used by clinical components, reports, or FHIR APIs.
 

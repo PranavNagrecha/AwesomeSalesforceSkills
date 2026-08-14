@@ -204,6 +204,7 @@ Run through these before marking work in this area complete:
 - [ ] PDF conversion step is included if PDF output is required
 - [ ] Generated document is stored as ContentVersion on the correct parent record
 - [ ] Server-side DocGen setting is enabled in OmniStudio Settings (if using server-side)
+- [ ] Every Data Mapper and Integration Procedure in the pipeline has a non-blank Required Permission — blank means any user can run it, and the `DefaultRequiredPermission` fallback is inert unless `VlocityRequiredPermissionCheck` is implemented manually
 
 ---
 

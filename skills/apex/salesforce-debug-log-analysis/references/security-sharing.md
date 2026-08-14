@@ -31,7 +31,7 @@ Directly visible in logs:
 - **Access denial errors**: `INSUFFICIENT_ACCESS_OR_READONLY`, `INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY`.
 - **User context**: `USER_INFO` event at the top of the log shows running user, language, locale.
 - **Implicit system mode in triggers**: Apex triggers run in system mode by default.
-- **FLS enforcement**: `WITH SECURITY_ENFORCED` clauses on SOQL, checked at query time.
+- **FLS enforcement**: `WITH USER_MODE` on SOQL — or legacy `WITH SECURITY_ENFORCED` in classes pinned below API 67.0 — checked at query time.
 - **stripInaccessible**: method calls visible, removing fields the user cannot access.
 
 Not directly visible (have to infer or check outside the log):
@@ -63,10 +63,12 @@ SYSTEM_MODE_EXIT
 - Object CRUD (can user read/create/edit/delete this type of record)?
 - Field-level security (can user see/edit this specific field)?
 
-To enforce CRUD/FLS, you must use:
-- `WITH SECURITY_ENFORCED` in SOQL (Spring '20+)
-- `Security.stripInaccessible()` method
-- Manual `Schema.sObjectType.Contact.fields.Email.isAccessible()` checks
+Which idiom enforces CRUD/FLS depends on the **`apiVersion` in the class's `.cls-meta.xml`**, not the org's release — a class pinned to 58.0 keeps 58.0 behaviour in a Summer '26 org:
+- **67.0+ (Summer '26+)**: SOQL, SOSL, and DML run in user mode by default, so CRUD and FLS are enforced with no keyword. Write `WITH USER_MODE` to state the intent; `WITH SYSTEM_MODE` plus a `// reason:` comment to opt out.
+- **57.0–66.0**: `WITH USER_MODE` in SOQL (GA Spring '23), `as user` on DML.
+- **≤ 56.0**: `WITH SECURITY_ENFORCED` in SOQL (Spring '20+). It does not compile at 67.0+ — see below.
+- **Any version from 48.0**: `Security.stripInaccessible(AccessType.READABLE, records)`, which returns an `SObjectAccessDecision` — operate on `.getRecords()`.
+- **Any version**: manual `Schema.sObjectType.Contact.fields.Email.isAccessible()` checks.
 
 ### Enterprise patterns
 
@@ -79,26 +81,29 @@ Deviation from this pattern is a code smell. When debugging permission errors, c
 
 ## SOQL security modes
 
-### WITH SECURITY_ENFORCED (Spring '20+)
-
-```apex
-[SELECT Name, Email FROM Contact WITH SECURITY_ENFORCED]
-```
-
-The query enforces FLS and CRUD for every field referenced. If the user lacks access to any field, the query throws `System.SecurityException`.
-
-Log signature: when this throws, you see `EXCEPTION_THROWN|System.SecurityException: No access to entity: Contact` or field-specific error.
-
-### USER_MODE and SYSTEM_MODE (Winter '23+)
+### USER_MODE and SYSTEM_MODE (GA Spring '23, API 57.0)
 
 ```apex
 [SELECT Name FROM Account WITH USER_MODE]
 [SELECT Name FROM Account WITH SYSTEM_MODE]
 ```
 
-`USER_MODE` enforces sharing, CRUD, and FLS all at once. `SYSTEM_MODE` bypasses all three (requires specific permissions).
+`USER_MODE` enforces sharing, CRUD, and FLS all at once. `SYSTEM_MODE` bypasses all three (requires specific permissions). At API 67.0+ user mode is the default with no keyword at all, so a bare query in a 67.0 class enforces all three and `WITH SYSTEM_MODE` is the deliberate opt-out.
 
-Log signature: visible in query text only, not as a distinct event.
+Log signature: the mode itself is visible in query text only, not as a distinct event. A denial is loud, though — `EXCEPTION_THROWN` carrying `System.QueryException` for the read, `System.DmlException` / `INSUFFICIENT_ACCESS_OR_READONLY` for the write.
+
+### WITH SECURITY_ENFORCED (legacy — Spring '20 through API 66.0)
+
+```apex
+// Legacy. Compiles only in a class pinned to apiVersion <= 66.0.
+[SELECT Name, Email FROM Contact WITH SECURITY_ENFORCED]
+```
+
+The query enforces FLS and CRUD for every field in the `SELECT` list. If the user lacks access to any field, the query throws `System.QueryException` — the whole query fails, no partial result.
+
+**Removed in API 67.0 (Summer '26).** A class compiled at 67.0+ containing this clause fails with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release — you will still see this clause running happily in Summer '26 logs from classes pinned to 58.0. When you find it while triaging, read it as tech debt to migrate to `WITH USER_MODE`, never as evidence the query is secure: it checks only the `SELECT` list, mishandles polymorphic fields, and reports one violation rather than all.
+
+Log signature: when this throws, you see an `EXCEPTION_THROWN` line carrying `System.QueryException` and naming the inaccessible field or entity. The type is `System.QueryException`, not `System.SecurityException` — grep for the former.
 
 ### stripInaccessible
 
@@ -115,8 +120,8 @@ Log signature: method call visible, but the field-by-field decisions are not.
 
 ## FLS diagnostics
 
-When FLS blocks access:
-- `System.SecurityException` with field name.
+When FLS blocks access (user mode, or legacy `WITH SECURITY_ENFORCED`):
+- `System.QueryException` on the query, or `System.DmlException` with `INSUFFICIENT_ACCESS_OR_READONLY` on the write.
 - Error message names the field and object.
 
 When FLS silently filters (via stripInaccessible):
@@ -292,8 +297,8 @@ These help diagnose issues that are not visible in real-time logs.
 # System mode transitions
 grep "SYSTEM_MODE_ENTER\|SYSTEM_MODE_EXIT" log.log
 
-# Access denied errors
-grep "INSUFFICIENT_ACCESS\|SecurityException" log.log
+# Access denied errors (QueryException is the CRUD/FLS denial on a user-mode query)
+grep "INSUFFICIENT_ACCESS\|QueryException\|SecurityException" log.log
 
 # Sharing DML (Apex managed sharing)
 grep "DML_BEGIN" log.log | grep "__Share"

@@ -37,3 +37,13 @@
 **Why:** Version numbers are scoped to the Type+Subtype+Language triplet. Version 3 of the English OmniScript and version 3 of the French OmniScript are completely different objects.
 
 **How to avoid:** Always specify the full triplet (Type/Subtype/Language/VersionNumber) in release notes, rollback procedures, and activation checklists. Never refer to a version number without the triplet context.
+
+---
+
+## 5. FlexCards Embedded in an OmniScript Have Their Own Version Rules
+
+**What happens:** A release plan promotes an OmniScript and the FlexCards embedded in it under one procedure. The team plans a label fix on the live FlexCard, the designer refuses the edit, and they deactivate the card to make it editable — taking it off the page for the duration of the change.
+
+**Why:** FlexCards share the single-active-version rule — "When you activate a version, Omnistudio deactivates all other versions of the Flexcard" — and add an explicit edit restriction: "You can't edit or delete an active Flexcard. To make changes, deactivate it first." Activation is also a compile step: "When you activate a Flexcard, Omnistudio generates a custom Lightning web component." Adding that LWC to a Lightning page or Experience Builder page is a separate step — activation alone does not place it.
+
+**How to avoid:** For a FlexCard change, use **New Version** — the name and author stay the same, only one version can be active at a time, and the previously active version stays active until you activate the replacement, so you never have to take the live card down to edit it. Use **Clone** only when you want a genuinely separate FlexCard: a clone needs the same setup information as a new FlexCard and carries its own version history.

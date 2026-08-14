@@ -28,7 +28,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any case merge operation, whether performed via the UI (Cases > Merge Cases) or via the Apex `merge` DML statement.
 
-**How to avoid:** Inside `before delete` and `after delete` handlers on Case, check `MasterRecordId` on each record in `Trigger.old`. A non-null `MasterRecordId` indicates the record is being merged into the master; a null value indicates a true permanent delete. Branch the logic accordingly. The Apex Developer Guide confirms this is the canonical detection method for merge operations within delete triggers.
+**How to avoid:** Inside the **`after delete`** handler on Case, check `MasterRecordId` on each record in `Trigger.old`. A non-null `MasterRecordId` indicates the record was merged into the master; a null value indicates a true permanent delete. Branch the logic accordingly.
+
+The check must be in `after delete`, not `before delete`: "The MasterRecordId field is only set in after delete trigger events." The platform's documented sequence is `before delete` fires → records are deleted, children reparented, and `MasterRecordId` set → `after delete` fires. A merge guard written in `before delete` compiles, runs, and always reads null, so every merged case takes the true-delete branch — reproducing the exact data loss the guard was added to prevent, while looking correct in review.
 
 ---
 
@@ -49,3 +51,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any time a developer tries to pass `Database.DmlOptions` to a keyword DML statement rather than to the equivalent `Database.*` method.
 
 **How to avoid:** Use `Database.insert(recordList, opts)` and `Database.update(recordList, opts)`. These are the static methods on the `Database` class that accept a `Database.DmlOptions` second argument. The DML keyword syntax (`insert`, `update`, `upsert`) has no mechanism for DML options.
+
+---
+
+## Gotcha 6: Case Is Mergeable from Apex but Not from the SOAP `merge()` Call
+
+**What happens:** The two merge surfaces support different object sets, and the narrower one is the API surface most integrations use. The Apex Developer Guide states "Only leads, contacts, cases, and accounts can be merged" — so `merge masterCase duplicateCase;` is valid Apex. The SOAP API `merge()` call documents a different list: "The supported object types are Lead, Contact, Account, Person Account, and Individual." Case is absent from it. A middleware job that merges cases over the SOAP API fails on the object type, not on the data.
+
+**When it occurs:** Porting a case-dedupe routine from Apex to an API-driven integration, or assuming that because `Case.MasterRecordId` exists and the Lightning UI has a case merge action, every merge surface accepts Case.
+
+**How to avoid:** Merge cases from Apex, from the Lightning case merge UI, or from a service the integration calls into — not from a SOAP `merge()` envelope typed to Case. Both surfaces cap one merge at three records — Apex: "You can pass a main record and up to two additional sObject records to a single merge method"; SOAP: "Up to three records can be merged in a single request, including the main record." The SOAP call adds "Up to 200 merge requests can be made in a single SOAP call" and "External ID fields can't be used with merge()." Merging is irreversible — the losing records are deleted and their children reparented.

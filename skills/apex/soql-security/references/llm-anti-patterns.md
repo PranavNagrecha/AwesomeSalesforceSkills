@@ -64,6 +64,8 @@ public static List<Account> getAccounts() {
 }
 ```
 
+**At `apiVersion` 67.0+ the clause is gone** and the code above does not compile at all (`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`). Read the fix as `WITH USER_MODE`, which throws the same `QueryException` and needs the same handling.
+
 **Detection hint:** `WITH SECURITY_ENFORCED` in a query without a surrounding try/catch for `QueryException`.
 
 ---
@@ -74,11 +76,11 @@ public static List<Account> getAccounts() {
 
 ```apex
 String query = 'SELECT Id, Name FROM Account WHERE Industry = :industry';
-List<Account> results = Database.query(query); // Runs in system mode
+List<Account> results = Database.query(query); // Access mode left implicit — see below
 // WITH USER_MODE cannot be appended to Database.query string
 ```
 
-**Why it happens:** LLMs know about `WITH USER_MODE` but forget it is a compile-time clause for inline SOQL, not for dynamic `Database.query()`. For dynamic SOQL with user-mode enforcement, you must use `Database.query(query, AccessLevel.USER_MODE)`.
+**Why it happens:** LLMs know about `WITH USER_MODE` but forget it is a compile-time clause for inline SOQL, not for dynamic `Database.query()`. For dynamic SOQL with user-mode enforcement, you must use `Database.query(query, AccessLevel.USER_MODE)`. The single-argument overload leaves the mode implicit, and the implicit value flipped: system mode at `apiVersion` ≤ 66.0, user mode at 67.0+. Pass the `AccessLevel` so the call means the same thing at both.
 
 **Correct pattern:**
 
@@ -132,13 +134,16 @@ return decision.getRecords();
 
 ---
 
-## Anti-Pattern 5: Omitting CRUD/FLS checks entirely in classes without sharing keyword
+## Anti-Pattern 5: Omitting CRUD/FLS checks entirely in classes without sharing keyword (`apiVersion` ≤ 66.0)
 
 **What the LLM generates:**
 
 ```apex
 public class DataExporter {
-    // No sharing keyword — defaults to without sharing in many contexts
+    // No sharing keyword — runs without sharing at apiVersion <= 66.0
+    // (at 67.0+ a bare class runs with sharing, and one link saved at 67.0+
+    //  pulls the other keyword-less classes in the chain with it; an explicit
+    //  without sharing still wins for that class at every version)
     @AuraEnabled
     public static List<Account> exportData() {
         return [SELECT Id, Name, AnnualRevenue, SSN__c FROM Account];
@@ -147,7 +152,7 @@ public class DataExporter {
 }
 ```
 
-**Why it happens:** LLMs generate the query without any security clause and omit the sharing keyword. For `@AuraEnabled` methods, this means any user can access any record and any field — a critical security vulnerability that would fail a Salesforce security review.
+**Why it happens:** LLMs generate the query without any security clause and omit the sharing keyword. On a class pinned to `apiVersion` ≤ 66.0 — still the common case for existing code — that `@AuraEnabled` method lets any user read any record and any field, a critical vulnerability that would fail a Salesforce security review. On a 67.0+ class both defaults invert and the gap closes on its own, so the correct pattern below is a no-op there rather than a fix; write it anyway, because the same source file is one `apiVersion` edit away from the old behavior and the explicit form reads the same at every version.
 
 **Correct pattern:**
 
@@ -160,7 +165,7 @@ public with sharing class DataExporter {
 }
 ```
 
-**Detection hint:** `@AuraEnabled` methods in classes without `with sharing`, and SOQL without `WITH USER_MODE` or `WITH SECURITY_ENFORCED`.
+**Detection hint:** `@AuraEnabled` methods in a class pinned below `apiVersion` 67.0 that declares no sharing keyword, whose SOQL has no `WITH USER_MODE` and no `Security.stripInaccessible` on the result. `WITH SECURITY_ENFORCED` does not clear this hint at any version — see Gotcha 2.
 
 ---
 

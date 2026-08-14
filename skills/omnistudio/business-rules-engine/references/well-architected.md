@@ -24,6 +24,26 @@ Both are lookup mechanisms but with different use cases. A Calculation Matrix is
 **Expression Sets vs. Apex boolean logic:**
 Expression Sets externalize boolean conditions that would otherwise live in Apex. The tradeoff is testability: Apex boolean logic is easily unit-testable in isolation with mocked inputs; Expression Sets require a connected org and an active version to test. For rules that change frequently and must be managed by business users, Expression Sets are the right choice. For rules that are stable, implementation-coupled, and require complex object traversal, Apex is more appropriate.
 
+**Standard vs. advanced vs. CSV-based decision tables:**
+The three types differ by two orders of magnitude on row capacity, and the choice is expensive to reverse — changing type means re-authoring the table and every lookup that calls it. Published default ceilings, `(fixed)` meaning Salesforce does not extend it:
+
+| Dimension | Standard | Advanced | CSV-based |
+|---|---|---|---|
+| Processable rows | 100,000 | 20,000,000 | 1,000,000 (fixed) |
+| Uploadable rows | — | — | 50,000 |
+| Columns | 15 | 31 matched (fixed) + 10 unmatched | — |
+| Input conditions | 30 | — | — |
+| Output results / columns | 10 (fixed) | 10 (fixed) | — |
+| Simultaneously active tables | 20 | 100 | — |
+| Row grouping | 200 groups × 25,000 rows | 200 rows per Equals/Required/AND combination (fixed) | — |
+| Output rows returned | 50 single-input, 200 multi-input (fixed) | 40,000 across simultaneous lookups | — |
+| Full refreshes per hour | 40 (fixed) | 60 | — |
+| Invocations per hour | 2,000,000 | 10,800,000 | — |
+
+Advanced tables additionally cap at 5 source objects per table (fixed) and 1,000,000 rows per incremental refresh; CSV-based tables allow 5 simultaneous uploads and 5 downloads.
+
+Size against these at design time. A table expected to pass 100,000 rows, 15 columns, or 30 input conditions starts as an advanced decision table rather than as a standard one migrated later. For CSV-based tables the binding constraint is the 50,000 uploadable rows, not the 1,000,000 processable rows — a bulk rate-table import fails on upload long before it reaches the processing ceiling. The partitioning guidance below is about auditability and blast radius, not about an absent platform limit.
+
 **Single large Decision Table vs. multiple smaller tables:**
 A single table with 500+ rows is harder to audit and slower to evaluate than multiple partitioned tables. Partition by a high-cardinality dimension (product line, region, or customer segment) and route to the appropriate table in the Integration Procedure using a Condition step. This keeps each table focused, auditable, and fast.
 
@@ -43,5 +63,7 @@ A single table with 500+ rows is harder to audit and slower to evaluate than mul
 
 - OmniStudio Developer Guide — Business Rules Engine section — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
 - Salesforce Industries Developer Guide — Decision Tables and Expression Sets REST API — https://developer.salesforce.com/docs/atlas.en-us.industries_reference.meta/industries_reference/connect_resources_business_rules.htm
+- Salesforce Help — Business Rules Engine Default Limits (expression set, decision matrix, and standard / advanced / CSV-based decision table ceilings) — https://help.salesforce.com/s/articleView?id=ind.business_rules_engine_default_limits.htm&language=en_US&type=5
+- Salesforce Help — Permission Sets for Business Rules Engine (Rule Engine Runtime, Rule Engine Designer, Context Service, Decision Explainer) — https://help.salesforce.com/s/articleView?id=ind.bre_permission_sets.htm&language=en_US&type=5
 - Salesforce Well-Architected Overview — architecture quality framing for reliability and operational excellence — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Integration Patterns — Integration Procedure callout architecture — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html

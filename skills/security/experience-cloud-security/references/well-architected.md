@@ -21,6 +21,8 @@
 ## Official Sources Used
 
 - Salesforce Security Implementation Guide — External OWD and Sharing Sets — https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/networks_setting_light_users.htm
+- Salesforce Security Guide — Set Your External Organization-Wide Sharing Defaults ("After it's enabled, the External Sharing Model can't be disabled.") — https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_owd_external_setting.htm
+- Salesforce Security Guide — External Organization-Wide Defaults Overview — https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_owd_external.htm
 - Experience Cloud Developer Guide — Secure Sites: Authenticated and Guest Users — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_security_overview.htm
 - Salesforce Help — Securely Share Experience Cloud Sites — https://help.salesforce.com/s/articleView?id=sf.networks_security.htm&type=5
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5

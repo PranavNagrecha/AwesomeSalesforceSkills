@@ -142,3 +142,37 @@ attributes before using them in downstream logic.
 ```
 
 **Detection hint:** Look for Decision Table designs with no row that has all condition columns blank, or for IP/Apex code that uses BRE output attributes without a null guard.
+
+---
+
+## Anti-Pattern 7: Designing Expression Sets and Decision Matrices Past the Published Default Ceilings
+
+**What the LLM generates:** A single monolithic "pricing engine" or "eligibility engine" Expression Set with several hundred sequential steps and subexpressions nested three or four levels deep, presented as a finished design with no limit mentioned anywhere.
+
+**Why it happens:** BRE default limits live in an Industries-specific help article that is thinly represented in training data, and there is no famous error string attached to breaching one. With no remembered constraint, the model scales the design to the size of the requirement and treats "it saves" as the only bound.
+
+**Correct pattern:**
+
+```
+Expression Set default limits, per version:
+  Steps per version ............................... 200        (extensible)
+  Business elements per version ...................  50        (extensible)
+  Local resources per version ..................... 1,000      (extensible)
+  Conditions per conditional group step ........... 200        (NOT extensible)
+  Subexpression depth ............................. 2 levels   (NOT extensible)
+  Object aliases with referenceable fields ........   5        (NOT extensible)
+  Object field aliases per version ................ 100        (NOT extensible)
+  Context tags usable as list variables ........... 100        (extensible)
+  Expression sets executed per hour ............... 5,000,000  (extensible)
+
+Decision Matrix default limits:
+  Maximum CSV file upload size .................... 100 MB     (NOT extensible)
+  Simultaneous input set lookups .................. 200        (NOT extensible)
+  Decision matrices invoked per hour .............. 400,000    (NOT extensible)
+
+Design rule: the NOT-extensible ceilings are walls, not budget items.
+Decompose a monolithic rule into several expression sets invoked in
+sequence rather than nesting deeper or referencing more objects.
+```
+
+**Detection hint:** Look for expression set designs exceeding roughly 150 steps or 50 business elements, more than two levels of nested subexpressions, more than five referenced object aliases — and for any BRE design answer that quotes no limit numbers at all.

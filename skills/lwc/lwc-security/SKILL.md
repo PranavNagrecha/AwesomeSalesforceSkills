@@ -214,19 +214,19 @@ export default class SalesChart extends LightningElement {
 
 ---
 
-### Pattern 5: Apex with `WITH SECURITY_ENFORCED` vs `Security.stripInaccessible`
+### Pattern 5: Apex FLS — `WITH USER_MODE` vs `Security.stripInaccessible`
 
 **When to use:** Choosing between the two FLS enforcement mechanisms.
 
 ```java
-// Option A: WITH SECURITY_ENFORCED — throws exception if ANY field is inaccessible
+// Option A: WITH USER_MODE — the query fails if ANY queried field is inaccessible
 @AuraEnabled(cacheable=true)
 public static List<Contact> getContacts(Id accountId) {
     return [SELECT Id, Name, Email, Phone
             FROM Contact
             WHERE AccountId = :accountId
-            WITH SECURITY_ENFORCED];
-    // If user lacks access to Phone, the ENTIRE query fails with InsufficientAccessException
+            WITH USER_MODE];
+    // If user lacks access to Phone, the ENTIRE query fails — nothing is returned
 }
 
 // Option B: stripInaccessible — silently removes inaccessible fields, returns the rest
@@ -242,14 +242,16 @@ public static List<Contact> getContacts(Id accountId) {
 }
 ```
 
-Use `WITH SECURITY_ENFORCED` when all queried fields are required for the feature to work. Use `stripInaccessible` when the component should gracefully degrade (show fewer columns).
+Use `WITH USER_MODE` when all queried fields are required for the feature to work. Use `stripInaccessible` when the component should gracefully degrade (show fewer columns).
+
+The idiom is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release. `WITH USER_MODE` is available from 57.0 (Spring '23); at 67.0+ (Summer '26) SOQL, SOSL, DML, and `Database` methods already run in user mode with no keyword, and `WITH USER_MODE` states that intent explicitly. Older LWC controllers carry `WITH SECURITY_ENFORCED` in this position — it was **removed in 67.0** and fails to compile there with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. A class still pinned to 66.0 or below compiles it and keeps running in a Summer '26 org, so it is tech debt to migrate, not an outage. Never write it into new code at any version.
 
 ## Decision Guidance
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Standard record access for forms or detail views | LDS or UI API | Platform-managed sharing, CRUD, and FLS — zero custom security code needed |
-| Custom Apex for LWC — all fields required | `with sharing` + `WITH SECURITY_ENFORCED` | Fail-fast; no partial data that confuses users |
+| Custom Apex for LWC — all fields required | `with sharing` + `WITH USER_MODE` (57.0+; default at 67.0+) | Fail-fast; no partial data that confuses users. `WITH SECURITY_ENFORCED` is the ≤ 66.0 legacy form and does not compile at 67.0+ |
 | Custom Apex for LWC — graceful degradation | `with sharing` + `Security.stripInaccessible` | Returns what the user can see; component hides missing columns |
 | Dynamic content display | Template bindings or `lightning-formatted-rich-text` | Auto-escaping; `innerHTML` is never the answer |
 | DOM interaction needed | `this.template.querySelector` only | Scoped to shadow DOM; future-proof for LWS enforcement |
@@ -261,11 +263,11 @@ Use `WITH SECURITY_ENFORCED` when all queried fields are required for the featur
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 1. **Inventory the component surface** — list every data source (LDS, Apex, API callout, static data), every DOM manipulation method used, and whether the component runs in Lightning Experience, Experience Cloud, or both. Flag any `innerHTML`, `lwc:dom="manual"`, `document.querySelector`, or `static renderMode = 'light'` usage.
-2. **Audit Apex controllers** — for every `@AuraEnabled` method called by this component, verify: (a) the class declares `with sharing`, (b) FLS is enforced via `WITH SECURITY_ENFORCED` or `Security.stripInaccessible`, (c) dynamic SOQL uses bind variables or `String.escapeSingleQuotes`. If the component is exposed to Experience Cloud, verify guest user access assumptions.
+2. **Audit Apex controllers** — for every `@AuraEnabled` method called by this component, verify: (a) the class declares `with sharing`, (b) FLS is enforced via `WITH USER_MODE` or `Security.stripInaccessible` — read the class's `.cls-meta.xml` `apiVersion` first, and flag any surviving `WITH SECURITY_ENFORCED` as P0 at 67.0+ (it no longer compiles) or P2 tech debt at 57.0–66.0, (c) dynamic SOQL uses bind variables or `String.escapeSingleQuotes`. If the component is exposed to Experience Cloud, verify guest user access assumptions.
 3. **Replace unsafe DOM patterns** — convert any `innerHTML` usage to template bindings or `lightning-formatted-rich-text`. Replace `document.querySelector` / `document.getElementById` with `this.template.querySelector`. Ensure third-party libraries load via `platformResourceLoader` from static resources.
 4. **Evaluate light DOM usage** — if `static renderMode = 'light'` is set, confirm it is required (Experience Cloud CSS interop is the main valid reason). Ensure the component does not handle PII, auth tokens, or financial data. Nest light DOM components inside shadow DOM parents.
 5. **Test in the deployment context** — verify the component in the actual deployment surface (Lightning app page, Experience Cloud site, mobile). Guest user contexts and community pages have different security boundaries than internal Lightning pages.
-6. **Run the checker script** — execute `python3 skills/lwc/lwc-security/scripts/check_security.py` against the component source. Review any flagged patterns.
+6. **Run the checker script** — execute `python3 skills/lwc/lwc-security/scripts/check_lwc_security.py` against the component source. Review any flagged patterns.
 7. **Cross-check against llm-anti-patterns.md** — before marking complete, verify your output does not match any of the 6 documented anti-patterns in this skill's references.
 
 ---
@@ -275,7 +277,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] No `innerHTML` assignments exist outside of a justified, sanitized `lwc:dom="manual"` container.
 - [ ] No `document.querySelector` or `document.getElementById` — only `this.template.querySelector`.
 - [ ] All `@AuraEnabled` Apex classes declare `with sharing`.
-- [ ] All `@AuraEnabled` Apex methods enforce FLS via `WITH SECURITY_ENFORCED` or `Security.stripInaccessible`.
+- [ ] All `@AuraEnabled` Apex methods enforce FLS via `WITH USER_MODE` or `Security.stripInaccessible` — no `WITH SECURITY_ENFORCED` survives (removed at 67.0; migrate it at 57.0–66.0).
 - [ ] No dynamic SOQL without bind variables or `String.escapeSingleQuotes`.
 - [ ] Third-party libraries loaded from static resources via `platformResourceLoader`, not CDN/script injection.
 - [ ] Light DOM usage is documented, justified, nested inside shadow DOM parent, and does not handle sensitive data.
@@ -286,7 +288,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 1. **`@AuraEnabled` methods are callable by any user with namespace access, including Experience Cloud guest users** — the Apex class is the security boundary, not the component placement. A component removed from a page layout is still callable if the Apex class is accessible. Use `with sharing` and explicit FLS enforcement in every `@AuraEnabled` method.
 
-2. **`WITH SECURITY_ENFORCED` throws an exception if ANY queried field is inaccessible** — this is fail-fast behavior. If your component should gracefully hide columns the user cannot see, use `Security.stripInaccessible` instead. Mixing them up causes either silent data exposure or broken pages.
+2. **User-mode SOQL fails the whole query if ANY queried field is inaccessible** — this is fail-fast behavior, and it is what `WITH USER_MODE` (and the 67.0+ default) gives you. If your component should gracefully hide columns the user cannot see, use `Security.stripInaccessible` instead — it drops the inaccessible fields and returns the rest. Mixing them up causes either silent data exposure or broken pages. The same fail-fast note used to be written about `WITH SECURITY_ENFORCED`; that clause was removed in API 67.0, so a controller pinned at 67.0+ will not compile until it is switched to `WITH USER_MODE`.
 
 3. **`document.querySelector()` may work in dev but break under Lightning Web Security** — LWS enforces namespace-scoped DOM access. Code that reaches outside the component boundary may work today in sandboxes with LWS disabled but will fail when LWS is enforced in production. Always use `this.template.querySelector`.
 

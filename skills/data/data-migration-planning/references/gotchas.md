@@ -66,3 +66,19 @@ If the count is non-zero, investigate the parent load and re-upsert the affected
 **When it occurs:** When the migration cutover is rushed, the post-migration checklist is incomplete, or the team member who set the flag is not the same person responsible for clearing it. Also occurs when multiple migration batches run across days and the flag is set and forgotten between runs.
 
 **How to avoid:** Include "Clear `Migration_In_Progress__c` flag" as a mandatory, signed-off step in the migration runbook — not an optional checklist item. Assign a named person responsible for clearing the flag. After clearing it, run a test manual record save on each affected object and confirm that the expected automation (email, related record creation, field update) fires correctly. Document the flag status in the post-migration sign-off document.
+
+---
+
+## Gotcha 7: Master-Detail Fields Are Implicitly Required, and a Blank Parent Column Fails With REQUIRED_FIELD_MISSING
+
+**What happens:** A blank or omitted master-detail column fails the row with:
+
+```text
+REQUIRED_FIELD_MISSING: Required fields are missing: [Order__c]:Order__c --
+```
+
+Salesforce Help gives the cause directly — "master-detail relationship fields are always required on child (detail) records." The requirement comes from the relationship type, not from a field-level setting: a field describe has no `required` property at all, and surfaces master-detail requiredness only as `nillable: false`. So an audit that looks for a required flag in field metadata will not predict this failure — `nillable: false` is the signal to key on.
+
+**When it occurs:** Loading detail records whose source export has no parent key on some rows — line items whose header was purged from the legacy system, comments orphaned by an earlier cleanup, or a CSV where the `Parent__r.External_Id__c` cross-reference resolved to nothing. It also occurs when a team plans to load children now and backfill the parent later, which is viable for a lookup and impossible for a master-detail.
+
+**How to avoid:** Populate the master-detail column on every row before submitting the job — either the 15- or 18-character parent record ID, or the external-ID cross-reference — and let the parent job finish before the child job starts. Rows with no resolvable parent are not migratable as they stand: either route them to a designated catch-all parent record, or hold them out of the load and reconcile them separately. Count the blank-parent rows in the source extract during pre-migration profiling so the number is known before cutover rather than discovered in an error file.

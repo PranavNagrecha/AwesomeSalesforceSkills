@@ -64,7 +64,7 @@ def audit_file(path: Path) -> list[str]:
 
     if TURBO_RE.search(path.name) or TURBO_RE.search(text):
         if FORMULA_RE.search(text):
-            findings.append(f"HIGH {path}: Turbo-style DataRaptor contains formula markers; verify a standard Extract is the correct asset instead")
+            findings.append(f"HIGH {path}: Turbo-style DataRaptor contains formula markers; Turbo Extract has no formulas or mappings, so use a standard Extract")
 
     mapping_count = len(MAPPING_RE.findall(text))
     if mapping_count >= 120:

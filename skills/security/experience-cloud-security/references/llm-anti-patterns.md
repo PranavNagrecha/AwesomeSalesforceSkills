@@ -92,3 +92,27 @@ Use Sharing Sets with a specific lookup mapping to restrict access to only relat
 ```
 
 **Detection hint:** Any recommendation to grant "View All" or "Modify All" permission to a Customer Community or Partner Community profile as a solution to record visibility issues.
+
+---
+
+## Anti-Pattern 6: Describing the External Sharing Model as a Reversible Toggle
+
+**What the LLM generates:** "Enable the external sharing model in Sharing Settings — if it doesn't suit your org, you can turn it back off." Often framed as a low-risk experiment worth trying directly in production.
+
+**Why it happens:** Almost every Salesforce org preference is a checkbox that toggles both ways, and training data is dense with enable/disable pairs. One-way doors are a small minority, so the model generalizes from the majority case. The same bias produces the mirror error: framing the decision purely as risk and omitting the benefit Salesforce documents.
+
+**Correct pattern:**
+```
+Enabling the external sharing model is irreversible:
+"After it's enabled, the External Sharing Model can't be disabled." (Salesforce Security Guide)
+
+- Pilot it in a sandbox, never as a production experiment.
+- The only documented fallback is setting Default External Access and Default
+  Internal Access to the same access level for each object.
+- It is already on in orgs created in Spring '20 or after, and in any org where
+  Experiences or portals are enabled — check before proposing to "enable" it.
+- State the upside too: external org-wide defaults "simplify your sharing rules
+  configuration and improve recalculation performance."
+```
+
+**Detection hint:** Any advice that pairs "enable the external sharing model" with a rollback, revert, or "turn it off if needed" step — or that presents the decision as risk-only with no mention of the documented sharing-rule simplification and recalculation gain.

@@ -201,7 +201,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 3. **Field set size** — Querying "all fields" or wide layouts increases heap pressure per row; retrieve only what the flow uses.
 4. **Non-selective filters on non-indexed fields** — Salesforce's query optimizer may refuse to run the query if it's too expensive; `QUERY_TIMEOUT` is the symptom.
 5. **Cross-object queries have tighter limits** — `SELECT Id FROM Account WHERE Id IN (SELECT AccountId FROM Contact)` evaluates the inner + outer against the same limits.
-6. **`WITH SECURITY_ENFORCED` in Flow (indirect via Apex)** — if an invocable Apex uses this, FLS-blocked fields cause the query to fail entirely; confirm Guest/external user FLS.
+6. **FLS enforcement in invocable Apex fails the whole query, not just the blocked field** — a field the running user cannot read throws and the Flow's Apex action errors out; confirm Guest/external-user FLS. Which idiom applies is gated by the `apiVersion` in the class's `.cls-meta.xml`, not the org's release: at 67.0+ SOQL runs in user mode by default and `WITH USER_MODE` states that explicitly; at 57.0–66.0 `WITH USER_MODE` is the idiom; legacy `WITH SECURITY_ENFORCED` still compiles below 67.0 but was removed at 67.0+ (`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`).
 7. **Platform Cache can hide staleness issues** — if the Flow reads from cached data, LDV tests might not surface cache-miss latency spikes.
 8. **Big Objects have a different query model** — can't use them the same way as sObjects in Flow; async SOQL required.
 9. **Batch Apex called from Flow still obeys Flow's governor budget for the invocation** — the Apex async execution is separate, but the Flow-side setup costs money too.

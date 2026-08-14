@@ -344,6 +344,7 @@ metadata-driven escalation).
 | External system signals approval | **Pattern B** via Platform Event subscriber | Async, durable, decoupled |
 | Find approvals stuck > 7 days on inactive users | **Pattern C** with scheduled batch | Operational monitoring |
 | Source record changes invalidate the approval | **Pattern D** recall | Don't let an invalid approval complete |
+| Backlog of records stuck pending (bad load, rule change, departed approver) | Setup → **Mass Transfer Approval Requests** (remove or transfer); no Apex | Declarative bulk cleanup — Pattern C only surfaces them; `Approval.unlock` drops the lock but removes nothing |
 | Custom Lightning component shows approval status + buttons | Apex-driven submit + workitem actions | Wrap Approval.process() in @AuraEnabled |
 | Approval process uses "manually select approver" | Always set `setNextApproverIds` | Required by the process; otherwise submit fails |
 | Bulk approve as part of a system batch | **Pattern B** shape (find workitems → ProcessWorkitemRequest) | Same governor budget per call (200 max) |

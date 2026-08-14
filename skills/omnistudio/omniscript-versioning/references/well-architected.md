@@ -22,3 +22,5 @@
 - OmniStudio Developer Guide (Version Management) — https://help.salesforce.com/s/articleView?id=sf.os_omniscript_versioning.htm&type=5
 - OmniStudio Activate and Launch OmniScripts — https://help.salesforce.com/s/articleView?id=sf.os_activate_omniscript.htm&type=5
 - OmniStudio DataPack Reference — https://help.salesforce.com/s/articleView?id=sf.os_datapacks.htm&type=5
+- Clone a Flexcard or Create a New Version — https://help.salesforce.com/s/articleView?id=xcloud.os_flexcards_versioning_and_cloning_42243.htm&type=5
+- Activate and Publish a Flexcard — https://help.salesforce.com/s/articleView?id=sf.os_activateconfigureand_publish_flexcards_24744.htm&type=5

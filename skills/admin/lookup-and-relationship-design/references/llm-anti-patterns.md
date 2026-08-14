@@ -94,3 +94,29 @@ flat access in mind.
 ```
 
 **Detection hint:** SOQL with 5+ dot-traversals in SELECT or WHERE.
+
+---
+
+## Anti-Pattern 6: Treating the two master-details on an object as interchangeable
+
+**What the LLM generates:** "Add two master-detail fields" as the whole recipe, with no mention that one parent is primary and one is secondary. Asked who owns such a record, it answers "the user who created it."
+
+**Why it happens:** Model applies the default OwnerId-on-insert rule and never learned that a junction object's two master-details are asymmetric.
+
+**Correct pattern:**
+
+```
+The two master-details are NOT interchangeable. Metadata API
+CustomField.relationshipOrder: 0 = primary, 1 = secondary (always 0 on
+a non-junction master-detail). That designation "affects delete
+behavior and inheritance of look and feel, and record ownership for
+junction objects."
+
+Detail-side records have no owner of their own: the Owner field is
+unavailable and is set from the master record, and "custom objects on
+the detail side of a master-detail relationship can't have sharing
+rules, manual sharing, or queues, because these elements require the
+Owner field."
+```
+
+**Detection hint:** Object metadata with two MasterDetail fields and no explicit `relationshipOrder`; any answer asserting such a record has its own independent owner.

@@ -42,10 +42,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Tests under default system context bypass FLS — strips become no-ops
+## Gotcha 5: Tests without `System.runAs` bypass FLS — strips become no-ops
 
-**What happens:** A test that calls `Security.stripInaccessible` without `System.runAs(nonAdmin)` runs under the system test user, which has access to everything. The strip returns the input list unchanged. The test asserts "the records were processed" and passes — proving nothing about FLS enforcement.
+**What happens:** A test that calls `Security.stripInaccessible` without `System.runAs(nonAdmin)` runs as the user executing the test, normally an admin with access to everything. The strip returns the input list unchanged. The test asserts "the records were processed" and passes — proving nothing about FLS enforcement.
 
-**When it occurs:** Unit tests written by developers who forget that test code runs in system mode by default for FLS purposes.
+**When it occurs:** Unit tests written by developers who forget that without `runAs` there is no restricted user for the strip to restrict. Below API 67.0 the class also ran in system mode by default; at 67.0+ database operations default to user mode, but the trap survives the change unaltered — `stripInaccessible` has always evaluated the *running user's* FLS, and that user is still an admin.
 
 **How to avoid:** Always wrap FLS enforcement assertions in `System.runAs(testUser)` where `testUser` has a profile that explicitly lacks the field permissions you want to verify. Use the `templates/apex/tests/TestUserFactory` (per `templates/README.md`) to construct the restricted user.

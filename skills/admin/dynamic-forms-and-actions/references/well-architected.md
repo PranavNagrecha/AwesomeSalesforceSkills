@@ -38,3 +38,4 @@ Dynamic Forms pages with many individually-placed field components and numerous 
 - Dynamic Actions (Lightning App Builder) — https://help.salesforce.com/s/articleView?id=sf.lightning_app_builder_dynamic_actions.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Field-Level Security — https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm
+- Enhancing Dynamic Pages with Visibility Rules (Trailhead, Lightning App Builder module) — https://trailhead.salesforce.com/content/learn/modules/lightning_app_builder/add-visibility-rules-for-dynamic-pages-lab

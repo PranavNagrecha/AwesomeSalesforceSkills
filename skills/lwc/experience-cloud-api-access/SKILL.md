@@ -52,7 +52,7 @@ Gather this context before working on anything in this domain:
 - **Determine user type:** Guest (unauthenticated) vs. authenticated external user. Guest users have no named session and cannot authenticate with OAuth. The most common wrong assumption is treating guest user API constraints as a permission gap fixable with permission sets.
 - **Check FLS on the guest profile:** Field-level security on the guest profile is the hard enforcement boundary for Apex running on behalf of guest users. Permission sets grant class access but they do not override guest profile FLS.
 - **Review external OWDs:** External object-wide defaults (OWDs) control what records API responses can return to external users. These are distinct from internal OWDs and must be set explicitly.
-- **Confirm whether the Apex class runs with or without sharing:** For guest users, `with sharing` is required. Running `without sharing` on guest-accessible Apex is a critical security violation.
+- **Confirm whether the Apex class runs with or without sharing — and read its `apiVersion`:** For guest users, `with sharing` is required, and an explicit `without sharing` on guest-accessible Apex is a critical security violation at every version. What the *absence* of a keyword means is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release: at **67.0+** (Summer '26) a class with no sharing keyword runs `with sharing`, and at **66.0 and below** it runs without sharing. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 
@@ -80,9 +80,9 @@ Customer Community Plus and Partner Community licenses include API access entitl
 
 ### Apex Sharing Enforcement for External User API Calls
 
-When an LWC component on an Experience Cloud page calls an Apex `@AuraEnabled` or `@RemoteAction` method, the method runs in the context of the logged-in external user. For authenticated external users (Customer Community Plus, Partner Community), Apex declared `with sharing` enforces the user's sharing access, profile object permissions, and FLS. For guest users, the same applies but against the guest profile's permissions.
+When an LWC component on an Experience Cloud page calls an Apex `@AuraEnabled` or `@RemoteAction` method, the method runs in the context of the logged-in external user. For authenticated external users (Customer Community Plus, Partner Community), Apex declared `with sharing` enforces the user's record access — object permissions and FLS come from the database access mode (`WITH USER_MODE`, or the 67.0+ default), not from the sharing keyword. For guest users, the same split applies but against the guest profile's permissions.
 
-Running Apex `without sharing` for guest-accessible endpoints exposes all records in the org regardless of the guest profile configuration. This is the most common data exposure pattern in Experience Cloud implementations.
+Running Apex explicitly declared `without sharing` for guest-accessible endpoints exposes all records in the org regardless of the guest profile configuration. This is the most common data exposure pattern in Experience Cloud implementations. What Summer '26 changed is the *default* for a class with no keyword: pinned at 67.0+ it runs `with sharing` and its SOQL, SOSL, DML, and `Database` calls default to user mode, while the same source pinned at 66.0 or below runs without sharing in system mode. The omission is therefore only a hole on older-pinned classes — check the `.cls-meta.xml` before grading one.
 
 ---
 
@@ -105,8 +105,11 @@ Running Apex `without sharing` for guest-accessible endpoints exposes all record
 public with sharing class GuestProductController {
     @AuraEnabled(cacheable=true)
     public static List<Product2> getProducts() {
-        // with sharing enforces guest profile FLS and object permissions
-        return [SELECT Id, Name, Description FROM Product2 WHERE IsActive = true];
+        // with sharing enforces the guest user's record access. Guest profile FLS and
+        // object permissions come from the access mode, not the sharing keyword: user
+        // mode is the default at apiVersion 67.0+, and WITH USER_MODE (57.0+) states it
+        // explicitly, which is what a class pinned below 67.0 needs.
+        return [SELECT Id, Name, Description FROM Product2 WHERE IsActive = true WITH USER_MODE];
     }
 }
 ```
@@ -174,7 +177,7 @@ Non-obvious platform behaviors that cause real production problems:
 1. **Customer Community license API access is a hard platform limit, not a permission gap** — Adding "API Enabled" to a Customer Community profile or granting the permission via permission set has no effect. The license itself does not include API entitlement. Support cases, partner escalations, and workaround attempts will all fail. The only path is to upgrade the license or use a mid-tier integration.
 2. **Guest profile FLS is independent of permission sets** — Permission sets can grant a guest user Apex class access. They cannot grant field-level permissions. FLS for guest users is configured exclusively on the guest user profile (Setup > Users > [site guest user] > Edit > Field Permissions). This surprises practitioners who use permission sets for all other FLS management.
 3. **External OWDs are not inherited from internal OWDs** — An object with Public Read/Write as its internal OWD can still have a "Private" external OWD. Changing the internal OWD does not change the external OWD. Practitioners often diagnose sharing issues without checking the external OWD row in Setup > Sharing Settings.
-4. **`without sharing` Apex on a guest-accessible endpoint bypasses all guest profile restrictions** — If an Apex class called by a guest user is declared `without sharing` or inherits `without sharing` from a calling class, it runs in system context and can return any record in the org. The guest profile and external OWDs provide no protection in this scenario.
+4. **`without sharing` Apex on a guest-accessible endpoint bypasses all guest profile restrictions** — An Apex class called by a guest user and explicitly declared `without sharing` can return any record in the org; the guest profile and external OWDs provide no protection. The *inherited* case is version-gated: a class with no sharing keyword picks up `without sharing` from its caller only when it is pinned at 66.0 or below, where it also runs in system context past FLS and object permissions. If any class in the chain is saved at 67.0+, the keyword-less class runs `with sharing`. Read the `.cls-meta.xml` before assuming which row applies.
 5. **OAuth flows cannot be used by guest users — there is no token to obtain** — Guest users browse anonymously. There is no login, no session, and no mechanism to exchange credentials for an access token. Patterns like the OAuth 2.0 Client Credentials flow for guest user API access are inapplicable to Experience Cloud guest sessions.
 
 ---

@@ -8,6 +8,7 @@
     "0ff8628d4d9a4679befe",
     "122a55b8739c15b73170",
     "13458a0b2ca84429bc4d",
+    "1bb08a48815865151e4e",
     "1dd3280585ddb25e525b",
     "251a807cc87f7802b3f7",
     "25d223afe618a7ce6d7b",
@@ -31,7 +32,9 @@
     "8cdaa4e67ec4bf9ff3c4",
     "8fb8ae105bb43a75de7e",
     "90f2c9329d5e2756b85b",
+    "9a9080074703c9cb3657",
     "9b3954dc5911254f4fe6",
+    "9ea30a68fbb66dc94e26",
     "a5324a19ae6cf435ef02",
     "abee915291cb787e06c9",
     "b55a394d551ad9bb8a32",
@@ -53,9 +56,10 @@
     "f938ee974d6172cce5ee",
     "fa82114cd4f9fd369602",
     "fc2fdb39ee16e2d1a548",
+    "fe21b4fc44fed5df941c",
     "fe66d6c3e18a13119391"
   ],
-  "content_hash": "10535ce1a422e4f5fb078d0bfc4dd4e6e91233847067dc9e36e489b64482d5e2",
+  "content_hash": "f1e7c4f9778f143d3cfa8c5a43216ace374b3a138c81d901b5e58c5f5eb0bee9",
   "dependencies": [],
   "description": "Use when configuring access controls, sharing, or site security for authenticated or guest Experience Cloud (community) users: external OWD, Sharing Sets, Share Groups, CSP, clickjack protection, guest user record access. NOT for internal sharing model configuration (use sharing-and-visibility).",
   "file_location": "skills/security/experience-cloud-security",
@@ -68,6 +72,8 @@
   "name": "experience-cloud-security",
   "official_sources": [
     "Salesforce Security Implementation Guide \u2014 External OWD and Sharing Sets \u2014 https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/networks_setting_light_users.htm",
+    "Salesforce Security Guide \u2014 Set Your External Organization-Wide Sharing Defaults (\"After it's enabled, the External Sharing Model can't be disabled.\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_owd_external_setting.htm",
+    "Salesforce Security Guide \u2014 External Organization-Wide Defaults Overview \u2014 https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_owd_external.htm",
     "Experience Cloud Developer Guide \u2014 Secure Sites: Authenticated and Guest Users \u2014 https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_security_overview.htm",
     "Salesforce Help \u2014 Securely Share Experience Cloud Sites \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_security.htm&type=5",
     "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"

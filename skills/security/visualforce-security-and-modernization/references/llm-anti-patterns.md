@@ -57,7 +57,7 @@ public Employee__c getEmployee() {
 }
 ```
 
-**Detection hint:** Any SOQL inside a Visualforce custom-controller class that lacks `WITH USER_MODE` or `WITH SECURITY_ENFORCED`. The bundled checker script regexes for this.
+**Detection hint:** Any SOQL inside a Visualforce custom-controller class that lacks `WITH USER_MODE` or `WITH SECURITY_ENFORCED`. The bundled checker script regexes for this. Resolve the hit against the `apiVersion` in the class's `.cls-meta.xml` before calling it a leak: at 67.0+ (Summer '26) database operations default to user mode, so a *bare* query is already FLS-enforced and the finding is legibility, not exposure. A query carrying `WITH SYSTEM_MODE` is the opposite case — it opts out at every version, so it stays a real exposure finding. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

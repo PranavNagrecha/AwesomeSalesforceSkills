@@ -316,21 +316,21 @@ AND(
 
 ## Example 23: Percent Field Arithmetic
 
-**Context:** `Discount_Percent__c` is a Percent field with value 15 (meaning 15%).
+**Context:** `Discount_Percent__c` is a Percent field displaying 15 in the UI (meaning 15%). Inside a formula it evaluates to `0.15` — the platform expresses percent fields divided by 100 in formulas.
 
-**Wrong (treats 15 as 15.0):**
-
-```
-{!opportunity.Amount} * {!opportunity.Discount_Percent__c}
-```
-
-**Right:**
+**Wrong (double-divides — returns 0.15% of Amount, not 15%):**
 
 ```
 {!opportunity.Amount} * ({!opportunity.Discount_Percent__c} / 100)
 ```
 
-**Why it matters:** Percent fields are stored as the displayed number (15), NOT as a decimal (0.15). Always divide by 100 before multiplying.
+**Right:**
+
+```
+{!opportunity.Amount} * {!opportunity.Discount_Percent__c}
+```
+
+**Why it matters:** The `/ 100` "fix" produces a number 100× too small, and it looks like a currency amount, so it survives review. Range checks follow the same rule: bound a 0–100% field with `OR({!pct} > 1.0, {!pct} < 0.0)`, never `> 100`.
 
 ---
 
@@ -341,6 +341,8 @@ ROUND({!opportunity.Amount} * (BLANKVALUE({!opportunity.Tax_Rate__c}, 0) / 100),
 ```
 
 **Why it works:** `ROUND(value, 2)` truncates to 2 decimal places, matching standard currency display. `BLANKVALUE` guards a nullable Tax_Rate__c.
+
+**Read the field type first:** this `/ 100` is correct only because `Tax_Rate__c` is a **Number** field holding `7.5` for 7.5%. If it were a **Percent** field the division would be wrong — see Example 23.
 
 ---
 

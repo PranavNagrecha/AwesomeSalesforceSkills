@@ -4,7 +4,7 @@
 
 **Context:** An Enterprise org with 200 users (10 GB base + 200 × 20 MB = 14 GB allocated) has received a 90% storage alert. The admin opens Setup > Storage Usage and sees the top consumers are: Task (3.1 GB), ContentDocument (0.8 GB in data storage for metadata records), and a custom object `Support_Log__c` (2.2 GB).
 
-**Problem:** The admin does not know which pool (data vs file) is at 90%, which objects are safe to clean, or whether the Recycle Bin is inflating the number.
+**Problem:** The admin does not know which pool (data vs file) is at 90%, which objects are safe to clean, or whether a recent load simply hasn't been recalculated yet.
 
 **Solution:**
 
@@ -13,16 +13,17 @@ Step 1 — Confirm which pool is at 90%:
   Setup > Storage Usage > Data Storage section shows 12.6 GB / 14 GB = 90%.
   File Storage section shows 4.1 GB / 410 GB = 1%. Problem is data storage only.
 
-Step 2 — Check Recycle Bin:
-  Setup > Storage Usage > Recycle Bin shows 0.9 GB held.
-  Action: Empty the Recycle Bin via Setup > Recycle Bin > Empty.
-  Result: Data storage drops to 11.7 GB / 14 GB = 83.6%.
+Step 2 — Rule out asynchronous recalculation:
+  A 400k-record load ran last night. Storage is recalculated asynchronously,
+  so re-check Setup > Storage Usage before diagnosing further.
+  Do NOT empty the Recycle Bin here: bin records do not count against storage,
+  so it frees nothing and destroys the 15-day restore window.
 
 Step 3 — Assess Task records:
   SELECT COUNT() FROM Task WHERE CreatedDate < LAST_N_YEARS:3
-  Result: 2.4 million records older than 3 years.
+  Result: 1.2 million records older than 3 years (Task holds 3.1 GB in total).
   Business confirms: tasks older than 2 years have no retention requirement.
-  Action: Batch delete using Bulk API hardDelete. Estimated reclamation: ~4.8 GB.
+  Action: Batch delete using Bulk API hardDelete. Estimated reclamation: ~2.4 GB.
 
 Step 4 — Assess Support_Log__c:
   SELECT COUNT() FROM Support_Log__c WHERE CreatedDate < LAST_N_YEARS:2
@@ -31,7 +32,7 @@ Step 4 — Assess Support_Log__c:
   Big Objects do not consume regular data storage.
 ```
 
-**Why it works:** Separating the two storage pools prevents wasted effort (file storage was not the problem). Checking the Recycle Bin first is low-risk and immediate. Assessing retention requirements before deleting prevents compliance violations.
+**Why it works:** Separating the two storage pools prevents wasted effort (file storage was not the problem). Ruling out asynchronous recalculation first avoids deleting data to fix a number that was going to settle on its own. Assessing retention requirements before deleting prevents compliance violations.
 
 ---
 

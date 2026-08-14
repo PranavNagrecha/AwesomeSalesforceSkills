@@ -10,6 +10,7 @@
     "0d03904cc87085f0859f",
     "10cc4c4041d5b5a574cd",
     "122283961330692b2111",
+    "126f2bb7f29310cd03a0",
     "12a7cc4102069b618a4a",
     "143a67d792f6e0d150f8",
     "162624dc9dc19ef1def7",
@@ -35,6 +36,7 @@
     "45185675e3ff7bf464bc",
     "45c3384f75ec04bbbaa2",
     "46f9243b7115c171a6bc",
+    "487a044a86f0f8d6a24e",
     "48c347f1dfed014657a0",
     "4933d5586e31c8ea9239",
     "4bafd9d67bf6d9479d47",
@@ -79,6 +81,7 @@
     "9c5bed4e7cb692645cec",
     "a1083aa7a3dea02fc151",
     "a84e5e48d6b2524ee18a",
+    "aac2100d82e8394e9d81",
     "abc77d642c2a3c9e70ad",
     "adc8d63294f1147dc312",
     "ae929adaa590c4012050",
@@ -102,6 +105,7 @@
     "d01c72411b2c60d9027e",
     "d10a82f4c86d3b0d07b3",
     "d3d9cd43656bf8364bce",
+    "d4383eed35c7a13d2929",
     "d50aa95e8fff55a35340",
     "d5544b008dd4ae63bd02",
     "d7229837d5604ff64f81",
@@ -126,7 +130,7 @@
     "fc3c356145a9adcad4a2",
     "fe52537d59e5ec3298b3"
   ],
-  "content_hash": "cd95392faa88e488c32949d92fdcdc93ae651395c225f1bc36d2e05bff269bee",
+  "content_hash": "5f3cdb789ba1e38addf5ca4b9014fffab5db5efff5fa837ca69df1da1ef8c380",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting a Salesforce data migration \u2014 covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics (use data-import-and-management). NOT for schema or data model design (use data-model-design-patterns). NOT for ongoing ETL pipeline architecture.",
   "file_location": "skills/data/data-migration-planning",
@@ -146,7 +150,8 @@
     "Salesforce Help: Import Data \u2014 import wizard behavior, data import limits, supported objects",
     "Apex Developer Guide: DML Upsert \u2014 upsert behavior, external ID matching semantics, insert-or-update logic",
     "Salesforce Well-Architected Overview \u2014 architecture quality model, reliability and operational excellence framing",
-    "Object Reference: sObject Concepts \u2014 relationship types, referential integrity rules, master-detail behavior"
+    "Object Reference: sObject Concepts \u2014 relationship types, referential integrity rules, master-detail behavior",
+    "Salesforce Help 000382856: Error \"Required Fields Are Missing\" When Importing Records with the Salesforce Data Import Wizard \u2014 master-detail fields are always required on child records; REQUIRED_FIELD_MISSING cause and resolution"
   ],
   "outputs": [
     "Completed migration plan document using the data-migration-planning-template.md",

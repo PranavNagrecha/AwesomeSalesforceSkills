@@ -74,7 +74,7 @@ trigger CaseTrigger on Case (before delete) {
 **Correct pattern:**
 
 ```apex
-trigger CaseTrigger on Case (before delete) {
+trigger CaseTrigger on Case (after delete) {
     for (Case c : Trigger.old) {  // Use Trigger.old in delete context
         if (c.MasterRecordId != null) {
             // This is a merge — c is the losing record
@@ -84,6 +84,51 @@ trigger CaseTrigger on Case (before delete) {
 ```
 
 **Detection hint:** Look for `Trigger.new` inside a `before delete` or `after delete` context. This will cause a `NullPointerException` at runtime.
+
+---
+
+## Anti-Pattern 3b: Checking `MasterRecordId` in `before delete`
+
+**What the LLM generates:**
+
+```apex
+trigger CaseTrigger on Case (before delete) {
+    for (Case c : Trigger.old) {
+        if (c.MasterRecordId != null) {   // WRONG context — always null here
+            archiveToMaster(c);           // never runs
+        } else {
+            purgeCase(c);                 // runs for merged cases too
+        }
+    }
+}
+```
+
+**Why it happens:** Once the model has learned "use `Trigger.old` in delete context" it treats `before delete` and `after delete` as interchangeable for reading fields off the losing record. The code compiles, deploys, and passes a review — the defect is invisible without knowing the platform's write ordering.
+
+**Correct pattern:** Put the merge branch in `after delete`. The Apex Developer Guide: "The MasterRecordId field is only set in after delete trigger events." The platform fires `before delete`, *then* deletes and sets `MasterRecordId`, *then* fires `after delete`.
+
+```apex
+trigger CaseTrigger on Case (after delete) {
+    for (Case c : Trigger.old) {
+        if (c.MasterRecordId != null) { archiveToMaster(c); }
+        else { purgeCase(c); }
+    }
+}
+```
+
+**Detection hint:** Flag any `MasterRecordId` reference inside a `before delete` block or a handler method invoked from one. Unlike the `Trigger.new` mistake this throws no exception — it silently sends every merged record down the true-delete path.
+
+---
+
+## Anti-Pattern 3c: Merging Cases Through the SOAP `merge()` Call
+
+**What the LLM generates:** A SOAP `merge()` envelope with `type="Case"`, or advice that an integration can dedupe cases the same way it dedupes leads and contacts.
+
+**Why it happens:** `Case.MasterRecordId` exists, Lightning has a case merge action, and Apex genuinely does support case merge — "Only leads, contacts, cases, and accounts can be merged." The model generalizes that to every merge surface.
+
+**Correct pattern:** The SOAP `merge()` call is narrower: "The supported object types are Lead, Contact, Account, Person Account, and Individual." Case is not among them. Merge cases from Apex or the Lightning UI, and have the integration call into Apex rather than issuing `merge()` directly.
+
+**Detection hint:** Look for `merge()` request bodies or WSDL-typed merge calls naming Case, and for claims that Apex and SOAP merge support the same objects. They do not.
 
 ---
 

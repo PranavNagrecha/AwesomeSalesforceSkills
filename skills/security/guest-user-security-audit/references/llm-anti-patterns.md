@@ -23,7 +23,9 @@ LLM doesn't surface the guest exposure.
 
 **Correct pattern.** `with sharing` for guest-reachable classes.
 Restrict the SOQL by an explicit "public" flag. Use bind variables
-to avoid SOQL injection. Apply `WITH SECURITY_ENFORCED`.
+to avoid SOQL injection. Apply `WITH USER_MODE` — not
+`WITH SECURITY_ENFORCED`, which was removed at API 67.0 and no
+longer compiles in a class pinned there.
 
 **Detection hint.** Any `@AuraEnabled` or `@RestResource` Apex
 class declared `without sharing`.
@@ -71,13 +73,22 @@ public without sharing class C {
 
 **Why it happens.** The clause sounds comprehensive.
 
-**Correct pattern.** `WITH SECURITY_ENFORCED` enforces FLS and
-CRUD; it does not enforce record-level sharing. A `without
-sharing` class still returns records the guest user shouldn't see.
-Combine `with sharing` + `WITH SECURITY_ENFORCED`.
+**Correct pattern.** Two defects here, and the second one is newer
+than most training data. First, `WITH SECURITY_ENFORCED` enforces
+FLS and CRUD only; it does not enforce record-level sharing, so a
+`without sharing` class still returns records the guest user
+shouldn't see. Second, the clause was removed at API 67.0 — a class
+whose `.cls-meta.xml` pins 67.0+ fails to compile with `WITH
+SECURITY_ENFORCED is no longer supported, use WITH USER_MODE
+instead`. Write `with sharing` + `WITH USER_MODE` (GA at API 57.0):
+user mode enforces sharing rules alongside FLS and object
+permissions, and keeping `with sharing` on the class still covers
+queries and DML in it that carry no clause.
 
 **Detection hint.** Any code claim that `WITH SECURITY_ENFORCED`
-is sufficient on its own.
+is sufficient on its own — and the clause itself in emitted code,
+at any version. In an audit, flag it: P0 on a class at `apiVersion`
+67.0+ (it does not compile), P2 tech debt at 57.0–66.0.
 
 ---
 

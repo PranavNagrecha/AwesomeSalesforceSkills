@@ -3,7 +3,7 @@
 - **Skill under test:** `skills/apex/trigger-framework/SKILL.md`
 - **Priority:** P0
 - **Cases:** 3
-- **Last verified:** 2026-04-16
+- **Last verified:** 2026-08-13
 - **Related templates:** `templates/apex/TriggerHandler.cls`, `templates/apex/TriggerControl.cls`, `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml`
 - **Related decision trees:** `standards/decision-trees/automation-selection.md`
 
@@ -54,7 +54,7 @@ Any answer that places logic directly inside `trigger` body, uses
 - **Correctness:** Does the trigger actually enforce both rules on bulk insert?
 - **Completeness:** Are handler class, trigger, test class, and metadata record all present?
 - **Bulk safety:** Zero SOQL/DML in loops; aggregate updates on parents.
-- **Security:** Uses `WITH USER_MODE` or `Security.stripInaccessible`.
+- **Security:** Uses `WITH USER_MODE` or `Security.stripInaccessible`, and states the write path's access mode rather than leaving it to the handler class's `apiVersion` default.
 - **Citation of official docs:** Links to the trigger best-practices page on developer.salesforce.com.
 
 **Reference answer (gold):**
@@ -106,6 +106,19 @@ public with sharing class InvoiceTriggerHandler extends TriggerHandler {
     }
 }
 ```
+
+**On the unqualified `update toUpdate;`:** the gold above leaves the write mode implicit *as the
+discussion object* — it is not the full-credit form. What that line enforces is set by the
+`apiVersion` in `InvoiceTriggerHandler.cls-meta.xml`, not by the org's release. At **67.0+**
+(Summer '26) DML defaults to user mode, so a user without edit access to
+`Account.Invoice_Total__c` fails the whole invoice insert; at **66.0 and below** the same line
+runs in system mode and the roll-up succeeds silently. A full-credit answer names the mode on the
+write path — the canonical write idiom, plus a `// reason:` comment whenever it opts out of user
+mode — instead of letting a version pin decide. Score Security down on an answer that leaves the
+mode implicit, whichever version it targets. The `.trigger` file is not the lever: triggers run in
+system mode at every version and cannot carry a sharing declaration at all, so the handler class's
+`apiVersion` is what a grader checks. Canonical table:
+[`agents/_shared/AGENT_CONTRACT.md`](../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 Plus a `Trigger_Setting__mdt` record with `Object_API_Name__c = Invoice__c`,
 `Handler_Class__c = InvoiceTriggerHandler`, `Is_Active__c = true`, and a

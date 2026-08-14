@@ -31,6 +31,7 @@
     "61bfd05629997be33101",
     "628b953a8ab2d1f0f302",
     "67a6f439f65cefff5338",
+    "69f724436df2c7cced8c",
     "6c9b60342c62c9f34259",
     "6d52adb1cf74d46c4e8d",
     "71e7b25a1b71670a024a",
@@ -43,6 +44,7 @@
     "8eafdaaa86ae539a3aa1",
     "9180e0b35624a5594f5b",
     "a13d608f4fadc523f80f",
+    "a3ceabdd47bae87b474d",
     "a618b41babd8d73d5fd7",
     "b4a2bec6f995755daaf2",
     "b5e40d87b9cd6a260ae1",
@@ -58,7 +60,7 @@
     "fae8cfe185ba2c522991",
     "fcb072375bc93783dbfd"
   ],
-  "content_hash": "3b9779597c0e9d545b8a773f6fdc2be86d296bceebaa4f6906781ebae064f5d0",
+  "content_hash": "e1aa8ce7321ff3dbc17f840838d0b585271f3a779886c7fa9e3e060624570782",
   "dependencies": [],
   "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
   "file_location": "skills/admin/list-views-and-compact-layouts",
@@ -72,6 +74,7 @@
   "official_sources": [
     "Compact Layouts (Help) - https://help.salesforce.com/s/articleView?id=sf.compact_layout_overview.htm&type=5",
     "List Views (Help) - https://help.salesforce.com/s/articleView?id=sf.customviews.htm&type=5",
+    "Manage List View Sharing and Editing with Granular Permissions (Summer '26 Release Notes) - https://help.salesforce.com/s/articleView?id=release-notes.rn_listviews_share_private.htm&language=en_US&release=262&type=5",
     "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

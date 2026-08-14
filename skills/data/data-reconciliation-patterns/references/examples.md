@@ -28,7 +28,7 @@ if sf_count != erp_count:
     log_discrepancy(sf_count, erp_count, failed)
 ```
 
-**Why it works:** `SELECT COUNT()` in SOQL returns an aggregate with no row limit and runs in system context when executed via the integration user. Comparing it to the source count immediately surfaces missing rows.
+**Why it works:** `SELECT COUNT()` in SOQL returns an aggregate with no row limit, so comparing it to the source count immediately surfaces missing rows. It counts only the rows the running user can see: over the REST API here that means the integration user needs View All Data on Account — running *as* the integration user is not the same as running in system context. If you move this count into Apex, the default is gated by the `apiVersion` in the class's `.cls-meta.xml` rather than the org's release: at **67.0+** (Summer '26) SOQL defaults to user mode and a class with no sharing keyword runs `with sharing`, so a count that was complete at 58.0 quietly under-reports and manufactures a phantom discrepancy. The opt-in is `WITH SYSTEM_MODE` on the statement, not the class's sharing keyword — `without sharing` alone leaves the query in user mode. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

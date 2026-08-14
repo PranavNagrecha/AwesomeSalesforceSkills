@@ -27,6 +27,7 @@
     "362fb90edd17704bd2d2",
     "3c74ba98dbb3e5524084",
     "3cf1c51fa2ff9fe6e4d1",
+    "3d66df34d7f59f23b5f5",
     "406843427e3308973e4b",
     "422ad5adf3f43fe1cb15",
     "4bfcbc937a2305b5b9d3",
@@ -41,11 +42,13 @@
     "5fde00c1901b02d537f0",
     "60537c01e47ea564f4ce",
     "60c7ec7000fa4948b2ae",
+    "653584aa9e93e6ae12f8",
     "6ae788057838891db95a",
     "6bcfbdfaa1a04913558f",
     "727f7df7784a4ad4c6ba",
     "7339636fed68a51dfe71",
     "758e7a5055fadcabc06a",
+    "7638ea55fc4cfd1e1f19",
     "76b92dfc6c86896490d5",
     "7960c5477c4d545854f0",
     "7a856b94e0f272bf596e",
@@ -82,6 +85,7 @@
     "d869ef2c83956cf9acb7",
     "db81da88551736bee58d",
     "e0dd99924f1a488ad99f",
+    "ee97dfc43e2b7fc4630c",
     "ef3dd599a50b55a157a7",
     "efeb427c8dac632e56de",
     "f01c82d475415415bf6f",
@@ -94,7 +98,7 @@
     "fd4516128d99e1f3564a",
     "fd5efd6e3f5030cfd5d3"
   ],
-  "content_hash": "8ce18f6632f7d96378ec5816c29eeda46779712fd491a44db99788df78fdef7b",
+  "content_hash": "cc41fb83930d53cd2d93070a8a33e31c83ec9f5e9131eed571005a194656b6c3",
   "dependencies": [
     "admin/care-plan-configuration",
     "apex/apex-security-patterns"
@@ -115,6 +119,8 @@
     "Health Cloud Object Reference (EhrPatientMedication, PatientHealthCondition, CarePlan, ReferralRequest): https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/",
     "Apex Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
     "Apex Reference Guide: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the version qualifier on the FLS and CRUD note above",
+    "Database Operations Run in User Mode by Default, Not System Mode (Summer '26 / API 67.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

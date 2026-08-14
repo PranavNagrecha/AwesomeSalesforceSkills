@@ -57,3 +57,15 @@
 **Correct pattern:** OmniScript identity is always the full triplet: Type + Subtype + Language. Version numbers exist within that triplet. Always include all three when describing an activation, rollback, or version comparison. Different languages of the same OmniScript have independent version histories.
 
 **Detection hint:** Any OmniScript activation or rollback instruction that identifies the script by Type alone without Subtype and Language.
+
+---
+
+## 6. Proposing Two Concurrent FlexCard Versions for a Phased Rollout
+
+**What the LLM generates wrong:** "Activate FlexCard version 4 on the pilot pages and leave version 3 active everywhere else, then flip the remaining pages next sprint."
+
+**Why it happens:** The LLM transfers canary and blue/green deployment models onto OmniStudio, and FlexCards look like independent page components that could be targeted per page.
+
+**Correct pattern:** FlexCards enforce the same single-active-version rule as OmniScripts — "When you activate a version, Omnistudio deactivates all other versions of the Flexcard." There is no per-page or per-audience version targeting. A phased rollout requires two separately named FlexCards (a **Clone**, not a **New Version**) placed on different pages, not two active versions of one FlexCard.
+
+**Detection hint:** Any plan in which more than one version number of the same FlexCard — or the same OmniScript triplet — is active in one org at the same time.

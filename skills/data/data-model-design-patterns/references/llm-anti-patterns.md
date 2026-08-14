@@ -21,10 +21,14 @@ Master-Detail:
 - Supports native Roll-Up Summary fields
 - Cannot reparent once created (unless Allow Reparenting is enabled)
 - Maximum 2 master-detail relationships per object
+- These standard objects can NEVER be the master: BusinessHours, Idea, Lead,
+  OrderItem, PriceBook2, Product2, QuoteLineItem, User
 
 Lookup:
 - Child can exist without parent (optional relationship)
-- No cascade delete by default (configurable on custom objects)
+- No cascade delete: the field is cleared (deleteConstraint SetNull, default).
+  Restrict is self-serve; Cascade is NOT in the field wizard — it needs a
+  Salesforce Support case and it bypasses security and sharing
 - Independent sharing model
 - No native Roll-Up Summary (use DLRS, Flow, or Apex alternatives)
 - Can be reparented freely
@@ -148,7 +152,8 @@ Many-to-many relationship pattern in Salesforce:
 1. Create a junction object: Account_Product__c
 2. Add two relationships from the junction to each parent:
    - Account__c (Master-Detail or Lookup to Account)
-   - Product__c (Master-Detail or Lookup to Product2)
+   - Product__c (Lookup to Product2 — Master-Detail is impossible here;
+     Product2 is on the never-the-master list above)
 3. Optionally add attributes on the junction (Quantity, Start_Date, etc.)
 4. Create a Related List on each parent object's page layout
 
@@ -160,4 +165,4 @@ Junction object advantages over multi-select picklist:
 - No 4,099-character limit (multi-select picklist limit)
 ```
 
-**Detection hint:** Flag multi-select picklist or comma-separated text field recommendations where the data model describes a relationship between two objects. Look for "store related [object] names in a field" patterns.
+**Detection hint:** Flag multi-select picklist or comma-separated text field recommendations where the data model describes a relationship between two objects. Look for "store related [object] names in a field" patterns. Also flag any junction recipe that puts a master-detail on one of the eight never-the-master standard objects listed in Anti-Pattern 1 — that leg cannot be created, so the promised rollup on that parent does not exist.

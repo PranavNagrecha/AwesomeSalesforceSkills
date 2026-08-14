@@ -48,16 +48,18 @@ public with sharing class AccountSummaryService {
     @AuraEnabled(cacheable=true)
     public static Snapshot getSnapshot(Id accountId) {
         Snapshot s = new Snapshot();
-        s.account = [SELECT Id, Name FROM Account WHERE Id = :accountId WITH SECURITY_ENFORCED];
+        s.account = [SELECT Id, Name FROM Account WHERE Id = :accountId WITH USER_MODE];
         s.totalOpenOpps = [SELECT SUM(Amount) total FROM Opportunity
-                            WHERE AccountId = :accountId AND IsClosed = false WITH SECURITY_ENFORCED][0].get('total') == null
+                            WHERE AccountId = :accountId AND IsClosed = false WITH USER_MODE][0].get('total') == null
                             ? 0
-                            : (Decimal) [SELECT SUM(Amount) total FROM Opportunity WHERE AccountId = :accountId AND IsClosed = false][0].get('total');
-        // ...other queries with WITH SECURITY_ENFORCED
+                            : (Decimal) [SELECT SUM(Amount) total FROM Opportunity WHERE AccountId = :accountId AND IsClosed = false WITH USER_MODE][0].get('total');
+        // ...other queries with WITH USER_MODE
         return s;
     }
 }
 ```
+
+**On the security clause:** the read idiom depends on the `apiVersion` in `AccountSummaryService.cls-meta.xml`, not on the org's release. At **67.0+** (Summer '26) `WITH SECURITY_ENFORCED` was removed and the compiler rejects it with *"WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead"* — and user mode is the default there anyway, so `WITH USER_MODE` just states the intent. At **57.0–66.0** `WITH USER_MODE` compiles and is the stronger construct. Only at **≤ 56.0** is `WITH SECURITY_ENFORCED` the idiom available, and a migration is the moment to raise the `apiVersion` rather than port the old clause forward. See `agents/_shared/AGENT_CONTRACT.md` § *Apex security idiom by API version*.
 
 **Migrated LWC (`accountSummary.js`):**
 

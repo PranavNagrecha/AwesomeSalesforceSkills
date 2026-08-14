@@ -29,7 +29,14 @@ the difference between "ships" and "fails WCAG 2.1 Level AA."
   `lightning-record-edit-form` or `lightning-record-form` — both of
   which enforce CRUD/FLS automatically when using the wired output —
   but if the modal calls Apex imperatively, the Apex must enforce FLS
-  itself (`WITH SECURITY_ENFORCED` or `Security.stripInaccessible`).
+  itself: `WITH USER_MODE` on the query (the read idiom from API 57.0
+  up — the `WITH SECURITY_ENFORCED` clause it replaces was removed in
+  67.0 and no longer compiles), or
+  `Security.stripInaccessible(AccessType.READABLE, records)` operating
+  on the returned decision's `.getRecords()`. The gate is the
+  `apiVersion` in the controller's `.cls-meta.xml`, not the org's
+  release: a class still pinned to 58.0 compiles the old clause, but
+  `WITH USER_MODE` is available there too and is the migration target.
 - **Reliability** — `disableClose` is the only safe way to prevent
   user dismissal during an in-flight async operation (Apex callout,
   UI API write, file upload). Without it, Esc-on-spinner orphans the
@@ -134,3 +141,6 @@ component, not a custom-sized modal.
 - SLDS Global Focus Guidelines (referenced from the LightningModal
   accessibility section):
   https://www.lightningdesignsystem.com/guidelines/focus/
+- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0):
+  https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
+  — grounds the API-version gate on the Apex controller idiom above.

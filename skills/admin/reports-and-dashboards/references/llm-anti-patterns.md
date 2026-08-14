@@ -197,6 +197,11 @@ Historical Trend Reporting (Setup -> Historical Trending):
   Opportunity history with Pipeline Inspection historical trending on).
 - Storage: up to 5 million rows of trending data per object; collection
   stops above that, with an admin alert at 70%.
+- Format: MATRIX only. The summary format is not supported, and Lightning
+  gives you charts but no tabular view of a trend report. In Lightning the
+  snapshot date must be the primary row grouping.
+- Not available at all: export, subscriptions, row-limit filters, and
+  dynamic exchange rates (a static rate is used instead).
 - No retroactive data: tracking starts the day you enable it.
 
 For lead-funnel trending, use a Reporting Snapshot into a custom object,
@@ -208,4 +213,43 @@ sentence also contains `Lead`, `Date/Time`, `Percent`, `Checkbox`, or a
 snapshot-date count other than `5`, it is wrong. A second mechanical check:
 `Forecasting Items` must be present in any supported-object list — an answer
 that says "Forecasts" but omits Cases or includes Leads was generated from
-memory of Field History Tracking, not from the Historical Trending doc.
+memory of Field History Tracking, not from the Historical Trending doc. Third
+check: if the answer summary-formats, subscribes to, or exports a historical
+trend report, it has designed something the platform rejects — the Analytics
+REST API returns error 501 telling you to change the format to matrix.
+
+---
+
+## Anti-Pattern 7: Writing report/dashboard package.xml with folder labels and wildcards
+
+**What the LLM generates:** a `Report` section containing `<members>*</members>`,
+or an explicit member written with the folder's display label:
+`<members>Sales Team Reports/Pipeline by Stage</members>`.
+
+**Why it happens:** almost every other metadata type accepts the wildcard, and
+the label is the only folder name the model has ever seen (it is what the UI
+shows). Reports and dashboards are the exception on both counts, so a manifest
+that looks completely ordinary retrieves nothing and deploys nothing.
+
+**Correct pattern:**
+
+```
+package.xml members for Report and Dashboard:
+- A member is <folder developer name>/<item developer name>. The names in
+  package.xml must be developer names, never report or dashboard titles.
+- No wildcard: neither Report nor Dashboard accepts <members>*</members>.
+  The Metadata API guide states the restriction separately for each type.
+  Enumerate every member explicitly.
+- To enumerate, call listMetadata() with type = ReportFolder (or
+  DashboardFolder) and folder = *, take the folder fullNames it returns,
+  then call listMetadata() again with type = Report (or Dashboard) and
+  folder = each of those names.
+- A nested folder referenced on its own needs a trailing slash:
+  <members>TopLevel/SubLevel/</members>. Omitting it fails with
+  "Entity of type 'Report' named 'TopLevel/SubLevel' cannot be found".
+```
+
+**Detection hint:** grep the manifest for `<members>*</members>` beneath a
+`Report` or `Dashboard` type, and for any report/dashboard member containing a
+space — a space almost always means a label was pasted where a developer name
+belongs. Both are wrong by construction, before the org is ever contacted.

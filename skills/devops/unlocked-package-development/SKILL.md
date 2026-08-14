@@ -120,7 +120,8 @@ Every version created with `sf package version create` starts as **beta**. Beta 
 **Promotion to Released** (`sf package version promote`) is a one-way, irreversible operation that:
 - Enables installation in production orgs
 - Requires Apex code coverage >= 75% across all classes in the package directory
-- Locks the version — it cannot be modified after promotion
+- Requires the **Promote a package version to released** user permission in the Dev Hub org (Salesforce recommends putting it in a dedicated permission set and assigning that set to the users who should be able to release)
+- Locks the version — it cannot be modified after promotion, and each version number can be promoted only once
 
 Released versions can be installed in any org type. Plan promotion as a deliberate gate before production deployments.
 

@@ -116,6 +116,45 @@ class NameMatchBonusTest(unittest.TestCase):
         # -> overlap {trigger} = 1/2 = 0.5 -> 0.25
         self.assertAlmostEqual(bonus, 1.75)
 
+    def test_query_token_prefix_matches_a_plural_in_the_name(self):
+        """Overlap is prefix-based, matching FTS5's own ``token*`` semantics.
+
+        This is the defect that inverted the "translate omniscript" fixture:
+        the skill whose description says "OmniScripts" scored 0.0 centrality
+        against a query saying "omniscript", while a sibling with the exact
+        singular in its title took the full name weight and won the slot on a
+        third of the chunk evidence.
+        """
+        meta = {"omnistudio/omnistudio-multi-language": (
+            "omnistudio-multi-language",
+            "Localize OmniScripts and FlexCards using Label-based translation.",
+        )}
+        bonus = _name_match_bonus(
+            {"omniscript"}, "omnistudio/omnistudio-multi-language", meta, 1.5, 0.5
+        )
+        # name has no omniscript token -> 0.0 ; description "OmniScripts"
+        # prefix-matches -> 1/1 * 0.5
+        self.assertAlmostEqual(bonus, 0.5)
+
+    def test_prefix_matching_is_one_directional(self):
+        """A query token may PREFIX a target token, not the reverse.
+
+        Otherwise a one-word query like "trigger" would match every skill
+        whose name merely starts with the same three letters, and the bonus
+        would stop discriminating.
+        """
+        meta = {"apex/trig": ("trig", "Short name.")}
+        # query "triggerframework" must NOT match the shorter target "trig"
+        self.assertAlmostEqual(
+            _name_match_bonus({"triggerframework"}, "apex/trig", meta, 1.5, 0.5), 0.0
+        )
+
+    def test_one_query_token_matching_several_targets_counts_once(self):
+        """The ratio stays bounded by 1.0, so the bonus cannot exceed its weight."""
+        meta = {"apex/x": ("trigger triggers triggered", "trigger triggers triggering")}
+        bonus = _name_match_bonus({"trigger"}, "apex/x", meta, 1.5, 0.5)
+        self.assertAlmostEqual(bonus, 1.5 + 0.5)
+
     def test_overlap_is_a_fraction_of_the_query_not_the_name(self):
         """A long descriptive skill name must not be penalised, and a long
         query must not be trivially satisfied."""
@@ -362,9 +401,11 @@ class AggregateScoringTest(unittest.TestCase):
             rows, 5, skill_meta=self.META, query="trigger recursion", name_weight=1.5, description_weight=0.5
         )
         self.assertEqual([r["id"] for r in ordered], ["apex/trigger-recursion", "apex/soql-basics"])
-        # name 2/2 -> 1.5 ; description {static,guard,recursive,triggers} ∩
-        # {trigger,recursion} = {} -> 0.0
-        self.assertAlmostEqual(ordered[0]["rank_score"], 0.4 + 1.5)
+        # name 2/2 -> 1.5 ; description {static,guard,recursive,triggers}
+        # prefix-matches 1 of {trigger,recursion} — "trigger" is a prefix of
+        # "triggers", while "recursion" is not a prefix of "recursive" — so
+        # 0.5 * (1/2) -> 0.25.
+        self.assertAlmostEqual(ordered[0]["rank_score"], 0.4 + 1.5 + 0.25)
 
     def test_bonus_never_leaks_into_the_gated_fields(self):
         """``score`` and ``max_score`` feed the coverage gate. A title

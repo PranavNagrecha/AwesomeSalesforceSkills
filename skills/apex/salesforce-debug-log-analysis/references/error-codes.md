@@ -164,7 +164,7 @@ String operation invalid.
 Division by zero, etc.
 
 ### System.QueryException
-SOQL-related. "List has no rows for assignment to SObject" is the most common: `.get()` on a list that is empty, or `[SELECT ...][0]` where the query returned zero.
+SOQL-related. "List has no rows for assignment to SObject" is the most common: `.get()` on a list that is empty, or `[SELECT ...][0]` where the query returned zero. Also the CRUD/FLS denial signal: a user-mode query — `WITH USER_MODE`, or any SOQL in a class pinned at API 67.0+ where user mode is the default, or legacy `WITH SECURITY_ENFORCED` below 67.0 — throws this when the running user lacks access to a field or object in the `SELECT` list.
 
 ### System.DmlException
 DML failed. Wraps status codes above.
@@ -188,7 +188,7 @@ Email send failed.
 JSON parse failure.
 
 ### System.SecurityException
-Security check failed (stripInaccessible, WITH SECURITY_ENFORCED).
+Thrown by explicit guard code, not by query-level CRUD/FLS enforcement — e.g. the custom `SecurityException` in `templates/apex/SecurityUtils.cls`. Do not grep for it when triaging an access denial on a query: `WITH USER_MODE`, default user mode (API 67.0+), and legacy `WITH SECURITY_ENFORCED` in a class pinned below 67.0 all throw `System.QueryException` instead, and `Security.stripInaccessible` throws nothing at all — it strips the fields and continues.
 
 ## Specific contextual errors
 

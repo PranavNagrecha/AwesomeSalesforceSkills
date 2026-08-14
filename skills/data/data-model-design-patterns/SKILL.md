@@ -67,7 +67,7 @@ Gather this context before working on anything in this domain:
 
 ### Lookup Relationships
 
-A lookup relationship is a loosely coupled reference from a child object to a parent object. The child record can exist without a parent (the parent field is optional unless you mark it required on the page layout). Deleting the parent does not automatically delete child records — the lookup field is simply cleared (or you can configure it to restrict or cascade). Lookups do not support rollup summary fields on the parent.
+A lookup relationship is a loosely coupled reference from a child object to a parent object. The child record can exist without a parent (the parent field is optional unless you mark it required on the page layout). Deleting the parent does not automatically delete child records — the lookup field is simply cleared (Metadata API `deleteConstraint: SetNull`, the default). You can self-serve switch that to `Restrict`, which blocks the parent delete. `Cascade` is **not** a third option in the field wizard: it requires Salesforce Support to enable the org feature "cascade delete on custom lookup relationships", it is unavailable for lookups to standard objects, and it bypasses security and sharing (see `references/gotchas.md`). Lookups do not support rollup summary fields on the parent.
 
 Each object supports up to 40 lookup relationship fields. Standard relationship fields (OwnerId, CreatedById, LastModifiedById, RecordTypeId) are indexed by default and do not count toward the custom lookup limit.
 
@@ -90,6 +90,8 @@ Salesforce does not support native many-to-many relationships. The standard patt
 - Rollup summaries on both parent objects (if both sides are MDR)
 - Cascade delete: deleting either parent deletes the junction records
 - A place to store attributes about the relationship itself (e.g., a role, a quantity, a date)
+
+**Both legs must be legal.** Eight standard objects can never be the master: BusinessHours, Idea, Lead, OrderItem, PriceBook2, Product2, QuoteLineItem, User. A junction to any of them must use a lookup on that leg, which means no native rollup on that parent — `Account_Product__c` with a master-detail to Product2 is not buildable. No standard object can be the detail of a custom object either.
 
 If you model the junction with two **lookup** fields instead of two MDR fields, you lose rollup summary capability on both sides and the junction records survive even after one parent is deleted — which creates orphan records and referential integrity problems.
 
@@ -215,7 +217,7 @@ Use this mode when a production issue traces back to the data model.
 | Rollup summary not available | Relationship is likely a lookup, not a master-detail. Rollups require master-detail. |
 | SOQL timeout or governor limit on large object | Check query execution plan. If full table scan, identify filter field and request a custom index if eligible. |
 | Upsert matching not working | Confirm the target field is marked External ID. Upsert won't match on non-External-ID fields. |
-| Missing data after parent delete | Lookup delete behavior may be "Clear" instead of "Cascade" — clarify expected behavior and update. |
+| Orphaned children after a lookup parent delete | Lookup delete behavior is `SetNull` (clears the field) by default. `Cascade` is not self-serve — it needs a Salesforce Support case and bypasses sharing. Use `Restrict`, master-detail, or a before-delete trigger instead. |
 | Text field values getting truncated | Field is likely Text(255). Migrate to Long Text Area. |
 
 ---

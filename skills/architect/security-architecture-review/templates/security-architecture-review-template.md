@@ -46,7 +46,7 @@ TODO: 3–5 sentence summary of the overall security posture. State the number o
 | 1 | OWD settings documented and justified for all objects holding sensitive data | TODO: Pass / Fail / N/A | TODO | TODO |
 | 2 | No sensitive object has OWD "Public Read/Write" without documented justification | TODO | TODO | TODO |
 | 3 | All sharing rules reviewed — no rule matches >50% of records without justification | TODO | TODO | TODO |
-| 4 | All Apex classes have explicit sharing declarations (`with sharing`, `without sharing`, or `inherited sharing`) | TODO | TODO | TODO |
+| 4 | All Apex classes have explicit sharing declarations (`with sharing`, `without sharing`, or `inherited sharing`) — record each class's `apiVersion`, since an absent keyword means *without sharing* at ≤66.0 and *with sharing* at 67.0+ | TODO | TODO | TODO |
 | 5 | All `without sharing` classes have a documented reason | TODO | TODO | TODO |
 | 6 | Experience Cloud external OWD reviewed for all objects accessible via the site | TODO | TODO | TODO |
 | 7 | Manual shares reviewed — no unexplained accumulation of manual share records | TODO | TODO | TODO |
@@ -65,8 +65,8 @@ TODO: 3–5 sentence summary of the overall security posture. State the number o
 
 | # | Check | Status | Severity | Notes |
 |---|-------|--------|----------|-------|
-| 8 | All Apex querying sensitive fields uses `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `stripInaccessible` | TODO | TODO | TODO |
-| 9 | All DML in Apex uses `WITH USER_MODE` or confirms CRUD before write | TODO | TODO | TODO |
+| 8 | All Apex querying sensitive fields uses `WITH USER_MODE` or `Security.stripInaccessible(...).getRecords()` — or is pinned at `apiVersion` 67.0+, where user mode is the default. `WITH SECURITY_ENFORCED` is a finding, not a pass: legacy at 57.0–66.0, non-compiling at 67.0+ | TODO | TODO | TODO |
+| 9 | All DML in Apex uses `as user` / `AccessLevel.USER_MODE`, confirms CRUD before write, or runs at `apiVersion` 67.0+ where user mode is the default | TODO | TODO | TODO |
 | 10 | All `@AuraEnabled` methods enforce FLS on fields returned to the LWC | TODO | TODO | TODO |
 | 11 | Integration user profile/permission sets follow minimum necessary access | TODO | TODO | TODO |
 | 12 | Visualforce pages displaying sensitive fields use explicit FLS checks | TODO | TODO | TODO |

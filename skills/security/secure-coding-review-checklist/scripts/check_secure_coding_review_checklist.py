@@ -41,6 +41,28 @@ def find_files(manifest_dir: Path, extensions: list[str]) -> list[Path]:
     return sorted(files)
 
 
+def class_api_version(filepath: Path) -> float | None:
+    """Return <apiVersion> from the sibling ``*-meta.xml``, or None if unreadable.
+
+    This value — not the org's release — decides the Apex default access mode
+    and the default sharing behaviour of a class with no keyword. See
+    agents/_shared/AGENT_CONTRACT.md, "Apex security idiom by API version".
+    """
+    try:
+        text = Path(str(filepath) + "-meta.xml").read_text(
+            encoding="utf-8", errors="replace"
+        )
+    except OSError:
+        return None
+    match = re.search(r"<apiVersion>\s*(\d+(?:\.\d+)?)\s*</apiVersion>", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(1))
+    except ValueError:  # malformed value — treat as unknown, never crash the scan
+        return None
+
+
 def check_crud_fls(apex_files: list[Path]) -> list[str]:
     """Check for SOQL queries missing CRUD/FLS enforcement."""
     issues = []
@@ -49,6 +71,7 @@ def check_crud_fls(apex_files: list[Path]) -> list[str]:
         re.IGNORECASE | re.DOTALL,
     )
     user_mode_pattern = re.compile(r"WITH\s+(USER_MODE|SYSTEM_MODE)", re.IGNORECASE)
+    security_enforced_pattern = re.compile(r"WITH\s+SECURITY_ENFORCED", re.IGNORECASE)
 
     for filepath in apex_files:
         try:
@@ -63,10 +86,46 @@ def check_crud_fls(apex_files: list[Path]) -> list[str]:
             if not user_mode_pattern.search(query_text):
                 # Find the line number of the match start
                 line_num = content[:match.start()].count("\n") + 1
-                issues.append(
-                    f"CRUD/FLS: SOQL query without WITH USER_MODE/SYSTEM_MODE "
-                    f"at {filepath.name}:{line_num}"
-                )
+                api = class_api_version(filepath)
+                seen = f"apiVersion {api:.1f}" if api is not None else "apiVersion unknown"
+                # WITH SECURITY_ENFORCED is never scored clean and never
+                # downgraded by the 67.0 default: it was REMOVED in 67.0, so
+                # the class does not compile there.
+                if security_enforced_pattern.search(query_text):
+                    if api is not None and api >= 67.0:
+                        issues.append(
+                            f"CRUD/FLS: WITH SECURITY_ENFORCED at {filepath.name}:{line_num} "
+                            f"— removed in API 67.0 and this file is {seen}, so it does not "
+                            f"compile; replace with WITH USER_MODE"
+                        )
+                    elif api is not None and api < 57.0:
+                        issues.append(
+                            f"CRUD/FLS (advisory): WITH SECURITY_ENFORCED at "
+                            f"{filepath.name}:{line_num} — the available idiom at {seen}, but "
+                            f"it checks only the SELECT list; raise apiVersion to 57.0+ and "
+                            f"migrate to WITH USER_MODE"
+                        )
+                    else:
+                        issues.append(
+                            f"CRUD/FLS: WITH SECURITY_ENFORCED at {filepath.name}:{line_num} "
+                            f"— {seen}; the weaker construct (SELECT list only, one violation "
+                            f"reported) and removed at 67.0. Migrate to WITH USER_MODE"
+                        )
+                # Triggers always run in system mode, at every API version, so
+                # a bare query in a .trigger is never covered by a default.
+                elif filepath.suffix == ".cls" and api is not None and api >= 67.0:
+                    issues.append(
+                        f"CRUD/FLS (advisory): SOQL query without WITH USER_MODE "
+                        f"at {filepath.name}:{line_num} — apiVersion {api:.1f} runs it "
+                        f"in user mode by default; add the keyword to state intent"
+                    )
+                else:
+                    assumed = "" if api is not None else " (assuming 66.0 or below)"
+                    issues.append(
+                        f"CRUD/FLS: SOQL query without WITH USER_MODE/SYSTEM_MODE "
+                        f"at {filepath.name}:{line_num} — {seen}, so this runs in "
+                        f"system mode with no CRUD/FLS enforcement{assumed}"
+                    )
 
     return issues
 
@@ -128,9 +187,22 @@ def check_sharing_declarations(apex_files: list[Path]) -> list[str]:
             declaration_text = content[declaration_start : match.end()]
             if not sharing_pattern.search(declaration_text):
                 line_num = content[:match.start()].count("\n") + 1
+                api = class_api_version(filepath)
+                if api is not None and api >= 67.0:
+                    effect = (
+                        f"apiVersion {api:.1f} runs it 'with sharing' by default, but "
+                        f"the intent is implicit"
+                    )
+                elif api is not None:
+                    effect = f"apiVersion {api:.1f}, so it runs 'without sharing'"
+                else:
+                    effect = (
+                        "apiVersion unknown — assuming 66.0 or below, where it runs "
+                        "'without sharing'"
+                    )
                 issues.append(
                     f"Sharing: Class '{class_name}' has no explicit sharing "
-                    f"declaration at {filepath.name}:{line_num} — add "
+                    f"declaration at {filepath.name}:{line_num} — {effect}; declare "
                     f"'with sharing', 'without sharing', or 'inherited sharing'"
                 )
 

@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Cleanup jobs on objects with heavy master-detail children (e.g., deleting Orders that have 100+ Order Products each), particularly when the cleanup was designed without checking cascade volumes.
 
 **How to avoid:** Query the average child count before setting the batch size: if each parent has an average of N children, set batch size to `floor(10000 / N)` rounded down to a safe number. Common safe sizes: 50 (when cascading 100+ children), 100 (20–50 children), 200 (few or no children). Always log `DeleteResult` failures so silently skipped records are visible.
+
+---
+
+## Gotcha 6: Deleting a Roll-Up Summary Field via Metadata API Bypasses the Recycle Bin Unconditionally
+
+**What happens:** Cleanup work often ships as a `destructiveChanges.xml` deployment alongside the record purge — dropping the staging fields and roll-ups the retired data fed. A custom field deleted that way normally lands in the Recycle Bin and can be restored; you opt out of that by setting the `purgeOnDelete` deployment option to true. Roll-up summary fields are the exception: per the Metadata API Developer Guide, a roll-up summary field deleted through the Metadata API is not saved in the Recycle Bin and is purged even when `purgeOnDelete` is left false. There is no undelete, and the aggregate values stored on the parent records go with it.
+
+**When it occurs:** Any destructive deployment containing a `CustomField` member that happens to be a roll-up summary — including the routine "delete it and re-create it with a corrected filter" refactor, which reads as reversible but is not.
+
+**How to avoid:** Treat roll-up summary deletion as a one-way door in the cleanup runbook, separate from the reversible destructive changes. Export the current values (`SELECT Id, Rollup__c FROM Object__c`) first if any report, formula, or integration reads them, and remember that a re-created roll-up recalculates only from surviving detail records — child rows the purge already removed are never reflected again. Where only the filter criteria need to change, edit the roll-up in place instead of dropping and re-adding it.

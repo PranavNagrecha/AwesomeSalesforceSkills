@@ -30,6 +30,8 @@ public with sharing class EmployeeViewController {
 
 The `with sharing` keyword enforces record sharing only. The user has access to the *record* (community sharing rule), but not to the `Annual_Salary__c` *field*. The query returns the field anyway, and `<apex:outputField>` renders whatever the controller hands it.
 
+This "before" holds when `EmployeeViewController.cls-meta.xml` pins `apiVersion` at 66.0 or below. At 67.0+ (Summer '26) the same unqualified query runs in user mode and enforces FLS on its own — the symptom above is impossible there, and this community user gets the `System.QueryException` described below instead of a salary. The "after" is then stating intent rather than closing a hole. Check the meta XML before writing the finding up — the gate is the class's pinned version, not the org's release. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+
 **After (FLS-enforced via `WITH USER_MODE`):**
 
 ```apex
@@ -50,9 +52,9 @@ public with sharing class EmployeeViewController {
 }
 ```
 
-`WITH USER_MODE` enforces FLS and CRUD for the running user. Fields the user cannot read are returned as `null`; `<apex:outputField>` then renders nothing for that field. No page-side change required.
+`WITH USER_MODE` enforces FLS and CRUD for the running user, and it does so all-or-nothing: one inaccessible field in the `SELECT` list throws `System.QueryException` and the whole query fails, so the community user gets a page error rather than a redacted field. That is the intended fail-closed behaviour, but it is not a drop-in swap — either select only the fields that audience can read, or run `Security.stripInaccessible(AccessType.READABLE, records).getRecords()` where rendering the record without the salary is acceptable.
 
-**Verification:** Log in as a community user, load the page, view source. The salary field should not appear in the rendered HTML at all (not just be hidden via CSS).
+**Verification:** Log in as a community user and load the page. Either the page surfaces the `QueryException` (fail-closed), or — on the `stripInaccessible` variant — it renders with the salary absent from the HTML entirely (not merely hidden via CSS).
 
 ---
 

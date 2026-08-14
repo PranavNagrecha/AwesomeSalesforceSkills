@@ -50,7 +50,7 @@ Gather this context before working on anything in this domain:
 
 - Navigate to **Setup > Storage Usage** and note the current data storage usage (GB used / GB allocated) and file storage usage separately. Export or screenshot the per-object breakdown.
 - Confirm the org edition. Enterprise orgs receive 10 GB base data storage + 20 MB per user license and 10 GB base file storage + 2 GB per user license. Unlimited orgs receive more generous per-user additions.
-- Check whether the recycle bin is a major contributor — deleted records count toward storage until the bin is emptied or records age past 15 days (30 days for bulk-deleted records).
+- Check whether a large delete or data load ran recently. Storage is recalculated asynchronously, so the Storage Usage page may simply not have caught up. The Recycle Bin is not a contributor: records in it do not count against storage, so do not budget for reclaiming anything by emptying it.
 - Confirm whether Big Objects are in use. Big Objects have their own separate storage allocation and do NOT consume regular data storage quota.
 
 ---
@@ -76,7 +76,6 @@ These allocations are org-wide shared pools. There is no per-user or per-object 
 The canonical monitoring path is **Setup > Storage Usage**. This page shows:
 - Total data storage used vs allocated, broken down by object type
 - Total file storage used vs allocated, broken down by ContentDocument, Attachment, Document, etc.
-- Recycle Bin usage (data storage held by deleted-but-not-purged records)
 
 For programmatic monitoring, use the **Limits API** (`GET /services/data/vXX.0/limits/`) which returns `DataStorageMB` and `FileStorageMB` with `Max` and `Remaining` values. This is the recommended approach for automated alerting pipelines.
 
@@ -118,7 +117,7 @@ Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or th
 **How it works:**
 1. Open Setup > Storage Usage. Note the top 5 objects by data storage consumption.
 2. For each high-volume object, check whether records in it have a defined retention need. Common candidates for cleanup: Task/Event records older than 2 years, ContentVersion records from deleted parent records (orphaned files), EmailMessage records.
-3. Check the Recycle Bin section. If significant storage is held there, emptying it is the lowest-risk first step.
+3. Rule out asynchronous recalculation before diagnosing further — if a large delete or load ran recently, the page may not have caught up. Do not reach for the Recycle Bin: bin records do not count against storage, so emptying it frees nothing and destroys the 15-day restore window.
 4. Query orphaned ContentDocuments: `SELECT Id FROM ContentDocument WHERE Id NOT IN (SELECT ContentDocumentId FROM ContentDocumentLink)`. These files have no linked records and can be safely deleted.
 5. For large Attachment volumes, evaluate migration to ContentDocument to enable deduplication via ContentDocumentLink.
 
@@ -170,7 +169,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 Run through these before marking work in this area complete:
 
 - [ ] Setup > Storage Usage reviewed and per-object breakdown captured
-- [ ] Recycle Bin storage checked and emptied if significant
+- [ ] Asynchronous recalculation ruled out after any recent large delete or load
 - [ ] Orphaned ContentDocuments queried and deleted (or confirmed none exist)
 - [ ] Attachment vs ContentDocument decision documented for any new file feature
 - [ ] Limits API monitoring confirmed or set up (alert threshold ≤25% remaining)

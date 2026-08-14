@@ -60,5 +60,8 @@ not recalculated until step 16, thirteen steps later in the child's save.
 because the recalculation is *later in the save*, not because it happens
 after commit.)
 
-**Fix:** move any logic that needs roll-up to the after-save Flow on the
-**parent** object, triggered by the child's DML.
+**Fix:** read the recalculated value in a **parent** before or after
+trigger (steps 4 / 8 of the parent's own save). The parent's after-save
+Flow is not an option here: the step-16 parent save is a recursive save,
+and Salesforce skips steps 9–17 of it, so step 14 never runs. See
+gotchas.md #11.

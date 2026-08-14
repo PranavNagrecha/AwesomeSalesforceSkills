@@ -62,7 +62,7 @@ public class CaseImportBatch implements Database.Batchable<SObject> {
 **Solution:**
 
 ```apex
-trigger CaseTrigger on Case (before insert, before update, after update, before delete, after delete) {
+trigger CaseTrigger on Case (before insert, before update, after update, after delete) {
     if (Trigger.isBefore && Trigger.isInsert) {
         CaseTriggerHandler.associateEntitlements(Trigger.new);
     }
@@ -73,8 +73,8 @@ trigger CaseTrigger on Case (before insert, before update, after update, before 
     if (Trigger.isAfter && Trigger.isUpdate) {
         CaseTriggerHandler.completeMilestonesOnClose(Trigger.new, Trigger.oldMap);
     }
-    if (Trigger.isBefore && Trigger.isDelete) {
-        CaseTriggerHandler.onBeforeDelete(Trigger.old);
+    if (Trigger.isAfter && Trigger.isDelete) {
+        CaseTriggerHandler.onAfterDelete(Trigger.old);
     }
 }
 ```
@@ -152,11 +152,12 @@ public with sharing class CaseTriggerHandler {
         update open;
     }
 
-    public static void onBeforeDelete(List<Case> oldCases) {
+    // MasterRecordId is populated only in after delete — a before delete
+    // version of this check would read null for every record.
+    public static void onAfterDelete(List<Case> oldCases) {
         for (Case c : oldCases) {
             if (c.MasterRecordId != null) {
-                // Merge delete: c is being absorbed into MasterRecordId
-                // Place merge-specific pre-processing here (e.g., re-parent child records)
+                // Merge delete: c was absorbed into MasterRecordId
                 System.debug('Case merge detected. Losing: ' + c.Id
                     + ' | Master: ' + c.MasterRecordId);
             }

@@ -33,9 +33,9 @@ outputs:
   - "Auto-response rule that fires reliably alongside assignment rules"
   - "Lead Settings configuration guidance (default owner, notification, conversion options)"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-13
 ---
 
 # Lead Management and Conversion
@@ -63,7 +63,7 @@ Lead Settings (Setup > Lead Settings) control three org-wide behaviors:
 
 1. **Default Lead Owner** — The user or queue that owns a lead when no assignment rule is active or no rule entry matches. If this field is blank or the referenced user is inactive, unmatched web-to-lead submissions are discarded silently.
 2. **Notify Default Lead Owner** — When checked, the default owner receives an email when they receive a lead through the assignment fallback. Not needed if the owner is a queue.
-3. **Require Validation and Triggers from Lead Convert** — When checked, standard validation rules and Apex triggers run during conversion. When unchecked, conversion bypasses them. The default is unchecked. Enable this only intentionally — disabling it means business rules protecting Contact or Account data do not run during the conversion path.
+3. **Require Validation for Converted Leads** — Unchecked by default. While unchecked, conversion does **not** enforce validation rules or universally required custom fields on the Account, Contact, Opportunity, or Task records it creates, and Salesforce ignores lookup filters when converting leads. Checking it enforces all three on the conversion path, so conversions that previously succeeded can start failing. Apex triggers fire during conversion either way. See `references/gotchas.md` Gotcha 6 for the enablement path and its two regression risks.
 
 ### Web-to-Lead
 
@@ -137,7 +137,7 @@ Auto-response rules send an email to the lead submitter when a lead is captured 
 | Lead data type differs from target field type | Create matching target field with same data type | Type mismatch causes silent transfer failure |
 | Auto-response emails not firing | Confirm active assignment rule exists and has a matching entry | Auto-response only fires when assignment rule also fires |
 | Lead routing not working for API-created leads | Add `Sforce-Auto-Assign: true` header or use `DMLOptions.assignmentRuleHeader` | Assignment rules do not run automatically for API DML |
-| Conversion triggers validation rules causing errors | Review Lead Settings > "Require Validation and Triggers from Lead Convert" | Deliberately enable or disable based on business requirements |
+| Conversion triggers validation rules causing errors | Review Lead Settings > "Require Validation for Converted Leads" | Deliberately enable or disable based on business requirements |
 | Need scored lead routing (Einstein) | Use Einstein Prediction Builder or Flow-based point scoring | Native lead scoring is not built in; these are the two declarative approaches |
 
 ---
@@ -166,6 +166,7 @@ Run through these before marking lead management configuration complete:
 - [ ] Every custom Lead field that must survive conversion is mapped in Object Manager > Lead > Map Lead Fields
 - [ ] Target fields for conversion mapping use matching data types (Text-to-Text, Picklist-to-Picklist with identical API values)
 - [ ] Exactly one Lead Status value has the Converted checkbox enabled
+- [ ] Lead Settings > "Require Validation for Converted Leads" reflects a deliberate decision; if any compliance rule on Account, Contact, Opportunity, or Task must hold at conversion, it is checked
 - [ ] Auto-response rule exists only where an active assignment rule is also configured
 - [ ] Web-to-lead tested end-to-end from non-Salesforce IP with expected Lead created
 - [ ] Test Lead converted in sandbox; Contact, Account, and Opportunity field values verified

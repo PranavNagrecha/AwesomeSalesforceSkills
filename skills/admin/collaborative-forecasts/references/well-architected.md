@@ -35,6 +35,9 @@ Forecast Types produce manager-editable, adjustment-capable, hierarchy-based vie
 - Salesforce Help — Define Forecast Types — https://help.salesforce.com/s/articleView?id=sf.forecasts3_define_forecast_types.htm
 - Salesforce Help — Forecast Categories — https://help.salesforce.com/s/articleView?id=sf.forecasts3_forecast_categories.htm
 - Salesforce Help — Cumulative Forecast Rollups — https://help.salesforce.com/s/articleView?id=sf.forecasts3_cumulative_rollups.htm
+- Salesforce Help — Forecast Hierarchy in Collaborative Forecasts — https://help.salesforce.com/s/articleView?id=sf.forecasts3_hierarchy_overview.htm
+- Salesforce Help — Define Forecast Managers and Their Subordinates — https://help.salesforce.com/s/articleView?id=sf.forecasts3_setting_up_your_forecasts_hierarchy.htm
+- Pipeline Forecasting Implementation Guide (PDF) — user enablement, Allow Forecasting, and the View Roles and Role Hierarchy note — https://resources.docs.salesforce.com/260/latest/en-us/sfdc/pdf/forecasts.pdf
 - Salesforce Help — ForecastingQuota Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_forecastingquota.htm
 - Salesforce Help — ForecastingAdjustment Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_forecastingadjustment.htm
 - Metadata API Developer Guide — ForecastingSettings — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_forecastingsettings.htm

@@ -69,7 +69,7 @@ DataRaptor outputs, Integration Procedure responses, and HTTP action payloads sh
 
 ### Custom Apex And LWC Are Security Multipliers
 
-The riskiest OmniStudio assets are often the ones that bridge into Apex or custom client components. Their sharing model, CRUD/FLS enforcement, and external exposure are part of the OmniStudio review.
+The riskiest OmniStudio assets are often the ones that bridge into Apex or custom client components. Their sharing model, CRUD/FLS enforcement, and external exposure are part of the OmniStudio review. What a class with *no* sharing keyword and no query clause actually enforces is set by the `apiVersion` in its `.cls-meta.xml`, not by the org's release, and both defaults inverted at 67.0 (Summer '26) — so score a guest-facing bridge class against its own pin, not the org's. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

@@ -29,6 +29,12 @@
   URL: https://architect.salesforce.com/design/record-access-for-enterprise-scale
 - Salesforce Large Data Volumes Best Practices — supplementary source for parent-child skew impact on related list rendering and implicit sharing scan behavior.
   URL: https://architect.salesforce.com/design/large-data-volumes
+- Large Data Volumes: Design Your Data Model (Trailhead) — source for the data skew definition ("Data skew happens when more than 10,000 child records are associated with the same parent record within an org") and for the three named skew types: account data skew, ownership skew, and lookup skew.
+  URL: https://trailhead.salesforce.com/content/learn/modules/large-data-volumes/design-your-data-model
+- Managing Lookup Skew in Salesforce to Avoid Record Lock Exceptions (Salesforce Developers engineering blog) — source for lookup-field target-record locking, lock duration across custom code execution, and the distribute-the-skew vs. picklist-substitution mitigations including the "additional fields and other data" precondition.
+  URL: https://developer.salesforce.com/blogs/engineering/2013/04/managing-lookup-skew-to-avoid-record-lock-exceptions
+- SOAP API Developer Guide — Core Data Types Used in API Calls (StatusCode reference) — source for the exact `UNABLE_TO_LOCK_ROW` status code, its "deadlock or timeout condition has been detected" semantics, and whole-batch failure behavior.
+  URL: https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm
 - Salesforce Well-Architected Overview — architecture quality framing for reliability and scalability pillars.
   URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Object Reference — sObject relationship semantics (Lookup vs Master-Detail, Controlled by Parent OWD behavior).

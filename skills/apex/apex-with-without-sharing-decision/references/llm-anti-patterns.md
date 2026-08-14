@@ -67,12 +67,17 @@ correct for the job.
 
 **What the LLM generates:** Author reviews a `with sharing` controller
 and concludes "this code is safe" without inspecting the helper classes
-it calls. One of the helpers is bare or `without sharing`, and queries
-inside the helper run unrestricted.
+it calls. One of the helpers is `without sharing` — or is bare and pinned
+at API ≤ 66.0, where a `without sharing` caller elsewhere in the codebase
+drags the same helper open — and queries inside the helper run
+unrestricted.
 
 **Why it happens:** The model's mental model treats each class as an
 isolated unit and does not propagate sharing analysis across method
-boundaries.
+boundaries. At API 67.0+ the bare-helper half of this closes (a bare
+helper runs `with sharing` on its own), but an explicitly `without
+sharing` helper is unaffected at every version, so the call-graph review
+step does not go away.
 
 **Correct pattern:**
 
@@ -136,9 +141,14 @@ sole enforcement mechanism on a bare class.
 
 **What the LLM generates:** Suggests `with sharing` on a trigger
 handler class to "make the trigger respect sharing." But the trigger
-body itself runs in system context — DML in the trigger ignores
-sharing regardless of the handler keyword. Only SOQL queries inside the
-handler are affected by the handler's keyword.
+body itself runs in system mode at **every** API version — including
+67.0+, where the default-mode change does not reach it. DML in the
+trigger ignores sharing, FLS, and object permissions regardless of the
+handler keyword, and a `.trigger` file cannot carry a class-level sharing
+keyword of its own. Per-statement enforcement does work inside a trigger
+body (`WITH USER_MODE`, `as user`, `AccessLevel.USER_MODE`) — it is the
+default that is system mode. Only SOQL inside the handler is affected by
+the handler's keyword.
 
 **Why it happens:** Model assumes trigger and handler share a single
 sharing context. They don't.
@@ -146,8 +156,8 @@ sharing context. They don't.
 **Correct pattern:**
 
 ```apex
-// Trigger body always runs in system context — the trigger keyword
-// only affects SOQL queries inside the handler class.
+// Trigger body always runs in system mode, at every API version — the
+// handler keyword only affects SOQL queries inside the handler class.
 trigger AccountTrigger on Account (before insert, after update) {
     new AccountTriggerHandler().run();  // DML inside runs system-context
 }
@@ -166,21 +176,28 @@ user-scoped. In most trigger-framework codebases, handlers should be
 
 ---
 
-## Anti-Pattern 6: Treating bare class as "the same as `with sharing`"
+## Anti-Pattern 6: Stating the bare-class default without checking the `apiVersion`
 
-**What the LLM generates:** "This class has no keyword, but it's
-called from an `@AuraEnabled` method, so it's `with sharing` by
-default — no change needed."
+**What the LLM generates:** either era's default asserted flatly — "this
+class has no keyword, but it's called from an `@AuraEnabled` method, so
+it's `with sharing` by default, no change needed", or the post-Summer-'26
+"bare classes run `with sharing` now" applied to a class pinned to 58.0.
 
-**Why it happens:** Model knows the post-API-v34 default for Lightning
-entry points and over-generalizes. In other call paths (called from a
-`without sharing` Apex class, anonymous Apex, some legacy contexts),
-a bare class still runs effectively `without sharing`.
+**Why it happens:** The default inverted in API 67.0 and the model has
+one era memorized. The gate is the `apiVersion` in the class's own
+`.cls-meta.xml`, not the org's release: a Summer '26 org runs a 58.0
+class with the old behavior. At **≤ 66.0** a bare class runs effectively
+`without sharing` outside Lightning entry points; at **67.0+** it runs
+`with sharing`, and a class saved at 67.0+ anywhere in the chain pulls
+the rest with it.
 
-**Correct pattern:** never ship a bare class. Always declare an
-explicit keyword. The repo's checker flags bare classes containing
-`@AuraEnabled` annotations.
+**Correct pattern:** never ship a bare class at either version — always
+declare an explicit keyword. When the `.cls-meta.xml` is not visible, say
+so and name which version row you assumed. The repo's checker flags bare
+classes containing `@AuraEnabled` annotations and reads the sibling meta
+XML to grade them.
 
-**Detection hint:** Any production class file where the `class` line
-has no `with sharing`, `without sharing`, or `inherited sharing`
-keyword.
+**Detection hint:** Any production class file where the `class` line has
+no `with sharing`, `without sharing`, or `inherited sharing` keyword —
+and any review comment that states the bare default without naming the
+class's `apiVersion`.

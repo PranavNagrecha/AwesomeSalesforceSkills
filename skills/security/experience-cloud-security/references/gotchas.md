@@ -39,3 +39,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Site guest users invoke global Apex classes (via REST, a Visualforce page, or a screen flow) that use `without sharing` — often inherited from code that was never designed for guest users.
 
 **How to avoid:** Audit all Apex classes accessible to the guest profile. Confirm whether each uses `with sharing`, `without sharing`, or `inherited sharing`. Any class that accesses data on behalf of a guest user should use `with sharing` or enforce explicit FLS and CRUD checks. Never mark a class `global without sharing` if it is accessible to external or guest users.
+
+---
+
+## Gotcha 5: Enabling the External Sharing Model Is a One-Way Door
+
+**What happens:** Turning on the external sharing model splits the org-wide default of every object that supports external OWD into **Default Internal Access** and **Default External Access** — and there is no off switch. The Salesforce Security Guide states it plainly: "After it's enabled, the External Sharing Model can't be disabled." The only fallback the same page offers is to "manually set Default External Access and Default Internal Access to the same access level for each object."
+
+**When it occurs:** An admin holding the "Manage Sharing" permission enables it from Setup > Sharing Settings to pilot a portal, assuming it can be rolled back if the portal is shelved. It also arrives unrequested: external org-wide defaults are automatically enabled in all orgs created in Spring '20 or later, and in any org where Salesforce Experiences or portals are enabled.
+
+**How to avoid:** Treat it as a permanent org change and get it approved as one — pilot in a sandbox with the per-object external defaults planned before the switch is thrown. Do not frame it as pure risk, though: Salesforce documents the upside as "External-organization-wide defaults simplify your sharing rules configuration and improve recalculation performance."

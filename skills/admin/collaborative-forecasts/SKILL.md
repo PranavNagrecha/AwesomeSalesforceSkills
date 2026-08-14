@@ -156,7 +156,7 @@ Use this mode when enabling and setting up Collaborative Forecasts for the first
 
 **Step 4 — Add Forecast Type to the Forecasts Tab.** After creation, the type must be added to the visible columns on the forecasts page. Enable it in Forecasts Settings.
 
-**Step 5 — Enable Forecast Users.** Go to each user's detail page (or bulk-configure via API) and set `ForecastEnabled = true`. Users must be enabled as forecast users to appear in the forecast hierarchy. Without this flag, a user is invisible in the forecast rollup even if they have the correct role.
+**Step 5 — Enable Forecast Users and Assign Forecast Managers.** Go to each user's detail page (or bulk-configure via API) and set `ForecastEnabled = true` — labelled **Allow Forecasting** under General Information. Without this flag, a user is invisible in the forecast rollup even if they have the correct role; role assignment alone never sets it. The same enablement is also reachable from Setup > Forecasts Hierarchy > **Enable Users**, moving users between Available Users and Enabled Users — a second path to the same flag, not a substitute for it. Then, on the same Forecasts Hierarchy page, click **Assign Manager** / **Edit Manager** on every role that should roll up: if no forecast manager is assigned to a role, neither that role nor its subordinate roles are included in forecasts. Forecast users also need **View Roles and Role Hierarchy** to access role-based forecasts in Lightning Experience — assigned to all forecast users by default, so only verify it when a user cannot open the tab.
 
 **Step 6 — Load Quotas (if needed).** Use Data Loader or the quota import wizard to upload `ForecastingQuota` records for each user, period, and forecast type. Verify attainment column appears on the forecast page after load.
 
@@ -192,9 +192,14 @@ Use this mode when reviewing an existing setup for correctness, investigating mi
 Use this mode when forecast rollups show unexpected amounts, users are missing from the hierarchy, or adjustments behave unexpectedly.
 
 **Users missing from forecast hierarchy:**
-- Confirm `ForecastEnabled = true` on the user record.
-- Confirm the user has a role assigned and the role is in the forecast hierarchy.
-- For territory-based forecast types: confirm the user is a territory member in the active territory model.
+- Confirm `ForecastEnabled = true` (Allow Forecasting) on the user record.
+- Confirm the user has a role assigned and the role is in the forecast hierarchy. For a role-based Forecast Type, a user with no role has no node in the hierarchy and cannot forecast at all.
+- Confirm the role — and every role above it — has a forecast manager assigned. If no forecast manager is assigned to a role, neither that role nor its subordinate roles are included in forecasts.
+- For territory-based forecast types: confirm the user is a territory member in the active territory model. Territory-based types roll up through the territory hierarchy, so a role-less user can still appear there.
+
+**Forecasts tab blank or inaccessible in Lightning Experience:**
+- Check the `View Roles and Role Hierarchy` permission — it is required to access role-based forecasts in Lightning Experience. It is assigned to all forecast users by default and is automatically enabled by View Setup and Configuration, View All Forecasts, Override Forecasts, or Delegated External Portal User, so admins rarely reproduce the failure.
+- Confirm the Forecasts tab itself is in the app's navigation items or set to Default On.
 
 **Opportunities not appearing in forecast:**
 - Check the opportunity stage — stages mapped to Omitted are excluded by design.
@@ -250,6 +255,7 @@ Run through these before marking Collaborative Forecasts setup complete:
 - [ ] All active Forecast Types are within the 4-type default limit
 - [ ] All expected forecast users have `ForecastEnabled = true` on their user record
 - [ ] Each forecast user has the correct role in the role hierarchy (or territory membership for territory types)
+- [ ] Every role that should roll up has a forecast manager assigned — an unassigned role node drops that role and all its subordinate roles from forecasts
 - [ ] Quotas are loaded for the current period if attainment display is required
 - [ ] Split-based types have Opportunity Splits enabled and splits populated on opportunities
 - [ ] Forecast adjustments are intentionally configured (enabled/disabled) per stakeholder preference

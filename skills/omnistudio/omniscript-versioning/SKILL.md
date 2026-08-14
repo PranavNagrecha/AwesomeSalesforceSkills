@@ -175,3 +175,4 @@ This means CI/CD pipelines must be careful: deploying a DataPack with `activate:
 - omnistudio/omnistudio-deployment-datapacks — DataPack export, import, and CI/CD for OmniStudio components
 - omnistudio/omniscript-design-patterns — OmniScript design and step configuration
 - omnistudio/omnistudio-debugging — debugging OmniScript runtime errors
+- omnistudio/flexcard-design-patterns — FlexCard build and layout patterns; note that an active FlexCard cannot be edited or deleted

@@ -31,3 +31,5 @@ Secure defaults such as LDS and declarative rendering also improve consistency a
 - Secure Apex Classes — https://developer.salesforce.com/docs/platform/lwc/guide/apex-security.html
 - Light DOM — https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html
 - Access Elements the Component Owns — https://developer.salesforce.com/docs/platform/lwc/guide/create-components-dom-work
+- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 — grounds the API-version gate on the FLS pattern in `SKILL.md` Pattern 5
+- Database Operations Run in User Mode by Default, Not System Mode (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5

@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time a Login Flow attempts to update records, query objects with restrictive sharing, or call Apex methods that rely on `UserInfo.getUserId()` returning a real user. The Login Flow User is a system principal with a narrow set of permissions.
 
-**How to avoid:** Write Apex Invocable classes that run `without sharing` for Login Flow contexts. Explicitly pass the user's ID via `$Flow.LoginFlow_UserId` rather than relying on `UserInfo.getUserId()`. Test every Apex action from within the actual login flow, not from Flow Builder's debug mode (which runs as the admin).
+**How to avoid:** Write Apex Invocable classes that declare `without sharing` for Login Flow contexts -- explicitly, never by omitting the keyword, since at `apiVersion` 67.0+ (Summer '26) a class with no sharing keyword runs `with sharing`. The same version gate applies to the DML itself: at 67.0+ database operations default to user mode, so a write the Login Flow User is not permitted to make needs `update as system u;` (or `AccessLevel.SYSTEM_MODE` on the `Database` call) on top of the sharing keyword. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release -- see [`agents/_shared/AGENT_CONTRACT.md` -> Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version). Explicitly pass the user's ID via `$Flow.LoginFlow_UserId` rather than relying on `UserInfo.getUserId()`. Test every Apex action from within the actual login flow, not from Flow Builder's debug mode (which runs as the admin).
 
 ---
 

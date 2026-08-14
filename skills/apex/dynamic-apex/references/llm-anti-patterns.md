@@ -175,7 +175,7 @@ String query = 'SELECT ' + String.join(accessibleFields, ', ') + ' FROM Account'
 List<Account> results = Database.query(query);
 ```
 
-**Detection hint:** `WITH SECURITY_ENFORCED` in a dynamic SOQL string where the intent is partial results (graceful degradation) rather than strict enforcement. If the business requirement is "show what the user can see," pre-filter is correct. If it is "fail if any field is missing," `WITH SECURITY_ENFORCED` is appropriate — but document the intent.
+**Detection hint:** `WITH SECURITY_ENFORCED` in a dynamic SOQL string where the intent is partial results (graceful degradation) rather than strict enforcement. If the business requirement is "show what the user can see," pre-filter is correct. If it is "fail if any field is missing," pass `AccessLevel.USER_MODE` to `Database.query` — never the clause above, which was removed in API 67.0 (Summer '26): in inline SOQL a class pinned at 67.0+ in its `.cls-meta.xml` fails to compile with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`, and in a dynamic string like the one above the compiler never sees it, so compiling cleanly is not evidence it still works. At `apiVersion` 66.0 and below it still compiles; treat it there as tech debt to migrate, not as a passing security check.
 
 ---
 

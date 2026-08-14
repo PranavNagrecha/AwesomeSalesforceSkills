@@ -37,9 +37,9 @@ behaves under change.
   context. Mis-scoping a flow's run context (`System Context with
   Sharing` vs `User Context` vs `System Context Without Sharing`)
   makes Record Choice Sets a vector for surfacing data the user
-  shouldn't see. The skill at `flow/flow-security-context` covers
-  context selection; this skill assumes you've already chosen the
-  right context.
+  shouldn't see. The skill at `flow/flow-runtime-context-and-sharing`
+  covers context selection; this skill assumes you've already chosen
+  the right context.
 - **Adaptable** — Constants and `$Label` references for shared
   values (region names, threshold numbers, environment-specific
   Ids) are the cheapest path to a flow that survives translation,

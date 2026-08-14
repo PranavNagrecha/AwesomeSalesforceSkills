@@ -40,7 +40,9 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 **When it occurs:** Whenever a code reviewer treats `with sharing` / `without sharing` as the security keyword. The keyword only governs which *records* the user can see (sharing rules, role hierarchy, OWD); FLS and CRUD on *fields and objects* are separate enforcement layers.
 
-**How to avoid:** Pair `with sharing` with `WITH USER_MODE` on every SOQL query. `WITH USER_MODE` (Summer '23+) enforces both FLS and CRUD; the older `WITH SECURITY_ENFORCED` is an acceptable alternative. For DML, use `Database.insert(records, AccessLevel.USER_MODE)`. Treat `with sharing` alone as record-level only — never as a complete security posture.
+**How to avoid:** Pair `with sharing` with `WITH USER_MODE` on every SOQL query. `WITH USER_MODE` (Summer '23+, API 57.0) enforces both FLS and CRUD. For DML, use `Database.insert(records, AccessLevel.USER_MODE)`. Treat `with sharing` alone as record-level only — never as a complete security posture.
+
+**The leak above requires a class pinned below `apiVersion` 67.0.** At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode, so the unqualified query is already FLS-enforced and never reaches the community user with `Salary__c` populated; `WITH SECURITY_ENFORCED` is also removed there and will not compile. What decides which behaviour you get is the `apiVersion` in that class's `.cls-meta.xml`, not the org's release. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

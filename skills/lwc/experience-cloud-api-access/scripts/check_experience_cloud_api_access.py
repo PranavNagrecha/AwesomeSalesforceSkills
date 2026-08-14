@@ -5,7 +5,8 @@ Scans Salesforce metadata for common API access anti-patterns involving
 Experience Cloud guest users and external users.
 
 Checks performed:
-  - Apex classes without an explicit sharing declaration that are callable by guest/external users
+  - Apex classes without an explicit sharing declaration that are callable by guest/external
+    users, graded against the apiVersion in the sibling .cls-meta.xml
   - Connected Apps with overly broad OAuth scopes (full, admin) in the metadata
   - Profile XML for guest/community profiles missing "API Enabled" when it may be required
 
@@ -33,6 +34,13 @@ _SHARING_DECL_RE = re.compile(
 )
 _AURA_ENABLED_RE = re.compile(r"@AuraEnabled", re.IGNORECASE)
 _REMOTE_ACTION_RE = re.compile(r"@RemoteAction", re.IGNORECASE)
+_API_VERSION_RE = re.compile(r"<apiVersion>\s*([0-9.]+)\s*</apiVersion>")
+
+# A class with no sharing keyword runs `with sharing` from API 67.0 (Summer '26);
+# below that it runs without sharing. The gate is the class's own version pin, not
+# the org's release. See agents/_shared/AGENT_CONTRACT.md, "Apex security idiom by
+# API version".
+_DEFAULT_WITH_SHARING_IN = 67.0
 
 _BROAD_SCOPES = {"full", "admin", "web", "visualforce"}
 _SCOPE_TAG_RE = re.compile(r"<oauthScopes>(.*?)</oauthScopes>", re.DOTALL)
@@ -53,6 +61,20 @@ _API_ENABLED_TAG_RE = re.compile(
 # Individual checks
 # ---------------------------------------------------------------------------
 
+def _class_api_version(cls_file: Path) -> float | None:
+    """apiVersion from the sibling `<Class>.cls-meta.xml`, or None if unreadable."""
+    meta = cls_file.with_name(cls_file.name + "-meta.xml")
+    if not meta.is_file():
+        return None
+    match = _API_VERSION_RE.search(meta.read_text(encoding="utf-8", errors="replace"))
+    if not match:
+        return None
+    try:
+        return float(match.group(1))
+    except ValueError:
+        return None
+
+
 def check_apex_sharing(manifest_dir: Path) -> list[str]:
     """Flag Apex classes with @AuraEnabled or @RemoteAction that lack an explicit sharing declaration."""
     issues: list[str] = []
@@ -69,15 +91,32 @@ def check_apex_sharing(manifest_dir: Path) -> list[str]:
         has_sharing = _SHARING_DECL_RE.search(content) is not None
         without_sharing = re.search(r"\bwithout sharing\b", content, re.IGNORECASE) is not None
         if not has_sharing:
-            issues.append(
-                f"Apex class '{cls_file.name}' has @AuraEnabled/@RemoteAction but no sharing "
-                f"declaration — defaults to system context, which is unsafe for guest-accessible endpoints. "
-                f"Add 'with sharing'."
-            )
+            api = _class_api_version(cls_file)
+            if api is not None and api >= _DEFAULT_WITH_SHARING_IN:
+                issues.append(
+                    f"Apex class '{cls_file.name}' has @AuraEnabled/@RemoteAction but no sharing "
+                    f"declaration — at apiVersion {api:.1f} it runs 'with sharing', so this is not an "
+                    f"exposure today. Declare it anyway rather than leave a guest-accessible endpoint's "
+                    f"posture to the version pin."
+                )
+            elif api is None:
+                issues.append(
+                    f"Apex class '{cls_file.name}' has @AuraEnabled/@RemoteAction but no sharing "
+                    f"declaration, and has no sibling .cls-meta.xml to read — graded as "
+                    f"pre-{_DEFAULT_WITH_SHARING_IN:.1f} (runs without sharing), which is unsafe for "
+                    f"guest-accessible endpoints. Add 'with sharing'."
+                )
+            else:
+                issues.append(
+                    f"Apex class '{cls_file.name}' has @AuraEnabled/@RemoteAction but no sharing "
+                    f"declaration — at apiVersion {api:.1f} it runs without sharing, which is unsafe for "
+                    f"guest-accessible endpoints. Add 'with sharing'."
+                )
         elif without_sharing:
             issues.append(
                 f"Apex class '{cls_file.name}' has @AuraEnabled/@RemoteAction and is declared "
-                f"'without sharing' — this bypasses guest profile FLS and external OWD enforcement. "
+                f"'without sharing' — this bypasses external OWD and guest record-access enforcement "
+                f"(below {_DEFAULT_WITH_SHARING_IN:.1f}, guest profile FLS goes too). "
                 f"Change to 'with sharing' for any class reachable by Experience Cloud guest or external users."
             )
     return issues

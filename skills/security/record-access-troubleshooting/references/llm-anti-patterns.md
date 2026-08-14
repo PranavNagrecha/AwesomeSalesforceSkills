@@ -179,3 +179,50 @@ or express the requirement as a sharing rule / account team instead.
 ```
 
 **Detection hint:** the string `__Share` preceded by a standard object name is always wrong — mechanically, `__Share` on any token that does not end in `__c` before substitution. Second checkable tell: `ParentId` or a bare `AccessLevel` assigned on a share object whose name lacks `__`. Third: `Schema.<Anything>Share.RowCause.<Anything>__c` where the object is standard — a custom RowCause with no `__Share` in the type name cannot compile.
+
+---
+
+## Anti-Pattern 7: Owner-based remediation on the detail side of a master-detail
+
+**What the LLM generates:** asked to "route `Inspection__c` records to the Field
+Ops queue," it produces a queue design plus
+
+```apex
+Inspection__c i = [SELECT Id, OwnerId FROM Inspection__c WHERE Id = :recId];
+i.OwnerId = fieldOpsQueueId;
+update i;
+```
+
+— or an owner-based sharing rule, or a manual share, on the same object.
+
+**Why it happens:** the model treats `OwnerId` as universally present on every
+sObject, because it is present on every object it has seen in a tutorial. That
+`Inspection__c` is the *detail* side of a master-detail to `Account` is invisible
+in the prompt and never checked.
+
+**Correct pattern:**
+
+```
+The Object Reference: "The Owner field on the detail object isn't available and
+is automatically set to the owner of its associated master record," and "Custom
+objects on the detail side of a master-detail relationship can't have sharing
+rules, manual sharing, or queues, because these elements require the Owner
+field." There is nothing to grant at the child level — "The detail record
+inherits the sharing and security settings of its master record," so fix access
+on the MASTER. If the child genuinely needs its own owner, sharing rules or
+queues, the relationship is the wrong shape: it has to be a Lookup, which is a
+data-model change, not a sharing change.
+
+Confirm before recommending anything owner-based:
+  SELECT QualifiedApiName FROM FieldDefinition
+  WHERE  EntityDefinition.QualifiedApiName = 'Inspection__c'
+    AND  QualifiedApiName = 'OwnerId'
+Zero rows on a custom object = it is the detail side of a master-detail.
+```
+
+**Detection hint:** any `OwnerId` read or write, `__Share` insert, queue
+assignment, or owner-based sharing rule proposed for a custom object that
+carries a master-detail relationship field to a parent — Apex or SOQL naming
+`OwnerId` there does not compile, because the field does not exist. OWD
+`Controlled by Parent` is *not* the tell: Contact carries that OWD and still has
+an Owner (see `gotchas.md` Gotcha 3).

@@ -72,7 +72,7 @@ Salesforce does not permanently delete custom fields immediately. Deleted fields
 Key limits:
 - Each standard or custom object has a limit on TOTAL custom fields — the allocation is per object, not per data type (500 for Enterprise Edition objects, 800 for Performance/Unlimited, 100 for Professional). Regardless of edition or source, an org can't exceed 900 custom fields on most object types once managed-package fields are counted.
 - Fields in the deleted queue still count toward the limit until hard-deleted.
-- To reclaim slots immediately, go to Setup > Object Manager > [Object] > Fields & Relationships > Deleted Fields and click "Erase**.
+- To reclaim slots immediately, go to Setup > Object Manager > [Object] > Fields & Relationships > Deleted Fields and click **Erase**.
 
 Always check field usage (reports, list views, Flows, Apex, validation rules, page layouts) before deleting. A field with zero populated records may still be referenced in automation or code.
 
@@ -80,9 +80,9 @@ Always check field usage (reports, list views, Flows, Apex, validation rules, pa
 
 Each Flow in the org can accumulate many versions. The org-wide limit is 2,000 total active and inactive Flow versions (may vary by edition). Inactive versions serve no runtime purpose but consume the version count.
 
-To delete inactive Flow versions: Setup > Flows > select the Flow > Versions tab > delete individual inactive versions. You cannot delete the currently active version or any version that was active within the last 24 hours.
+To delete inactive Flow versions: Setup > Flows > select the Flow > Versions tab > delete individual inactive versions. A version can be deleted as soon as it is not active and has no paused interviews — there is no waiting period after deactivation. Paused interviews are the usual blocker: wait for those interviews to resume and finish, or delete the interviews first.
 
-Bulk deletion of Flow versions requires the Metadata API — either a destructive deploy or the Tooling API `DELETE` on `FlowDefinition` records.
+Bulk deletion of Flow versions requires an API — either a Metadata API destructive deploy or a Tooling API `DELETE` on `Flow` records, one row per version. The Tooling `FlowDefinition` object is only the container that tracks which version is active; it supports `query()`, `retrieve()`, and `update()` but not `delete()`, so versions cannot be removed through it.
 
 ### Destructive Deploys
 

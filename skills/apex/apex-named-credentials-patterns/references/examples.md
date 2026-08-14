@@ -94,12 +94,14 @@ public with sharing class SaasAuthController {
     @AuraEnabled(cacheable=true)
     public static Boolean isUserAuthenticated(String externalCredentialDevName) {
         // Step 1: Resolve External Credential ID from developer name.
-        // ExternalCredential is a Setup object accessible via SOQL with WITH SECURITY_ENFORCED.
+        // ExternalCredential is a Setup object; WITH USER_MODE enforces object and
+        // field permissions on the read. Do not use WITH SECURITY_ENFORCED here —
+        // it was removed in API 67.0 (Summer '26) and does not compile at 67.0+.
         List<ExternalCredential> ecs = [
             SELECT Id
             FROM ExternalCredential
             WHERE DeveloperName = :externalCredentialDevName
-            WITH SECURITY_ENFORCED
+            WITH USER_MODE
             LIMIT 1
         ];
         if (ecs.isEmpty()) {
@@ -147,7 +149,7 @@ public with sharing class SaasAuthController {
 }
 ```
 
-**Why it works:** The `UserExternalCredential` query is a cheap SOQL read (no callout consumed) that answers "has this user ever authenticated?" with high confidence. The two-step flow — resolve External Credential ID, then check `UserExternalCredential` — is necessary because `UserExternalCredential` records are keyed by the Internal Salesforce ID of the External Credential record, not by its developer name. Note the `WITH SECURITY_ENFORCED` clause on the `ExternalCredential` query to respect FLS and object permissions, and the use of `with sharing` on the class to enforce record-level visibility.
+**Why it works:** The `UserExternalCredential` query is a cheap SOQL read (no callout consumed) that answers "has this user ever authenticated?" with high confidence. The two-step flow — resolve External Credential ID, then check `UserExternalCredential` — is necessary because `UserExternalCredential` records are keyed by the Internal Salesforce ID of the External Credential record, not by its developer name. Note the `WITH USER_MODE` clause on the `ExternalCredential` query to respect FLS and object permissions, and the use of `with sharing` on the class to enforce record-level visibility. `WITH USER_MODE` is the read idiom from API 57.0 up; the older `WITH SECURITY_ENFORCED` was removed in API 67.0 (Summer '26) and fails to compile there with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release — a class pinned at 66.0 or below still compiles the old clause on a Summer '26 org. At 57.0–66.0 it is legacy tech debt to migrate to `WITH USER_MODE`; at 56.0 and below it is the idiom available at that version, and raising the class's `apiVersion` beats hardening it in place.
 
 ---
 

@@ -32,3 +32,4 @@ Approval sprawl becomes an admin burden quickly.
 
 - Salesforce Well-Architected Overview — governance and reliability framing for approval design
 - Metadata API Developer Guide — approval metadata packaging and deployment behavior
+- Salesforce Winter '26 Release Notes, Salesforce Flow → Flow Approval Processes — the Approval Designer permission pair and the Submit for Activation review flow

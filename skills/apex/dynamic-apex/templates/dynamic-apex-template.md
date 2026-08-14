@@ -64,7 +64,8 @@ Copy this and tick items as you complete them.
 **Correctness**
 - [ ] `record.get()` return values are explicitly cast with type verified via `DescribeFieldResult.getType()`.
 - [ ] Field Set members are validated against the live field map before query construction.
-- [ ] `WITH SECURITY_ENFORCED` usage is documented as intentional fail-fast, not graceful degradation.
+- [ ] The enforcement mode is explicit — `AccessLevel.USER_MODE` passed to `Database.query` / `Database.queryWithBinds` — and documented as intentional fail-fast, not graceful degradation.
+- [ ] Any surviving `WITH SECURITY_ENFORCED` is flagged, not counted as a passing check: P0 if the class's `.cls-meta.xml` pins `apiVersion` at 67.0+ (removed in Summer '26 — inline SOQL will not compile, and burying the clause in a dynamic string only moves the failure out of the compiler's reach), P2 tech debt at 57.0–66.0.
 
 **Testing**
 - [ ] Test covers the happy path with accessible fields.

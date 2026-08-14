@@ -3,6 +3,7 @@
   "chunk_ids": [
     "08dd9b4489208dd56f71",
     "0929fb2e19e5c1a73e16",
+    "0ee4215c2371b37c8a79",
     "1198052f59486c25b84f",
     "11e4050448ae7017ede8",
     "162d79ee4c58e44f1b16",
@@ -46,13 +47,12 @@
     "e747773a4d216381571f",
     "e91975facb76bca19306",
     "e96cfa463c2ca73c4353",
-    "e994275dbaccc7224005",
     "ee1a946a2a5961c2c7e3",
     "f353d3545aa9d32fa703",
     "fbef625bd3b03e1a59f1",
     "fc413498655cf07cc5fe"
   ],
-  "content_hash": "1d1aaee578e1f1671e75a655ae08d27a15e938361d1a1cc636b7c02ff30954b3",
+  "content_hash": "dcc63a7d98a48da59b5c0d16b14039a656b009f21b31a844feeffd08191fcb8f",
   "dependencies": [],
   "description": "Custom lookup component in LWC \u2014 typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for in-form lookups inside lightning-record-edit-form (use lightning-input-field) or lookup filters (use admin lookup filter config).",
   "file_location": "skills/lwc/lwc-custom-lookup",
@@ -66,14 +66,15 @@
   "official_sources": [
     "lightning-record-picker (LWC Component Reference) \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-record-picker/documentation",
     "SOSL Reference (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm",
-    "WITH SECURITY_ENFORCED in SOQL \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm",
+    "Enforce User Mode for Database Operations (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_user_mode.htm",
+    "WITH SECURITY_ENFORCED in SOQL (legacy, \u2264 API 66.0) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm",
     "@AuraEnabled cacheable=true \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "ARIA combobox role \u2014 https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
     "Salesforce Well-Architected: Performant \u2014 https://architect.salesforce.com/well-architected/performant/efficient"
   ],
   "outputs": [
     "LWC component template + JS controller with debounced search",
-    "Cacheable Apex method using SOSL or SOQL with WITH SECURITY_ENFORCED",
+    "Cacheable Apex method using SOSL or SOQL with WITH USER_MODE",
     "Pill/chip rendering pattern for selected record(s)"
   ],
   "references": [

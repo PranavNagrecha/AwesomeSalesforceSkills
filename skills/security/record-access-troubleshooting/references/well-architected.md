@@ -62,6 +62,13 @@ core tradeoff matrix:
 | **Add user to higher Role** | All records owned by their subordinates | YES (role hierarchy is permanent until changed) | Yes (User detail → Role) | Async recalc on role move | Org-design alignment issue, not a sharing issue |
 | **Loosen OWD** | All records of the object, everyone | YES (tenant-wide setting) | Yes (Sharing Settings) | Tenant-wide async recalc (can be hours) | The object's privacy model was wrong; resharing one-by-one is infeasible at scale |
 
+This matrix assumes the object has an `Owner` field. A custom object on the
+*detail* side of a master-detail relationship does not: per the Object
+Reference, *"Custom objects on the detail side of a master-detail relationship
+can't have sharing rules, manual sharing, or queues, because these elements
+require the Owner field."* None of these rows can be applied to the detail
+record itself — apply them to the master, whose access the detail inherits.
+
 The defining axis is **scope vs. precision**. Manual shares and team
 membership are surgical but don't compose well. Sharing rules and
 role-hierarchy changes are broad but can grant more than intended.
@@ -152,3 +159,4 @@ the doc layout changes.
 - Apex Developer Guide — Understanding Apex Managed Sharing ("Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects") — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm
 - Apex Developer Guide — Creating Apex Managed Sharing (share object naming: AccountShare for standard, MyObject__Share for custom) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm
 - Object Reference — AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm
+- Object Reference — Relationships Among Objects (detail object has no Owner field; no sharing rules, manual sharing or queues on the detail side) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm

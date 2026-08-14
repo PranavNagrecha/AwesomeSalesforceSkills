@@ -36,6 +36,8 @@ For guest-facing or external-facing OmniScripts:
 ALWAYS verify that CRUD/FLS enforcement is active.
 ```
 
+**What Summer '26 did not change:** the DataRaptor default above is OmniStudio runtime behaviour and is unaffected by the API 67.0 Apex change, where SOQL/SOSL/DML default to user mode and a class with no sharing keyword runs `with sharing`. That change is gated on the `apiVersion` in a class's `.cls-meta.xml`, and a DataRaptor has none — raising a helper class's `apiVersion` buys a DataRaptor nothing. Verify the OmniStudio setting itself. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+
 **Detection hint:** Flag OmniStudio implementations exposed to guest or external users without CRUD/FLS enforcement verification. Check for missing "Respect User CRUD/FLS" setting.
 
 ---
@@ -154,7 +156,15 @@ Principle of least privilege:
 Custom LWC security review in OmniScript context:
 
 1. @AuraEnabled methods called by the LWC:
-   - Must enforce CRUD/FLS (WITH USER_MODE or stripInaccessible)
+   - Must enforce CRUD/FLS. Read the apiVersion in the class's
+     .cls-meta.xml, not the org's release: at 67.0+ SOQL/SOSL/DML
+     already default to user mode; at 66.0 and below they run in
+     system mode until WITH USER_MODE (57.0+) says otherwise
+   - On writes assembled from OmniScript input, prefer
+     Security.stripInaccessible(AccessType.CREATABLE, records)
+     on an insert - AccessType.UPDATABLE on an update - and DML
+     the .getRecords() result; user mode throws and fails the
+     whole DML instead
    - Must validate input parameters (not trust OmniScript data)
    - Must handle errors gracefully (not expose stack traces)
 

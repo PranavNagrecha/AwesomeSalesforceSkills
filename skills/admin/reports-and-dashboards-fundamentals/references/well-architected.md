@@ -8,7 +8,7 @@ Reports and dashboards are a primary path through which users access aggregated 
 
 - Default to "Run as logged-in user" (dynamic dashboard) to ensure record-level security is enforced per viewer.
 - Audit static dashboard running users: any running user with elevated sharing access creates an implicit data elevation path.
-- Report subscriptions send the running user's data to all recipients — treat subscription delivery as a broadcast of the owner's data, not personalized data.
+- Report subscriptions send one running user's data to every recipient. That running user defaults to whoever created the subscription — not the report owner — and redirecting it requires **Subscribe to Reports: Set Running User**. Treat subscription delivery as a broadcast, never as personalized data, and audit holders of that permission alongside dashboard running users.
 - Folder permissions are the access control layer for reports and dashboards. A report in a public folder is visible to all users who have access to that folder. Review folder sharing before deploying sensitive reports.
 
 ### Operational Excellence
@@ -80,3 +80,8 @@ A dashboard with the wrong component type for its data degrades decision quality
 - Salesforce Help: Joined Reports — https://help.salesforce.com/s/articleView?id=sf.reports_joined.htm
 - Salesforce Help: Bucket Fields in Reports — https://help.salesforce.com/s/articleView?id=sf.reports_bucketing_about.htm
 - Salesforce Help: Report Subscriptions — https://help.salesforce.com/s/articleView?id=sf.reports_subscribe_overview.htm
+- Salesforce Help: Subscribe to a Report (Lightning Experience) — https://help.salesforce.com/s/articleView?id=analytics.reports_subscribe_lex.htm
+- Salesforce Help: Reports and Dashboards Limits and Allocations — https://help.salesforce.com/s/articleView?id=sf.rd_reports_dashboards_limits.htm
+- Salesforce Help: Joined Report Limits, Limitations, and Allocations — https://help.salesforce.com/s/articleView?id=sf.reports_unavailable_with_joined_reports.htm
+- Salesforce Help: Create a Report or Dashboard Subfolder in Lightning Experience — https://help.salesforce.com/s/articleView?id=sf.rd_folders_create_subfolders.htm
+- Salesforce Developers: Analytics REST API Report Error Codes — https://developer.salesforce.com/docs/atlas.en-us.api_analytics.meta/api_analytics/sforce_analytics_rest_api_report_error_codes.htm

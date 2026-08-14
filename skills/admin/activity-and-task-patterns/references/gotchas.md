@@ -10,11 +10,11 @@ production data volume or a non-trivial user.
 
 **What happens:** A subquery like
 `(SELECT Id, Subject FROM ActivityHistories WHERE ActivityDate < LAST_N_YEARS:2)`
-returns at most 500 rows regardless of `LIMIT`. The platform applies
-the cap *before* your `WHERE`/`ORDER BY`, so on an Account with
-thousands of historical tasks you get an arbitrary 500-record slice,
-not the 500 most recent. The truncation is silent — no system
-debug entry, no row-count warning.
+returns at most 500 rows per parent no matter how many matching
+activities exist, and you cannot raise the ceiling with a larger
+`LIMIT`. The truncation is silent — no system debug entry, no
+row-count warning — so any total computed from the subquery is
+capped at 500 on long-tenured parents.
 
 **When it occurs:** Any subquery from a parent against
 `ActivityHistories` or `OpenActivities` on accounts/opportunities

@@ -47,7 +47,7 @@
     "f402299d26f0c7d17b1f",
     "fdb99b06fa4074aee43b"
   ],
-  "content_hash": "654e006f499c763bc609f085b8922a5038b646867bfcd67f0f852068367aeaaa",
+  "content_hash": "59d6f55e220f743cd3487f788ac9c4675ce04560103797c8468ee84416e7dddf",
   "dependencies": [],
   "description": "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for Scheduled Flow (use scheduled-flow-patterns). NOT for time-based workflow rules (use migrate-workflow-pb).",
   "file_location": "skills/admin/scheduled-path-patterns",

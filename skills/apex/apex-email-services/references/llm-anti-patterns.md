@@ -165,7 +165,7 @@ public Messaging.InboundEmailResult handleInboundEmail(
 }
 ```
 
-**Why it happens:** LLMs do not consider that email services run in system context and any external sender can email the service address. Without sender validation, anyone can create records in the org.
+**Why it happens:** LLMs do not consider that any external sender can email the service address and that `fromAddress` is unverified header data. Without sender validation, anyone can create records in the org. Sender validation is required at every API version: raising the class to 67.0+, where database operations default to user mode, narrows *what* the handler can reach (to the Email Service's Context User's permissions) but says nothing about *who* invoked it.
 
 **Correct pattern:**
 

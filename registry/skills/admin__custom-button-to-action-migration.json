@@ -7,6 +7,7 @@
     "0fdbfa000f612efc04f6",
     "1401b2e9c8e9453eafc2",
     "169f6bbc66125daa0189",
+    "1aaa9b52184264fac602",
     "1c6513b0d5a66201744d",
     "1de626d1ff8aa3ac933b",
     "231b80b43912d2139a55",
@@ -45,6 +46,7 @@
     "7a132e5620ac9521827a",
     "7e514b08996daf9b07e2",
     "81e0d121f0063cbd6019",
+    "82fc8aa1f3852996207f",
     "888c3bb119cffcce6c85",
     "892b2e8206c2257d6aba",
     "8a4e6d283be920f7641f",
@@ -58,6 +60,7 @@
     "9adf8fb6e8b175636392",
     "9af3c7ed19438064247f",
     "9b92ca85a53d4ef20115",
+    "9c5a4cbcfdd3ea76cee8",
     "a180d28a953b65926a72",
     "aa8c48bd063e0ffccdca",
     "abe486b8b8d22eb91b3e",
@@ -91,7 +94,7 @@
     "fe3c25ab1b3347149a9e",
     "fe70f5d06aa93ac23e82"
   ],
-  "content_hash": "aa9d48ea7d633f58d9f38f9bd7052d470c2e9c90fe0774542303c201d2e923ab",
+  "content_hash": "721d22e7aa02079687d709c35ee28471ad9fb6cd033717818930ddb821f159d4",
   "dependencies": [],
   "description": "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute \u2192 Apex action, navigation alerts \u2192 toast events, MassAction.update \u2192 record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/quick-actions-and-flow-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced).",
   "file_location": "skills/admin/custom-button-to-action-migration",
@@ -113,7 +116,9 @@
     "NavigationMixin \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-navigate.html",
     "Lightning Web Security \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/security-lwsec-intro.html",
     "Salesforce Mobile App Quick Actions \u2014 https://help.salesforce.com/s/articleView?id=sf.actions_in_salesforce_mobile.htm",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the version qualifier on the Security pillar note above",
+    "Secure Apex Code with User Mode Database Operations (Generally Available) (Spring '23 / API 57.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5"
   ],
   "outputs": [
     "Lightning Quick Actions (object-specific) replacing Detail Page Buttons",

@@ -97,7 +97,7 @@ sf project deploy start --manifest package-site.xml --target-org <alias> --wait 
 2. Navigate to Setup > Digital Experiences > All Sites
 3. Click Builder next to [SiteName]
 4. Click Publish in Experience Builder
-5. Confirm status changes to Active
+5. Confirm the status changes to Published (`Network.Status = Live` via the API)
 
 **Option B — Connect REST API (for automated pipelines):**
 ```bash
@@ -127,7 +127,7 @@ curl -X POST \
 - [ ] All Apex/LWC dependencies deployed and confirmed present in target
 - [ ] Network and CustomSite records confirmed present in target before ExperienceBundle deploy
 - [ ] ExperienceBundle deployment completed without errors
-- [ ] Site published (Status = Active) — verified in Setup > All Sites
+- [ ] Site published — `SELECT Status FROM Network WHERE Name = '[SiteName]'` returns `Live` (Setup > All Sites shows the label Published)
 - [ ] Site URL reachable from browser: ___________________
 - [ ] Guest User Profile permissions reviewed in target org
   - [ ] Apex class access matches source

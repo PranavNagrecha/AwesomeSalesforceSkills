@@ -21,13 +21,16 @@
     "3616424d243d845bac9f",
     "3882fd2592f1687f189a",
     "3cac7b5e4b3b2a65b5f9",
+    "442221d6ce139bf6a5d3",
     "44527527084faab29f8b",
     "445f49e36e766c97e840",
+    "494ceb820a76d26a069a",
     "4a6b933d88a66f127e43",
     "4ad265b14a7a493563b0",
     "556fc96c52ed6531ffd3",
     "56ec2af65e9c678336bb",
     "572b4556e9dad5029e39",
+    "57e9818fbd711590541d",
     "5ef95d7bd71ae345ca19",
     "63e4bb552f8e92b224e3",
     "69b484b984bbae7bc52e",
@@ -68,7 +71,7 @@
     "fad230e06c1914a41405",
     "ff80798f3e0057c81fa7"
   ],
-  "content_hash": "c2bb2bd8b5188378a9b521dd1f711ec1834975113c048c44106b4f9f7a9938da",
+  "content_hash": "43ea4d457d884f5bf7a4b39c934e417b5e05a16c68a69e59309e3efde896e00a",
   "dependencies": [],
   "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
   "file_location": "skills/apex/trigger-framework",
@@ -113,7 +116,7 @@
     "skills/apex/trigger-framework/templates/trigger_body.trigger",
     "skills/apex/trigger-framework/templates/trigger_handler.cls"
   ],
-  "updated": "2026-07-07",
+  "updated": "2026-08-13",
   "vector_embedding": null,
   "version": "1.1.0"
 }

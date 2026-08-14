@@ -179,7 +179,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Inventory the VF page surface.** List the `apex:page` attributes (`controller`, `extensions`, `standardController`, `renderAs`, `contentType`, `tabStyle`), every `apex:` markup tag in use, every controller method (its return type and DML behavior), every URL parameter consumed, and every static resource referenced.
 2. **Decide migrate vs retain.** Apply the Decision Guidance table. PDF, email-body, custom-content-type, and externally-linked URL pages are migration *partial* candidates; everything else is a full migration target.
-3. **Translate controller to `@AuraEnabled` methods.** For each `get` property, expose a `@AuraEnabled(cacheable=true)` static method. For each action method, expose an `@AuraEnabled(cacheable=false)` method that returns explicit DTOs (no `PageReference`). Include `with sharing` and explicit FLS checks (`Security.stripInaccessible` or `WITH SECURITY_ENFORCED` in SOQL).
+3. **Translate controller to `@AuraEnabled` methods.** For each `get` property, expose a `@AuraEnabled(cacheable=true)` static method. For each action method, expose an `@AuraEnabled(cacheable=false)` method that returns explicit DTOs (no `PageReference`). Include `with sharing` and explicit FLS enforcement: `WITH USER_MODE` in SOQL, plus `Security.stripInaccessible(AccessType.CREATABLE, records).getRecords()` on write paths that assemble records from user input (`AccessType.UPDATABLE` when the DML is an update — the enum must match the operation). Do not carry `WITH SECURITY_ENFORCED` across from the old controller — it does not compile once the new class's `.cls-meta.xml` `apiVersion` is 67.0+ (Summer '26 removed it).
 4. **Scaffold the LWC bundle.** Create `<componentName>.js`, `.html`, `.css`, and `.js-meta.xml`. Set `targets` to match the original VF surface. Expose `@api` properties for any URL parameter the VF page received.
 5. **Wire data + handle navigation.** Use `@wire` for read-only data, imperative for writes. Replace `PageReference` returns with `this[NavigationMixin.Navigate]({ type, attributes })`. Replace `apex:commandButton` action calls with JS event handlers that invoke the imperative method and then `refreshApex(this.wiredHandle)` on success.
 6. **Verify parity.** Diff the rendered output against the VF page on identical data. Confirm FLS behavior (a user without field access must see the same hidden state). Test all URL parameter entry points.
@@ -193,7 +193,7 @@ Run through these before marking work in this area complete:
 
 - [ ] Every VF controller `get` property has a corresponding `@AuraEnabled(cacheable=true)` method
 - [ ] Every controller action method has been re-architected as an imperative `@AuraEnabled` method returning a serializable DTO (no `PageReference`)
-- [ ] All `with sharing`, CRUD, and FLS enforcement is explicit in the new Apex (`Security.stripInaccessible` or `WITH SECURITY_ENFORCED`)
+- [ ] All `with sharing`, CRUD, and FLS enforcement is explicit in the new Apex (`WITH USER_MODE` in SOQL, `Security.stripInaccessible` on write paths) — no `WITH SECURITY_ENFORCED` survived the port, which fails to compile at `apiVersion` 67.0+
 - [ ] LWC `js-meta.xml` `targets` match every original VF surface (App Builder, Experience, Tab, etc.)
 - [ ] All `PageReference` redirects are translated to `NavigationMixin.Navigate` calls with the correct `type` and `attributes`
 - [ ] No `<apex:outputText escape="false">` patterns survived (template binding sanitizes by default)

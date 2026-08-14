@@ -29,6 +29,7 @@
     "5353fbb9e7fa7b9153ff",
     "578599a939ee8f93db82",
     "5a1c4b6e946a9bc1ac54",
+    "5c84758325cfe0741d04",
     "5cb26da874a5e25446ee",
     "5f6d61fb0740c6d4427f",
     "6000b84c778e364ce1f8",
@@ -62,9 +63,11 @@
     "aa374be4dbf8dfcc9e37",
     "ac8a0f6aebf95ec5e254",
     "af759c61d5c6573ae274",
+    "afcdf4cb343684eb195e",
     "b5e323c0aacf3dababc1",
     "bb4e97a7e51a7c68314f",
     "c0dd5fdf85a224875385",
+    "c24e5450bb303e99ad11",
     "c5c6e7667d4148d988a3",
     "c72deac8912be20f3924",
     "ca26ef1411953eabeb89",
@@ -87,7 +90,7 @@
     "f07450cb1d602e87f667",
     "f39926accaac8fe1d4e0"
   ],
-  "content_hash": "8b91cf4ae67cef868778553015dd77b346fe2cd92a39b5faeae9ffae70ae2bc4",
+  "content_hash": "7c3fa81e728a56ebfdef46a9ade110ea487929477dbc0d5c5d9305cb989956bb",
   "dependencies": [],
   "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for field-level security (use field-level-security-audit). NOT for designing sharing (use sharing-selection decision tree).",
   "file_location": "skills/security/record-access-troubleshooting",
@@ -111,7 +114,8 @@
     "Salesforce Well-Architected \u2014 Trusted (Secure) \u2014",
     "Apex Developer Guide \u2014 Understanding Apex Managed Sharing (\"Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
     "Apex Developer Guide \u2014 Creating Apex Managed Sharing (share object naming: AccountShare for standard, MyObject__Share for custom) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm",
-    "Object Reference \u2014 AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm"
+    "Object Reference \u2014 AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm",
+    "Object Reference \u2014 Relationships Among Objects (detail object has no Owner field; no sharing rules, manual sharing or queues on the detail side) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm"
   ],
   "outputs": [
     "UserRecordAccess diagnostic query",

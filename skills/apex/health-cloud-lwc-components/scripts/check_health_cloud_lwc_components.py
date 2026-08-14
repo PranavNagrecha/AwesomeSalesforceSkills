@@ -3,6 +3,7 @@
 
 Checks org metadata for common Health Cloud LWC component issues:
 - Apex controller FLS enforcement for clinical objects
+- Use of WITH SECURITY_ENFORCED, removed in API 67.0 (Summer '26)
 - TimelineObjectDefinition metadata presence
 - Custom Account fields used for clinical data (anti-pattern)
 
@@ -16,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -42,6 +44,109 @@ CLINICAL_OBJECTS = [
 ]
 
 
+API_VERSION_RE = re.compile(r"<apiVersion>\s*([0-9]+(?:\.[0-9]+)?)\s*</apiVersion>")
+
+# Read-side idioms that enforce FLS and still compile at every current API
+# version. WITH SECURITY_ENFORCED is deliberately absent: it was removed in API
+# 67.0, so its presence is never on its own evidence of a secure query. `as user`
+# is also absent — it is the DML idiom, and a class that writes `insert x as
+# user` has said nothing about whether its SELECT of PHI is enforced.
+# Lowercased because Apex and SOQL are case-insensitive.
+ENFORCEMENT_IDIOMS = (
+    "with user_mode",
+    "accesslevel.user_mode",
+    "security.stripinaccessible",
+    "isaccessible",
+)
+
+
+def read_api_version(cls_file: Path) -> float | None:
+    """Return the apiVersion pinned in the class's .cls-meta.xml, or None.
+
+    This value, not the org's release, gates the security idiom: a Summer '26
+    org runs a class pinned to 58.0 unchanged, and that class still compiles
+    WITH SECURITY_ENFORCED.
+    """
+    meta_file = cls_file.parent / f"{cls_file.name}-meta.xml"
+    if not meta_file.exists():
+        return None
+    match = API_VERSION_RE.search(meta_file.read_text(encoding="utf-8"))
+    if not match:
+        return None
+    try:
+        return float(match.group(1))
+    except ValueError:
+        return None
+
+
+def describe_removed_security_clause(
+    cls_file: Path, lowered: str, api_version: float | None
+) -> str | None:
+    """Flag WITH SECURITY_ENFORCED, severity by the class's pinned apiVersion."""
+    if "with security_enforced" not in lowered:
+        return None
+
+    if api_version is None:
+        return (
+            f"{cls_file.name}: uses WITH SECURITY_ENFORCED, and no apiVersion could be read "
+            f"from {cls_file.name}-meta.xml. The clause was removed in API 67.0 (Summer '26): "
+            "a 67.0+ class fails to compile with 'WITH SECURITY_ENFORCED is no longer "
+            "supported, use WITH USER_MODE instead'. Confirm the pinned apiVersion, then "
+            "migrate to WITH USER_MODE."
+        )
+    if api_version >= 67.0:
+        return (
+            f"{cls_file.name}: [P0] uses WITH SECURITY_ENFORCED at apiVersion {api_version:.1f}. "
+            "The clause was removed in API 67.0 (Summer '26) — this class does not compile: "
+            "'WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead'. "
+            "Replace it with WITH USER_MODE."
+        )
+    if api_version >= 57.0:
+        return (
+            f"{cls_file.name}: [P2] uses WITH SECURITY_ENFORCED at apiVersion {api_version:.1f}. "
+            "It still compiles below 67.0, but it is the weaker construct: it checks only the "
+            "SELECT list, mishandles polymorphic fields, and reports one violation rather than "
+            "all. Migrate to WITH USER_MODE, GA since API 57.0."
+        )
+    return (
+        f"{cls_file.name}: [P3] uses WITH SECURITY_ENFORCED at apiVersion {api_version:.1f}, the "
+        "idiom available at that version. Prefer raising the class's apiVersion to 57.0+ and "
+        "moving to WITH USER_MODE over hardening it in place."
+    )
+
+
+def describe_missing_enforcement(
+    cls_file: Path, clinical_obj: str, api_version: float | None
+) -> str:
+    """Describe a clinical query carrying no enforcement idiom, severity by apiVersion."""
+    if api_version is not None and api_version >= 67.0:
+        return (
+            f"{cls_file.name}: [P3] @AuraEnabled method queries {clinical_obj} with no explicit "
+            f"security clause at apiVersion {api_version:.1f}. The query is not unenforced — from "
+            "API 67.0 SOQL runs in user mode by default and applies the running user's sharing "
+            "rules, FLS, and object permissions with no keyword at all. Add WITH USER_MODE to "
+            "state the intent, so the enforcement survives a later edit or apiVersion change."
+        )
+
+    if api_version is None:
+        context = (
+            f"No apiVersion could be read from {cls_file.name}-meta.xml; below API 67.0 SOQL runs "
+            "in system mode, so an unenforced query returns PHI the running user may not be "
+            "entitled to see."
+        )
+    else:
+        context = (
+            f"At apiVersion {api_version:.1f} SOQL runs in system mode, so this returns PHI the "
+            "running user may not be entitled to see."
+        )
+    return (
+        f"{cls_file.name}: @AuraEnabled method queries {clinical_obj} without FLS enforcement. "
+        f"{context} Add WITH USER_MODE to the SOQL query (API 57.0+; it replaced "
+        "WITH SECURITY_ENFORCED, removed in 67.0), or run the result through "
+        "Security.stripInaccessible(AccessType.READABLE, records).getRecords()."
+    )
+
+
 def check_apex_fls_enforcement(manifest_dir: Path) -> list[str]:
     """Check Apex classes querying clinical objects for FLS enforcement."""
     issues: list[str] = []
@@ -49,21 +154,32 @@ def check_apex_fls_enforcement(manifest_dir: Path) -> list[str]:
     if not classes_dir.exists():
         return issues
 
-    for cls_file in classes_dir.glob("*.cls"):
+    for cls_file in sorted(classes_dir.glob("*.cls")):
         content = cls_file.read_text(encoding="utf-8")
         if "@AuraEnabled" not in content:
             continue
 
+        lowered = content.lower()
+        api_version = read_api_version(cls_file)
+
+        stale_clause = describe_removed_security_clause(cls_file, lowered, api_version)
+        if stale_clause:
+            issues.append(stale_clause)
+            # That finding is the whole story for this class: below 67.0 the
+            # clause does enforce FLS, and at 67.0+ the class does not compile,
+            # so a second "add WITH USER_MODE" line is noise either way. The
+            # migration is already named in the message.
+            continue
+
+        if any(idiom in lowered for idiom in ENFORCEMENT_IDIOMS):
+            continue
+
         for clinical_obj in CLINICAL_OBJECTS:
-            if f"FROM {clinical_obj}" in content or f"FROM {clinical_obj}\n" in content:
-                if "WITH SECURITY_ENFORCED" not in content and "isAccessible" not in content:
-                    issues.append(
-                        f"{cls_file.name}: @AuraEnabled method queries {clinical_obj} without "
-                        "WITH SECURITY_ENFORCED or FLS check. "
-                        "Clinical data (PHI) requires FLS enforcement in all Apex controllers. "
-                        "Add WITH SECURITY_ENFORCED to the SOQL query."
-                    )
-                    break
+            if f"from {clinical_obj.lower()}" in lowered:
+                issues.append(
+                    describe_missing_enforcement(cls_file, clinical_obj, api_version)
+                )
+                break
     return issues
 
 

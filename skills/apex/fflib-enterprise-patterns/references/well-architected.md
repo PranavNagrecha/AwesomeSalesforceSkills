@@ -16,7 +16,7 @@
 
 **Incremental adoption vs. consistency.** You can adopt fflib one SObject at a time, but a half-adopted codebase has two query patterns, two DML patterns, and two trigger dispatch patterns. Document which SObjects are on fflib and which are not, and set a timeline for full migration.
 
-**FLS enforcement location.** Selector-level FLS enforcement (via `isEnforcingFLS()`) is the fflib-recommended approach, but it only covers Selector queries. Ad-hoc SOQL outside Selectors remains unenforced. The tradeoff is discipline: if all queries go through Selectors, FLS is centralized. If developers write SOQL outside Selectors, you need additional enforcement via `WITH SECURITY_ENFORCED` or `Security.stripInaccessible()`.
+**FLS enforcement location.** Selector-level FLS enforcement (via `isEnforcingFLS()`) is the fflib-recommended approach, but it only covers Selector queries. Ad-hoc SOQL outside Selectors falls outside it, and is then enforced only by whatever access mode its own class runs in. The tradeoff is discipline: if all queries go through Selectors, FLS is centralized. If developers write SOQL outside Selectors, enforce it with `WITH USER_MODE` on the read and `as user` on the DML — or `Security.stripInaccessible(AccessType, records).getRecords()` on writes where dropping the inaccessible fields beats throwing on the whole statement. Which idiom is available is gated by the class's `apiVersion` in its `.cls-meta.xml`, not by the org's release: at 67.0+ database operations already run in user mode by default and `WITH SECURITY_ENFORCED` no longer compiles (`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`); at 57.0–66.0 both compile and `WITH USER_MODE` is the one to write; only at ≤56.0 is `WITH SECURITY_ENFORCED` still the idiom (with `Security.stripInaccessible`, 48.0+, on writes — `as user` does not exist below 57.0), and there prefer raising the class's `apiVersion` over hardening it in place.
 
 ## Anti-Patterns
 
@@ -32,3 +32,4 @@
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Secure Apex Classes (LWC Guide) — https://developer.salesforce.com/docs/platform/lwc/guide/apex-security
+- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 — grounds the API-version gate on the FLS tradeoff note above

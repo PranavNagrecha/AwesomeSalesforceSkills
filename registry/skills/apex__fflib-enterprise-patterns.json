@@ -57,6 +57,7 @@
     "dd1777cab906e818b8de",
     "de6b14aaf52d08ecaac4",
     "e0a66e06d7574d2db5a1",
+    "e1fba23e473b2ba081ed",
     "ee5e26bb8a0e8945447d",
     "f26a4ac7c373890ca456",
     "f2e0fe8d003808161f55",
@@ -65,7 +66,7 @@
     "f8423951871d4ffbd09d",
     "f969b16a262bd0c298fa"
   ],
-  "content_hash": "869cf0ed01b194d24169a253f30cd6bb6a83f728470ce66b978141b46b0c396d",
+  "content_hash": "2feeb8a528612f021d1cb52cb915e2b4078631dd4e83124555b6c3a2b04853fd",
   "dependencies": [
     "apex-design-patterns"
   ],
@@ -82,7 +83,8 @@
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
     "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Secure Apex Classes (LWC Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security"
+    "Secure Apex Classes (LWC Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the API-version gate on the FLS tradeoff note above"
   ],
   "outputs": [
     "fflib layer wiring recommendation with Application factory configuration",

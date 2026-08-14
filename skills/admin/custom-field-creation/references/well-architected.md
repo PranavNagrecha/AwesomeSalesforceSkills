@@ -4,7 +4,7 @@
 
 - **Security** — Field-Level Security is the primary Salesforce mechanism for controlling who reads and edits specific data at the field granularity. Every custom field must have an explicit FLS design: which profiles or permission sets get Read, which get Edit, and which should have no access. Skipping FLS configuration is not a neutral default — it means all users with "View All Data" or Administrator access can read the field via API even if it is not visible in the UI. Security must be intentional, not accidental.
 
-- **Operational Excellence** — Field type decisions made at creation time cannot be undone for most types. Choosing the wrong type (Text instead of Picklist, Lookup instead of Master-Detail) creates technical debt that is expensive to correct: new field creation, data migration, update of all references in flows/apex/reports, and removal of the old field. Operational Excellence here means making deliberate, documented decisions at creation time rather than improvising and correcting later.
+- **Operational Excellence** — Field type decisions made at creation time are cheap to make and expensive to reverse. Most conversions are technically permitted, which is the trap: the documented data-losing ones destroy the stored values and take every list view built on the field with them, and any type change drops the field's lead-conversion mapping. Choosing the wrong type (Text instead of Picklist, Lookup instead of Master-Detail) creates technical debt that is expensive to correct: new field creation, data migration, update of all references in flows/apex/reports, and removal of the old field. Operational Excellence here means making deliberate, documented decisions at creation time rather than improvising and correcting later.
 
 - **Scalability** — Custom field count per object is a hard platform limit (500 in Enterprise, 800 in Unlimited/Performance). Orgs with many custom objects and fields across hundreds of integrations approach this limit. Adding a field for every one-off reporting request without a field governance process creates objects with hundreds of fields, many of which become unused over time. Field creation should be intentional and subject to a governance review for large orgs.
 
@@ -31,6 +31,7 @@
 
 - Salesforce Help — Custom Field Types: https://help.salesforce.com/s/articleView?id=sf.custom_field_types.htm
 - Salesforce Help — Custom Field Allocations (limits by edition): https://help.salesforce.com/s/articleView?id=platform.custom_field_allocations.htm
+- Salesforce Help — Considerations for Converting the Field Type of a Custom Field: https://help.salesforce.com/s/articleView?id=platform.notes_on_changing_custom_field_types.htm
 - Object Reference — sObject field concepts: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — CustomField metadata type: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

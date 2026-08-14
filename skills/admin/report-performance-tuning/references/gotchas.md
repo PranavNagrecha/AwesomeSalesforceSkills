@@ -49,3 +49,31 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any report subscription where the subscriber's sharing access is more restrictive than the report owner's or the admin's. The subscription engine runs the report as the subscriber, applying their OWD, sharing rules, and role hierarchy access. If the subscriber's scoped data set is still large enough to time out, the subscription silently fails.
 
 **How to avoid:** Always test subscriptions by running the report impersonating the subscriber (or by temporarily giving a test user the subscriber's permissions and checking results). If the subscriber's data volume is still too large, apply additional filters specific to the subscriber's context (e.g., Owner = Current User) or redesign the report to include a user-scoped filter.
+
+---
+
+## Gotcha 6: The Analytics API Refuses a 100-Column Report Outright — It Does Not Run It Slowly
+
+**What happens:** A wide "one report to rule them all" extract accumulates columns over years of requests. Once it crosses 99 columns, the Analytics API stops running it at all: the request fails with HTTP 400 and the exact message:
+
+```
+Only a report with fewer than 100 columns can be run. The columns are fields
+specified as detail columns, summaries, or custom summary formulas. Remove
+unneeded columns from the report and try again.
+```
+
+This is a hard refusal, not a degradation — no partial result, no truncation, nothing to tune.
+
+**When it occurs:** Any report at or above 100 columns run through the Analytics API, where the count sums three categories that admins rarely add together: detail columns, summaries (each Sum/Average/Max/Min toggled on a column), and custom summary formulas. A report showing 80 detail columns with Sum enabled on 25 of them is already over. Salesforce documents this as an API processing limit — "The API can process only reports that contain up to 100 fields selected as columns" — not as a report-builder allocation, so do not assume the builder blocks you before you get there.
+
+**How to avoid:** Treat 100 as a design ceiling, not a runtime surprise, and know the builder allocations that bite before it: **20 field filters per report** in the report builder (10 in the legacy report wizard), **3 cross filters per report with up to 5 subfilters each**, and **5 custom summary formulas per report** — hard-coded and not raisable by Salesforce Support, with joined reports the one exception (10 per block, 50 per report). When an extract genuinely needs more than 100 columns, it is not a report; split it by object or pull the fields directly via Bulk API 2.0 query.
+
+---
+
+## Gotcha 7: Filter Logic Governs Field Filters Only — Cross Filters Are Always ANDed
+
+**What happens:** An admin writes filter logic like `1 AND (2 OR 3)` and expects it to cover every filter on the report, including a cross filter such as "Accounts without Opportunities." The cross filter is silently excluded from the expression and applied as an unconditional AND. The report returns fewer rows than the logic implies, and the discrepancy is read as a data problem rather than a filter-scope problem.
+
+**When it occurs:** Any report combining filter logic with a cross filter. The same exclusion applies to standard report filters — per Salesforce Help, "You can't apply filter logic to standard report filters," and "Filter logic doesn't apply to cross filters." Only the numbered field filters participate.
+
+**How to avoid:** Before writing filter logic, confirm every condition it must cover is a field filter. Cross filters and standard filters (the date range and scope selectors at the top of the builder) cannot be made optional through logic — if an OR branch must include a cross-object condition, build separate reports or move the condition into a formula field that can be filtered as a field filter.

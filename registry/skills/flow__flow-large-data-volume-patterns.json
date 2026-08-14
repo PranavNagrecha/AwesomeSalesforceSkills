@@ -7,6 +7,7 @@
     "251bbea746317e3866bc",
     "25d49d1253f18bb8e29c",
     "268cb864ea1f5a72b852",
+    "26f9089a52c60a2a6dc9",
     "36343b5c577c483368b6",
     "389e5412e933567a636a",
     "3be84d948fb403f0eb57",
@@ -30,6 +31,7 @@
     "712e452c1e1a894c851b",
     "724841ee21bdd1b79e33",
     "7f252c5d011fd3465303",
+    "863b9b1a394dd187b78e",
     "87a643363396b1438718",
     "8d56637de97cd9f71fae",
     "8d8708576ca3c1413219",
@@ -56,7 +58,7 @@
     "faa1f7782e9420320c19",
     "fb2afdeb96ae0e4b0dff"
   ],
-  "content_hash": "b65f678f99ecb49fff775625e7a18e0fa565443359306927a918a21f937d12ed",
+  "content_hash": "25e0ad3b2605c6d8eb97a278321a1f37f9f70c75c76b669578b2dea52b03f3d8",
   "dependencies": [
     "flow/flow-bulkification"
   ],
@@ -75,7 +77,8 @@
     "Flow Reference \u2014 element behavior, limits, and considerations tied to Flow runtime \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
     "General Flow Limits \u2014 per-transaction Flow limits including totals that apply alongside Apex governor limits \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm&type=5",
     "Flow Considerations \u2014 additional runtime considerations for automation at scale \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations.htm&type=5",
-    "Metadata API Developer Guide \u2014 Flow metadata structure when reviewing `*.flow-meta.xml` in source control \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+    "Metadata API Developer Guide \u2014 Flow metadata structure when reviewing `*.flow-meta.xml` in source control \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Summer '26 Release Notes, *The WITH SECURITY_ENFORCED SOQL Clause Is Removed* \u2014 API-version gate for the Apex security idiom in invocable classes called from Flow (Gotcha 6) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5"
   ],
   "outputs": [
     "risk assessment against query-row and collection ceilings",

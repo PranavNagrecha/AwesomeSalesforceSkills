@@ -140,10 +140,23 @@ The Tier 3 claim is not discarded — if it describes a real-world nuance not in
 
 ```
 Example:
-  Tier 1: "WITH SECURITY_ENFORCED throws an exception if a field is inaccessible."
-  Tier 3 (Andy in the Cloud): "WITH USER_MODE is preferred in most cases because it silently strips."
-  → SKILL.md cites Tier 1 for the behavior. gotchas.md surfaces the Tier 3 nuance with tag [T3: Andy in the Cloud].
+  Tier 1: "In API version 67.0 and later, Apex runs in user context by default."
+  Tier 3 (community post): "Add WITH USER_MODE everywhere — it's the new way to be secure."
+  → SKILL.md cites Tier 1 for the behavior, and states the version gate: the
+    class's .cls-meta.xml apiVersion decides, not the org's release.
+    gotchas.md surfaces the Tier 3 practice — writing the clause explicitly is
+    still worth doing for intent — tagged [T3], while noting it is a no-op for
+    enforcement at 67.0+.
 ```
+
+Note what this example is NOT doing: it is not treating the Tier 3 claim as a
+harmless nuance. A Tier 3 source that is simply **wrong** gets corrected, not
+surfaced. The version of this example that shipped here until 2026-08-13 quoted
+"WITH USER_MODE is preferred because it silently strips" as the Tier 3 nuance to
+preserve — but user mode *throws*; `Security.stripInaccessible` is the construct
+that strips. Surfacing that in `gotchas.md` with an attribution tag would have
+propagated a false claim under the appearance of due process. Rule 3 promotes a
+real-world nuance Tier 1 omits; it does not launder an error.
 
 ### Rule 4: Tier 2 vs Tier 3
 **Tier 2 wins unless Tier 3 has a specific version/release citation.**

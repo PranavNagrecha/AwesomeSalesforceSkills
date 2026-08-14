@@ -66,13 +66,14 @@
     "e158f56d2bd25519b1db",
     "e24c2e12004254c779ac",
     "e8b3a9c87760b45fd1f2",
+    "ea42d7ec1f2553cf1b2d",
     "f19d0f3a2aab98d668b6",
     "f68773925f1cf5419c40",
     "f98448c96093d53b05cd",
     "fe1a5064e9667e9b71a4",
     "ffc4fb859e995be5b4f3"
   ],
-  "content_hash": "c0065febd45260fb390f3255c4f6c9f860b0f156496d4ebe178e1057a0f24db2",
+  "content_hash": "072a10577432f3667a55121d35c3cd5b1904f98b43d1b5c4851306643eae0a1c",
   "dependencies": [],
   "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration (use bulk-api-and-large-data-loads). NOT for record snapshots (use field-history-tracking).",
   "file_location": "skills/apex/apex-record-clone-patterns",
@@ -89,6 +90,7 @@
     "Apex Reference Guide \u2014 System.JSON Methods (serialize/deserialize):",
     "Apex Developer Guide \u2014 Roundtrip Serialization and Deserialization:",
     "Salesforce Help \u2014 Set Audit Fields upon Record Creation (permission required for `preserveReadonlyTimestamps`):",
+    "Salesforce Release Notes \u2014 The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0):",
     "Salesforce Well-Architected \u2014 Trusted (Secure):"
   ],
   "outputs": [

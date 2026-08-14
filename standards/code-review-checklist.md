@@ -8,7 +8,7 @@ Critical and High items are blockers. Medium items should be fixed before merge.
 
 ## Security — Check First, Always
 
-- [ ] **FLS on all SOQL reads** — `WITH SECURITY_ENFORCED` or `WITH USER_MODE` on every SOQL query in user-facing context
+- [ ] **FLS on all SOQL reads** — `WITH USER_MODE` on every SOQL query in user-facing context. At API 67.0+ user mode is already the default and the clause states the intent explicitly; below 67.0 it must be written. Treat `WITH SECURITY_ENFORCED` as a finding rather than a pass: it was removed in 67.0 and does not compile there, and on 57.0–66.0 it is the weaker construct (checks only the `SELECT` list, mishandles polymorphic fields, reports one violation rather than all). The class's `.cls-meta.xml` `apiVersion` is the gate, not the org's release — see [Apex security idiom by API version](../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version)
 - [ ] **FLS on all DML writes** — `Security.stripInaccessible(AccessType.UPSERTABLE, ...)` before insert/update, or `Schema.sObjectType.[Object].fields.[Field].isUpdateable()` checks
 - [ ] **No SOQL injection** — no string concatenation in dynamic SOQL; use bind variables or `String.escapeSingleQuotes()`
 - [ ] **Sharing model respected** — class declared `with sharing` for user-context operations; `without sharing` only where documented and justified; if sub-operation needs elevation, use a `private inner class without sharing`, not the entire outer class

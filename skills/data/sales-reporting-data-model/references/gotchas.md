@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Reporting Snapshot Source Report Row Cap Is Silently Enforced at 2,000 Rows
+## Gotcha 1: The Reporting Snapshot 2,000 Cap Is on Target-Object Inserts Per Run, Not on Source Report Rows
 
-**What happens:** When a Reporting Snapshot source report returns more than 2,000 rows at run time, Salesforce writes only the first 2,000 rows to the target object and does not raise a visible error in the standard UI. The snapshot run is marked as "Successful" in the run history log, but the target object contains an incomplete dataset for that day.
+**What happens:** Salesforce documents the limit as an insert cap on the target object, not a row cap on the source report: "When a reporting snapshot runs, it can add up to 2000 new records to the target object. If there are more than 2000 new records, the additional records are not recorded, and the notification indicates that some rows failed." The target object therefore contains an incomplete dataset for that day — but the platform *does* say so, in the run notification and in Run History. The failure mode is an unread partial-error notification, not a silent success.
 
-**When it occurs:** Any org where the open pipeline (scoped by the source report filters) grows past 2,000 Opportunity records. This often happens gradually — the snapshot starts working correctly when the org is small, and the silent truncation begins months or years later when the pipeline grows beyond the cap.
+**When it occurs:** Any org where the open pipeline (scoped by the source report filters) grows past 2,000 Opportunity records. This often happens gradually — the snapshot works correctly when the org is small, and truncation begins months or years later when the pipeline grows beyond the cap and nobody is reading the notifications.
 
-**How to avoid:** After each Snapshot run, query the target object for records with `Snapshot_Date__c = TODAY` and compare the count to the expected pipeline count. Build a monitoring report or scheduled alert if today's snapshot count is less than a known minimum threshold. If the source report exceeds 2,000 rows, segment it into multiple source reports (by region or record type) with separate Snapshot configurations writing to the same target object.
+**How to avoid:** Route snapshot notifications to a monitored alias, and check Run History for partial errors rather than assuming a completed run is a complete run. After each Snapshot run, query the target object for records with `Snapshot_Date__c = TODAY` and compare the count to the expected pipeline count. If a run would insert more than 2,000 new records, segment the source report into multiple views (by region or record type) with separate Snapshot configurations writing to the same target object.
 
 ---
 
@@ -49,3 +49,32 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When the user who was set as the Reporting Snapshot's Running User leaves the company or has their account deactivated. In multi-year snapshot configurations, the original Running User may have left years after the snapshot was set up.
 
 **How to avoid:** Designate a dedicated integration user or non-person admin service account as the Running User for all Reporting Snapshots. This user should not be associated with a specific employee. Monitor the Reporting Snapshot run history — build a report or monitoring flow that alerts the admin team if a run fails or produces zero records for Snapshot_Date__c = TODAY.
+
+---
+
+## Gotcha 6: Reporting Snapshot Run History Is the Only Place the Real Failure Reason Appears
+
+**What happens:** A snapshot run can fail, half-fail, or abort before the report even finishes, and each state looks different in Run History. A blank **Total Row Number** means the run failed before the report completed (for example, the report was invalid or the running user is inactive). If only the field mappings failed, the snapshot still runs and Run History records a *partial* error. The Result column carries the exact platform string, which names the cause precisely:
+
+```
+Running user does not have permission to run reports.
+Running user is inactive.
+Running user does not have permission to access source report.
+Running user does not have permission to edit target object.
+Target object has been deleted or is inaccessible to running user.
+One or more required fields on the target object are not mapped.
+```
+
+**When it occurs:** Most often after an unrelated change — a permission set removed from the service account, a report moved to a folder the running user cannot see, a required field added to the target object, or the target object made a detail in a master-detail relationship.
+
+**How to avoid:** Read the Result string before theorising. Confirm the running user has **Run Reports** (or **Create and Customize Reports**), folder access to the source report, and **Create** on the target object; confirm the account is active. Creating, saving, and scheduling snapshots at all requires the **Manage Reporting Snapshots** user permission — an admin who can run the report may still be unable to configure the snapshot.
+
+---
+
+## Gotcha 7: Turning Historical Trending Off Deletes the Data, the Report Type, and Every Report Built on It
+
+**What happens:** Historical Trending is a one-way door in the destructive direction. Turning it off for an object deletes all of that object's historical data and configuration settings, including the object's historical trending report type and any reports created with it. Turning it off for a single *field* deletes that field's historical data; if the field is then deleted, that history is gone for good even if trending is re-enabled later. Re-enabling collects forward from the moment of re-enablement — there is no restore.
+
+**When it occurs:** During org cleanup ("nobody uses this trending object"), when freeing headroom against the 5,000,000-row-per-object trending limit, or when swapping one tracked field for another to stay inside the 8-field cap. It also bites teams who toggle trending in a sandbox refresh rehearsal and assume production behaves reversibly.
+
+**How to avoid:** Treat the Historical Trending checkbox as an irreversible change with change-control approval, not a Setup toggle. Before disabling, export what is needed from the trending reports and inventory every report built on the object's historical trending report type — those reports are deleted with it, not orphaned. Because re-enabling only starts fresh collection, "we can just turn it back on" is never a valid rollback plan.

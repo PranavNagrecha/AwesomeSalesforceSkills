@@ -19,9 +19,11 @@ summary field.
 
 **Correct pattern:** the roll-up on the parent is not recalculated until
 step 16 of the child's save, long after the before-save Flow ran at
-step 3. Put logic that needs the roll-up on the parent's after-save
-flow. (Step 16 precedes the commit at step 19 — "roll-ups recalc after
-commit" is a common but incorrect gloss.)
+step 3. Read the recalculated value in a parent before or after trigger,
+not the parent's after-save Flow — the step-16 parent save is a recursive
+save, which skips steps 9–17, so step 14 never runs (see Anti-Pattern 7).
+(Step 16 precedes the commit at step 19 — "roll-ups recalc after commit"
+is a common but incorrect gloss.)
 
 ## Anti-Pattern 3: Workflow + Record-Triggered Flow On Same Field
 
@@ -90,3 +92,23 @@ Fix = single field ownership. If both must write, condition the TRIGGER
 before trigger. Flag any claim that the two share step 3. Flag any total
 step count other than 20, or after-save Flows placed anywhere but step 14
 (step 15 is the most common stale value; step 15 is now entitlement rules).
+
+## Anti-Pattern 7: Claim A Cascading Parent Save Runs The Full Order
+
+**What the LLM generates:** "the roll-up updates the parent, and the
+parent then goes through the complete order of execution" — so the
+design routes the reaction to the parent's after-save Flow.
+
+**Why it happens:** the docs really do say "Parent record goes through
+save procedure" at step 16, and the model completes that phrase to "all
+20 steps". The exclusion sits in a Note box above the list, not in the
+step text.
+
+**Correct pattern:** "During a recursive save, Salesforce skips steps 9
+(assignment rules) through 17 (roll-up summary field in the grandparent
+record)." After-save Flows are step 14, so the parent's after-save Flow
+does not run — silently, with no error.
+
+**Detection hint:** flag any claim that a cascading parent or
+grandparent save runs assignment rules, workflow rules, after-save
+Flows, entitlement rules, or its own roll-ups.

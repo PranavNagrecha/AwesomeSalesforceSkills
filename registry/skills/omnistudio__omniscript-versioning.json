@@ -3,6 +3,7 @@
   "chunk_ids": [
     "01a8a92826e23d7bd571",
     "08ee97f2bd481c335e7b",
+    "0a33907a7049b76fc4a0",
     "170297f24fe59430e91c",
     "1ce2ef6203e51a6c5dbe",
     "1e8f9e28d7775c4e01fc",
@@ -29,6 +30,7 @@
     "8e92cc755255e67cae14",
     "9066804d86facf6b6b26",
     "9b2f9c3315942c36ef37",
+    "a590963e3b0113f9a69a",
     "a59f55595b38d7dc7cca",
     "a5b087aa6f3c81dc0855",
     "a5b2fb2482cfe280abaa",
@@ -42,6 +44,7 @@
     "bf3da0c644f401d41433",
     "bf7af63cc0d079179e9f",
     "c7fe78593102faa01840",
+    "ce6155c6dfc3964f50f3",
     "d2e7a69a42e17c66f80a",
     "d890d108c57fd79a0ccc",
     "d901f82e017b8cba597d",
@@ -54,7 +57,7 @@
     "f91202debc0526950d2a",
     "ff5c740323c6ff262c0e"
   ],
-  "content_hash": "66386d3f6c4b14c5e332c145f3cc1a260b4cb8641ff49dea55b810a17c5d6448",
+  "content_hash": "77e846097e5be48fc04328305b68c04627cc97765f0a87bdc919a8fc737093c4",
   "dependencies": [],
   "description": "Use when managing OmniScript versions: activating new versions, deactivating prior versions, testing a specific version before activation, rolling back to a previous version, or understanding version identity (Type/Subtype/Language triplet). NOT for OmniStudio deployment or DataPack migration (use omnistudio/omnistudio-deployment-datapacks).",
   "file_location": "skills/omnistudio/omniscript-versioning",
@@ -68,7 +71,9 @@
   "official_sources": [
     "OmniStudio Developer Guide (Version Management) \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_versioning.htm&type=5",
     "OmniStudio Activate and Launch OmniScripts \u2014 https://help.salesforce.com/s/articleView?id=sf.os_activate_omniscript.htm&type=5",
-    "OmniStudio DataPack Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.os_datapacks.htm&type=5"
+    "OmniStudio DataPack Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.os_datapacks.htm&type=5",
+    "Clone a Flexcard or Create a New Version \u2014 https://help.salesforce.com/s/articleView?id=xcloud.os_flexcards_versioning_and_cloning_42243.htm&type=5",
+    "Activate and Publish a Flexcard \u2014 https://help.salesforce.com/s/articleView?id=sf.os_activateconfigureand_publish_flexcards_24744.htm&type=5"
   ],
   "outputs": [
     "Activation checklist for the target version",

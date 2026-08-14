@@ -82,15 +82,17 @@ public with sharing class MyPageService {
 
     @AuraEnabled(cacheable=true)
     public static SnapshotDto getSnapshot(Id accountId) {
-        // implementation with WITH SECURITY_ENFORCED
+        // implementation — SOQL with WITH USER_MODE
     }
 
     @AuraEnabled
     public static Id save(Account record) {
-        // implementation
+        // implementation — Security.stripInaccessible(...).getRecords() before DML
     }
 }
 ```
+
+> Record the new class's `.cls-meta.xml` `apiVersion` here: `__________`. That value, not the org's release, picks the read idiom — `WITH USER_MODE` at 57.0+, and at 67.0+ the `WITH SECURITY_ENFORCED` clause the old controller may have used no longer compiles.
 
 ---
 

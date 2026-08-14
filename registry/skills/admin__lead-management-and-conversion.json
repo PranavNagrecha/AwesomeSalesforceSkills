@@ -11,6 +11,7 @@
     "120f2491654dc53a5e40",
     "1351552c2717ceb76cc7",
     "13a93ad927c9fa9b224f",
+    "1424b5a169694888bc6c",
     "1a576d714d722d82e88c",
     "1d42abc9638ca726cf96",
     "23b202d98e81bcf229cf",
@@ -21,6 +22,7 @@
     "3055334eb56501db949c",
     "31c7fe765f787ea11679",
     "322297e691c94758af38",
+    "35319df2f90a8a1c9574",
     "3d2654dacaca19bd124b",
     "3f4104e2ced64694ddc1",
     "43ba0b08126e8b2fa643",
@@ -37,6 +39,7 @@
     "5b1f737a27fb2513be0c",
     "5f6b7cf753f8e28808a0",
     "62140c8edbb40111942c",
+    "65d35671174d7374b190",
     "68ef4d5d02534da000d7",
     "70a9d01c0527aa4bc298",
     "7391adec6ff7edc4df64",
@@ -48,17 +51,21 @@
     "82cd5e28ff9667952156",
     "85c73c9c09f5baae2c41",
     "85f919b41fa7e8436ebd",
+    "891f94dec54e765dc163",
     "89694ab5e476c04ad46b",
     "95bec9fb1f59f5401350",
     "a38c566cebf3ccaf28e1",
+    "a7fbf682eb3742188ffd",
     "a89d7514daa03b62166d",
     "a8fe0762eeb3ea98d2cf",
+    "aa02dd3f9639cf483b83",
     "ad2f46c28e9d97d008f5",
     "b1f7b464d1fb17a99e69",
     "bced8c43768ec6d34688",
     "c68b9b78c12d6f37d5ad",
     "c7ab629eaef7f47cc37f",
     "cab17f873c323bb61d3d",
+    "cca38beefd9a4dd7575b",
     "ceec9369681c10c4b729",
     "d15257e42116c0a4f7b7",
     "d41772fa24adadaeb68a",
@@ -80,7 +87,7 @@
     "fd647acafa39554283b4",
     "fefac2a9a21dd6228d80"
   ],
-  "content_hash": "b3fcf7fa8ed1374cc8eabe15b2669ffb35cc85a2a0047ffa43d07b8c5ad38bfb",
+  "content_hash": "07329bc29edaa3546c74d39fb4f69cf707001ec80541048e822fcbf8542ca783",
   "dependencies": [],
   "description": "Configuring Salesforce lead management and conversion: lead settings, web-to-lead, conversion field mapping, lead queues, auto-response rules, lead processes. Use when setting up lead capture, routing, or conversion for Sales Cloud. Trigger keywords: web-to-lead, lead conversion, lead field mapping, lead settings, lead process, lead queue, lead auto-response. NOT for lead assignment rule logic (use assignment-rules). NOT for duplicate rule configuration (use data-quality-and-governance).",
   "file_location": "skills/admin/lead-management-and-conversion",
@@ -99,7 +106,11 @@
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Help: Lead Conversion Field Mapping \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_leadconv.htm",
     "Salesforce Help: Web-to-Lead \u2014 https://help.salesforce.com/s/articleView?id=sf.setting_up_web-to-lead.htm",
-    "Salesforce Help: Lead Auto-Response Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_leadautoresponse.htm"
+    "Salesforce Help: Lead Auto-Response Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_leadautoresponse.htm",
+    "Salesforce Help: Considerations for Converting Leads \u2014 https://help.salesforce.com/s/articleView?id=sales.leads_notes.htm&type=5",
+    "Salesforce Help: Validation rule not firing when converting Leads \u2014 https://help.salesforce.com/s/articleView?id=000386058&type=1",
+    "Salesforce Help: Enable Use Apex Lead Convert for Validation Rules \u2014 https://help.salesforce.com/s/articleView?id=000386851&type=1",
+    "Salesforce Help: Resolving Common Lead Conversion Errors in Salesforce \u2014 https://help.salesforce.com/s/articleView?id=000383660&type=1"
   ],
   "outputs": [
     "Configured web-to-lead form HTML with correct org ID and return URL",
@@ -129,7 +140,7 @@
   "templates": [
     "skills/admin/lead-management-and-conversion/templates/lead-management-and-conversion-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-13",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

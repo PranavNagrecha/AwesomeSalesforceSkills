@@ -128,7 +128,7 @@ Flow design (Screen Flow):
 6. **End:** User proceeds to org.
 
 ```apex
-public class UpdateTermsAcceptance {
+public without sharing class UpdateTermsAcceptance {
 
     @InvocableMethod(label='Update Terms Acceptance' description='Sets terms version and date on User record')
     public static void updateTerms(List<TermsInput> inputs) {
@@ -138,8 +138,13 @@ public class UpdateTermsAcceptance {
             Terms_Accepted_Version__c = input.termsVersion,
             Terms_Accepted_Date__c = Date.today()
         );
-        // Must run without sharing — Login Flow User lacks standard update permission
-        update u;
+        // Login Flow User lacks standard update permission, so both axes are stated
+        // explicitly: `without sharing` on the class (never by omitting the keyword —
+        // at apiVersion 67.0+ a class with no keyword runs `with sharing`), and the
+        // write mode here, because at 67.0+ DML defaults to user mode. `as system`
+        // compiles from 57.0 up; below 67.0 it restates the default rather than
+        // changing it.
+        update as system u;
     }
 
     public class TermsInput {
@@ -152,7 +157,7 @@ public class UpdateTermsAcceptance {
 }
 ```
 
-**Why it works:** The flow checks the user's acceptance status before displaying any screen, so returning users experience zero additional login latency. The Apex action runs in system context to bypass the Login Flow User's limited permissions. Storing the terms version in Custom Metadata makes version bumps deployable without a flow change.
+**Why it works:** The flow checks the user's acceptance status before displaying any screen, so returning users experience zero additional login latency. The Apex action declares `without sharing` and states `as system` on the DML, so it bypasses the Login Flow User's limited permissions on both axes — record sharing and FLS / object permissions — whether the class is saved at 66.0 or at 67.0+, where those two defaults inverted. Storing the terms version in Custom Metadata makes version bumps deployable without a flow change.
 
 ---
 

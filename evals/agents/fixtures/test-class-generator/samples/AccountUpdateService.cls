@@ -21,7 +21,7 @@ public with sharing class AccountUpdateService {
             SELECT Id, Name, AnnualRevenue, Tier__c
             FROM Account
             WHERE Id IN :accountIds
-            WITH SECURITY_ENFORCED
+            WITH USER_MODE
         ];
 
         for (Account a : targets) {

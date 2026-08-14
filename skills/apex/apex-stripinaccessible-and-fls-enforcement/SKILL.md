@@ -47,7 +47,9 @@ Activate when Apex code accepts records from a less-privileged context (LWC, Aur
 - Confirm the records are user-supplied. Internal trusted-context data (e.g., trigger handler reading from the trigger context with `without sharing`) does not need stripInaccessible.
 - Decide the AccessType: are you reading, creating, updating, or upserting? The wrong enum will silently strip the wrong fields.
 - Confirm the calling class's sharing keyword. `with sharing` enforces record visibility; stripInaccessible enforces FIELD visibility. Both are needed for full enforcement.
-- If the SOQL itself is fetching records to return to a less-privileged caller, prefer `WITH USER_MODE` (Summer '23+) on the query and skip a redundant strip pass.
+- Read the `apiVersion` in the class's `.cls-meta.xml` before judging what the surrounding code already enforces — that value is the gate, not the org's release. At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode and a class with no sharing keyword runs `with sharing`; at 66.0 and earlier both defaulted the other way, so a class pinned to 58.0 in a Summer '26 org keeps the old behaviour. Canonical table: [`agents/_shared/AGENT_CONTRACT.md` → Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version). Either way `Security.stripInaccessible` is unaffected — it evaluates the running user's FLS at every version.
+- Apex **triggers** are the exception at every API version: a trigger body runs in system mode, cannot declare a sharing or access mode, and bypasses sharing, FLS and object permissions. The 67.0 default-user-mode change does not reach it. Delegate to a handler class where the keyword and access level can be set.
+- If the SOQL itself is fetching records to return to a less-privileged caller, prefer `WITH USER_MODE` (Spring '23 / API 57.0+) on the query and skip a redundant strip pass.
 
 ---
 
@@ -99,7 +101,7 @@ The single most common bug is calling `insert userSupplied;` after the strip —
 | Querying records to return/manipulate as the running user | `WITH USER_MODE` on the SOQL itself |
 | DML on records assembled from user input (e.g., REST body) | `stripInaccessible(CREATABLE/UPDATABLE/UPSERTABLE, ...)` |
 | Apex constructed records, no SOQL involved | `stripInaccessible` |
-| Backwards compat to API 47 or earlier | `WITH SECURITY_ENFORCED` (legacy) |
+| Class pinned to API 47 or earlier | `WITH SECURITY_ENFORCED` (legacy — removed in 67.0, does not compile there) |
 | Need granular per-field reporting (which fields were removed) | `stripInaccessible` (USER_MODE throws, doesn't strip) |
 
 Rule of thumb: `WITH USER_MODE` is THROW-on-inaccessible, `stripInaccessible` is REMOVE-and-continue. Pick based on whether silent partial success is acceptable.
@@ -143,7 +145,7 @@ if (!Schema.sObjectType.Account.fields.AnnualRevenue.isCreateable()) {
 
 ### Testing with System.runAs
 
-Tests run as the system user by default — FLS is bypassed. To prove stripInaccessible actually strips, create a non-admin user with limited permissions and wrap your test in `System.runAs(testUser)`. Without `runAs`, your strip call returns the input unchanged and your test passes for the wrong reason.
+Without `runAs`, test code runs as whoever is running the test — normally an admin holding every field permission — so the strip returns the input unchanged and the test passes for the wrong reason. (Below API 67.0 the class also ran in system mode by default; at 67.0+ database operations default to user mode. Neither changes `stripInaccessible`, which evaluates the running user's FLS either way.) To prove it actually strips, create a non-admin user with limited permissions and wrap the assertion in `System.runAs(testUser)`.
 
 ---
 
@@ -180,7 +182,7 @@ Tests run as the system user by default — FLS is bypassed. To prove stripInacc
 | Upsert from a user-supplied list | `stripInaccessible(UPSERTABLE, ...)` | Intersects creatable AND updatable |
 | Internal trigger handler updating fields the running user can edit anyway | Skip — not user-supplied | stripInaccessible cost not justified |
 | Need to know WHICH fields got removed for audit | `stripInaccessible` + `getRemovedFields()` | USER_MODE throws, gives no per-field detail |
-| Running on API < 48 | `WITH SECURITY_ENFORCED` | stripInaccessible introduced in API 45, USER_MODE in 58 |
+| Class pinned below API 48 | `WITH SECURITY_ENFORCED` | `stripInaccessible` needs 48.0+, `WITH USER_MODE` needs 57.0+. Never emit `WITH SECURITY_ENFORCED` into a 67.0+ class — it was removed and fails to compile |
 
 ---
 
@@ -191,7 +193,7 @@ Tests run as the system user by default — FLS is bypassed. To prove stripInacc
 3. Replace the raw DML on the input list with DML on `Security.stripInaccessible(type, input).getRecords()`. Capture the decision in a local variable so you can also call `getRemovedFields()`.
 4. Strip child collections separately if relationships are populated — parent strip does NOT recurse.
 5. Log `getRemovedFields()` (or surface as a warning to the caller) so silent stripping is observable.
-6. Add a test under `System.runAs(nonAdminUser)` that proves a restricted field IS stripped. The same test under default system context should be a no-op.
+6. Add a test under `System.runAs(nonAdminUser)` that proves a restricted field IS stripped. The same test with no `runAs` — running as the privileged test user — should be a no-op.
 7. Run `python3 scripts/check_apex_stripinaccessible_and_fls_enforcement.py` over the changed `.cls` files to catch the "stripped-then-DML-on-original" mistake.
 
 ---
@@ -213,7 +215,7 @@ Tests run as the system user by default — FLS is bypassed. To prove stripInacc
 
 1. **DML on the original list silently bypasses the strip.** `stripInaccessible(...).getRecords()` returns a NEW list. Calling `insert userSupplied;` after the strip line does nothing — the strip's effect is in `getRecords()`.
 2. **Subquery child records ARE stripped — separately queried records are not.** The documented worked example strips `Contact.Phone` from the child rows of `SELECT Name, (SELECT LastName, Phone FROM Contacts) FROM Account`, so a strip on the parent collection does cover children returned inside it. What it cannot cover is any record obtained by a *different* query or traversal; strip those at their own query site. The supported traversal depth is not documented — do not design around an assumed limit.
-3. **Tests pass under system context regardless of FLS.** Without `System.runAs(nonAdminUser)`, every field is accessible and your strip call is a no-op — the test proves nothing.
+3. **Tests pass regardless of FLS unless you supply a restricted user.** Without `System.runAs(nonAdminUser)` the running user is the admin executing the test, so every field is accessible and your strip call is a no-op — the test proves nothing. Unchanged at 67.0+, where user mode still enforces that same unrestricted user's permissions.
 4. **`AccessType.UPSERTABLE` is the intersection of CREATABLE and UPDATABLE.** A field accessible for create but not update gets stripped on UPSERTABLE — this is correct behavior for upsert but surprising if you expected union semantics.
 5. **`SObjectAccessDecision` is immutable.** You cannot mutate `getRecords()` results and have those changes reflect anywhere; call DML directly on the returned list.
 

@@ -33,9 +33,9 @@ outputs:
   - Per-query override plan using WITH USER_MODE where appropriate
   - Reviewer checklist confirming inherited-method risks are handled
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-13
 ---
 
 # Apex With / Without / Inherited Sharing Decision
@@ -73,24 +73,28 @@ Gather this context before deciding:
 
 ### The three keyword choices
 
-`with sharing` / `without sharing` / `inherited sharing` differ on **whose** sharing rules apply to direct SOQL queries. Field-Level Security and CRUD are a separate enforcement concern (`Security.stripInaccessible`, `WITH SECURITY_ENFORCED`, `WITH USER_MODE`) and are **not** controlled by these keywords.
+`with sharing` / `without sharing` / `inherited sharing` differ on **whose** sharing rules apply to direct SOQL queries. Field-Level Security and CRUD are a separate enforcement concern (`WITH USER_MODE`, `Security.stripInaccessible`; `WITH SECURITY_ENFORCED` only on classes at API ≤ 66.0 — it is removed in 67.0 and does not compile there) and are **not** controlled by these keywords.
 
 | Keyword | Sharing applied to direct SOQL | Default for what entry points | When to use |
 |---|---|---|---|
 | `with sharing` | Running user's sharing rules enforced; invisible records filtered out | `@AuraEnabled`, `@RemoteAction`, `@RestResource` (must default here) | Any user-facing entry point unless you have a documented elevation reason |
-| `without sharing` | Sharing ignored; class runs in system context | None — never a safe default | Audit aggregation, approval routing, compliance scrubbing — deliberate elevation only |
+| `without sharing` | Running user's sharing rules ignored for this class's own queries | None — never a safe default | Audit aggregation, approval routing, compliance scrubbing — deliberate elevation only |
 | `inherited sharing` | Adopts the **caller's** mode; **defaults to `with sharing`** when called directly from Lightning/REST/Aura | Reusable utilities, selectors, base service classes | Shared service/selector code that should respect whatever the entry point demanded |
+
+`without sharing` is a record-visibility keyword, not a blanket system context. It does not turn off FLS or CRUD — and at API 67.0+ database operations enforce the running user's FLS and object permissions by default with no keyword at all, so an elevation that genuinely needs them off states it per statement (`WITH SYSTEM_MODE`, `AccessLevel.SYSTEM_MODE`).
 
 ### Sharing is inherited through method calls
 
-The sharing mode of the **outermost** class on the call stack governs the
-queries inside any callees that did not declare a keyword themselves. A
-class that explicitly declares `with sharing` keeps its own mode no
-matter who calls it. The corollary: if you author a `with sharing`
-controller that calls into a service class with no keyword, the service
-runs `with sharing` — but if a different `without sharing` controller
-calls the same service, the service runs `without sharing`. Always
-declare an explicit keyword on shared service / selector layers.
+A class that explicitly declares `with sharing` keeps its own mode no
+matter who calls it. What a **bare** callee does depends on its own
+`apiVersion` (see "Bare class behavior" below): at **API ≤ 66.0** the
+outermost class on the call stack governs it, so a `with sharing`
+controller makes the bare service run `with sharing` while a `without
+sharing` controller makes the same service run `without sharing`. At
+**API 67.0+** the bare callee no longer follows the caller down — it runs
+`with sharing` on its own. Either way the callee's behavior is decided
+somewhere other than its source, so always declare an explicit keyword on
+shared service / selector layers.
 
 ### Where `inherited sharing` fits
 
@@ -101,15 +105,29 @@ also do not want to be ambiguous about it." It also produces a safe
 default (with sharing) when called from Lightning / REST entry points —
 unlike a bare class with no keyword.
 
-### Bare class (no keyword) behavior
+### Bare class (no keyword) behavior — version-gated
 
-A class with no sharing keyword is **not equivalent to `with sharing`**.
-Historically it ran effectively as `without sharing`. Since API v34, when
-called from a Lightning context (`@AuraEnabled`, `@RemoteAction`) it runs
-as `with sharing`, but in many other contexts (called from a `without
-sharing` class, anonymous Apex, some legacy entry points) it still runs
-as `without sharing`. **Never ship a bare class** — always pick one of
-the three keywords explicitly so reviewers can audit intent.
+The bare-class default inverted in Summer '26. The gate is the
+**`apiVersion` in the class's own `.cls-meta.xml`**, not the org's
+release — a Summer '26 org runs a class pinned to 58.0 with the old
+behavior.
+
+- **API 67.0+** — a class with no keyword runs `with sharing`,
+  regardless of who called it. The rule reaches across a call chain: once
+  any class in the chain is saved at 67.0+, the chain from there runs
+  `with sharing` — a bare 67.0 callee is not pulled down to `without
+  sharing` by a `without sharing` caller.
+- **API ≤ 66.0** — a bare class is **not** equivalent to `with sharing`;
+  it ran effectively as `without sharing`, except when called from a
+  Lightning context (`@AuraEnabled`, `@RemoteAction`), which has run it
+  `with sharing` since API v34.
+
+**Never ship a bare class at either version** — pick one of the three
+keywords explicitly so reviewers can audit intent, and so an `apiVersion`
+bump cannot silently flip a class that needs elevation into enforcing
+sharing. Canonical version table:
+[`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md)
+§ *Apex security idiom by API version*.
 
 ### Interaction with `WITH USER_MODE`
 
@@ -184,7 +202,7 @@ integration user can silently miss records and cause incomplete jobs.
 | `@RestResource` exposed to a community / partner | `with sharing` | External caller authenticates as a user |
 | Reusable selector / service / domain class | `inherited sharing` | Caller chooses; you remain neutral |
 | Batch / Schedulable system job | `without sharing` + `// reason:` | Cross-perimeter aggregation |
-| Trigger handler | `without sharing` (typical) | Triggers run in system context already; explicit keyword removes ambiguity |
+| Trigger handler | `without sharing` (typical) | The trigger body runs in system mode at **every** API version — 67.0 does not change that; the handler's keyword governs only the handler's own queries |
 | Site / guest user controller | `with sharing` (mandatory for guest) | Guest perimeter must not be elevated |
 | Managed-package internal class | `without sharing` (Salesforce-enforced) | Subscriber's keyword cannot override package |
 | One-off elevated query inside a `with sharing` class | keep class `with sharing`, use `WITH SYSTEM_MODE` per-query | Minimum-blast-radius elevation |
@@ -207,7 +225,7 @@ When this skill activates, the agent runs these steps in order:
 
 ## Review Checklist
 
-- [ ] Every class in scope has an explicit sharing keyword (no bare classes)
+- [ ] Every class in scope has an explicit sharing keyword (no bare classes) — at API 67.0+ the bare default is `with sharing`, which is safe but hides intent and flips on an `apiVersion` change
 - [ ] All `@AuraEnabled` and `@RestResource` classes are `with sharing`
 - [ ] Every `without sharing` class has a `// reason:` comment above it
 - [ ] Reusable service / selector classes use `inherited sharing`
@@ -221,16 +239,21 @@ When this skill activates, the agent runs these steps in order:
 ## Salesforce-Specific Gotchas
 
 1. **Sharing is inherited through method calls.** A `with sharing`
-   controller that calls a `without sharing` helper executes that helper
-   in system context — the helper's keyword wins for queries it makes
-   itself. Reviewers must trace the call tree, not just the entry point.
+   controller that calls a `without sharing` helper runs that helper's
+   own queries with the running user's sharing rules ignored — the
+   explicit keyword wins over the caller at every API version. Reviewers
+   must trace the call tree, not just the entry point.
 2. **Managed-package classes always run `without sharing` regardless of
    subscriber.** When a subscriber org calls a managed-package
    `@AuraEnabled` class, the package's declared keyword is enforced; the
    subscriber cannot tighten it.
-3. **Triggers run in system context** by default. The trigger body itself
-   is system; the trigger handler class keyword determines what queries
-   inside it do. Always declare an explicit keyword on the handler.
+3. **Triggers run in system mode at every API version.** The 67.0
+   default-mode change does not reach the trigger body: it bypasses
+   sharing, FLS, and object permissions, and a `.trigger` file cannot
+   carry a class-level sharing keyword. Per-statement enforcement still
+   works inside a trigger (`WITH USER_MODE` on its SOQL, `as user` /
+   `AccessLevel.USER_MODE` on its DML) — but the default is system mode,
+   so delegate to a handler class and declare an explicit keyword there.
 4. **Aggregate queries (`SUM`, `COUNT`, `AVG`) respect class sharing.**
    A `with sharing` class running `SELECT COUNT() FROM Opportunity` only
    counts opportunities the user can see — surprising for dashboards.

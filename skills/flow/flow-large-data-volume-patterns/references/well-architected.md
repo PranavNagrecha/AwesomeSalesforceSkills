@@ -27,3 +27,4 @@
 - General Flow Limits — per-transaction Flow limits including totals that apply alongside Apex governor limits — https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm&type=5
 - Flow Considerations — additional runtime considerations for automation at scale — https://help.salesforce.com/s/articleView?id=sf.flow_considerations.htm&type=5
 - Metadata API Developer Guide — Flow metadata structure when reviewing `*.flow-meta.xml` in source control — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Summer '26 Release Notes, *The WITH SECURITY_ENFORCED SOQL Clause Is Removed* — API-version gate for the Apex security idiom in invocable classes called from Flow (Gotcha 6) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5

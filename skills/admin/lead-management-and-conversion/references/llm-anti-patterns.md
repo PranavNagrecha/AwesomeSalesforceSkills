@@ -139,3 +139,26 @@ Lead is created and no admin notification is generated.
 ```
 
 **Detection hint:** Any web-to-lead form HTML with `name` values using underscores or human-readable labels for custom fields (rather than 15–18 character Salesforce IDs beginning with `00N`) is using incorrect field names that will be silently ignored by Salesforce.
+
+---
+
+## Anti-Pattern 7: Asserting That Validation Rules Always Fire on Lead Conversion
+
+**What the LLM generates:** "Validation rules run on every DML operation, including lead conversion, so a required-field validation rule on Contact will block any conversion that leaves the field blank."
+
+**Why it happens:** "Validation rules fire on insert and update" is a true general statement that gets over-generalized. Lead conversion is a distinct platform operation with its own opt-in enforcement switch, and that switch is off in a brand-new org — a nuance rarely stated alongside the general rule in training data. The resulting answer produces a compliance design with an unremarked hole that the admin only discovers during an audit.
+
+**Correct pattern:**
+
+```
+Lead conversion does NOT enforce validation rules or universally required custom
+fields on the Account, Contact, Opportunity, or Task it creates unless
+"Require Validation for Converted Leads" is checked on the Lead Settings page.
+While it is unchecked, Salesforce also ignores lookup filters when converting leads.
+
+If that checkbox is missing from Lead Settings, the org needs the
+"Use Apex Lead Convert" permission enabled through a Salesforce Support
+activation request before the checkbox appears.
+```
+
+**Detection hint:** Flag any answer that builds a compliance or data-quality control out of validation rules on Account, Contact, Opportunity, or Task when Leads are in scope but never names "Require Validation for Converted Leads". Also flag the phrasings "validation rules always run", "fires on every DML", and "conversion is just an insert" in a Lead context.

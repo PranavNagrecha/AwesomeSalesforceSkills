@@ -54,6 +54,8 @@ Activate when designing a new parent-child relationship or reviewing an existing
 
 Child record is owned by parent: inherits sharing, cascade-deletes, allows roll-up summary fields on parent. A child cannot exist without a parent. Converting master-detail → lookup is possible only when no orphans exist and no roll-ups reference the field. Max 2 master-detail relationships per object.
 
+When an object carries two (the junction-object shape), the two parents are **not interchangeable**: one is primary and one is secondary, recorded in the field's Metadata API `relationshipOrder` (`0` = primary, `1` = secondary; always `0` on a non-junction master-detail). The `CustomField` reference states that designation "affects delete behavior and inheritance of look and feel, and record ownership for junction objects" — a design decision, not a cosmetic one. Settle which parent should govern the junction's ownership and deletion, and set `relationshipOrder` deliberately.
+
 ### Lookup
 
 Independent child record; keeps its own owner and sharing. Deletion behavior configurable: "Clear the value of this field" (default), "Don't allow deletion of the parent if a child exists" (restrict), or "Delete this record also" (cascade — requires specific config). No native roll-up summary.
@@ -111,6 +113,7 @@ When master-detail is not viable, use a trigger-framework-based rollup (e.g., De
 - [ ] Relationship field count under 40 on child object
 - [ ] Roll-up summaries planned where needed
 - [ ] Sharing impact analyzed (especially for master-detail)
+- [ ] On an object with two master-details, `relationshipOrder` names the intended parent as primary
 - [ ] SOQL path depth under 5 levels for queries traversing this relationship
 - [ ] Data model diagram updated
 

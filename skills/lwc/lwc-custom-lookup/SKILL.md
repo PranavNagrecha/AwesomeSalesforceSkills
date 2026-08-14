@@ -26,7 +26,7 @@ inputs:
   - "Whether selection is single or multi-select"
 outputs:
   - "LWC component template + JS controller with debounced search"
-  - "Cacheable Apex method using SOSL or SOQL with WITH SECURITY_ENFORCED"
+  - "Cacheable Apex method using SOSL or SOQL with WITH USER_MODE"
   - "Pill/chip rendering pattern for selected record(s)"
 dependencies: []
 version: 1.0.0
@@ -67,7 +67,10 @@ broken even when it works.
 2. **Design the Apex search.** Use SOSL for multi-object,
    short-string queries (`FIND :term IN ALL FIELDS RETURNING ...`).
    Use SOQL with `LIKE` only for single-object, indexed-field
-   matches. Both with `WITH SECURITY_ENFORCED` and `@AuraEnabled(cacheable=true)`.
+   matches. Both with `WITH USER_MODE` and
+   `@AuraEnabled(cacheable=true)`. `WITH USER_MODE` is GA from API
+   57.0; the clause it replaces, `WITH SECURITY_ENFORCED`, no
+   longer compiles at 67.0+ (Summer '26).
 3. **Debounce the search by 250-300ms.** Use `setTimeout` /
    `clearTimeout` in the input's `oninput` handler. Without
    debounce, every keystroke fires a callout — exhausting Apex CPU

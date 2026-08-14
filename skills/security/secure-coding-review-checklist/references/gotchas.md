@@ -12,11 +12,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Apex Triggers Default to without sharing When No Keyword Is Declared
+## Gotcha 2: Apex Triggers Always Run in System Mode — at Every API Version
 
-**What happens:** An Apex trigger that omits the sharing keyword entirely runs in system context — equivalent to `without sharing`. This means the trigger can read and modify all records regardless of the running user's sharing rules. Developers often assume triggers inherit the calling context, but they do not.
+**What happens:** A trigger body runs in system context, reading and modifying all records regardless of the running user's sharing rules, FLS, or object permissions. A trigger cannot declare a sharing or access mode: there is no keyword to omit. Developers often assume triggers inherit the calling context, but they do not.
 
-**When it occurs:** Every trigger execution where the developer did not explicitly declare `with sharing` or `without sharing`. The Salesforce Code Analyzer flags this as a security finding, and the AppExchange security review team requires explicit justification for any code running without sharing enforcement.
+**When it occurs:** Every trigger execution, at every API version. Do not generalise the Summer '26 / API 67.0 change to triggers — a 67.0+ class defaults to user mode and a bare 67.0+ class defaults to `with sharing`, but a 67.0+ trigger body is still system mode and still bypasses everything. The Salesforce Code Analyzer flags SOQL and DML in the trigger body, and the AppExchange security review team requires explicit justification for any code running without sharing enforcement.
 
 **How to avoid:** Always declare an explicit sharing keyword on trigger handler classes. If the trigger legitimately needs system-level access (e.g., cross-object rollup calculations), document the justification in a code comment and be prepared to explain it during the security review. Move business logic out of the trigger body into a handler class that declares `with sharing`.
 

@@ -12,9 +12,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Successful Deployment Leaves the Site in Unpublished Draft Status
+## Gotcha 2: Successful Deployment Leaves the Site Unpublished at `UnderConstruction`
 
-**What happens:** After a fully successful ExperienceBundle deployment — no errors, deployment status shows Succeeded — end users report they cannot access the site, or the site URL shows a "Site Under Construction" page. The deployment completed correctly, but the site remains in **Draft** status until an admin manually publishes it.
+**What happens:** After a fully successful ExperienceBundle deployment — no errors, deployment status shows Succeeded — end users report they cannot access the site, or the site URL shows a "Site Under Construction" page. The deployment completed correctly, but it did not publish. A site that has never been published stays at `Network.Status = UnderConstruction` (Setup label **Preview**); a target site that was already published stays at `Live` and keeps serving its previously published version, so the deployed changes are invisible to members. Either way, an admin must publish.
 
 **When it occurs:** Every ExperienceBundle deployment, regardless of whether the site was Published in the source org. Publishing status is not transferred as part of the deployment. This catches teams off guard on the first production deployment and on every subsequent deployment if publishing is not included in the release runbook.
 
@@ -49,3 +49,19 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** On every ExperienceBundle deployment when the Guest User Profile has been modified in the source org. Teams frequently overlook this because the Profile is not visually grouped with the Experience Cloud site components in the Setup UI.
 
 **How to avoid:** Always retrieve the site's Guest User Profile explicitly and include it as a `Profile` component in the deployment package (as a separate deploy step). The Guest User Profile can be identified by its naming convention: `[SiteName] Profile`. After deployment, manually verify object permissions, FLS, Apex class access, and connected app settings on the Guest User Profile in the target org.
+
+---
+
+## Gotcha 6: `Network.Status` API Values Are Not the Labels Setup Shows, and a Site Cannot Be Created or Deleted Through the Data API
+
+**What happens:** A post-deploy smoke test or release-window script writes the status it sees in Setup, and the DML fails against a restricted picklist. `Network.Status` accepts exactly three API values, none of which matches its label:
+
+- `Live` — "The site is online and members can access it. Label is Published."
+- `UnderConstruction` — "The site hasn't yet been published." Only users whose profile is associated with the site and who hold the **Create and Set Up Experiences** permission can reach it. Label is Preview. This value is one-way: "After a site is published, it can never be in this status again."
+- `DownForMaintenance` — previously published, now taken offline. Members with **Create and Set Up Experiences** keep setup access; the site still appears to members in the dropdown as `SiteName (Offline)`. Label is Offline.
+
+`Published`, `Active`, and `Draft` are not values. Separately, the `Network` sObject's supported calls are `describeSObjects()`, `query()`, `retrieve()`, and `update()` only — there is no `create()` or `delete()`, so a site cannot be provisioned or removed through the data API.
+
+**When it occurs:** When a pipeline asserts publish state after an ExperienceBundle deploy, when a release runbook takes the site offline for a maintenance window, or when someone tries to script site provisioning in a fresh target org.
+
+**How to avoid:** Assert `Status = 'Live'` in the post-deploy smoke test, use `DownForMaintenance` (never `UnderConstruction`) to take a published site offline, and provision new sites through the Metadata API `Network` type or Setup rather than DML. Guard the smoke test itself: `Network` "is available only when your org has digital experiences enabled," so the query errors rather than returning zero rows in an org where Digital Experiences was never turned on.

@@ -90,7 +90,8 @@ Filters:
   - Close Date: Current FY and Next FY
 Columns: Opportunity Name, Account Name, Stage, Amount, Close Date, Owner Full Name,
          Forecast Category, Probability
-Confirm row count < 2,000 before activating snapshot.
+Confirm the run will insert fewer than 2,000 new records — the cap is on target-object
+inserts per run, and the surplus is dropped with a partial error in Run History.
 ```
 
 Step 3 — Configure the Reporting Snapshot in Setup:

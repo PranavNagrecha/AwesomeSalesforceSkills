@@ -85,7 +85,7 @@ Gather if not available:
 | Records with AND without related records | Report Type with outer join (default for most standard Report Types) |
 | Only records that HAVE related records | Standard join (inner join — default when you add a related object) |
 | Records WITHOUT a specific related record | Cross-filter: "Accounts WITHOUT Opportunities" |
-| Historical field values over time | Historical Trending Report (limited to specific objects/fields) |
+| Historical field values over time | Historical Trending Report — **Matrix format only**; no export, no subscription; limited objects/fields |
 | Combine data from multiple unrelated report types | Joined Report |
 | Real-time data in a dashboard | Dashboard with auto-refresh (limited to 24-hour minimum) |
 | Scheduled delivery to email | Report Subscription |

@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: handleInboundEmail Runs in System Context — No Sharing or User Enforcement
+## Gotcha 2: handleInboundEmail Runs as the Context User — and Its Default Access Mode Inverted at API 67.0
 
-**What happens:** The `handleInboundEmail` method executes in system context, equivalent to `without sharing` and with no `UserInfo.getUserId()` returning a meaningful value. Record-level security, field-level security, and permission sets are entirely bypassed. Any `insert` or `update` DML inside the handler affects records the sending user could never access through the UI.
+**What happens:** There is no authenticated sender at any API version — `email.fromAddress` is unverified header data — and `UserInfo.getUserId()` returns the Email Service's configured **Context User**, never the person who sent the mail. What the handler's database operations *enforce* is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release. At **66.0 and below**, a handler class declared without a sharing keyword is `without sharing` and its SOQL/DML run in system mode: record-level security, field-level security, and permission sets are entirely bypassed, and any `insert` or `update` inside the handler affects records the sending user could never access through the UI. At **67.0+** (Summer '26) both defaults invert — the bare class runs `with sharing`, and SOQL, SOSL, DML, and `Database` methods default to user mode, evaluated against that Context User. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version* for the canonical table.
 
 **When it occurs:** Any time the handler inserts records with sensitive fields, attaches files to restricted records, or queries data based on sender identity without re-validating permissions. The risk is elevated when senders are external (the handler accepts emails from any address by default unless `Accept Email From` is configured).
 
-**How to avoid:** Restrict sender addresses in the Email Service configuration (`Accept Email From` field). For any record access that should respect sharing, delegate to a method declared `with sharing`. Never treat `fromAddress` alone as a trusted identity — validate it against known internal users before granting elevated record access. Log all handler invocations to a custom audit object.
+**How to avoid:** Restrict sender addresses in the Email Service configuration (`Accept Email From` field). Read the handler's `.cls-meta.xml` before reasoning about enforcement: at 66.0 and below, delegate any record access that should respect sharing to a helper class declared `with sharing` (the keyword is a class modifier — there is no method-level form — and the callee's keyword governs the queries it runs itself); at 67.0+ the default is already `with sharing` plus user mode, which relocates the escalation surface onto the Context User rather than removing it — point the Email Service at a least-privilege integration user, not a System Administrator. Never treat `fromAddress` alone as a trusted identity — validate it against known internal users before granting elevated record access. Log all handler invocations to a custom audit object.
 
 ---
 

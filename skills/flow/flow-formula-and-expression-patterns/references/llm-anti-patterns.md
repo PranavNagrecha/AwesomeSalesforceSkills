@@ -124,23 +124,23 @@ OR(AND({!flag1}, {!flag2}), {!flag3})
 
 ---
 
-## Anti-Pattern 7: Treating Percent fields as decimals
+## Anti-Pattern 7: Dividing a Percent field by 100 inside a formula
 
 **What the LLM generates:**
-
-```
-{!opportunity.Amount} * {!opportunity.Discount_Percent__c}
-```
-
-**Why it happens:** In most data systems Percent fields are stored as decimals (0.15 for 15%). Salesforce stores them as the displayed number (15 for 15%). LLMs default to the more common storage convention.
-
-**Correct pattern:**
 
 ```
 {!opportunity.Amount} * ({!opportunity.Discount_Percent__c} / 100)
 ```
 
-**Detection hint:** if any operand of `*` is a field whose name contains "Percent", "Pct", "Rate", or "%", check whether the field type is Percent and whether the formula divides by 100. If not, flag.
+**Why it happens:** The UI renders `15` for 15%, so the model reasons the stored value must be `15` and helpfully scales it. In formula context the platform has already applied that division, so the extra `/ 100` returns 1/100th of the intended amount — and nothing, deploy or runtime, flags it.
+
+**Correct pattern:**
+
+```
+{!opportunity.Amount} * {!opportunity.Discount_Percent__c}
+```
+
+**Detection hint:** grep the formula body for `/ 100`; if the numerator is a Percent-type field, the division is a bug, and so is the comparison form `{!pct} > 50` (should be `> 0.5`). Do not go by field name — a Number field called `Tax_Rate__c` holding `7.5` genuinely does need the `/ 100`.
 
 ---
 

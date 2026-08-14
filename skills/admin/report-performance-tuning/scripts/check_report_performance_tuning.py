@@ -43,6 +43,21 @@ SELECTIVE_FILTER_FIELDS = {
     "RECORDTYPEID",
 }
 
+# The Analytics API cannot process a report with 100 or more columns; it
+# rejects the run with HTTP 400: "Only a report with fewer than 100 columns can
+# be run. The columns are fields specified as detail columns, summaries, or
+# custom summary formulas. Remove unneeded columns from the report and try
+# again." This is an API processing limit, not a report builder allocation.
+MAX_REPORT_COLUMNS = 100
+
+# Report builder allocations, flagged as hard failures when exceeded.
+MAX_FIELD_FILTERS = 20
+MAX_CROSS_FILTERS = 3
+MAX_REPORT_FORMULAS = 5
+# Joined reports get a larger custom summary formula allowance: 10 per block,
+# 50 per report.
+MAX_JOINED_REPORT_FORMULAS = 50
+
 # Dashboard refresh minimum is 24 hours; we flag anything less.
 MIN_DASHBOARD_REFRESH_HOURS = 24
 
@@ -59,9 +74,22 @@ def _tag(name: str) -> str:
     return f"{{{_NS}}}{name}"
 
 
+def _iter_filter_items(root: ET.Element):
+    """Yield each report-level field-filter element in the report XML.
+
+    The Report metadata type nests filter conditions as ``filter/criteriaItems``
+    (see the Metadata API Report reference). ``crossFilters`` carries its
+    subfilters under the *same* ``criteriaItems`` element name, so the search is
+    scoped to ``filter`` rather than walking the whole document — otherwise up
+    to 15 cross filter subfilters inflate the field filter count.
+    """
+    for filt in root.iter(_tag("filter")):
+        yield from filt.findall(_tag("criteriaItems"))
+
+
 def _has_selective_filter(root: ET.Element) -> bool:
     """Return True if the report XML contains at least one selective filter."""
-    for criteria in root.iter(_tag("reportFilterCriteria")):
+    for criteria in _iter_filter_items(root):
         column = criteria.findtext(_tag("column"), default="").upper()
         if column in SELECTIVE_FILTER_FIELDS:
             return True
@@ -79,6 +107,20 @@ def _count_crt_objects(root: ET.Element) -> int:
         return len(type_refs)
     # Fall back: count objectType elements
     return len(list(root.iter(_tag("objectType"))))
+
+
+def _count_columns(root: ET.Element) -> int:
+    """Count columns as the Analytics API counts them toward the 100 cap.
+
+    Per the platform error message, the cap sums three categories: detail
+    columns (``columns``), summaries (each ``aggregateTypes`` entry toggled on
+    a column), and custom summary formulas (``aggregates``). All three are real
+    Report metadata elements; see the Metadata API Report reference.
+    """
+    detail_columns = len(list(root.iter(_tag("columns"))))
+    summaries = len(list(root.iter(_tag("aggregateTypes"))))
+    custom_summary_formulas = len(list(root.iter(_tag("aggregates"))))
+    return detail_columns + summaries + custom_summary_formulas
 
 
 def _has_outer_joins(root: ET.Element) -> bool:
@@ -126,7 +168,48 @@ def check_report_files(manifest_dir: Path) -> list[str]:
                 f"Add a date range, Owner, or Record Type filter."
             )
 
-        # Check 3: CRT with many objects
+        # Check 3: Column cap — an Analytics API refusal, not a slowdown.
+        column_count = _count_columns(root)
+        if column_count >= MAX_REPORT_COLUMNS:
+            issues.append(
+                f"{report_name}: Report has ~{column_count} columns "
+                f"(detail columns + summaries + custom summary formulas). "
+                f"The Analytics API cannot process a report with "
+                f"{MAX_REPORT_COLUMNS} or more columns — it returns HTTP 400: "
+                f"'Only a report with fewer than {MAX_REPORT_COLUMNS} columns can "
+                f"be run.' Remove unneeded columns, or extract the fields via "
+                f"Bulk API 2.0 query instead of a report."
+            )
+
+        # Check 4: Report builder allocations
+        filter_count = len(list(_iter_filter_items(root)))
+        if filter_count > MAX_FIELD_FILTERS:
+            issues.append(
+                f"{report_name}: {filter_count} field filters exceeds the report "
+                f"builder cap of {MAX_FIELD_FILTERS} (10 in the legacy report wizard)."
+            )
+
+        cross_filter_count = len(list(root.iter(_tag("crossFilters"))))
+        if cross_filter_count > MAX_CROSS_FILTERS:
+            issues.append(
+                f"{report_name}: {cross_filter_count} cross filters exceeds the cap "
+                f"of {MAX_CROSS_FILTERS} per report (up to 5 subfilters each)."
+            )
+
+        formula_cap = (
+            MAX_JOINED_REPORT_FORMULAS
+            if format_.upper() == "JOINED"
+            else MAX_REPORT_FORMULAS
+        )
+        formula_count = len(list(root.iter(_tag("aggregates"))))
+        if formula_count > formula_cap:
+            issues.append(
+                f"{report_name}: {formula_count} custom summary formulas exceeds "
+                f"the cap of {formula_cap} for this report format. The limit is "
+                f"hard-coded and cannot be raised by Salesforce Support."
+            )
+
+        # Check 5: CRT with many objects
         # report type name is the API name of the report type; standard types
         # do not start with a namespace or custom suffix. CRT names are set by
         # the admin and do not follow a reliable pattern, but we can check
@@ -140,7 +223,7 @@ def check_report_files(manifest_dir: Path) -> list[str]:
                 f"actively used fields; remove unused objects from the CRT."
             )
 
-        # Check 4: Outer join on high-cardinality path
+        # Check 6: Outer join on high-cardinality path
         if _has_outer_joins(root):
             issues.append(
                 f"{report_name}: Outer join (with-or-without) detected in report type. "
@@ -149,7 +232,7 @@ def check_report_files(manifest_dir: Path) -> list[str]:
                 f"join behavior is explicitly required."
             )
 
-        # Check 5: Joined reports have extra overhead
+        # Check 7: Joined reports have extra overhead
         if format_.upper() == "JOINED":
             issues.append(
                 f"{report_name}: Joined report format detected. Joined reports run "

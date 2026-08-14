@@ -81,6 +81,12 @@ multi-stage processes from it.
   (short-form approval) or weeks (employee onboarding). Long-running
   orchestrations have specific gotchas around flow definition
   changes, user deactivation, and Work Item retention.
+- **Don't design around a run budget.** As of Spring '26,
+  orchestration runs are included with no usage-based limitations in
+  Enterprise, Performance, Unlimited, all Einstein 1, and Developer
+  editions; the old 600-runs-per-org-per-year entitlement is retired
+  and there is no add-on licence to buy. Ordinary edition-based Flow
+  limits still apply.
 
 ---
 

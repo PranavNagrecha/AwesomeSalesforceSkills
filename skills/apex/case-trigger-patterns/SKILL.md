@@ -50,7 +50,7 @@ Gather this context before working on anything in this domain:
 
 - Confirm whether case assignment rules exist in the org and whether you need the active rule or a specific rule by Id. `Database.DmlOptions.AssignmentRuleHeader` accepts either the active rule flag or a specific rule Id.
 - Verify whether Entitlements are enabled (Setup > Entitlement Settings). If enabled, check whether EntitlementContact junction records are being used to restrict which accounts or contacts are covered by each entitlement.
-- Identify whether a case merge operation is in scope. Merge fires `before delete` and `after delete` on losing records, not a dedicated merge event. `MasterRecordId` on the losing record identifies the winner.
+- Identify whether a case merge operation is in scope. Merge fires `before delete` and `after delete` on losing records, not a dedicated merge event. `MasterRecordId` on the losing record identifies the winner, but it is populated only in `after delete`.
 - Determine whether Entitlement Process milestones are active on cases in scope. Milestones do not auto-complete when a case is closed — any process requiring milestone completion at case close needs explicit Apex or a Flow.
 
 ---
@@ -75,12 +75,14 @@ The trigger-based pattern for this situation is a `Before Insert` (and optionall
 
 When two Case records are merged in Salesforce (via the UI or via Apex `merge` DML), the platform fires:
 
-- `before delete` and `after delete` on the **losing** record(s), not a "merge" event
+- `before delete` and `after delete` on the **losing** record(s), not a "merge" event — one delete event covers all losing records in the merge, not one event per record
 - `before update` and `after update` on the **winning** (master) record
 
-Inside a `before delete` or `after delete` trigger on Case, `Trigger.new` and `Trigger.newMap` are null. Use `Trigger.old` and `Trigger.oldMap`. On the losing record, `MasterRecordId` is populated with the Id of the winning record. A merge trigger can use this field to determine whether the delete is a merge (non-null `MasterRecordId`) or a true delete (null `MasterRecordId`).
+Inside a `before delete` or `after delete` trigger on Case, `Trigger.new` and `Trigger.newMap` are null. Use `Trigger.old` and `Trigger.oldMap`.
 
-The Apex Developer Guide explicitly states: "In a merge operation, triggers fire on the losing record (as a delete) and on the winning record (as an update)."
+**`MasterRecordId` is readable only in `after delete`.** The Apex Developer Guide states: "The MasterRecordId field is only set in after delete trigger events." The documented order is: the `before delete` trigger fires, *then* the platform deletes the records, reparents children, and sets `MasterRecordId`, *then* the `after delete` trigger fires. A `before delete` handler that branches on `MasterRecordId != null` therefore never takes the merge branch — every merged record silently falls through to the true-delete path, which is exactly the data-loss scenario the branch exists to prevent. Detect merges in `after delete` only.
+
+The guide also states: "Merge events do not fire their own trigger events. Instead, they fire delete and update events," and "Any child records that are reparented as a result of the merge operation do not fire triggers."
 
 ### Milestone Completion Gap at Case Close
 
@@ -180,17 +182,14 @@ public with sharing class CaseTriggerHandler {
 
 ### Pattern 3: Distinguishing Merge Deletes from True Deletes in a Case Trigger
 
-**When to use:** Logic in a `before delete` or `after delete` trigger on Case must behave differently for merged records (which have a surviving master) versus permanently deleted records.
+**When to use:** Logic in an `after delete` trigger on Case must behave differently for merged records (which have a surviving master) versus permanently deleted records.
 
-**How it works:** Check `MasterRecordId` on the losing record. A non-null `MasterRecordId` indicates a merge; a null value indicates a true delete.
+**How it works:** Check `MasterRecordId` on the losing record **in `after delete`**. A non-null `MasterRecordId` indicates a merge; a null value indicates a true delete. The field is not yet populated in `before delete`, so the branch must live in the after context.
 
 ```apex
-trigger CaseTrigger on Case (before delete, after delete) {
-    if (Trigger.isBefore && Trigger.isDelete) {
-        CaseTriggerHandler.onBeforeDelete(Trigger.old);
-    }
+trigger CaseTrigger on Case (after delete) {
     if (Trigger.isAfter && Trigger.isDelete) {
-        CaseTriggerHandler.onAfterDelete(Trigger.old, Trigger.oldMap);
+        CaseTriggerHandler.onAfterDelete(Trigger.old);
     }
 }
 ```
@@ -198,24 +197,32 @@ trigger CaseTrigger on Case (before delete, after delete) {
 ```apex
 public with sharing class CaseTriggerHandler {
 
-    public static void onBeforeDelete(List<Case> oldCases) {
+    public static void onAfterDelete(List<Case> oldCases) {
+        Map<Id, Id> mergedIntoMaster = new Map<Id, Id>();
+        List<Case> trueDeletes = new List<Case>();
+
         for (Case c : oldCases) {
             if (c.MasterRecordId != null) {
-                // This is a merge — c is a losing record being absorbed by c.MasterRecordId
-                // Example: copy attachments or related records to the master before the delete commits
+                // Merge — c was absorbed by c.MasterRecordId
+                mergedIntoMaster.put(c.Id, c.MasterRecordId);
             } else {
-                // True delete — run permanent deletion logic
+                trueDeletes.add(c);
             }
         }
-    }
 
-    public static void onAfterDelete(List<Case> oldCases, Map<Id, Case> oldMap) {
-        // Similar pattern: MasterRecordId != null means merge, null means true delete
+        if (!mergedIntoMaster.isEmpty()) {
+            // Re-point anything the platform did not reparent automatically
+        }
+        if (!trueDeletes.isEmpty()) {
+            // Permanent-delete logic (archival, integration notifications)
+        }
     }
 }
 ```
 
-**Why not the alternative:** Without checking `MasterRecordId`, merge-delete logic runs the same path as permanent deletes, potentially purging data that should have been migrated to the master record or triggering cleanup workflows on records that still have a surviving counterpart.
+**Why not the alternative:** Putting this branch in `before delete` compiles and runs but is dead code — `MasterRecordId` is null there for every record, so merged cases take the true-delete path and the guard silently does nothing. Omitting the check entirely has the same effect: merge-delete logic runs the permanent-delete path, purging data that should have been migrated to the master record or firing cleanup workflows on records that still have a surviving counterpart.
+
+If work genuinely must happen before the delete commits, do it unconditionally in `before delete` (you cannot know the master there) and reconcile in `after delete` once `MasterRecordId` is available.
 
 ---
 
@@ -268,7 +275,7 @@ public with sharing class CaseTriggerHandler {
 | Need a specific assignment rule, not the active one | `assignmentRuleHeader.assignmentRuleId` | Allows pinning to a rule by Id; useful in multi-rule orgs |
 | Entitlement coverage is account-wide | Rely on platform auto-association | Platform can resolve entitlement by Account without a trigger |
 | Entitlement coverage is contact-specific (EntitlementContact) | Before Insert trigger querying EntitlementContact | Platform cannot resolve without the junction query |
-| Delete trigger must distinguish merge from true delete | Check `MasterRecordId` on `Trigger.old` records | Only reliable way; no dedicated merge event exists |
+| Delete trigger must distinguish merge from true delete | Check `MasterRecordId` on `Trigger.old` in **`after delete`** | Only reliable way; no dedicated merge event exists, and the field is null in `before delete` |
 | Milestones must be completed when case closes | After Update trigger setting `CaseMilestone.CompletionDate` | Platform does not auto-complete milestones in the same transaction as case close |
 | Existing trigger framework in org | Add new Case logic to existing handler | One trigger per object; do not create a second `CaseTrigger` |
 
@@ -281,7 +288,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 1. **Audit the org context** — Check whether a Case trigger already exists. If one does, add new logic inside the existing handler. Confirm whether assignment rules, entitlements, and entitlement processes are active. Identify which of the four patterns (assignment rules, entitlement association, merge handling, milestone completion) are in scope.
 2. **Implement assignment rule invocation** — If cases are inserted or updated via Apex and must respect assignment rules, switch from the `insert`/`update` keyword to `Database.insert()`/`Database.update()` with `Database.DmlOptions` set to `useDefaultRule = true` (or a specific rule Id). Apply this in the service or handler layer, not in the trigger body itself.
 3. **Implement entitlement association** — If contact-specific entitlement coverage is required, add a `Before Insert` (and optionally `Before Update`) handler that queries `EntitlementContact` for the case's `ContactId` and stamps `Case.EntitlementId` before the DML commits. Guard with a null check to avoid overwriting existing entitlement assignments.
-4. **Implement merge delete handling** — If delete-trigger logic must treat merged records differently from permanent deletes, add a null check on `MasterRecordId` in the `before delete` or `after delete` context. Document this guard explicitly with a comment so future maintainers understand the intent.
+4. **Implement merge delete handling** — If delete-trigger logic must treat merged records differently from permanent deletes, add a null check on `MasterRecordId` in the `after delete` context. Do not place this check in `before delete`: the platform sets `MasterRecordId` between the two events, so the before-context check always reads null. Document this guard explicitly with a comment so future maintainers understand the intent.
 5. **Implement milestone completion** — If milestones must complete at case close, add an `After Update` handler that detects the `IsClosed` flip, queries open `CaseMilestone` records for the affected cases, and sets `CompletionDate` to `Datetime.now()`.
 6. **Write test coverage** — Test each pattern independently: insert a case and assert the owner changed (assignment rule); insert a case with a ContactId linked to an EntitlementContact and assert `EntitlementId` is set; perform a merge and assert `MasterRecordId` behavior in delete context; close a case and assert `CaseMilestone.IsCompleted` is true.
 7. **Run validation** — Execute `python3 scripts/skill_sync.py --skill skills/apex/case-trigger-patterns` and confirm no errors before marking work complete.
@@ -294,7 +301,7 @@ Run through these before marking work in this area complete:
 
 - [ ] All Case DML that requires assignment rules uses `Database.insert()`/`Database.update()` with `Database.DmlOptions`, not the `insert`/`update` keyword
 - [ ] Entitlement association logic runs in `Before Insert` to avoid extra update DML
-- [ ] Merge delete handler checks `MasterRecordId` to distinguish merge from true delete
+- [ ] Merge delete handler checks `MasterRecordId` in `after delete` (never `before delete`, where it is always null) to distinguish merge from true delete
 - [ ] Milestone completion logic queries `CaseMilestone` with `IsCompleted = false` and sets `CompletionDate`
 - [ ] No second `CaseTrigger` has been created if one already exists — logic is in the existing handler
 - [ ] All handler methods are bulkified — no SOQL or DML inside loops
@@ -308,7 +315,9 @@ Run through these before marking work in this area complete:
 
 2. **Closing a case does not auto-complete its milestones** — When `Case.Status` transitions to a closed value, open `CaseMilestone` records for that case are not automatically set to `IsCompleted = true`. The entitlement process evaluates milestones asynchronously; in the same transaction as the close, milestones remain open. Any logic that reads milestone completion status in the same transaction as the close will see stale data unless the trigger explicitly updates `CaseMilestone.CompletionDate`.
 
-3. **Merge fires delete triggers, not a merge event** — There is no `ismerge` or `mergeResult` context in an Apex trigger. The only way to detect a merge inside a delete trigger is to check `MasterRecordId` on the losing record. Triggers that perform cleanup or archival on delete without this check will incorrectly process merged records as permanently deleted.
+3. **Merge fires delete triggers, not a merge event** — There is no `ismerge` or `mergeResult` context in an Apex trigger. The only way to detect a merge inside a delete trigger is to check `MasterRecordId` on the losing record, and that check works only in `after delete` — "The MasterRecordId field is only set in after delete trigger events." Triggers that perform cleanup or archival on delete without this check, *or that place the check in `before delete`*, will incorrectly process merged records as permanently deleted.
+
+4. **Apex `merge` supports cases; the SOAP `merge()` call does not** — The Apex Developer Guide states "Only leads, contacts, cases, and accounts can be merged," so `merge masterCase duplicateCase;` is valid Apex. The SOAP API is narrower: its `merge()` call documents "The supported object types are Lead, Contact, Account, Person Account, and Individual" — Case is absent. An integration that merges cases through the SOAP API cannot do so; move the merge into Apex or use the Lightning case merge UI. Both surfaces cap a single merge at three records — Apex: "You can pass a main record and up to two additional sObject records to a single merge method"; SOAP: "Up to three records can be merged in a single request, including the main record."
 
 ---
 
@@ -317,7 +326,7 @@ Run through these before marking work in this area complete:
 | Artifact | Description |
 |---|---|
 | `CaseTrigger.trigger` | Minimal trigger body routing to handler by context |
-| `CaseTriggerHandler.cls` | Handler class with methods for each pattern: `associateEntitlements`, `completeMilestonesOnClose`, `onBeforeDelete`/`onAfterDelete` with merge guard |
+| `CaseTriggerHandler.cls` | Handler class with methods for each pattern: `associateEntitlements`, `completeMilestonesOnClose`, `onAfterDelete` carrying the `MasterRecordId` merge guard |
 | `CaseService.cls` | Optional service class encapsulating `Database.insert()` with `DmlOptions` for cases requiring assignment rule invocation |
 | `CaseTriggerHandlerTest.cls` | Test class covering all four patterns with assertions on owner, entitlement, merge behavior, and milestone completion |
 

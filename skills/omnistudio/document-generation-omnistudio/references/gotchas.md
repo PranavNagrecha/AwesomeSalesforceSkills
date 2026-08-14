@@ -68,3 +68,19 @@ Salesforce documents this explicitly in *Map Image Tokens in the Omnistudio Data
 **When it occurs:** The org has OmniStudio Document Generation enabled but the server-side-specific setting has not been toggled on. The two settings are independent.
 
 **How to avoid:** In Setup > OmniStudio Settings, verify that both the general Document Generation setting and the "Enable Server-Side Document Generation" setting are active. Check this in every target environment, as sandbox refreshes may not carry the setting forward.
+
+---
+
+## Gotcha 7: A Blank Required Permission Makes the DocGen Data Mapper Runnable by Anyone
+
+**What happens:** The generated document is locked down by sharing on its ContentVersion, but any authenticated user can invoke the Data Mapper or Integration Procedure behind it directly and receive the raw JSON — pricing, PII, contract terms — without ever opening a document. The leak is upstream of the file, so auditing file sharing finds nothing.
+
+**When it occurs:** Omnistudio Data Mappers and Integration Procedures have a **Required Permission** property, which "determines who has runtime access" and accepts roles, profiles, permission sets, custom permissions, or any combination. It is blank by default, and Salesforce states the consequence plainly: *"If Required Permission is blank, any user can run the Data Mapper or Integration Procedure unless the DefaultRequiredPermission property is set."* Access is broader than direct invocation — it *"also applies if an application the user is using calls the Data Mapper or Integration Procedure"*, which is how a DocGen OmniScript reaches it.
+
+**The check does not cascade downward.** Salesforce is explicit: *"If a user has access to a parent Integration Procedure, the parent can invoke child Integration Procedures and Data Mappers to which the user doesn't have direct access."* A Required Permission on a child Data Mapper therefore does not protect it from anyone who can run the parent Integration Procedure. Secure the entry point first; child permissions guard only against the child being called directly.
+
+**How to avoid:** Set Required Permission on every Data Mapper and Integration Procedure in the DocGen pipeline — starting with whatever the OmniScript or external caller invokes first — and treat a blank one as an audit finding, not a default. Back it with the three org-level controls in the **Omni Interaction Configuration** custom setting:
+
+- `DefaultRequiredPermission` (String, default none) — the fallback applied to components whose Required Permission is blank. You must implement the `VlocityRequiredPermissionCheck` class manually; it does not work properly from inside the Vlocity managed package.
+- `EnforceDMFLSAndDataEncryption` (True/False) — when true, Data Mappers run in the user context instead of the system context, so a Data Mapper cannot read a field the running user cannot see and merge it into the document, and encrypted fields render in plain text only for users with View Encrypted Data. Salesforce began enabling this setting by default in the week of 2 February 2026, so verify its current value rather than assuming either state.
+- `CheckCachedMetadataRecordSecurity` (True/False, default **False**) — while False, cached metadata is not secured when Salesforce Sharing Settings or Sharing Sets control access. Set it to True to perform a record-level security check on cached metadata, at a small cost to caching performance.

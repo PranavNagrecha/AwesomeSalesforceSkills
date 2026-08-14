@@ -152,3 +152,28 @@ manually for high-stakes orchestrations.
 **Detection hint.** Any orchestration metadata change advice that
 doesn't address in-flight orchestrations is missing the impact
 analysis.
+
+---
+
+## Anti-Pattern 9: Quoting the retired 600-run orchestration entitlement
+
+**What the LLM generates.** "Flow Orchestration is a paid add-on"
+or "you get 600 free orchestration runs per org per year (except
+flow approvals), then you buy more" — usually offered as the reason
+to reject an orchestration design.
+
+**Why it happens.** That usage-based entitlement was real until
+Spring '26 (week of 16 February 2026), so it saturates pre-2026
+training data — and it's a licensing claim, so repeating it can
+cost the customer a design they're already entitled to.
+
+**Correct pattern.** Orchestration runs are included with no
+usage-based limitations in Enterprise, Performance, Unlimited, all
+Einstein 1, and Developer editions — orchestration is a standard
+Flow type with no add-on licence to buy, and ordinary edition-based
+Flow limits apply. Choose orchestration on fit (multi-stage /
+multi-human / multi-day), not on a run budget.
+
+**Detection hint.** Any answer that prices orchestration, counts
+runs against an annual allowance, or carves out "except flow
+approvals" is quoting a retired entitlement.

@@ -32,10 +32,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: Package Version Deletion Is Restricted — Beta Versions Can Be Deleted, Released Cannot
+## Gotcha 4: Deletion Rules Invert Between 2GP Managed and Unlocked Packages
 
-**What happens:** A team creates a 2GP package version with a critical bug and wants to delete it from the system. Subscribers have not yet installed it, so the team assumes deletion is safe. They discover that released package versions cannot be deleted.
+**What happens:** A team creates a 2GP managed package version with a critical bug, assumes deletion is safe because no subscriber has installed it, and discovers that released 2GP managed versions cannot be deleted. The same team later carries that rule over to its unlocked packages and treats those released versions as equally permanent — they are not. Salesforce's deletion matrix answers "Can I delete released packages and package versions?" with No for Second-Generation Managed Packages and Yes for Unlocked Packages; beta versions of both types are deletable.
 
-**Impact:** The buggy released version remains in the system permanently. Salesforce can deprecate a version (mark it as not for installation) but cannot delete a released version. The version is visible in the package version list indefinitely.
+**Impact:** For 2GP managed, the buggy released version stays in the system permanently — Salesforce can deprecate a version (mark it as not for installation) but cannot delete it. For unlocked, the opposite failure mode applies: "Deletion is permanent," and "Attempts to install a deleted package version will fail." Any CI/CD job, install script, or org that installs that `04t` version ID after the deletion fails, and there is no undo. The docs state only the install-time failure — they say nothing about orgs that already have the version installed, so do not promise either way.
 
-**How to avoid:** Use beta versions (`--skip-validation` flag) during development and testing. Beta versions can be deleted. Only create a released version when the package is ready for subscriber installation. A released version is a permanent record.
+**How to avoid:** Keep pre-release work on beta versions — beta is deletable for both package types. Before running `sf package version delete` or `sf package delete` against an unlocked package, confirm the package or version "isn't referenced as a dependency" by another package and is not pinned in any install pipeline; deleting the package itself requires deleting all associated package versions first. Deletion is gated by the **Delete Second-Generation Packages** user permission in the Dev Hub — withhold it from anyone who does not own the release train.

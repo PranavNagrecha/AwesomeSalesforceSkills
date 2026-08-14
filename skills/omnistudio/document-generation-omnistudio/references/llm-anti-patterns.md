@@ -151,3 +151,30 @@ There is no native "preview" step in the OmniScript DocGen component library.
 ```
 
 **Detection hint:** Any reference to a "DocGen Preview" step, "Document Preview" OmniScript element, or similar built-in preview component is a hallucination.
+
+---
+
+## Anti-Pattern 7: Securing the DocGen Pipeline with the Generic Apex Security Answer
+
+**What the LLM generates:** Asked how to secure an OmniStudio document generation flow, the model returns the platform-wide answer — `with sharing`, `Security.stripInaccessible`, `isAccessible()` checks, a permission set on the object. None of it is wrong in general, and none of it is the control that governs a Data Mapper or Integration Procedure.
+
+**Why it happens:** Apex security dominates the training data; OmniStudio's runtime access model is a thin slice of it. The model also assumes secure-by-default, so it never raises the question of whether the component is runnable by any authenticated user in the first place.
+
+**Correct pattern:**
+
+```text
+Per component:
+  Required Permission   roles / profiles / permission sets / custom permissions
+                        BLANK = any user can run the component
+                        NOT re-checked on children a parent IP invokes
+
+Org-wide (Omni Interaction Configuration custom setting):
+  DefaultRequiredPermission, EnforceDMFLSAndDataEncryption,
+  CheckCachedMetadataRecordSecurity   -- see gotchas.md Gotcha 7 for
+                                         types, defaults and caveats
+
+`with sharing` governs Apex. It does not govern a Data Mapper invoked from an
+OmniScript, from an Integration Procedure, or by an external caller.
+```
+
+**Detection hint:** An OmniStudio security answer that names `with sharing`, `stripInaccessible`, or permission sets but never names **Required Permission** is answering a different question. See `references/gotchas.md` Gotcha 7.

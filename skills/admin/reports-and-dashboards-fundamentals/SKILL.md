@@ -97,7 +97,7 @@ Salesforce offers four report formats:
 
 Tabular reports cannot be used as dashboard source reports directly unless they have a row limit applied. Summary and Matrix reports are the standard dashboard source formats.
 
-Joined reports have strict limits: maximum 5 blocks, 2,000 rows per block, no bucket fields that span blocks, and they cannot be embedded in dashboards.
+Joined reports have strict limits: maximum 5 blocks, 100 columns per block, 10 custom summary formulas per block (50 per report), and 10 cross-block formulas. Bucketed fields, cross filters, and conditional highlighting are unavailable inside a joined report entirely. On a dashboard you can add a joined report's **chart** as a widget but not the full report, and you cannot add a filter to a dashboard whose widgets are all joined reports.
 
 ### 3. Filters, Bucket Fields, and Summary Formulas
 
@@ -209,7 +209,7 @@ Run through these before marking work complete:
 - [ ] Dashboard running user is set to "Run as logged-in user" unless a static view has been explicitly approved
 - [ ] Dashboard filters tested against all components — confirm which components are and are not affected
 - [ ] Report and dashboard are in a shared folder, not a private folder
-- [ ] Report subscriptions are addressed to named, currently active recipients
+- [ ] Report subscriptions are addressed to named, currently active recipients, and each subscription's running user is confirmed (it defaults to whoever created the subscription, not the report owner)
 - [ ] CRT join semantics verified — "may or may not have" vs "must have" matches the business intent
 - [ ] Row and block limits confirmed — not approaching 2,000 rows in dashboard tables, not exceeding 5 blocks in joined reports
 - [ ] No dashboard has more than 20 source report components

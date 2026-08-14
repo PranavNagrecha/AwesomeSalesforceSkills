@@ -30,6 +30,7 @@
     "6955a1d97a496bec2749",
     "6bf9eb1a075c45311413",
     "6c6b830fe857dacd5b5d",
+    "6e7d86b6b84ec2f9f56d",
     "721b6dee8d81484b3d98",
     "73320c9de92d5ffa69af",
     "73859ccec1b25d34bfa1",
@@ -60,7 +61,7 @@
     "f6f560781a2d38c74da4",
     "fe3eff3b3df73f2d2098"
   ],
-  "content_hash": "f44c68585e1dc22066619e7ec418ef398b49bf467478df71624822186811a21e",
+  "content_hash": "8fe85662fb24c2b20c3ed8d45d4f85238bacf36b490ea2827f8a0d82d9717595",
   "dependencies": [],
   "description": "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates. NOT for Process Builder (migrate-workflow-pb covers migration). Use when building flows that must write to a related record.",
   "file_location": "skills/flow/flow-cross-object-updates",
@@ -75,6 +76,7 @@
     "Flow Builder Reference \u2014 Update Records element:",
     "Flow Builder Reference \u2014 Bulkification in Record-Triggered Flows:",
     "Apex Developer Guide \u2014 Order of Execution:",
+    "Summer '26 Release Notes \u2014 Database Operations Run in User Mode by Default,",
     "Flow Builder Reference \u2014 How a Flow Runs in System or User Context:",
     "Salesforce Well-Architected \u2014 Adaptable (Resilient):"
   ],

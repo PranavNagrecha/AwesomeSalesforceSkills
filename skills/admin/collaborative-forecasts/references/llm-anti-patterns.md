@@ -125,3 +125,31 @@ to obtain the correct ID before bulk-loading quota records.
 ```
 
 **Detection hint:** Any quota load guidance that omits `ForecastingTypeId` as a required field is incomplete.
+
+---
+
+## Anti-Pattern 7: Treating the Forecast Hierarchy as an Independently Editable Structure
+
+**What the LLM generates:** "Add a node for the new EMEA region in the forecast hierarchy," or "just remove the role from that sales ops user so their skewed pipeline stops distorting the rollup."
+
+**Why it happens:** The forecast hierarchy has its own Setup page and its own forecast-manager assignments, so it reads like a standalone tree that can be edited node by node. LLMs also treat "no role" as a harmless way to keep a user out of a rollup, without knowing it removes them from role-based forecasting altogether.
+
+**Correct pattern:**
+```
+The role-based forecasts hierarchy is GENERATED from the user role hierarchy
+(territory forecasts use the territory hierarchy instead). You cannot add,
+delete, or reorder its nodes. You change the ROLE hierarchy; then on each
+generated node you use Enable Users and Assign Manager / Edit Manager.
+
+If no forecast manager is assigned to a role, neither that role nor its
+subordinate roles are included in forecasts. For a role-based Forecast Type,
+a user with no role has no node at all — so "give them no role" is never
+available for an identity that must appear in a role-based forecast.
+
+Two distinct permissions, both required, neither implied by the other:
+  Allow Forecasting (User.ForecastEnabled) — puts the user IN the forecast.
+  View Roles and Role Hierarchy — lets the user OPEN a role-based forecast
+                                  in Lightning Experience.
+```
+
+**Detection hint:** Any response that proposes adding, deleting, or reordering forecast-hierarchy nodes, or that suggests removing a role to keep a user out of a forecast, is incorrect.

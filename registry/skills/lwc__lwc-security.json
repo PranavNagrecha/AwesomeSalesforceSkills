@@ -3,7 +3,6 @@
   "chunk_ids": [
     "002b2feb484a7ecd4b4f",
     "091c6cf2c8dda027fe31",
-    "0cc7aa08dc9bb3d82466",
     "1c0560efec56c795c5d0",
     "1c0d0f62ad8283031145",
     "1fe0fb8db227846d975f",
@@ -17,10 +16,12 @@
     "3b02f4553811cb09fb2f",
     "3b702839decd697a166c",
     "3cea90777c0d44cb44b8",
+    "410c38eeca1e3f408086",
     "4286427b337d350f954d",
     "45142b8bef02fbfba685",
     "47ce41dcdc7ae60c5d70",
     "49903c8901222e3989f1",
+    "49d40d81029934c1ac10",
     "4f6c88f8cd5dfaeedf79",
     "512c349ba18ee85adac7",
     "51c0f061961b7f04eee3",
@@ -40,14 +41,15 @@
     "a1200b9ae021441a48eb",
     "a35cbac72d5e6dcafcc0",
     "a5030ae7965498d61b5e",
+    "b12b6602f1f63a6ae66b",
     "b9dc4801f0e488031c32",
     "bee2942ee48f1bb77bbb",
     "c287be53e4989312ef81",
     "c420c7a8d494c4aca2c5",
     "c68b6c9f155699237221",
     "c75821bd14abdfc7fb61",
+    "cf914d5b401a010928b2",
     "d46054458f632f8c4c4c",
-    "d5820327aabc0150f4d6",
     "d95f981be70b40bb2609",
     "e15dd7b8af14a936406f",
     "e58deb6531063d40098b",
@@ -59,7 +61,7 @@
     "fe4d2180cb0ba0413786",
     "fefd8892f7936cd17eb4"
   ],
-  "content_hash": "ec5b609d5addfd4f7b61b25ead595a984dda1f54d1593952fa020e8e6f56ecd7",
+  "content_hash": "508319379b30f823b062cdd31151d60780692b1a947aa1296bb0ff27d24df085",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security boundaries, third-party library handling, and secure server-side data access from LWC. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface is involved.",
   "file_location": "skills/lwc/lwc-security",
@@ -73,7 +75,9 @@
   "official_sources": [
     "Secure Apex Classes \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security.html",
     "Light DOM \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html",
-    "Access Elements the Component Owns \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-dom-work"
+    "Access Elements the Component Owns \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-dom-work",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the API-version gate on the FLS pattern in `SKILL.md` Pattern 5",
+    "Database Operations Run in User Mode by Default, Not System Mode (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5"
   ],
   "outputs": [
     "security review findings for lwc and supporting apex",

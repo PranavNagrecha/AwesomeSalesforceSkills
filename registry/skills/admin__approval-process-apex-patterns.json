@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "06f9e9956046692aaab8",
     "0be1ab22c74beea69f65",
     "0e56aaef0fda662c07b1",
     "1279ccf90f951819cccf",
@@ -29,6 +30,7 @@
     "50cc7080af017abfb368",
     "51424c9cffdfc98f3be4",
     "579dbee2f9e935ec81ad",
+    "5876a252ed8c3bac7ce9",
     "5aa721d1e9e7bb66cfaf",
     "5f07f4acff6c562dc3ea",
     "6242bcffabdc8793f69a",
@@ -50,6 +52,7 @@
     "921e12c27ef3267aa5a7",
     "9352c913d1f36ba4009e",
     "938a5d219ae50fc14b12",
+    "9aaa10d9a559b2019bb7",
     "9b868eeb37248800674a",
     "9db1e0cbfd9867f30578",
     "a0b80c4f8b376089551e",
@@ -78,7 +81,7 @@
     "fcfde78ec919755df22a",
     "fed47307e8bc465678ff"
   ],
-  "content_hash": "54f3d927a4f12b33102680012ef46b6dcb16d3967ee519b12258fa2c9c2f153f",
+  "content_hash": "ea259e5784046b2ddbd3adec089e84082c8e9d8e6a5d00a813a2534a8a0cbb61",
   "dependencies": [],
   "description": "Programmatically driving Salesforce Approval Processes from Apex \u2014 `Approval.process(ProcessSubmitRequest)` to submit, `ProcessWorkitemRequest` to approve / reject / reassign, recall semantics, querying `ProcessInstance` and `ProcessInstanceWorkitem` to find pending approvals, and the bulk-submit / bulk-action error-row handling. Covers when to use Apex-driven approval (system-initiated submission, batch approvals, custom UIs) vs leaving the platform's standard buttons in place. NOT for the Approval Process metadata definition itself (that's admin / declarative \u2014 see admin/approval-process-design), NOT for Flow-based approvals (use flow/flow-orchestration-patterns).",
   "file_location": "skills/admin/approval-process-apex-patterns",
@@ -96,6 +99,7 @@
     "Apex Reference: Approval.ProcessWorkitemRequest \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Approval_ProcessWorkitemRequest.htm",
     "Object Reference: ProcessInstance / ProcessInstanceWorkitem \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_processinstance.htm",
     "Approval Process Considerations \u2014 https://help.salesforce.com/s/articleView?id=sf.approvals_considerations.htm&type=5",
+    "Remove Pending Approval Requests (Mass Transfer Approval Requests) \u2014 https://help.salesforce.com/s/articleView?id=sf.data_approval_requests_remove.htm&type=5",
     "Sibling skill \u2014 `skills/admin/approval-process-design/SKILL.md`",
     "Sibling skill \u2014 `skills/flow/flow-orchestration-patterns/SKILL.md`",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"

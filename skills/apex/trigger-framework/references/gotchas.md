@@ -60,9 +60,11 @@ static void testAfterInsert_secondMethod() {
 
 **When it bites you:** Always, silently. `without sharing` in a trigger handler is a data exposure risk that doesn't throw errors — it just ignores the sharing model.
 
+**What Summer '26 did and did not change:** an *explicit* `without sharing` opts the class out of the sharing model at every `apiVersion`, so this gotcha is not retired — though at 67.0+ what a bare operation inside such a class actually reaches also depends on its access mode, which now defaults to user mode (see "How to avoid it" below). What inverted at **67.0** is the meaning of *no* keyword — a bare `public class AccountTriggerHandler` runs `with sharing` there, while at **66.0 and below** it runs without sharing. The gate is the `apiVersion` in the handler's `.cls-meta.xml`, not the org's release, and the inheritance rule means one 67.0+ class anywhere in the chain pulls the rest to `with sharing`. Separately, the `.trigger` file always runs in system mode at every version and cannot carry a sharing keyword at all — the handler is the only place this decision exists. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+
 **How to avoid it:**
 - Default to `with sharing` on all handler classes
-- If a specific sub-operation needs elevated context (e.g. querying config records the user can't see): extract it to a private inner class `private without sharing class SystemContextHelper {...}` — scope the elevation to the minimum necessary code
+- If a specific sub-operation needs elevated context (e.g. querying config records the user can't see): extract it to a private inner class `private without sharing class SystemContextHelper {...}` — scope the elevation to the minimum necessary code. At `apiVersion` **67.0+** the keyword alone no longer buys the elevation: database operations default to user mode, so the helper must declare `without sharing` *and* state the mode on the operation itself (`WITH SYSTEM_MODE` on the query, `as system` on the DML, or `AccessLevel.SYSTEM_MODE` on the `Database` call) with a `// reason:` comment. Below 67.0 the keyword is sufficient
 - Document why `without sharing` is used with a comment: `// without sharing: required to query TriggerSettings__c which is admin-only`
 
 ---

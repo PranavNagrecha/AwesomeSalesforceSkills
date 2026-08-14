@@ -66,9 +66,9 @@
 3. **Block 2**: Report type = "Quotas with Users" (a custom CRT or standard if available). Filters: Quota Period = Current FQ. Group by Quota Owner. Summary field: SUM(Quota Amount) labeled "Quota."
 4. Set the common grouping field to Owner Name across both blocks (this is how joined report blocks align rows).
 5. Add a Summary Formula across blocks: Attainment % = `[Opportunities]Amount:SUM / [Quotas]QuotaAmount__c:SUM`
-6. Save and add to the leadership dashboard as a Table component — note that joined reports can only appear as tables in dashboards, not as charts.
+6. Add a chart to the joined report, then place **that chart** on the leadership dashboard as a widget. The full joined report cannot be added as a dashboard widget, and a dashboard whose widgets are all joined-report charts cannot be filtered at all — so plan any period switching as separate dashboards, not as a dashboard filter.
 
-**Limits to know:** Maximum 5 blocks per joined report. Maximum 2,000 rows per block. Bucket fields cannot span blocks. Joined reports are not available in dashboards as chart components — only as embedded table components, and only on some editions.
+**Limits to know:** Maximum 5 blocks per joined report, 100 columns per block, 10 custom summary formulas per block and 50 across the report, and 10 cross-block formulas (step 5 spends one). Bucketed fields, cross filters, and conditional highlighting are unavailable inside a joined report entirely — the coverage-tier bucket from Example 2 cannot be reused here.
 
 **Why it works:** The joined report treats each block as an independent data source aligned on the common grouping. Reps with quota but no closed deals still appear (block 2 contributes the row); reps with deals but no quota entry also appear (block 1 contributes). The cross-block summary formula surfaces attainment percentage without requiring a custom formula field on either object.
 

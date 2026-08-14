@@ -2,11 +2,11 @@
 
 ## 1. Turbo Extract Is A Narrow Optimization
 
-Teams often treat Turbo Extract like a default performance upgrade.
+Teams often treat Turbo Extract like a default performance upgrade. It is not a faster Extract with the same surface. Salesforce states: "Because a Data Mapper Turbo Extract is a simpler type, it doesn't have formulas or mappings." And separately: "You can't use formulas, custom JSON, default values, and transformations on a Data Mapper Turbo Extract." Its configuration surface is the extraction object, filters, the fields to return (including fields from related parent objects), and Options.
 
 Avoid it:
 - Use it for simple single-object reads only.
-- Switch back to Extract when mapping flexibility is actually needed.
+- Switch back to Extract the moment a formula, a default value, custom output JSON, or a transformation enters the requirement — a Turbo Extract has no Output tab to configure one in.
 
 ## 2. Mapping Complexity Hides Asset Drift
 
@@ -31,3 +31,11 @@ The urge to keep everything in one OmniStudio layer can turn a mapping asset int
 Avoid it:
 - Move sequencing and multi-step coordination into Integration Procedures.
 - Use Apex where OmniStudio no longer fits cleanly.
+
+## 5. Transform And Load Cannot Query Salesforce
+
+Designs sometimes assume a Load can look up the record it is about to update, or that a Transform can enrich a payload from Salesforce. Neither can: "The Data Mapper Transform and Load types don't include queries because they're not retrieving data from Salesforce objects."
+
+Avoid it:
+- Fetch first, then reshape or write — a Data Mapper Extract, an HTTP action in an Integration Procedure, or the calling OmniScript supplies the data these types consume.
+- Resolve the target record with an upsert key on the Load instead of an imaginary query step inside it.

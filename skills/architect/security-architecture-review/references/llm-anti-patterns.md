@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Treating Profile-Level Security as Sufficient Without Checking Apex CRUD/FLS Enforcement
 
-**What the LLM generates:** "Security is handled by profiles and permission sets — users can only see and edit fields they have access to" without noting that Apex code runs in system mode by default and bypasses both CRUD and FLS checks unless the developer explicitly enforces them.
+**What the LLM generates:** "Security is handled by profiles and permission sets — users can only see and edit fields they have access to" without noting that Apex code saved at API 66.0 or earlier runs in system mode by default and bypasses both CRUD and FLS checks unless the developer explicitly enforces them. The mirror-image error is now just as common: asserting a flat "Apex runs in user mode" because Summer '26 flipped the default, which is wrong for every class still pinned below 67.0.
 
 **Why it happens:** LLMs conflate declarative security (profile/permission set FLS) with runtime Apex security. Training data from admin-focused content assumes the UI enforces FLS, which is true for standard UI but not for Apex, Visualforce, or LWC with imperative Apex.
 
@@ -17,17 +17,21 @@ A security architecture review must check BOTH layers:
 1. Declarative: profiles, permission sets, OWD, sharing rules, FLS settings
 2. Programmatic: Apex classes must enforce CRUD/FLS explicitly
 
-Apex enforcement methods:
-- WITH USER_MODE in SOQL (Spring '23+): SELECT Id FROM Account WITH USER_MODE
+Read the apiVersion in each class's .cls-meta.xml FIRST — it, not the
+org's release, decides the default access mode. Then:
+
+- WITH USER_MODE in SOQL (GA API 57.0, Spring '23): SELECT Id FROM Account WITH USER_MODE
+- as user / AccessLevel.USER_MODE on DML and Database methods
 - Schema.SObjectType.Account.isAccessible() for CRUD checks
-- Security.stripInaccessible() to remove fields the user cannot access
-- WITH SECURITY_ENFORCED in SOQL (older pattern, throws exception on violation)
+- Security.stripInaccessible(AccessType.READABLE, records) -> operate on
+  the SObjectAccessDecision's .getRecords(), not the original list
+- WITH SECURITY_ENFORCED: legacy, and does not compile at 67.0+
 
 Flag any Apex class that queries or DMLs user-facing data without one of
 these enforcement mechanisms.
 ```
 
-**Detection hint:** Search Apex code for SOQL queries without `WITH USER_MODE` or `WITH SECURITY_ENFORCED`, and DML operations without `stripInaccessible()`. Flag classes that handle user-facing data in system mode.
+**Detection hint:** Search Apex code for SOQL queries without `WITH USER_MODE` and DML without `as user` or `stripInaccessible`, then check each hit's `apiVersion` — below 67.0 that is an unenforced query, at 67.0+ it is already user mode and the real finding is an explicit `WITH SYSTEM_MODE` / `as system` opt-out. Treating the presence of `WITH SECURITY_ENFORCED` as evidence a query is secure is a scanner defect at every version. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

@@ -69,3 +69,17 @@ A version that achieves 76% coverage in the version creation org may have differ
 **When it occurs:** CI pipelines that treat `sfdx-project.json` as read-only or do not include a commit step after version creation. Common in teams that copy-paste version IDs from CI logs manually.
 
 **How to avoid:** Include a step in the CI pipeline that commits the updated `sfdx-project.json` (with new aliases written by the CLI) back to the repository or to a release branch. Alternatively, use the `--json` output of `sf package version create` to capture the version ID and store it as a pipeline artifact or environment variable for downstream steps, and treat `sfdx-project.json` as the authoritative store to be updated and committed.
+
+---
+
+## Gotcha 7: Promotion Is Spend-Once Per Version Number, and `version delete` Is Not an Undo
+
+**What happens:** The Salesforce DX Developer Guide states it flatly: "You can promote and release only once for each package version number, and you can't undo this change." Once `sf package version promote --package "Expense Manager@1.3.0-7"` returns `Successfully promoted the package version, ID: 04t... to released.`, that build number is spent. A defect found an hour later cannot be fixed by rebuilding `1.3.0-7` and re-promoting it — the number is burned and you must ship `1.3.0-8`.
+
+Teams then reach for `sf package version delete` as an "un-promote." It is not one. For unlocked packages a released version *can* be deleted (unlike 2GP managed packages, where only beta versions are deletable) — but deletion is permanent, every later attempt to install that `04t...` fails, and any package that names it as a dependency breaks. Deleting does not return the version to beta and does not undo the release.
+
+Promotion is additionally gated by a permission most orgs never provision deliberately: the **Promote a package version to released** user permission, which must be enabled in the **Dev Hub** org for the user (or CI integration user) running the command. Salesforce's guidance is to create a permission set containing this permission and assign it only to the users who should be able to release.
+
+**When it occurs:** Pipelines that promote automatically on every green `main` build. Also hotfixes promoted ahead of QA sign-off, and first-time setups where the CI integration user fails the promote step because nobody assigned the permission.
+
+**How to avoid:** Treat promotion as a release event, not a build step — manual approval gate, run after sandbox validation. Enforce it at the platform layer too: put **Promote a package version to released** in a `Release_Manager` permission set assigned only to release managers in the Dev Hub, so an automation account cannot promote by accident. When a promoted version is bad, roll forward to a new build number; never plan a rollback that depends on deleting or demoting the released version.

@@ -150,7 +150,7 @@ def check_custom_report_type_joins(manifest_dir: Path) -> list[str]:
 
     Salesforce CRT metadata files use the .reportType-meta.xml suffix.
     Checks:
-      - CRT is in "Deployed" status (not Draft)
+      - CRT Deployment Status is "Deployed" (the other value is "In Development")
       - Multi-level "without" joins are flagged for review
     """
     issues: list[str] = []
@@ -165,8 +165,10 @@ def check_custom_report_type_joins(manifest_dir: Path) -> list[str]:
         deployed = child_text(root, "deployed")
         if deployed.lower() == "false":
             issues.append(
-                f"[CRTNotDeployed] Report Type '{crt_name}' is not deployed (deployed=false). "
-                f"Users cannot access report types until they are deployed."
+                f"[CRTNotDeployed] Report Type '{crt_name}' has Deployment Status 'In Development' "
+                f"(deployed=false). It is hidden from all users except those with the "
+                f"'Manage Custom Report Types' permission. Note that this status also flips back from "
+                f"Deployed if the primary custom or external object's own Deployment Status changes."
             )
 
         # Check for "without" joins at non-first relationship steps — flag for manual review

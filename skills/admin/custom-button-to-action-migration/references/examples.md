@@ -38,12 +38,14 @@ if (result == "OK") {
 public with sharing class OpportunityActions {
     @AuraEnabled
     public static void markAsHotProspect(Id oppId) {
-        Opportunity opp = [SELECT Id, IsHotProspect__c FROM Opportunity WHERE Id = :oppId WITH SECURITY_ENFORCED LIMIT 1];
+        Opportunity opp = [SELECT Id, IsHotProspect__c FROM Opportunity WHERE Id = :oppId WITH USER_MODE LIMIT 1];
         opp.IsHotProspect__c = true;
         update opp;
     }
 }
 ```
+
+`WITH USER_MODE` is the read idiom for a class at `apiVersion` 57.0+; the clause it replaces, `WITH SECURITY_ENFORCED`, was removed in 67.0 (Summer '26) and no longer compiles there. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release — a class still pinned at ≤ 56.0 keeps the old clause (`WITH USER_MODE` is not available to it) until someone raises the version.
 
 **Headless LWC (`markHotProspect.js`):**
 
@@ -164,7 +166,7 @@ if (records.length === 0) {
 public with sharing class AccountActions {
     @AuraEnabled
     public static Integer markAsKey(List<Id> ids) {
-        List<Account> accounts = [SELECT Id, Is_Key_Account__c FROM Account WHERE Id IN :ids WITH SECURITY_ENFORCED];
+        List<Account> accounts = [SELECT Id, Is_Key_Account__c FROM Account WHERE Id IN :ids WITH USER_MODE];
         for (Account a : accounts) a.Is_Key_Account__c = true;
         update accounts;
         return accounts.size();
@@ -266,7 +268,7 @@ Field: Last_Action_Source__c (Picklist: Classic Button, Lightning Action, Both)
 public with sharing class OpportunityActions {
     @AuraEnabled
     public static void markAsHotProspect(Id oppId) {
-        Opportunity opp = [SELECT Id, Last_Action_Source__c FROM Opportunity WHERE Id = :oppId WITH SECURITY_ENFORCED];
+        Opportunity opp = [SELECT Id, Last_Action_Source__c FROM Opportunity WHERE Id = :oppId WITH USER_MODE];
         opp.IsHotProspect__c = true;
         opp.Last_Action_Source__c = 'Lightning Action';
         update opp;

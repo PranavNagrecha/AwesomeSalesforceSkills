@@ -8,14 +8,23 @@ retire-vs-harden-vs-leave-alone decision for legacy Visualforce pages:
   - <apex:page action="{!method}"> — page-action attribute that may trigger
     GET-side state changes; requires manual review of the action method.
   - Apex controllers without `with sharing` / `without sharing` / `inherited
-    sharing` — sharing keyword is not declared (defaults to without sharing
-    in older orgs, ambiguous in any case).
+    sharing` — sharing keyword is not declared, so the behaviour depends on
+    the class's pinned apiVersion (see below).
   - Getters returning an sObject from a SOQL query without WITH USER_MODE or
-    WITH SECURITY_ENFORCED — FLS is not enforced for the rendered page.
+    WITH SECURITY_ENFORCED — below apiVersion 67.0, or at any version when the
+    query opts out with WITH SYSTEM_MODE, FLS is not enforced for the rendered
+    page.
   - <apex:outputText value="{!record.Field}"/> bound to an sObject field —
     outputText does not enforce FLS; should be outputField.
   - <apex:dynamicComponent componentValue="..."/> — dynamic-component branch
     is hard to security-review and is a strong rewrite candidate.
+
+Two Apex defaults inverted in API 67.0 (Summer '26): database operations run
+in user mode, and a class with no sharing keyword runs `with sharing`. The
+gate is the apiVersion in each class's own `.cls-meta.xml`, not the org's
+release, so the sharing and SOQL findings below are reported against the
+version read from that sibling file. See agents/_shared/AGENT_CONTRACT.md,
+"Apex security idiom by API version".
 
 Uses stdlib only — no pip dependencies.
 
@@ -90,6 +99,21 @@ _SOQL_USER_MODE = re.compile(
     re.IGNORECASE,
 )
 
+# Explicit opt-out of default user mode. A query carrying this clause is NOT
+# FLS-enforced whatever the class's apiVersion defaults to, so it must never be
+# scored clean on the strength of the 67.0 default.
+_SOQL_SYSTEM_MODE = re.compile(
+    r'\bWITH\s+SYSTEM_MODE\b',
+    re.IGNORECASE,
+)
+
+# apiVersion from a class's sibling `<Class>.cls-meta.xml`. API 67.0 (Summer '26)
+# inverted both Apex defaults — database operations run in user mode, and a class
+# with no sharing keyword runs `with sharing` — so the same source line means
+# different things at different pinned versions.
+_API_VERSION = re.compile(r'<apiVersion>\s*([0-9.]+)\s*</apiVersion>')
+_DEFAULTS_INVERTED_IN = 67.0
+
 # Controller hint — class references ApexPages or has page-controller markers
 _VF_CONTROLLER_HINT = re.compile(
     r'\bApexPages\b|\bApexPages\.StandardController\b|\bApexPages\.standardController\b',
@@ -128,6 +152,20 @@ def _is_likely_sobject_type(type_name: str) -> bool:
     if type_name in _STANDARD_SOBJECTS:
         return True
     return False
+
+
+def class_api_version(cls_file: Path) -> float | None:
+    """apiVersion from the sibling `<Class>.cls-meta.xml`, or None if unreadable."""
+    meta = cls_file.with_name(cls_file.name + "-meta.xml")
+    if not meta.is_file():
+        return None
+    match = _API_VERSION.search(meta.read_text(encoding="utf-8", errors="replace"))
+    if not match:
+        return None
+    try:
+        return float(match.group(1))
+    except ValueError:
+        return None
 
 
 def check_visualforce_pages(pages_dir: Path) -> list[str]:
@@ -190,16 +228,32 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
 
         is_vf_controller = bool(_VF_CONTROLLER_HINT.search(source))
 
+        api_version = class_api_version(cls_file)
+        version_label = (
+            f"apiVersion {api_version:.1f}"
+            if api_version is not None
+            else "an unknown apiVersion (no readable .cls-meta.xml — assuming 66.0 or below)"
+        )
+        defaults_inverted = api_version is not None and api_version >= _DEFAULTS_INVERTED_IN
+
         # Check sharing keyword
         if is_vf_controller:
             class_decl = _CLASS_DECL.search(source)
             if class_decl and not _CLASS_WITH_SHARING.search(source):
+                default_note = (
+                    "runs `with sharing` by default, so its queries enforce record access "
+                    "unless one opts out with WITH SYSTEM_MODE — declare "
+                    "the keyword anyway so the posture is explicit and survives a downgrade"
+                    if defaults_inverted
+                    else "runs `without sharing` — declare `with sharing` explicitly for "
+                    "record-level enforcement"
+                )
                 issues.append(
                     f"[NO-SHARING-KEYWORD] {cls_file.name}: "
                     f"VF controller class {class_decl.group(2)!r} declares no sharing keyword "
                     f"(with sharing / without sharing / inherited sharing). "
-                    f"Default depends on context — explicitly declare `with sharing` for record-level "
-                    f"enforcement. Note: this does NOT cover FLS — pair with WITH USER_MODE on SOQL."
+                    f"At {version_label} it {default_note}. "
+                    f"Note: the keyword does NOT cover FLS — pair with WITH USER_MODE on SOQL."
                 )
 
         # Check SOQL queries lacking enforcement
@@ -207,12 +261,29 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
             query_text = match.group(0)
             if not _SOQL_USER_MODE.search(query_text):
                 snippet = query_text[:80].strip().replace("\n", " ")
+                if _SOQL_SYSTEM_MODE.search(query_text):
+                    consequence = (
+                        "the query opts out with WITH SYSTEM_MODE, so FLS is not enforced "
+                        "whatever the class's default is — pages binding the result via "
+                        "<apex:outputField> will still expose FLS-restricted fields. "
+                        "Confirm the opt-out is deliberate and documented, or drop the clause"
+                    )
+                elif defaults_inverted:
+                    consequence = (
+                        "database operations already default to user mode, so FLS is enforced — "
+                        "add WITH USER_MODE to state the intent, and note that "
+                        "WITH SECURITY_ENFORCED no longer compiles here"
+                    )
+                else:
+                    consequence = (
+                        "the query runs in system mode; FLS will not be enforced, and pages "
+                        "binding the result via <apex:outputField> will still expose "
+                        "FLS-restricted fields"
+                    )
                 issues.append(
                     f"[SOQL-NO-USER-MODE] {cls_file.name}: "
                     f"SOQL query missing WITH USER_MODE or WITH SECURITY_ENFORCED — "
-                    f"snippet: {snippet!r}. FLS will not be enforced; pages binding "
-                    f"this query's result via <apex:outputField> will still expose "
-                    f"FLS-restricted fields."
+                    f"snippet: {snippet!r}. At {version_label}, {consequence}."
                 )
 
         # Check for getters returning sObjects without enforcement nearby
@@ -238,11 +309,19 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
                             break
                 method_body = source[method_start:method_end]
                 if _SOQL_QUERY.search(method_body) and not _SOQL_USER_MODE.search(method_body):
+                    opts_out = bool(_SOQL_SYSTEM_MODE.search(method_body))
+                    if defaults_inverted and not opts_out:
+                        continue  # user mode is the default at 67.0+; the getter is enforced
+                    reason = (
+                        "opts out of user mode with WITH SYSTEM_MODE"
+                        if opts_out
+                        else f"runs SOQL without WITH USER_MODE at {version_label}"
+                    )
                     issues.append(
                         f"[GETTER-SOBJECT-NO-FLS] {cls_file.name}: "
-                        f"Getter returning sObject type {return_type!r} runs SOQL "
-                        f"without WITH USER_MODE. Pages binding this getter via "
-                        f"<apex:outputField> will not have FLS enforced."
+                        f"Getter returning sObject type {return_type!r} {reason}. "
+                        f"Pages binding this getter via <apex:outputField> will not "
+                        f"have FLS enforced."
                     )
 
     return issues

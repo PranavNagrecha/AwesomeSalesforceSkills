@@ -41,6 +41,16 @@ LOOKUP_COUNT_WARNING_THRESHOLD = 30
 # Salesforce hard limit on MDR fields per child object.
 MDR_HARD_LIMIT = 2
 
+# Standard objects that can never be the primary (master) object in a
+# master-detail relationship. Object Reference, "Relationships Among Objects":
+# "you can't create a master-detail relationship where these standard objects
+# are the primary object." A lookup to one of these can never be converted to
+# master-detail, so never advise it.
+MDR_INELIGIBLE_MASTERS = {
+    "BusinessHours", "Idea", "Lead", "OrderItem",
+    "PriceBook2", "Pricebook2", "Product2", "QuoteLineItem", "User",
+}
+
 # Phone / email label keywords (case-insensitive) used for field type heuristic.
 PHONE_LABEL_KEYWORDS = {"phone", "mobile", "cell", "fax", "tel"}
 EMAIL_LABEL_KEYWORDS = {"email", "e-mail"}
@@ -156,21 +166,48 @@ def check_junction_object_mdr_pattern(objects: list[ObjectInfo]) -> list[str]:
             mdr_fields = [f for f in rel_fields if f.field_type == "MasterDetail"]
 
             if len(lookup_fields) == 2:
+                blocked = [f for f in lookup_fields if f.reference_to in MDR_INELIGIBLE_MASTERS]
+                if len(blocked) == 2:
+                    advice = (
+                        f"Both parents ({blocked[0].reference_to}, {blocked[1].reference_to}) "
+                        f"are on the never-the-master list, so neither leg can become "
+                        f"MasterDetail. Rollups on these parents need Flow, Apex, or DLRS."
+                    )
+                elif blocked:
+                    convertible = [f for f in lookup_fields if f not in blocked]
+                    advice = (
+                        f"Convert {convertible[0].api_name} to MasterDetail for rollups and "
+                        f"referential integrity, but leave {blocked[0].api_name} as a Lookup — "
+                        f"{blocked[0].reference_to} can never be the master of a master-detail "
+                        f"relationship."
+                    )
+                else:
+                    advice = (
+                        "Convert to MasterDetail on both sides to enable rollup summaries and "
+                        "enforce referential integrity."
+                    )
                 issues.append(
                     f"JUNCTION_LOOKUP: {obj.api_name} appears to be a junction object "
                     f"(two relationship fields, no other custom fields) but both relationship "
                     f"fields are Lookup type ({lookup_fields[0].api_name}, {lookup_fields[1].api_name}). "
-                    f"Convert to MasterDetail on both sides to enable rollup summaries and "
-                    f"enforce referential integrity. "
+                    f"{advice} "
                     f"[File: {obj.file_path}]"
                 )
             elif len(lookup_fields) == 1 and len(mdr_fields) == 1:
+                lookup_field = lookup_fields[0]
+                if lookup_field.reference_to in MDR_INELIGIBLE_MASTERS:
+                    # One MDR + one Lookup to an MDR-ineligible parent is the only
+                    # legal shape for this junction, so it is not a finding at all.
+                    continue
+                advice = (
+                    "Consider converting the Lookup to MasterDetail if rollup summaries "
+                    "are needed on that parent."
+                )
                 issues.append(
                     f"JUNCTION_MIXED: {obj.api_name} appears to be a junction object "
-                    f"but uses one Lookup ({lookup_fields[0].api_name}) and one MasterDetail "
+                    f"but uses one Lookup ({lookup_field.api_name}) and one MasterDetail "
                     f"({mdr_fields[0].api_name}). The Lookup side cannot support rollup summaries "
-                    f"on that parent object. Consider converting the Lookup to MasterDetail if "
-                    f"rollup summaries are needed on that parent. "
+                    f"on that parent object. {advice} "
                     f"[File: {obj.file_path}]"
                 )
 

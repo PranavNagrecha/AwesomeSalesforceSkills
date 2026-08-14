@@ -155,13 +155,21 @@ def check_data_skew_and_sharing_performance(manifest_dir: Path) -> list[str]:
 
     # Always emit a reminder about runtime skew checks (not detectable from metadata alone)
     print(
-        "NOTE: Record count checks (ownership skew >10k, parent-child skew >10k) "
-        "require a live org query and cannot be performed from metadata alone.\n"
+        "NOTE: Record count checks for all three documented skew types (ownership, "
+        "account/parent-child, lookup) require a live org query and cannot be performed "
+        "from metadata alone.\n"
         "Run in Developer Console:\n"
+        "  -- Ownership skew\n"
         "  SELECT OwnerId, COUNT(Id) cnt FROM <Object> GROUP BY OwnerId "
         "HAVING COUNT(Id) > 10000 ORDER BY cnt DESC\n"
+        "  -- Account (parent-child) skew\n"
         "  SELECT AccountId, COUNT(Id) cnt FROM Contact GROUP BY AccountId "
-        "HAVING COUNT(Id) > 10000 ORDER BY cnt DESC"
+        "HAVING COUNT(Id) > 10000 ORDER BY cnt DESC\n"
+        "  -- Lookup skew: repeat per custom lookup field on the object\n"
+        "  SELECT <Lookup_Field__c>, COUNT(Id) cnt FROM <Object> "
+        "GROUP BY <Lookup_Field__c> HAVING COUNT(Id) > 10000 ORDER BY cnt DESC\n"
+        "Lookup skew only causes UNABLE_TO_LOCK_ROW failures where the object also takes "
+        "concurrent high-volume DML, so weight any hit by write concurrency before remediating."
     )
 
     return issues

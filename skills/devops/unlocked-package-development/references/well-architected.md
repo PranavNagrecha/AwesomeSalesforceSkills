@@ -79,6 +79,7 @@ Limits to be aware of (as of Spring '25):
 ## Official Sources Used
 
 - Salesforce DX Developer Guide: Unlocked Packages — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_intro.htm
+- Salesforce DX Developer Guide: Release an Unlocked Package (promotion permission and one-way promotion) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_create_pkg_ver_promote.htm
 - Second-Generation Package Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/pkg2_dev_intro.htm
 - Salesforce DX Developer Guide: Second-Generation Packaging — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm
 - Salesforce CLI Reference: sf package commands — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm

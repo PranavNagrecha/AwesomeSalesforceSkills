@@ -82,3 +82,30 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 - Schedule reports and SOQL-dependent processes with a buffer after bulk load jobs complete, rather than chaining them directly in the same automation sequence.
 - Use Bulk API 2.0 job status polling to confirm the job has completed before triggering downstream processes; then allow a platform-defined settling period before running aggregate queries on the loaded object.
 - Coordinate with Salesforce Support to understand the expected refresh lag for the specific skinny table configuration in your org.
+
+---
+
+## Gotcha 7: Cascade Delete on a Lookup Is Not a Field-Wizard Option — It Needs a Support Case and Bypasses Sharing
+
+**What happens:** The Metadata API `deleteConstraint` on a lookup field accepts three values: `SetNull` ("This value is the default. If the lookup record is deleted, the lookup field is cleared"), `Restrict` ("Prevents the record from being deleted if it's in a lookup relationship"), and `Cascade` ("Deletes the lookup record as well as associated lookup fields"). The Setup field wizard exposes only the first two. `Cascade` is gated on an org-level feature — "cascade delete on custom lookup relationships" — which is disabled by default. Salesforce states: "A cascade-delete bypasses security and sharing settings, which means users can delete records when the target lookup record is deleted even if they don't have access to the records." It is also unavailable entirely for lookup relationships to standard objects.
+
+**When it occurs:** Whenever children must disappear with the parent but master-detail is off the table — the 2-MDR limit is already spent, the parent must stay optional, or the parent is a standard object that cannot be a master (see Gotcha 8). The design doc says "set the lookup delete behavior to cascade" and the admin discovers there is no such radio button.
+
+**How to avoid:**
+- Do not commit to cascade-on-lookup in a design. Enabling it requires a System Administrator to file an Activations request with Salesforce Support and explicitly acknowledge the security bypass; there is no self-serve path.
+- Prefer master-detail when the dependency is genuine, or delete children explicitly from a before-delete Apex trigger or record-triggered Flow. Unlike cascade, that path lives in the org's metadata and its execution context is yours to choose — but it does not respect sharing by default either: a trigger runs in system mode unless its handler class is declared `with sharing`, and a record-triggered flow defaults to system context without sharing.
+- Use `Restrict` as the safe self-serve middle ground: it blocks the parent delete instead of silently removing children.
+- If the feature is already on in the org, treat every `deleteConstraint: Cascade` lookup as an audit finding — Salesforce notes that when the parent of a lookup relationship is deleted, field history tracking on the child does not record the deletion, so the child's history shows no sign of it.
+
+---
+
+## Gotcha 8: Eight Standard Objects Can Never Be the Master, and No Standard Object Can Be the Detail of a Custom Object
+
+**What happens:** The Object Reference states: "you can't create a master-detail relationship where these standard objects are the primary object. BusinessHours, Idea, Lead, OrderItem, PriceBook2, Product2, QuoteLineItem, User". Separately: "the standard object can't be on the detail side of a relationship with a custom object." Those objects are simply not offered in the Related To list once you pick Master-Detail Relationship in the field wizard. The permanent consequence is that no native rollup summary field can ever exist on any of those eight objects.
+
+**When it occurs:** Most often in junction design — the canonical broken recipe is `Account_Product__c` with a master-detail to Account plus a master-detail to Product2. The second leg is impossible. It also surfaces on requests like "roll up open pipeline onto the Lead", "count assigned cases per User", or "sum line quantities onto PriceBook2".
+
+**How to avoid:**
+- Check the blocklist before promising a rollup. If either parent is on it, that leg must be a lookup — and the rollup on that parent must come from a record-triggered Flow, an Apex trigger, or DLRS writing to a plain Number field.
+- For a junction where one side is blocked, use master-detail to the eligible (usually custom) parent and lookup to the blocked one. The junction still inherits sharing and cascade delete from the master side, and rollups still work on that side.
+- Never propose converting a standard object into the detail of a custom object; the platform offers no path for it, so a "make Contact a detail of Household__c" design has to be rewritten as a lookup, with record access handled by sharing rules or programmatically created Share records instead of inherited from the parent.

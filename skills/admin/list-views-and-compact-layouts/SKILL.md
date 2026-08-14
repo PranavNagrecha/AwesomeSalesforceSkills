@@ -141,6 +141,7 @@ Non-obvious platform behaviors that cause real production problems:
 2. **Search layout fixes do not change list views** - teams often edit the wrong metadata because both features display columns.
 3. **List-view sprawl is a governance problem, not just a UX problem** - once everyone can create broad public views freely, the object becomes harder to navigate and harder to support.
 4. **Field visibility in the UI is still bounded by security** - if a user cannot access a field, layout design alone will not make it usable.
+5. **"Manage Public List Views" is no longer the only permission for sharing a view** - since Summer '26, grant "Manage Shared List Views" so a user can share their own list views with the roles, groups, and territories they belong to; "Manage Public List Views" still works, but it also lets them edit or delete every public list view in the org.
 
 ---
 

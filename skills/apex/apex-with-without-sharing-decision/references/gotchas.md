@@ -5,11 +5,14 @@ problems when choosing a sharing keyword.
 
 ## Gotcha 1: Sharing inherits through static method calls
 
-**What happens:** `ServiceA.with sharing` calls `Util.doWork()` (no
-keyword on `Util`). The query inside `doWork` runs `with sharing`.
-Later, `BatchB.without sharing` calls the same `Util.doWork()` — and
-the query now runs `without sharing`. The same line of code returns
-different records depending on the caller.
+**What happens:** at **API ≤ 66.0** — `ServiceA.with sharing` calls
+`Util.doWork()` (no keyword on `Util`). The query inside `doWork` runs
+`with sharing`. Later, `BatchB.without sharing` calls the same
+`Util.doWork()` — and the query now runs `without sharing`. The same line
+of code returns different records depending on the caller. At **API
+67.0+** a bare `Util` stops following the caller and runs `with sharing`
+in both paths, which silently breaks `BatchB` instead: the surprise moves
+from the controller path to the batch path, it does not go away.
 
 **When it occurs:** any time a service / selector / utility class lacks
 an explicit keyword and is called from multiple entry points.
@@ -38,19 +41,22 @@ them to a UI. Treat the package boundary as a trust boundary.
 
 ## Gotcha 3: `@AuraEnabled` on a bare class is not implicitly `with sharing` in all contexts
 
-**What happens:** A class with `@AuraEnabled` methods and no class-level
-sharing keyword. Most LWC entry-point invocations run `with sharing`
-since API v34. But if that same class is called from another `without
-sharing` Apex class (e.g., a Queueable that re-uses the controller
-method), it runs `without sharing`. Reviewers see "it's an AuraEnabled
-controller" and assume safety; the second caller path breaks the
-assumption.
+**What happens:** version-gated on the `apiVersion` in the class's own
+`.cls-meta.xml`, not the org's release. At **API 67.0+** a bare class
+runs `with sharing` and this gotcha is closed. At **API ≤ 66.0** a class
+with `@AuraEnabled` methods and no class-level keyword runs `with
+sharing` for most LWC entry-point invocations (since API v34) — but if
+that same class is called from another `without sharing` Apex class
+(e.g., a Queueable that re-uses the controller method), it runs `without
+sharing`. Reviewers see "it's an AuraEnabled controller" and assume
+safety; the second caller path breaks the assumption.
 
 **When it occurs:** controllers that are also re-used as utility
 methods by background jobs.
 
 **How to avoid:** always explicitly declare `with sharing` on
-`@AuraEnabled` classes. Never rely on the implicit Lightning default.
+`@AuraEnabled` classes. Never rely on the implicit Lightning default, and
+never rely on the 67.0+ default either — an `apiVersion` change moves it.
 
 ---
 
@@ -73,15 +79,19 @@ they're seeing org-wide totals.
 
 ---
 
-## Gotcha 5: Trigger handlers default to `without sharing`-like behavior if bare
+## Gotcha 5: A bare trigger handler's query mode is version-gated — the trigger body's is not
 
 **What happens:** A trigger handler class with no sharing keyword. The
-trigger body itself runs in system context, so DML happens regardless.
-But SOQL queries inside the handler — fetching related records, e.g.,
-`SELECT Id FROM Account WHERE Id IN :triggerNew` — run without sharing
-unless the handler explicitly declares `with sharing`. New records show
-up that the actor would normally not be able to see, and downstream
-logic (e.g., assignment rules driven by the handler) misbehaves.
+trigger body itself runs in system mode at **every** API version — the
+Summer '26 / 67.0 default-mode change does not reach it, so DML in the
+trigger happens regardless of the handler keyword. What the keyword does
+govern is the handler's own SOQL, and that default inverted at 67.0. At
+**API ≤ 66.0**, `SELECT Id FROM Account WHERE Id IN :triggerNew` in a
+bare handler ran without sharing: records showed up that the actor could
+not normally see, and downstream logic (e.g., assignment rules driven by
+the handler) misbehaved. At **API 67.0+** the same bare handler runs
+`with sharing` — the opposite surprise, where a handler that needs
+cross-perimeter reads silently starts filtering them.
 
 **When it occurs:** trigger handlers written without explicit sharing
 declaration; especially common in trigger-handler frameworks where the

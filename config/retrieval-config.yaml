@@ -30,16 +30,37 @@ embeddings:
   # content_hash cache and only re-encode changed chunks. The pre-commit
   # hook explicitly skips embeddings via --skip-embeddings (see
   # .githooks/pre-commit) so day-to-day commits stay sub-second.
-  # TEMPORARILY DISABLED 2026-08-01 for build-agent memory safety.
-  # Measured: loading vector_index/embeddings.jsonl (535 MB) puts a single
-  # search process at 3.84 GB peak RSS; --no-embeddings drops it to 0.88 GB.
-  # This machine has 16 GB total, so 3-4 concurrent build agents OOM it.
-  # Quality cost on the held-out set: Hit@1 35.7%->34.4%, Hit@3 46.8%->42.2%,
-  # NONE 4.5%->5.2%. Immaterial for construction work, NOT acceptable as the
-  # shipped default -- restore to true before release, and see the queued
-  # work item to fix the underlying architecture (load only the ~30 candidate
-  # chunk vectors after the lexical pass instead of the whole file).
-  enabled: false
+  # RE-ENABLED 2026-08-13. It was disabled on 2026-08-01 "TEMPORARILY ... for
+  # build-agent memory safety", on the measurement that loading
+  # vector_index/embeddings.jsonl (535 MB) put one search process at 3.84 GB
+  # peak RSS on a 16 GB machine. That reason no longer holds:
+  #
+  #   * embeddings.jsonl is not built and is gitignored, so nothing loads it.
+  #     Only skill_embeddings.jsonl (~5 MB, one vector per skill) is read.
+  #   * Re-measured at HEAD: 472 MB peak RSS for a search process, and 91 ms
+  #     per query once the fastembed model is warm. The 3.84 GB figure is
+  #     obsolete, not merely improved.
+  #
+  # Quality, on the 154-query held-out set (the honest benchmark — none of its
+  # queries appear in the index):
+  #     off -> Hit@1 36.4%, Hit@3 44.2%
+  #     on  -> Hit@1 37.0%, Hit@3 48.7%
+  # +4.5pp Hit@3 is the reason this is on. NONE rate is 0.0% either way.
+  #
+  # SAFE FOR A FRESH CLONE, and that is a code guarantee rather than a hope.
+  # Both vector files are gitignored (over GitHub's file limit; rebuilt
+  # locally), so most installs have no vectors at all. scripts/search_knowledge
+  # .run_search now skips embed_query entirely unless vectors are actually
+  # loaded, matching the guard the MCP surface always had. So the three cases
+  # are: no fastembed -> None, no vectors -> not called, vectors present ->
+  # used. Turning this on cannot cost an install that has nothing to compare
+  # against. To get the +4.5pp locally, run
+  # `python3 scripts/build_skill_embeddings.py`.
+  #
+  # Still true, still queued: chunk-level embeddings would need the keyed
+  # vector store described above (fetch the ~30 candidate vectors after the
+  # lexical pass) before embeddings.jsonl is worth building again.
+  enabled: true
   backend: fastembed
   dimensions: 384
   # Skill count thresholds for embedding adoption

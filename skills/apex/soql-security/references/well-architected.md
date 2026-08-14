@@ -5,7 +5,7 @@
 **Directly implements:**
 - SOQL injection prevention protects against data exfiltration and manipulation via crafted queries
 - FLS/CRUD enforcement ensures users can only access data their permission set allows — prevents privilege escalation through Apex code
-- `WITH USER_MODE` / `WITH SECURITY_ENFORCED` / `stripInaccessible` are the three Salesforce-native FLS enforcement mechanisms
+- `WITH USER_MODE` and `stripInaccessible` are the Salesforce-native FLS enforcement mechanisms to design around; `WITH SECURITY_ENFORCED` is legacy at `apiVersion` 57.0–66.0 and removed at 67.0+, where user mode is the default for database operations
 
 **Tag a finding as Security when:**
 - `Database.query()` concatenates any variable that originates from user input, URL parameters, or deserialized JSON
@@ -18,7 +18,7 @@
 
 **How it connects:**
 - Allowlist validation for dynamic SOQL prevents runtime failures from unexpected input shapes
-- `WITH SECURITY_ENFORCED` throws `QueryException` on inaccessible fields — predictable failure mode vs. silent data exposure
+- `WITH USER_MODE` throws `QueryException` on inaccessible fields — predictable failure mode vs. silent data exposure (as did `WITH SECURITY_ENFORCED` on the classes that still carry it)
 - `stripInaccessible` on DML prevents "field not updatable" errors in production when a permission set changes
 
 **Tag a finding as Reliability when:**

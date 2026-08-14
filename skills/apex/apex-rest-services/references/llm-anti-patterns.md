@@ -54,7 +54,7 @@ global static void createAccount() {
 ```apex
 @RestResource(urlMapping='/api/accounts/*')
 global class AccountApi {
-    // No sharing keyword — defaults to without sharing for global REST classes
+    // No sharing keyword — runs without sharing in a class pinned to apiVersion 66.0 or below
     @HttpGet
     global static Account getAccount() {
         Id accountId = RestContext.request.requestURI.substringAfterLast('/');
@@ -63,7 +63,7 @@ global class AccountApi {
 }
 ```
 
-**Why it happens:** LLMs omit the sharing keyword, and `@RestResource` classes are typically `global`, which runs without sharing enforcement by default. This means any authenticated API caller can access any record regardless of their sharing rules.
+**Why it happens:** LLMs omit the sharing keyword. What that costs depends on the `apiVersion` in the class's `.cls-meta.xml`, not on the org's release — a Summer '26 org runs a class pinned to 58.0 with the older behavior. At **66.0 and below** a class with no keyword runs without sharing enforcement, so any authenticated API caller can reach any record regardless of their sharing rules, and the bare SOQL above runs in system mode past FLS as well. At **67.0+** (Summer '26) the bare class runs `with sharing` and database operations default to user mode, so the omission is no longer that hole — but declare the keyword anyway, because otherwise the endpoint's access posture is decided by a version pin the reviewer cannot see in the source. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 **Correct pattern:**
 
@@ -78,7 +78,7 @@ global with sharing class AccountApi {
 }
 ```
 
-**Detection hint:** `@RestResource` class declaration without `with sharing` keyword.
+**Detection hint:** `@RestResource` class declaration without `with sharing` keyword. Grade the hit against the sibling `.cls-meta.xml`: an exposed-records defect at 66.0 and below, a hardening note at 67.0+.
 
 ---
 

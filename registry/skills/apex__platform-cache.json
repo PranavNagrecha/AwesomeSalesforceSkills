@@ -6,6 +6,7 @@
     "0b5a4fd90ab59265bf67",
     "0c54b2d45dea42ea9ba9",
     "19cb1d6f2163fa6ab9db",
+    "24838af180994f637e56",
     "35aea4304bf1527fa424",
     "3721ee3343fb45b20041",
     "3b26f0e37f869b60f9e1",
@@ -26,6 +27,7 @@
     "6ff58747e882a688d69c",
     "74ee4201ccc23b435aad",
     "77861368f7fbdb8ebb10",
+    "7adac57aca37d79ffa34",
     "81d2b8871e0b2fa07146",
     "868633529dc6d7ac64fc",
     "8fe831237b772711a440",
@@ -37,8 +39,8 @@
     "b582263e15365bc4fdb0",
     "b9c5817dc38845e2b3bf",
     "ba28478c6c3015ebe024",
+    "bf21a33ea412d6d5d2e4",
     "bfb8bb63fa28003192fb",
-    "c0b79a63f8430c1df906",
     "c299cfb3195d7030b204",
     "c36866eb9a3b0d54a1d3",
     "c61f6f7917d7491121fe",
@@ -52,7 +54,7 @@
     "fe5f53a1a55f202b7bd0",
     "ff80cb1a58c7a1170705"
   ],
-  "content_hash": "f3cf873ec24fa8bdf60e4305b1312447cf61b5c5bdee75d5ae2bc6ef85c45b2f",
+  "content_hash": "a7aaad701988d75a6080cf06dcae8172ca903092fcab8ecb868218855d57f623",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data.",
   "file_location": "skills/apex/platform-cache",
@@ -66,7 +68,8 @@
   "official_sources": [
     "Apex Developer Guide \u2014 Platform Cache overview",
     "Apex Reference Guide \u2014 cache partition APIs",
-    "Platform Cache considerations guidance \u2014 limits, scope, and operational considerations"
+    "Platform Cache considerations guidance \u2014 limits, scope, and operational considerations",
+    "Salesforce Help \u2014 Cache for Omnistudio Data Mappers and Integration Procedures (VlocityMetadata partition requirement)"
   ],
   "outputs": [
     "Platform Cache design recommendation",

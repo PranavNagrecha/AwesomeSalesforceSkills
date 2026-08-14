@@ -77,7 +77,7 @@
     "f7b4d8609b7e88411b9c",
     "fe684d2fcef3186991cc"
   ],
-  "content_hash": "96214f77cfb7168cd334caf884a5df8c4c1e62c71e685656b4e9779e494b2929",
+  "content_hash": "099f424c664f056c01d59ee3de0b49c62fe70d67a733d15112651bdd3953a5f6",
   "dependencies": [],
   "description": "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated). NOT for in-page overlays (use SLDS popover).",
   "file_location": "skills/lwc/lwc-lightning-modal",
@@ -93,7 +93,8 @@
     "lightning-modal-header API Reference:",
     "lightning-modal-body API Reference:",
     "lightning-modal-footer API Reference:",
-    "SLDS Global Focus Guidelines (referenced from the LightningModal"
+    "SLDS Global Focus Guidelines (referenced from the LightningModal",
+    "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0):"
   ],
   "outputs": [
     "LightningModal subclass LWC",

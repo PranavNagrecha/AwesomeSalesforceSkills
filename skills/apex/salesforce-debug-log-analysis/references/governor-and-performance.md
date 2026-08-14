@@ -278,7 +278,7 @@ grep -B 10 "SOQL_EXECUTE_BEGIN" log.log | grep "ENTERING_MANAGED_PKG" | sort | u
 3. **Cache**: use `Map<Id, SObject>` to avoid re-querying.
 4. **Async offload**: move heavy work to batch/queueable/future.
 5. **Skip unchanged records**: in triggers, compare new vs old to avoid unnecessary work.
-6. **Use `WITH SECURITY_ENFORCED` sparingly**: it adds overhead to every query. Profile first.
+6. **Budget for the CRUD/FLS check, do not skip it**: user mode (`WITH USER_MODE`, or the default at API 67.0+; legacy `WITH SECURITY_ENFORCED` in classes ≤ 66.0) costs time on every query. Profile first — dropping enforcement is not a performance fix.
 7. **Flatten rollups**: if DLRS is killing performance, consider scheduled recalculation instead of realtime.
 8. **Use platform events for decoupling**: instead of directly calling dependent logic, publish an event.
 9. **Use Change Data Capture for integration**: lets external systems subscribe to changes instead of polling.

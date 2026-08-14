@@ -25,9 +25,11 @@
 
 **Sharing model summary:**
 
-| Class / Trigger | Sharing Declaration | Justification (if `without sharing`) |
-|---|---|---|
-| | | |
+Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, decides what a *blank* sharing declaration means (`without sharing` at 66.0 and below, `with sharing` at 67.0+). Triggers have no declaration to record: mark them `n/a — system mode` and audit the handler class.
+
+| Class / Trigger | `apiVersion` | Sharing Declaration | Effective Sharing | Justification (if `without sharing`) |
+|---|---|---|---|---|
+| | | | | |
 
 ---
 

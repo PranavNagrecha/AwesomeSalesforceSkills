@@ -37,6 +37,7 @@
     "737dc4d2c8c14f657da7",
     "73f66213f692bf876760",
     "78698228b6097d91e654",
+    "7ba3279edfe3858dd83e",
     "8372ffdf175731f1f1e6",
     "8a5a182bc4b5edee2446",
     "8af0ebb1d54cf7786b26",
@@ -45,6 +46,7 @@
     "8f2ed723f8c98c10b39a",
     "960a15781ebec2f01ad6",
     "96cc8971d388bf8a11f6",
+    "9da59a53012100966b19",
     "9fa65c2a0f57f9cb0743",
     "a6534ec8dd7f349cf45c",
     "a659500d4d60d49853d0",
@@ -77,7 +79,7 @@
     "fe4e02ac5f06405b93cb",
     "ff7c195b495415b54ed7"
   ],
-  "content_hash": "6f3b19b467ddfa91bf56f745bbf47ac68e423523a02d57753314aa4b8a74245f",
+  "content_hash": "b01176f640be6bdf28a8d06e039c7e3c8f9b6925f6121205fe1e4b23965b2a48",
   "dependencies": [],
   "description": "Use when executing admin-level cleanup in a Salesforce org: deleting unused fields, removing inactive Flow versions, deactivating legacy automation, running Salesforce Optimizer or Org Check, and performing destructive metadata deploys. Triggers: 'clean up unused fields', 'delete inactive flows', 'run Optimizer', 'org has too many custom fields', 'remove old workflow rules', 'Flow version limit'. NOT for assessing or reporting on technical debt (use architect/technical-debt-assessment). NOT for code-level refactoring or Apex cleanup (use apex/ skills).",
   "file_location": "skills/admin/org-cleanup-and-technical-debt",
@@ -94,6 +96,8 @@
     "Salesforce Well-Architected Overview \u2014 operational excellence and reliability framing for metadata hygiene",
     "Salesforce Help: Manage Deleted Custom Fields \u2014 field recycle queue behavior and permanent erasure",
     "Salesforce Help: Custom Fields Allowed Per Object + Edition Allocations \u2014 https://help.salesforce.com/s/articleView?id=platform.custom_field_allocations.htm&type=5 \u2014 the allocation is per object, not per data type: Professional 100, Enterprise 500, Performance/Unlimited 800, Developer 500; \"An org can't have more than 900 custom fields on most object types, regardless of the edition or source of those fields.\"",
+    "Metadata API Developer Guide: Flow metadata type \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm \u2014 the deletion condition for a flow version: \"You can delete a flow version if it isn't active and doesn't have any paused interviews.\" and \"If the flow version has paused interviews, wait for those interviews to resume and finish, or delete them.\"",
+    "Tooling API Reference: Flow and FlowDefinition objects \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_flow.htm \u2014 `Flow` (one row per version) supports \"create(), delete(), query(), retrieve(), update(), upsert()\"; `FlowDefinition` supports only \"query(), retrieve(), update()\", so version deletion goes through `Flow`",
     "Salesforce Admins Blog: Tech Debt \u2014 admin-focused technical debt awareness and cleanup guidance"
   ],
   "outputs": [

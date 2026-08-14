@@ -3,7 +3,7 @@
 ## Relevant Pillars
 
 - **Reliability** — The bulk contract (one list in, one list out, same length, same order) is what keeps invocables stable under load. Violations of this contract produce silent data corruption that is extremely difficult to debug.
-- **Security** — Invocables expand the security surface: they run in Apex context, typically called by a flow running as an end user. Sharing posture (`with sharing` / `without sharing` / `inherited sharing`) must be declared explicitly and CRUD/FLS enforcement applied with `Schema.DescribeFieldResult` checks or `WITH SECURITY_ENFORCED` SOQL.
+- **Security** — Invocables expand the security surface: they run in Apex context, typically called by a flow running as an end user. Sharing posture (`with sharing` / `without sharing` / `inherited sharing`) must be declared explicitly, and CRUD/FLS enforced with `WITH USER_MODE` on reads (API 57.0+; the default at 67.0+) and `Security.stripInaccessible(AccessType, records).getRecords()` before DML. `WITH SECURITY_ENFORCED` is the idiom only for classes pinned at API ≤56.0; at 57.0–66.0 it still compiles but is legacy, and at 67.0+ it was removed and no longer compiles. What decides is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release.
 - **Performance** — A well-bulked invocable is cheaper per record than equivalent Flow logic because Apex can batch SOQL/DML. A poorly-bulked one is dramatically more expensive because each request-loop iteration counts separately.
 - **Operational Excellence** — The `label`, `description`, and `category` parameters on `@InvocableMethod` are the admin-facing contract. A well-documented invocable is usable by admins without reading the source; a poorly-documented one generates support tickets.
 
@@ -46,3 +46,5 @@ When a flow needs to trigger external work, the invocable can either issue a cal
 - Salesforce Developer — Flow.Interview Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Flow_Interview.htm
 - Salesforce Help — Customize Flow Behavior with Apex: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_apex.htm
 - Salesforce Architects — Well-Architected Framework: https://architect.salesforce.com/design/architecture-framework/well-architected
+- Salesforce Release Notes — The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
+- Salesforce Release Notes — Secure Apex Code with User Mode Database Operations (GA, Spring '23 / API 57.0): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5

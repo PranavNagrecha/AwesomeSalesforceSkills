@@ -6,6 +6,12 @@
  * Dependencies: [ObjectName]Service, TestDataFactory (tests)
  *
  * WAF Pillars: Scalability (bulkified), Reliability (recursion guard), Security (with sharing)
+ *
+ * Sharing:    Declared explicitly on purpose. The .trigger file always runs in system
+ *             mode and cannot carry a sharing declaration at all, so this class is
+ *             where the decision lives. What an *absent* keyword means is version-gated
+ *             on this class's apiVersion — see agents/_shared/AGENT_CONTRACT.md
+ *             § "Apex security idiom by API version".
  */
 public with sharing class [ObjectName]TriggerHandler {
 

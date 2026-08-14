@@ -52,7 +52,7 @@ Gather this context before working on anything in this domain:
 
 ### External Org-Wide Defaults (External OWD)
 
-External OWD is a separate org-wide default that applies exclusively to external users (portal users, community users, guest users). It is configured per object in Setup > Sharing Settings alongside the internal OWD. External OWD can be equal to or more restrictive than internal OWD — it can never be more permissive than the internal OWD for the same object. For example, if internal OWD is Public Read/Write, external OWD can be Public Read/Write, Public Read Only, or Private — but not more permissive.
+External OWD is a separate org-wide default that applies exclusively to external users (portal users, community users, guest users). It is configured per object in Setup > Sharing Settings alongside the internal OWD. Enabling the external sharing model is a one-way door — Salesforce documents that after it's enabled, the External Sharing Model can't be disabled — and it is already enabled in every org created in Spring '20 or later and in any org with Experiences or portals enabled. External OWD can be equal to or more restrictive than internal OWD — it can never be more permissive than the internal OWD for the same object. For example, if internal OWD is Public Read/Write, external OWD can be Public Read/Write, Public Read Only, or Private — but not more permissive.
 
 When external OWD is set to Private for an object, external users can only access records via explicit sharing mechanisms (Sharing Sets, manual sharing, Apex sharing, or profile-level permissions with "View All").
 

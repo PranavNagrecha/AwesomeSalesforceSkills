@@ -49,5 +49,7 @@ OmniStudio assets are often authored by configuration-focused teams with limited
 - OmniStudio OmniScript Help — https://help.salesforce.com/s/articleView?id=sf.os_omniscript.htm
 - OmniStudio Integration Procedures Help — https://help.salesforce.com/s/articleView?id=sf.os_integration_procedures.htm
 - OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
+- Cache Top-Level Integration Procedure Data — https://help.salesforce.com/s/articleView?id=xcloud.os_cache_for_top_level_integration_procedure_data_54841.htm&type=5
+- Decision Matrix Action for Integration Procedures — https://help.salesforce.com/s/articleView?id=xcloud.os_decision_matrix_action_for_integration_procedures_51584.htm&type=5
 - Salesforce Well-Architected Framework — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Integration Patterns and Practices — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
