@@ -1,6 +1,6 @@
 ---
 name: guest-user-security-audit
-description: "Auditing the security posture of an Experience Cloud (Community) site's Guest User. Covers the post-Spring '21 secure-by-default lockdown (object permissions removed, sharing rule grants required for any access), the Guest User profile permissions to remove (View All Data, Modify All Data, Manage Users, etc.), guest sharing rules, the Run-As-Guest test, OWASP A01 (Broken Access Control) mapping, and the standard set of leakage vectors (Apex with `without sharing`, Aura / LWC `@AuraEnabled` methods, public-site Visualforce, REST endpoints under `/services/apexrest`). NOT for Experience Cloud authenticated user setup (see experience/experience-cloud-user-management), NOT for general Salesforce profile design (see admin/profile-permset-design)."
+description: "Audit Experience Cloud guest user access — object/field CRUD, sharing, login, and hardening. Triggers: guest user audit, Experience Cloud guest security, site guest profile. NOT for member/community user provisioning — use admin/experience-cloud-member-management. NOT for profile/permset architecture — use admin/permission-sets-vs-profiles."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

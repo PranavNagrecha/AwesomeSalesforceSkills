@@ -1,6 +1,6 @@
 ---
 name: change-set-deployment
-description: "Use when uploading, validating, or deploying a change set between Salesforce orgs through Setup UI. Trigger keywords: 'change set upload', 'validate change set', 'deploy inbound change set', 'change set stuck', 'missing dependency change set', 'change set component error'. NOT for SFDX-based deployments, DevOps Center pipelines, or CI/CD automation — use the sf-cli-and-sfdx-essentials or devops-center-pipeline skills for those."
+description: "Use when uploading, validating, or deploying a change set between Salesforce orgs through Setup UI. Trigger keywords: 'change set upload', 'validate change set', 'deploy inbound change set', 'change set stuck', 'missing dependency change set', 'change set component error'. NOT for release planning or rollback strategy — use admin/change-management-and-deployment. NOT for DevOps Center pipelines — use devops/devops-center-pipeline. NOT for scripted or CI/CD deploys — use devops/salesforce-cli-automation."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

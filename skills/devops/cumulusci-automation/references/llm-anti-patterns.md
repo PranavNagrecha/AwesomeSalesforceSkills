@@ -186,3 +186,30 @@ sf org login jwt \
 ```
 
 **Detection hint:** Any CI configuration that includes `cci org connect`, `sf org login web`, or `sfdx auth:web:login` should be flagged as requiring interactive input and replaced with JWT-based auth.
+
+---
+
+## Anti-Pattern 7: Harvesting a Credential From `sf org display --json` in a CI Step
+
+**What the LLM generates:** A pipeline step that scrapes a token or auth URL out of `org display` output and hands it to a later step or to CumulusCI.
+
+```bash
+# Wrong — these fields are no longer emitted
+TOKEN=$(sf org display --target-org DevHub --json | jq -r '.result.accessToken')
+AUTH_URL=$(sf org display --verbose --json | jq -r '.result.sfdxAuthUrl')
+```
+
+**Why it happens:** A decade of pipeline templates and blog posts use `sf org display --json` as the token source, so it dominates training data. The Salesforce CLI stripped access tokens, SFDX auth URLs and passwords from those outputs on 27 May 2026. The command still exits 0 and the field is simply absent, so `jq -r` yields the literal string `null` rather than a token — a `[ -z "$TOKEN" ]` guard does not catch it, and the failure surfaces much later as a 401 in whatever consumed the value.
+
+**Correct pattern:**
+
+```bash
+# Ask for the credential explicitly; both commands warn and prompt
+# unless --no-prompt/-p or --json is passed.
+sf org auth show-access-token  --target-org DevHub --no-prompt
+sf org auth show-sfdx-auth-url --target-org DevHub --no-prompt
+```
+
+For CumulusCI specifically, the better answer is not to extract a credential at all: authenticate the org into CumulusCI's own keychain (JWT for CI, `cci org connect` locally) and let `cci flow run` use it. That removes the round-trip for persistent orgs only — scratch orgs still read credentials back through `org display`, so pin the CLI version there (see `gotchas.md` Gotcha 7).
+
+**Detection hint:** Any pipeline line combining `org display` with `.result.accessToken`, `.result.sfdxAuthUrl`, or `.result.password` reads fields the CLI no longer returns. Same for `SF_TEMP_SHOW_SECRETS=true` used as a permanent setting rather than a migration window.

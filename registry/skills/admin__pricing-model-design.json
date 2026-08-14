@@ -127,12 +127,12 @@
     "febbc046fda820bd7715",
     "ff7360c67ad3471f8d84"
   ],
-  "content_hash": "c8d97330a5b71a19e25e25b1713c56adfd3cfd0c7099d8c3edaf001192bd99b5",
+  "content_hash": "539170230599942073d11da831b9f37149b8aa682ba3b7d95061c51807ea0f8d",
   "dependencies": [
     "cpq-product-catalog-setup",
     "products-and-pricebooks"
   ],
-  "description": "Use this skill when selecting or designing the correct Salesforce CPQ pricing model for a product or product line \u2014 choosing among the four native Pricing Methods (List, Cost Plus Markup, Block, Percent of Total), deciding between Range and Slab Discount Schedule types, and mapping business pricing requirements to the correct CPQ mechanism before any configuration begins. Trigger keywords: CPQ pricing method, SBQQ__PricingMethod__c, Cost Plus Markup, Block Pricing design, Percent of Total design, discount schedule type, Range vs Slab discount, pricing model strategy, which CPQ pricing mechanism to use. NOT for CPQ implementation of Price Rule objects (use cpq-pricing-rules), NOT for standard Salesforce pricing without CPQ (use products-and-pricebooks), NOT for CPQ product catalog or bundle setup.",
+  "description": "Use when selecting the right Salesforce CPQ pricing model for a product line \u2014 the four native Pricing Methods (List, Cost Plus Markup, Block, Percent of Total) and Range vs Slab Discount Schedule types \u2014 before any configuration begins. Trigger keywords: CPQ pricing method, SBQQ__PricingMethod__c, Cost Plus Markup, Block Pricing design, Percent of Total design, discount schedule type, Range vs Slab discount, pricing model strategy, which CPQ pricing mechanism to use. NOT for configuring Price Rule objects \u2014 use admin/cpq-pricing-rules. NOT for pricing without CPQ \u2014 use admin/products-and-pricebooks.",
   "file_location": "skills/admin/pricing-model-design",
   "id": "admin/pricing-model-design",
   "inputs": [

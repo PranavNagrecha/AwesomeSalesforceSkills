@@ -46,6 +46,17 @@ HARDCODED_MODEL_API = re.compile(
     r"['\"]sfdc_ai__Default[A-Za-z0-9_]+"
 )
 
+# Model API names carrying a retirement date on the Supported Models page.
+# Requests to a retired model are rerouted to a replacement model rather than
+# rejected, so a stale name degrades silently — no exception, no non-200.
+# Refresh this map against the source page when it goes stale; keep it to names
+# the page explicitly annotates, never to names merely assumed gone.
+# Source: https://developer.salesforce.com/docs/ai/agentforce/guide/supported-models.html
+# Last verified: 2026-08-13
+RETIRED_MODEL_API_NAMES = {
+    "sfdc_ai__DefaultVertexAIGeminiPro30": "Retired on Apr 23, 2026",
+}
+
 # Batch / Queueable class declaration without AllowsCallouts
 BATCH_CLASS_DECL = re.compile(
     r"class\s+\w+\s+implements\s+[^{]*Database\.Batchable"
@@ -74,8 +85,12 @@ TRIGGER_LOOP = re.compile(
 
 def collect_apex_files(manifest_dir: Path) -> list[Path]:
     apex_files: list[Path] = []
-    for pattern in ("**/*.cls", "**/*.trigger"):
-        apex_files.extend(manifest_dir.rglob(pattern.lstrip("**/")))
+    # rglob already recurses, so the pattern must not carry a "**/" prefix.
+    # Do not reintroduce one via lstrip("**/") — lstrip strips a character set,
+    # not a prefix, so "**/*.cls" collapses to ".cls" and matches nothing,
+    # silently reducing every check below to a no-op.
+    for pattern in ("*.cls", "*.trigger"):
+        apex_files.extend(manifest_dir.rglob(pattern))
     return apex_files
 
 
@@ -131,6 +146,17 @@ def check_hardcoded_model_api_names(
                 f"Hardcoded model API name '{name}' appears in {len(files)} files "
                 f"({', '.join(files)}). Store this value in Custom Metadata or a "
                 f"Custom Setting to avoid scattered configuration strings."
+            )
+
+        retirement = RETIRED_MODEL_API_NAMES.get(name)
+        if retirement:
+            issues.append(
+                f"Model API name '{name}' is retired ({retirement}) per the "
+                f"Supported Models page, and is referenced in "
+                f"{', '.join(files)}. Requests to a retired model are rerouted to a "
+                f"replacement model rather than rejected, so this fails silently — "
+                f"no exception and no non-200 response. Replace it with a current "
+                f"model API name copied from the Supported Models page."
             )
 
 

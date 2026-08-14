@@ -1,6 +1,6 @@
 ---
 name: ip-relaxation-and-restriction
-description: "Design IP-based access controls: profile login IP ranges, org-wide trusted IPs, IP relaxation per profile, and the interaction with MFA and SSO. Trigger keywords: login IP range, trusted IP, IP relaxation, restricted IP, IP allowlist, login hours. Does NOT cover: network-layer firewalling, corporate VPN design, or Shield Event Monitoring."
+description: "Design IP-based access controls: profile login IP ranges, org-wide trusted IPs, IP relaxation per profile, and the interaction with MFA and SSO. Trigger keywords: login IP range, trusted IP, IP relaxation, restricted IP, IP allowlist, login hours. NOT for CSP Trusted Sites, CORS allowlists, TLS requirements, or troubleshooting a CSP violation — use security/network-security-and-trusted-ips."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

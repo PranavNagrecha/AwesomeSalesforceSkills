@@ -1,6 +1,6 @@
 ---
 name: webhook-signature-verification
-description: "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks."
+description: "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST — Crypto.generateMac, timing-safe compare, secret in Protected Custom Metadata, replay-window rejection. NOT for designing the receiver end to end — Sites routing, guest-user access, idempotency, the 5-second response window — use integration/webhook-inbound-patterns. NOT for signing a webhook Salesforce sends out — use integration/outbound-webhook-from-salesforce."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

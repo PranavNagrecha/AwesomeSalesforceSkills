@@ -43,9 +43,9 @@
     "f005aca1b60d309669fc",
     "f439d84be95e6c2480bf"
   ],
-  "content_hash": "7359aa09d9cf4132737ed40f5f617a1b7c2ce0f529eaa6011b9afbd0c2e8b9f3",
+  "content_hash": "f8cc21abdf2b23d615fa1c12b991ebc4aca62f58e3dad71b885e50c6a40ee409",
   "dependencies": [],
-  "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
+  "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for registering an OpenAPI spec as an External Service \u2014 use flow/flow-external-services. NOT for Apex callout logic and mock tests \u2014 use apex/callouts-and-http-integrations.",
   "file_location": "skills/flow/flow-http-callout-action",
   "id": "flow/flow-http-callout-action",
   "inputs": [

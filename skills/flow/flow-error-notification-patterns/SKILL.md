@@ -1,6 +1,6 @@
 ---
 name: flow-error-notification-patterns
-description: "Fault-path design and error notification for Salesforce Flow — what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of relying on the org-default 'apex exception email recipient'. Covers the ordering rule (Fault path on every callout / DML / record-create-or-update), the difference between a screen-flow user-visible error and a record-triggered-flow silent failure, and how to suppress noisy expected-rejection paths. NOT for the basic 'how do I add a Fault connector' (use Salesforce help), NOT for Apex-trigger errors (different runtime, see apex/apex-exception-handling)."
+description: "Use when Flow fault emails are noisy, repeated, going to the wrong person, or need to go somewhere other than email. Fault-path design and error notification for Salesforce Flow — what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of the org-default 'apex exception email recipient'. Covers the screen-flow user-visible error vs record-triggered-flow silent failure difference and suppressing noisy expected-rejection paths. Triggers: 'flow keeps sending me error emails', 'too many flow error emails', 'stop flow fault emails', 'change who receives flow error emails', 'route flow errors to Slack or a custom log object', 'apex exception email recipient'. NOT for how to build the Fault connector itself — use flow/fault-handling. NOT for triaging one failure that already happened — use flow/flow-runtime-error-diagnosis."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,7 @@ triggers:
   - "flow error custom log platform event notification"
   - "flow fault on screen flow vs record-triggered"
   - "flow.faultmessage screen flow display"
+  - "no fault connector org wide last modifier email"
 tags:
   - flow
   - fault-path
@@ -34,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-08-14
 ---
 
 # Flow Error Notification Patterns

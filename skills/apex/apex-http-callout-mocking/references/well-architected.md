@@ -1,28 +1,33 @@
-# Well-Architected Notes — Apex Http Callout Mocking
+# Well-Architected Notes — Apex HTTP Callout Mocking
 
 ## Relevant Pillars
 
-TODO: Identify which Well-Architected pillars apply and why.
-
-- **Security** — TODO: explain if/how security applies to this skill
-- **Performance** — TODO: explain if/how performance applies
-- **Scalability** — TODO: explain if/how scalability applies
-- **Reliability** — TODO: explain if/how reliability applies
-- **Operational Excellence** — TODO: explain if/how operational excellence applies
+- **Reliability** — Primary. Mocks are the only place an integration's failure paths are ever executed before production. A test suite that mocks only the 200 case has verified the least interesting third of the code. The reliability question this skill answers is "which failure will we survive," and the answer is exactly the set of responses you sequenced.
+- **Operational Excellence** — Secondary. Because "if an HTTP callout is invoked in test context, the callout is not made", the mock is also the *contract document* for the integration. Storing large fixtures as `StaticResource` files makes that contract reviewable in a pull request instead of buried in an escaped string literal.
+- **Performance** — Marginal but load-bearing on limits. Mocks return instantly and therefore never surface the real ceilings: 100 callouts per transaction, a 10-second default per-callout timeout, and a 120-second cumulative timeout across the whole transaction. Retry and pagination budgets have to be checked by reading the code, because no mock will fail them for you.
+- **Security** — Marginal. The mock is the only observation point for the outbound request, so header, method, and endpoint assertions belong there. If nobody asserts on `Authorization`, nobody has tested authentication.
 
 ## Architectural Tradeoffs
 
-TODO: Document the key tradeoffs a practitioner will face. Reference the patterns section in SKILL.md.
+| Tradeoff | Decision criteria |
+|---|---|
+| `StaticResourceCalloutMock` vs custom `HttpCalloutMock` | Static resource when the test needs one large, reviewable body and nothing else. Custom implementation the moment the test needs more than one response, needs to branch on the request, or needs to assert on it. |
+| `MultiStaticResourceCalloutMock` vs a routing custom mock | Multi-static when endpoints map cleanly one-to-one onto fixture files and no assertions are needed. A routing custom mock when you also want a 404 fallback for unexpected endpoints — that fallback is what turns an endpoint typo into a test failure. |
+| Inline body strings vs `StaticResource` fixtures | Inline for bodies under a few lines; the indirection of a static resource is not worth it. Static resource once the payload is realistic, because a 200-line escaped string is unreviewable and diffs badly. |
+| Per-test-class mock vs one shared mock | Shared, annotated `@IsTest`, once a second class needs it — `templates/apex/tests/MockHttpResponseGenerator.cls` is the canonical shared implementation. Duplicated mocks drift, and drifted mocks encode contradictory beliefs about the same API. |
+| Assert on side effects vs assert on the request | Both. Side-effect assertions prove the response was parsed; request assertions prove the right call was made. Only the second catches a wrong endpoint, a missing header, or a malformed body. |
+| Refactor to async vs use the `startTest`/`setMock` ordering trick | The ordering rules are a test-context affordance for fixtures. If *production* code needs DML before a callout, that is an architecture problem — move the callout to a Queueable. Do not let a passing test disguise it. |
 
-## Anti-Patterns
+## Architectural Anti-Patterns
 
-TODO: List 2–3 architectural anti-patterns this skill helps avoid.
-
-1. **TODO: Anti-pattern name** — TODO: explain why this is bad and what to do instead.
-2. **TODO: Anti-pattern name** — TODO: explanation.
+1. **Coverage-driven mocking** — Registering a 200-response mock so the integration class clears the 75% deploy gate, then asserting nothing. This produces the specific illusion that is most expensive to unwind: a green suite over an unverified integration. Assert on parsed output, on records written, and on the request.
+2. **Stateless mocks for stateful protocols** — One response reused across a pagination loop, a retry sequence, or an auth-then-resource flow. The mock makes call N indistinguishable from call 1, so the logic that distinguishes them is never exercised. Sequence the responses instead.
+3. **Treating the mock as the API contract without versioning it** — The mock encodes what the team *believed* the partner returns. When the partner changes a field, the suite stays green and production breaks. Pair mock fixtures with a periodic contract check against the real sandbox endpoint, and treat a fixture edit as an API-change event that needs review.
 
 ## Official Sources Used
 
-- Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
-- Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Apex Developer Guide — Testing HTTP Callouts. Confirms that "test methods don't support HTTP callouts" by default and that you "enable HTTP callout testing by instructing Apex to generate mock responses in tests, using Test.setMock", plus the split between the `HttpCalloutMock` interface and the static-resource mocks. — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing.htm (verified 2026-08-14)
+- Apex Developer Guide — Testing HTTP Callouts by Implementing the HttpCalloutMock Interface. Confirms the `respond(HTTPRequest)` signature, the `Test.setMock(HttpCalloutMock.class, new YourHttpCalloutMockImpl())` registration, the verbatim behaviour that "the callout is not made and you receive the mock response you specified in the respond method implementation", and that the implementation class "can be either global or public" and may carry `@IsTest` to exclude it from organization code size limits. — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_httpcalloutmock.htm (verified 2026-08-14)
+- Apex Developer Guide — Performing DML Operations and Mock Callouts. Confirms that "callouts aren't allowed after DML operations in the same transaction because DML operations result in pending uncommitted work that prevents callouts from executing", and the three ordering conditions: the callout must sit inside `Test.startTest`/`Test.stopTest`, "The Test.startTest statement must appear before the Test.setMock statement", and "The calls to DML operations must not be part of the Test.startTest/Test.stopTest block." — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_dml.htm (verified 2026-08-14)
+- Apex Developer Guide — Callout Timeouts / callout limits. Confirms "A single Apex transaction can make a maximum of 100 callouts to an HTTP request or an API call", the 10-second default timeout, the 1 ms to 120,000 ms `setTimeout` range, and that "the maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds. This time is additive across all callouts invoked by the Apex transaction." — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm (verified 2026-08-14)
+- Salesforce Well-Architected Overview — pillar definitions used to map the tradeoffs above. — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

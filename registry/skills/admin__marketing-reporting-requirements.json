@@ -106,9 +106,9 @@
     "f81b366e9fb72c0ae136",
     "fd38dcb1a1fe68008837"
   ],
-  "content_hash": "c17d360e3a65008b9656714c6baaf35fda4bfa7687273efb401c29ba5dcb7d1d",
+  "content_hash": "1ef9de6453bb6d2142d59c7e80add41b7bc0122d7684a32c25f25bf07907e265",
   "dependencies": [],
-  "description": "Use this skill when gathering and documenting Salesforce marketing reporting requirements: defining KPIs, choosing an attribution model (First Touch / Last Touch / Even Distribution / Multi-Touch), selecting the correct Campaign Influence configuration, and mapping business questions to Salesforce report types and dashboard features. NOT for building the dashboards themselves, configuring CRM Analytics datasets, writing SOQL for marketing reports, or setting up Marketing Cloud Engagement journeys.",
+  "description": "Gathering and documenting Salesforce marketing reporting requirements: defining KPIs, choosing an attribution model (First Touch / Last Touch / Even Distribution / Multi-Touch), selecting the right Campaign Influence configuration, and mapping business questions to report types and dashboard features. NOT for actually building the Campaign Hierarchy and CCI models - use admin/campaign-planning-and-attribution. NOT for CRM Analytics dataset and dashboard requirements - use admin/analytics-requirements-gathering.",
   "file_location": "skills/admin/marketing-reporting-requirements",
   "id": "admin/marketing-reporting-requirements",
   "inputs": [

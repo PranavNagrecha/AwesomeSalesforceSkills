@@ -59,9 +59,9 @@
     "e4ec951516a299371d1c",
     "f116c5cb48361be8a726"
   ],
-  "content_hash": "6af049ae25de0ee270883bb8ff8c843ceccc02b9d4bd1457ae063a9e120de146",
+  "content_hash": "1ffc08464e28b237be04301aa519af146d71b6038262b80de73a43a6af6e17d9",
   "dependencies": [],
-  "description": "Use when configuring Salesforce Translation Workbench, translating custom labels, picklist values, field labels, page layout sections, or Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for Marketing Cloud email localization, NOT for Apex string formatting by locale (use formula fields or Apex String.format patterns), NOT for multi-currency (use currency management admin).",
+  "description": "Configure Salesforce Translation Workbench and translate custom labels, picklist values, field labels, page layout sections, or the Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for creating the Custom Label records or referencing them from Apex/LWC \u2014 use admin/custom-label-management. NOT for locale formatting and RTL layout inside a component \u2014 use lwc/lwc-internationalization.",
   "file_location": "skills/admin/multi-language-and-translation",
   "id": "admin/multi-language-and-translation",
   "inputs": [

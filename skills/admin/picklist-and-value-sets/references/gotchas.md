@@ -90,3 +90,13 @@ Note: For new fields where no records exist yet, renaming labels before any data
 - In Validation Rules and formulas: use `INCLUDES(Interests__c, 'Red')` instead of `ISPICKVAL(Interests__c, 'Red')`
 - In Apex: use `String.valueOf(record.Interests__c).contains('Red')` carefully, or better, split on `;` and check the list
 - Avoid multi-select picklists in reporting group-by clauses — each combination of selected values becomes its own bucket, making reports very hard to aggregate
+
+---
+
+## Gotcha 8: The Literal Value `"None"` Is Not Blank
+
+**What happens:** A picklist includes an API value `None` (sometimes the default). Reports, validation (`ISPICKVAL(Status, '')`), and Flow `ISBLANK` treat it as **populated**. Funnels that filter "Status not blank" include every "None." Silent defaults write `None` on create so required-looking fields never look empty.
+
+**When it occurs:** Imported spreadsheets; "please pick None if N/A"; controlling-field placeholders.
+
+**How to avoid:** Blank is the unset state. If you need an explicit N/A, name it `Not_Applicable` and teach reports the difference. Never default to `None`. Never use `None` as a sentinel in SOQL (`= 'None'`) when you meant `= null`.

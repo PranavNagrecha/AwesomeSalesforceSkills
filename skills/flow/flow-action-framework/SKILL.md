@@ -1,6 +1,6 @@
 ---
 name: flow-action-framework
-description: "Use when designing or troubleshooting Salesforce Flow actions in Flow Builder: standard and core actions, the Apex action element for @InvocableMethod classes, how list-shaped inputs and outputs map at the Flow–Apex boundary, subflows, and choosing between declarative actions versus custom Apex versus packaged invocables. Triggers: 'Flow Apex action', 'add Apex to Flow', 'InvocableMethod in Flow', 'Flow action palette', 'map Flow variables to Apex invocable inputs'. NOT for authoring or testing Apex @InvocableMethod bodies (use the Apex invocable-methods skill), External Services or HTTP callout registration (use flow-external-services), OmniStudio action packs, or LWC screen component local actions."
+description: "Use when designing or troubleshooting Salesforce Flow actions in Flow Builder: standard and core actions, the Apex action element for @InvocableMethod classes, how list-shaped inputs and outputs map at the Flow–Apex boundary, subflows, and choosing between declarative actions versus custom Apex versus packaged invocables. Triggers: 'Flow Apex action', 'add Apex to Flow', 'InvocableMethod in Flow', 'Flow action palette', 'map Flow variables to Apex invocable inputs'. NOT for authoring or testing the Apex @InvocableMethod body — use apex/invocable-methods. NOT for registering an OpenAPI spec or HTTP Callout action — use flow/flow-external-services."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -159,8 +159,7 @@ Record-triggered Flow:
 4. In Flow Builder, add the Apex action, map inputs using the correct scalar vs collection types, and name fault paths.
 5. Decide failure strategy: unhandled exception vs structured per-row results returned to Flow for branching.
 6. Test with bulk data sizes representative of production (especially record-triggered paths).
-7. Document the action in team runbooks: inputs, outputs, required permissions, governor-sensitive notes.
-8. Verify running-user perms in the target environment BEFORE deploying (the common "works in sandbox, fails in prod" cause).
+7. **Document and verify before deploy.** Publish the action in team runbooks (inputs, outputs, required permissions, governor-sensitive notes). Verify running-user perms in the target environment BEFORE deploying — the common "works in sandbox, fails in prod" cause.
 
 ---
 
@@ -173,17 +172,6 @@ Record-triggered Flow:
 - [ ] Bulk scenarios tested for the same Flow path that will run in production.
 - [ ] Apex invocable documented: inputs, outputs, permissions, governor notes.
 - [ ] If packaged: wrapper types have stable contracts with explicit version strategy.
-
-
-## Recommended Workflow
-
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
 
 ---
 

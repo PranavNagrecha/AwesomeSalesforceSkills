@@ -51,3 +51,15 @@ Note there is **no 60-second `iat` rule**. `iat` is not a required claim for the
 **When it occurs:** Whenever a Connected App has relaxed IP restrictions and the authenticating user has restrictive profile IP ranges. The profile ranges are bypassed for the OAuth token grant.
 
 **How to avoid:** Audit Connected App IP relaxation settings independently from profile IP range audits. A security review that checks only profile IP ranges will miss Connected App overrides. Include Connected App IP relaxation in org security health checks and periodic reviews.
+
+---
+
+## Gotcha 6: Device Flow Is Blocked and Cannot Be Re-Enabled on a Custom Connected App
+
+**What happens:** Salesforce enforced the removal on a calendar date rather than a release boundary — *"Starting August 28, 2025, new and existing authorizations to any org using the OAuth 2.0 Device Flow with the default Salesforce CLI connected app will be blocked."* Note **existing** authorizations, not just new ones: a CI job that had been running for a year stops working on that date with no config change on your side.
+
+The obvious remediation is closed by name in the same article: *"You cannot work around this restriction by re-enabling the Device Flow in a custom connected app, because the **Enable for Device Flow** option in the **API (Enable OAuth Settings)** section has been permanently disabled by Salesforce."* So standing up your own Connected App to carry the flow is not a migration plan — the only plan is moving off Device Flow.
+
+**When it occurs:** Any headless authorization built on `sf org login device` — build agents, containers, jump boxes, kiosk-style tooling — and any runbook that tells an engineer to authorize by reading a code off a terminal. Also hits anyone who inherits such a runbook and tries to reproduce it in a new org.
+
+**How to avoid:** Migrate headless authorization to the JWT Bearer flow (`sf org login jwt`) with a dedicated integration user and a certificate you rotate on a schedule; use the Web Server flow (`sf org login web`) wherever a browser is genuinely available. Grep runbooks, Dockerfiles and CI configs for `login device` / `auth:device:login` before an audit rather than after an outage. Related restriction from the same change: an org admin must install the Salesforce CLI connected app themselves — standard users no longer can.

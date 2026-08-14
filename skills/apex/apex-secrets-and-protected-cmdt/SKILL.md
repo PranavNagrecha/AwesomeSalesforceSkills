@@ -1,6 +1,6 @@
 ---
 name: apex-secrets-and-protected-cmdt
-description: "Storing API keys, signing secrets, and third-party tokens that Apex must consume — Protected Custom Metadata in a managed package, Protected Custom Settings, Encrypted Custom Fields, Apex Crypto, and what to NEVER do (hardcode, unprotected CMDT, System.debug). NOT for callout authentication — see apex-named-credentials-patterns; NOT for record-level data encryption — see Shield Platform Encryption."
+description: "Storing API keys, signing secrets, and third-party tokens that Apex must consume — Protected Custom Metadata in a managed package, Protected Custom Settings, Encrypted Custom Fields, Apex Crypto, and what to NEVER do (hardcode, unprotected CMDT, System.debug). NOT for callout authentication — use apex/apex-named-credentials-patterns. NOT for computing the HMAC or signature itself — use apex/apex-encoding-and-crypto. NOT for record-level Shield data encryption — use security/platform-encryption."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

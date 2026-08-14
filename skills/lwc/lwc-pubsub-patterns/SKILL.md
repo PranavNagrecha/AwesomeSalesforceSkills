@@ -1,6 +1,6 @@
 ---
 name: lwc-pubsub-patterns
-description: "Sibling-component communication in LWC — Lightning Message Service (the modern, supported pattern via Message Channels), the legacy `pubsub` utility (community-shared, predates LMS), `scope = APPLICATION` vs `scope = ACTIVE` semantics, when LMS is the wrong tool (parent-child should use props / `CustomEvent`; cross-tab needs Platform Events), and the migration from `pubsub` to LMS. Covers the message channel `.messageChannel-meta.xml` definition, the `@wire(MessageContext)` pattern, `subscribe` / `unsubscribe` lifecycle, and avoiding leaked subscriptions on disconnectedCallback. NOT for parent-child LWC props / events (see lwc/lwc-component-communication), NOT for cross-org / cross-user messaging (use Platform Events)."
+description: "Legacy pubsub communication between LWCs on the same page (deprecated — prefer LMS). Triggers: pubsub LWC, c-pubsub, pageRef pubsub. NOT for modern cross-component messaging — use lwc/message-channel-patterns. NOT for parent-child events — use lwc/lwc-custom-event-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

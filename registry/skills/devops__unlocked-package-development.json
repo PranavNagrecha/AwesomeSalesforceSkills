@@ -139,9 +139,9 @@
     "f7bf972485b983f74b15",
     "ffc9d377ce1bf5e9b9e5"
   ],
-  "content_hash": "a94382811fe4578becbad7a12a14b3eb796012e4e7f60d37d603c74f67a41739",
+  "content_hash": "5c78cb3843404c6f4aa30b659e8d11bdbaf1cd381643b58edeac4fff279c0fe6",
   "dependencies": [],
-  "description": "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta vs. released), ancestor versions, installation keys, and subscriber installation via sf CLI or Package Install UI. NOT for 2GP managed packages (ISV packaging with namespaces, push upgrades, or AppExchange listings), 1GP managed packages, change set deployments, or scratch org setup.",
+  "description": "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta. NOT for 2GP managed packages (ISV packaging with namespaces, push upgrades, or AppExchan \u2014 use devops/second-generation-managed-packages.",
   "file_location": "skills/devops/unlocked-package-development",
   "id": "devops/unlocked-package-development",
   "inputs": [

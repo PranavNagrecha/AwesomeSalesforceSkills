@@ -39,9 +39,9 @@
     "d47705f449aa29ef6cbe",
     "dd751097104e5fa12c7f"
   ],
-  "content_hash": "50d9dd364be154673d4670d27e0664ca7ae804ad7ee03d33ae9aa5868c2334dd",
+  "content_hash": "c7cf09047cf6104cde2ec137611431593e6bb764f92b3f827c77a155f9bd8423",
   "dependencies": [],
-  "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
+  "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify adversarial test cases and guardrails, scoped to the agent boundary rather than general application-security review. NOT for the overall agent test plan (topic coverage, golden sets, regression harness) \u2014 use agentforce/agentforce-testing-strategy. NOT for keeping PII out of prompts, model calls and logs \u2014 use agentforce/agentforce-pii-redaction.",
   "file_location": "skills/agentforce/prompt-injection-defense",
   "id": "agentforce/prompt-injection-defense",
   "inputs": [

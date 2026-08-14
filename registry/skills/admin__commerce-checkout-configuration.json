@@ -103,9 +103,9 @@
     "fe393a85422d327408dc",
     "ff0cafac37ccd0cdbc14"
   ],
-  "content_hash": "85342eab871665147b4f8630c441562cac55112e30fa0dc91227f2fd438f59e4",
+  "content_hash": "29229f45f1a461d59b2509d9a35a57fbed1c65f9b6b89cfe82d56ba61be28a27",
   "dependencies": [],
-  "description": "Use this skill when configuring Salesforce B2B or D2C Commerce checkout: payment methods, shipping/tax integration, guest checkout, order summary setup, and CartCheckoutSession state orchestration. Trigger keywords: checkout flow, payment adapter, shipping tax integration, guest checkout, order summary, CartCheckoutSession, Managed Checkout, Commerce checkout flow. NOT for CPQ quoting, Checkout.com account management, or Service Cloud Order Management post-fulfillment logic.",
+  "description": "Use this skill when configuring Salesforce B2B or D2C Commerce checkout: payment methods, shipping/tax integration, guest checkout, order summary setup, and CartCheckoutSession state orchestration. Trigger keywords: checkout flow, payment adapter, shipping tax integration, guest checkout, order summary, CartCheckoutSession, Managed Checkout, Commerce checkout flow. NOT for deciding the checkout design before build (LWR vs Aura) \u2014 use admin/commerce-checkout-flow-design. NOT for writing the CommercePayments adapter class \u2014 use apex/commerce-payment-integration.",
   "file_location": "skills/admin/commerce-checkout-configuration",
   "id": "admin/commerce-checkout-configuration",
   "inputs": [

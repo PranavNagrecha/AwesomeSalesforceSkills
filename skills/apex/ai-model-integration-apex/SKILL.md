@@ -1,6 +1,6 @@
 ---
 name: ai-model-integration-apex
-description: "Use when calling AI models from Apex code — including the aiplatform.ModelsAPI External Services wrapper, Einstein Platform Services (Vision and Language), response parsing, token lifecycle management, and caching strategies. Trigger keywords: aiplatform.ModelsAPI, createGenerations, createChatGenerations, createEmbeddings, Einstein Platform Services, Einstein Vision, Einstein Language, ModelsAPI callout, AI callout from Apex. NOT for Agentforce actions, Einstein Next Best Action, or Prompt Builder flows."
+description: "Use when calling AI models from Apex code — including the aiplatform.ModelsAPI External Services wrapper, Einstein Platform Services (Vision and Language), response parsing, token lifecycle management, and caching strategies. Trigger keywords: aiplatform.ModelsAPI, createGenerations, createChatGenerations, createEmbeddings, Einstein Platform Services, Einstein Vision, Einstein Language, ModelsAPI callout, AI callout from Apex. NOT for Einstein Next Best Action strategies. NOT for the Apex class an Agentforce agent invokes as an action — use agentforce/custom-agent-actions-apex. NOT for generating content from a Prompt Builder template — use agentforce/prompt-builder-templates."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: agentforce-agent-creation
-description: "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for topic design or action contract design — use agentforce/agent-topic-design and agentforce/agent-actions respectively."
+description: "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for designing what the agent can DO — an agent that looks up an order, checks a case, or creates a record is action design, use agentforce/agent-actions. NOT for topic boundary design — use agentforce/agent-topic-design."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

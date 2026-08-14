@@ -1,6 +1,6 @@
 ---
 name: analytics-permission-and-sharing
-description: "Use this skill when configuring CRM Analytics (formerly Einstein Analytics) app sharing, dataset-level permissions, row-level security predicates, sharing inheritance, or license assignment. Trigger keywords: CRM Analytics security, row-level security predicate, dataset permissions, analytics sharing inheritance, Analytics Plus license. NOT for standard Salesforce OWD/sharing rules, profile-based record access, or non-Analytics report folder sharing."
+description: "Configure CRM Analytics (formerly Einstein Analytics) app sharing, dataset-level permissions, row-level security predicates, sharing inheritance, and license assignment. Trigger keywords: CRM Analytics security, row-level security predicate, dataset permissions, analytics sharing inheritance, Analytics Plus license. NOT for OWD and sharing rules — use admin/sharing-and-visibility. NOT for predicate design across many datasets — use architect/analytics-security-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

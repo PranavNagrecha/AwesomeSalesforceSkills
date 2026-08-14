@@ -124,3 +124,32 @@ Connected app hardening checklist:
 ```
 
 **Detection hint:** If the output creates a connected app without configuring IP restrictions, token expiration, or permitted user policies, the app is unhardened. Search for `IP Relaxation`, `Refresh Token`, or `Permitted Users`.
+
+---
+
+## Anti-Pattern 6: Opening every integration walkthrough with "New Connected App"
+
+**What the LLM generates:** "In Setup, go to App Manager and click **New Connected App**, then enable OAuth settings and upload your certificate under Use Digital Signatures." Often paired with a generated `ConnectedApp` metadata file to deploy.
+
+**Why it happens:** Almost every OAuth, JWT-bearer, and CI/CD tutorial in the training corpus starts there, because until Spring '26 it was the only path. Salesforce has since restricted it: "Connected apps creation is restricted as of Spring '26." In an affected org that Setup path is closed by default, and the assistant never mentions External Client Apps. The mirror-image error is over-correcting into "everything is an ECA now," which breaks Salesforce DX.
+
+**Correct pattern:**
+
+```
+Net-new inbound integration in a Spring '26+ org:
+- Build it as an External Client App. "We recommend using external
+  client apps instead." Deploy via ExternalClientApplication metadata
+  (API version 59.0 and later).
+- If a connected app is genuinely required: "If you must continue
+  creating connected apps, contact Salesforce Support," or deliver it
+  through a package install.
+
+Existing apps: leave them alone. "You can continue to use existing
+connected apps during and after Spring '26."
+
+Salesforce DX is the exception -- pick by command, not by era:
+- `org login jwt`            -> external client app (required)
+- `org create scratch|sandbox` from a Dev Hub -> connected app
+```
+
+**Detection hint:** If the output says "New Connected App" or emits `<ConnectedApp` metadata for a net-new integration without naming the Spring '26 restriction, it is stale. Conversely, if it recommends an ECA for a Dev Hub that runs `org create scratch`, it has over-corrected. Search for `New Connected App`, `ConnectedApp`, and `org create scratch`.

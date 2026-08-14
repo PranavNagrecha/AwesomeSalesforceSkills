@@ -115,7 +115,7 @@ Three worked examples covering: (a) a sales-rep mobile story with declarative im
   ],
   "complexity": "L",
   "recommended_agents": ["object-designer", "flow-builder", "permission-set-architect"],
-  "recommended_skills": ["integration/named-credentials", "apex/queueable-callouts", "flow/record-triggered-flows"],
+  "recommended_skills": ["integration/named-credentials", "apex/queueable-callouts", "flow/record-triggered-flow-patterns"],
   "dependencies": ["US-FIN-070 (NetSuite Named Credential exists)", "US-FIN-071 (NetSuite_Invoice_Id__c field exists)"],
   "notes": "Apex Queueable + callout required (governor limits on synchronous callouts in record-triggered flow). The story does NOT prescribe Apex — the build agent decides per integration-pattern-selection.md."
 }
@@ -230,7 +230,7 @@ This fails INVEST on every axis: persona is generic, the I-Want is an epic, no A
   "story_id": "US-Q2C-103",
   "complexity": "M",
   "recommended_agents": ["object-designer", "flow-builder"],
-  "recommended_skills": ["flow/record-triggered-flows", "admin/object-relationships"],
+  "recommended_skills": ["flow/record-triggered-flow-patterns", "admin/object-relationships"],
   "dependencies": ["US-Q2C-102"]
 }
 ```

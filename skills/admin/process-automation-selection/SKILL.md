@@ -1,6 +1,6 @@
 ---
 name: process-automation-selection
-description: "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen."
+description: "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for 'which tool should stamp this field on save, and will it recurse' — use admin/workflow-field-update-patterns. NOT for actually running the conversion of an existing Process Builder — use flow/process-builder-to-flow-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

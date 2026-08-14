@@ -84,9 +84,9 @@
     "f9e25fb79b10ecdaa1a7",
     "ff4c3ae66eca9d902eaf"
   ],
-  "content_hash": "7df9bb1bbbd061344c2d71af6db941ac16ce5dcd80e93d4d847d827144384439",
+  "content_hash": "82c947f5b3dae70dcf51f0c23914ed9d7fa60e81617a2f52040ab03d623290dc",
   "dependencies": [],
-  "description": "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads \u2014 including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for setting up Named Credentials or OAuth flows end-to-end \u2014 use apex-named-credentials-patterns; NOT for SOQL injection defense \u2014 use soql-security.",
+  "description": "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads \u2014 including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for where the signing key or API secret is stored \u2014 use apex/apex-secrets-and-protected-cmdt. NOT for setting up Named Credentials or OAuth flows end-to-end \u2014 use apex/apex-named-credentials-patterns. NOT for SOQL injection defense \u2014 use apex/soql-security.",
   "file_location": "skills/apex/apex-encoding-and-crypto",
   "id": "apex/apex-encoding-and-crypto",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-custom-activities
-description: "Use when building, debugging, or architecting a custom activity, custom split activity, or custom entry source for Marketing Cloud Journey Builder. Trigger keywords: custom activity, Postmonger, config.json, Journey Builder execute endpoint, customActivity.js, custom split outcome, installed package app extension, Journey Builder REST API. NOT for standard Journey Builder canvas configuration, out-of-the-box activity settings, Email Studio send activities, or general Marketing Cloud automation."
+description: "Use when building, debugging, or architecting a custom activity, custom split activity, or custom entry source for Marketing Cloud Journey Builder. Trigger keywords: custom activity, Postmonger, config.json, Journey Builder execute endpoint, customActivity.js, custom split outcome, installed package app extension, Journey Builder REST API. NOT for Journey Builder canvas setup — use admin/journey-builder-administration. NOT for MC REST/SOAP API calls — use apex/marketing-cloud-api."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: hipaa-compliance-architecture
-description: "Use this skill to design HIPAA-compliant Salesforce org architectures for healthcare organizations storing or processing Protected Health Information (PHI). Trigger keywords: HIPAA BAA, PHI storage, Shield encryption, Health Cloud compliance, HIPAA technical safeguards, covered entity Salesforce architecture. NOT for general security architecture or non-healthcare compliance."
+description: "Use this skill to design HIPAA-compliant Salesforce org architectures for healthcare organizations storing or processing Protected Health Information (PHI). Trigger keywords: HIPAA BAA, PHI storage, Shield encryption, Health Cloud compliance, HIPAA technical safeguards, covered entity Salesforce architecture. NOT for minimum-necessary access design — use admin/hipaa-workflow-design. NOT for non-healthcare org security review — use architect/security-architecture-review."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

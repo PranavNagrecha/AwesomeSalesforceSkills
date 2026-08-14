@@ -56,9 +56,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** SOAP calls return a `500 UNSUPPORTED_API_VERSION` fault with no other explanation. The integration worked for years and then started failing after a Salesforce release.
 
-**When it occurs:** Salesforce periodically retires old API versions (typically versions below v21.0 as of recent announcements, with ongoing deprecation of older versions). Integrations that have not been updated in years and are pinned to old endpoint URLs hit this error after retirement.
+**When it occurs:** Salesforce retires old API versions in waves. Per the SOAP API End-of-Life Policy, versions 7.0 through 20.0 are retired ("As of Summer '22, these versions are retired and unavailable") and versions 21.0 through 30.0 are retired ("As of Summer '25, these versions are retired and unavailable"). Versions 31.0 through 67.0 are supported. Integrations pinned to a URL in a retired range fail outright — do not read "below v21.0" as the current boundary, it moved.
 
-**How to avoid:** Pin endpoint URLs to API version v56.0 or later and audit SOAP endpoint URLs during annual integration reviews. Monitor the Salesforce release notes for API version retirement announcements. Treat the API version as a first-class dependency in your integration's configuration, not a buried constant.
+The same error code now has a second, unrelated cause: at API version 65.0 and later the `login()` **call** was removed while the version itself is perfectly current. A `login()` against `/services/Soap/u/65.0` returns `UNSUPPORTED_API_VERSION` even though every other operation on 65.0 works. Diagnose by asking which call failed, not just which version is in the URL — see Gotcha 8.
+
+**How to avoid:** Pin endpoint URLs to API version v56.0 or later and audit SOAP endpoint URLs during annual integration reviews. Salesforce "is committed to supporting each API version for a minimum of 3 years from the date of first release" and "notifies customers who use an API version scheduled for deprecation at least 1 year before support for the version ends" — treat the API version as a first-class, tracked dependency in your integration's configuration, not a buried constant.
 
 ---
 
@@ -69,3 +71,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any ISV, packaged, or multi-org integration built on the partner WSDL — the same audience that chose the partner WSDL precisely to avoid per-org regeneration. The partner WSDL "doesn't contain the detailed type information that's available in the enterprise WSDL which you need for a relationship SOQL query," because it "defines a single, generic object (`sObject`) that represents all the objects."
 
 **How to avoid:** Call `describeSObjects()` for the target object before building the query. From the `DescribeSObjectResult`, read the `relationshipName` for one-to-many relationships (for example, `Assets` on `Account`) to form subqueries, and identify the reference fields (for example, `WhoId`, `WhatId`, `OwnerId`, or custom lookups) for child-to-parent traversal. Because the query returns nested records as generic `sObject`s, resolve each nested record's real type from the `name` field of its `DescribeSObjectResult` instead of casting to a generated class, and parse fields in the order of your `SELECT` list rather than the WSDL's declared order.
+
+---
+
+## Gotcha 8: `login()` Is Already Gone at v65.0+ and Retires Everywhere in Summer '27
+
+**What happens:** Three distinct failures, all from the same retirement programme, and they look nothing alike:
+
+1. A `login()` call against an endpoint at API version 65.0 or later fails immediately. Per the Winter '26 release notes, "As of Winter '26 (API version 65.0), SOAP `login()` is no longer available. It will return an HTTP status code of 500 and the exception code `UNSUPPORTED_API_VERSION`." The version is current; only the `login()` call was withdrawn.
+2. A `login()` that has worked for years against production is rejected the first time it runs against a newly created sandbox or scratch org. "A new Any API Auth user permission lets you control who can authenticate via SOAP `login()`, and it's enforced by default in newly created orgs." The credentials are fine; the running user lacks the **Any API Auth** permission.
+3. On Summer '27, every remaining `login()` stops. Versions 31.0–64.0 keep it only "until Summer '27 is released."
+
+**When it occurs:** Any integration — middleware, ETL job, Ant Migration Tool invocation, WSC client — that authenticates with username, password, and security token. Failure 1 hits whoever upgrades their endpoint version; failure 2 hits whoever spins up a fresh org; failure 3 hits everyone still on the pattern.
+
+**How to avoid:** Migrate authentication to OAuth 2.0 — JWT bearer or client credentials flow for server-to-server, web server flow for browser-based — issued through an **external client app**, not a legacy connected app: "Before Summer '27 is released, customers and partners must modify or upgrade their applications to use external client apps for authentication." The migration is confined to the auth step, because "SOAP API now accepts JWT-based access tokens from Salesforce OAuth flows in the `sessionId` header element, reaching parity with REST authentication." Every `query()`, `create()`, `upsert()`, and `queryMore()` call stays exactly as written. Do not treat pinning the endpoint back to 64.0 as a remedy — it buys time against failure 1 and nothing against failure 3.

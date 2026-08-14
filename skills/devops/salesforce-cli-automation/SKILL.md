@@ -1,6 +1,6 @@
 ---
 name: salesforce-cli-automation
-description: "Use this skill when automating Salesforce work with the unified Salesforce CLI (`sf`, v2): shell scripts, Make/npm tasks, cron jobs, and CI steps that need stable flags, `--json` output, org aliases, bulk/data commands, plugins, and non-interactive auth patterns. Trigger keywords: sf CLI automation, sfdx migration, JSON output CI, sf project deploy script, sf data bulk, CLI plugins, target-org alias, machine-readable CLI. NOT for choosing or wiring a specific CI platform (GitHub Actions, GitLab, Jenkins, Bitbucket, Azure DevOps—use those devops skills), VS Code Salesforce extensions, or Copado/Gearset release management UIs."
+description: "Automating Salesforce work with the unified Salesforce CLI (`sf`, v2): shell scripts, Make/npm tasks, cron jobs and CI steps needing stable flags, `--json` output, org aliases, bulk/data commands, plugins, non-interactive auth. Trigger keywords: sf CLI automation, sfdx migration, JSON output CI, sf project deploy script, sf data bulk, CLI plugins, target-org alias, machine-readable CLI. NOT for basic sf commands, org auth or first DX project setup — use apex/sf-cli-and-sfdx-essentials. NOT for writing your own sf plugin — use devops/sf-cli-plugin-authoring."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

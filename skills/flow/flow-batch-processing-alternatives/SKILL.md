@@ -1,6 +1,6 @@
 ---
 name: flow-batch-processing-alternatives
-description: "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex Queueable/Batch escalation. Does NOT cover choosing async across a general workflow (see async-selection decision tree)."
+description: "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex. NOT for choosing async across a general workflow (see async-selection decision tree) — use flow/flow-large-data-volume-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

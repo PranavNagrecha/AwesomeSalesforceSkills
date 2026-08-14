@@ -1,6 +1,6 @@
 ---
 name: apex-trigger-context-variables
-description: "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework architecture (use apex-trigger-handler-framework). NOT for bulk patterns (use apex-bulkification-patterns)."
+description: "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework / handler architecture and one-trigger-per-object design — use apex/trigger-framework. NOT for bulk patterns and Map<Id, SObject> collection handling — use apex/apex-collections-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

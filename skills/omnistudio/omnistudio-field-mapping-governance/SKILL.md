@@ -1,6 +1,6 @@
 ---
 name: omnistudio-field-mapping-governance
-description: "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals."
+description: "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals — use data/omnistudio-metadata-management."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -38,9 +38,10 @@ Orgs with >20 DataRaptors; required for governance maturity.
 
 1. Naming standard: prefix DRs by domain, suffix by function (`Account_DR_Read_Contacts`).
 2. Build a dependency report via Tooling API: for each DR, extract field references from its JSON.
-3. CI: on every deploy, run a script that cross-references the DR field list against object fields; fail on missing.
-4. Track usage: query OmniScript steps referencing each DR; flag orphans.
-5. Version DRs — keep old active until consumers migrate.
+3. **Data Mapper versioning (Summer '26, opt-in):** On Standard Runtime, enable **Data Mapper Versioning** in Omnistudio Settings *after* Omnistudio Metadata is active. Active Data Mappers lock in place — create a **new version** instead of editing the live mapper, matching OmniScript/FlexCard/IP versioning discipline. Versioning is **off by default**; turning it on activates existing standard mappers as version 1.
+4. CI: on every deploy, run a script that cross-references the DR field list against object fields; fail on missing.
+5. Track usage: query OmniScript steps referencing each DR; flag orphans.
+6. Version DRs — keep old active until consumers migrate; when Data Mapper versioning is on, prefer new versions over in-place edits to active mappers.
 
 ## Key Considerations
 

@@ -1,6 +1,6 @@
 ---
 name: apex-test-setup-patterns
-description: "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking)."
+description: "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a reusable test data factory class — use apex/test-data-factory-patterns. NOT for HTTP callout mocks — use apex/apex-http-callout-mocking."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

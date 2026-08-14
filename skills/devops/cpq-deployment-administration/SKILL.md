@@ -1,6 +1,6 @@
 ---
 name: cpq-deployment-administration
-description: "Use when deploying Salesforce CPQ (Steelbrick/SBQQ) configuration between orgs — Product Rules, Price Rules, Price Actions, Price Conditions, Option Constraints, Quote Templates, and Custom Settings. Covers data-migration-based deployment strategies, parent-child ordering, external-ID mapping, and tooling selection (Prodly, Copado, Salto, custom data loader). NOT for deploying standard Salesforce metadata via Change Sets or Metadata API, not for OmniStudio/Industries CPQ DataPacks, not for CPQ managed-package upgrades or CPQ Apex class customizations."
+description: "Deploying Salesforce CPQ (Steelbrick/SBQQ) configuration between orgs — Product Rules, Price Rules, Price Actions, Price Conditions, Option Constraints, Quote Templates, Custom Settings: data-migration strategy, parent-child ordering, external-ID mapping, tooling choice (Prodly, Copado, Salto, Data Loader). NOT for building the bundles and rules in the first place — use admin/cpq-product-catalog-setup. NOT for bulk-loading the product catalog itself — use data/product-catalog-migration-cpq."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

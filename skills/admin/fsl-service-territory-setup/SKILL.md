@@ -1,6 +1,6 @@
 ---
 name: fsl-service-territory-setup
-description: "Use this skill to configure Field Service Lightning service territories — including territory types, operating hours, time slots, territory hierarchy, member types, and polygon boundaries. NOT for ETM territories (Territory2 / Enterprise Territory Management in Sales Cloud), and NOT for Salesforce Scheduler territories."
+description: "Use this skill to configure Field Service Lightning service territories — including territory types, operating hours, time slots, territory hierarchy, member types, and polygon boundaries. NOT for Enterprise Territory Management (Territory2) in Sales Cloud — use admin/enterprise-territory-management. NOT for bulk-loading territory polygons or members — use data/fsl-territory-data-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

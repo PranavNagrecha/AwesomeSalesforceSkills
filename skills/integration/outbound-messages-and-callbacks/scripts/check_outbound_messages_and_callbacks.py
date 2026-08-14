@@ -7,14 +7,17 @@ related to Outbound Messages. Uses stdlib only — no pip dependencies.
 Checks performed:
   1. Detects WorkflowAlert XML files that configure Outbound Message actions and
      validates that the endpoint URL uses HTTPS (not HTTP).
-  2. Detects Workflow Rules that reference Outbound Messages and warns if the
+  2. Detects Outbound Messages that still set includeSessionId=true. Salesforce
+     stopped sending session IDs the week of February 23, 2026; the flag is
+     ignored and always FALSE, so these deploy cleanly but their callbacks 401.
+  3. Detects Workflow Rules that reference Outbound Messages and warns if the
      Workflow Rule evaluation criteria is set to "alwaysTrue" — a common
      misconfiguration that fires on every save, not just qualifying changes.
-  3. Detects Outbound Message definitions with no fields selected beyond the
+  4. Detects Outbound Message definitions with no fields selected beyond the
      implicit Id field — likely under-configured.
-  4. Warns if Outbound Message endpoint URLs contain non-production hostnames
+  5. Warns if Outbound Message endpoint URLs contain non-production hostnames
      (localhost, staging, dev) that may have been accidentally promoted.
-  5. Reports a count of active Workflow Rules referencing Outbound Messages
+  6. Reports a count of active Workflow Rules referencing Outbound Messages
      to surface volume for operations planning.
 
 Usage:
@@ -132,6 +135,59 @@ def check_outbound_message_field_coverage(manifest_dir: Path) -> list[str]:
     return issues
 
 
+def check_include_session_id(manifest_dir: Path) -> list[str]:
+    """Flag Outbound Messages that still request a session ID.
+
+    Salesforce removed the ability to send session IDs in Outbound Messages,
+    enforced the week of February 23, 2026 (rescheduled from February 16, 2026).
+    The `IncludeSessionId` flag is ignored and always set to FALSE, and the value
+    no longer appears within the <sessionID></sessionID> element of the payload.
+
+    `<includeSessionId>true</includeSessionId>` still DEPLOYS without error -- it
+    is simply inert -- so nothing on the Salesforce side reports a problem. Any
+    listener that authenticated by reusing the payload session ID now fails with
+    a 401 on the callback leg while the delivery queue still shows success.
+    Endpoints must move to OAuth 2.0-based authentication.
+    """
+    issues: list[str] = []
+    wf_files = _find_xml_files(manifest_dir, ".workflow-meta.xml")
+    om_files = _find_xml_files(manifest_dir, ".outboundMessage-meta.xml")
+
+    def _flag(name: str, filename: str) -> str:
+        return (
+            f"Outbound Message '{name}' in {filename} sets includeSessionId=true. "
+            f"Salesforce stopped sending session IDs the week of February 23, 2026 — "
+            f"the flag is ignored and always FALSE, and the <sessionID> element is "
+            f"empty. This deploys cleanly and fails silently: delivery still succeeds "
+            f"while the listener's callback gets a 401. Migrate the endpoint to "
+            f"OAuth 2.0 and confirm no code path reads SessionId from the payload."
+        )
+
+    for path in wf_files:
+        root = _parse_xml_safe(path)
+        if root is None:
+            continue
+        for om in root.findall(f".//{{{_WF_NS}}}outboundMessages"):
+            flag_elem = om.find(f"{{{_WF_NS}}}includeSessionId")
+            if flag_elem is None or (flag_elem.text or "").strip().lower() != "true":
+                continue
+            name_elem = om.find(f"{{{_WF_NS}}}name")
+            name = name_elem.text.strip() if name_elem is not None and name_elem.text else path.name
+            issues.append(_flag(name, path.name))
+
+    for path in om_files:
+        root = _parse_xml_safe(path)
+        if root is None:
+            continue
+        flag_elem = root.find(f"{{{_WF_NS}}}includeSessionId")
+        if flag_elem is not None and (flag_elem.text or "").strip().lower() == "true":
+            name_elem = root.find(f"{{{_WF_NS}}}name")
+            name = name_elem.text.strip() if name_elem is not None and name_elem.text else path.stem
+            issues.append(_flag(name, path.name))
+
+    return issues
+
+
 def check_workflow_rule_trigger_type(manifest_dir: Path) -> list[str]:
     """Warn on Workflow Rules that fire on every evaluation (triggerType = alwaysTrue or onAllChanges)."""
     issues: list[str] = []
@@ -215,6 +271,7 @@ def check_outbound_messages_and_callbacks(manifest_dir: Path) -> list[str]:
         return issues
 
     issues.extend(check_outbound_message_https(manifest_dir))
+    issues.extend(check_include_session_id(manifest_dir))
     issues.extend(check_outbound_message_field_coverage(manifest_dir))
     issues.extend(check_workflow_rule_trigger_type(manifest_dir))
     # Append informational count (not an issue, but useful for operations review)
@@ -227,8 +284,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Check Salesforce metadata for Outbound Messages and Callbacks "
-            "configuration issues: HTTPS enforcement, field coverage, trigger "
-            "type volume risk, and non-production endpoint URLs."
+            "configuration issues: HTTPS enforcement, retired includeSessionId "
+            "flags, field coverage, trigger type volume risk, and non-production "
+            "endpoint URLs."
         ),
     )
     parser.add_argument(

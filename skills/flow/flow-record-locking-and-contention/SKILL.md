@@ -1,6 +1,6 @@
 ---
 name: flow-record-locking-and-contention
-description: "Diagnose and prevent UNABLE_TO_LOCK_ROW + parent-record contention in record-triggered, scheduled, and screen flows by mapping the implicit lock chain and applying decouple patterns (Platform Events, Queueable handoff, Scheduled Paths). NOT for general flow bulkification — see flow-bulkification. NOT for fault-path catch logic — see flow-rollback-patterns."
+description: "Diagnose and prevent UNABLE_TO_LOCK_ROW + parent-record contention in record-triggered, scheduled, and screen flows by mapping the implicit lock chain and applying decouple patterns (Platform Events, Queueable handoff, Scheduled Paths). NOT for general flow bulkification — see flow-bulkification — use apex/record-locking-and-contention."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

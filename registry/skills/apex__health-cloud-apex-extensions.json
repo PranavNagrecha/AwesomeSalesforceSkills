@@ -98,12 +98,12 @@
     "fd4516128d99e1f3564a",
     "fd5efd6e3f5030cfd5d3"
   ],
-  "content_hash": "cc41fb83930d53cd2d93070a8a33e31c83ec9f5e9131eed571005a194656b6c3",
+  "content_hash": "ea6d13c498e7e69b35a300e7c40914203d62bd086273a865d9dca8d2b4c6da40",
   "dependencies": [
     "admin/care-plan-configuration",
     "apex/apex-security-patterns"
   ],
-  "description": "Use this skill when extending Health Cloud via Apex: implementing HealthCloudGA managed-package interfaces, automating care plan lifecycle hooks, processing referrals using Industries Common Components invocable actions, or enforcing HIPAA-compliant logging governance for clinical Apex code. Trigger keywords: CarePlanProcessorCallback, HealthCloudGA namespace, ReferralRequest, ReferralResponse, care plan invocable actions, clinical Apex extension, Health Cloud Apex API. NOT for standard Apex triggers or generic Apex development unrelated to Health Cloud managed-package extension points.",
+  "description": "Use this skill when extending Health Cloud via Apex: implementing HealthCloudGA managed-package interfaces, automating care plan lifecycle hooks, processing referrals using Industries Common Components invocable actions, or enforcing HIPAA-compliant logging governance for clinical Apex code. Trigger keywords: CarePlanProcessorCallback, HealthCloudGA namespace, ReferralRequest, ReferralResponse, care plan invocable actions, clinical Apex extension, Health Cloud Apex API. NOT for standard Apex triggers or generic Apex development unrelated to Health Cloud managed-package extension points. NOT for creating ClinicalAlert or CareGap decision-support records \u2014 use apex/clinical-decision-support. NOT for HealthCloudGA package install order, PSL assignment, or post-deploy setup \u2014 use devops/health-cloud-deployment-patterns.",
   "file_location": "skills/apex/health-cloud-apex-extensions",
   "id": "apex/health-cloud-apex-extensions",
   "inputs": [

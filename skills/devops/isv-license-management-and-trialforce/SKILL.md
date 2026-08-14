@@ -1,6 +1,6 @@
 ---
 name: isv-license-management-and-trialforce
-description: "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package — covers License Management App (LMA) install and registration, Lead/License object lifecycle, Trialforce Management Org (TMO) and Trialforce Source Org (TSO) split, Trialforce templates, SignupRequest API, AppExchange Checkout integration, and Feature Parameters (LmoToSubscriber / SubscriberToLmo) as the cross-org configuration channel. Triggers: 'register package with LMA', 'set up Trialforce', 'add feature parameter to managed package', 'license expired in subscriber org', 'AppExchange Checkout licensing'. NOT for general managed-package version creation, ancestor pinning, or PostInstall handler design (use managed-package-development); NOT for second-generation packaging mechanics (use second-generation-managed-packages); NOT for non-ISV experience-cloud login licensing (use experience-cloud-licensing-model)."
+description: "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package — covers License Management App (LMA) install and registration, Lead/License object. NOT for general managed-package version creation, ancestor pinning, or PostInstall handl — use devops/appexchange-app-analytics."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

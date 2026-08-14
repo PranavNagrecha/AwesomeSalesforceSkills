@@ -96,9 +96,9 @@
     "fb2247a53f92d65e9926",
     "fd91c2a21a6e31500e28"
   ],
-  "content_hash": "27e99d1a092d8ebd057ccb8bdf014938d68ec38028be286a27a4b3a192434a66",
+  "content_hash": "0901a5efba6f0888d3a313399554141937b450cee991a33d6cb8d8b46ef49c1a",
   "dependencies": [],
-  "description": "Use this skill when designing or documenting a lead scoring model in Salesforce Sales Cloud or Account Engagement: qualifying criteria, MQL/SQL threshold definitions, scoring dimensions (demographic, firmographic, behavioral), and sales handoff SLA. NOT for Einstein Lead Scoring (AI-based predictive scoring) or Account Engagement (Pardot) automation rule configuration.",
+  "description": "Use this skill when designing or documenting a lead scoring model in Salesforce Sales Cloud or Account Engagement: qualifying criteria, MQL/SQL threshold definitions, scoring dimensions (demographic, firmographic, behavioral), and sales handoff SLA. NOT for configuring the scoring, grading, and automation rules in Account Engagement \u2014 use admin/mcae-lead-scoring-and-grading. NOT for the whole marketing program's lifecycle stages and platform scope \u2014 use admin/marketing-automation-requirements.",
   "file_location": "skills/admin/lead-scoring-requirements",
   "id": "admin/lead-scoring-requirements",
   "inputs": [

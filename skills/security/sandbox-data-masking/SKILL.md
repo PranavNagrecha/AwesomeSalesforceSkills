@@ -1,6 +1,6 @@
 ---
 name: sandbox-data-masking
-description: "Use this skill when configuring or reviewing Salesforce Data Mask to protect PII/PHI in partial or full copy sandboxes after a refresh. Trigger keywords: data mask, sandbox masking, PII in sandbox, GDPR sandbox, HIPAA non-production, mask contacts, obfuscate fields non-production. NOT for sandbox refresh mechanics (use sandbox-refresh-and-templates), NOT for production data anonymization, NOT for Shield Platform Encryption at rest."
+description: "Use this skill when configuring or reviewing Salesforce Data Mask to protect PII/PHI in partial or full copy sandboxes after a refresh. Trigger keywords: data mask, sandbox masking, PII in sandbox, GDPR sandbox, HIPAA. NOT for sandbox refresh mechanics (use sandbox-refresh-and-templates), NOT for productio — use admin/sandbox-strategy."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

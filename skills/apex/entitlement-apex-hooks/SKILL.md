@@ -1,6 +1,6 @@
 ---
 name: entitlement-apex-hooks
-description: "Use this skill when writing Apex triggers or classes that interact with CaseMilestone records — completing milestones, detecting violations, or reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement process admin setup, milestone configuration in Setup UI, or Flow-based milestone actions."
+description: "Apex triggers and classes that read or write CaseMilestone records: completing milestones, detecting violations, reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement auto-association or assignment rules in a Case trigger — use apex/case-trigger-patterns. NOT for entitlement process and milestone setup in Setup — use admin/entitlements-and-milestones."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

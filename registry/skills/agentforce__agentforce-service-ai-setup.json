@@ -116,9 +116,9 @@
     "fa80c399b734d1b3496c",
     "fc981ad186137f464427"
   ],
-  "content_hash": "c68f6f662ef5270b83a53fee542a76c1a43b1238258d7d1c8d6a140bd0e3d59a",
+  "content_hash": "510072d70c143af34cf340a3b9deb1576bfa15657cf6c9e34cefa15af2b9aba0",
   "dependencies": [],
-  "description": "Use this skill to verify prerequisites, license entitlements, and org readiness before enabling Einstein for Service AI features: Case Classification, Article Recommendations, Reply Recommendations, and Work Summaries. Trigger keywords: Einstein for Service setup, enable Case Classification, enable Article Recommendations, enable Reply Recommendations, enable Work Summaries, Einstein generative AI prerequisites, Data Cloud for Work Summaries. NOT for core Agentforce agent setup, Agent Builder topic design, Einstein Copilot configuration, ongoing optimization of already-running features, or Einstein Trust Layer configuration.",
+  "description": "Verify prerequisites, license entitlements, and org readiness before enabling Einstein for Service AI features: Case Classification, Article Recommendations, Reply Recommendations, and Work Summaries. Trigger keywords: Einstein for Service setup, enable Case Classification, enable Article Recommendations, enable Reply Recommendations, enable Work Summaries, Einstein generative AI prerequisites, Data Cloud for Work Summaries. NOT for tuning or troubleshooting a feature that is already live \u2014 classification accuracy, recommendations not appearing \u2014 use agentforce/einstein-copilot-for-service. NOT for building the agent itself \u2014 use agentforce/agentforce-agent-creation. NOT for its topic boundary design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-service-ai-setup",
   "id": "agentforce/agentforce-service-ai-setup",
   "inputs": [

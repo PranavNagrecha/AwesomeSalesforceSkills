@@ -8,7 +8,7 @@ Use this template when implementing, configuring, or troubleshooting an Outbound
 
 **Skill:** `outbound-messages-and-callbacks`
 
-**Request summary:** (describe what was asked — e.g., "configure Outbound Message to notify billing system when Opportunity closes", "debug retry loop on existing Outbound Message", "implement session ID callback for Account enrichment")
+**Request summary:** (describe what was asked — e.g., "configure Outbound Message to notify billing system when Opportunity closes", "debug retry loop on existing Outbound Message", "migrate a listener off the removed session ID callback to OAuth 2.0")
 
 ---
 
@@ -48,7 +48,7 @@ Complete this section when configuring the Outbound Message in Setup or in metad
 | Id | Always implicit |
 | (add fields) | (why the endpoint needs this field) |
 
-**Session ID required for callback?** Yes / No
+**Callback into Salesforce required?** Yes / No — if Yes, plan OAuth 2.0 below. The **Send Session ID** checkbox no longer exists (removed the week of February 23, 2026) and `includeSessionId` is ignored and always FALSE.
 
 ---
 
@@ -77,9 +77,15 @@ Complete this section when configuring the Outbound Message in Setup or in metad
 
 ---
 
-## Session ID Callback Plan (if applicable)
+## OAuth 2.0 Callback Plan (if applicable)
 
 **Why callback is needed:** (what data cannot be included in the Outbound Message field list)
+
+**Connected App / External Client App name:** (the app the listener authenticates as)
+
+**OAuth flow:** (client credentials recommended for server-to-server listeners — no interactive login)
+
+**Integration user and permission scope:** (which user the Connected App runs as, and the object/field access it needs)
 
 **REST API calls planned:**
 
@@ -88,9 +94,11 @@ Complete this section when configuring the Outbound Message in Setup or in metad
 | Example | GET /services/data/v63.0/sobjects/Account/{id} | BillingStreet, Territory__c |
 | (add rows) | | |
 
-**Session expiry risk:** (will the callback be made synchronously on receipt, or deferred? If deferred, document the maximum expected latency and whether session expiry is a concern)
+**Token caching:** (where the access token is cached and its TTL — do not request a token per notification, bulk loads will exhaust API limits)
 
-**Credential handling:** Confirm session ID is NOT stored in plaintext logs or database: Yes / No
+**Credential handling:** Confirm client secret is in a managed secret store, not source control, and the access token is not written to logs: Yes / No
+
+**Legacy session ID check:** Confirm no code path reads `SessionId` from the payload — the element is `nillable` and now arrives empty, so it parses to `None` and any Bearer header built from it 401s: Yes / No
 
 ---
 
@@ -110,9 +118,11 @@ Complete this section when configuring the Outbound Message in Setup or in metad
 - [ ] Send the same SOAP payload twice to the endpoint
 - [ ] Confirm the second delivery is detected as a duplicate and discarded without creating duplicate records or processing
 
-**Session ID callback test (if applicable):**
-- [ ] Extract session ID from a sandbox delivery and make a test REST API call
-- [ ] Confirm data returned matches the triggering user's access level
+**OAuth 2.0 callback test (if applicable):**
+- [ ] Acquire an access token via the Connected App and make a test REST API call
+- [ ] Confirm data returned matches the integration user's access level
+- [ ] Confirm the listener parses a delivery whose `SessionId` element is empty or nil without throwing
+- [ ] Confirm token refresh on 401 works and does not loop indefinitely
 
 **Load test (if bulk operations are expected):**
 - [ ] Simulate burst delivery (multiple rapid record changes) and confirm endpoint handles without HTTP errors
@@ -151,7 +161,7 @@ Complete before marking this work done:
 - [ ] Workflow Rule criteria tested in sandbox — fires as expected, does not over-fire
 - [ ] External endpoint returns the exact SOAP acknowledgment structure (not just HTTP 200)
 - [ ] Endpoint deduplicates by record ID or payload hash before processing side effects
-- [ ] Session ID is not logged in plaintext (if callback pattern is used)
+- [ ] No code path reads `SessionId` from the payload; callbacks use an OAuth 2.0 access token that is not logged in plaintext
 - [ ] Delivery queue shows successful delivery in sandbox before production activation
 - [ ] Operations runbook is documented and shared with the team responsible for this integration
 - [ ] Salesforce IP ranges are allowlisted on the receiving endpoint's firewall

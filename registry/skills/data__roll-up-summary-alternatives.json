@@ -52,9 +52,9 @@
     "dd2173e53b6e28952f18",
     "ee18fbf6e17f7c1ec5ec"
   ],
-  "content_hash": "2c258d5e0c131f1e7a7f1b2992083fcc8a9f5768fdc92c21509613470c4cdb7a",
+  "content_hash": "2b64bd199a4ff2a598f5caadf6b1bdefeed2fddb6c5930b45a40416657c836c1",
   "dependencies": [],
-  "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'DLRS', 'aggregate trigger', 'summary count on parent', 'roll-up limitation'. NOT for ordinary master-detail roll-up fields that fit native limits without extra design tradeoffs.",
+  "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on. NOT for ordinary master-detail roll-up fields that fit native limits without extra desig \u2014 use apex/cross-object-formula-and-rollup-performance.",
   "file_location": "skills/data/roll-up-summary-alternatives",
   "id": "data/roll-up-summary-alternatives",
   "inputs": [

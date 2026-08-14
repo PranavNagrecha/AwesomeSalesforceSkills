@@ -138,12 +138,12 @@
     "fc529bcc70aa3e1bec4b",
     "fd4012b51d79967dab66"
   ],
-  "content_hash": "ac9d57ac77da4451a9e60db6199ab77d09fc7da4c49ec4bf5a327e5aaaec8357",
+  "content_hash": "8b19931c113a2ff3f21d38001e98acafefc5a77f29826e7325df6489d0bd58cd",
   "dependencies": [
     "rag-patterns-in-salesforce",
     "einstein-trust-layer"
   ],
-  "description": "Use this skill when developing Data Cloud vector search capabilities: configuring search indexes, selecting chunking strategies (Easy Setup vs Advanced Setup), generating embeddings via the Salesforce-managed model, calling the Query API with a Data Cloud access token, and wiring retrieval to Agentforce grounding. NOT for Data Cloud admin, data model design, or standard CRM Connected App token management.",
+  "description": "Developing Data Cloud vector search: configuring search indexes, selecting chunking strategies (Easy Setup vs Advanced Setup), generating embeddings via the Salesforce-managed model, calling the Query API with a Data Cloud access token, and wiring retrieval to Agentforce grounding. NOT for admin-side index upkeep in Setup \u2014 refresh mode, PII field exclusion, rebuilds \u2014 use data/vector-database-management. NOT for end-to-end RAG pipeline design \u2014 use agentforce/rag-patterns-in-salesforce.",
   "file_location": "skills/agentforce/data-cloud-vector-search-dev",
   "id": "agentforce/data-cloud-vector-search-dev",
   "inputs": [

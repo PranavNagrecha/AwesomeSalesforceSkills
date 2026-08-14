@@ -58,7 +58,7 @@
     "fb96618b56261d61dcc2",
     "fd3b7e04f3c0d2e08bcd"
   ],
-  "content_hash": "1c9eb81b2427b6bd21893223162b3875f0f80a2a663b0814bdd957b40b640eb4",
+  "content_hash": "be64e913e354597fc3a5a3af9067527b7a252179701c0f1fbfe2c83316fbaa8f",
   "dependencies": [],
   "description": "Specify a FlexCard before a developer opens Card Designer: the card-state set and the condition that selects each state, the data source type behind each card (DataRaptor, Integration Procedure, Apex remote, SOQL), the action menu users get (navigate, launch OmniScript, Apex, DataRaptor), and every embedded child FlexCard or custom LWC. Produces the artifacts a BA hands to the builder. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions, FlexCard card states, OmniStudio FlexCard scoping. NOT for building the card in Card Designer, NOT for OmniScript step and branching requirements (use admin/omniscript-flow-design-requirements), NOT for standard Lightning record-page component requirements.",
   "file_location": "skills/admin/flexcard-requirements",

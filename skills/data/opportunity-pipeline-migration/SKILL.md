@@ -1,6 +1,6 @@
 ---
 name: opportunity-pipeline-migration
-description: "Use when migrating historical Opportunity records into Salesforce — covering stage history recreation, amount and close date mapping, product line item load sequencing (Product2 → Price Book → OpportunityLineItem), team member (OpportunityTeamMember) and revenue split (OpportunitySplit) loading, and Pricebook2 assignment. NOT for generic multi-object data migration planning (use data-migration-planning). NOT for ongoing CRM sync or ETL pipeline architecture. NOT for opportunity record type or sales process configuration."
+description: "Use when migrating historical Opportunity records into Salesforce — covering stage history recreation, amount and close date mapping, product line item load sequencing (Product2 → Price Book → OpportunityLineItem), team member (OpportunityTeamMember) and revenue split (OpportunitySplit) loading, and Pricebook2 assignment. NOT for sequencing a whole multi-object migration with automation bypass and rollback — use data/data-migration-planning. NOT for opportunity record types, stages and sales process setup — use admin/opportunity-management."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

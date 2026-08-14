@@ -1,6 +1,6 @@
 ---
 name: program-outcome-tracking-design
-description: "Design guidance for program outcome measurement in Salesforce nonprofit orgs: logic model structure, indicator taxonomy, impact reporting design, and grant compliance reporting using NPSP Program Management Module (PMM) or Nonprofit Cloud (NPC) Outcome Management. NOT for CRM Analytics dashboards, NPSP PMM implementation/setup, or fundraising data analysis."
+description: "Design guidance for program outcome measurement in Salesforce nonprofit orgs: logic model structure, indicator taxonomy, impact reporting design, and grant compliance reporting using NPSP Program Management Module (PMM) or Nonprofit Cloud (NPC) Outcome Management. NOT for configuring PMM programs, cohorts and service deliveries - use admin/npsp-program-management. NOT for setting up grant tracking, funding awards and disbursements - use admin/grant-management-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

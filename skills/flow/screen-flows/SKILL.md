@@ -1,6 +1,6 @@
 ---
 name: screen-flows
-description: "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling."
+description: "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for building the custom LWC that renders on a screen — use flow/flow-screen-lwc-components. NOT for per-field validation that blocks Next — use flow/flow-screen-input-validation-patterns."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: assignment-rules
-description: "Use this skill when configuring or troubleshooting Lead or Case assignment rules in Salesforce: creating rule entries, setting filter criteria, assigning records to users or queues, understanding when rules run, and implementing round-robin patterns with Apex. Trigger keywords: lead assignment, case assignment, assignment rule, queue assignment, auto-assign. NOT for approval process routing (use approval-processes). NOT for Omni-Channel routing or Skills-Based Routing (those are separate routing engines). NOT for Flow-triggered field updates unrelated to ownership."
+description: "Use this skill when configuring or troubleshooting Lead or Case assignment rules in Salesforce: creating rule entries, setting filter criteria, assigning records to users or queues, understanding when rules run, and implementing round-robin patterns with Apex. Trigger keywords: lead assignment, case assignment, assignment rule, queue assignment, auto-assign. NOT for creating the queue or public group a rule routes into — use admin/queues-and-public-groups. NOT for Omni-Channel or skills-based routing — use admin/omni-channel-routing-setup. NOT for approval routing — use admin/approval-processes."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

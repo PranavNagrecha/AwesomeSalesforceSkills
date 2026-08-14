@@ -1,6 +1,6 @@
 ---
 name: fsl-reporting-data-model
-description: "Use this skill when building Salesforce reports and dashboards on FSL operational data: job completion metrics, travel time analytics, first-time fix rate, utilization, and service performance. Trigger keywords: FSL reporting, ServiceAppointment reports, ActualDuration ActualTravelTime, first-time fix rate custom field, FSL utilization metrics. NOT for CRM Analytics / Field Service Intelligence (Einstein Analytics), ServiceReport PDF generation, or non-FSL service reporting."
+description: "Use this skill when building Salesforce reports and dashboards on FSL operational data: job completion metrics, travel time analytics, first-time fix rate, utilization, and service performance. Trigger keywords: FSL reporting, ServiceAppointment reports, ActualDuration ActualTravelTime, first-time fix rate custom field, FSL utilization metrics. NOT for loading the WorkOrder and ServiceAppointment records you want to report on — use data/fsl-work-order-migration. NOT for CRM Analytics / Field Service Intelligence dashboards — use admin/analytics-dashboard-design."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

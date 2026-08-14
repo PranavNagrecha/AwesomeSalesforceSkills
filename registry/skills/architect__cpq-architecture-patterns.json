@@ -94,9 +94,9 @@
     "fd80dc154fa6f8f935e0",
     "fd87c6f00454e00e0e79"
   ],
-  "content_hash": "62efc2c4534b3de958697023579845d0c12e0809a1c52ec26b516afe66c6cc4d",
+  "content_hash": "58089d6f45ca64a73c1c9b7ad591847172c8260b70d7ca2d1e446ed2c5e5e275",
   "dependencies": [],
-  "description": "CPQ solution architecture covering bundle design, pricing engine performance, multi-currency strategy, and integration patterns. Trigger keywords: CPQ architecture, quote scalability, bundle design, QCP performance, CPQ integration, large quote, pricing waterfall, ServiceRouter. NOT for individual feature design such as configuring specific Price Rules or Discount Schedules \u2014 see cpq-pricing-rules or pricing-model-design instead.",
+  "description": "CPQ solution architecture covering bundle design, pricing engine performance, multi-currency strategy, and integration patterns. Trigger keywords: CPQ architecture, quote scalability, bundle design, QCP performance, CPQ integration, large quote, pricing waterfall, ServiceRouter. NOT for a quote that already calculates slowly or times out \u2014 use data/cpq-performance-optimization. NOT for configuring individual Price Rules or Discount Schedules \u2014 use admin/cpq-pricing-rules.",
   "file_location": "skills/architect/cpq-architecture-patterns",
   "id": "architect/cpq-architecture-patterns",
   "inputs": [

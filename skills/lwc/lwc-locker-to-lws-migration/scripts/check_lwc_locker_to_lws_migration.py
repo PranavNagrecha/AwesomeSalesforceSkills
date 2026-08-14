@@ -25,6 +25,12 @@ Severity model:
       a (mistaken) "LWS allows it now" workaround when removing Locker
       pre-compiled-template shims.
 
+  P1  A 'data:' URI flowing into an anchor's href (assignment, setAttribute,
+      or a template-bound href). Summer '26 LWS distorted
+      HTMLAnchorElement.prototype.href to block the 'data:' scheme, so the
+      classic anchor + data-URL client-side download silently stops working.
+      Replace with a blob: object URL (see references/gotchas.md item 9).
+
   P1  Static-resource load of a known-suspect library name fragment
       (e.g., 'chartjs_locker', 'jspdf_locker', 'd3_locker_fork') that
       indicates a Locker-era patched fork. Should be replaced with an
@@ -65,6 +71,17 @@ BARE_FUNCTION_CTOR_RE = re.compile(
     r"(?<![A-Za-z0-9_$.])(?<!new\s)Function\s*\(\s*['\"]"
 )
 DEEP_CLONE_RE = re.compile(r"JSON\.parse\s*\(\s*JSON\.stringify\s*\(")
+# Summer '26: LWS blocks the `data:` scheme on HTMLAnchorElement.prototype.href.
+# Match a data: literal assigned to .href, passed via setAttribute('href', ...),
+# or bound into an href attribute in a template.
+DATA_URI_HREF_RE = re.compile(
+    r"""(?:
+          \.href\s*=\s*(?:['"`]\s*data:|[^;\n]*['"`]data:)
+        | setAttribute\s*\(\s*['"]href['"]\s*,\s*(?:['"`]\s*data:|[^)\n]*['"`]data:)
+        | \bhref\s*=\s*['"]\s*data:
+    )""",
+    re.IGNORECASE | re.VERBOSE,
+)
 LOAD_SCRIPT_RE = re.compile(r"\bload(?:Script|Style)\s*\(")
 SUSPECT_FORK_RE = re.compile(
     r"@salesforce/resourceUrl/[A-Za-z0-9_]*"
@@ -183,6 +200,19 @@ def analyse(path: str) -> List[Tuple[str, str]]:
                 f"{path}:{line_of(text, m.start())}: uses 'Function(\"...\")' "
                 f"(constructor form). Disallowed by page CSP under both Locker "
                 f"and LWS. Refactor.",
+            ))
+
+    # P1 — data: URI on an anchor href (blocked by LWS distortion, Summer '26)
+    if is_js or path.endswith(HTML_EXTS):
+        for m in DATA_URI_HREF_RE.finditer(text):
+            findings.append((
+                "P1",
+                f"{path}:{line_of(text, m.start())}: assigns a 'data:' URI to an "
+                f"anchor href. Summer '26 LWS distorts "
+                f"HTMLAnchorElement.prototype.href to block the 'data:' scheme, so "
+                f"this download silently stops working (no error is thrown). "
+                f"Replace with a blob: object URL via URL.createObjectURL(), and "
+                f"call URL.revokeObjectURL() after the click.",
             ))
 
     # P1 — suspect Locker-era patched library fork referenced via @salesforce/resourceUrl

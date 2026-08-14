@@ -30,9 +30,9 @@
     "f483648e490a76053a73",
     "f674caa60c1cbce70167"
   ],
-  "content_hash": "7bbaf0daa8db7b52bea8185beafe11e1504db18f85a318510b2fc0c8efd2813d",
+  "content_hash": "9b9ea902939e2f368c4c3db6e4d31f2ec857d0a62320bb7c4e665afee6f11254",
   "dependencies": [],
-  "description": "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for generic Apex exception handling or Flow fault paths.",
+  "description": "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for authoring the action itself \u2014 @InvocableMethod schema, labels, security context \u2014 use agentforce/custom-agent-actions-apex. NOT for the Apex tests that force each error branch \u2014 use agentforce/agent-action-unit-tests.",
   "file_location": "skills/agentforce/agent-action-error-handling",
   "id": "agentforce/agent-action-error-handling",
   "inputs": [

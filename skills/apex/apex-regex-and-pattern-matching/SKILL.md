@@ -1,6 +1,6 @@
 ---
 name: apex-regex-and-pattern-matching
-description: "Use when writing Apex that validates, extracts, or transforms strings with Pattern/Matcher or String regex methods. Covers catastrophic backtracking, 1M char input cap, anchored vs unanchored matching, and replaceAll reserved `$`/`\\` chars. NOT for SOQL LIKE queries, Flow formula REGEX, or client-side JavaScript regex."
+description: "Use when writing Apex that validates, extracts, or transforms strings with Pattern/Matcher or String regex methods. Covers catastrophic backtracking, the 1M char input cap, anchored vs unanchored matching, and replaceAll reserved `$`/`\\` chars. NOT for String.split or String.format — use apex/apex-string-and-regex. NOT for Flow REGEX() — use flow/flow-formula-and-expression-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

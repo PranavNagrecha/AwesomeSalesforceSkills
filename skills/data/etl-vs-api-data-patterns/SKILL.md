@@ -1,6 +1,6 @@
 ---
 name: etl-vs-api-data-patterns
-description: "Use this skill when selecting between ETL/ELT tools and API-based integration for ongoing data pipelines between Salesforce and external systems: Informatica Cloud, MuleSoft Batch, Jitterbit, and direct Bulk API patterns. Trigger keywords: ETL vs API integration choice, Informatica vs MuleSoft data pipeline, should I use ETL or API for Salesforce, bulk data pipeline architecture, ongoing data sync tool selection. NOT for one-time data migration tool selection (use data-migration-planning), Data Loader usage, or real-time event-driven integration (use event-driven-architecture-patterns)."
+description: "Use this skill when selecting between ETL/ELT tools and API-based integration for ongoing data pipelines between Salesforce and external systems: Informatica Cloud, MuleSoft Batch, Jitterbit, and direct Bulk API patterns. Trigger keywords: ETL vs API integration choice, Informatica vs MuleSoft data pipeline, should I use ETL or API for Salesforce, bulk data pipeline architecture, ongoing data sync tool selection. NOT for one-time migration — use data/data-migration-planning. NOT for Platform Events, CDC or Pub/Sub vs Bulk API timing — use integration/real-time-vs-batch-integration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: environment-specific-value-injection
-description: "Use this skill when configuring, reviewing, or troubleshooting how environment-specific values — endpoint URLs, client IDs, thresholds, feature flags — are managed across Salesforce orgs without hardcoding. Triggers: 'named credential per environment', 'custom metadata for config', 'sfdx string replacement', 'CI variable substitution', 'secrets in org configuration', 'org-specific values'. NOT for sandbox refresh automation (use sandbox-refresh-and-templates), NOT for general deployment pipeline setup (use github-actions-for-salesforce or bitbucket-pipelines-for-salesforce), and NOT for per-user or per-profile configuration overrides."
+description: "Use this skill when configuring, reviewing, or troubleshooting how environment-specific values — endpoint URLs, client IDs, thresholds, feature flags — are managed across Salesforce orgs without hardcoding. Triggers:. NOT for sandbox refresh automation (use sandbox-refresh-and-templates), NOT for general  — use data/deployment-data-dependencies."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

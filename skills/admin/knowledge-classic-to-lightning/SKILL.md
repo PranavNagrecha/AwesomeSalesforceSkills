@@ -1,6 +1,6 @@
 ---
 name: knowledge-classic-to-lightning
-description: "Migrating Classic Knowledge (KnowledgeArticleVersion / Article Types) to Lightning Knowledge (Knowledge__kav with record types): article-type-to-record-type mapping, multi-language translation preservation, data category re-architecture, file attachment porting, version and publication-state retention, channel visibility translation, and downstream Case Feed / Community / Bot rewiring. NOT for new Lightning Knowledge setup (use admin/knowledge-base-administration) or for editorial workflow design (use admin/knowledge-publishing-workflow)."
+description: "Migrating Classic Knowledge (KnowledgeArticleVersion / Article Types) to Lightning Knowledge (Knowledge__kav with record types): article-type-to-record-type mapping, multi-language translation preservation, data category re-architecture, file attachment porting, version and publication-state retention, channel visibility translation, and downstream Case Feed / Community / Bot rewiring. NOT for new Lightning Knowledge setup or editorial publishing workflow design (use admin/knowledge-base-administration)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -274,7 +274,7 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `admin/knowledge-base-administration` — Use for new Lightning Knowledge configuration (post-migration)
-- `admin/knowledge-publishing-workflow` — Use when designing approval workflows on the migrated articles
-- `agentforce/agentforce-knowledge-grounding` — Use when migrated articles will ground Einstein/Agentforce responses
+- `admin/approval-processes` — Use when designing approval workflows on the migrated articles
+- `agentforce/rag-patterns-in-salesforce` — Use when migrated articles will ground Einstein/Agentforce responses
 - `lwc/visualforce-to-lwc-migration` — Use if Knowledge surfaces also include Visualforce pages being modernized
-- `data/data-cloud-knowledge-ingestion` — Use when migrated articles must also populate Data Cloud for AI grounding
+- `data/data-cloud-data-streams` — Use when migrated articles must also populate Data Cloud for AI grounding

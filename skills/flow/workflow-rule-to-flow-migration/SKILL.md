@@ -1,6 +1,6 @@
 ---
 name: workflow-rule-to-flow-migration
-description: "Migrate Workflow Rules to record-triggered Flows: field update mapping, email alert migration, outbound message alternatives using Flow Core Actions, time-based workflow replacement with Scheduled Paths. NOT for Process Builder migration (use process-builder-to-flow-migration), NOT for building new flows from scratch."
+description: "Migrate Workflow Rules to record-triggered Flows: field update mapping, email alert migration, outbound message alternatives using Flow Core Actions, time-based workflow replacement with Scheduled Paths. NOT for Process Builder migration — use flow/process-builder-to-flow-migration. NOT for building the replacement flow from scratch — use flow/record-triggered-flow-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -132,15 +132,12 @@ In the record-triggered flow, add a Scheduled Path:
 
 ## Recommended Workflow
 
-1. **Inventory all Workflow Rules**: query `SELECT Id, Name, TableEnumOrId, Active FROM WorkflowRule` via Tooling API or SOQL; note action types for each rule.
-2. **Triage tool-eligible vs. manual-rebuild**: mark any rule with ISCHANGED/ISNEW criteria, task actions, or global variables as manual-rebuild.
-3. **Verify Outbound Message definitions exist**: for any rule with outbound message actions, confirm the definition exists in Setup before running the tool.
-4. **Run Migrate to Flow on eligible rules**: Setup > Migrate to Flow > select rule > Convert. Tool creates INACTIVE flow — review in Flow Builder.
-5. **Rebuild unsupported elements**: add Create Records for tasks, Scheduled Paths for time-based actions, rebuild ISCHANGED criteria with `$Record__Prior`.
-6. **Add Fault Paths**: add fault connectors to all Update Records and Create Records elements — the tool never generates them.
-7. **Assign Flow Trigger Explorer priorities**: open Flow Trigger Explorer for the object; assign priority integers preserving intended order relative to other flows.
-8. **Test in sandbox with bulk data**: load 200+ records, verify field values and email alerts, confirm time-based path scheduling. 
-9. **Activate Flow, deactivate Workflow Rule simultaneously**: never run both active on the same object.
+1. **Inventory and triage.** Query `SELECT Id, Name, TableEnumOrId, Active FROM WorkflowRule` via Tooling API or SOQL; note action types for each rule. Mark any rule with ISCHANGED/ISNEW criteria, task actions, or global variables as manual-rebuild. Confirm Outbound Message definitions exist in Setup before running the tool.
+2. **Run Migrate to Flow on eligible rules.** Setup > Migrate to Flow > select rule > Convert. Tool creates INACTIVE flow — review in Flow Builder.
+3. **Rebuild unsupported elements.** Add Create Records for tasks, Scheduled Paths for time-based actions, rebuild ISCHANGED criteria with `$Record__Prior`.
+4. **Add Fault Paths.** Add fault connectors to all Update Records and Create Records elements — the tool never generates them.
+5. **Assign Flow Trigger Explorer priorities.** Open Flow Trigger Explorer for the object; assign priority integers preserving intended order relative to other flows.
+6. **Test, activate, and cut over.** Load 200+ records in sandbox; verify field values, email alerts, and time-based path scheduling. Activate the Flow and deactivate the Workflow Rule simultaneously — never run both active on the same object.
 
 ---
 

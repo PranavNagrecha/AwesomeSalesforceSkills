@@ -1,6 +1,6 @@
 ---
 name: custom-field-creation
-description: "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill)."
+description: "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for creating the object itself - use admin/object-creation-and-design. NOT for formula field logic - use admin/formula-fields. NOT for picklist value set management - use admin/picklist-and-value-sets."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

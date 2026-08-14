@@ -1,6 +1,6 @@
 ---
 name: agentforce-persona-design
-description: "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for agent topic design (use agent-topic-design) or testing methodology (use agent-testing-and-evaluation)."
+description: "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for writing the actual conversational copy — utterances, fallback messages, escalation phrasing — use admin/agent-conversation-design. NOT for topic scope design — use agentforce/agent-topic-design."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

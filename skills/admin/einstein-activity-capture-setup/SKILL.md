@@ -1,6 +1,6 @@
 ---
 name: einstein-activity-capture-setup
-description: "Configure Einstein Activity Capture (EAC) for an org: enable the feature, create Configuration profiles, set auth type (User-Level or Org-Level OAuth), define email and calendar sync scope, configure excluded domains and privacy settings, assign users, and verify sync health. NOT for manual activity logging, Einstein Opportunity Scoring setup, Pipeline Inspection, or troubleshooting email deliverability outside EAC."
+description: "Configure Einstein Activity Capture (EAC) for an org: enable the feature, create Configuration profiles, set auth type (User-Level or Org-Level OAuth), define email and calendar sync scope, excluded domains and privacy settings, assign users, verify sync health. NOT for querying synced emails or events in SOQL, Apex or reports — use apex/einstein-activity-capture-api. NOT for Opportunity Scoring or Pipeline Inspection — use agentforce/einstein-copilot-for-sales."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

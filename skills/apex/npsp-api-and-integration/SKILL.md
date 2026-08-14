@@ -1,6 +1,6 @@
 ---
 name: npsp-api-and-integration
-description: "NPSP programmatic integration patterns: BDI gift processing API for bulk gift ingestion, ERD Schedules and Installments API for recurring donation data, and wealth screening integration via AppExchange managed packages. NOT for standard Salesforce REST/BULK API, NPSP PMM integration, or Nonprofit Cloud (NPC) native API patterns."
+description: "NPSP programmatic integration patterns: BDI gift processing API for bulk gift ingestion, ERD Schedules and Installments API for recurring donation data, and wealth screening integration via AppExchange managed packages. NOT for a one-off historical gift migration through the NPSP Data Importer — use data/gift-history-import. NOT for choosing the payment gateway or wealth-screening architecture — use architect/fundraising-integration-patterns. NOT for Nonprofit Cloud (NPC) native APIs or NPSP PMM."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: fflib-enterprise-patterns
-description: "Use when adopting or working with the fflib (Apex Enterprise Patterns) open-source library — UnitOfWork, SObjectDomain, SObjectSelector, and Service layer classes — in a Salesforce Apex codebase. Triggers: 'fflib', 'UnitOfWork', 'SObjectDomain', 'enterprise patterns apex'. NOT for general Apex layering guidance without the fflib library (see apex-design-patterns) or for Apex Mocks setup in isolation."
+description: "Use when adopting or working with the fflib (Apex Enterprise Patterns) open-source library — UnitOfWork, SObjectDomain, SObjectSelector, and Service layer classes — in a Salesforce Apex codebase. Triggers: 'fflib', 'UnitOfWork', 'SObjectDomain', 'enterprise patterns apex'. NOT for Apex layering without the fflib library — use apex/apex-design-patterns. NOT for splitting a class with this repo's lightweight base classes — use apex/apex-class-decomposition-pattern."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

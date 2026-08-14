@@ -17,6 +17,7 @@
     "3723d6e9e23471562552",
     "38533eb1369bdbf71afa",
     "3981b141cd8dbae5e127",
+    "40b6f91886c31470ba0d",
     "46b377d0a9d9bebb1233",
     "4ffd538273ae7e7794b1",
     "53c949a32258160afe50",
@@ -28,6 +29,7 @@
     "6ece63ce5b9845bd6b64",
     "6ed62a7fbb9365879b98",
     "765729a3933dcab12018",
+    "77cc1b650067f402259b",
     "7a2aadef02f71443049a",
     "7f5c634b97b18b4f295d",
     "85853a624735a8ae660e",
@@ -60,9 +62,9 @@
     "f4de66253a5e9712884f",
     "ff4cd7471297bb5ef859"
   ],
-  "content_hash": "a78df29fba4262417262b7de47cadd34cfaef8408788a7c346c5c772ea646b74",
+  "content_hash": "6d9287506b723a0861947c1778c98585aac7c3e0cd18b9bdadac50dd812467bd",
   "dependencies": [],
-  "description": "Use when a SOQL single-quoted string literal contains a character that must be escaped: an apostrophe in a name (O'Brien, Bob's BBQ), a backslash, a tab/newline/other control character, a Unicode character via \\uXXXX, or a literal LIKE wildcard (\\_ or \\%). Covers the backslash escape character, the full quoted-string escape-sequence table, the two reserved characters (single quote and backslash) that must always be escaped, the LIKE-only \\_ / \\% wildcard escapes, the hard-error rule for any other backslash use, and String.escapeSingleQuotes on the Apex side. NOT for choosing bind variables vs concatenation or SOQL-injection defense-in-depth (see apex/apex-dynamic-soql-binding-safety and apex/soql-security), NOT for general SELECT/WHERE/ORDER BY syntax (see apex/soql-fundamentals), NOT for Apex String/regex methods (see apex/apex-string-and-regex).",
+  "description": "Use when a SOQL single-quoted string literal contains a character that must be escaped: an apostrophe in a name (O'Brien, Bob's BBQ), a backslash, a tab/newline/other control character, a Unicode character via \\uXXXX, or a literal LIKE wildcard (\\_ or \\%). Covers the backslash escape character, the full quoted-string escape-sequence table, the two reserved characters (single quote and backslash) that must always be escaped, the LIKE-only \\_ / \\% wildcard escapes, the hard-error rule for any other backslash use, and String.escapeSingleQuotes on the Apex side. NOT for binding untrusted input into dynamic SOQL \u2014 use apex/apex-dynamic-soql-binding-safety. NOT for SOQL-injection review or CRUD/FLS enforcement \u2014 use apex/soql-security. NOT for Apex String/regex methods \u2014 use apex/apex-string-and-regex.",
   "file_location": "skills/apex/soql-string-escaping-and-reserved-characters",
   "id": "apex/soql-string-escaping-and-reserved-characters",
   "inputs": [
@@ -102,7 +104,7 @@
   "templates": [
     "skills/apex/soql-string-escaping-and-reserved-characters/templates/soql-string-escaping-and-reserved-characters-template.md"
   ],
-  "updated": "2026-07-08",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

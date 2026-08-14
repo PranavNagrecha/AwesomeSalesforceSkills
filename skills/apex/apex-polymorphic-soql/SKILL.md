@@ -1,6 +1,6 @@
 ---
 name: apex-polymorphic-soql
-description: "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for Activity object model (use activity-and-task-patterns). NOT for general SOQL (use apex-soql-patterns)."
+description: "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for subqueries or dot-notation traversal — use apex/apex-soql-relationship-queries. NOT for the Activity data model — use admin/activity-and-task-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

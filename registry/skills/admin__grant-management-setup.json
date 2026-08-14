@@ -90,9 +90,9 @@
     "fc30bbd4a3c89b1d827d",
     "fcf5683ea8a2f059e55b"
   ],
-  "content_hash": "44e2d134806181e0fae78c6a9fb1d36360806a63f091cfdec7e54580a08540fc",
+  "content_hash": "29b0767c2f2a6f2e4eef24a10831dd3026c068f425cf62e322c08a5bb470bee5",
   "dependencies": [],
-  "description": "Use when configuring grant tracking in a Salesforce nonprofit org \u2014 covers both NPSP Outbound Funds Module (Opportunity-based, managed package path) and Nonprofit Cloud for Grantmaking (FundingAward, FundingDisbursement, FundingAwardRequirement objects, separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for standard Opportunity tracking or fundraising donor gifts.",
+  "description": "Use when configuring grant tracking in a Salesforce nonprofit org \u2014 NPSP Outbound Funds Module (Opportunity-based, managed package) or Nonprofit Cloud for Grantmaking (separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for recording donor gifts and receipts \u2014 use admin/gift-entry-and-processing. NOT for reporting program outcomes to a funder \u2014 use admin/program-outcome-tracking-design.",
   "file_location": "skills/admin/grant-management-setup",
   "id": "admin/grant-management-setup",
   "inputs": [

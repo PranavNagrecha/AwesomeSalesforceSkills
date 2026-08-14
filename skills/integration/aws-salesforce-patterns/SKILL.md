@@ -1,6 +1,6 @@
 ---
 name: aws-salesforce-patterns
-description: "AWS integration patterns for Salesforce — pick between Amazon AppFlow, Event Relay → EventBridge, Amazon S3 ingestion paths, and direct Apex → Lambda callouts. Decision matrix + AppFlow deep dive (Salesforce as source / destination, OAuth Authorization-Code vs JWT, REST vs Bulk 2.0 API, 15 GB / run cap). NOT for the Event Relay setup details themselves (see integration/event-relay-configuration), NOT for MuleSoft, NOT for in-AWS architecture (Lambda code style, EventBridge bus topology)."
+description: "AWS integration patterns for Salesforce — pick between Amazon AppFlow, Event Relay → EventBridge, Amazon S3 ingestion paths, and direct Apex → Lambda callouts. Decision matrix + AppFlow deep dive (Salesforce as source / destination, OAuth Authorization-Code vs JWT, REST vs Bulk 2.0 API, 15 GB / run cap). NOT for Azure — use integration/azure-salesforce-patterns. NOT for Event Relay setup steps — use integration/event-relay-configuration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

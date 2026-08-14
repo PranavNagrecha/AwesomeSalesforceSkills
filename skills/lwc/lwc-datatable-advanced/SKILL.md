@@ -1,6 +1,6 @@
 ---
 name: lwc-datatable-advanced
-description: "Advanced lightning-datatable patterns — inline edit + draftValues, custom cell types via extending LightningDatatable, sortable columns, infinite scroll with onloadmore, row-level errors, and the cost of large data sets. NOT for read-only display of small lists (plain lightning-datatable suffices) or fully custom grids (use a third-party library)."
+description: "Advanced lightning-datatable — inline edit, custom cell types, infinite scroll, row errors. Triggers: datatable inline edit, custom cell type, onloadmore. NOT for first-time datatable setup — use lwc/lwc-data-table. NOT for fully custom virtual grids — use lwc/lwc-virtualized-lists."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

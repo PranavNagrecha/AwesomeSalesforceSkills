@@ -1,6 +1,6 @@
 ---
 name: flow-bulkification
-description: "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk."
+description: "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for 'Too many query rows' at LDV scale — use flow/flow-large-data-volume-patterns. NOT for refactoring one Loop element — use flow/flow-loop-element-patterns."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -20,6 +20,10 @@ triggers:
   - "how do I bulkify a flow for 200 records"
   - "after save flow creates too many updates"
   - "flow bulkification collection update import"
+  - "flow hitting SOQL limits"
+  - "too many SOQL queries in a flow"
+  - "flow query limit exceeded"
+  - "System.LimitException: Too many SOQL queries from a flow"
 inputs:
   - "flow type and trigger context"
   - "expected record volume per transaction or schedule"

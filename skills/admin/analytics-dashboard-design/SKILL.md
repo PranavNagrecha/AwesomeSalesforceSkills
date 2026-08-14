@@ -1,6 +1,6 @@
 ---
 name: analytics-dashboard-design
-description: "Use when designing or troubleshooting CRM Analytics dashboards — chart types, bindings, faceting, dashboard interactions, mobile layout, and filters. NOT for standard Salesforce reports and dashboards."
+description: "Use when designing or troubleshooting CRM Analytics dashboards — chart types, bindings, faceting, dashboard interactions, mobile layout, and filters. NOT for standard Salesforce reports and dashboards — use admin/reports-and-dashboards-fundamentals. NOT for hand-editing dashboard JSON or a SAQL step — use admin/analytics-dashboard-json."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

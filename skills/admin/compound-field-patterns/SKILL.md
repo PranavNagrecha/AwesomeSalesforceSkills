@@ -1,6 +1,6 @@
 ---
 name: compound-field-patterns
-description: "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for general field design (use custom-field-creation). NOT for address validation services (use address-validation-integration)."
+description: "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for creating a new custom field — use admin/custom-field-creation. NOT for formula syntax and functions — use admin/formula-fields."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -148,5 +148,4 @@ Collect form fields, assign to component fields on new SObject, DML.
 ## Related Skills
 
 - `admin/custom-field-creation` — general field design
-- `integration/address-validation-integration` — external address cleansing
-- `apex/apex-soql-patterns` — SOQL query patterns
+- `apex/soql-fundamentals` — SOQL query patterns

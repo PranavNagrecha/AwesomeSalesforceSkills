@@ -103,9 +103,9 @@
     "fc51ad6edd84b434a25f",
     "fcac573e0cb643eec44b"
   ],
-  "content_hash": "90b93bdb9b98b348c3e662f7b37eeff374341aafc76bd47d4bedf3b987cdb90a",
+  "content_hash": "997c6374de8eb6dd866a76a559bb6a854bc8cdda7cdf452a20bad405f49ecbbc",
   "dependencies": [],
-  "description": "Use this skill when implementing inbound email processing via Apex: parsing emails sent to a Salesforce-hosted address, creating or updating records from email content, handling attachments, or configuring Email Service routing. Trigger keywords: InboundEmailHandler, email service address, handleInboundEmail, Messaging.InboundEmail, Email-to-Case alternative, process email in Apex. NOT for outbound email templates, Messaging.SingleEmailMessage, workflow email alerts, or Email-to-Case declarative setup.",
+  "description": "Use this skill when implementing inbound email processing via Apex: parsing emails sent to a Salesforce-hosted address, creating or updating records from email content, handling attachments, or configuring Email Service routing. Trigger keywords: InboundEmailHandler, email service address, handleInboundEmail, Messaging.InboundEmail, Email-to-Case alternative, process email in Apex. NOT for outbound email \u2014 use apex/apex-outbound-email-patterns. NOT for email templates or workflow email alerts \u2014 use admin/email-templates-and-alerts.",
   "file_location": "skills/apex/apex-email-services",
   "id": "apex/apex-email-services",
   "inputs": [

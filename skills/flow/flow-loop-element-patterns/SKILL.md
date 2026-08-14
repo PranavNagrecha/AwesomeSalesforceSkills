@@ -1,6 +1,6 @@
 ---
 name: flow-loop-element-patterns
-description: "Use when reviewing or authoring Flow logic that contains a Loop element — covers DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for general collection processing semantics (see flow-collection-processing) and NOT for end-to-end bulkification redesign across an entire flow (see flow-bulkification)."
+description: "Use when reviewing or authoring Flow logic that contains a Loop element — DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for collection elements on their own — use flow/flow-collection-processing. NOT for whole-flow bulk redesign — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

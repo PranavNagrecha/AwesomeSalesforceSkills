@@ -66,9 +66,9 @@
     "f978db0bdd01656fdb11",
     "fda75f20b4e820dc4c0b"
   ],
-  "content_hash": "17ed78ed34f67cfb1f90a7e973e5df9de4b9540113b47859f77c8cfb526acd22",
+  "content_hash": "f200a10b8f9d44eebff7b684015ee397cadb9cdb9bef0581e3e29e64eff3a76e",
   "dependencies": [],
-  "description": "Use when designing retry-safe integrations with Salesforce \u2014 including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for Salesforce duplicate management rules.",
+  "description": "Use when designing retry-safe integrations with Salesforce \u2014 including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for stopping duplicate records users create, via matching and duplicate rules \u2014 use admin/duplicate-management. NOT for the retry schedule itself \u2014 exponential backoff, jitter, circuit breaker \u2014 use integration/retry-and-backoff-patterns.",
   "file_location": "skills/integration/idempotent-integration-patterns",
   "id": "integration/idempotent-integration-patterns",
   "inputs": [

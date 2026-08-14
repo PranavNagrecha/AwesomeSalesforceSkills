@@ -53,9 +53,10 @@ If the license is not present, standard tooling is the only valid option.
 ```
 - Identify the org's current state: managed package (vlocity_ins__ or industries__ 
   namespace) vs Standard Designers (no OmniStudio namespace prefix).
-- Migration from managed package to Standard Designers requires the Salesforce 
-  OmniStudio Conversion Tool and is a structured project, not a simple redeploy.
-- Do not mix the two models without a documented migration plan.
+- Migration from managed package to Standard Designers runs through the Omnistudio
+  Migration Assistant (OMA), an SF CLI plugin, and is a structured project across
+  dev sandbox / validation sandbox / production — not a simple redeploy.
+- Do not mix the two models outside the documented Omnistudio Hybrid configuration.
 ```
 
 **Detection hint:** Look for advice that treats namespace removal as a trivial step, or that suggests Standard Designers components can be added to a managed-package org without migration planning.
@@ -126,7 +127,36 @@ For new org implementations (Spring '25+):
 - Standard Designers is the Salesforce-recommended forward path
 - Managed package is a legacy path for existing orgs with migration debt
 
-Source: https://developer.salesforce.com/blogs/2024/omnistudio-standard-designers
+Source: https://developer.salesforce.com/blogs/2026/03/whats-new-in-salesforce-omnistudio-standard-designers
 ```
 
 **Detection hint:** Recommendations to install the OmniStudio AppExchange package for new org implementations when the customer is on Spring '25 or later.
+
+---
+
+## Anti-Pattern 7: Framing Managed Package vs Standard Designers as a Hard Either/Or
+
+**What the LLM generates:** "Your org is on the managed package, so you can't touch the standard designers. Migrate every FlexCard, OmniScript, Data Mapper, and Integration Procedure first, then you can start building." Or, at the other extreme: "You have an Industries license, so the standard designers are already available to your team."
+
+**Why it happens:** Pre-2025 training data describes exactly two org states — packaged or not — because that was the only shape that existed. Both the coexistence configuration and the runtime-state gate postdate most of the corpus, so the model reasons from license alone and assumes a big-bang cutover is the only migration shape.
+
+**Correct pattern:**
+
+```
+1. Ask which RUNTIME the org is on, not just which license it holds.
+   - Industries license + no package  -> enable bundled Omnistudio license,
+     designers and runtime are on the Platform.
+   - License enabled + already on the Platform -> update the package to the
+     latest version, standard designers arrive by default.
+   - On the package runtime -> standard designers are NOT automatic; migration
+     to the Platform runtime is required to gain access.
+2. Coexistence is a real, named option: Omnistudio Hybrid lets you create
+   components with the standard designers and standard runtime inside a
+   managed package environment.
+3. Do not promise Hybrid eligibility or reversibility from memory. Check the
+   Salesforce Help "Omnistudio Hybrid Compatibility Matrix" per component type.
+4. Full migration = Omnistudio Migration Assistant (OMA), Assess before Migrate.
+   Angular Omniscripts are out of scope for the tool and need a rebuild.
+```
+
+**Detection hint:** Any answer that derives standard-designer availability from the license alone, that asserts a full component-by-component migration must complete before any new build can start, or that states a Hybrid locking/reversibility rule without pointing at the compatibility matrix.

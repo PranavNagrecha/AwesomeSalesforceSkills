@@ -1,6 +1,6 @@
 ---
 name: multi-package-development
-description: "Designing, orchestrating, and maintaining multi-package architectures in Salesforce DX: dependency DAG design, layered package decomposition, install ordering, cross-package API contracts, mono-repo vs. multi-repo layout, and CI/CD pipeline sequencing for projects with two or more unlocked or managed packages. NOT for single-package creation or versioning (see unlocked-package-development), 2GP managed-package ISV workflows (see second-generation-managed-packages), or change-set deployments."
+description: "Designing, orchestrating, and maintaining multi-package architectures in Salesforce DX: dependency DAG design, layered package decomposition, install ordering, cross-package API contracts, mono-repo vs multi-repo layout, and CI/CD sequencing for two or more packages. NOT for single-package creation or versioning — use devops/unlocked-package-development. NOT for 2GP managed-package ISV workflows — use devops/second-generation-managed-packages."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

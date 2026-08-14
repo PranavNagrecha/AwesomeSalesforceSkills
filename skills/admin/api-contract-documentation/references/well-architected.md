@@ -18,9 +18,9 @@ Documenting authentication requirements and error code meanings prevents consume
 
 ## Cross-Skill References
 
-- `integration/apex-rest-services` — Use for implementing custom Apex REST endpoints that this skill documents
+- `apex/apex-rest-services` — Use for implementing custom Apex REST endpoints that this skill documents
 - `integration/api-led-connectivity` — Use for designing the API layer architecture before documenting individual endpoints
-- `integration/connected-app-security` — Use for OAuth flow setup referenced in API authentication documentation
+- `integration/oauth-flows-and-connected-apps` — Use for the OAuth flow setup referenced in API authentication documentation
 
 ## Official Sources Used
 

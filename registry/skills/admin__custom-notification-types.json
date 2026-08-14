@@ -72,9 +72,9 @@
     "f9c6dc4d7dc373c007a2",
     "fd9496f67d66e7ab2ac4"
   ],
-  "content_hash": "105a34491f5e272916c0dd197183355388a4a9b140dbc70eb66be41b3d19b012",
+  "content_hash": "1781de8abe58b84bb085152793ed4c9edc5facd4d058a1e6ebe002748a4cd980",
   "dependencies": [],
-  "description": "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for email alerts (use email-templates-and-alerts). NOT for in-app bell notifications alone (use chatter-feed-customization).",
+  "description": "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for choosing channels, consent, or notification-fatigue policy \u2014 use admin/custom-notification-type-design. NOT for email alerts \u2014 use admin/email-templates-and-alerts.",
   "file_location": "skills/admin/custom-notification-types",
   "id": "admin/custom-notification-types",
   "inputs": [

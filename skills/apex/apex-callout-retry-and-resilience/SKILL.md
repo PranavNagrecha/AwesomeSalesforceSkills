@@ -1,6 +1,6 @@
 ---
 name: apex-callout-retry-and-resilience
-description: "Strategy layer for resilient Apex HTTP callouts: bounded retry with backoff, queueable async retry chains, circuit-breaker via Platform Cache, idempotency keys, dead-letter pattern. NOT for callout authentication — see apex-named-credentials-patterns. NOT for transaction-boundary rules — see callout-and-dml-transaction-boundaries. NOT a re-write of the HttpClient template — this is the policy and orchestration layer that calls it."
+description: "Strategy layer for resilient Apex HTTP callouts: bounded retry with backoff, queueable async retry chains, circuit-breaker via Platform Cache, idempotency keys, dead-letter pattern. NOT for callout authentication — use apex/apex-named-credentials-patterns. NOT for callout/DML transaction-boundary rules — use apex/callout-and-dml-transaction-boundaries."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Apex Callout Retry and Resilience

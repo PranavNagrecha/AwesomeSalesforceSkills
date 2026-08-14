@@ -1,6 +1,6 @@
 ---
 name: analytics-dashboard-json
-description: "Use this skill when editing CRM Analytics dashboard JSON directly to implement advanced bindings, custom SAQL/SOQL step queries, layout changes, step parameters, or cross-widget interactions. Trigger keywords: dashboard JSON, SAQL step, binding syntax, mustache binding, dashboard REST API, widget layout, step limit, datasetId, datasetVersionId. NOT for standard dashboard builder UI configuration, chart type selection, or dataset design."
+description: "Use this skill when editing CRM Analytics dashboard JSON directly to implement advanced bindings, custom SAQL/SOQL step queries, layout changes, step parameters, or cross-widget interactions. Trigger keywords: dashboard JSON, SAQL step, binding syntax, mustache binding, dashboard REST API, widget layout, step limit, datasetId, datasetVersionId. NOT for building the dashboard in the builder UI or picking chart types — use admin/analytics-dashboard-design. NOT for writing or tuning the SAQL itself — use admin/saql-query-development."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

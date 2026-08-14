@@ -1,6 +1,6 @@
 ---
 name: agent-output-formats
-description: "Convert the canonical markdown+JSON deliverable of any SfSkills runtime agent into Excel, PDF, CSV, Notion card, ServiceNow ticket, or similar downstream format WITHOUT polluting the consumer's project with new dependencies or regenerating from the agent's source logic. NOT for authoring new agent output formats (use DELIVERABLE_CONTRACT.md). NOT for data-export SOQL (use bulk-api-2-patterns)."
+description: "Convert the canonical markdown+JSON deliverable of any SfSkills runtime agent into Excel, PDF, CSV, Notion card, ServiceNow ticket, or similar downstream format without adding dependencies to the consumer's project. NOT for an Agentforce action's output — use agentforce/agent-actions. NOT for exporting Salesforce data — use integration/bulk-api-2-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

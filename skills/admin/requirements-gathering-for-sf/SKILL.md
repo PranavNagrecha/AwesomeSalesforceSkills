@@ -1,6 +1,6 @@
 ---
 name: requirements-gathering-for-sf
-description: "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design)."
+description: "Eliciting, documenting and structuring requirements for a Salesforce implementation: stakeholder discovery interviews, As-Is and To-Be process mapping, and gap analysis against standard Salesforce capability. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for authoring the user stories themselves - use admin/user-story-writing-for-salesforce. NOT for scoring requirements against a specific org - use admin/fit-gap-analysis-against-org. NOT for technical design decisions - use architect/solution-design-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

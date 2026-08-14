@@ -27,9 +27,9 @@
     "f1eef71a6e11e340eeee",
     "f9deeff16c4e0da8f4dc"
   ],
-  "content_hash": "17c57cd2768f6a608fddf8021564f05bd21811423c1d65356d8b1533a2d30bd7",
+  "content_hash": "5b11e6c16984b4c4720253daec30bd3d18b8da4f6b386fcdde4ab35eae9ceb97",
   "dependencies": [],
-  "description": "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening.",
+  "description": "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening \u2014 use admin/integration-user-management.",
   "file_location": "skills/security/api-only-user-hardening",
   "id": "security/api-only-user-hardening",
   "inputs": [

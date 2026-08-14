@@ -1,6 +1,6 @@
 ---
 name: cicd-for-experience-cloud
-description: "CI/CD pipeline patterns for Experience Cloud sites — the layer between sfdx-project metadata deploys and a working production site. Covers GitHub Actions / Jenkins / GitLab pipeline shapes for ExperienceBundle / DigitalExperienceBundle deploys, BrandingSet + ExperiencePropertyTypeBundle promotion, guest-user permission-set automation, custom-domain / CDN binding scripts, and the ordering rules that make the difference between a clean deploy and a half-applied site. NOT for the metadata-shape details (use devops/experience-cloud-deployment-dev), NOT for generic SFDX CI/CD (use devops/sfdx-cicd-pipeline)."
+description: "CI/CD pipeline patterns for Experience Cloud sites — the layer between sfdx-project metadata deploys and a working production site. Covers GitHub Actions / Jenkins / GitLab pipeline shapes for ExperienceBundle / DigitalExperienceBundle deploys, BrandingSet + ExperiencePropertyTypeBundle promotion, guest-user permission-set automation, custom-domain / CDN binding scripts, and the ordering rules that make the difference between a clean deploy and a half-applied site. NOT for the metadata-shape details (use devops/experience-cloud-deployment-dev), NOT for generic SFDX CI/CD (use architect/ci-cd-pipeline-architecture)."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -50,9 +50,9 @@ binding that lives outside Metadata API entirely.
 What this skill is NOT. The shape of `ExperienceBundle` /
 `DigitalExperienceBundle` metadata, the CMS Managed Content exclusion,
 and the per-bundle deploy mechanics live in
-`devops/experience-cloud-deployment-dev`. Generic SFDX CI/CD patterns
-(scratch org strategy, source tracking, package versioning) live in
-`devops/sfdx-cicd-pipeline`. This skill is the Experience-Cloud-specific
+`devops/experience-cloud-deployment-dev`. Generic pipeline design
+(stage sequence, promotion strategy, quality gates) lives in
+`architect/ci-cd-pipeline-architecture`. This skill is the Experience-Cloud-specific
 *pipeline-tooling* layer between them.
 
 ---
@@ -294,7 +294,7 @@ before customers do.
 | Hybrid Aura + LWR site (uncommon) | Both bundle types in the package | Each component lives in its own bundle |
 | Custom domain not yet DNS-bound | Pipeline emits DNS targets; gate on confirmation | Don't promote past "metadata deployed" until the site is reachable |
 | CMS Managed Content needed in target | Separate CMS-content-export step (NOT SFDX) | CMS isn't covered by Metadata API |
-| Generic SFDX CI/CD without Experience-Cloud specifics | **Use `devops/sfdx-cicd-pipeline`** | Don't reinvent the SFDX layer |
+| Generic CI/CD pipeline design without Experience-Cloud specifics | **Use `architect/ci-cd-pipeline-architecture`** | Don't reinvent the pipeline layer |
 | Bundle metadata details / shape | **Use `devops/experience-cloud-deployment-dev`** | This skill is pipelines, not bundle internals |
 
 ---
@@ -352,7 +352,7 @@ before customers do.
 ## Related Skills
 
 - `devops/experience-cloud-deployment-dev` — bundle metadata internals (this skill ends where that one starts).
-- `devops/sfdx-cicd-pipeline` — generic SFDX CI/CD; this skill assumes those primitives are in place.
-- `admin/experience-cloud-admin-designer` — site design / configuration; this skill is the deploy half.
+- `architect/ci-cd-pipeline-architecture` — generic CI/CD stage sequence and quality gates; this skill assumes those primitives are in place.
+- `admin/experience-cloud-site-setup` — site design / configuration; this skill is the deploy half.
 - `security/guest-user-security` — what permissions the guest user *should* have (vs this skill which is about how the pipeline applies them).
 - `architect/experience-cloud-licensing-model` — license-model decisions upstream of the pipeline.

@@ -1,6 +1,6 @@
 ---
 name: apex-wrapper-class-patterns
-description: "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess. NOT for JSON serialization mechanics — use apex-json-serialization. NOT for LWC data-binding patterns — use lwc-reactive-state-patterns or lwc-lightning-record-forms."
+description: "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess. NOT for JSON serialization mechanics — use apex/apex-json-serialization. NOT for LWC data-binding patterns — use lwc/lwc-reactive-state-patterns."
 category: apex
 salesforce-version: "Spring '24+"
 well-architected-pillars:

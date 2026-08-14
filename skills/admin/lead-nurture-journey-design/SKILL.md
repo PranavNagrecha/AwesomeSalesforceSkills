@@ -1,6 +1,6 @@
 ---
 name: lead-nurture-journey-design
-description: "Use this skill when designing or configuring lead nurture journeys in MCAE (Account Engagement / Pardot) Engagement Studio — including mapping content to funnel stages, defining behavioral trigger rules, building branching program paths, and establishing MQL handoff criteria. Covers funnel stage mapping (Awareness, Consideration, Decision), Engagement Studio program structure, rule-based branching on score/grade/activity, content inventory prerequisites, and program execution schedule. NOT for Journey Builder implementation in Marketing Cloud Engagement (MCE), NOT for Sales Engagement cadences in Sales Cloud, NOT for Einstein Lead Scoring configuration, NOT for initial MCAE Business Unit setup or CRM connector provisioning."
+description: "Use this skill when designing lead nurture journeys in MCAE (Account Engagement / Pardot) Engagement Studio — mapping content to funnel stages (Awareness, Consideration, Decision), behavioral trigger rules, branching program paths, and MQL handoff criteria to Sales. NOT for building a journey in Marketing Cloud Journey Builder — use admin/journey-builder-administration. NOT for the scoring and grading model behind MQL — use admin/mcae-lead-scoring-and-grading."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -122,9 +122,9 @@
     "f9e65a560310feeff2e7",
     "fd7e0f1d058397b91b13"
   ],
-  "content_hash": "bf36f09452bd00d53d0b96f6772aedaa23632a2abcfbe594ebcd9d4070a70554",
+  "content_hash": "13c7032694fee8352e78f7560b91e1c658e3b8223c45db2815ee822711d00e02",
   "dependencies": [],
-  "description": "Use when configuring Communications Cloud for the first time: org setup sequence, permission sets, Enterprise Product Catalog (EPC) service catalog configuration, TM Forum-aligned order decomposition, Account record-type segmentation, and contract lifecycle activation. NOT for generic OmniStudio configuration, Salesforce CPQ (SBQQ), standard B2C/B2B Commerce order management, or non-Communications Industries clouds.",
+  "description": "Configure Communications Cloud for the first time: org setup sequence, permission sets, Enterprise Product Catalog (EPC) service catalog, TM Forum-aligned order decomposition setup, Account record-type segmentation, contract lifecycle activation. NOT for designing the commercial-to-technical order process itself - use admin/industries-process-design. NOT for calling TM Forum Open APIs (TMF622, TMF679) - use omnistudio/industries-api-extensions.",
   "file_location": "skills/admin/industries-communications-setup",
   "id": "admin/industries-communications-setup",
   "inputs": [

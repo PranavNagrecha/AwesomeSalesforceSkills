@@ -87,3 +87,18 @@ doesn't infer them.
 
 **How to avoid:** make governance tagging a standing step in the deployment checklist, and
 re-audit tags whenever the script's output schema changes.
+
+---
+
+## Gotcha 7: The Summer '26 blog swaps "script" and "function"
+
+**What happens:** a design uses a "function" for a batch transform and a "script" for search-index
+chunking, then the deploy/wiring steps don't match the product.
+
+**When it occurs:** the Summer '26 developer blog describes Code Extension as running "on isolated
+containers" (correct) but then says functions do batch transforms and scripts do chunking. That
+swap is **not** what the Code Extension developer guide says.
+
+**How to avoid:** treat the guide as authoritative: **scripts** run as a batch data transform;
+**functions** run in the search-index pipeline as the chunking strategy. Quote the blog for
+isolated containers, the Logs DLO, and data-kit auto-inclusion — not for which surface is which.

@@ -1,6 +1,6 @@
 ---
 name: lwc-slots-composition
-description: "Use when a Lightning Web Component needs to let a parent inject markup into predefined regions using `<slot>` — default and named slots, `slotchange` wiring, fallback content, and detecting slot emptiness. NOT for rendering a dynamic component whose tag name is chosen at runtime — that is `lwc-dynamic-components` — and NOT for cross-component messaging via Lightning Message Service."
+description: "Use when a Lightning Web Component needs to let a parent inject markup into predefined regions using `<slot>` — default and named slots, `slotchange` wiring, fallback content, and detecting slot emptiness. NOT for rendering a dynamic component whose tag name is chosen at runtime — that is `lwc — use lwc/lwc-web-components-interop."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

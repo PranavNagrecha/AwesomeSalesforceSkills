@@ -1,6 +1,6 @@
 ---
 name: email-service-inbound
-description: "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use service/email-to-case)."
+description: "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -276,12 +276,15 @@ or Custom Setting so admins can manage without redeploying Apex.
 
 1. **Decide custom service vs Email-to-Case.** Case creation → E2C; everything else → custom.
 2. **Provision a dedicated running user** for the Email Service. Document its required permissions.
-3. **Implement `Messaging.InboundEmailHandler`** with the right business logic.
-4. **Configure Email Service** in Setup → Email → Email Services. Set running user, max email size, accept attachments, error-response template.
-5. **Create one or more Email Services Addresses.** Each gets a Salesforce-supplied subdomain.
-6. **Plan threading** if applicable (subject token, `In-Reply-To` parse).
-7. **Test by sending real emails** to the address. Verify success / failure paths.
-8. **Monitor.** Inbound email volume, handler exceptions, attachment storage growth.
+3. **Implement the handler.**
+   - Write `Messaging.InboundEmailHandler` with the right business logic.
+   - Plan threading if applicable (subject token, `In-Reply-To` parse).
+4. **Configure the Email Service and its addresses.**
+   - Setup → Email → Email Services. Set running user, max email size, accept attachments, error-response template.
+   - Create one or more Email Services Addresses. Each gets a Salesforce-supplied subdomain.
+5. **Test and monitor.**
+   - Send real emails to the address. Verify success / failure paths.
+   - Monitor inbound email volume, handler exceptions, attachment storage growth.
 
 ---
 

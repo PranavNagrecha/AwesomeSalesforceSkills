@@ -72,12 +72,12 @@
     "fa48de52921d40fcf4e4",
     "fefe7cc3db070c05d158"
   ],
-  "content_hash": "0baad4f3e8cf2a5268e0567357d15cb725d3c334377157dbfbc92268ba5ed5e5",
+  "content_hash": "86ddfd36f4820a7c4c9621b7d5964097814899b292d7ea236b7c68ce2bf46d65",
   "dependencies": [
     "architect/nfr-definition-for-salesforce",
     "devops/environment-strategy"
   ],
-  "description": "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time (EPT) measurement, and sandbox sizing for performance work. Triggers: 'load test Salesforce org', 'Scale Test Full Copy sandbox', 'EPT optimization', 'API concurrency limits', 'JMeter Salesforce performance'. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization (see data/soql-query-optimization), or NFR definition (see architect/nfr-definition-for-salesforce).",
+  "description": "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization ( \u2014 use data/soql-query-optimization.",
   "file_location": "skills/devops/performance-testing-salesforce",
   "id": "devops/performance-testing-salesforce",
   "inputs": [

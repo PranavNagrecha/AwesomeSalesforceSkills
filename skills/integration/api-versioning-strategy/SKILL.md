@@ -1,6 +1,6 @@
 ---
 name: api-versioning-strategy
-description: "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs."
+description: "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs — use apex/apex-rest-services."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: fsc-data-model
-description: "Use when designing, querying, or troubleshooting the Financial Services Cloud data model — including managed-package (FinServ__ namespace) and Core FSC (standard objects, no namespace) object structures, household relationship modeling, financial account ownership, and the FSC rollup framework. Trigger keywords: FSC data model, FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountParty, FinServ namespace, household rollup, AssetsAndLiabilities, FinancialGoal, LifeEvent, AccountContactRelation FSC. NOT for standard Salesforce data model or non-FSC financial objects."
+description: "Use when designing, querying, or troubleshooting the Financial Services Cloud data model — including managed-package (FinServ__ namespace) and Core FSC (standard objects, no namespace) object structures, household relationship modeling, financial account ownership, and the FSC rollup framework. Trigger keywords: FSC data model, FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountParty, FinServ namespace, household rollup, AssetsAndLiabilities, FinancialGoal, LifeEvent, AccountContactRelation FSC. NOT for setting up financial accounts and roles in Setup — use admin/financial-account-setup. NOT for household membership and rollup scheduling — use admin/household-model-configuration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: data-cloud-ingestion-api
-description: "Use when implementing or troubleshooting the Salesforce Data Cloud Ingestion API — covers streaming ingestion (near-real-time micro-batches), bulk ingestion (CSV-based full-replace jobs), schema management in OpenAPI 3.0.x YAML, Connected App setup with cdp_ingest_api scope, and error handling for both modes. NOT for standard Salesforce Bulk API, CRM Analytics data import, or Data Cloud data streams from CRM objects."
+description: "Use when implementing or troubleshooting the Salesforce Data Cloud Ingestion API — covers streaming ingestion (near-real-time micro-batches), bulk ingestion (CSV-based full-replace jobs), schema management in OpenAPI. NOT for standard Salesforce Bulk API, CRM Analytics data import, or Data Cloud data stre — use integration/bulk-api-2-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

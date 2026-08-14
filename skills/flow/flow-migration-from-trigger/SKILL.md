@@ -1,6 +1,6 @@
 ---
 name: flow-migration-from-trigger
-description: "Decide whether an existing Apex trigger should be rewritten as a Flow, and execute the migration safely. Covers the decision criteria (complexity, ownership, performance), side-by-side rollout, test-coverage parity, and the inverse case (recognize when Flow should stay Apex). NOT for migrating Process Builder / Workflow Rule to Flow (use those migration skills). NOT for brand-new automation decisions (use automation-selection.md)."
+description: "Decide whether an existing Apex trigger should be rewritten as a Flow, and execute the migration safely. Covers the decision criteria (complexity, ownership, performance), side-by-side rollout, test-coverage. NOT for migrating Process Builder / Workflow Rule to Flow (use those migration skills) — use flow/process-builder-to-flow-migration."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

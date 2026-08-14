@@ -109,3 +109,36 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 - Check the blocklist before promising a rollup. If either parent is on it, that leg must be a lookup — and the rollup on that parent must come from a record-triggered Flow, an Apex trigger, or DLRS writing to a plain Number field.
 - For a junction where one side is blocked, use master-detail to the eligible (usually custom) parent and lookup to the blocked one. The junction still inherits sharing and cascade delete from the master side, and rollups still work on that side.
 - Never propose converting a standard object into the detail of a custom object; the platform offers no path for it, so a "make Contact a detail of Household__c" design has to be rewritten as a lookup, with record access handled by sharing rules or programmatically created Share records instead of inherited from the parent.
+
+---
+
+## Gotcha 9: Funnel or Wizard State in a Long Text Area JSON Is Invisible
+
+**What happens:** Navigation status (`not started` / `in progress` / `completed` per section) is stored as one JSON string in a Long Text Area. That field cannot be filtered in SOQL, grouped in reports, referenced by formulas, or rolled up. Operations cannot answer "how many drafts are stuck on Income" **while the record is still alive**. After a purge, the JSON is gone.
+
+**When it occurs:** Multi-step Experience Cloud / OmniScript applications that treat Salesforce as intake, not system of record.
+
+**How to avoid:**
+- Custom metadata can declare controlling-question → reopen-dependent-section rules. That is the reusable navigation idea — do not put the **instance** state in an LTA.
+- Prefer child rows or Platform Events: section, timestamp, status, **no PII**. Measurement then survives both the wizard and the purge.
+- A single "last visited section" text field is last-write-wins, not a funnel.
+
+---
+
+## Gotcha 10: Process on the Wrong Standard Object
+
+**What happens:** The pipeline lives on **Account** (or Case, or Campaign) because Opportunity was skipped. Stage, amount, close date, and "deal team" are custom fields on a party object. Reports, forecasts, Path, and every sales skill assume Opportunity. Integrations and AppExchange expect Opportunity.
+
+**When it occurs:** PE / search-fund / professional-services orgs that "didn't need Opportunity." Also: using Contact as the employee record.
+
+**How to avoid:** If the noun is a deal, use Opportunity (or a custom object whose API name and report types say deal). Account is a party. Retrofitting Opportunity later means migrating stage history that never existed. Document the deviation in an ADR; do not pretend Account *is* Opportunity in reports.
+
+---
+
+## Gotcha 11: Lookup-Driven Junction Create Without an Existence Check
+
+**What happens:** A Flow sees Lookup A and Lookup B populated and **Creates** a junction row every time. No Get Records for the pair. Save-edit-save duplicates the junction. Reports count relationships twice.
+
+**When it occurs:** After-save Flows that "link the related company / contact / campaign when the lookup is filled."
+
+**How to avoid:** Get existing junction on `(ParentA, ParentB)` (or an External Id on the pair) before Create. Prefer a unique matching rule / duplicate rule on the junction. Idempotent create, not fire-and-forget.

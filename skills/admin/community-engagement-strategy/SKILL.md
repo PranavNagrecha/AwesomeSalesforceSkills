@@ -1,6 +1,6 @@
 ---
 name: community-engagement-strategy
-description: "Use this skill to design and configure the engagement model for an Experience Cloud community: reputation levels, ideation, and content contribution strategy. Triggers: 'community engagement strategy', 'gamification Experience Cloud', 'reputation levels setup', 'ideation community portal', 'member recognition program'. NOT for moderation configuration (see experience-cloud-moderation). NOT for technical Experience Cloud site setup or Lightning template selection."
+description: "Design the engagement model for an Experience Cloud community: reputation levels, ideation, and content contribution strategy. Triggers: 'community engagement strategy', 'gamification Experience Cloud', 'reputation levels setup', 'ideation community portal', 'member recognition program'. NOT for blocking, flagging or approving what members post — use admin/experience-cloud-moderation. NOT for measuring logins, page views or engagement after launch — use data/community-analytics-data."
 category: admin
 salesforce-version: "Spring '25+"
 triggers:

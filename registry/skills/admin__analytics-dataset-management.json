@@ -83,9 +83,9 @@
     "f4cfc3aba27cbe1298d3",
     "fa1b4b5e7b69fc69abdb"
   ],
-  "content_hash": "d5386626b97dac71530e4df8f38415f9a886a23971191238044bcf152f886f4f",
+  "content_hash": "933ce794f41798c0325c7fd9ee91b749794371ee5d5ccb097578a55bf78f8bbc",
   "dependencies": [],
-  "description": "Use when creating or managing CRM Analytics datasets: configuring dataflows, scheduling refreshes, selecting fields, handling date types, managing row-count growth, or troubleshooting stale or broken datasets. Triggers: 'dataset creation', 'dataflow schedule', 'dataflow quota', 'date field not filterable', 'dataset row limit', 'CRM Analytics data refresh', 'field type mismatch in dataset'. NOT for standard Salesforce report types or choosing between analytics tools.",
+  "description": "Use when creating or managing CRM Analytics datasets: configuring dataflows, scheduling refreshes, selecting fields, handling date types, managing row-count growth, or troubleshooting stale or broken datasets. Triggers: 'dataset creation', 'dataflow schedule', 'dataflow quota', 'date field not filterable', 'dataset row limit', 'CRM Analytics data refresh', 'field type mismatch in dataset'. NOT for making an existing dataset smaller or faster \u2014 use data/analytics-dataset-optimization. NOT for choosing between Reports, CRM Analytics and Tableau in the first place \u2014 use admin/einstein-analytics-basics.",
   "file_location": "skills/admin/analytics-dataset-management",
   "id": "admin/analytics-dataset-management",
   "inputs": [

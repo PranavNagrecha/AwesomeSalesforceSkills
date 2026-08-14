@@ -1,6 +1,6 @@
 ---
 name: donor-lifecycle-requirements
-description: "Requirements mapping for the full donor lifecycle in NPSP or Nonprofit Cloud: acquisition stage design, moves management for cultivation and solicitation, upgrade path design, lapsed donor re-engagement strategy, and segmentation for portfolio management. NOT for marketing automation execution, email campaign configuration, or recurring donation implementation."
+description: "Requirements mapping for the full donor lifecycle in NPSP or Nonprofit Cloud: acquisition stage design, moves management, upgrade paths, lapsed donor re-engagement, and portfolio segmentation. NOT for mapping the Opportunity sales processes and stage picklists — use admin/fundraising-process-mapping. NOT for stewardship task automation — use admin/npsp-engagement-plans."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

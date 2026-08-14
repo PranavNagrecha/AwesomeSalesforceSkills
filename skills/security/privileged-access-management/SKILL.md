@@ -1,6 +1,6 @@
 ---
 name: privileged-access-management
-description: "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design."
+description: "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design — use admin/permission-set-architecture."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

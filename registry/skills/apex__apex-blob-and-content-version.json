@@ -78,9 +78,9 @@
     "ff609cf292195edebc60",
     "ff8ec38e4d0280d90116"
   ],
-  "content_hash": "fae3ea40f19831af888b7503d8c0456f64470eb754fd188d4ca333f9843f6bf0",
+  "content_hash": "8c32bbe8f3bff5c21f233362f0030836d26100efb8ea31714e79c69c07cdb142",
   "dependencies": [],
-  "description": "Use when Apex must create, persist, stream, or serve binary files \u2014 including uploading from LWC/REST, generating ContentVersion records, chunking large bodies, relating files to records via ContentDocumentLink, and handling the heap/payload limits that trip binary workflows. Triggers: 'ContentVersion VersionData Blob', 'upload file from LWC to Apex', 'large file heap limit Apex', 'ContentDocumentLink sharing'. NOT for generating PDFs (use pdf-generation-patterns); NOT for email attachment parsing (use apex-email-services).",
+  "description": "Use when Apex must create, persist, stream, or serve binary files \u2014 including uploading from LWC/REST, generating ContentVersion records, chunking large bodies, relating files to records via ContentDocumentLink, and handling the heap/payload limits that trip binary workflows. Triggers: 'ContentVersion VersionData Blob', 'upload file from LWC to Apex', 'large file heap limit Apex', 'ContentDocumentLink sharing'. NOT for the Files data model itself \u2014 use data/salesforce-files-architecture. NOT for generating PDFs \u2014 use apex/pdf-generation-patterns.",
   "file_location": "skills/apex/apex-blob-and-content-version",
   "id": "apex/apex-blob-and-content-version",
   "inputs": [

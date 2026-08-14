@@ -1,6 +1,6 @@
 ---
 name: flow-governor-limits-deep-dive
-description: "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. NOT for general bulkification (use flow-bulkification). NOT for Apex limits (use apex-governor-limits)."
+description: "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. NOT for general bulkification — use flow/flow-bulkification. NOT for Apex limits — use apex/governor-limits."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

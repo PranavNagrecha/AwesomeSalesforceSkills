@@ -51,9 +51,9 @@
     "f1570acaa4f865218f36",
     "fdb6bed32b8d769e5f97"
   ],
-  "content_hash": "32723cc903986c2a6436d6a67d519f9621bd01df094e1d6e5000ee14dc530fee",
+  "content_hash": "b49d8fd06f03572ce1da32d3bb189d7789b424a09686bd9d24b7450901097b12",
   "dependencies": [],
-  "description": "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment).",
+  "description": "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for Salesforce's own seasonal platform release (Spring/Summer/Winter) readiness \u2014 release notes triage, Release Updates, Sandbox Preview opt-in (use admin/salesforce-release-preparation); this skill governs YOUR release train, not Salesforce's. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment).",
   "file_location": "skills/devops/release-management",
   "id": "devops/release-management",
   "inputs": [

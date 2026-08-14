@@ -28,9 +28,9 @@
     "d3970969868c3b120e90",
     "f338ad45248b9c725ca1"
   ],
-  "content_hash": "4f496231d2ce48c00c0f97ab70a229706f75eaae2ee81fa0cdc907eb66c2a342",
+  "content_hash": "a2f47d11cf5daa2a5ec02779de71db34b871b6449f099383de4fbc22a644ed7c",
   "dependencies": [],
-  "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks.",
+  "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST \u2014 Crypto.generateMac, timing-safe compare, secret in Protected Custom Metadata, replay-window rejection. NOT for designing the receiver end to end \u2014 Sites routing, guest-user access, idempotency, the 5-second response window \u2014 use integration/webhook-inbound-patterns. NOT for signing a webhook Salesforce sends out \u2014 use integration/outbound-webhook-from-salesforce.",
   "file_location": "skills/integration/webhook-signature-verification",
   "id": "integration/webhook-signature-verification",
   "inputs": [

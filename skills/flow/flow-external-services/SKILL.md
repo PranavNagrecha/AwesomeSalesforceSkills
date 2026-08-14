@@ -1,6 +1,6 @@
 ---
 name: flow-external-services
-description: "Use when calling external REST APIs from Salesforce Flow without writing Apex: registering API specs as External Services, using generated invocable actions in Flow Builder, using Flow's built-in HTTP Callout action (GA Spring '24+), configuring Named Credentials for authentication, mapping inputs/outputs, and handling fault paths. Trigger keywords: 'External Services', 'HTTP Callout action in Flow', 'call REST API from Flow', 'register OpenAPI spec', 'Flow HTTP action'. NOT for Apex callouts, Apex HttpRequest patterns, OmniStudio Integration Procedures, or Platform Event publishing."
+description: "Use when calling external REST APIs from Salesforce Flow without writing Apex: registering API specs as External Services, using generated invocable actions in Flow Builder, using Flow's built-in HTTP Callout action (GA Spring '24+), configuring Named Credentials for authentication, mapping inputs/outputs, and handling fault paths. Trigger keywords: 'External Services', 'HTTP Callout action in Flow', 'call REST API from Flow', 'register OpenAPI spec', 'Flow HTTP action'. NOT for writing the callout in Apex — use apex/callouts-and-http-integrations. NOT for shaping a complex JSON response into Flow variables — use flow/flow-apex-defined-types."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

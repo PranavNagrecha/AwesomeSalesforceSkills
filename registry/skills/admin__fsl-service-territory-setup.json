@@ -87,9 +87,9 @@
     "fb6dda50f27cf851e837",
     "fec7c15dc6d67141b000"
   ],
-  "content_hash": "765387b62d848dc5ece1d7cf0b259e789eaa44af851bd938a4313c3436dd6ab2",
+  "content_hash": "3670a1d52382cc6e8e7998e9c7bf5c4d2a1a6841df0a58d8cb023df867867388",
   "dependencies": [],
-  "description": "Use this skill to configure Field Service Lightning service territories \u2014 including territory types, operating hours, time slots, territory hierarchy, member types, and polygon boundaries. NOT for ETM territories (Territory2 / Enterprise Territory Management in Sales Cloud), and NOT for Salesforce Scheduler territories.",
+  "description": "Use this skill to configure Field Service Lightning service territories \u2014 including territory types, operating hours, time slots, territory hierarchy, member types, and polygon boundaries. NOT for Enterprise Territory Management (Territory2) in Sales Cloud \u2014 use admin/enterprise-territory-management. NOT for bulk-loading territory polygons or members \u2014 use data/fsl-territory-data-setup.",
   "file_location": "skills/admin/fsl-service-territory-setup",
   "id": "admin/fsl-service-territory-setup",
   "inputs": [

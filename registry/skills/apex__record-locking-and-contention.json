@@ -69,9 +69,9 @@
     "f930795a93dc94a79148",
     "fc30af90e74bb526a641"
   ],
-  "content_hash": "35c645ff79b506756a223e4a20e914227e6a277a5d59fb320e6df322a01913da",
+  "content_hash": "789dec3a8bc2b4fec16ae575d81b76f0f918538e20ae377d0a183e87a6f790a0",
   "dependencies": [],
-  "description": "Use when diagnosing or preventing UNABLE_TO_LOCK_ROW errors, record lock contention in Apex or Bulk API loads, FOR UPDATE locking, parent-child lock escalation, and deadlock scenarios. Triggers: 'UNABLE_TO_LOCK_ROW', 'record lock contention', 'FOR UPDATE SOQL', 'deadlock', 'lock timeout'. NOT for approval-process record locking (admin/approval-processes) or optimistic concurrency via timestamps.",
+  "description": "Use when diagnosing or preventing UNABLE_TO_LOCK_ROW errors, record lock contention in Apex or Bulk API loads, FOR UPDATE locking, parent-child lock escalation, and deadlock scenarios. Triggers: 'UNABLE_TO_LOCK_ROW', 'record lock contention', 'FOR UPDATE SOQL', 'deadlock', 'lock timeout'. NOT for locks from a Flow \u2014 use flow/flow-record-locking-and-contention. NOT for approval-process locking \u2014 use admin/approval-processes.",
   "file_location": "skills/apex/record-locking-and-contention",
   "id": "apex/record-locking-and-contention",
   "inputs": [

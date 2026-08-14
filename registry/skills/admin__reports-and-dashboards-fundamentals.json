@@ -6,6 +6,7 @@
     "06ad8c8016cb2fcb2d24",
     "08c36fc1e6c7df5857f7",
     "0927155489652124f0d6",
+    "09e7f68c28a3be99fc5c",
     "0d32caebd10affb67060",
     "1276b3099c9f26873bae",
     "15990a23d49e8b9061ba",
@@ -78,6 +79,7 @@
     "98c43ca3edaedbf00f4f",
     "9978b7fa20dd7b90bf7c",
     "997f2b42d70c7b68558c",
+    "99e52e3ea291b137eecb",
     "9cb8eefa8fe7ffb83e75",
     "9ef59cb5a024911f432e",
     "a1bb9ac5598142ed80ca",
@@ -99,6 +101,7 @@
     "c0d8bf9e1e541dd8208a",
     "c26373a683ba483ea9fd",
     "c46dc3fa11ce82670d71",
+    "c4760947d05446282877",
     "c5a6c5661d3eceac52b2",
     "c8745a179052b6266c84",
     "ce3af9031a9b65bf9422",
@@ -121,13 +124,14 @@
     "eb8e852acd7b06321d34",
     "efd01ced306227d6ff1c",
     "f270e143f730baf6801e",
+    "f30cc42ba89340cc447f",
     "f342eaa73c01a57d2c79",
     "f711ee86c756dcb460ad",
     "fb9ca5597e483b8598cc",
     "fd315f4b1dc3ab6016e8",
     "ff6b3081f317a7ef462c"
   ],
-  "content_hash": "2b54eadd6cb89c8e433decfac93b9959e8540422af653ca26991c39e33679a3d",
+  "content_hash": "141d0cf5f70d989a20ba50758901ce89924cbaa7362358009dfb46c82209b126",
   "dependencies": [],
   "description": "Use when learning, designing, or explaining Salesforce Reports and Dashboards from first principles \u2014 report types, custom report types, groupings, bucket fields, summary formulas, charts, dashboard components, dynamic dashboards, report subscriptions, and folder permissions. Triggers: 'how do I build a report', 'what report type should I use', 'set up a dashboard', 'joined report limits', 'bucket field vs formula', 'dynamic dashboard running user'. NOT for CRM Analytics (use crm-analytics-* skills). NOT for Einstein Discovery predictive analytics. NOT for troubleshooting missing report data caused by sharing model issues (use admin/reports-and-dashboards for that).",
   "file_location": "skills/admin/reports-and-dashboards-fundamentals",
@@ -187,7 +191,7 @@
   "templates": [
     "skills/admin/reports-and-dashboards-fundamentals/templates/reports-and-dashboards-fundamentals-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

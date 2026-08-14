@@ -1,6 +1,7 @@
 {
   "category": "apex",
   "chunk_ids": [
+    "034e658950020fce08b9",
     "075a5493560f95e1945b",
     "07c5d8d69ab96a53e6bb",
     "0cc1ff8e94b234f2d229",
@@ -63,6 +64,7 @@
     "bc647aa8b785d1d6fb9e",
     "c4909a4e69b577ad52ec",
     "c7b7bd1ddec88dcd1f05",
+    "c7db3de6ffa5ea1b90de",
     "cfee50ec4f00af19399b",
     "d418bdd9b609c42f1823",
     "d499a1efd6860ff4c633",
@@ -83,9 +85,9 @@
     "f570e6819dcace2b3831",
     "f6f2f333e026c1e312cb"
   ],
-  "content_hash": "175db74d6e32b20abba747ca0165730bb149f1517df7bd2c6fa7b60ea6327952",
+  "content_hash": "c748fba898ccd16fcad8b5df39184cca15dfb1ee06635a0129973cf49396fa9a",
   "dependencies": [],
-  "description": "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, when to prefer WITH USER_MODE on the SOQL itself, and integration with the SecurityUtils template. NOT for class-level sharing keyword choice (with sharing / without sharing / inherited sharing \u2014 see apex-sharing-keywords). NOT for managed sharing or Apex managed sharing recalculations (see sharing-selection decision tree).",
+  "description": "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, and when to prefer WITH USER_MODE on the SOQL itself. NOT for the with sharing / without sharing keyword choice \u2014 use apex/apex-with-without-sharing-decision. NOT for SOQL injection review \u2014 use apex/soql-security.",
   "file_location": "skills/apex/apex-stripinaccessible-and-fls-enforcement",
   "id": "apex/apex-stripinaccessible-and-fls-enforcement",
   "inputs": [
@@ -103,7 +105,7 @@
     "The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5 \u2014 grounds the \"does not compile at 67.0+\" qualifier in the tradeoff table above and the checker's P0 rule",
     "Database Operations Run in User Mode by Default, Not System Mode (Summer '26 / API 67.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5 \u2014 grounds the default-access-mode gate; canonical table in [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) \u00a7 *Apex security idiom by API version*",
     "Secure Apex Code with User Mode Database Operations (Generally Available) (Spring '23 / API 57.0) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5 \u2014 grounds `WITH USER_MODE` being 57.0+, not 58",
-    "Apex Developer Guide \u2014 Using the with sharing, without sharing, and inherited sharing Keywords (\"In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm",
+    "Apex Developer Guide \u2014 Using the with sharing, without sharing, and inherited sharing Keywords (\"In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm \u2014 its *Implementation in Apex Triggers* section grounds the trigger's two axes: triggers \"can't have an explicit sharing declaration\" and \"always run implicitly in a without sharing context\", while \"database operations within trigger bodies, including SOQL queries, SOSL queries, DML statements, and Database methods, run in user mode unless system mode is explicitly specified\" and user mode \"effectively enforces a with sharing context in the trigger body\". The worked example (labelled *API version 67.0 and later*) puts `WITH SYSTEM_MODE` on a query inside a trigger and notes that object- and field-level permissions are bypassed while \"Record sharing remains governed by the trigger's own without sharing context\"",
     "Apex Reference Guide \u2014 Security Class \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm",
     "Apex Reference Guide \u2014 SObjectAccessDecision \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm",
     "Salesforce Well-Architected \u2014 Trusted (Security) \u2014 https://architect.salesforce.com/well-architected/trusted/secure"

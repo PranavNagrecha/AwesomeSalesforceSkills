@@ -49,9 +49,9 @@
     "f77718d16404e7f820b5",
     "fa489ff0d73a09e21772"
   ],
-  "content_hash": "31b067dda679c84d72195d1fffae332f164a085cecfb990d7937486c8e42ea83",
+  "content_hash": "9f7f056587fc5eb19cf3d71a65df65a1a68285892fb104d6774f3469cb341c8f",
   "dependencies": [],
-  "description": "Use this skill when producing or reviewing API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, and OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for API implementation (building the API endpoint), Apex REST service coding, or Connected App setup \u2014 those are covered by apex-rest-services and connected-app-security.",
+  "description": "Produce or review API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for building the endpoint or writing the Apex REST service \u2014 use apex/apex-rest-services. NOT for upgrading the API version on your own Apex, LWC or sfdx-project.json \u2014 use devops/api-version-management.",
   "file_location": "skills/admin/api-contract-documentation",
   "id": "admin/api-contract-documentation",
   "inputs": [

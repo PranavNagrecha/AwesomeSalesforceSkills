@@ -52,9 +52,9 @@
     "f69863ed202496a8be43",
     "fa11d46b199d0a3b5526"
   ],
-  "content_hash": "a008dab3c6477f042d224b2dd562121b03b1f0bc3f6ba6381e79b2beb0bcbbf8",
+  "content_hash": "bb53fa7ea8f30a9cff5d760bf286a74413c01510ffaca4ac91e60644b06071e5",
   "dependencies": [],
-  "description": "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy \u2014 which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention', 'route event monitoring to splunk', 'how long to keep login history', 'siem salesforce integration', 'event monitoring storage tier'. NOT for enabling Shield (see salesforce-shield-deployment).",
+  "description": "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy \u2014 which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention'. NOT for enabling Shield (see salesforce-shield-deployment) \u2014 use security/event-monitoring.",
   "file_location": "skills/security/shield-event-log-retention-strategy",
   "id": "security/shield-event-log-retention-strategy",
   "inputs": [

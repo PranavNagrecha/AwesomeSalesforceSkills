@@ -63,9 +63,9 @@
     "f590a15b7ceedd7f5acc",
     "f7e88134862429730aed"
   ],
-  "content_hash": "13358af33261e6f70a371e058a9ccb73faebd51dabf040072ac8fc15d82d9c6d",
+  "content_hash": "b9a27d432d52fe5bc8a52dd0b6ca917a0bfa181856776102d6b73215138d33be",
   "dependencies": [],
-  "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
+  "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for stage gating, work-item assignment and the cancel pathway \u2014 use flow/flow-orchestration-patterns. NOT for lightweight approval routing that needs no orchestration \u2014 use admin/approval-processes.",
   "file_location": "skills/flow/orchestration-flows",
   "id": "flow/orchestration-flows",
   "inputs": [
@@ -77,6 +77,7 @@
   "official_sources": [
     "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
     "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Orchestration Run list is the `FlowOrchestrationInstance` object list view (`/lightning/o/FlowOrchestrationInstance/list`), not a Setup node",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [
@@ -104,7 +105,7 @@
   "templates": [
     "skills/flow/orchestration-flows/templates/orchestration-flows-template.md"
   ],
-  "updated": "2026-04-30",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "2.1.0"
 }

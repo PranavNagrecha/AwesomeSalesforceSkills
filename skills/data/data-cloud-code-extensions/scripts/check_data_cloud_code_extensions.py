@@ -11,7 +11,7 @@ It looks for the documented scaffold shape (Dockerfile, requirements.txt,
 payload/config.json, payload/entrypoint.py) anywhere beneath --project-dir and reports
 concrete, actionable issues:
   - missing scaffold files, invalid config.json
-  - deployment vs dev dependency hygiene (requirements.txt / requirements-dev.txt)
+  - deployment vs local-venv hygiene (do not ship pytest etc. in requirements.txt)
   - sensitive-looking values written to stdout (everything lands in the broadly
     readable DataCustomCodeLogs__dll Logs DLO)
   - hand-typed CLI subcommands that don't exist in the documented toolchain
@@ -163,8 +163,9 @@ def _check_requirements(scaffold: Path, issues: list[str]) -> None:
     for name in deploy_names:
         if name in DEV_ONLY_PACKAGES:
             issues.append(
-                f"{req}: '{name}' looks like a dev/test-only package — move it to "
-                f"requirements-dev.txt so it doesn't ship in the deployed container"
+                f"{req}: '{name}' looks like a dev/test-only package — do not ship it in "
+                f"requirements.txt. Leave the scaffold requirements-dev.txt unmodified; "
+                f"install extra test tools in the local venv"
             )
 
     dev_req = scaffold / "requirements-dev.txt"

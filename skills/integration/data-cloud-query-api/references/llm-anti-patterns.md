@@ -107,3 +107,53 @@ dc_base = dc_token_response["dcInstanceUrl"]  # Correct field
 **Correct pattern:** Data Cloud Query V2 has per-batch row limits (platform-defined, not fixed at 100), and the limit is a batch size, not a rate limit. Pagination via `nextBatchId` allows fetching the complete result set over multiple requests. There is no 100-row hard cap on query results — only a per-batch size that determines how many rows appear per response.
 
 **Detection hint:** Claims of "100 row limit" for Data Cloud Query API or recommendations to add `LIMIT 100` to avoid hitting limits are red flags.
+
+---
+
+## Anti-Pattern 6: Reaching for `ConnectApi.CdpQuery` and Hand-Rolled Batching in Apex
+
+**What the LLM generates:** `ConnectApi.CdpQuery.queryANSISql(...)` or `queryAnsiSqlV2(...)`, followed by a hand-written chained-Queueable loop over `nextBatchAnsiSqlV2` to page a large result set — presented as current best practice.
+
+**Why it happens:** `ConnectApi.CdpQuery` is the only Apex entry point in pre-2026 training data. The `sfsqlquery` namespace shipped in Summer '26 (API version 67.0), so a model with an earlier cutoff cannot know that `SqlStatement`, `SqlRowIterator`, `SqlQueueable` and `SqlTester` exist, and re-implements what they already provide.
+
+**Correct pattern:**
+
+```apex
+// Synchronous: iterator plus typed row accessors
+for (sfsqlquery.Row row : sfsqlquery.SqlStatement.create(sql, 'default').execute()) {
+    System.debug(row.getString('ssot__FirstName__c'));
+}
+
+// Async: extend the shipped base class instead of hand-rolling chained Queueables
+public class ProfileExportJob extends sfsqlquery.SqlQueueable {
+    // SqlQueueable declares only SqlQueueable(SqlStatement) and SqlQueueable(QueryHandle).
+    // With no no-arg super to call, a subclass MUST declare a constructor or it won't compile.
+    public ProfileExportJob(sfsqlquery.SqlStatement stmt) { super(stmt); }
+
+    public override void processDataChunk() { /* handle this page */ }
+    public override void chainNextJob(sfsqlquery.QueryHandle handle) { /* enqueue the next */ }
+}
+```
+
+`ConnectApi.CdpQuery` is not wrong — Salesforce keeps it "as a low-level interface that directly mirrors the Connect REST API" — but it is the fallback, and it is the only option when the class's `.cls-meta.xml` `apiVersion` is below 67.0. Check that value before recommending either.
+
+**Detection hint:** Apex naming `ConnectApi.CdpQuery`, `queryANSISql`, or `nextBatchAnsiSqlV2` in a class saved at 67.0+; or a Data 360 test class with no `sfsqlquery.SqlTester` mocks, which means it depends on a live data space to pass.
+
+---
+
+## Anti-Pattern 7: Generating V1/V2 Query Shapes for a V3 Endpoint
+
+**What the LLM generates:**
+
+```python
+resp = requests.post(f"{dc_base}/api/v3/query", json={"sql": sql})
+rows = resp.json()["data"]                 # V3 returns a queryId, not rows
+count = rows[0]["_col0"]                   # V3 names unaliased columns 1, 2
+nxt = requests.get(f"{dc_base}/api/v2/query/{resp.json()['nextBatchId']}")
+```
+
+**Why it happens:** The model has V1's inline-results contract and V2's `nextBatchId` cursor memorized and treats the version segment in the path as cosmetic. Nothing in the request rejects the mismatch — the POST succeeds, so the failure surfaces as empty output.
+
+**Correct pattern:** Submit, then retrieve by `queryId` — `GET /api/v3/query/{queryId}` for status, `GET /api/v3/query/{queryId}/chunks/{chunkId}` (preferred) or `.../rows` for data, `GET /api/v3/query/{queryId}/metadata` for columns, `DELETE /api/v3/query/{queryId}` to cancel. Alias every expression rather than reading generated names. Do not "fix" this by downgrading the caller to V2 unless the integration is genuinely staying there — but equally, do not tell the user V2 is retired, because no V1/V2 end-of-life date is published.
+
+**Detection hint:** `nextBatchId` or `_col0` appearing anywhere in the same file as `api/v3/query`; or a V3 POST whose response is dereferenced for rows without an intervening status poll.

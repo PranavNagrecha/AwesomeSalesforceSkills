@@ -18,6 +18,8 @@ Fill in each section before implementing or recommending changes.
 Answer these before proceeding:
 
 - **License confirmed?** Shield / Event Monitoring add-on present: [ ] Yes [ ] No [ ] Unknown
+- **Admin holds Modify Transaction Security Policy + Customize Application?** [ ] Yes [ ] No — Customize Application alone is read-only [ ] Unknown
+- **Existing `ReportEvent` policies inventoried (including any Salesforce-deployed default)?** [ ] Yes [ ] No [ ] N/A — not a ReportEvent policy
 - **Event type to target:** ______________________________
 - **Event type is policy-supported?** [ ] Yes [ ] No [ ] Unverified (check Platform Events Developer Guide)
 - **Enforcement approach:** [ ] Block [ ] MFA [ ] Notification [ ] End Session [ ] Multiple

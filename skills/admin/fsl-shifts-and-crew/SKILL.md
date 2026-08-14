@@ -1,6 +1,6 @@
 ---
 name: fsl-shifts-and-crew
-description: "Use this skill to configure FSL Shifts, ShiftTemplates, ShiftPatterns, and Crew ServiceResources — covering availability windows layered on Operating Hours, bulk shift generation via ShiftPattern + ShiftPatternEntry, and the two Crew models (Static vs. Shell/Dynamic). NOT for individual resource scheduling, NOT for scheduling policy or work rule configuration, and NOT for FSL mobile app or time-sheet setup."
+description: "Configure FSL Shifts, ShiftTemplates, ShiftPatterns, and Crew ServiceResources — availability windows layered on Operating Hours, bulk shift generation via ShiftPattern + ShiftPatternEntry, and the two Crew models (Static vs. Shell/Dynamic). NOT for setting up the resources themselves — types, skills, ResourcePreference — use admin/fsl-resource-management. NOT for capping how many hours or appointments a resource can take — use admin/fsl-capacity-planning."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

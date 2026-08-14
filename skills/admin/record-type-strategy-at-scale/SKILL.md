@@ -1,6 +1,6 @@
 ---
 name: record-type-strategy-at-scale
-description: "Use when designing or refactoring record types across objects with many profiles, business processes, or picklist variations. Covers layout assignment explosion, Dynamic Forms migration, and record type ID portability. NOT for basic record type setup or page layout assignment — see record-types-and-page-layouts for introductory guidance."
+description: "Use when designing or refactoring record types across objects with many profiles, business processes, or picklist variations. Covers layout assignment explosion, Dynamic Forms migration, and record type ID portability. NOT for basic record type setup or page layout assignment — use admin/record-types-and-page-layouts. NOT for converting one page layout to Dynamic Forms — use admin/dynamic-forms-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

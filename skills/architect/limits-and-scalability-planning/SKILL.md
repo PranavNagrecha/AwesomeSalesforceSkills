@@ -1,6 +1,6 @@
 ---
 name: limits-and-scalability-planning
-description: "Use when planning a new org build for scale, auditing an existing org for governor limit exposure, or investigating a limit-related incident. Trigger phrases: 'org is hitting governor limits', 'how many custom objects can we have', 'will our data volume cause performance issues', 'batch job keeps failing with limit errors', 'planning for 10 million records', 'platform event throughput limits', 'SOQL limit exceeded in production'. NOT for code-level optimization (use apex-cpu-and-heap-optimization), NOT for individual SOQL query tuning (use apex/soql-optimization), NOT for Batch Apex authoring mechanics (use apex/batch-apex)."
+description: "Use when planning a new org build for scale, auditing an existing org for governor limit exposure, or investigating a limit-related incident. Trigger phrases: 'org is hitting governor limits', 'how many custom objects can we have', 'will our data volume cause performance issues', 'batch job keeps failing with limit errors', 'planning for 10 million records', 'platform event throughput limits', 'SOQL limit exceeded in production'. NOT for one transaction's limits - use apex/governor-limits. NOT for tuning an individual SOQL query - use data/soql-query-optimization. NOT for Batch Apex authoring mechanics - use apex/batch-apex-patterns."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

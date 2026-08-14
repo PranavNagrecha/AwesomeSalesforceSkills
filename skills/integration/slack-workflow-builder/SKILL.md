@@ -1,6 +1,6 @@
 ---
 name: slack-workflow-builder
-description: "Use this skill when designing or troubleshooting Slack Workflow Builder workflows that call Salesforce — especially the Salesforce connector step Run a Flow, mapping inputs/outputs, handling failures, and understanding limits. Triggers on: Slack Workflow Builder Salesforce, Run a Flow from Slack, autolaunched flow from Slack, Slack automation calling Salesforce. NOT for Salesforce Flow Builder tutorials unrelated to Slack (use flow skills), not for Flow Core Actions that send Slack messages from Salesforce (use flow-for-slack), not for initial org-to-workspace connection (use slack-salesforce-integration-setup), and not for building custom Slack apps outside Workflow Builder."
+description: "Use this skill when designing or troubleshooting Slack Workflow Builder workflows that call Salesforce — especially the Salesforce connector step Run a Flow, mapping inputs/outputs, handling failures, and understanding limits. Triggers on: Slack Workflow Builder Salesforce, Run a Flow from Slack, autolaunched flow from Slack, Slack automation calling Salesforce. NOT for sending a Slack message or creating a channel FROM a Salesforce Flow — use flow/flow-for-slack. NOT for first connecting the org to the Slack workspace — use integration/slack-salesforce-integration-setup."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

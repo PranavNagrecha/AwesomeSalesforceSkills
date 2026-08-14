@@ -1,6 +1,6 @@
 ---
 name: analytics-embedded-components
-description: "Use this skill when embedding a CRM Analytics dashboard into a Lightning App Builder page, Experience Cloud page, or when embedding a custom LWC inside an Analytics dashboard. Trigger keywords: wave-wave-dashboard-lwc, wave-community-dashboard, analytics__Dashboard target, embed dashboard, record-id context filtering, dashboard state JSON, analytics component. NOT for standard LWC development unrelated to Analytics dashboards, NOT for designing dashboard content or datasets, NOT for CRM Analytics app creation or dataset management."
+description: "Use this skill when embedding a CRM Analytics dashboard into a Lightning App Builder page, Experience Cloud page, or when embedding a custom LWC inside an Analytics dashboard. Trigger keywords: wave-wave-dashboard-lwc, wave-community-dashboard, analytics__Dashboard target, embed dashboard, record-id context filtering, dashboard state JSON, analytics component. NOT for charts - use admin/analytics-dashboard-design. NOT for Aura wave:waveDashboard on Visualforce or cross-dashboard state - use architect/embedded-analytics-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

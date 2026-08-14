@@ -1,6 +1,6 @@
 ---
 name: npsp-custom-rollups
-description: "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) — including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions."
+description: "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) — including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for rolling up across a lookup outside NPSP — use data/roll-up-summary-alternatives. NOT for who gets soft credit on a gift — use admin/soft-credits-and-matching. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: encrypted-field-query-patterns
-description: "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation."
+description: "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter. NOT for Classic Encryption (deprecated), field-level security policy, or tenant secret k — use security/platform-encryption."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

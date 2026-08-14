@@ -44,4 +44,4 @@ Source Priority produces deterministic, predictable reconciliation output and is
 
 - `architect/data-cloud-architecture` — end-to-end Data Cloud architecture patterns including multi-ruleset design
 - `data/data-cloud-data-streams` — DMO mapping prerequisites for identity resolution
-- `data/data-cloud-ingestion-api` — ingestion of identity attributes from external systems
+- `integration/data-cloud-ingestion-api` — ingestion of identity attributes from external systems

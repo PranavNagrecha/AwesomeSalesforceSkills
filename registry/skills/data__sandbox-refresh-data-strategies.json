@@ -56,9 +56,9 @@
     "f874a9f4c95492ca552f",
     "fbf9bac03c16e78fb1f8"
   ],
-  "content_hash": "5473f45d79d03f75c4221f113b5d8b1c2ae7a60f0911c9022fd51445e28d477a",
+  "content_hash": "144c2c7b7d566c3614e4893611ea50b1d208e4771eaab402d4e04cd84802477b",
   "dependencies": [],
-  "description": "Use this skill when designing data management strategies for sandbox refreshes: deciding which reference data must be re-seeded after every refresh, using Salesforce's native Data Seeding feature, writing SandboxPostCopy implementations that hand off to Queueable jobs for large data loads, and cleaning up stale data between sprints. Trigger keywords: seed data after sandbox refresh, SandboxPostCopy data strategy, native data seeding Salesforce, reference data re-seed after refresh, post-refresh data cleanup. NOT for sandbox administration setup, sandbox type selection (use sandbox-strategy), sandbox refresh mechanics and PII masking (use sandbox-refresh-and-templates), or scratch org data seeding for CI (use data-seeding-for-testing).",
+  "description": "Use this skill when designing data strategies for sandbox refreshes: which reference data must be re-seeded after every refresh, the native Data Seeding feature, SandboxPostCopy implementations that hand off to Queueable jobs for large data loads, and clearing stale data between sprints. Trigger keywords: seed data after sandbox refresh, SandboxPostCopy data strategy, native data seeding Salesforce, reference data re-seed after refresh, post-refresh data cleanup. NOT for refresh mechanics, sandbox templates and PII masking \u2014 use devops/sandbox-refresh-and-templates. NOT for sandbox type selection \u2014 use admin/sandbox-strategy. NOT for scratch-org data seeding for CI \u2014 use devops/data-seeding-for-testing.",
   "file_location": "skills/data/sandbox-refresh-data-strategies",
   "id": "data/sandbox-refresh-data-strategies",
   "inputs": [

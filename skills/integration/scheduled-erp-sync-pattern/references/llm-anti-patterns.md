@@ -206,8 +206,8 @@ try {
 **Why it happens:** Polling is the most common integration shape in training data and the easiest to demonstrate. Streaming patterns (Pub/Sub API, Platform Events, CDC consumed via Pub/Sub) require more nuanced architectural reasoning and are often skipped.
 
 **Correct pattern:** Before recommending polling, walk through Concept 4's volume / cadence table. If volume routinely exceeds 10K per cycle, sub-minute latency is required, or the ERP supports event publication, the right answer is *not* this pattern. Route to:
-- `integration/platform-events-publish-subscribe` — if ERP can publish events
-- `integration/change-data-capture-consumer-pattern` — if change is sourced from another Salesforce instance or ERP-side CDC
-- `data/data-loader-bulk-api` — if volume is the dominant constraint
+- `integration/platform-events-integration` — if ERP can publish events
+- `integration/change-data-capture-integration` — if change is sourced from another Salesforce instance or ERP-side CDC
+- `integration/bulk-api-2-patterns` — if volume is the dominant constraint
 
 **Detection hint:** A recommendation for "scheduled poll" without explicitly addressing volume, cadence, and the ERP's event-publication capability is incomplete. The skill activation should always include the Concept 4 check.

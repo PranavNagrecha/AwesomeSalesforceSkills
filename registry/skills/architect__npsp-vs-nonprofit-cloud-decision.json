@@ -94,9 +94,9 @@
     "f9d8cc5288a999542dda",
     "fffe425962846032a24e"
   ],
-  "content_hash": "b501f35043050a98cefeb5ba2817aa701b54cb9d83f30d882c5ddf195dd42f6c",
+  "content_hash": "2f46658aaaf5cd5832ff902be380c0ee10db5bc8fa3737ea41085ba2c59f4a54",
   "dependencies": [],
-  "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation \u2014 does not cover post-decision NPC build, NPSP customization, or data migration execution.",
+  "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for migration execution: object mapping and phased data conversion - use architect/nonprofit-cloud-vs-npsp-migration. NOT for designing the NPC module architecture - use architect/nonprofit-platform-architecture.",
   "file_location": "skills/architect/npsp-vs-nonprofit-cloud-decision",
   "id": "architect/npsp-vs-nonprofit-cloud-decision",
   "inputs": [

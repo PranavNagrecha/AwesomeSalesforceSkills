@@ -1,6 +1,6 @@
 ---
 name: exception-handling
-description: "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for choosing async execution models or general governor-limit tuning."
+description: "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for a specific runtime error — use apex/common-apex-runtime-errors. NOT for a cross-cutting error framework — use apex/error-handling-framework."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

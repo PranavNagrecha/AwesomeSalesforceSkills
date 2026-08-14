@@ -40,9 +40,9 @@
     "d2faba80ac20113c6e54",
     "de37839eb06d00fc88a7"
   ],
-  "content_hash": "1c18e349c536f55fe3caa1d66b7f63e15a1510aa783f54367221b2e14e201eab",
+  "content_hash": "9654b503206204a9611613dafc55d934be3274ee31f8debca73ccbce09f0aadb",
   "dependencies": [],
-  "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
+  "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD \u2014 use integration/graphql-api-patterns.",
   "file_location": "skills/integration/connect-rest-api-patterns",
   "id": "integration/connect-rest-api-patterns",
   "inputs": [

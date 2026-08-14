@@ -66,9 +66,9 @@
     "f9833190ad4e9de670dd",
     "fe6930daac9af13fefdb"
   ],
-  "content_hash": "6379e3d91f599ae2bc38e9158a463c054a7c08b9ccc25f04e16e8f09997e5b48",
+  "content_hash": "3c102cbece256c06e114692aa2ccd755c3c9406e0e0e711e7ec56461a86fad07",
   "dependencies": [],
-  "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for screen-flow UX or pure bulkification work when the trigger model is already correct.",
+  "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for tracing save order against triggers \u2014 use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/record-triggered-flow-patterns",
   "id": "flow/record-triggered-flow-patterns",
   "inputs": [

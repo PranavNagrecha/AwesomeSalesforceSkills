@@ -1,6 +1,6 @@
 ---
 name: sosl-search-patterns
-description: "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool."
+description: "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection', 'search across objects', 'search all objects at once', 'find a phone number or email across objects', 'search multiple sObjects'. NOT for a search that silently drops matches or stops at 250 rows — use data/sosl-search-result-limits. NOT for WITH SNIPPET, HIGHLIGHT, or DATA CATEGORY scoping — use data/sosl-with-clauses."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

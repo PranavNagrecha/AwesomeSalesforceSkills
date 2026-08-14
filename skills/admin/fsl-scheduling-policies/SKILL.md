@@ -1,6 +1,6 @@
 ---
 name: fsl-scheduling-policies
-description: "Use this skill to create, configure, or tune Field Service Lightning scheduling policies — including work rules (pass/fail filters) and service objectives (weighted ranking criteria). Covers the four default policies, custom policy design, work rule type selection, and objective weighting strategy. NOT for configuring service territories, resource availability calendars, or the Salesforce Scheduler (Appointment Scheduling) product."
+description: "Use this skill to create, configure, or tune Field Service Lightning scheduling policies — including work rules (pass/fail filters) and service objectives (weighted ranking criteria). Covers the four default policies, custom policy design, work rule type selection, and objective weighting strategy. NOT for running or tuning the Optimizer itself — use admin/fsl-scheduling-optimization-design. NOT for resource skills and preferences — use admin/fsl-resource-management. NOT for resource capacity records — use admin/fsl-capacity-planning."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

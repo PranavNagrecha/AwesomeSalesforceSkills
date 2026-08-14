@@ -1,28 +1,36 @@
-# Well-Architected Notes — Usage Based Pricing Setup
+# Well-Architected Notes — Usage-Based Pricing Setup
 
 ## Relevant Pillars
 
-TODO: Identify which Well-Architected pillars apply and why.
-
-- **Security** — TODO: explain if/how security applies to this skill
-- **Performance** — TODO: explain if/how performance applies
-- **Scalability** — TODO: explain if/how scalability applies
-- **Reliability** — TODO: explain if/how reliability applies
-- **Operational Excellence** — TODO: explain if/how operational excellence applies
+- **Reliability** — Primary. Usage pricing turns telemetry into money, so every defect is a billing defect and every billing defect is a customer conversation. The two failure modes that matter are double-counting (a replayed ingestion window with no idempotency key) and under-counting (a dropped window nobody reconciled). Both are ingestion-layer problems, and neither is visible until an invoice is disputed.
+- **Scalability** — Primary alongside Reliability. Raw `TransactionJournal` rows accumulate at the rate the product emits them, which for a metered API product is orders of magnitude above normal CRM volume. The aggregation chain exists precisely so nothing downstream reads raw rows; designs that query journal rows for reporting do not survive their first year of data.
+- **Operational Excellence** — Primary. Rating is a batched, policy-driven pipeline with its own job records. A team that cannot answer "which stage is this record at" cannot triage a pricing dispute, and will instead re-derive the arithmetic by hand under time pressure.
+- **Security** — Secondary. Usage data is commercially sensitive and, for multi-tenant products, is per-customer consumption detail. Portal exposure should read aggregated summaries, not raw journal rows, for confidentiality as much as for performance.
 
 ## Architectural Tradeoffs
 
-TODO: Document the key tradeoffs a practitioner will face. Reference the patterns section in SKILL.md.
+| Tradeoff | Decision criteria |
+|---|---|
+| Policy objects vs custom rating code | Policy objects, always, for anything the model expresses — overage, rollover, renewal, commitment, billing accumulation, rating frequency. Custom code re-implements a platform capability, diverges from the visible configuration, and does not survive a rating-engine upgrade. |
+| Ingestion cadence: near-real-time vs batched windows | Batched fixed windows are easier to make idempotent, because the window boundary *is* the natural external-id component. Near-real-time streaming needs a per-event id that the source can reproduce on replay — if the source cannot guarantee that, choose windows. |
+| External-id upsert vs insert-with-dedup-job | External-id upsert. A dedup job is a second thing that can fail, and it fails after the duplicate has already been aggregated. Put the guarantee in the write path. |
+| Portal reads: `UsageSummary` vs `TransactionJournal` | Summary. The aggregation object exists for this, and raw journal volume makes direct reads a scalability dead end. Accept the summary's staleness window and show it explicitly in the UI rather than chasing real-time from raw rows. |
+| Retain raw journal rows vs archive | Retain only as far back as dispute resolution genuinely requires, then archive off-platform or to Big Objects. Raw usage is the highest-volume, lowest-query-value data in the org. |
+| Which usage model to build on | Determined by the org's licensing and object availability, not preference. Check Object Manager for `UsageResource` / `TransactionJournal` / `UsageSummary` first; mixing guidance across the older `ConsumptionSchedule` model and the current Revenue Management usage model produces configurations that half-work. |
 
-## Anti-Patterns
+## Architectural Anti-Patterns
 
-TODO: List 2–3 architectural anti-patterns this skill helps avoid.
-
-1. **TODO: Anti-pattern name** — TODO: explain why this is bad and what to do instead.
-2. **TODO: Anti-pattern name** — TODO: explanation.
+1. **Non-idempotent ingestion** — Inserting usage rows with no reproducible external id. The pipeline works until the first partial failure, and then a replay double-bills. This is the single most expensive mistake in the domain because it is discovered by the customer, not by monitoring.
+2. **A parallel rating engine in Apex** — Written during the build when platform rating "didn't produce anything", and never removed. It ignores the configured policy objects, so the admin-visible configuration and the actual billing behaviour disagree with no error anywhere.
+3. **Unit mismatch between telemetry, entitlement, and rate** — Bytes ingested against a gigabyte entitlement priced per gigabyte. Nothing rejects it; the invoice is simply wrong by a constant factor. `UnitOfMeasure` and `UnitOfMeasureClass` exist to make the unit an explicit, single-sourced decision — use them rather than normalising ad hoc in three places.
+4. **Reporting off raw journal rows** — Dashboards and portal components that query `TransactionJournal` directly. They are fast in a demo org and are a scalability failure in production, and they bypass the aggregation the platform already computed.
 
 ## Official Sources Used
 
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Revenue Management Developer Guide — Usage Management overview. Confirms the feature's purpose, verbatim: "Provide transparent, accurate, and efficient management of usage data and estimated usage amount to enhance revenue management capabilities", and that the data model "provides objects and fields to set up and manage consumption of usage-based products." — https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/usage_management_overview.htm (verified 2026-08-14)
+- Revenue Management Developer Guide — Usage Management Standard Objects. The authority for every object name and one-line description quoted in this package: `TransactionJournal`, `UsageSummary`, `UsageRatableSummary`, `UsageBillingPeriodItem`, `UsageResource`, `UsageEntitlementBucket`, `UsageEntitlementEntry`, `TransactionUsageEntitlement`, `UsageOveragePolicy`, `UsageGrantRolloverPolicy`, `UsageGrantRenewalPolicy`, `UsageCommitmentPolicy`, `UsageResourcePolicy`, `UsageResourceBillingPolicy`, `UnitOfMeasure`, `UnitOfMeasureClass`, and the rest. Confirms there is no `UsageRecord` or `UsageTransaction` object in this model. — https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/usage_management_std_objects_parent.htm (verified 2026-08-14)
+- Revenue Management Developer Guide — Rate Management Standard Objects. Confirms `RateCard` ("Rules used to rate consumption of resource groups within a product"), `RateCardEntry`, `RateAdjustmentByTier`, `RateAdjustmentByAttribute`, `PriceBookRateCard`, `RatingFrequencyPolicy`, `RatingRequest`, and `RatingRequestBatchJob` — i.e. that rating is a batched pipeline with its own job records. — https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/rate_management_std_objects_parent.htm (verified 2026-08-14)
+- Revenue Management Developer Guide — Rate Management overview and business API resources. Confirms the feature purpose ("Quote and price products based on predefined rates for future use of the product or service") and the two business API resources, including Rating Waterfall, which returns "the persisted rating waterfall that stores the process logs" and "provides insights into the internal rating process". — https://developer.salesforce.com/docs/atlas.en-us.revenue_lifecycle_management_dev_guide.meta/revenue_lifecycle_management_dev_guide/rate_management_business_apis_resources.htm (verified 2026-08-14)
+- Salesforce Well-Architected Overview — pillar definitions used to map the tradeoffs above. — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+**Not verified, and therefore not claimed anywhere in this package:** field-level detail for `ConsumptionSchedule` / `ConsumptionRate` (`Type`, `RatingMethod`, `LowerBound`/`UpperBound`, `PricingMethod`) and for the Usage Management objects. Those pages live in the Object Reference and per-object sections of the Revenue Management guide, which return only their navigation shell to a crawler. Anyone extending this package should read them in a browser before adding field-level guidance.

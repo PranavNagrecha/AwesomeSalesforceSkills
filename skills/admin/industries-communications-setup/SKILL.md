@@ -1,6 +1,6 @@
 ---
 name: industries-communications-setup
-description: "Use when configuring Communications Cloud for the first time: org setup sequence, permission sets, Enterprise Product Catalog (EPC) service catalog configuration, TM Forum-aligned order decomposition, Account record-type segmentation, and contract lifecycle activation. NOT for generic OmniStudio configuration, Salesforce CPQ (SBQQ), standard B2C/B2B Commerce order management, or non-Communications Industries clouds."
+description: "Configure Communications Cloud for the first time: org setup sequence, permission sets, Enterprise Product Catalog (EPC) service catalog, TM Forum-aligned order decomposition setup, Account record-type segmentation, contract lifecycle activation. NOT for designing the commercial-to-technical order process itself - use admin/industries-process-design. NOT for calling TM Forum Open APIs (TMF622, TMF679) - use omnistudio/industries-api-extensions."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -273,5 +273,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `architect/industries-data-model` — Use for understanding the full Industries data model across Communications, Insurance, Energy & Utilities, and Health Cloud, including Account subtype SOQL patterns
-- `omnistudio/omnistudio-custom-components` — Use when customizing OmniStudio-based order capture UIs within a Communications Cloud org
+- `omnistudio/omnistudio-custom-lwc-elements` — Use when customizing OmniStudio-based order capture UIs within a Communications Cloud org
 - `admin/industries-energy-utilities-setup` — Use when configuring Energy & Utilities Cloud; both clouds' catalogs sit on the same Shared Catalog foundation (along with Media Cloud), so spec-type, inheritance, bundling, and attribute patterns carry over, as do the account hierarchy and Industries Order Management patterns

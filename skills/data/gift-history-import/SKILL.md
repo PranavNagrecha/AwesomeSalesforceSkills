@@ -1,6 +1,6 @@
 ---
 name: gift-history-import
-description: "Use when migrating donation or gift history into Salesforce NPSP using the NPSP Data Importer (BDI) — covers DataImport__c staging, payment mapping, soft credit creation via Opportunity Contact Roles, GAU allocation, and campaign attribution. NOT for standard Opportunity import via Data Loader, NPC gift records, or recurring donation setup."
+description: "Use when migrating donation or gift history into Salesforce NPSP using the NPSP Data Importer (BDI) — covers DataImport__c staging, payment mapping, soft credit creation via Opportunity Contact Roles, GAU allocation, and campaign attribution. NOT for loading the constituents, households and addresses themselves — use data/constituent-data-migration. NOT for configuring soft credit and matching gift rules — use admin/soft-credits-and-matching."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

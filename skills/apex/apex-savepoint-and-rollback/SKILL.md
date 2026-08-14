@@ -1,6 +1,6 @@
 ---
 name: apex-savepoint-and-rollback
-description: "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns)."
+description: "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics — use apex/apex-dml-patterns. NOT for Queueable chained rollback — use apex/apex-queueable-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

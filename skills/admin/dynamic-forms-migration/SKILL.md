@@ -264,6 +264,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `admin/dynamic-forms-and-actions` — Use for new Dynamic Forms configuration (post-migration) and for Dynamic Actions
 - `admin/lightning-app-builder-advanced` — Use for advanced Lightning Record Page composition patterns (custom LWCs, Path, Related Lists)
-- `security/field-level-security-design` — Use to audit and re-architect FLS BEFORE applying Dynamic Forms visibility
-- `admin/page-layout-assignment-strategy` — Use when planning which Page Layouts to retain for Quick Actions, Print View, and Classic
+- `admin/permission-sets-vs-profiles` — Use to audit and re-architect Field-Level Security across Profiles and Permission Sets BEFORE applying Dynamic Forms visibility
+- `admin/record-types-and-page-layouts` — Use when planning which Page Layouts to retain for Quick Actions, Print View, and Classic
 - `lwc/visualforce-to-lwc-migration` — Use if some record-page real estate also includes Visualforce components being modernized

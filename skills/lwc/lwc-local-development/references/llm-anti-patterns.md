@@ -72,13 +72,17 @@ or flags like `--watch` / `--hot` that don't exist.
 **Correct pattern:**
 
 ```bash
-sf lightning dev component -o <org> [-n <component>] [-c]
+sf lightning dev component -o <org> [-n <component>]
 sf lightning dev app       -o <org> [-n <app>] [-t desktop|ios|android] [-i <device-id>]
 sf lightning dev site      -o <org> [-n <site>]
+# plugin is auto-installed; sf update if the commands are missing
 ```
 
 **Detection hint:** any `sf lightning dev` invocation whose subcommand isn't `component`, `app`,
-or `site`, or a `force:lightning:preview`-style legacy command.
+or `site`; a `force:lightning:preview`-style legacy command; `sfdx force:lightning:lwc:start`;
+`npm run lwc-dev-server`; or `@salesforce/lwc-dev-server` as a required install. Also flag
+telling the user to `sf plugins install @salesforce/plugin-lightning-dev` as a prerequisite —
+the LWC Developer Guide states the CLI installs the Live Preview plugin automatically.
 
 ---
 
@@ -89,13 +93,9 @@ still Beta" without tying the claim to a release.
 
 **Why it happens:** models pattern-fill maturity labels and default to whatever they saw most.
 
-**Correct pattern:** single-component preview was **Beta as of Winter '26** (when platform-module
-access was added) and reached **GA as "Single Component Live Preview" the week of April 13,
-2026**; the VS Code extension's **React** preview is **Beta** while its LWC preview is GA. Cite
-the release; don't assert a status the notes don't give.
+**Correct pattern:** do not invent a GA/Beta date for single-component preview. The LWC Developer Guide documents `sf lightning dev component` as a Live Preview tool and does not attach a GA/Beta label on that page. Cite the current guide; do not quote a week-of-April-13 GA date that is not on it. The VS Code extension's React preview is a distinct surface from LWC preview.
 
-**Detection hint:** a GA/Beta claim about local dev with no release reference, or a date earlier
-than Winter '26.
+**Detection hint:** a GA/Beta claim about Live Preview with no citation to the current LWC Developer Guide page.
 
 ---
 

@@ -129,3 +129,17 @@ Use `sf` commands: `sf project deploy start`, `sf project retrieve start`, `sf o
 Declare dependencies explicitly in each packageDirectory entry. The CLI resolves the correct build/install order from the dependency graph. Array order in `packageDirectories` is irrelevant for build sequencing.
 
 **Detection hint:** Advice mentioning "order" or "sequence" of `packageDirectories` as a deployment mechanism.
+
+---
+
+## Anti-Pattern 8: Prescribing a Source-Tracking Reset After Moving Files
+
+**What the LLM generates:** A warning that reorganizing package directories will make `sf project deploy preview` report phantom deletes and recreations, with `sf project reset tracking` or `sf project delete tracking` offered as the remedy.
+
+**Why it happens:** Training data is dominated by 2024-era guidance written before source mobility shipped. Resetting tracking genuinely was the workaround then, so the model reproduces it confidently and never mentions the environment variable that now governs the behaviour.
+
+**Correct pattern:**
+
+Moving source files inside the project is safe by default on a Winter '26 or later `sf` CLI — source mobility is enabled, with `SF_DISABLE_SOURCE_MOBILITY` defaulting to `false`. Restructure the directories, commit, and let tracking follow. The feature ships in the CLI rather than the org, so reach for a tracking reset only after confirming both that the runner's CLI is current (`sf --version`) and that the opt-out is unset (`echo "${SF_DISABLE_SOURCE_MOBILITY:-unset}"`).
+
+**Detection hint:** Advice pairing a directory move or `packageDirectories` restructure with `reset tracking`, `delete tracking`, or a "deleted and recreated" warning, with no mention of `SF_DISABLE_SOURCE_MOBILITY`.

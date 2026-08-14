@@ -79,9 +79,9 @@
     "fbc7a95a0094c6c74044",
     "ffc3be023a5c751cd829"
   ],
-  "content_hash": "68814ca9fcda543e254d3e03767a7e871f5118156e8d4f66ad898b6c1aa0dc55",
+  "content_hash": "e0a399a7b0488f3ba6412176330a4d4e2be40df6670cf4e54393c2a9581f0349",
   "dependencies": [],
-  "description": "Planning and executing metadata rollbacks and emergency hotfixes in Salesforce orgs. Use when a production deployment causes regression and needs to be reverted, or when an urgent fix must bypass the normal release pipeline. Covers pre-deploy archive bundles, quick deploy for hotfixes, non-rollbackable component handling, and hotfix branch isolation. NOT for routine CI/CD pipeline setup (use continuous-integration-testing). NOT for destructive changes authoring (use destructive-changes-deployment).",
+  "description": "Planning and executing metadata rollbacks and emergency hotfixes in Salesforce orgs. Use when a production deployment causes regression and needs to be reverted, or when an urgent fix must bypass the normal release pipeline. NOT for routine CI/CD pipeline setup (use continuous-integration-testing) \u2014 use admin/change-management-and-deployment.",
   "file_location": "skills/devops/rollback-and-hotfix-strategy",
   "id": "devops/rollback-and-hotfix-strategy",
   "inputs": [

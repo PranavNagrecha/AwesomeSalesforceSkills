@@ -90,9 +90,9 @@
     "f07450cb1d602e87f667",
     "f39926accaac8fe1d4e0"
   ],
-  "content_hash": "7c3fa81e728a56ebfdef46a9ade110ea487929477dbc0d5c5d9305cb989956bb",
+  "content_hash": "b59414dd123b97d7958e266399238147f867e6bd990f17dcd9f02172e428bae4",
   "dependencies": [],
-  "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for field-level security (use field-level-security-audit). NOT for designing sharing (use sharing-selection decision tree).",
+  "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for remediating a CRUD/FLS finding \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for designing the sharing model itself \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/security/record-access-troubleshooting",
   "id": "security/record-access-troubleshooting",
   "inputs": [

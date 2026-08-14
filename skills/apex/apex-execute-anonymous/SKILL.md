@@ -1,6 +1,6 @@
 ---
 name: apex-execute-anonymous
-description: "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management)."
+description: "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for trace flags or reading the log output — use apex/debug-logs-and-developer-console. NOT for async job design — use apex/async-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

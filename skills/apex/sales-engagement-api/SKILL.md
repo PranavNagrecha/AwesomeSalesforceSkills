@@ -1,6 +1,6 @@
 ---
 name: sales-engagement-api
-description: "Use when enrolling records in Sales Engagement cadences from Apex, logging call outcomes on cadence steps, customizing cadence step actions via Apex, or consuming cadence lifecycle events through Change Data Capture. Triggers: 'enroll lead in cadence', 'assignTargetToSalesCadence', 'ActionCadenceTracker', 'log call result cadence', 'Sales Engagement Apex'. NOT for building or administering cadence structures (steps, branches, variants) — cadence content must be authored in the Cadence Builder UI and cannot be created or mutated via API."
+description: "Use when enrolling records in Sales Engagement cadences from Apex, logging call outcomes on cadence steps, customizing cadence step actions via Apex, or consuming cadence lifecycle events through Change Data Capture. Triggers: 'enroll lead in cadence', 'assignTargetToSalesCadence', 'ActionCadenceTracker', 'log call result cadence', 'Sales Engagement Apex'. NOT for building or administering cadences, steps, or rep permissions in Setup — use admin/sales-engagement-cadences."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

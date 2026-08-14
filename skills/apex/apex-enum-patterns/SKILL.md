@@ -1,6 +1,6 @@
 ---
 name: apex-enum-patterns
-description: "Apex enum patterns — enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design (use admin/picklist-design)."
+description: "Apex enum patterns — enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design and value-set management — use admin/picklist-and-value-sets. NOT for reading picklist values at runtime via describe — use apex/apex-schema-describe."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

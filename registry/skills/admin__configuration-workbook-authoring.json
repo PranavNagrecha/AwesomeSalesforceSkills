@@ -116,7 +116,7 @@
     "fcfd42070c70388a430c",
     "fe16e213d0dbfe4b3f3a"
   ],
-  "content_hash": "720cb0e237ea3ee4a48c2e63084920005a45f6d892b8858010caa88445970398",
+  "content_hash": "01be11fdf75ff72adf5d52ad632021d56b23ff1ee8d5a7152f12501400d4d7fa",
   "dependencies": [],
   "description": "Author the Salesforce Configuration Workbook \u2014 the structured, reviewable handoff document an admin uses to execute a feature across Objects/Fields, Page Layouts, Profiles/PSGs, Sharing, Validation, Automation, List Views, Reports, Integrations, and Data. Triggers: 'salesforce configuration workbook', 'admin handoff document', 'implementation workbook'. NOT for object design itself (use admin/custom-field-creation, admin/lookup-and-relationship-design, agents/object-designer/AGENT.md), NOT for permission set design (use admin/permission-set-architecture, agents/permission-set-architect/AGENT.md), NOT for Flow construction (use skills/flow/* and agents/flow-builder/AGENT.md), and NOT for the deployment manifest (use skills/devops/metadata-api-retrieve-deploy).",
   "file_location": "skills/admin/configuration-workbook-authoring",
@@ -133,7 +133,7 @@
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Architects: Center of Excellence playbook (workbook-driven implementation handoff) \u2014 https://architect.salesforce.com/decision-guides/center-of-excellence",
-    "Salesforce Help: Track changes to your org with Setup Audit Trail (rationale for source-grounded change records) \u2014 https://help.salesforce.com/s/articleView?id=sf.setup_audit_trail.htm"
+    "Object Reference \u2014 SetupAuditTrail (rationale for source-grounded change records) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_setupaudittrail.htm"
   ],
   "outputs": [
     "Configuration Workbook (markdown + JSON envelope + CSV) covering 10 canonical sections, every row tagged with owner, source_req_id, source_story_id, status, recommended_agent, and recommended_skills",

@@ -1,6 +1,6 @@
 ---
 name: ferpa-compliance-in-salesforce
-description: "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields, directory information opt-out via FLS and Individual data privacy flags, ContactPointTypeConsent for parental and third-party disclosure, 45-day student records response window tracking, and consent workflow automation. Trigger keywords: FERPA, student records privacy, LearnerProfile, parental disclosure, directory information opt-out, education data privacy, student consent, education cloud compliance. NOT for GDPR/CCPA general data privacy (see gdpr-data-privacy skill), platform encryption at rest (see platform-encryption skill), or HIPAA health-data compliance."
+description: "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields. NOT for GDPR/CCPA general data privacy (see gdpr-data-privacy skill), platform encryptio — use architect/health-cloud-data-residency."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

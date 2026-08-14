@@ -1,6 +1,6 @@
 ---
 name: scratch-org-snapshots
-description: "Use Scratch Org Snapshots to reduce CI bring-up time from 10–20 minutes to under 2. NOT for persistent sandbox provisioning."
+description: "Use Scratch Org Snapshots to reduce CI bring-up time from 10–20 minutes to under 2. NOT for persistent sandbox provisioning — use devops/scratch-org-pools."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

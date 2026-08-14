@@ -85,9 +85,9 @@
     "fc131cc2bd222a1c60c6",
     "ff478227a7c7b7bed58c"
   ],
-  "content_hash": "ae5b447ee91be368a5ca0f18dbe3723d1c36d3613d8024b6d986179d5d1115ee",
+  "content_hash": "82dded9e9d9bb5b40b2521ab96e7df79f8f077896a5243462c7d043ecf107212",
   "dependencies": [],
-  "description": "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for Bulk API (use bulk-api-patterns). NOT for GraphQL connection pagination (use graphql-api-patterns).",
+  "description": "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for REST CRUD or Composite \u2014 use integration/rest-api-patterns. NOT for GraphQL pagination \u2014 use integration/graphql-api-patterns.",
   "file_location": "skills/integration/rest-api-pagination-patterns",
   "id": "integration/rest-api-pagination-patterns",
   "inputs": [

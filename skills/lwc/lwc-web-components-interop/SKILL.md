@@ -1,6 +1,6 @@
 ---
 name: lwc-web-components-interop
-description: "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices). NOT for Aura interop (use aura-to-lwc-migration)."
+description: "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices) — use lwc/lwc-light-dom."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

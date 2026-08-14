@@ -75,9 +75,9 @@
     "f88e3205be7f46158473",
     "fc7528b38399c927f3cd"
   ],
-  "content_hash": "1736a89884c549f01c42394a20e060fffea0f9f3bd22069ed33a44f90343ac14",
+  "content_hash": "d930af0e1f3f857837f80694ec78973a71dda7cbe643adae7c97f781a74b67c7",
   "dependencies": [],
-  "description": "Use when setting up or tuning Experience Cloud community content moderation: keyword/criteria-based rules, member reputation system, and moderation queue management. Triggers: 'set up community content moderation', 'configure reputation levels', 'flagging rules Experience Cloud', 'moderation queue setup', 'keyword blocking community', 'approve community posts before publishing'. NOT for CMS content publishing workflows or Digital Experiences page publishing.",
+  "description": "Set up or tune Experience Cloud content moderation: keyword/criteria rules, member reputation system, moderation queue. Triggers: 'set up community content moderation', 'configure reputation levels', 'flagging rules Experience Cloud', 'moderation queue setup', 'keyword blocking community', 'approve community posts before publishing'. NOT for publishing or scheduling CMS articles on the site \u2014 use admin/experience-cloud-cms-content. NOT for deciding which behaviours to reward or how to name reputation tiers \u2014 use admin/community-engagement-strategy.",
   "file_location": "skills/admin/experience-cloud-moderation",
   "id": "admin/experience-cloud-moderation",
   "inputs": [

@@ -83,9 +83,9 @@
     "fc6fa332421d3713d08f",
     "ff80eeedac1191af0ee9"
   ],
-  "content_hash": "9b99dc536c7b27e5f620e4adc4a9f80e4e98029721c3c0c5cd7a7f4285e01e95",
+  "content_hash": "5e81524c1e4451d7fdb7530ec791dc5da48c222a01982b578584e43757b6a71e",
   "dependencies": [],
-  "description": "Use this skill when configuring CRM Analytics (formerly Einstein Analytics) app sharing, dataset-level permissions, row-level security predicates, sharing inheritance, or license assignment. Trigger keywords: CRM Analytics security, row-level security predicate, dataset permissions, analytics sharing inheritance, Analytics Plus license. NOT for standard Salesforce OWD/sharing rules, profile-based record access, or non-Analytics report folder sharing.",
+  "description": "Configure CRM Analytics (formerly Einstein Analytics) app sharing, dataset-level permissions, row-level security predicates, sharing inheritance, and license assignment. Trigger keywords: CRM Analytics security, row-level security predicate, dataset permissions, analytics sharing inheritance, Analytics Plus license. NOT for OWD and sharing rules \u2014 use admin/sharing-and-visibility. NOT for predicate design across many datasets \u2014 use architect/analytics-security-architecture.",
   "file_location": "skills/admin/analytics-permission-and-sharing",
   "id": "admin/analytics-permission-and-sharing",
   "inputs": [

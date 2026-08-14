@@ -1,6 +1,6 @@
 ---
 name: model-builder-and-byollm
-description: "Use when configuring Model Builder in Salesforce to register external LLMs or select standard models for Agentforce and Einstein features. Covers model registration, API key configuration, model aliases, and cost/performance tradeoffs. NOT for Trust Layer configuration (use agentforce-trust-layer)."
+description: "Use when configuring Model Builder in Salesforce to register external LLMs or select standard models for Agentforce and Einstein features. Covers model registration, API key configuration, model aliases, and cost/performance tradeoffs. NOT for deciding the model-tier or multi-agent platform strategy before you register anything — use architect/ai-platform-architecture. NOT for Trust Layer configuration — use agentforce/einstein-trust-layer."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

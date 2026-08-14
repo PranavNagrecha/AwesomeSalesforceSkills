@@ -1,6 +1,6 @@
 ---
 name: continuous-integration-testing
-description: "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for Apex test class design patterns, test data factory architecture, or LWC Jest testing."
+description: "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for standing up a GitHub Actions workflow — use devops/github-actions-for-salesforce. NOT for Apex test class design — use apex/test-class-standards. NOT for LWC Jest testing — use lwc/lwc-testing."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 # Continuous Integration Testing

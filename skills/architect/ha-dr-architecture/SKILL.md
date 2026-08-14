@@ -1,6 +1,6 @@
 ---
 name: ha-dr-architecture
-description: "Designing high availability and disaster recovery strategies for Salesforce: Trust site monitoring, backup strategies, cross-region considerations, business continuity planning, RTO/RPO target definition, and failover patterns for integrations. Use when designing org resilience architecture, planning for outages, or defining recovery objectives. NOT for data backup mechanics (use salesforce-backup-and-restore). NOT for general security architecture (use security-architecture-review)."
+description: "Designing high availability and disaster recovery strategies for Salesforce: Trust site monitoring, backup strategies, cross-region considerations, business continuity planning, RTO/RPO target definition, and failover patterns for integrations. Use when designing org resilience architecture, planning for outages, or defining recovery objectives. NOT for picking a backup product or restore mechanics — use data/salesforce-backup-and-restore. NOT for a security posture review — use architect/security-architecture-review."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

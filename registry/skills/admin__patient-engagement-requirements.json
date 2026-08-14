@@ -54,12 +54,12 @@
     "fa88f6a732ea3035adf3",
     "fbefd52e74e671d09478"
   ],
-  "content_hash": "377423ac3a0b2c9391437d84f9a576eb851a4ba5306595b646491682074b10e4",
+  "content_hash": "43085838dd8ad68bda6c5057f30e69cae74252f44653bcb7aa27df3b76d4835a",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
   ],
-  "description": "Use this skill when defining patient engagement portal requirements for Health Cloud: appointment scheduling, secure in-portal messaging, health assessments, patient education, and self-service features. NOT for Experience Cloud site configuration, OmniStudio development, or standard CRM portal setup unrelated to clinical patient engagement.",
+  "description": "Use this skill when defining patient engagement portal requirements for Health Cloud: appointment scheduling, secure in-portal messaging, health assessments, patient education, and self-service features. NOT for care team workflows, SDOH barriers and care gaps \u2014 use admin/care-coordination-requirements. NOT for patient portal licensing and cloud topology \u2014 use architect/health-cloud-multi-cloud-strategy.",
   "file_location": "skills/admin/patient-engagement-requirements",
   "id": "admin/patient-engagement-requirements",
   "inputs": [

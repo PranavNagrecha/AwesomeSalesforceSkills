@@ -24,7 +24,7 @@ SandboxPostCopy reliability requires async delegation. Scripts that fail silentl
 
 - `data/deployment-data-dependencies` — Handling org-specific ID resolution after data loads
 - `data/data-migration-planning` — Full data migration tool selection (SFDMU, Data Loader)
-- `devops/deployment-pipeline-design` — CI/CD pipeline integration with sandbox refresh events
+- `architect/ci-cd-pipeline-architecture` — CI/CD pipeline integration with sandbox refresh events
 
 ## Official Sources Used
 

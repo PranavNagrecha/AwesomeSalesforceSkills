@@ -1,6 +1,6 @@
 ---
 name: calculation-procedures
-description: "Use when building, reviewing, or troubleshooting OmniStudio Calculation Procedures (also called Expression Sets) and Calculation Matrices (also called Decision Matrices). Triggers: 'calculation procedure', 'expression set', 'calculation matrix', 'decision matrix', 'pricing calculation', 'lookup step', 'matrix versioning'. NOT for DataRaptor transforms or DataRaptor-based field mapping."
+description: "Build and troubleshoot Calculation Procedures (Expression Sets) and Calculation Matrices. Triggers: calculation procedure, expression set, calculation matrix, decision matrix, pricing calculation, lookup step, matrix versioning. NOT for pricing/rating design decisions — use omnistudio/calculation-procedure-design."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

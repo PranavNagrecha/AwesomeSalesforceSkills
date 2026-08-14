@@ -1,6 +1,6 @@
 ---
 name: analytics-security-architecture
-description: "Use this skill when designing or auditing CRM Analytics (formerly Einstein Analytics / Tableau CRM) data access controls: row-level security predicates, dataset-level visibility, app-level sharing roles, sharing inheritance configuration, and cross-dataset security embedding strategies. Trigger keywords: CRM Analytics security, row-level security predicate, Analytics dataset access, sharing inheritance, security predicate design, cross-dataset security, analytics entitlement dataset. NOT for standard Salesforce sharing model design (OWD, role hierarchy, sharing rules on standard objects), standard reports/dashboards folder sharing, or Tableau Server/Tableau Cloud security."
+description: "Use this skill when designing or auditing CRM Analytics (formerly Einstein Analytics / Tableau CRM) data access controls: row-level security predicates, dataset-level visibility, app-level sharing roles, sharing inheritance configuration, and cross-dataset security embedding strategies. Trigger keywords: CRM Analytics security, row-level security predicate, Analytics dataset access, sharing inheritance, security predicate design, cross-dataset security, analytics entitlement dataset. NOT for a predicate's SAQL syntax - use data/crm-analytics-security-predicates. NOT for sharing an app or assigning an Analytics license - use admin/analytics-permission-and-sharing."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

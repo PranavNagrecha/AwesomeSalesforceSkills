@@ -13,6 +13,10 @@ triggers:
   - "guest user omniscript security concern"
   - "OmniStudio HTTP action exposing too much data"
   - "custom Apex action behind OmniStudio review"
+  - "OmniStudio Scale Cache Required Permission guest"
+  - "VlocityOpenInterface Callable without sharing guest"
+  - "ContextId contactId from client OmniStudio guest"
+  - "unsigned integration procedure guest sharing"
 tags:
   - omnistudio-security
   - guest-users
@@ -31,7 +35,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
 # OmniStudio Security

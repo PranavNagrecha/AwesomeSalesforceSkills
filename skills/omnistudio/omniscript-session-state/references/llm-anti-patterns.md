@@ -41,3 +41,25 @@ aggressively.
 **Why it happens:** simpler code path.
 
 **Correct pattern:** version field + conflict branch.
+
+---
+
+## Anti-Pattern 6: Guest Save-for-Later as a Second PHI Store
+
+**What the LLM generates:** Native OmniScript session persistence on a public Experience Cloud script so "users can come back."
+
+**Why it happens:** Save and Resume is a platform feature; turning it on looks free.
+
+**Correct pattern:** Off for guest flows. Resume credentials live server-side (hashed token), not as a session Id in the URL. If authenticated portal save-for-later is required, encrypt, TTL, and purge in the **same** job as the intake row. The session blob holds the PII the purge was meant to destroy.
+
+**Detection hint:** Guest OmniScript with session save on; purge job that deletes application rows but not OmniScript saved sessions.
+
+---
+
+## Anti-Pattern 7: Resume Token in the URL Without Referrer Policy
+
+**What the LLM generates:** `/s/resume?sid=…` linked from an email.
+
+**Why it happens:** Deep links are convenient.
+
+**Correct pattern:** Opaque token, short TTL, `referrer-policy` on the resume page. Experience Cloud logout ≠ OmniScript session end — detect re-auth.

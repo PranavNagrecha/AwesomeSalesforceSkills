@@ -1,6 +1,6 @@
 ---
 name: sales-process-mapping
-description: "Eliciting, documenting, and structuring a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Use when a business needs to analyse or formalise its sales methodology before any Salesforce configuration begins. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage picklist values, Sales Processes, or record types in Setup (use opportunity-management skill). NOT for Path configuration. NOT for Collaborative Forecasts or quota alignment."
+description: "Eliciting and documenting a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage, Sales Processes or Path in Setup — use admin/opportunity-management. NOT for cross-functional swim-lane maps — use admin/process-flow-as-is-to-be."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

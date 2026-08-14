@@ -278,15 +278,18 @@ For developer machines, prefer `sf plugins link <local-path>` during plugin deve
 ## Recommended Workflow
 
 1. Confirm a plugin is the right answer (see *Before Starting*); if a script suffices, write a script and stop.
-2. Choose the template: `plugin-template-sf-external` for ISV/community plugins, `plugin-template-sf` for Salesforce-internal. Generate the scaffold with `sf dev generate plugin --name <plugin-name>`.
-3. Decide the topic tree before writing code; the directory structure under `src/commands/` mirrors the runtime topic tree (`mytopic/mycommand.ts` becomes `sf mytopic mycommand`).
-4. Write the JSON result type first — `type CommandResult = { ... }` — and treat it as the public contract from day one.
-5. Implement the command class extending `SfCommand<CommandResult>`. Use `Flags.requiredOrg()` / `Flags.requiredHub()` / `Flags.string()` rather than parsing manually.
-6. Write the messages markdown file (`messages/<command>.md`) for `summary`, `description`, `examples`, and any flag summaries.
-7. Add at least one NUT test (`test/commands/<topic>/<command>.nut.ts`) that runs the real command end-to-end against a scratch org or mocked HTTP responses (`nock` for callouts).
-8. Locally link the plugin with `sf plugins link .` and exercise both human and `--json` output. Verify `--json` output against the typed contract.
-9. Update the README with the JSON shape spec and any required org permissions.
-10. Publish (private or public registry); consumers install with `sf plugins install <name>@<version>`. Document the install line in the README.
+2. Scaffold, and settle the topic tree before any code exists — renaming a topic after release forces every consumer onto a deprecation-alias window (Pattern 2):
+   - Choose the template: `plugin-template-sf-external` for ISV/community plugins, `plugin-template-sf` for Salesforce-internal. Generate the scaffold with `sf dev generate plugin --name <plugin-name>`.
+   - Decide the topic tree; the directory structure under `src/commands/` mirrors the runtime topic tree (`mytopic/mycommand.ts` becomes `sf mytopic mycommand`).
+3. Write the JSON result type first — `type CommandResult = { ... }` — and treat it as the public contract from day one.
+4. Implement the command against that contract:
+   - Implement the command class extending `SfCommand<CommandResult>`. Use `Flags.requiredOrg()` / `Flags.requiredHub()` / `Flags.string()` rather than parsing manually.
+   - Write the messages markdown file (`messages/<command>.md`) for `summary`, `description`, `examples`, and any flag summaries.
+5. Exercise both output modes against a real runtime before shipping:
+   - Add at least one NUT test (`test/commands/<topic>/<command>.nut.ts`) that runs the real command end-to-end against a scratch org or mocked HTTP responses (`nock` for callouts).
+   - Locally link the plugin with `sf plugins link .` and exercise both human and `--json` output. Verify `--json` output against the typed contract.
+6. Update the README with the JSON shape spec and any required org permissions.
+7. Publish (private or public registry); consumers install with `sf plugins install <name>@<version>`. Document the install line in the README.
 
 ---
 

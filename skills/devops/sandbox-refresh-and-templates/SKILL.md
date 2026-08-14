@@ -1,6 +1,6 @@
 ---
 name: sandbox-refresh-and-templates
-description: "Sandbox refresh cycles, sandbox templates, post-refresh automation via the SandboxPostCopy Apex interface, and data handling during refresh. NOT for sandbox type selection (use sandbox-strategy)."
+description: "Sandbox refresh cycles, sandbox templates, post-refresh automation via the SandboxPostCopy Apex interface, and data handling during refresh. NOT for sandbox type selection — use admin/sandbox-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

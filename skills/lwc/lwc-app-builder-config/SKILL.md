@@ -1,6 +1,6 @@
 ---
 name: lwc-app-builder-config
-description: "Use when an LWC needs to appear, be configured, and be constrained inside Lightning App Builder, Experience Builder, Home Page, or Flow screens via its js-meta.xml file — including isExposed, targets, targetConfigs, supportedFormFactors, objects scoping, and admin-facing design attributes. Triggers: 'lwc not appearing in app builder', 'expose lwc to record page', 'design attribute datasource picklist', 'supportedformfactors mobile small', 'targetconfigs for record page vs app page', 'masterlabel vs description'. NOT for custom property editors for Flow (see `custom-property-editor-for-flow`), and NOT for Experience Cloud theming at the page level."
+description: "Use when an LWC needs to appear, be configured, and be constrained inside Lightning App Builder, Experience Builder, Home Page, or Flow screens via its js-meta.xml file — including isExposed, targets, targetConfigs, supportedFormFactors, objects scoping, and admin-facing design attributes. Triggers: 'lwc not appearing in app builder', 'expose lwc to record page', 'design attribute datasource picklist', 'supportedformfactors mobile small', 'targetconfigs for record page vs app page', 'masterlabel vs description'. NOT for page-level config like visibility filters or Dynamic Forms — use admin/lightning-app-builder-advanced. NOT for a Flow custom property editor — use lwc/custom-property-editor-for-flow."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

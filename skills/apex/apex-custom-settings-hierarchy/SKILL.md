@@ -1,6 +1,6 @@
 ---
 name: apex-custom-settings-hierarchy
-description: "Use when reading or writing Hierarchy Custom Settings from Apex to resolve per-user/per-profile/org configuration. Covers `getInstance()` resolution order, DML cost, cache semantics, and when to prefer Custom Metadata Types instead. NOT for List Custom Settings, Custom Metadata Types deployment packaging, or the deprecated Setup UI for editing."
+description: "Use when reading or writing Hierarchy Custom Settings from Apex to resolve per-user/per-profile/org configuration. Covers `getInstance()` resolution order, DML cost, cache semantics, and when to prefer Custom Metadata Types instead. NOT for Custom Metadata Types in Apex — use apex/custom-metadata-in-apex. NOT for the CMT vs Custom Settings choice — use admin/custom-metadata-types-and-settings."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

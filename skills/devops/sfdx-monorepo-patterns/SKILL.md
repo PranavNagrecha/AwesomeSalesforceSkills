@@ -1,6 +1,6 @@
 ---
 name: sfdx-monorepo-patterns
-description: "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies."
+description: "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies — use apex/sf-cli-and-sfdx-essentials."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

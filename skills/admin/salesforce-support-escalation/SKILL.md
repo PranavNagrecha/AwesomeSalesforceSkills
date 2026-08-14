@@ -1,6 +1,6 @@
 ---
 name: salesforce-support-escalation
-description: "Guide practitioners through opening, classifying, and escalating support cases with Salesforce Technical Support via the Help portal, including choosing the correct severity level, engaging Premier Success resources, using the Escalate to Technical Support Management path, and tracking incidents on the Trust site. NOT for configuring Salesforce Case Escalation Rules (declarative platform automation), Entitlement Management or SLA milestones, or building customer-facing support processes inside an org."
+description: "Open, classify, and escalate support cases with Salesforce Technical Support via the Help portal: choosing severity, engaging Premier Success, the Escalate to Technical Support Management path, tracking incidents on the Trust site. NOT for escalating your own org's cases after N hours - use admin/escalation-rules. NOT for SLA milestone timers and entitlement processes - use admin/entitlements-and-milestones."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

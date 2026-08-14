@@ -1,6 +1,6 @@
 ---
 name: picklist-data-integrity
-description: "Picklist governance for Salesforce admins — Restricted vs Unrestricted, Global Value Sets vs local picklists, value deactivation that breaks reports, dependent picklists with deactivated controllers, and the 'value not in picklist' phantom-data problem. Covers the per-record-type value selection model, the API-vs-label mismatch trap, and the mass-replace-values runbook. NOT for selection-list UX (that's LWC styling), NOT for the architectural decision of when to use a picklist vs lookup vs custom metadata."
+description: "Picklist governance for Salesforce admins — Restricted vs Unrestricted, Global Value Sets vs local picklists, value deactivation that breaks reports, dependent picklists with deactivated controllers, and the 'value not in picklist' phantom-data problem. Covers the per-record-type value selection model, the API-vs-label mismatch trap, and the mass-replace-values runbook. NOT for auditing an org where invalid values already exist or record-type mappings have drifted — use admin/picklist-field-integrity-issues. NOT for creating a picklist field or wiring up a dependent picklist — use admin/picklist-and-value-sets."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: apex-event-bus-subscriber
-description: "Apex Platform Event subscriber runtime semantics — checkpoint-and-resume via `EventBus.TriggerContext.setResumeCheckpoint`, `EventBus.RetryableException` semantics, the 2,000-event-per-trigger default batch (10× standard DML trigger size), and `PlatformEventSubscriberConfig` for batch-size + running-user tuning. Covers the checkpoint-vs-RetryableException decision (the most common subscriber bug). NOT for declaring Platform Events themselves (use platform_events_definition skill), NOT for publishing them (apex/platform-event-publish), NOT for the basic `trigger Foo on MyEvent__e (after insert)` syntax."
+description: "Apex Platform Event subscriber runtime semantics — checkpoint-and-resume via `EventBus.TriggerContext.setResumeCheckpoint`, `EventBus.RetryableException` semantics, the 2,000-event-per-trigger default batch, and `PlatformEventSubscriberConfig` for batch-size and running-user tuning. Covers the checkpoint-vs-RetryableException decision, the most common subscriber bug. NOT for publishing from Apex — use apex/platform-events-apex. NOT for external subscribers — use integration/platform-events-integration."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -47,7 +47,7 @@ production bug in Platform Event subscribers.
 This skill is the runtime-semantics layer. The basic `trigger Foo on
 MyEvent__e (after insert) { ... }` syntax is plain Apex; go to the Apex
 Developer Guide. Publishing events (`EventBus.publish`) lives in
-`apex/platform-event-publish`. Defining the event SObject itself lives
+`integration/platform-event-publish-patterns`. Defining the event SObject itself lives
 in admin / metadata. This skill assumes you already have a trigger and
 you need to make it production-grade.
 
@@ -273,7 +273,7 @@ dominates.
 
 ## Related Skills
 
-- `apex/platform-event-publish` — the publisher side; pair with this skill for end-to-end Platform Event flow.
+- `integration/platform-event-publish-patterns` — the publisher side; pair with this skill for end-to-end Platform Event flow.
 - `apex/trigger-framework` — when this trigger lives inside a generic trigger framework; the framework dispatch must respect the EventBus.TriggerContext API rather than treating the trigger like a DML trigger.
 - `apex/apex-mocking-and-stubs` — for the test class that uses `Test.EventBus.deliver()`.
 - `integration/event-relay-configuration` — when the same Platform Event channel that this trigger subscribes to is also relayed to AWS EventBridge; the two subscribers are independent (Apex + AWS-side rule).

@@ -63,12 +63,12 @@
     "fb60b9644b99adc550cb",
     "ffa8ef22f55e142923a3"
   ],
-  "content_hash": "ce718ffe90db003c3d3cf304a3c58552f72081acca2a9b27e655e4b42290eaa5",
+  "content_hash": "63c60db5c730f252a93bf8597f37715c521a508e50f1a7a6f9de79ee21321e26",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
   ],
-  "description": "Use this skill when configuring Health Cloud referral management: setting up ClinicalServiceRequest-based referrals, provider search, referral status workflows, and network management. NOT for Sales Cloud referrals, FSC Einstein Referral Scoring, or Public Sector Solutions referral objects.",
+  "description": "Use this skill when configuring Health Cloud referral management: setting up ClinicalServiceRequest-based referrals, provider search, referral status workflows, and network management. NOT for referrals in Financial Services Cloud \u2014 use admin/fsc-referral-management. NOT for care team workflow and transition-of-care design \u2014 use admin/care-coordination-requirements.",
   "file_location": "skills/admin/referral-management-health",
   "id": "admin/referral-management-health",
   "inputs": [

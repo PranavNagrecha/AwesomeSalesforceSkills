@@ -97,11 +97,11 @@
     "fb5cc9b5dc5e64ff3e3d",
     "fc6e8f23c17f1251008e"
   ],
-  "content_hash": "953820cd58ee60f1eae8af6101c54b03b974df108e83c64d8db9a6724c46288f",
+  "content_hash": "a897f07f68d5c92cf8a94d4600c18f68fdbaa78e11e8c82835c650b0c84cb7a0",
   "dependencies": [
     "products-and-pricebooks"
   ],
-  "description": "Use this skill when setting up or modifying product bundles, product options, product rules, configuration attributes, and product features in Salesforce CPQ. Trigger keywords: CPQ product bundle, product rule, option constraint, feature configuration, dynamic bundle, filter rule, configuration attribute, bundle nesting. NOT for standard Salesforce Products & Pricebooks (use the products-and-pricebooks skill), CPQ pricing rules or discount schedules, or quote template/document configuration.",
+  "description": "Use this skill when setting up or modifying product bundles, product options, product rules, configuration attributes, and product features in Salesforce CPQ. Trigger keywords: CPQ product bundle, product rule, option constraint, feature configuration, dynamic bundle, filter rule, configuration attribute, bundle nesting. NOT for plain Products and Pricebooks without CPQ \u2014 use admin/products-and-pricebooks. NOT for moving an existing CPQ catalog between orgs \u2014 use data/product-catalog-migration-cpq. NOT for price rules, price actions or discount schedules \u2014 use admin/cpq-pricing-rules.",
   "file_location": "skills/admin/cpq-product-catalog-setup",
   "id": "admin/cpq-product-catalog-setup",
   "inputs": [

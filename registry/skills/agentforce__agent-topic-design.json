@@ -67,9 +67,9 @@
     "f6ff105635d452d357f8",
     "fb3f59ba662d23ee767f"
   ],
-  "content_hash": "c4e805e3aec0be9e51d7e719a8a42a8c5f31f282b51dada59604690309333202",
+  "content_hash": "fc965f8eb2efc3fb761dd218d6fe1e3838fe20d2e8215928f4fc86a9039bf9e3",
   "dependencies": [],
-  "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping.",
+  "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) \u2014 use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out \u2014 Omni-Channel routing and the context package \u2014 use agentforce/agentforce-agent-handoff-patterns.",
   "file_location": "skills/agentforce/agent-topic-design",
   "id": "agentforce/agent-topic-design",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: orchestration-flows
-description: "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration."
+description: "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for stage gating, work-item assignment and the cancel pathway — use flow/flow-orchestration-patterns. NOT for lightweight approval routing that needs no orchestration — use admin/approval-processes."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-30
+updated: 2026-08-14
 ---
 
 Use this skill when the business process spans time, people, and system boundaries in a way that normal record-triggered or screen flows do not handle cleanly. Flow Orchestration is the right tool when a process needs explicit stage progression, work assignment, and observability across days or weeks — instead of pretending the whole journey happens in one synchronous transaction.
@@ -84,6 +84,7 @@ A long-running process is incomplete unless operations teams can see where insta
 | Flow Orchestration Work Items List View | Customizable per-persona views of pending work. |
 | Orchestration Error Email | Delivered to the Process Automation user when a stage fails. |
 | Custom dashboards | Built on `FlowOrchestrationInstance` + `FlowOrchestrationWorkItem` sObjects. |
+| Orchestration Runs list | **Not a Setup node.** Open `/lightning/o/FlowOrchestrationInstance/list` (object list view). `/lightning/setup/OrchestrationRuns/home` is invalid. |
 
 If operations isn't going to look at any of these, the Orchestration was probably wrong — a standard Flow with good fault handling would have served. Design the monitoring surface BEFORE building the Orchestration, not after.
 

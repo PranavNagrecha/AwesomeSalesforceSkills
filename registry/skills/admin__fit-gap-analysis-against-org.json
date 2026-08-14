@@ -84,7 +84,7 @@
     "f466a03db98905673e2c",
     "fd863f5353e8835bb1fb"
   ],
-  "content_hash": "c1a7d280e27663dd43e9b8cb8173a052e19e71f9d57f11963cc76b1fdfc166dc",
+  "content_hash": "6d956c13c01f58c015cf44b537111f5a1cba9fb8cf229c72f254787713b9a69d",
   "dependencies": [],
   "description": "Use when scoring a list of business or solution requirements against the *actual* capabilities of a specific Salesforce org so each row can be classified Standard / Configuration / Low-Code / Custom / Unfit, given an effort tier (S/M/L/XL), a risk tag, and an AppExchange suggestion when applicable. Trigger keywords: fit gap salesforce requirements, score requirements against salesforce capabilities, salesforce capability matrix, classify requirement as standard config custom, fit-gap effort tier, AppExchange alternative for requirement. NOT for requirements elicitation (use admin/requirements-gathering-for-sf). NOT for architecture decisions on the GAP rows (use architect/solution-design-patterns and standards/decision-trees/). NOT for license or edition selection (use architect/license-optimization-strategy and architect/org-edition-and-feature-licensing). NOT for OmniStudio-specific fit-gap (use architect/omnistudio-vs-standard-decision).",
   "file_location": "skills/admin/fit-gap-analysis-against-org",

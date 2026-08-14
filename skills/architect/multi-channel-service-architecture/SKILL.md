@@ -1,6 +1,6 @@
 ---
 name: multi-channel-service-architecture
-description: "Use when designing a unified multi-channel service strategy spanning phone (Service Cloud Voice), email (Email-to-Case), chat (Messaging for In-App/Web), social, and SMS with Omni-Channel routing. Triggers: channel prioritization, unified routing across channels, service channel migration, multi-channel capacity planning. NOT for individual channel setup or configuration — see service-cloud-architecture for single-channel implementation details."
+description: "Use when designing a unified multi-channel service strategy spanning phone (Service Cloud Voice), email (Email-to-Case), chat (Messaging for In-App/Web), social, and SMS with Omni-Channel routing. Triggers: channel prioritization, unified routing across channels, service channel migration, multi-channel capacity planning. NOT for end-to-end contact centre design - use architect/service-cloud-architecture. NOT for enabling Omni-Channel and creating Service Channels - use admin/omni-channel-routing-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

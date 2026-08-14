@@ -51,9 +51,9 @@
     "fad5c02c4194313e8171",
     "fb004e8bbf77c42b5dd3"
   ],
-  "content_hash": "0872b3d003ab303f1e0a6cead7c6c1b6cf20c4839a457e35f7f99177e532f19b",
+  "content_hash": "389f88ff23eead2769181ecb8cbac0a15b24f098d372955d10bef98526f01749",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for migrating Classic templates to Lightning \u2014 use admin/classic-email-template-migration. NOT for sending email from Apex \u2014 use apex/apex-outbound-email-patterns.",
   "file_location": "skills/admin/email-templates-and-alerts",
   "id": "admin/email-templates-and-alerts",
   "inputs": [

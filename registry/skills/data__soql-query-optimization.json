@@ -102,9 +102,9 @@
     "faf822ff3cc163cb6343",
     "fd0c7e8f9c043f87677a"
   ],
-  "content_hash": "6bd4b0aa868d04e09bf7797218a59e2703a20a278c82d33dadbbd99d39479e29",
+  "content_hash": "8ec547dc7d05150b19bf2afa88f5dab6aa27ed992347f831ec202d64876c9ba7",
   "dependencies": [],
-  "description": "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for Apex CPU or heap governor limit issues (use apex-cpu-and-heap-optimization) or for writing basic SOQL (use soql-fundamentals).",
+  "description": "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for org-wide large-data-volume architecture \u2014 ownership or account data skew, Big Object archival, tens of millions of rows on one object \u2014 use architect/large-data-volume-architecture. NOT for the custom-index or composite-index request itself \u2014 use data/custom-index-requests. NOT for Apex CPU or heap governor limits \u2014 use apex/apex-cpu-and-heap-optimization. NOT for writing basic SOQL \u2014 use apex/soql-fundamentals.",
   "file_location": "skills/data/soql-query-optimization",
   "id": "data/soql-query-optimization",
   "inputs": [

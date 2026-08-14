@@ -102,12 +102,12 @@
     "fc87de848678ae35a794",
     "fe5ae3862798f51f4582"
   ],
-  "content_hash": "caa69a905dba8796ba4fb6cb6a2556b441d103cb6dc723816a8280a9c2a8eb3f",
+  "content_hash": "69354d74b8ab13db073040f4900cfc8e87adeff9642793cecdc559f2cfeda965",
   "dependencies": [
     "cpq-data-model",
     "cpq-architecture-patterns"
   ],
-  "description": "Use when designing, mapping, or troubleshooting the end-to-end quote-to-cash process in orgs running Salesforce CPQ (managed package) or Revenue Cloud \u2014 covering the full object chain from SBQQ__Quote__c through Contract to blng__Invoice__c, approval routing via Advanced Approvals (sbaa__), billing schedule generation, and order activation. Trigger keywords: CPQ quote, SBQQ, revenue cloud billing, Advanced Approvals, subscription, blng invoice, contract pivot. NOT for standard Sales Cloud quote-to-cash or implementation of individual CPQ pricing rules, discount schedules, or guided selling configuration \u2014 use the quote-to-cash-requirements skill for standard objects.",
+  "description": "Use when designing, mapping, or troubleshooting the end-to-end quote-to-cash process in orgs running Salesforce CPQ (managed package) or Revenue Cloud \u2014 covering the full object chain from SBQQ__Quote__c through Contract to blng__Invoice__c, approval routing via Advanced Approvals (sbaa__), billing schedule generation, and order activation. Trigger keywords: CPQ quote, SBQQ, revenue cloud billing, Advanced Approvals, subscription, blng invoice, contract pivot. NOT for quote-to-cash on standard Sales Cloud objects \u2014 use admin/quote-to-cash-requirements. NOT for setting up SBAA approval rules and chains \u2014 use admin/cpq-approval-workflows.",
   "file_location": "skills/admin/quote-to-cash-process",
   "id": "admin/quote-to-cash-process",
   "inputs": [

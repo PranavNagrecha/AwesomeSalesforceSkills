@@ -1,6 +1,6 @@
 ---
 name: hipaa-workflow-design
-description: "Use this skill when designing HIPAA-compliant workflow requirements for Health Cloud: minimum necessary access design, audit trail requirements mapping, access control patterns, and BAA dependency identification. NOT for security implementation (Shield Platform Encryption configuration, event monitoring setup) — this skill covers workflow requirements design, not technical security build steps."
+description: "Use this skill when designing HIPAA-compliant workflow requirements for Health Cloud: minimum necessary access design, audit trail requirements mapping, access control patterns, and BAA dependency identification. NOT for org-level HIPAA architecture or Shield encryption configuration — use architect/hipaa-compliance-architecture. NOT for care team and SDOH process design — use admin/care-coordination-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -103,9 +103,9 @@
     "fd81065edd5d27f8cd27",
     "fe3148a7cd5b3a5812fd"
   ],
-  "content_hash": "e9ade420d2ab701e863667698e7621104ea9031e93a2dfb038b1e83d463672c5",
+  "content_hash": "aa7219004a88e2518ac28d0f8e1dadaabcbb4196a50113f28d7291b4121191c9",
   "dependencies": [],
-  "description": "Use this skill to configure Field Service Lightning service resources \u2014 including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for service territory setup (see fsl-service-territory-setup), NOT for scheduling policy configuration, and NOT for FSL mobile app setup.",
+  "description": "Use this skill to configure Field Service Lightning service resources \u2014 including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for territory-level WorkCapacityLimit throttling or capacity-vs-utilization reporting \u2014 use admin/fsl-capacity-planning. NOT for service territory setup \u2014 use admin/fsl-service-territory-setup. NOT for work rules and service objectives \u2014 use admin/fsl-scheduling-policies.",
   "file_location": "skills/admin/fsl-resource-management",
   "id": "admin/fsl-resource-management",
   "inputs": [

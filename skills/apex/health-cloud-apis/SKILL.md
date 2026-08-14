@@ -1,6 +1,6 @@
 ---
 name: health-cloud-apis
-description: "Use this skill when working with Health Cloud APIs: querying healthcare-specific SObjects (CarePlan, ClinicalEncounter, HealthCondition) via standard SObject API, using the FHIR R4-aligned Healthcare API, handling FHIR bundle limits, and understanding API authentication differences between the two layers. NOT for generic REST API development or standard Salesforce SObject API patterns unrelated to Health Cloud clinical objects."
+description: "Use this skill when working with Health Cloud APIs: querying healthcare-specific SObjects (CarePlan, ClinicalEncounter, HealthCondition) via standard SObject API, using the FHIR R4-aligned Healthcare API, handling FHIR bundle limits, and API authentication differences between the two layers. NOT for choosing or enabling the clinical objects — use data/health-cloud-data-model. NOT for EHR integration design, CDS Hooks, or SMART on FHIR — use apex/fhir-integration-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: ai-use-case-assessment
-description: "Use this skill to identify, score, and prioritize Salesforce AI use cases before any implementation begins — covering opportunity identification, Impact-Effort matrix scoring, feasibility evaluation across Technical/Operational/Data/Risk dimensions, and ROI framing. NOT for implementation, enablement, feature configuration, or data architecture design."
+description: "Identify, score, and prioritize Salesforce AI use cases before any implementation begins — opportunity identification, Impact-Effort matrix scoring, feasibility evaluation across Technical/Operational/Data/Risk dimensions, and ROI framing. NOT for the license checks and enablement steps once a use case is approved — use agentforce/agentforce-service-ai-setup or agentforce/agentforce-sales-ai-setup. NOT for making the data model AI-ready — use architect/ai-ready-data-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

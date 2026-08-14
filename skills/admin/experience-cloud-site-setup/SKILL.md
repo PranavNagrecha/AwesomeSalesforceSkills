@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-site-setup
-description: "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for internal Lightning apps, Lightning App Builder configuration, or Flow orchestration inside an existing site."
+description: "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for coding LWR themes or custom components — use lwc/lwr-site-development. NOT for deploying a finished site to another org — use devops/experience-cloud-deployment-admin."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

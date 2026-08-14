@@ -1,6 +1,6 @@
 ---
 name: insurance-cloud-architecture
-description: "Architecture guidance for Salesforce Insurance Cloud on FSC: module licensing strategy, policy administration object model, claims processing workflow design, underwriting rule integration, and channel routing. NOT for Health Cloud payer architecture, FSC retail banking, or implementation-level OmniScript development."
+description: "Architecture guidance for Salesforce Insurance Cloud on FSC: module licensing strategy, policy administration object model, claims processing workflow design, underwriting rule integration, and channel routing. NOT for enabling insurance objects, coverage types or claim config in Setup — use admin/industries-insurance-setup. NOT for FSC retail banking and lending architecture — use architect/banking-lending-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -78,9 +78,9 @@
     "fd0e84a24427b365720d",
     "ff9ab8a05f46bf2a2bb7"
   ],
-  "content_hash": "a3acf9553072140236fcb04dfe79c3fe181aec0367b73fc645903d1423101889",
+  "content_hash": "7949972ffaa861d84034b32ac671315a2d8415ccb9a8ff91dbd1f6d7538182b5",
   "dependencies": [],
-  "description": "Use when creating or configuring a CRM Analytics (Einstein Analytics) app \u2014 including app containers, lenses, datasets, data source connections, and app sharing. NOT for standard Salesforce reports and dashboards or Tableau.",
+  "description": "Use when creating or configuring a CRM Analytics (Einstein Analytics) app \u2014 including app containers, lenses, datasets, data source connections, app sharing, and the row-level security that gates whether users see any data. NOT for choosing Reports vs CRM Analytics vs Tableau \u2014 use admin/einstein-analytics-basics. NOT for security predicate syntax, sharing inheritance or Analytics license assignment \u2014 use admin/analytics-permission-and-sharing.",
   "file_location": "skills/admin/crm-analytics-app-creation",
   "id": "admin/crm-analytics-app-creation",
   "inputs": [

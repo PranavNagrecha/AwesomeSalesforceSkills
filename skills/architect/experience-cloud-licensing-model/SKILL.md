@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-licensing-model
-description: "Use this skill to select the correct Experience Cloud external user license type for a portal or community. Trigger keywords: Customer Community vs Partner Community, login-based vs member-based license, External Apps license, external user license selection, Experience Cloud license tiers. NOT for internal Salesforce employee licensing. NOT for Marketing Cloud licensing. NOT for ISV or OEM licensing."
+description: "Use this skill to select the correct Experience Cloud external user license type for a portal or community. Trigger keywords: Customer Community vs Partner Community, login-based vs member-based license, External Apps license, external user license selection, Experience Cloud license tiers. NOT for adding members, self-registration or login pages — use admin/experience-cloud-member-management. NOT for bulk-migrating existing portal users between license types — use data/community-user-data-migration."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

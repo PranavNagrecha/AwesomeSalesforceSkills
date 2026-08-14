@@ -28,9 +28,9 @@
     "db2dc24d14097954af47",
     "efb9e573ff9457eb271d"
   ],
-  "content_hash": "d257cb7d0c53ac64e3ba81604d383f5d5273b36cd8b3f1c02187c1c0b235b351",
+  "content_hash": "91ef67cad55d09d765cc12a5cb6ac19ee1f31ac0cc847963df45c253ed30c206",
   "dependencies": [],
-  "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
+  "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, accessible announcements, and file drop zones. NOT for kanban migration from legacy Lightning.",
   "file_location": "skills/lwc/drag-and-drop",
   "id": "lwc/drag-and-drop",
   "inputs": [

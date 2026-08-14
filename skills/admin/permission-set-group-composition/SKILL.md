@@ -1,6 +1,6 @@
 ---
 name: permission-set-group-composition
-description: "Tactical guidance for composing Permission Set Groups: layering permission sets, applying Mute Permission Sets to subtract narrow capabilities, sequencing the recalculation lifecycle, deletion order, and assignment-vs-activation lifecycle. Triggers: 'PSG composition', 'mute permission set', 'PSG recalculation', 'cannot delete permission set in PSG', 'PSG explosion', 'expired PSG assignment'. NOT for the strategic question of profile-vs-PSG architecture (see admin/permission-set-architecture). NOT for record-sharing or CRUD/FLS in Apex."
+description: "Tactical guidance for composing Permission Set Groups: layering permission sets, applying Mute Permission Sets to subtract narrow capabilities, sequencing the recalculation lifecycle, deletion order, and assignment-vs-activation lifecycle. Triggers: 'PSG composition', 'mute permission set', 'PSG recalculation', 'cannot delete permission set in PSG', 'PSG explosion', 'expired PSG assignment'. NOT for the strategic profile-vs-PSG choice or migrating off profiles - use admin/permission-set-architecture. NOT for record-sharing design (OWD, role hierarchy, sharing rules) - use admin/sharing-and-visibility."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -182,4 +182,4 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 - `admin/permission-set-architecture` — strategic counterpart: profile-vs-PS-vs-PSG architecture and migration off profile-centric access. Read it first if the request is "should we even be using PSGs."
 - `security/permission-set-groups-and-muting` — security-pillar framing for the same domain; reach for it during security review.
 - `admin/permission-sets-vs-profiles` — admin-level distinction between PSes and profiles; useful when the request is about the assignment basics rather than composition tactics.
-- `devops/source-tracked-metadata-retrieve` — when the deployment context surfaces the Mute Permission Set retrieval gotcha.
+- `devops/metadata-api-retrieve-deploy` — when the deployment context surfaces the Mute Permission Set retrieval gotcha.

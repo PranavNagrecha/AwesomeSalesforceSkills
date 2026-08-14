@@ -1,6 +1,6 @@
 ---
 name: devops-center-pipeline
-description: "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline — including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle, release management. NOT for CLI-based deployment workflows, SFDX commands, unlocked packages, or change sets — those have separate skills."
+description: "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline — including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle. NOT for CLI-based deployment or SFDX commands — use devops/salesforce-cli-automation. NOT for change sets — use devops/change-set-deployment. NOT for unlocked packages — use devops/unlocked-package-development."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: api-governance-and-rate-limits
-description: "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints."
+description: "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints — use security/api-security-and-rate-limiting."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: cpq-apex-plugins
-description: "Use when implementing Salesforce CPQ plugin interfaces in Apex or JavaScript (JS QCP) to customize quote calculation, product search, order creation, contracting, or configuration screens. Trigger keywords: SBQQ plugin, QuoteCalculatorPlugin, ProductSearchPlugin, OrderPlugin, ContractingPlugin, ConfigurationInitializerPlugin, SBQQ__CustomScript__c, JS QCP, calculate callback, CPQ plugin registration. NOT for standard Apex triggers on SBQQ__Quote__c or SBQQ__QuoteLine__c. NOT for Flow-based customization of CPQ processes. NOT for declarative CPQ configuration such as price rules, discount schedules, or product rules that do not require code."
+description: "Implementing Salesforce CPQ plugin interfaces in Apex or JavaScript (JS QCP) to customize quote calculation, product search, order creation, contracting, or configuration screens. Trigger keywords: SBQQ plugin, QuoteCalculatorPlugin, ProductSearchPlugin, OrderPlugin, ContractingPlugin, ConfigurationInitializerPlugin, SBQQ__CustomScript__c, JS QCP, calculate callback, CPQ plugin registration. NOT for driving CPQ yourself via SBQQ.ServiceRouter — use apex/cpq-api-and-automation. NOT for declarative price rules and discount schedules — use admin/cpq-pricing-rules; for product rules and bundle options — use admin/cpq-product-catalog-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

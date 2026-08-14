@@ -1,6 +1,6 @@
 ---
 name: attachment-to-files-migration
-description: "Migrating Classic Notes & Attachments to Salesforce Files (ContentDocument / ContentVersion / ContentDocumentLink): bulk extraction, owner and parent preservation, sharing translation, idempotent re-runs, and post-migration cleanup. Triggers: 'attachments to files', 'notes and attachments migration', 'ContentDocument from Attachment', 'enable Files for Salesforce'. NOT for general file storage strategy (use data/file-and-document-integration) or for ContentVersion API patterns in new code (use integration/file-and-document-integration)."
+description: "Migrating Classic Notes & Attachments to Salesforce Files (ContentDocument / ContentVersion / ContentDocumentLink): bulk extraction, owner and parent preservation, sharing translation, idempotent re-runs, and post-migration cleanup. Triggers: 'attachments to files', 'notes and attachments migration', 'ContentDocument from Attachment', 'enable Files for Salesforce'. NOT for general file storage strategy (use data/salesforce-files-architecture) or for ContentVersion API patterns in new code (use integration/file-and-document-integration)."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -242,8 +242,8 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `data/file-and-document-integration` — Use when designing new file-storage architecture (post-migration), not the migration itself
+- `data/salesforce-files-architecture` — Use when designing new file-storage architecture (post-migration), not the migration itself
 - `integration/file-and-document-integration` — Use when ingesting files from external systems into Salesforce Files
 - `apex/batch-apex-patterns` — Use when designing the batch class structure (scope, state, finish-chaining)
 - `data/data-archival-strategies` — Use when the migration plan includes archival of source Attachments to external storage
-- `security/sharing-and-visibility` — Use when the OWD on parent objects must be reviewed before setting `ContentDocumentLink.Visibility`
+- `admin/sharing-and-visibility` — Use when the OWD on parent objects must be reviewed before setting `ContentDocumentLink.Visibility`

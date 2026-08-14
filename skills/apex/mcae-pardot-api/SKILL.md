@@ -1,6 +1,6 @@
 ---
 name: mcae-pardot-api
-description: "Use this skill when integrating with the Account Engagement (Pardot) REST API v5 to create, read, update, or query Prospects, Visitors, Visitor Activities, or Form Handlers programmatically. Trigger keywords: Pardot API, Account Engagement API, prospect sync, visitor tracking API, form handler integration, MCAE REST API. NOT for Marketing Cloud API (Email Studio, Journey Builder REST), NOT for standard Salesforce CRM REST API, NOT for MCAE setup or business unit provisioning."
+description: "Account Engagement (Pardot) REST API v5 from code — creating, reading and querying Prospects, Visitors, Visitor Activities and Form Handlers. Trigger keywords: Pardot API, Account Engagement API, prospect sync, visitor tracking API, form handler integration, MCAE REST API. NOT for connector setup, business unit provisioning or User Sync — use admin/mcae-pardot-setup. NOT for Marketing Cloud Engagement (Email Studio, Journey Builder) APIs — use apex/marketing-cloud-api."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

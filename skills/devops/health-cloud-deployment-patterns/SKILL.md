@@ -1,6 +1,6 @@
 ---
 name: health-cloud-deployment-patterns
-description: "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance controls, and post-deploy manual steps not captured in metadata. Triggers: 'how do I deploy Health Cloud', 'HealthCloudGA package install order', 'care plan template not working after deployment', 'Health Cloud HIPAA Shield Encryption setup', 'CarePlanProcessorCallback registration post-deploy'. NOT for Health Cloud data model design (use health-cloud-data-model), NOT for Apex extensions in Health Cloud (use health-cloud-apex-extensions), NOT for API usage patterns (use health-cloud-apis)."
+description: "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance. NOT for Health Cloud data model design (use health-cloud-data-model), NOT for Apex exten — use admin/hipaa-workflow-design."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

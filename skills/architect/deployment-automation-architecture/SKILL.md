@@ -1,6 +1,6 @@
 ---
 name: deployment-automation-architecture
-description: "Deployment automation architecture on Salesforce: pipeline orchestration, branch strategy, environment topology, quality gates, release trains. Selecting between Copado, Gearset, Flosum, and native SFDX + GitHub Actions. NOT for cloud-specific deploy mechanics (use cloud-specific-deployment-architecture). NOT for CI/CD tool tutorials."
+description: "Deployment automation architecture on Salesforce: pipeline orchestration, branch strategy, environment topology, quality gates, release trains. Selecting between Copado, Gearset, Flosum, and native SFDX + GitHub Actions. NOT for cloud-specific deploy mechanics (Industries, Marketing Cloud, Data Cloud) — use architect/cloud-specific-deployment-architecture. NOT for CI/CD tool tutorials."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

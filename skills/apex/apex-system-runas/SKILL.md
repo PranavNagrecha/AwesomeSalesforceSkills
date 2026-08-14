@@ -1,6 +1,6 @@
 ---
 name: apex-system-runas
-description: "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for general test setup (use apex-test-setup-patterns). NOT for WITH USER_MODE SOQL (use apex-user-mode-patterns)."
+description: "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for the MIXED_DML_OPERATION error outside tests — use apex/mixed-dml-and-setup-objects. NOT for general test setup and @TestSetup semantics — use apex/apex-test-setup-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,7 +37,7 @@ status: stub
 
 # Apex System.runAs
 
-Activate when writing Apex tests that need to exercise a specific user's perspective — profile, permission set, role, sharing context — or when unblocking mixed-DML errors in `@TestSetup`. `System.runAs` impersonates a target user for the scope of a block and flushes setup-object DML. Known caveat: FLS is NOT enforced inside `runAs`.
+Activate when writing Apex tests that need to exercise a specific user's perspective — profile, permission set, role, sharing context — or when unblocking mixed-DML errors in `@TestSetup`. `System.runAs` impersonates a target user for the scope of a block and flushes setup-object DML. Version caveat: what a bare query inside `runAs` enforces depends on the *class's* `apiVersion` — at 66.0 and earlier FLS is not enforced, at 67.0 and later database operations default to user mode and it is. See `references/gotchas.md` Gotcha 1.
 
 ## Before Starting
 
@@ -61,7 +61,7 @@ System.runAs(u) {
 
 Applies to: `UserInfo.*`, sharing enforcement, profile CRUD, record ownership.
 
-Does NOT apply to: FLS (fields silently accessible regardless of profile), System.runAs itself (admin can still run it).
+Does NOT apply to: `System.runAs` itself (an admin can still call it). FLS depends on the class's `apiVersion` — see the section below.
 
 ### Mixed DML workaround
 
@@ -85,16 +85,17 @@ Allowed up to 20 levels. Exits back to the previous user when the block ends. Ra
 
 If the running user has `ModifyAllData` / `ViewAllData`, sharing is still bypassed inside `runAs` unless the target user lacks those perms. Make sure the target `User` record reflects the profile you mean to test.
 
-### FLS is NOT enforced
+### FLS enforcement is gated on the class's API version
 
 ```
 System.runAs(lowPrivUser) {
     Account a = [SELECT Hidden__c FROM Account];
-    String x = a.Hidden__c;  // NO FLS ERROR — even though lowPrivUser can't see Hidden__c
+    String x = a.Hidden__c;  // API 66.0 and earlier: no FLS error.
+                             // API 67.0 and later: the query runs in user mode and throws.
 }
 ```
 
-For FLS enforcement use `WITH USER_MODE` SOQL, `Security.stripInaccessible`, or `with sharing` in combination with explicit `Schema.DescribeFieldResult.isAccessible()` checks.
+Do not depend on either default. State the access mode so the assertion means the same thing at every version: `WITH USER_MODE` SOQL, `AccessLevel.USER_MODE` on `Database` calls, or `Security.stripInaccessible` where partial success is the requirement.
 
 ## Common Patterns
 
@@ -170,7 +171,7 @@ static void setup() {
 
 ## Salesforce-Specific Gotchas
 
-1. **FLS is silently bypassed inside runAs.** Tests pass while FLS-violating code ships to production.
+1. **On a class saved at API 66.0 or earlier, FLS is silently bypassed inside runAs.** The test passes and the FLS-violating code ships. At 67.0 and later the same query throws instead — so read the `.cls-meta.xml` before trusting either outcome.
 2. **`runAs` only works in test context** — calling it in non-test code throws.
 3. **`runAs(someUser)` inherits governor limits from the outer transaction** — does not give you a fresh limit budget.
 4. **Querying a User with `WHERE Profile.Name = ...` may hit profile-name changes across orgs.** Prefer `UserType = 'Standard'` plus permset assignments.
@@ -186,5 +187,5 @@ static void setup() {
 ## Related Skills
 
 - `apex/apex-test-setup-patterns` — overall test structure
-- `apex/apex-user-mode-patterns` — `WITH USER_MODE` / `with sharing`
-- `security/crud-and-fls-enforcement` — FLS enforcement patterns
+- `apex/apex-user-and-permission-checks` — user-mode and permission enforcement
+- `apex/apex-with-without-sharing-decision` — choosing the sharing keyword

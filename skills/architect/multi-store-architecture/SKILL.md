@@ -1,6 +1,6 @@
 ---
 name: multi-store-architecture
-description: "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for single-store setup, store creation basics, or non-Commerce use cases."
+description: "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for creating one WebStore with buyer groups and entitlement policies — use admin/b2b-commerce-store-setup. NOT for choosing between B2B Commerce on Core and B2C Commerce (SFCC) — use architect/b2b-vs-b2c-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

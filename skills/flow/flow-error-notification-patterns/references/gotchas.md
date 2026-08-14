@@ -164,3 +164,13 @@ should stop the whole loop.
 variable. After the loop, check the variable and branch. Or, if you
 want fail-fast: the Fault path connects to a path *outside* the
 loop, which exits early and skips remaining iterations.
+
+---
+
+## Gotcha: Zero `<faultConnector>` Org-Wide Means Every Failure Emails Last Modifier
+
+**What happens:** Grep of `force-app` finds **no** `<faultConnector>`. Unhandled faults email the **last person who saved the flow**, who may be deactivated. Slack / email actions on a scheduled path still fire with no fault path, so a failed callout is silent to ops and noisy to a ghost inbox.
+
+**When it occurs:** Admin-built orgs that never opened the Fault connector; Migrate-to-Flow output left as-is.
+
+**How to avoid.** Inventory DML and callout elements for a fault path. Route to a monitored alias or log object, not a human's mailbox. A scheduled path for Slack is the right shape; the missing fault is the defect. See `templates/flow/FaultPath_Template`.

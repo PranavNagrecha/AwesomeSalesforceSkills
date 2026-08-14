@@ -1,6 +1,6 @@
 ---
 name: mcp-tool-definition-apex
-description: "Use this skill to implement custom Apex MCP tool classes by extending McpToolDefinition from the salesforce-mcp-lib package. Covers inputSchema(), validate(), and execute() override patterns, JSON schema construction, SOQL and DML inside tools, error handling, and tool registration in the Apex REST endpoint. Trigger keywords: McpToolDefinition, extend McpToolDefinition, Apex MCP tool, mcp-tool Apex, JSON-RPC tool, salesforce-mcp-lib tool class. NOT for the initial server installation and proxy setup (see salesforce-mcp-server-setup), NOT for MCP Resources or Prompts, NOT for OmniStudio or Flow-based tool definitions."
+description: "Use this skill to implement custom Apex MCP tool classes by extending McpToolDefinition from the salesforce-mcp-lib package. Covers inputSchema(), validate(), and execute() override patterns, JSON schema construction, SOQL and DML inside tools, error handling, and tool registration in the Apex REST endpoint. Trigger keywords: McpToolDefinition, extend McpToolDefinition, Apex MCP tool, mcp-tool Apex, JSON-RPC tool, salesforce-mcp-lib tool class. NOT for a native Agentforce agent action — use agentforce/custom-agent-actions-apex. NOT for the initial server install and npm proxy setup — use agentforce/salesforce-mcp-server-setup."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - Review checklist confirming SOQL injection safety, sharing context, and governor limit awareness
 dependencies:
   - salesforce-mcp-server-setup
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # MCP Tool Definition in Apex
@@ -99,6 +99,16 @@ Note that `required` is a `List<Object>`, not `List<String>`. JSON serialization
 ### The Global Access Modifier Requirement
 
 All overriding methods in a class that extends a global abstract class from a managed package must also use the `global` access modifier. Using `public override` will cause a compile error because the base class methods are `global abstract`.
+
+Winter '26 added a second, independent rule, and it is gated on the class's `.cls-meta.xml` `apiVersion` rather than the org's release: *"In API version 65.0 and later, `abstract` and `override` methods require a `protected`, `public`, or `global` access modifier."* Omitting the modifier entirely — `override Object execute(Map<String, Object> params)` — compiled for a decade and is now a compilation error. A tool class pinned to 64.0 or below still compiles without it, so the same source can build in one project and fail in another purely on `apiVersion`. Both rules land on the same answer for MCP tool classes (`global override`), but they fail differently: a *missing* modifier is the 65.0 rule, a `public` modifier is the managed-package rule.
+
+### Hosted MCP Servers: Check the First-Party Path First
+
+This skill covers the open-source `salesforce-mcp-lib` route, where you write the `McpToolDefinition` subclass and own the Apex REST endpoint that speaks JSON-RPC. Salesforce now ships a first-party alternative — Salesforce Hosted MCP Servers, GA on 29 April 2026 — where a **custom server** exposes org logic as MCP tools with no protocol code of your own. Per the Build Custom MCP Servers guide, a custom tool can be backed by Flows, Apex Invocable Actions (`@InvocableMethod`), `@AuraEnabled` Apex methods, Apex REST methods (`@RestResource`), or APIs from the API Catalog. The Summer '26 developer release guide lists the Flow-backed form as new — *"Lightning Flows: Expose autolaunched flows as MCP tools"* — with a hard limit stated in the Flows guide: *"Only autolaunched flows (not screen flows or scheduled flows) can be exposed as MCP tools."*
+
+Two things to know before you choose. On identity, the GA announcement states that *"Every MCP transaction runs with the authenticated user's identity, permissions, and accountability"*; the Flows guide says the same in narrower terms, that flow execution runs as the authenticated user and not as a system context. On limits, the Flows guide states — for Flow-backed tools — *"Governor limits apply. Flows invoked via MCP consume Apex and DML limits the same as flows triggered from the UI or Apex."* Nothing on either route gets a separate MCP limit pool; the hand-rolled `salesforce-mcp-lib` endpoint is an ordinary Apex REST transaction and carries the same per-transaction budget listed in **Before Starting** above.
+
+Choose `McpToolDefinition` when you need protocol-level control: a custom JSON-RPC error shape, a hand-built `inputSchema()`, or an endpoint you can ship inside your own package. Choose a hosted custom server when the tool is ordinary org logic you would rather declare than hand-wire — you give up the wire format, and in exchange you stop maintaining a JSON-RPC endpoint and a hand-built schema `Map`. The docs do not state how a hosted server derives an Apex-backed tool's parameter schema, so confirm the generated schema against the running server rather than assuming it mirrors your `inputSchema()`.
 
 ---
 
@@ -271,6 +281,11 @@ Non-obvious platform behaviors that cause real production problems:
 - salesforce-mcp-lib GitHub (MIT) — https://github.com/Damecek/salesforce-mcp-lib
 - Apex Developer Guide: Apex REST Web Services — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest.htm
 - Apex Developer Guide: Governor Execution Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- The Salesforce Developer's Guide to the Winter '26 Release — https://developer.salesforce.com/blogs/2025/09/winter26-developers
+- Hosted MCP Servers: Flows as MCP Tools — https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/flows.html
+- Hosted MCP Servers: Build Custom MCP Servers — https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/custom-servers.html
+- Salesforce Hosted MCP Servers Are Now Generally Available (29 April 2026) — https://developer.salesforce.com/blogs/2026/04/salesforce-hosted-mcp-servers-are-now-generally-available
+- The Salesforce Developer's Guide to the Summer '26 Release — https://developer.salesforce.com/blogs/2026/06/the-salesforce-developers-guide-to-the-summer-26-release
 - JSON Schema specification — https://json-schema.org/understanding-json-schema/
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

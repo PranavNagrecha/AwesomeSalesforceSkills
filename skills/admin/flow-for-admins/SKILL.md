@@ -1,6 +1,6 @@
 ---
 name: flow-for-admins
-description: "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts — use omnistudio/ skills for that."
+description: "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for Flow debug mode, Run As user, or Flow test suites — use flow/flow-debugging. NOT for building an OmniStudio OmniScript — use omnistudio/omniscript-design-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

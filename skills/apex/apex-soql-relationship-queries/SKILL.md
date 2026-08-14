@@ -1,6 +1,6 @@
 ---
 name: apex-soql-relationship-queries
-description: "Use this skill when writing or debugging SOQL relationship queries in Apex — child-to-parent dot notation traversal, parent-to-child subqueries, polymorphic TYPEOF projection and `.Type` type filtering, and FROM-clause alias notation for implicit-join filtering. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, What.Type filter, WhatId, WhoId, alias notation. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there)."
+description: "Use this skill when writing or debugging SOQL relationship queries in Apex — child-to-parent dot notation traversal, parent-to-child subqueries, polymorphic TYPEOF projection and `.Type` type filtering, and FROM-clause alias notation for implicit-join filtering. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, What.Type filter, WhatId, WhoId, alias notation. NOT for aggregate queries — use apex/apex-aggregate-queries. NOT for SOSL text search — use data/sosl-search-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

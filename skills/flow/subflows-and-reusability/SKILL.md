@@ -1,6 +1,6 @@
 ---
 name: subflows-and-reusability
-description: "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution direction or Flow Orchestration process design."
+description: "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution — use flow/auto-launched-flow-patterns. NOT for Flow Orchestration process design — use flow/flow-orchestration-patterns."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

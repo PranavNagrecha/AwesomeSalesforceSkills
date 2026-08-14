@@ -1,6 +1,6 @@
 ---
 name: salesforce-data-pipeline-etl
-description: "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports."
+description: "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports — use data/etl-vs-api-data-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

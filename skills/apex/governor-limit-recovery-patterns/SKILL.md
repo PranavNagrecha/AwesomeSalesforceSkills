@@ -1,6 +1,6 @@
 ---
 name: governor-limit-recovery-patterns
-description: "Recovering from and preventing Apex governor limit errors: proactive Limits class checkpoints, savepoint-based partial recovery, BatchApexErrorEvent scope recovery, CPU timeout analysis, limit-safe coding patterns. Use when diagnosing LimitException failures or designing limit-safe Apex. NOT for general limits overview (use limits-and-scalability-planning). NOT for bulkification patterns (use governor-limits)."
+description: "Recovering from and preventing Apex governor limit errors: proactive Limits class checkpoints, savepoint-based partial recovery, BatchApexErrorEvent scope recovery, CPU timeout analysis, limit-safe coding patterns. Use when diagnosing LimitException failures or designing limit-safe Apex. NOT for org-level capacity planning — use architect/limits-and-scalability-planning. NOT for bulkification patterns — use apex/governor-limits."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

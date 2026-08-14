@@ -1,6 +1,6 @@
 ---
 name: omni-channel-capacity-model
-description: "Designing Omni-Channel capacity models for service orgs: agent capacity allocation, channel weighting (cases, chats, calls), skills matrix design, overflow strategy, presence configuration, and interruptible work patterns. Use when planning capacity units, defining Service Channel weights, or designing agent skills-based routing capacity. NOT for Omni-Channel routing configuration or queue assignment rules (use multi-channel-service-architecture). NOT for Einstein Bot design (use einstein-bot-architecture)."
+description: "Designing Omni-Channel capacity models for service orgs: agent capacity allocation, channel weighting (cases, chats, calls), skills matrix design, overflow strategy, presence configuration, and interruptible work patterns. Use when planning capacity units, defining Service Channel weights, or designing agent skills-based routing capacity. NOT for enabling Omni-Channel, creating Service Channels or routing rules - use admin/omni-channel-routing-setup. NOT for cross-channel strategy and channel-to-feature mapping - use architect/multi-channel-service-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: flow-debugging
-description: "Use when diagnosing a Flow that does not run, runs but produces wrong results, fails silently, or shows an unexpected fault email. Triggers: 'flow debug mode', 'flow not running', 'flow interview log', 'fault email', 'record-triggered flow not firing', 'debug run as user', 'flow test suite'. NOT for Apex debugging (use debug-and-logging), NOT for designing fault connectors (use fault-handling), NOT for fixing governor-limit failures caused by bulk volume (use flow-bulkification)."
+description: "Use when diagnosing a Flow that does not run, runs but produces wrong results, fails silently, or shows an unexpected fault email. Triggers: 'flow debug mode', 'flow not running', 'flow interview log', 'fault email', 'record-triggered flow not firing', 'debug run as user', 'flow test suite'. NOT for designing the fault path itself — use flow/fault-handling. NOT for Apex debug logs, trace flags, or the Developer Console — use apex/debug-logs-and-developer-console."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

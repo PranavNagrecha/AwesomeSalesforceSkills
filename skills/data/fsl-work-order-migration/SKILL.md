@@ -1,6 +1,6 @@
 ---
 name: fsl-work-order-migration
-description: "Use this skill when migrating Work Order, Work Order Line Item, Service Appointment, AssignedResource, and ProductConsumed data into a Salesforce Field Service org. Trigger keywords: FSL data migration, WorkOrder import, ServiceAppointment migration, AssignedResource load, ProductConsumed migration, work order history data load. NOT for Case data migration, standard Account/Contact migration without FSL objects, or configuring FSL after a migration."
+description: "Use this skill when migrating Work Order, Work Order Line Item, Service Appointment, AssignedResource, and ProductConsumed data into a Salesforce Field Service org. Trigger keywords: FSL data migration, WorkOrder import, ServiceAppointment migration, AssignedResource load, ProductConsumed migration, work order history data load. NOT for loading the technicians, skills and certifications themselves — use data/fsl-resource-and-skill-data. NOT for reporting on the work-order data once it is loaded — use data/fsl-reporting-data-model."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

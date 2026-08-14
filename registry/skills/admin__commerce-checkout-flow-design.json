@@ -106,9 +106,9 @@
     "fe586781ac7a1b427457",
     "ff3190d503fec402bb99"
   ],
-  "content_hash": "116d6bcd8f7233f9b1a4bff38e54da4d66232b7070d8d21effccf729bf755dcb",
+  "content_hash": "1b04b208b9f5c2605ebeba1c3c573009d8e16402ea968df429a60f28f1be48af",
   "dependencies": [],
-  "description": "Use this skill when designing the checkout experience for a Salesforce B2B or D2C Commerce storefront \u2014 covering runtime model selection (LWR Managed Checkout vs Aura Flow Builder), cart and line-item requirements, payment option scoping, shipping rule definition, and guest vs. registered buyer experience design. Trigger keywords: checkout flow design, checkout UX requirements, LWR vs Aura checkout, guest checkout design, payment options design, shipping rules, checkout experience planning. NOT for implementation: does not cover Apex adapter code, CartCheckoutSession debugging, Extension Point registration, or Flow Builder configuration steps.",
+  "description": "Use this skill when designing the checkout experience for a Salesforce B2B or D2C Commerce storefront \u2014 covering runtime model selection (LWR Managed Checkout vs Aura Flow Builder), cart and line-item requirements, payment option scoping, shipping rule definition, and guest vs. registered buyer experience design. Trigger keywords: checkout flow design, checkout UX requirements, LWR vs Aura checkout, guest checkout design, payment options design, shipping rules, checkout experience planning. NOT for configuring the checkout in Setup once designed \u2014 use admin/commerce-checkout-configuration. NOT for choosing B2B vs D2C Commerce \u2014 use admin/b2b-vs-b2c-requirements.",
   "file_location": "skills/admin/commerce-checkout-flow-design",
   "id": "admin/commerce-checkout-flow-design",
   "inputs": [

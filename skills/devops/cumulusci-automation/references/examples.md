@@ -136,7 +136,7 @@ jobs:
 
 ## Anti-Pattern: Hardcoding SFDX Auth URLs in CI Instead of JWT
 
-**What practitioners do:** Store a full SFDX auth URL (from `sf org display --verbose`) as a CI secret and use it to authenticate CumulusCI in pipelines.
+**What practitioners do:** Store a full SFDX auth URL as a CI secret and use it to authenticate CumulusCI in pipelines. Older guides tell you to read it from `sf org display --verbose`; since the 27 May 2026 Salesforce CLI release that field is stripped from `org display` output, and the URL has to be requested deliberately with `sf org auth show-sfdx-auth-url --target-org <alias> --no-prompt` (see `gotchas.md` Gotcha 7).
 
 ```bash
 # Wrong approach — do not do this

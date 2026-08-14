@@ -28,9 +28,9 @@
     "f2cf4c736a4e1f3624c9",
     "f4b341322f2ce3e2303e"
   ],
-  "content_hash": "8aa8cae230f6db6925f572685011d035f0427074ed68dc78d2eef1a3063150a0",
+  "content_hash": "08a586c4eb8e164a6747c8391329c2c74f558f79aa707826edcd3a783ceb1608",
   "dependencies": [],
-  "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
+  "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for publish-after-commit semantics, subscriber idempotency, or fan-out failure design \u2014 use flow/flow-platform-events-integration. NOT for a flow that just fires on record save \u2014 use flow/record-triggered-flow-patterns.",
   "file_location": "skills/flow/flow-and-platform-events",
   "id": "flow/flow-and-platform-events",
   "inputs": [

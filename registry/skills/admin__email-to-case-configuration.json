@@ -103,9 +103,9 @@
     "f737b3e66c154cad0b05",
     "fb751105bfb85f603f50"
   ],
-  "content_hash": "a2615c62a0942e12b3299a97f1dfe338b9368ca078e17a410d1129351058f916",
+  "content_hash": "530aa3393fbd176e0e802b69e69a97699f3a1ede145544050445a870b4ffe781",
   "dependencies": [],
-  "description": "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Use when setting up a new Email-to-Case channel, troubleshooting duplicate cases from customer replies, or choosing between On-Demand and Standard mode. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup. NOT for email templates or letterheads (use email-templates-and-alerts). NOT for Omni-Channel routing of case work items after creation (use omni-channel-routing-setup). NOT for Web-to-Case or inbound-only chat channels.",
+  "description": "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup. NOT for the wider case layer (queues, escalation rules, case teams, entitlements) - use admin/case-management-setup. NOT for routing case work items to agents after creation - use admin/omni-channel-routing-setup. NOT for the email templates or letterheads themselves - use admin/email-templates-and-alerts.",
   "file_location": "skills/admin/email-to-case-configuration",
   "id": "admin/email-to-case-configuration",
   "inputs": [

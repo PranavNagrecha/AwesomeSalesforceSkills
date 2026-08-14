@@ -56,9 +56,9 @@
     "ff4c32ca4235462d7506",
     "ff762cb152c7bbf64e68"
   ],
-  "content_hash": "ff7cda77155a2de67ac7fe46eb7cf9dbd408a09120ad8f612168c39de3c8b99b",
+  "content_hash": "917ffb7227fc257de293a2fd43679a83db2a1267292a359574f36de19ec10c65",
   "dependencies": [],
-  "description": "Use when designing or troubleshooting Apex callouts that approach governor limits: choosing between synchronous callouts, @future, Queueable, Continuation, or async chaining strategies. NOT for HTTP request construction or Named Credential setup (use named-credentials-setup).",
+  "description": "Use when designing or troubleshooting Apex callouts that approach governor limits: choosing between synchronous callouts, @future, Queueable, Continuation, or async chaining strategies. NOT for the @future rules themselves \u2014 primitive-only parameters, no chaining, the 50-per-transaction cap \u2014 use apex/apex-future-method-patterns. NOT for building the HttpRequest, handling the response, or mocking the callout in tests \u2014 use apex/callouts-and-http-integrations. NOT for configuring the Named Credential or External Credential itself \u2014 use integration/named-credentials-setup.",
   "file_location": "skills/integration/callout-limits-and-async-patterns",
   "id": "integration/callout-limits-and-async-patterns",
   "inputs": [

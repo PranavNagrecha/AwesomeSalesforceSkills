@@ -45,9 +45,9 @@
     "f90b7958acc49cc6bc7c",
     "feb6288503e166b62239"
   ],
-  "content_hash": "e9537296b0c11ad80d5f678e034e331ea2a7c09ec1b79e54e26f443eef8647a4",
+  "content_hash": "b188164d5ad900125e49e321e4eb64aa28c0c1a9441f2448c988a131df6595f2",
   "dependencies": [],
-  "description": "Use when a Flow needs to do work that must survive the triggering transaction \u2014 post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer escalation, and Apex Queueable finalizer bridging. Does NOT cover general Flow async decisions (see async-selection).",
+  "description": "Use when a Flow needs to do work that must survive the triggering transaction \u2014 post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer. NOT for general Flow async decisions (see async-selection) \u2014 use apex/apex-transaction-finalizers.",
   "file_location": "skills/flow/flow-transaction-finalizer-patterns",
   "id": "flow/flow-transaction-finalizer-patterns",
   "inputs": [

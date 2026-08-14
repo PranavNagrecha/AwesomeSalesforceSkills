@@ -63,9 +63,9 @@
     "f9a9b4699e2459c4221b",
     "ff04b80a79504af39e10"
   ],
-  "content_hash": "d3863c3f6ed78eb468f8a8c8dbef2011b7ad80da6f19041ff4e7f6b33028f421",
+  "content_hash": "2f802d9bcb143699773e03644040146047cf86b6a191d2a0fcb05ca2bc930700",
   "dependencies": [],
-  "description": "Use when Apex code performs arithmetic on currency, tax, percentage, or quantity values and the result is wrong by a cent, a penny, or a fraction \u2014 Decimal scale collapses to 0 after divide, totals don't match the sum-of-line-items, currency-field rounding differs from in-app calculation, or `divide()` throws on a non-existent rounding mode. Triggers: 'apex decimal divide rounded wrong', 'currency calculation off by a penny', 'apex setScale rounding mode', 'integer divided by integer truncated to zero', 'apex Decimal precision lost'. NOT for SOQL aggregate queries (use apex-aggregate-queries), NOT for Flow formula expression rounding (use flow-formula-and-expression-patterns), NOT for multi-currency dated exchange rates (use multi-currency-and-advanced-currency-management).",
+  "description": "Use when Apex code performs arithmetic on currency, tax, percentage, or quantity values and the result is wrong by a cent, a penny, or a fraction \u2014 Decimal scale collapses to 0 after divide, totals don't match the sum-of-line-items, currency-field rounding differs from in-app calculation, or `divide()` throws on a non-existent rounding mode. Triggers: 'apex decimal divide rounded wrong', 'currency calculation off by a penny', 'apex setScale rounding mode', 'integer divided by integer truncated to zero', 'apex Decimal precision lost'. NOT for dated exchange rates \u2014 use data/multi-currency-and-advanced-currency-management. NOT for Flow formula rounding \u2014 use flow/flow-formula-and-expression-patterns. NOT for SOQL aggregate queries \u2014 use apex/apex-aggregate-queries.",
   "file_location": "skills/apex/apex-decimal-arithmetic-precision",
   "id": "apex/apex-decimal-arithmetic-precision",
   "inputs": [

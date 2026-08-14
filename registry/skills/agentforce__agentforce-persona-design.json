@@ -62,9 +62,9 @@
     "fcc159a7c9f7439433cf",
     "ff6b57b20c3c66f0a35b"
   ],
-  "content_hash": "664b786423481639fd9311c492951c7e129b621a30a8223296696f16b2c524ef",
+  "content_hash": "0ef81fe5028142654d2c6e81ba8315924713eb25c5d499cca317697ed71838d2",
   "dependencies": [],
-  "description": "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for agent topic design (use agent-topic-design) or testing methodology (use agent-testing-and-evaluation).",
+  "description": "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for writing the actual conversational copy \u2014 utterances, fallback messages, escalation phrasing \u2014 use admin/agent-conversation-design. NOT for topic scope design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-persona-design",
   "id": "agentforce/agentforce-persona-design",
   "inputs": [

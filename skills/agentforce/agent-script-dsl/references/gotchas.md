@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: GenAiPlannerBundle Is Only Available at API v64+
+## Gotcha 1: GenAiPlannerBundle Is Only Available at API v64.0+ — and v64.0 Is Summer '25, Not Spring '26
 
-**What happens:** Deploying a GenAiPlannerBundle metadata record against an org or project configured for API v63 or lower fails with an "Unknown type: GenAiPlannerBundle" error. This error is often misdiagnosed as a packaging or manifest problem.
+**What happens:** Deploying a GenAiPlannerBundle metadata record from a project configured for API v63.0 or lower fails with an unknown-type error naming GenAiPlannerBundle. This is often misdiagnosed as a packaging or manifest problem, or — worse — as the *org* being too old.
 
-**When it occurs:** When `apiVersion` in `sfdx-project.json` or the Metadata API call is set to 63.0 or lower, and the project was built expecting Spring '26 (API v64) features. Also occurs when retrieving agent metadata from a Spring '26+ org and trying to deploy it to a Winter '26 sandbox.
+**When it occurs:** When `sourceApiVersion` in `sfdx-project.json` (or the version in the Metadata API call) is set to 63.0 or lower. The Metadata API guide is explicit: "GenAiPlanner components are available in API version 60.0 to 63.0. GenAiPlannerBundle replaces GenAiPlanner in API version 64.0 and later." API v64.0 shipped with **Summer '25**. A widespread misattribution places the cutover at Spring '26 (which is API v66.0), three releases later, so teams on a Winter '26 or Spring '26 sandbox conclude their org can't support the bundle type and downgrade to GenAiPlanner unnecessarily.
 
-**How to avoid:** Confirm the target org's Salesforce release and set the project API version accordingly. For Spring '26 agents, set `"apiVersion": "64.0"` in `sfdx-project.json`. When working across mixed-version environments (e.g., a production org on Winter '26 while sandboxes are on Spring '26 preview), use GenAiPlanner (v60–v63 compatible) for the production path and plan the API version upgrade as part of the promotion strategy.
+**How to avoid:** Read the *project* pin, not the org release banner — every org from Summer '25 forward supports GenAiPlannerBundle, and any org will still accept a project pinned to 63.0 and behave like the old type. Set `"sourceApiVersion": "64.0"` (or higher) in `sfdx-project.json` — that is the documented key; a hand-written `apiVersion` property is ignored and in each `package.xml` `<version>`. Only genuinely pre-Summer-'25 targets need the GenAiPlanner path.
 
 ---
 
@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** In CI pipelines where the deploy job ran successfully but the post-deploy activation step was skipped or failed. The test job runs immediately after deploy, hits an Inactive agent, and the error is misread as a pipeline infrastructure issue.
 
 **How to avoid:** Add an explicit pre-test check to the CI pipeline that verifies the agent's Active status before invoking `sf agent test run`. A simple `sf data query` against the `BotVersion` or `GenAiPlannerBundle` object checking for Active status provides a fast, clear gate. Alternatively, add a pipeline step description comment that explicitly states "Agent must be manually activated before this step" and make the activation a required human approval gate in the pipeline configuration.
+
+---
+
+## Gotcha 6: A Bot/BotVersion/GenAiPlugin Manifest Silently Versions an Incomplete Agent
+
+**What happens:** A CI pipeline retrieves and deploys Bot, BotVersion, GenAiPlannerBundle, GenAiPlugin, and GenAiFunction, reports success, and the agent works in the target org — but the Agent Script source was never versioned. The next Builder edit has no baseline to diff against, and a rollback restores runtime metadata whose authoring source is gone.
+
+**When it occurs:** For any agent authored in the new Agentforce Builder. Its blueprint lives in `AiAuthoringBundle` (API v65.0+, Winter '26), described in the Metadata API guide as "a container for AI-related authoring content. For example, an AI authoring bundle for an Agentforce agent contains an Agent Script file and the associated metadata content." Manifests written against the 2024-era five-type list predate that type entirely, and a `sourceApiVersion` of 62.0/63.0 sits below its floor, so nothing errors — the type is simply never requested.
+
+**How to avoid:** Add `AiAuthoringBundle` to the manifest and raise `sourceApiVersion` to 65.0 or higher. Expect `aiAuthoringBundles/<Name>/<Name>.agent` plus `<Name>.bundle-meta.xml` in the retrieve; if the `.agent` file is absent, the retrieve did not capture the agent. Watch the bundle's `target` field in review — omitting it deploys the agent in draft state, while setting it to `{Bot}.{BotVersion}` commits the agent version, the equivalent of Agentforce Builder's version commit. Committing a version is still not activation; Gotcha 2 applies regardless.

@@ -1,6 +1,6 @@
 ---
 name: fsc-action-plans
-description: "Use this skill when designing, building, or troubleshooting FSC Action Plan templates for client-facing task sequences such as client onboarding, account opening, annual review preparation, and compliance tasks. Trigger keywords: Action Plan template, ActionPlanTemplate, ActionPlan object, FSC task sequence, onboarding checklist, review prep tasks. NOT for standard Salesforce Tasks, Flow automation, or general task management outside of FSC Action Plan objects."
+description: "Use this skill when designing, building, or troubleshooting FSC Action Plan templates for client-facing task sequences such as client onboarding, account opening, annual review preparation, and compliance tasks. Trigger keywords: Action Plan template, ActionPlanTemplate, ActionPlan object, FSC task sequence, onboarding checklist, review prep tasks. NOT for designing the onboarding process itself — use admin/client-onboarding-design. NOT for Health Cloud care plan templates — use admin/care-plan-configuration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

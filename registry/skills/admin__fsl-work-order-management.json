@@ -81,9 +81,9 @@
     "f8edf616619935bca492",
     "fa62d21faa4658288acb"
   ],
-  "content_hash": "e141c9706367bd0e848bace63b68c87c15fe116e39975b3fbf7a409d55856c07",
+  "content_hash": "f3914d7da45dc68977a046944c4faf53971287668af8316881e3aa861931f353",
   "dependencies": [],
-  "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration.",
+  "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for choosing which technician gets the appointment (work rules, scheduling policies) \u2014 use admin/fsl-scheduling-policies. NOT for setting up the technicians, their skills or capacity \u2014 use admin/fsl-resource-management.",
   "file_location": "skills/admin/fsl-work-order-management",
   "id": "admin/fsl-work-order-management",
   "inputs": [

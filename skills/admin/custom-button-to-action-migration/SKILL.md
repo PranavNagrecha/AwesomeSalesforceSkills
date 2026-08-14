@@ -1,6 +1,6 @@
 ---
 name: custom-button-to-action-migration
-description: "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute → Apex action, navigation alerts → toast events, MassAction.update → record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/quick-actions-and-flow-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced)."
+description: "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute → Apex action, navigation alerts → toast events, MassAction.update → record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/global-actions-and-quick-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -282,9 +282,9 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `admin/quick-actions-and-flow-actions` — Use for new Quick Action / Flow Action design (post-migration)
+- `admin/global-actions-and-quick-actions` — Use for new Quick Action / Global Action design (post-migration)
 - `lwc/lwc-quick-actions` — Use for designing LWC Quick Actions in detail (Headless vs Screen)
-- `flow/screen-flow-patterns` — Use for designing Screen Flow Actions
+- `flow/screen-flows` — Use for designing Screen Flow Actions
 - `lwc/visualforce-to-lwc-migration` — Use when buttons reference Visualforce pages being migrated
-- `apex/apex-rest-and-aura-enabled` — Use when Apex methods called from new Quick Actions need to be designed correctly
+- `apex/apex-security-patterns` — Use when Apex methods called from new Quick Actions need their sharing keyword and CRUD/FLS enforcement designed correctly
 - `admin/lightning-app-builder-advanced` — Use for placing Quick Actions on Lightning Record Pages

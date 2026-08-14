@@ -1,6 +1,6 @@
 ---
 name: static-resources-in-lwc
-description: "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Triggers: 'static resource in lwc', 'loadScript not working', 'resourceUrl path in zip', 'third party library in salesforce'. NOT for npm-bundled code that should ship through the build pipeline or server-side integration assets."
+description: "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and. NOT for npm-bundled code that should ship through the build pipeline or server-side inte — use security/csp-and-trusted-urls."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

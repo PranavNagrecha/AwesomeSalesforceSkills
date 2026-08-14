@@ -1,6 +1,6 @@
 ---
 name: nfr-definition-for-salesforce
-description: "Defining measurable non-functional requirements for Salesforce implementations: performance SLIs, scalability targets, availability SLAs, security and compliance requirements, usability benchmarks. Use when starting architecture design or preparing for go-live sign-off. NOT for technical implementation of those requirements. NOT for HA/DR planning (use ha-dr-architecture). NOT for individual governor limit investigation (use limits-and-scalability-planning). NOT for security controls implementation (use security-architecture-review)."
+description: "Defining measurable non-functional requirements for Salesforce implementations: performance SLIs, scalability targets, availability SLAs, security and compliance requirements, usability benchmarks. Use when starting architecture design or preparing for go-live sign-off. NOT for technical implementation of those requirements. NOT for HA/DR and failover planning — use architect/ha-dr-architecture. NOT for governor limit and scale headroom analysis — use architect/limits-and-scalability-planning."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

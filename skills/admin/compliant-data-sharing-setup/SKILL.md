@@ -1,6 +1,6 @@
 ---
 name: compliant-data-sharing-setup
-description: "Declarative setup of Compliant Data Sharing (CDS) in Financial Services Cloud: enabling CDS per-object in IndustriesSettings, configuring OWDs, creating CDS permissions, adding the Financial Deal Participants related list, and defining Participant Roles. Trigger keywords: ethical walls, compliant data sharing setup, FSC sharing model, isolate banking teams, participant roles. NOT for standard Salesforce sharing rules, OWD, or role hierarchy sharing. NOT for programmatic participant record DML (use fsc-compliant-sharing-api instead)."
+description: "Declarative setup of Compliant Data Sharing (CDS) in Financial Services Cloud: enabling CDS per-object in IndustriesSettings, configuring OWDs, creating CDS permissions, adding the Financial Deal Participants related list, and defining Participant Roles. Trigger keywords: ethical walls, compliant data sharing setup, FSC sharing model, isolate banking teams, participant roles. NOT for participant record DML from Apex — use apex/fsc-compliant-sharing-api. NOT for the FSC sharing design decision — use architect/fsc-architecture-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

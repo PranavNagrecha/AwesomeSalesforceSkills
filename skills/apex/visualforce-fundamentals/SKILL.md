@@ -1,6 +1,6 @@
 ---
 name: visualforce-fundamentals
-description: "Designing and debugging Visualforce pages: standard/custom controllers, view state management, CSRF and SOQL injection security, PDF rendering, Visualforce email templates. Use when building custom UI pages or PDF outputs on the Salesforce platform. NOT for LWC development (use lwc/* skills). NOT for Visualforce email template syntax (use email-services)."
+description: "Designing and debugging Visualforce pages: standard/custom controllers, view state management, CSRF and SOQL injection security, PDF rendering, Visualforce email templates. Use when building custom UI pages or PDF outputs on the Salesforce platform. NOT for hardening or rewriting legacy VF in LWC — use security/visualforce-security-and-modernization. NOT for migrating Classic VF email templates — use admin/classic-email-template-migration."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

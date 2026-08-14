@@ -1,6 +1,6 @@
 ---
 name: apex-batch-chaining
-description: "Use this skill when you need to run one Batch Apex job immediately after another completes — chaining via finish(), managing Flex Queue capacity, or choosing between batch-to-batch chaining and a Queueable bridge. NOT for async job technology selection — use the async-selection decision tree. NOT for single-job batch patterns, scope sizing, or Database.Stateful design — use batch-apex-patterns."
+description: "Use this skill when you need to run one Batch Apex job immediately after another completes — chaining via finish(), managing Flex Queue capacity, or choosing between batch-to-batch chaining and a Queueable bridge. NOT for single-job batch design or scope sizing — use apex/batch-apex-patterns. NOT for choosing Batch vs Queueable — use apex/async-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

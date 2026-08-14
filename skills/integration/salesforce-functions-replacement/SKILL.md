@@ -1,6 +1,6 @@
 ---
 name: salesforce-functions-replacement
-description: "Salesforce Functions is retired (EOL Jan 2025). This skill maps Functions workloads to replacements: Heroku (with Hyperforce), external containers, Apex (where viable), Agentforce Actions, external compute via Named Credentials. NOT for Lambda / Azure Functions tutorials. NOT for Apex @future replacement (use async-selection tree)."
+description: "Salesforce Functions is retired (EOL Jan 2025). This skill maps Functions workloads to replacements: Heroku (with Hyperforce), external containers, Apex (where viable), Agentforce Actions, external compute via Named Credentials. NOT for Lambda / Azure Functions tutorials — use agentforce/einstein-bots-to-agentforce-migration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

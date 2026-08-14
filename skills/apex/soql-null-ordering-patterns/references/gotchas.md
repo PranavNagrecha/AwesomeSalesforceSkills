@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Engineer transfers other-database syntax.
 
 **How to avoid:** Two separate keywords with a space: `NULLS LAST` or `NULLS FIRST`. No underscore, no hyphen, no concatenation.
+
+---
+
+## Gotcha 6: Standard list-view sorting flipped in Spring '26 — SOQL did not
+
+**What happens:** A custom LWC datatable backed by `ORDER BY SomeField__c ASC` shows blank-field records at the top, while the standard Lightning list view beside it shows those same records at the bottom. Both are "sorted ascending," so users report the custom component as the broken one.
+
+**When it occurs:** Spring '26 changed list-view sorting only. Per the release note *Use Updated Empty Value Placement in List View Sorting*: "When you sort a list view, blank fields, or null values, now are treated as the highest value in the dataset. ... Previously, Salesforce treated blank fields as the lowest value." It applies to Lightning Experience in all editions. SOQL was not part of that change — for an ascending sort the ORDER BY reference still gives nulls first ("By default, null values are sorted first"), so `ORDER BY SomeField__c ASC` still returns blanks at the top. Note the release note frames it as a ranking change ("the highest value in the dataset"), not a pin to the bottom, so a *descending* list-view sort now surfaces blanks first.
+
+**How to avoid:** Any query whose results sit next to, or replace, a standard list view needs an explicit `NULLS LAST` on an ascending sort to match the platform's new convention — the SOQL default and the UI default no longer agree. When a user reports that ordering "changed," establish which surface they are looking at before debugging the query. Exports, saved screenshots, and test assertions captured before Spring '26 are no longer valid expected-output for the list-view side.

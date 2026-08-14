@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-moderation
-description: "Use when setting up or tuning Experience Cloud community content moderation: keyword/criteria-based rules, member reputation system, and moderation queue management. Triggers: 'set up community content moderation', 'configure reputation levels', 'flagging rules Experience Cloud', 'moderation queue setup', 'keyword blocking community', 'approve community posts before publishing'. NOT for CMS content publishing workflows or Digital Experiences page publishing."
+description: "Set up or tune Experience Cloud content moderation: keyword/criteria rules, member reputation system, moderation queue. Triggers: 'set up community content moderation', 'configure reputation levels', 'flagging rules Experience Cloud', 'moderation queue setup', 'keyword blocking community', 'approve community posts before publishing'. NOT for publishing or scheduling CMS articles on the site — use admin/experience-cloud-cms-content. NOT for deciding which behaviours to reward or how to name reputation tiers — use admin/community-engagement-strategy."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

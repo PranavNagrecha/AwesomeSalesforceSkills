@@ -112,11 +112,11 @@
     "fafbd08c7891e67cabee",
     "fe6efa1a52617d31f986"
   ],
-  "content_hash": "c6f7c78beb1b687db2a221b46f99ce5cc4f8d6d08131a17e9e129221944439e1",
+  "content_hash": "f817dbf9e06f9dab7327a38f4c8eb25b484b140acef8c824e14437365f7496a7",
   "dependencies": [
     "fsl-scheduling-policies"
   ],
-  "description": "Use this skill to design, configure, and troubleshoot the Field Service Lightning (FSL) Optimizer \u2014 including selecting optimization type (Global, In-Day, Resource Schedule), understanding the priority-score model, configuring travel mode (Aerial vs Street-Level Routing), and tuning optimizer behavior for specific scheduling objectives. NOT for configuring scheduling policies, work rules, service objectives weights, or the Dispatcher Console dispatch settings.",
+  "description": "Use this skill to design, configure, and troubleshoot the Field Service Lightning (FSL) Optimizer \u2014 including selecting optimization type (Global, In-Day, Resource Schedule), understanding the priority-score model, configuring travel mode (Aerial vs Street-Level Routing), and tuning optimizer behavior for specific scheduling objectives. NOT for work rules and service-objective weights on a scheduling policy \u2014 use admin/fsl-scheduling-policies. NOT for ESO adoption and territory sizing \u2014 use architect/fsl-optimization-architecture.",
   "file_location": "skills/admin/fsl-scheduling-optimization-design",
   "id": "admin/fsl-scheduling-optimization-design",
   "inputs": [

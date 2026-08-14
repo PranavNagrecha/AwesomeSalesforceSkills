@@ -57,9 +57,9 @@
     "fdbf557fd31c9cdb1e1a",
     "fe3d95df59d46396a172"
   ],
-  "content_hash": "9660905a4d7bb137ca8b058318608a3166d2bc0f867b1b31e46179259d07559f",
+  "content_hash": "22edb733864d32ea32082d33c883c4a01c63335e7c1bf0638c5fc1d79ab17f2e",
   "dependencies": [],
-  "description": "Use when debugging or preventing recursive Apex trigger behavior, especially around self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry scenarios. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for general trigger-framework structure unless recursion is the actual design problem.",
+  "description": "Use when debugging or preventing recursive Apex trigger behavior \u2014 self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for how to structure the trigger handler itself \u2014 use apex/trigger-framework. NOT for switching a trigger off for a data load \u2014 use apex/apex-trigger-bypass-and-killswitch-patterns.",
   "file_location": "skills/apex/recursive-trigger-prevention",
   "id": "apex/recursive-trigger-prevention",
   "inputs": [

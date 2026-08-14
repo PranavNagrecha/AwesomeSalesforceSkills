@@ -6,6 +6,8 @@ Validates a project's cumulusci.yml for common configuration mistakes:
   - Options blocks placed at the flow level instead of inside steps
   - Sources pinned to 'latest' instead of a specific tag
   - JWT-unsafe auth patterns referenced in CI YAML files
+  - CI steps harvesting credentials from `sf org display` output (stripped since
+    the 27 May 2026 Salesforce CLI release)
   - Robot Framework suite paths that do not exist
 
 Uses stdlib only — no pip dependencies.
@@ -149,6 +151,9 @@ def check_ci_files(project_dir: Path) -> list[str]:
     )
     sfdx_url_auth = re.compile(r"sf\s+org\s+login\s+sfdx-url")
     pool_sf_cmd = re.compile(r"sf\s+org\s+pool|sfdx\s+force:org:pool")
+    org_display_cmd = re.compile(r"org[\s:]+display")
+    stripped_field = re.compile(r"accessToken|sfdxAuthUrl|\.password", re.IGNORECASE)
+    temp_show_secrets = re.compile(r"SF_TEMP_SHOW_SECRETS")
 
     for ci_file in ci_files:
         content = _read_text(ci_file)
@@ -178,6 +183,24 @@ def check_ci_files(project_dir: Path) -> list[str]:
                     f"{rel} line {i}: 'sf org pool' or 'sfdx force:org:pool' command detected. "
                     "These commands do not exist in the Salesforce CLI. "
                     "Use CumulusCI pool commands: cci org pool create/get/list/prune."
+                )
+            if org_display_cmd.search(line) and stripped_field.search(line):
+                issues.append(
+                    f"{rel} line {i}: credential harvested from 'org display' output. "
+                    "Access tokens, SFDX auth URLs and passwords have been stripped from "
+                    "'org display' and 'org list --json' since the 27 May 2026 Salesforce CLI "
+                    "release, so this reads a missing field (jq prints 'null') while the "
+                    "command still exits 0. "
+                    "Use 'sf org auth show-access-token' or 'sf org auth show-sfdx-auth-url' "
+                    "(add --no-prompt or --json to skip the confirmation prompt)."
+                )
+            if temp_show_secrets.search(line):
+                issues.append(
+                    f"{rel} line {i}: SF_TEMP_SHOW_SECRETS detected. "
+                    "This restores the pre-27-May-2026 CLI output but the Salesforce CLI "
+                    "announcement states it is temporary and will be removed. "
+                    "Migrate the step to 'sf org auth show-access-token' / "
+                    "'sf org auth show-sfdx-auth-url' before the escape hatch disappears."
                 )
 
     return issues

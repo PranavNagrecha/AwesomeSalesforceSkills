@@ -41,9 +41,9 @@
     "f9c7025ca7825325dcf9",
     "fba96690cc5820d52ff9"
   ],
-  "content_hash": "06ec01a3b25b1f7804918ec2a699b01c0ad034dc893ffee0a3cde2418a6f54ad",
+  "content_hash": "2a65fd756cc2bd50962f23c05ef7e1c25001ebbab124d782bda9f1982035a7ea",
   "dependencies": [],
-  "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
+  "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens \u2014 use flow/flow-screen-input-validation-patterns.",
   "file_location": "skills/flow/flow-reactive-screen-components",
   "id": "flow/flow-reactive-screen-components",
   "inputs": [

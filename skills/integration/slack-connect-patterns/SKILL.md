@@ -1,6 +1,6 @@
 ---
 name: slack-connect-patterns
-description: "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup, Slack Connect DLP policy, Slack partner channel governance, regulated industry Slack Connect compliance. Does NOT cover Salesforce-to-Salesforce integration, Salesforce for Slack app setup, or internal single-workspace Slack channels. NOT for Salesforce-to-Salesforce integration."
+description: "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup. NOT for Salesforce-to-Salesforce integration, Salesforce for Slack app setup, or interna — use integration/slack-salesforce-integration-setup."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

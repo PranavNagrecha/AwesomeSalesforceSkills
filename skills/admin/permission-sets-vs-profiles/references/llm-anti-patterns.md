@@ -31,29 +31,34 @@ Modern access model:
 
 ---
 
-## Anti-Pattern 2: Stating that profiles will be fully retired imminently
+## Anti-Pattern 2: Treating the Spring '26 "permissions in profiles" retirement as a live deadline
 
-**What the LLM generates:** "Salesforce is removing profiles in the next release. Migrate everything to permission sets immediately."
+**What the LLM generates:** "Permissions in profiles reach end of life in Spring '26 — decompose every profile before the upgrade or your users lose access." Or the stronger version: "Salesforce is removing profiles in the next release."
 
-**Why it happens:** LLMs extrapolate from Salesforce's stated direction toward profile retirement. While Salesforce has been reducing profile functionality (e.g., removing CRUD/FLS from profile UI in some releases), profiles are not fully removed. Profiles still control login hours, IP restrictions, page layout assignments, and default record types. The migration is gradual.
+**Why it happens:** Salesforce announced the retirement in 2023, and models trained before mid-2026 still carry it as settled fact. Salesforce **cancelled** the enforcement on 6 Jun 2026, citing customer feedback and remaining feature gaps, and published no replacement end-of-life date. Profiles themselves were never scheduled for removal. Both the deadline and the urgency built on top of it are fabricated, and a migration plan sold on that deadline is a plan the customer did not need to fund this quarter.
 
 **Correct pattern:**
 
 ```
-Profile status (as of Spring '25):
-- Profiles are NOT removed but are being slimmed down.
-- CRUD and FLS editing via Profile UI may be restricted
-  (enforced via the "Require Permission Set to Grant Permissions" setting).
-- Profiles still required for:
-  - Login hours and IP restrictions.
-  - Page layout assignment.
-  - Default record type assignment.
-  - User license assignment.
-- Strategy: move CRUD/FLS/features to permission sets NOW,
-  but do not delete profiles — they still serve a purpose.
+Profile status (as of Summer '26):
+- Permissions in profiles: retirement CANCELLED
+  (Salesforce Help 003834041, 6 Jun 2026). No new end-of-life date.
+  Existing profile grants keep working; nothing breaks on upgrade.
+- Salesforce still RECOMMENDS a permission-set-led model.
+  Recommendation, not cutoff.
+- Profiles remain the home for these settings:
+  - Default assigned apps.
+  - Default record types and page layouts.
+  - Login hours.
+  - Login IP ranges.
+  - Password policies.
+  - Session settings.
+- Strategy: move CRUD/FLS/features to permission sets because it is
+  easier to audit, assign and unwind — sequenced on business value.
+  Do not promise it as compliance with a release deadline.
 ```
 
-**Detection hint:** If the output says profiles are "removed," "deprecated," or "gone" in a specific release without nuance, the timeline is overstated. Search for `removed` or `deprecated` combined with `profile`.
+**Detection hint:** If the output attaches a release name ("Spring '26"), "end of life," or "must migrate before" to profile permissions, it is quoting a cancelled retirement. Search for `retire`, `end of life`, or `Spring '26` near `profile`.
 
 ---
 

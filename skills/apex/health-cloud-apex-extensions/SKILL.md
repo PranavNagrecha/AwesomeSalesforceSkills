@@ -1,6 +1,6 @@
 ---
 name: health-cloud-apex-extensions
-description: "Use this skill when extending Health Cloud via Apex: implementing HealthCloudGA managed-package interfaces, automating care plan lifecycle hooks, processing referrals using Industries Common Components invocable actions, or enforcing HIPAA-compliant logging governance for clinical Apex code. Trigger keywords: CarePlanProcessorCallback, HealthCloudGA namespace, ReferralRequest, ReferralResponse, care plan invocable actions, clinical Apex extension, Health Cloud Apex API. NOT for standard Apex triggers or generic Apex development unrelated to Health Cloud managed-package extension points."
+description: "Use this skill when extending Health Cloud via Apex: implementing HealthCloudGA managed-package interfaces, automating care plan lifecycle hooks, processing referrals using Industries Common Components invocable actions, or enforcing HIPAA-compliant logging governance for clinical Apex code. Trigger keywords: CarePlanProcessorCallback, HealthCloudGA namespace, ReferralRequest, ReferralResponse, care plan invocable actions, clinical Apex extension, Health Cloud Apex API. NOT for standard Apex triggers or generic Apex development unrelated to Health Cloud managed-package extension points. NOT for creating ClinicalAlert or CareGap decision-support records — use apex/clinical-decision-support. NOT for HealthCloudGA package install order, PSL assignment, or post-deploy setup — use devops/health-cloud-deployment-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

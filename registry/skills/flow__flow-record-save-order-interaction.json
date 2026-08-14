@@ -54,12 +54,12 @@
     "f6ec18e1bf5295435be3",
     "fc0a2f9a96cef588bb9d"
   ],
-  "content_hash": "f482450a160bd1375672448756d511e655b476438565a3099750da371e994c7d",
+  "content_hash": "beadd79cc1ce2757c279fd2cb5be773e96fe938c3c15c4afabd2a766fbd0abc6",
   "dependencies": [
     "flow/record-triggered-flow-patterns",
     "flow/flow-migration-from-trigger"
   ],
-  "description": "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. Does NOT cover writing trigger handlers, approval process setup, or workflow rule migration.",
+  "description": "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. NOT for choosing before-save vs after-save for one flow \u2014 use flow/record-triggered-flow-patterns. NOT for picking which tool stamps a field on save \u2014 use admin/workflow-field-update-patterns.",
   "file_location": "skills/flow/flow-record-save-order-interaction",
   "id": "flow/flow-record-save-order-interaction",
   "inputs": [

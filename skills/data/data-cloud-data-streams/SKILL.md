@@ -1,6 +1,6 @@
 ---
 name: data-cloud-data-streams
-description: "Step-by-step guidance for configuring Data Cloud data streams: connecting source connectors, mapping Data Lake Objects (DLOs) to Data Model Objects (DMOs), enabling identity resolution rulesets, defining Calculated Insights, and activating unified profiles. Trigger keywords: data stream setup, DLO to DMO mapping, identity resolution ruleset, ingestion API, Calculated Insights SQL. NOT for CRM Analytics datasets, Tableau CRM dataflows, or general Salesforce reporting."
+description: "Step-by-step guidance for configuring Data Cloud data streams: connecting source connectors, mapping Data Lake Objects (DLOs) to Data Model Objects (DMOs), enabling identity resolution rulesets, defining Calculated Insights, and activating unified profiles. Trigger keywords: data stream setup, DLO to DMO mapping, identity resolution ruleset, ingestion API, Calculated Insights SQL. NOT for choosing the DSO/DLO/DMO layering and identity-resolution strategy up front — use architect/data-cloud-architecture. NOT for designing the DMO schema itself — use data/data-cloud-data-model-objects."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

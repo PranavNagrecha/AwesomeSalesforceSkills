@@ -118,8 +118,8 @@ public with sharing class StripeConfigSetup {
 
 ## Anti-Pattern: "Temporary" hardcoded key
 
-**What practitioners do:** During development, paste the live API key into the class — `private static final String STRIPE_KEY = 'rk_live_a1b2...';` — with a `// TODO: move to settings before prod` comment.
+**What practitioners do:** During development, paste the live API key into the class — `private static final String STRIPE_KEY = 'rk_live_a1b2...';` — with a `// move to settings before prod` reminder comment.
 
-**What goes wrong:** The TODO survives the demo, survives the deploy, survives the package upload. The key is now in version control, in every developer's local clone, in CI logs, and in the managed-package distribution. Rotation requires a code change and a deploy to every subscriber org.
+**What goes wrong:** The reminder survives the demo, survives the deploy, survives the package upload. The key is now in version control, in every developer's local clone, in CI logs, and in the managed-package distribution. Rotation requires a code change and a deploy to every subscriber org.
 
 **Correct approach:** Even on day one, store in Named Credential (for callouts) or Protected CMDT (for signing). The "five extra minutes" pays back the first time you rotate.

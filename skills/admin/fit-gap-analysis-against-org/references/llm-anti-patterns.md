@@ -90,7 +90,7 @@ If end users need Setup access → re-classify as Configuration (permission-set 
 After scoring, group by primary sObject. Surface:
 - "Object X has 14 Configuration rows + 6 Low-Code rows" → object-designer + flow-builder workload per object
 - "Object Y has 0 Standard rows" → red flag for over-customization
-- "Object Z has 8 Custom rows" → trigger consolidation review per `apex/trigger-consolidation`
+- "Object Z has 8 Custom rows" → trigger consolidation review per `apex/trigger-framework`
 ```
 
 **Detection hint:** If the JSON output is a flat list with no per-sObject summary, the agent skipped this step.

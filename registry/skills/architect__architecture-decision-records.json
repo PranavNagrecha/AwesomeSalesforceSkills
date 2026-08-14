@@ -64,11 +64,11 @@
     "fb5dfae6d4a868f6c556",
     "fc7398868667701c0248"
   ],
-  "content_hash": "614408dd15f71fcba76bfea45b2c5788551aa6793caf444ee4f63f5c95b2fd4f",
+  "content_hash": "25ff352d7b78a07791bd7b448ad01c74b68f81528983420fecc89a7c92990e57",
   "dependencies": [
     "architect/solution-design-patterns"
   ],
-  "description": "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. Does NOT cover project roadmap planning, release notes, or RFC workflow for features.",
+  "description": "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. NOT for making the design decision itself, e.g. Flow vs Apex \u2014 use architect/solution-design-patterns. NOT for a formal architecture review that produces findings \u2014 use architect/well-architected-review.",
   "file_location": "skills/architect/architecture-decision-records",
   "id": "architect/architecture-decision-records",
   "inputs": [

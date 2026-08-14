@@ -74,12 +74,12 @@
     "fee113e2cc873c9dd0f1",
     "fef2e3be4615ab72d010"
   ],
-  "content_hash": "a7b9d964ce963d649336170e2da0c8c34260e4802cae84b303a83d45d1f9a06c",
+  "content_hash": "b19e7fd30348143d88047c58a819d4908c149a29e6d762c009d2b666c741c660",
   "dependencies": [
     "dynamic-forms-and-actions",
     "record-types-and-page-layouts"
   ],
-  "description": "Advanced Lightning App Builder usage: component visibility filters, custom page templates, Dynamic Forms, Dynamic Actions, page performance optimization, LWC targetConfig for record pages. Use when building complex record pages or custom app templates. NOT for basic page layout configuration. NOT for LWC component development (use lwc/* skills). NOT for Dynamic Forms basics (use dynamic-forms-and-actions).",
+  "description": "Advanced Lightning App Builder usage: component visibility filters, custom page templates, Dynamic Forms, Dynamic Actions, page performance optimization, LWC targetConfig constraints on record pages. Use when building complex record pages or custom app templates. NOT for Dynamic Forms basics \u2014 use admin/dynamic-forms-and-actions. NOT for exposing an LWC via js-meta.xml targets \u2014 use lwc/lwc-app-builder-config.",
   "file_location": "skills/admin/lightning-app-builder-advanced",
   "id": "admin/lightning-app-builder-advanced",
   "inputs": [

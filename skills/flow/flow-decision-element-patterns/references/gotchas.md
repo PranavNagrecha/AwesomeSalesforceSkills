@@ -40,3 +40,9 @@ Expensive formulas (nested IFs, cross-object lookups) cost each time.
 
 Rollups are stale inside a before-save context. Decision outcomes that
 branch on rollup value will branch on yesterday's number.
+
+## 9. People-as-Config: Hardcoded User Ids and Names
+
+A Decision outcome `CreatedById Equals 005…` or `Owner.LastName Equals "Patel"` is configuration stored as a person. Deactivation, rename, and sandbox refresh all break the branch with no compile error — the flow still runs, just never takes that path.
+
+**How to avoid.** Custom Permission, Queue, Public Group, or Custom Metadata that holds a User/Queue Id. Never a literal `005` in Flow XML. Name-picklists are not a User lookup.

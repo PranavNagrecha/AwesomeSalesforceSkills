@@ -22,9 +22,10 @@ Reproducibility depends on which package type you picked, because deletion rules
 
 ## Cross-Skill References
 
-- `devops/deployment-pipeline-design` — CI/CD pipeline design for package-based development
+- `architect/ci-cd-pipeline-architecture` — CI/CD pipeline design for package-based development
 - `devops/managed-package-development` — Detailed 2GP managed package development workflow
-- `devops/scratch-org-strategy` — Scratch org configuration and source-format development
+- `devops/scratch-org-management` — Scratch org definition files, Org Shape, and scratch org lifecycle
+- `devops/salesforce-dx-project-structure` — SFDX project structure and source-format layout
 
 ## Official Sources Used
 

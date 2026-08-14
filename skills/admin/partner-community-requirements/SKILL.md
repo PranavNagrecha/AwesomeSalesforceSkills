@@ -1,6 +1,6 @@
 ---
 name: partner-community-requirements
-description: "Use this skill to define and validate the requirements for a Salesforce Partner Relationship Management (PRM) implementation: deal registration flows, lead distribution models, partner tier hierarchies, MDF budget tracking, and co-marketing content entitlement. Trigger keywords: partner community requirements, PRM deal registration setup, channel partner portal requirements, lead distribution partner, partner tier management, MDF tracking, co-marketing entitlement. NOT for partner portal technical configuration (Experience Cloud site builder, Visualforce pages, LWC development). NOT for partner account management (account hierarchy or channel account teams)."
+description: "Use this skill to define and validate the requirements for a Salesforce Partner Relationship Management (PRM) implementation: deal registration flows, lead distribution models, partner tier hierarchies, MDF budget tracking, and co-marketing content entitlement. Trigger keywords: partner community requirements, PRM deal registration setup, channel partner portal requirements, lead distribution partner, partner tier management, MDF tracking, co-marketing entitlement. NOT for implementing the partner sharing model — use data/partner-data-access-patterns. NOT for building the portal in Experience Builder — use admin/experience-cloud-site-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

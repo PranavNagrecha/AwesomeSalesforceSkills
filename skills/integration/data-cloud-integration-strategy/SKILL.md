@@ -1,6 +1,6 @@
 ---
 name: data-cloud-integration-strategy
-description: "Use this skill when designing or troubleshooting the data pipeline strategy for connecting source systems to Data Cloud — including ingestion API pattern selection (streaming vs. batch), connector type decisions, DSO-to-DLO-to-DMO pipeline lag, and lakehouse federation patterns. Triggers on: Data Cloud ingestion API setup, streaming vs batch connector decision, Data Cloud connector types, MuleSoft Direct for Data Cloud, data pipeline lag for segmentation. NOT for standard Salesforce integration patterns (use integration-patterns skill), not for querying Data Cloud once data is ingested (use data-cloud-query-api), not for configuring standard admin connectors through the UI only."
+description: "Use this skill when designing or troubleshooting the data pipeline strategy for connecting source systems to Data Cloud — including ingestion API pattern selection (streaming vs. batch), connector type decisions. NOT for standard Salesforce integration patterns (use integration-patterns skill), not f — use data/data-cloud-data-streams."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

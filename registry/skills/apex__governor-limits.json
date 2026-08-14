@@ -67,9 +67,9 @@
     "fca19ee622e0f3194855",
     "fe800092efeef0ae0b9e"
   ],
-  "content_hash": "56e6570b955081f384cdf30dbe2c07a18594b6093e7b6f615aa7cd1f3e91c421",
+  "content_hash": "c13a836000023ee89e8045f22e01fd9dcceefae5c60e8f798bf62d90347dcc4d",
   "dependencies": [],
-  "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
+  "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for the 100-callout-per-transaction ceiling \u2014 use integration/callout-limits-and-async-patterns. NOT for org-level capacity planning \u2014 use architect/limits-and-scalability-planning. NOT for runtime Limits class guard clauses \u2014 use apex/apex-limits-monitoring.",
   "file_location": "skills/apex/governor-limits",
   "id": "apex/governor-limits",
   "inputs": [
@@ -111,7 +111,7 @@
   "templates": [
     "skills/apex/governor-limits/templates/bulk-safe-service.cls"
   ],
-  "updated": "2026-07-07",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.1.0"
 }

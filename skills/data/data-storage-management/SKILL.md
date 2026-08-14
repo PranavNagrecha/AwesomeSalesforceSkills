@@ -1,6 +1,6 @@
 ---
 name: data-storage-management
-description: "Salesforce storage management: monitoring data storage vs file storage usage, diagnosing storage alerts, optimizing large text fields, choosing between Attachment and ContentDocument (Files), and planning storage reclamation. NOT for external storage integration (S3, MuleSoft file offload, Heroku Connect)."
+description: "Salesforce storage management: monitoring data storage vs file storage usage, diagnosing storage alerts, optimizing large text fields, choosing between Attachment and ContentDocument (Files), and planning storage reclamation. NOT for archiving aging records to Big Objects or external storage (S3, Heroku) — use data/data-archival-strategies. NOT for Case and EmailMessage storage bloat in Service Cloud — use data/service-data-archival."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

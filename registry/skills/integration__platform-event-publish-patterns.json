@@ -74,9 +74,9 @@
     "f7f41c6ea446e4d7d8b6",
     "f9f7048f25fda3f9f2b0"
   ],
-  "content_hash": "b118001fb77848d67a75b9ab0e2a0f011718d1bb85ceab8bb1388d1bb9280535",
+  "content_hash": "aff58eeff2382be6e5ddd1570617343ad880cc3766dc298a3c5357cffa6794c1",
   "dependencies": [],
-  "description": "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for subscribing/consuming (use platform-event-subscribe-patterns). NOT for CDC architecture (use cdc-patterns).",
+  "description": "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for consuming events in Apex \u2014 use apex/platform-events-apex. NOT for CDC events \u2014 use integration/change-data-capture-integration.",
   "file_location": "skills/integration/platform-event-publish-patterns",
   "id": "integration/platform-event-publish-patterns",
   "inputs": [

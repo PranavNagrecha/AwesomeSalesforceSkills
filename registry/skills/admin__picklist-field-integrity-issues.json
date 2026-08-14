@@ -71,11 +71,11 @@
     "fd23fff52593a070550c",
     "fe008be9a5ac7710a3fb"
   ],
-  "content_hash": "2b7f028d69eab0f2898a81caba1ec6f59fbd2b20a3d02edd7f7251693a13d311",
+  "content_hash": "9292ac42a7dd25c25943b1bcf1f3d25b8c8a8f021342aa5aff85015057f13365",
   "dependencies": [
     "picklist-and-value-sets"
   ],
-  "description": "Use when picklist data quality has degraded: unrestricted picklists accepting garbage API values, dependent picklist relationships bypassed by integrations, record type picklist value mappings drifting out of sync, or orphaned values appearing in reports. NOT for initial picklist creation or Global Value Set design (use picklist-and-value-sets), NOT for record type configuration itself (use record-types-and-page-layouts).",
+  "description": "Use when picklist data quality has degraded: unrestricted picklists accepting garbage API values, dependent picklist relationships bypassed by integrations, record type picklist value mappings drifting out of sync, or orphaned values appearing in reports. NOT for the value-deactivation runbook or the API-name-vs-label trap \u2014 use admin/picklist-data-integrity. NOT for initial picklist creation or Global Value Set design \u2014 use admin/picklist-and-value-sets. NOT for record type configuration itself \u2014 use admin/record-types-and-page-layouts.",
   "file_location": "skills/admin/picklist-field-integrity-issues",
   "id": "admin/picklist-field-integrity-issues",
   "inputs": [

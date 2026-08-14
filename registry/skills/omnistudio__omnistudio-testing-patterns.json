@@ -17,6 +17,7 @@
     "30017cc99176932fc059",
     "311cbeb2640a748ebabd",
     "370bc84f292d3a2a430a",
+    "37bb9f6f4410a7d4d690",
     "395ddce6d5b5031a932b",
     "3c6bca9ebb86d75798ca",
     "42a1eaf11e7034df97f4",
@@ -55,6 +56,7 @@
     "d4b1e979cd44f592c7da",
     "e06f9b2cbd57ff532f3b",
     "e0cb792f3862170fe171",
+    "e3ba19268892806d54b1",
     "e79f3d34fca6dc66ca37",
     "e938b692f8af5c276ec6",
     "ecb9845853a5594fd992",
@@ -62,9 +64,9 @@
     "fba20fbb5fd06a8817d3",
     "fc0bf15147d6d6fae26f"
   ],
-  "content_hash": "406023e5f427ece3d077307aeb1de02d2b80c781f0b10fa57a4bb85170d6ffa0",
+  "content_hash": "0eeb7fadd9ff3a36dddf6e7d82500ac676393ee7fe5285f8719467a909e4fccf",
   "dependencies": [],
-  "description": "Use when testing or validating OmniStudio components \u2014 OmniScript preview, Integration Procedure step debugging, DataRaptor field-mapping validation, and end-to-end UTAM-based automation. NOT for Apex unit testing or standard Flow debugging.",
+  "description": "Test OmniStudio components \u2014 OmniScript preview, IP step debugging, DataRaptor validation, UTAM. Triggers: OmniStudio testing, UTAM automation, OmniScript test. NOT for live runtime debugging \u2014 use omnistudio/omnistudio-debugging. NOT for metadata/DataPack CI \u2014 use data/omnistudio-metadata-management.",
   "file_location": "skills/omnistudio/omnistudio-testing-patterns",
   "id": "omnistudio/omnistudio-testing-patterns",
   "inputs": [
@@ -110,7 +112,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-testing-patterns/templates/omnistudio-testing-patterns-template.md"
   ],
-  "updated": "2026-04-12",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

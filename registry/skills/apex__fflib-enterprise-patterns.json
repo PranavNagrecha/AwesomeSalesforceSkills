@@ -66,11 +66,11 @@
     "f8423951871d4ffbd09d",
     "f969b16a262bd0c298fa"
   ],
-  "content_hash": "2feeb8a528612f021d1cb52cb915e2b4078631dd4e83124555b6c3a2b04853fd",
+  "content_hash": "1654e6a4e47d21bd8a8e0c1d48dbb1c13a289749990ead247295e03e87a5e96d",
   "dependencies": [
     "apex-design-patterns"
   ],
-  "description": "Use when adopting or working with the fflib (Apex Enterprise Patterns) open-source library \u2014 UnitOfWork, SObjectDomain, SObjectSelector, and Service layer classes \u2014 in a Salesforce Apex codebase. Triggers: 'fflib', 'UnitOfWork', 'SObjectDomain', 'enterprise patterns apex'. NOT for general Apex layering guidance without the fflib library (see apex-design-patterns) or for Apex Mocks setup in isolation.",
+  "description": "Use when adopting or working with the fflib (Apex Enterprise Patterns) open-source library \u2014 UnitOfWork, SObjectDomain, SObjectSelector, and Service layer classes \u2014 in a Salesforce Apex codebase. Triggers: 'fflib', 'UnitOfWork', 'SObjectDomain', 'enterprise patterns apex'. NOT for Apex layering without the fflib library \u2014 use apex/apex-design-patterns. NOT for splitting a class with this repo's lightweight base classes \u2014 use apex/apex-class-decomposition-pattern.",
   "file_location": "skills/apex/fflib-enterprise-patterns",
   "id": "apex/fflib-enterprise-patterns",
   "inputs": [

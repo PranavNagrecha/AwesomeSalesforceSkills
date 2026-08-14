@@ -1,6 +1,6 @@
 ---
 name: agentforce-testing-strategy
-description: "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy."
+description: "Design the Agentforce test pyramid: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent regression suite, prompt golden set, action unit test agentforce. NOT for hallucination evals, fixture format, or scoring rubrics — use agentforce/agentforce-eval-harness. NOT for running tests in Testing Center, AiEvaluationDefinition or sf agent test — use agentforce/agent-testing-and-evaluation."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Testing Strategy

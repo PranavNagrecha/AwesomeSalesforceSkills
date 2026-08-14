@@ -1,6 +1,6 @@
 ---
 name: einstein-copilot-for-service
-description: "Service-specific AI features in Service Cloud: Case Classification setup and optimization, Article Recommendations configuration, Reply Recommendations, Work Summary (After-Visit Summary), Service Replies with Einstein, Auto-Routing, and Einstein Conversation Mining. NOT for core Agentforce setup, agent topic design, Agent Builder configuration, or Einstein Trust Layer setup."
+description: "Service-specific AI features in Service Cloud: Case Classification setup and optimization, Article Recommendations configuration, Reply Recommendations, Work Summary (After-Visit Summary), Service Replies with Einstein, Auto-Routing, and Einstein Conversation Mining. NOT for the license, entitlement and data-threshold check before first enablement — use agentforce/agentforce-service-ai-setup. NOT for building an Agentforce agent — use agentforce/agentforce-agent-creation. NOT for its topic boundary design — use agentforce/agent-topic-design."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -75,9 +75,9 @@
     "fc47342427159d2ed97f",
     "ff3cd4ffc61655aff949"
   ],
-  "content_hash": "077ee09a4874d5adb666f9894dc23f5a36c5f0dc67d901a3f25e5ac7e7a142fc",
+  "content_hash": "67001e7224f53dfaececfb91e1112862ba5525d0148dc682491bcaa568c34c73",
   "dependencies": [],
-  "description": "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for multi-select custom pickers (use lwc-multi-select-lookup). NOT for external-object lookup (use lwc-external-lookup).",
+  "description": "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for a fully custom typeahead lookup \u2014 use lwc/lwc-custom-lookup.",
   "file_location": "skills/lwc/lwc-record-picker",
   "id": "lwc/lwc-record-picker",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: code-review-checklist-salesforce
-description: "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment — governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives (use the security secure-coding checklist), network penetration testing, or org-wide permission model design without code artifacts."
+description: "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment — governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives (use the security secure-coding chec — use security/secure-coding-review-checklist."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

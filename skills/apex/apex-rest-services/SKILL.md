@@ -1,6 +1,6 @@
 ---
 name: apex-rest-services
-description: "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer."
+description: "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound callouts — use apex/callouts-and-http-integrations. NOT for a deprecation and sunset policy across many endpoints — use integration/api-versioning-strategy."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

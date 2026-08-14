@@ -1,6 +1,6 @@
 ---
 name: dataraptor-transform-optimization
-description: "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow', 'dataraptor formula vs apex', 'dataraptor bulk transform', 'dr governor limit'. NOT for DataRaptor Extract or Load performance."
+description: "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow'. NOT for DataRaptor Extract or Load performance — use omnistudio/dataraptor-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

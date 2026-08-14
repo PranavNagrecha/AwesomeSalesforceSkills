@@ -38,7 +38,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Performance-optimized polling loops that use `includeDetails=false` for heartbeat polls often forget to switch to `includeDetails=true` for the final status check when the deployment has reached a terminal state.
 
-**How to avoid:** Use `includeDetails=false` only during the intermediate polling iterations to reduce payload size. On the first poll that returns a terminal status (`Succeeded`, `Failed`, or `Canceled`), re-issue the call with `includeDetails=true` to capture the full error detail before returning results to the caller.
+**How to avoid:** Use `includeDetails=false` only during the intermediate polling iterations to reduce payload size. On the first poll that returns a terminal status (`Succeeded`, `SucceededPartial`, `Failed`, `FinalizingDeployFailed`, or `Canceled`), re-issue the call with `includeDetails=true` to capture the full error detail before returning results to the caller.
 
 ---
 
@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Local development environments where a long-running deploy loses the VPN or Wi-Fi connection, or CI runners where the job is cancelled mid-deploy without sending a cancel signal to Salesforce.
 
 **How to avoid:** When a connection is dropped, use `sf project deploy resume --job-id <id>` to re-attach to the already-running async job. If the deployment ID was not saved before the connection was lost, check Setup > Deployment Status or the Tooling API `DeployRequest` to find the in-progress deployment ID. Never re-submit `sf project deploy start` for the same package without first confirming the original deployment is no longer running.
+
+---
+
+## Gotcha 6: A Deployment in `FinalizingDeploy` Cannot Be Canceled at API 65.0+ — and Below 65.0 a Successful Cancel Can Still Commit Data
+
+**What happens:** Cancellation is bounded by a window that closes before the deployment finishes. From Metadata API 65.0 (Winter '26): "For API versions 65.0 and higher, deployments with a status of Finalizing Deploy, can't be cancelled." The call is rejected with `INVALID_ID_FIELD` and the message `You cannot cancel the deployment while finalizing is in progress` — alongside the pre-existing `Invalid deploy ID` and `Deployment already completed` messages. Below 65.0 the platform behaved worse, not better: "For API versions below 65.0, attempts to cancel a deployment may fail if the deployment has started committing data. Alternatively, it's possible that the cancellation will succeed, but data from the deployment is also committed." A `Canceled` status returned by an older call is therefore not evidence that the org is unchanged.
+
+**When it occurs:** Any attempt to abort a large or long-running deployment after it has left `InProgress`. The gating dimension is the **API version of the cancel call** — the `vXX.0` in the REST URI, the WSDL binding version for SOAP, or the version the CLI sends — not the org's release. A Summer '26 org reached at v64.0 by an older integration or a pinned `sourceApiVersion` still exhibits the old, ambiguous behaviour. Teams most often hit this when a production deploy is spotted as wrong mid-flight and someone reaches for cancel as a rollback.
+
+**How to avoid:** Read `status` before offering to cancel. If it is already `FinalizingDeploy`, say so — the only remaining options are to let it finish and then deploy a corrective change, or to restore from a prior known-good package. Do not present cancellation as a rollback at any API version: at 65.0+ it is unavailable once finalizing starts, and below 65.0 a `Canceled` result must be followed by verifying the org's actual metadata state. Because both `cancelDeploy(id)` and `PATCH .../metadata/deployRequest/{id}` (body `{"deployResult": {"status": "Canceling"}}`) are processed asynchronously, the immediate response can read `Canceling` rather than `Canceled` — keep polling `checkDeployStatus` until it settles rather than reporting the first response as the outcome. Both calls require **Modify Metadata Through Metadata API Functions** or **Modify All Data**.

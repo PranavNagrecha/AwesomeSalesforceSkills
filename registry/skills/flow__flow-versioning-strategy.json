@@ -51,11 +51,11 @@
     "fdb312c8c5d5145ace1e",
     "fe0b4c55285c8100da13"
   ],
-  "content_hash": "6eab4dc4c56419dfbbfe256e70bc917ae1492b6efcd76f6c9ce9b4dad3713bd2",
+  "content_hash": "26957d7ca970a138296083509f6b44f5a7048816de7e2a798612400ed94f2564",
   "dependencies": [
     "devops/flow-deployment-activation-ordering"
   ],
-  "description": "Manage Flow versions: activation policy, paused interview compatibility, cleanup cadence, and breaking-change detection. Trigger keywords: flow version management, activate flow version, paused interview, flow cleanup, flow breaking change, flow rollback. Does NOT cover: FlowDefinition metadata deploy order (see devops skill), Process Builder retirement, or Flow test coverage (separate skill).",
+  "description": "Manage Flow versions: activation policy, paused interview compatibility, cleanup cadence, and breaking-change detection. Trigger keywords: flow version management, activate flow version, paused interview, flow cleanup, flow breaking change, flow rollback. NOT for the deploy-time activation order of FlowDefinition metadata \u2014 use devops/flow-deployment-activation-ordering. NOT for moving a flow from sandbox to production \u2014 use flow/flow-deployment-and-packaging.",
   "file_location": "skills/flow/flow-versioning-strategy",
   "id": "flow/flow-versioning-strategy",
   "inputs": [

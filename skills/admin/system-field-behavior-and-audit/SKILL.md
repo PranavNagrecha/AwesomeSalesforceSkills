@@ -1,6 +1,6 @@
 ---
 name: system-field-behavior-and-audit
-description: "Use when practitioners need to understand system-managed fields (CreatedDate, LastModifiedDate, SystemModstamp, CreatedById, LastModifiedById, IsDeleted) — their update behavior, indexing, and queryability. Triggers: 'difference between SystemModstamp and LastModifiedDate', 'how to query deleted records', 'set CreatedDate during data migration', 'why does LastModifiedDate not match SystemModstamp', 'Create Audit Fields permission'. NOT for field-level change tracking (use field-history-tracking skill), Shield Field Audit Trail for compliance retention (use field-audit-trail skill), or custom audit logging with Apex triggers."
+description: "Use when practitioners need to understand system-managed fields (CreatedDate, LastModifiedDate, SystemModstamp, CreatedById, LastModifiedById, IsDeleted) — their update behavior, indexing, and queryability. Triggers: 'difference between SystemModstamp and LastModifiedDate', 'how to query deleted records', 'set CreatedDate during data migration', 'why does LastModifiedDate not match SystemModstamp', 'Create Audit Fields permission'. NOT for a field's value-change history — use data/field-history-tracking. NOT for Shield Field Audit Trail — use security/field-audit-trail."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

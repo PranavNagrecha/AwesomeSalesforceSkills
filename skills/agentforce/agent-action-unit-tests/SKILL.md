@@ -1,6 +1,6 @@
 ---
 name: agent-action-unit-tests
-description: "Apex test patterns for @InvocableMethod agent actions: per-branch coverage, bulk safety, deterministic assertions. NOT for UI/LWC testing or agent conversational quality scoring."
+description: "Apex test patterns for @InvocableMethod agent actions: per-reason-code branch coverage, bulk safety, callout mocking, deterministic assertions. NOT for testing whether the agent routes to the right topic or answers well — use agentforce/agent-testing-and-evaluation. NOT for designing the error envelope the tests assert on — use agentforce/agent-action-error-handling."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

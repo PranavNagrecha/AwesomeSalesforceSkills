@@ -68,9 +68,9 @@
     "ec6fe33d3e53af311caf",
     "f958833e1701197d8c34"
   ],
-  "content_hash": "4364c6beb962fdd4de37e4bf1406dfd974dd8c9832d1eb73d5375cb9de9c9a7a",
+  "content_hash": "d688dd8c6a7c7ec9e2ad2ccbdcf9040fbf11ef48ae43222593bf77a5e24c9753",
   "dependencies": [],
-  "description": "Use this skill to design and configure the engagement model for an Experience Cloud community: reputation levels, ideation, and content contribution strategy. Triggers: 'community engagement strategy', 'gamification Experience Cloud', 'reputation levels setup', 'ideation community portal', 'member recognition program'. NOT for moderation configuration (see experience-cloud-moderation). NOT for technical Experience Cloud site setup or Lightning template selection.",
+  "description": "Design the engagement model for an Experience Cloud community: reputation levels, ideation, and content contribution strategy. Triggers: 'community engagement strategy', 'gamification Experience Cloud', 'reputation levels setup', 'ideation community portal', 'member recognition program'. NOT for blocking, flagging or approving what members post \u2014 use admin/experience-cloud-moderation. NOT for measuring logins, page views or engagement after launch \u2014 use data/community-analytics-data.",
   "file_location": "skills/admin/community-engagement-strategy",
   "id": "admin/community-engagement-strategy",
   "inputs": [

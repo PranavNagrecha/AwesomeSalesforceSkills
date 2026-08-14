@@ -1,6 +1,6 @@
 ---
 name: sandbox-strategy
-description: "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning."
+description: "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for how many environments a program needs and how they map to branches - use devops/environment-strategy. NOT for re-seeding reference data after a refresh - use data/sandbox-refresh-data-strategies."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

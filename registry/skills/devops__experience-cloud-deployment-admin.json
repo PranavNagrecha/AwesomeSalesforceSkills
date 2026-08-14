@@ -103,9 +103,9 @@
     "ff04e3bf6e20f8716818",
     "ff9a9dcdc3ac31c5cda4"
   ],
-  "content_hash": "1a558bb6e3acd95ce8a23b5898909e38f6c61e6a5a4f7a6df45dbfcbf25d2fc5",
+  "content_hash": "7380403c74bb91986d0cc0da4411aef53292565b8bb90d427899eef3d2a839fa",
   "dependencies": [],
-  "description": "Use this skill when deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes \u2014 including metadata ordering, ExperienceBundle enablement, post-deployment publishing, and change-set or SFDX-based migration. NOT for: LWC component development within Experience Builder, CMS content migration via Managed Content REST API, or Aura/LWC code authoring.",
+  "description": "Deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes: metadata ordering, ExperienceBundle enablement, post-deployment publishing, change-set or SFDX-based migration. NOT for automating the deploy in a CI/CD pipeline, or LWR DigitalExperienceBundle \u2014 use devops/experience-cloud-deployment-dev. NOT for building the site in Experience Builder \u2014 use admin/experience-cloud-site-setup.",
   "file_location": "skills/devops/experience-cloud-deployment-admin",
   "id": "devops/experience-cloud-deployment-admin",
   "inputs": [

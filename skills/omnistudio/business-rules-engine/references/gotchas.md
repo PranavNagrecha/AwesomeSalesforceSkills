@@ -93,3 +93,13 @@ Three more are separately required and are the usual omission:
 - If any expression set uses context tags as list variables, pair Rule Engine Runtime with Context Service Runtime for runtime users, and Context Service Admin for authors.
 - Test as a runtime user, not as the author. The BRE Test tab runs under the author's permissions and will not reproduce a runtime access failure.
 - The five names above are the documented sets — there is no generic `Business Rules Engine User` or `BRE Admin`. Confirm the exact labels in Setup → Permission Sets before writing them into an access design.
+
+---
+
+## Dual Active Matrices / Year-Twin Names Silently Pick the Wrong Band
+
+**What happens:** An Integration Procedure Calculation Action is the Omni→BRE seam. Two matrices are Active, or `…NewYYYY` twins sit beside the live table. The Expression Set's `decisionTableName` points at one; authors test the other in the BRE UI. Dollar rows often live **outside** metadata (data, not source).
+
+**When it occurs:** Annual threshold updates; vault tools that do not model ExpressionSet/DecisionMatrix.
+
+**How to avoid:** One Active source of truth. Verify the Expression Set's `decisionTableName` against the matrix the IP actually calls. Golden-set regression on every rate change. Track versions in git even when row dollars are data. Guest Read on ExpressionSet is how public Omni runs BRE — share the minimum.

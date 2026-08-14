@@ -1,6 +1,6 @@
-# Eval: integration/callouts-and-http-integrations
+# Eval: apex/callouts-and-http-integrations
 
-- **Skill under test:** `skills/integration/callouts-and-http-integrations/SKILL.md`
+- **Skill under test:** `skills/apex/callouts-and-http-integrations/SKILL.md`
 - **Priority:** P0
 - **Cases:** 3
 - **Last verified:** 2026-04-16

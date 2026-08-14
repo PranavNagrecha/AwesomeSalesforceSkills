@@ -1,6 +1,6 @@
 ---
 name: flow-dynamic-choices
-description: "Build picklists and choice sets in Flow Builder sourced from records, picklist fields, or collections, including dependent choices. NOT for static hard-coded choice sets."
+description: "Build Flow choice sets from records, picklist fields, or collections, including dependent choices. Triggers: dynamic choices Flow, record choice set, dependent picklist Flow. NOT for static hard-coded choices — use flow/screen-flow-choice-component-selection."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

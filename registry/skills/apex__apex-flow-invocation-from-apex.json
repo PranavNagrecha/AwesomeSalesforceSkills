@@ -67,9 +67,9 @@
     "fe927f406999cb33d6ee",
     "ff3dd5bec8b3a5e1a061"
   ],
-  "content_hash": "59f75d71b0fb48503387cec9626b586564c962e62298d6c4838eb25beb683ab8",
+  "content_hash": "d7da82191f213c23414ccd5f011afc9050e68fe831995006ae1c466f7a8fe302",
   "dependencies": [],
-  "description": "Use when invoking Autolaunched Flows from Apex via `Flow.Interview.createInterview`. Covers parameter typing, output retrieval, governor boundaries, and when to inline logic instead. NOT for Apex-from-Flow (`@InvocableMethod`), Process Builder, Screen Flow invocation, or Flow Orchestrator stages.",
+  "description": "Use when invoking Autolaunched Flows from Apex via `Flow.Interview.createInterview`. Covers parameter typing, output retrieval, governor boundaries, and when to inline logic instead. NOT for writing the `@InvocableMethod` class a Flow calls \u2014 use apex/invocable-methods. NOT for starting the same flow from the REST API, a Platform Event, or a subflow \u2014 use flow/auto-launched-flow-patterns.",
   "file_location": "skills/apex/apex-flow-invocation-from-apex",
   "id": "apex/apex-flow-invocation-from-apex",
   "inputs": [

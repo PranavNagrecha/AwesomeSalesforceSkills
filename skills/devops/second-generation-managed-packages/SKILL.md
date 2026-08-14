@@ -1,6 +1,6 @@
 ---
 name: second-generation-managed-packages
-description: "2GP managed package development: creating managed packages with Dev Hub and Salesforce CLI, semantic versioning, patch versions, namespace linking, ISV AppExchange listing, and subscriber upgrade management. NOT for unlocked packages, unmanaged packages, or 1GP-only workflows."
+description: "2GP managed package development: creating managed packages with Dev Hub and Salesforce CLI, semantic versioning, patch versions, namespace linking, ISV AppExchange listing, and subscriber upgrade management. NOT for unlocked packages — use devops/unlocked-package-development. NOT for 1GP packaging orgs and namespace registration — use devops/managed-package-development."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -125,6 +125,8 @@ Inter-package dependencies are declared declaratively in `sfdx-project.json` und
 7. When ready to version: `sf package version create --package "My App" --target-dev-hub devhub --code-coverage --wait 20`.
 8. Test the beta version in a scratch org: `sf package install --package 04t... --target-org devorg`.
 9. Promote to released: `sf package version promote --package 04t... --target-dev-hub devhub`.
+
+**CLI push upgrades (Winter '26+).** For subscriber orgs already on a released 2GP or unlocked package version, **`sf package install push`** (and related push-upgrade commands in the Salesforce CLI reference) can schedule a push upgrade instead of waiting for each subscriber to self-install — use for ISV broadcast fixes where the AppExchange upgrade path is too slow.
 
 **Why not the alternative:** 1GP requires a dedicated packaging org per package and cannot be automated end-to-end through the CLI. 2GP integrates into CI/CD pipelines and eliminates org credential management overhead.
 

@@ -27,9 +27,9 @@
     "cafcba949488abdb85f7",
     "d006849587e67f79ff28"
   ],
-  "content_hash": "d6372e019f3baf1ef78127ff7b33da1dcd2ea3942659547391b45cf430608cb3",
+  "content_hash": "aab0f390e7f26fa204bd33ced4e8abbb1dac2fc3110b05dc167e11c725ed6290",
   "dependencies": [],
-  "description": "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy.",
+  "description": "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for the underlying erasure mechanics (Individual sObject, ShouldForget, ContactPointConsent) \u2014 use security/gdpr-data-privacy. NOT for general backup or org-level data retention policy.",
   "file_location": "skills/security/customer-data-request-workflow",
   "id": "security/customer-data-request-workflow",
   "inputs": [

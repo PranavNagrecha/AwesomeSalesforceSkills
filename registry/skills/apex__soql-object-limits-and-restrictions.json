@@ -78,9 +78,9 @@
     "fbce13ad3f122a10f508",
     "fe70cb4f0fa47719a6e4"
   ],
-  "content_hash": "82746e6b3375fb2015c4d077b3d0c5c16668ae1f7a29992aaec3c16489634bb7",
+  "content_hash": "d7ca67215bfb525ca3d4ceff4be28c1472e31a3163b9d717c7f9149b0403ad82",
   "dependencies": [],
-  "description": "Use when a SOQL query fails or must be shaped around a specific object's own limits and restrictions \u2014 Attachment's 100,000-record ceiling, the mandatory filter fields on ContentDocumentLink / ContentHubItem / Vote, the required LIMIT clause on TopicAssignment / NewsFeed / UserProfileFeed (absent View All Data), the hard 200-row cap and ORDER BY HasAccess rule on UserRecordAccess, indexed-field-only filtering on big objects, the 4-join / 1,000-row-subquery caps on external objects, KnowledgeArticleVersion requiring dynamic SOQL, and RecentlyViewed's 90-day rolling window. NOT for the generic per-transaction SOQL governor limits (100/200 query count, 50,000 rows retrieved \u2014 see apex/governor-limits and apex/apex-limits-monitoring), NOT for general SOQL syntax (apex/soql-fundamentals) or relationship-query depth (apex/apex-soql-relationship-queries), and NOT for query selectivity / index performance tuning (data/soql-query-optimization).",
+  "description": "Use when a SOQL query fails or must be shaped around a specific object's own limits and restrictions \u2014 Attachment's 100,000-record ceiling, the mandatory filter fields on ContentDocumentLink / ContentHubItem / Vote, the required LIMIT clause on TopicAssignment / NewsFeed / UserProfileFeed (absent View All Data), the hard 200-row cap and ORDER BY HasAccess rule on UserRecordAccess, indexed-field-only filtering on big objects, the 4-join / 1,000-row-subquery caps on external objects, KnowledgeArticleVersion requiring dynamic SOQL, and RecentlyViewed's 90-day rolling window. NOT for generic SOQL governor limits \u2014 use apex/governor-limits. NOT for index and selectivity tuning \u2014 use data/soql-query-optimization. NOT for general SOQL syntax \u2014 use apex/soql-fundamentals.",
   "file_location": "skills/apex/soql-object-limits-and-restrictions",
   "id": "apex/soql-object-limits-and-restrictions",
   "inputs": [

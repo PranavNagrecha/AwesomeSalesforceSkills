@@ -2,30 +2,69 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: TODO: Name
+## Gotcha 1: `getRecordTypeInfosByDeveloperName()` returns record types the running user cannot use
 
-**What happens:** TODO: describe the unexpected behavior
+**What happens:** A developer writes an "available record types" picker by iterating the describe map, and users see record types they are not assigned. The Apex Reference Guide is explicit for every one of the four accessor maps: "The current user is not required to have access to a record type to see it in this map." The map is a schema view, not an access-control view.
 
-**When it occurs:** TODO: describe the conditions that trigger it
+**When it occurs:** Any picker, LWC combobox, or Flow choice set built from `getRecordTypeInfosByDeveloperName()`, `getRecordTypeInfosByName()`, `getRecordTypeInfosById()`, or `getRecordTypeInfos()` without filtering. It also bites when a record type is deactivated — deactivation does not remove it from the map.
 
-**How to avoid:** TODO: describe the fix or prevention
+**How to avoid:** Filter on both `Schema.RecordTypeInfo.isAvailable()` — "Returns true if this record type is available to the current user" — and `isActive()`. Resolution code that only needs an Id for a known DeveloperName can skip the filter; anything user-facing cannot.
+
+```apex
+List<Schema.RecordTypeInfo> pickable = new List<Schema.RecordTypeInfo>();
+for (Schema.RecordTypeInfo rti : Account.SObjectType.getDescribe().getRecordTypeInfos()) {
+    if (rti.isAvailable() && rti.isActive() && !rti.isMaster()) {
+        pickable.add(rti);
+    }
+}
+```
 
 ---
 
-## Gotcha 2: TODO: Name
+## Gotcha 2: The Master record type is in the map and its Id is not what callers expect
 
-**What happens:** TODO: describe the unexpected behavior
+**What happens:** Code loops the describe map and assigns "the first record type" to new records, and picks up Master. The Apex Reference Guide is explicit: `isMaster()` "Returns true if this is the master record type and false otherwise. The master record type is the default record type that's used when a record has no custom record type associated with it." Assigning it is not the same as assigning a real record type — layout assignment, picklist filtering, and any `$RecordType.DeveloperName` comparison downstream all behave differently from what the author intended.
 
-**When it occurs:** TODO: describe the conditions
+**When it occurs:** Generic "clone this record into object X" utilities, data-load default logic, and LLM-generated pickers that iterate without an `isMaster()` guard.
 
-**How to avoid:** TODO: fix or prevention
+**How to avoid:** Always exclude `isMaster()` from user-facing lists, and never treat Master as a resolvable business record type. If your object genuinely has one record type, resolve that one by DeveloperName rather than falling back to the map's first entry.
 
 ---
 
-## Gotcha 3: TODO: Name
+## Gotcha 3: A deploy that renames a record type's `fullName` creates a second record type, it does not rename
 
-**What happens:** TODO: describe the unexpected behavior
+**What happens:** The Metadata API `RecordType` type documents `fullName` as the "Record type name. The fullName can contain only underscores and alphanumeric characters" — it *is* the DeveloperName and it *is* the component key. Change it in source and the next deploy creates a new record type at the new key and leaves the old one in place, still active, still holding every existing record. Reports split, validation rules that compare `$RecordType.DeveloperName` silently stop matching old records, and no error is raised.
 
-**When it occurs:** TODO: describe the conditions
+**When it occurs:** Any refactor that "cleans up" record-type API names, and any copy-paste of a record type definition between objects.
 
-**How to avoid:** TODO: fix or prevention
+**How to avoid:** Treat `fullName` as immutable after the first deploy. Change the `label` — "Required. Descriptive label for the record type" — when the business name changes; leave `fullName` alone. If the API name genuinely must change, plan a data migration that re-stamps `RecordTypeId` on existing records, then deactivate the old type with `<active>false</active>` rather than deleting it.
+
+---
+
+## Gotcha 4: `fullName` must NOT be prefixed with the object name
+
+**What happens:** A hand-written `RecordType` metadata file uses `<fullName>Opportunity.Bulk_Orders</fullName>` inside `objects/Opportunity/recordTypes/`, mirroring how the component is addressed in a `package.xml` member. The deploy fails or produces a record type whose DeveloperName contains an illegal character, and the Apex `getRecordTypeInfosByDeveloperName().get('Bulk_Orders')` lookup then returns `null` — which surfaces later as a `System.NullPointerException: Attempt to de-reference a null object` at the `.getRecordTypeId()` call, far from the real cause.
+
+**When it occurs:** Hand-authored metadata, and metadata generated by tooling that confuses the `package.xml` member name with the component's own `fullName`.
+
+**How to avoid:** The Metadata API guide states it directly: "As the record type is already defined within the object, don't prefix the object name (Opportunity. Bulk Orders)." Prefix only in `package.xml` members. And null-guard every describe lookup — a missing DeveloperName is a deployment defect that should fail loudly:
+
+```apex
+Schema.RecordTypeInfo rti = Account.SObjectType.getDescribe()
+    .getRecordTypeInfosByDeveloperName().get('Business_Account');
+if (rti == null) {
+    throw new IllegalArgumentException(
+        'Record type Business_Account is not deployed to this org');
+}
+Id rtId = rti.getRecordTypeId();
+```
+
+---
+
+## Gotcha 5: `getName()` is translated, so name-based lookups break for non-English users
+
+**What happens:** Code resolves via `getRecordTypeInfosByName()` and works for the developer, then returns `null` for a user whose language is French. `Schema.RecordTypeInfo.getName()` "Returns the UI label of this record type. The label can be translated into any language that Salesforce supports" — the by-Name map is keyed on the *running user's* rendered label.
+
+**When it occurs:** Multi-language orgs, and any org where Translation Workbench is enabled for record types. It is invisible in single-language sandboxes, so it ships.
+
+**How to avoid:** Use `getRecordTypeInfosByDeveloperName()` for every resolution. Reserve `getName()` for display only. The same rule applies in SOQL: filter `RecordType.DeveloperName`, never `RecordType.Name`.

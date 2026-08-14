@@ -1,4 +1,4 @@
-# Lwc Web Components Interop — Work Template
+# LWC Web Components Interop — Work Template
 
 Use this template when working on tasks in this area.
 
@@ -10,23 +10,30 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Answers to the Before Starting questions from SKILL.md:
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- Candidate library, and evidence it is a true standard custom element:
+- Module format shipped (ESM / UMD / IIFE) — `loadScript` cannot load ESM:
+- Org security architecture: Lightning Web Security enabled, or Locker:
+- Target surfaces (Lightning app, Experience Cloud, mobile, embedded):
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Wrapper design: who owns the load, the tag registration, the property contract, and the event renaming:
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
+From the review checklist in SKILL.md, plus the failure modes in `references/gotchas.md`:
 
-- [ ] TODO
-- [ ] TODO
+- [ ] LWS confirmed enabled — Locker does not support custom elements at all
+- [ ] Tag carries `lwc:external` in the template
+- [ ] Registration guarded with `customElements.get()` before `define()`
+- [ ] Reactive data reaches the element as a property; update path tested, not just first render
+- [ ] Non-lowercase events attached with `addEventListener`, re-dispatched lowercase
+- [ ] Experience Builder excluded from targets while LWS is enabled
+- [ ] Fallback UI when the library fails to load
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Deviations from the standard pattern, and the reason for each:
+

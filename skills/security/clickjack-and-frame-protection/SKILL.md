@@ -1,6 +1,6 @@
 ---
 name: clickjack-and-frame-protection
-description: "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration."
+description: "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration — use security/csp-and-trusted-urls."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

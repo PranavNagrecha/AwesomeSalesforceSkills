@@ -2,27 +2,36 @@
 
 ## Relevant Pillars
 
-TODO: Identify which Well-Architected pillars apply and why.
-
-- **Security** — TODO: explain if/how security applies to this skill
-- **Performance** — TODO: explain if/how performance applies
-- **Scalability** — TODO: explain if/how scalability applies
-- **Reliability** — TODO: explain if/how reliability applies
-- **Operational Excellence** — TODO: explain if/how operational excellence applies
+- **Reliability** — Primary, in the specific sense that matters here: the outputs are trusted by people making commitments to a board. Every prerequisite in this domain fails silently — field history that was never enabled, a forecast type with the wrong date basis, an Einstein model with nothing to train on — and each produces a plausible-looking empty or wrong number rather than an error. Reliability work is verification work.
+- **Operational Excellence** — Primary alongside Reliability. Part of the setup is deployable metadata and part is a Setup click that no pipeline can carry. A runbook that does not separate the two produces environments that pass CI and fail in use.
+- **User Experience** — Secondary but decisive for adoption. The shipped views are the product; a team that rebuilds them in custom reports ends up maintaining two answers to the same question and trusting neither.
+- **Performance** — Secondary. The intelligence is computed off history objects that grow with pipeline activity. Extensions should read the same aggregates the shipped views read, not re-derive deltas from raw history on every render.
 
 ## Architectural Tradeoffs
 
-TODO: Document the key tradeoffs a practitioner will face. Reference the patterns section in SKILL.md.
+| Tradeoff | Decision criteria |
+|---|---|
+| Which four forecast types to spend | Hard ceiling — "The maximum number of forecast types is four." Revenue and quantity of the same segmentation cost two slots. Decide the four during design, with finance in the room, before dashboards are promised. |
+| `dateType`: `OpportunityCloseDate` vs `ProductDate` vs `ScheduleDate` | Close date for sales-cycle forecasting; product or schedule date when the number must reconcile to revenue recognition. Changing it later re-bases every historical comparison, so treat it as a one-way decision. |
+| Configure shipped views vs build custom reports | Configure first. Deal-change deltas are the difficult part and are already computed correctly. Extend only after establishing what is genuinely absent — most gaps are column configuration. |
+| Track more history fields vs fewer | Track the pivot fields the analytics actually use. Field history is collected continuously and cannot be backfilled, so the cost of tracking a field you might need is small and the cost of *not* tracking it is a quarter of missing data. Balance that against the object-level limit your org is subject to. |
+| Deploy settings as metadata vs configure in Setup | Deploy everything that is deployable — `ForecastingSettings`, `ForecastingType`, `OpportunityScoreSettings` — so environments are reproducible. Document the residue (Amount and CloseDate history tracking) as explicit manual steps with a verification query, not as a footnote. |
+| Enable Einstein scoring early vs at go-live | Early. Scoring needs closed-deal history before it produces anything, so an empty score column in week one is a timing fact, not a defect. Enabling it late guarantees an empty column on the day people are being trained. |
 
-## Anti-Patterns
+## Architectural Anti-Patterns
 
-TODO: List 2–3 architectural anti-patterns this skill helps avoid.
-
-1. **TODO: Anti-pattern name** — TODO: explain why this is bad and what to do instead.
-2. **TODO: Anti-pattern name** — TODO: explanation.
+1. **Treating enablement as one switch** — Forecasts, forecast types, Einstein Opportunity Scoring and field history are four independent settings with independent defaults. `enableOpportunityScoring`'s "default value is false" and nothing about enabling Forecasts changes it. A checklist that says "enable Revenue Intelligence" will produce a half-configured org.
+2. **Assuming the pipeline deployed the prerequisites** — Field history tracking for currency and date fields on standard objects is not covered by `CustomField.trackHistory`, which the Metadata API scopes to "picklist and lookup fields only" for standard objects. A green deploy is not evidence that history is being collected; a query against `OpportunityFieldHistory` is.
+3. **Designing dashboards before settling the forecast-type budget** — The four-type ceiling is discovered when you try to add the fifth, which is usually after leadership has been shown a mock-up with five segmentations in it.
+4. **Parallel custom reporting** — Rebuilding deal-change detection in custom reports. The delta logic is the part that is hard to get right, and a hand-rolled version cannot answer "what changed since Tuesday" without a snapshot mechanism that is itself a project.
 
 ## Official Sources Used
 
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Metadata API Developer Guide — `ForecastingSettings`. Confirms the type "Represents the Forecasts settings options", availability from API version 28 with structural changes "in API version 30.0 and again in API version 53.0", the `enableForecasts` toggle ("Set to true to enable and false to disable the functionality"), `forecastingCategoryMappings` ("A list of mappings associating forecast types with forecast rollups"), and the hard limit on `forecastingTypeSettings`: "The maximum number of forecast types is four." Also confirms `globalAdjustmentsSettings`, `globalForecastRangeSettings` and `globalQuotasSettings` as "Available in API version 53.0 and later." — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_forecastingsettings.htm (verified 2026-08-14)
+- Metadata API Developer Guide — `ForecastingType`. Confirms availability in API version 52.0 and later and the field semantics used above: `active`, `amount` ("If true, the forecast type is based on a revenue measure"), `quantity` ("If true, the forecast type is based on a quantity measure"), `developerName`, `hasProductFamily`, `opportunitySplitType`, `territory2Model`, and `dateType` with its six valid values `OpportunityCloseDate`, `ProductDate`, `ScheduleDate`, `OLIMeasureCloseDateOnly`, `ProductDateOnly`, `ScheduleDateOnly`. — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_forecastingtype.htm (verified 2026-08-14)
+- Metadata API Developer Guide — `OpportunityScoreSettings`. Confirms the type "Represents an org's Einstein Opportunity Scoring settings", availability in API versions 49.0 and later, and the single field `enableOpportunityScoring` whose "default value is false." — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_opportunityscoresettings.htm (verified 2026-08-14)
+- Metadata API Developer Guide — `CustomField`. Confirms `trackHistory` — "Indicates whether history tracking is enabled for the field (true) or not (false). Also available for standard object fields (picklist and lookup fields only) in API version 30.0 and later" — and the dependency that "the enableHistory field on the associated standard or custom object must also be true." — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customfield.htm (verified 2026-08-14)
+- Metadata API Developer Guide — `CustomObject`. Confirms `enableHistory` — "Indicates whether the object is enabled for history tracking (true) or not (false)" — and `enableFeeds`, `enableReports`, `enableActivities`. — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/customobject.htm (verified 2026-08-14)
+- Salesforce Well-Architected Overview — pillar definitions used to map the tradeoffs above. — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+**Not verified, and therefore not claimed anywhere in this package:** the maximum number of fields per object that can have history tracked, field-history retention periods, licence names and edition availability for Revenue Intelligence and Pipeline Inspection, Einstein Activity Capture behaviour, and the API name of the Einstein Opportunity Scoring score field (do not guess it — an earlier draft of this package asserted a non-existent `Opportunity.Score__c`). Those live on `help.salesforce.com`, which returns only a client-side shell to a crawler. Anyone extending this package should read them in a browser before adding numbers.

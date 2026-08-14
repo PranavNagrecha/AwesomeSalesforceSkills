@@ -1,6 +1,6 @@
 ---
 name: duplicate-rule-person-account-edge-cases
-description: "When and how to author Duplicate Rules and Matching Rules in B2C / Person Account orgs without breaking lead conversion, cross-object matching, or PII hygiene. Covers PA's dual-record (001/003) shape, PersonEmail vs Contact.Email, multi-phone normalization, IsPersonAccount filtering, RecordType filtering for PA, and Lead-to-PA convert. NOT for B2B duplicate management — see data/duplicate-management. NOT for Data.com / Lightning Data — see integration/data-com."
+description: "Duplicate Rules and Matching Rules for Person Accounts — PA shape, lead convert, PII. Triggers: person account duplicate rule, PA matching, IsPersonAccount filter. NOT for general B2B duplicate management — use admin/duplicate-management. NOT for Person Account enablement — use data/person-accounts."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

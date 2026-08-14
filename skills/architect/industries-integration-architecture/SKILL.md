@@ -1,6 +1,6 @@
 ---
 name: industries-integration-architecture
-description: "Use when designing or reviewing the integration layer between Salesforce Industries clouds (Insurance, Communications, Energy & Utilities) and vertical backend systems such as policy administration systems, BSS/OSS platforms, or Customer Information Systems (CIS). NOT for generic Salesforce integration patterns unrelated to industry verticals, NOT for OmniStudio component design decisions (see omnistudio-vs-standard-architecture), NOT for FSC data model or module licensing (see insurance-cloud-architecture)."
+description: "Use when designing or reviewing the integration layer between Salesforce Industries clouds (Insurance, Communications, Energy & Utilities) and vertical backend systems such as policy administration systems, BSS/OSS platforms, or Customer Information Systems (CIS). NOT for calling a named Industries API (TMF679, InsurancePolicy Connect) — use omnistudio/industries-api-extensions. NOT for FSC data model or module licensing — use architect/insurance-cloud-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: cpq-architecture-patterns
-description: "CPQ solution architecture covering bundle design, pricing engine performance, multi-currency strategy, and integration patterns. Trigger keywords: CPQ architecture, quote scalability, bundle design, QCP performance, CPQ integration, large quote, pricing waterfall, ServiceRouter. NOT for individual feature design such as configuring specific Price Rules or Discount Schedules — see cpq-pricing-rules or pricing-model-design instead."
+description: "CPQ solution architecture covering bundle design, pricing engine performance, multi-currency strategy, and integration patterns. Trigger keywords: CPQ architecture, quote scalability, bundle design, QCP performance, CPQ integration, large quote, pricing waterfall, ServiceRouter. NOT for a quote that already calculates slowly or times out — use data/cpq-performance-optimization. NOT for configuring individual Price Rules or Discount Schedules — use admin/cpq-pricing-rules."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

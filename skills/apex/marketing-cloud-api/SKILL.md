@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-api
-description: "Use this skill when integrating Salesforce or external systems with Marketing Cloud Engagement REST or SOAP APIs — including OAuth 2.0 authentication, journey injection via /interaction/v1/events, triggered sends, and Data Extension row operations. Trigger keywords: MC API, Marketing Cloud REST, journey injection, triggered send, fire entry event, DE row upsert, dataeventsasync, Installed Package API integration. NOT for Salesforce core REST/SOAP APIs, MCAE/Pardot APIs, or Marketing Cloud Connect (CRM connector sync)."
+description: "Use this skill when integrating Salesforce or external systems with Marketing Cloud Engagement REST or SOAP APIs — OAuth 2.0 authentication, journey injection via /interaction/v1/events, triggered sends, and Data Extension row operations. Trigger keywords: MC API, Marketing Cloud REST, journey injection, triggered send, fire entry event, DE row upsert, dataeventsasync, Installed Package API integration. NOT for Account Engagement (Pardot) APIs — use apex/mcae-pardot-api. NOT for choosing the integration pattern — use architect/marketing-integration-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -75,9 +75,9 @@
     "ff9a99374989fb310568",
     "ffce86e1384584c0ccb4"
   ],
-  "content_hash": "977aee6f00f0d67df3c6ddc5f10340fdd515f021e57f188801e84c17e3269cae",
+  "content_hash": "14dde67b6b2a3b336b82c83b5372813e0ca48cdd0931b1e143db46a437ffcde1",
   "dependencies": [],
-  "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads.",
+  "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, and donations loaded in the same run) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for a standalone gift-history load with payments, soft credits, GAU allocations or campaign attribution \u2014 use data/gift-history-import. NOT for Nonprofit Cloud (NPC) migration \u2014 use architect/nonprofit-cloud-vs-npsp-migration.",
   "file_location": "skills/data/constituent-data-migration",
   "id": "data/constituent-data-migration",
   "inputs": [

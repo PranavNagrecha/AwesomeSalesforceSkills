@@ -1,6 +1,6 @@
 ---
 name: approval-processes
-description: "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that."
+description: "Design, review, or troubleshoot Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for submitting or acting on approvals from Apex - use admin/approval-process-apex-patterns. NOT for CPQ Advanced Approvals (SBAA rules and chains) - use admin/cpq-approval-workflows."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

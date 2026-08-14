@@ -58,12 +58,12 @@
     "f794cd5d42539d6ee5b2",
     "fb6d2d0de379ab512f6e"
   ],
-  "content_hash": "ebe44e62dcfeb7915bcb83b1a4a9fb15de500b765dd7f0a41dee47a14e201b26",
+  "content_hash": "854536fd966107325d18a0027c302ec330bb7e9f326aeec6c0e15e912fdf1aee",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-data-model"
   ],
-  "description": "Use this skill when defining clinical data model requirements for Health Cloud: HL7/FHIR data mapping, interoperability requirements, FHIR R4-aligned object activation, CodeableConcept constraints, and middleware translation requirements. NOT for data migration procedures, Apex integration code, or generic data architecture unrelated to clinical interoperability.",
+  "description": "Use this skill when defining clinical data model requirements for Health Cloud: HL7/FHIR data mapping, interoperability requirements, FHIR R4-aligned object activation, CodeableConcept constraints, and middleware translation requirements. NOT for the field-level mapping work itself \u2014 use data/fhir-data-mapping. NOT for choosing legacy HC24__ EHR objects vs standard clinical objects \u2014 use data/health-cloud-data-model.",
   "file_location": "skills/admin/clinical-data-requirements",
   "id": "admin/clinical-data-requirements",
   "inputs": [

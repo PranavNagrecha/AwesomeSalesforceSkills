@@ -13,6 +13,8 @@
 
 3. **Cutover timing for time-based actions**: Deactivating a rule immediately cancels all pending time-based actions. Teams must weigh fast cutover (some in-flight actions lost) against delayed cutover (longer parallel operation risk).
 
+4. **Sequencing after end of support**: The 31 December 2025 date has passed and active rules still run — Salesforce's own article says they "continue to run as they do today, even after 2025", with no shutdown date published. So migration order is no longer set by a deadline; it is set by unsupported-runtime exposure. Rank rules by what a permanently unfixed defect would cost: outbound messages feeding a paying integration and time-based actions driving SLA or renewal emails first, cosmetic same-record field updates last. A plan that migrates alphabetically, or that stops entirely because "the deadline already passed", both misprice this.
+
 ## Anti-Patterns
 
 1. **Running both Workflow Rule and replacement Flow simultaneously** — Even briefly running both active on the same object creates double execution of field updates and double email alerts. Deactivate the Workflow Rule the moment the Flow is activated.
@@ -24,7 +26,7 @@
 ## Official Sources Used
 
 - Transition to Flow — Retirement of Workflow Rules and Process Builder — https://help.salesforce.com/s/articleView?id=000389396&type=1
-- Workflow Rules Retirement — https://help.salesforce.com/s/articleView?id=001096524&type=1
+- Salesforce Workflow Rules & Process Builder End of Support — https://help.salesforce.com/s/articleView?id=001096524&language=en_US&type=1 — confirms support ended 31 Dec 2025 in the past tense, that active rules and processes "continue to run as they do today, even after 2025", and that the only change is the loss of customer support and bug fixes. No shutdown date is published on the page (verified 2026-08-13)
 - Migrate to Flow Tool Considerations — https://help.salesforce.com/s/articleView?id=sf.migrate_to_flow_tool_considerations.htm&type=5
 - Send an Outbound Message from a Record-Triggered Flow — https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_outbound_message.htm&release=234&type=5
 - Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5

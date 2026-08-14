@@ -1,6 +1,6 @@
 ---
 name: service-data-archival
-description: "Use this skill when Service Cloud orgs are consuming excessive data or file storage due to Case-related records, or when compliance requirements demand structured retention and deletion of case history. Trigger keywords: EmailMessage bloat, Email-to-Case storage, ContentDocument archival, case attachment cleanup, compliance retention policy, service storage optimization. NOT for generic data archival across non-Service objects — use data-archival-strategies instead. NOT for CPQ, Sales Cloud, or FSL record archival. NOT for purging custom object data unrelated to Cases."
+description: "Use this skill when Service Cloud orgs are consuming excessive data or file storage due to Case-related records, or when compliance requirements demand structured retention and deletion of case history. Trigger keywords: EmailMessage bloat, Email-to-Case storage, ContentDocument archival, case attachment cleanup, compliance retention policy, service storage optimization. NOT for generic archival across non-Service objects (CPQ, Sales Cloud, FSL) — use data/data-archival-strategies. NOT for loading legacy case history into the org rather than purging it — use data/case-history-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

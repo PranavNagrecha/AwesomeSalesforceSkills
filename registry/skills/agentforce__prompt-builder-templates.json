@@ -99,9 +99,9 @@
     "f7289e12b1a9550c3478",
     "fa4b47899ee9e43e44b8"
   ],
-  "content_hash": "f32d9a9850abe74cd0cc00a372dbe421facaca362cdcea78007af11911b60bd3",
+  "content_hash": "aaa97abb35beb98d9937a552ff60bc7fc00c880548b6f415a216ccc171de328b",
   "dependencies": [],
-  "description": "Use when creating, reviewing, or troubleshooting Prompt Builder templates (Field Generation, Record Summary, Sales Email, or Flex types), including grounding with merge fields, Flow, or Apex. Trigger keywords: prompt template, Prompt Builder, field generation, record summary, sales email template, flex template, grounding, merge fields, LLM template, Einstein generative AI. NOT for agent topic instructions, Copilot action configuration, or Data Cloud segment activation.",
+  "description": "Use when creating, reviewing, or troubleshooting Prompt Builder templates (Field Generation, Record Summary, Sales Email, or Flex types), including grounding with merge fields, Flow, or Apex. Trigger keywords: prompt template, Prompt Builder, field generation, record summary, sales email template, flex template, grounding, merge fields, LLM template, Einstein generative AI. NOT for versioning, promoting or rolling back a template \u2014 use agentforce/prompt-template-versioning. NOT for Data Cloud vector-search RAG pipelines that ground an agent (chunking, embeddings, retrievers) \u2014 use agentforce/rag-patterns-in-salesforce.",
   "file_location": "skills/agentforce/prompt-builder-templates",
   "id": "agentforce/prompt-builder-templates",
   "inputs": [

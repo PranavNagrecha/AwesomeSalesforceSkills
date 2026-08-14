@@ -1,6 +1,6 @@
 ---
 name: long-running-process-orchestration
-description: "Use when designing or reviewing multi-step Apex orchestration that spans multiple transactions, checkpoints state across async boundaries, or recovers from partial failure in a long-running workflow. Trigger keywords: 'multi-step Queueable chain', 'cross-transaction state', 'platform event state machine', 'Finalizer retry', 'orchestrate across transactions', 'workflow progress tracking'. NOT for single-job Queueable design (use apex-queueable-patterns), NOT for Flow Orchestration (use flow/orchestration-flows), NOT for bulk record processing where Batch Apex is the primary tool (use batch-apex-patterns)."
+description: "Use when designing or reviewing multi-step Apex orchestration that spans multiple transactions, checkpoints state across async boundaries, or recovers from partial failure in a long-running workflow. Trigger keywords: 'multi-step Queueable chain', 'cross-transaction state', 'platform event state machine', 'Finalizer retry', 'orchestrate across transactions', 'workflow progress tracking'. NOT for single-job Queueable design (use apex/apex-queueable-patterns), NOT for Flow Orchestration (use flow/orchestration-flows), NOT for bulk record processing where Batch Apex is the primary tool (use batch-apex-patterns)."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

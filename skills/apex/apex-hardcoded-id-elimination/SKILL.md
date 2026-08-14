@@ -1,6 +1,6 @@
 ---
 name: apex-hardcoded-id-elimination
-description: "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for storing config data — see apex-custom-settings-hierarchy / custom-metadata-in-apex. NOT for ID-based sharing rules (see sharing-selection)."
+description: "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for record type IDs in Flow, formulas or LWC — use admin/record-type-id-management. NOT for storing the config values themselves — use apex/custom-metadata-in-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

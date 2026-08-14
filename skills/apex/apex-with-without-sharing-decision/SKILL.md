@@ -1,6 +1,6 @@
 ---
 name: apex-with-without-sharing-decision
-description: "Choosing the correct sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how the choice flows through called methods, and when WITH USER_MODE overrides class-level behavior. NOT for org-level sharing design (use standards/decision-trees/sharing-selection.md). NOT for FLS / CRUD enforcement (use apex-fls-crud-enforcement). NOT for Apex Managed Sharing (use apex-managed-sharing)."
+description: "Choosing the sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how it flows through called methods, and when WITH USER_MODE overrides it. NOT for enforcing CRUD/FLS on the records themselves — use apex/apex-stripinaccessible-and-fls-enforcement. NOT for granting row access via __Share records — use apex/apex-managed-sharing."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

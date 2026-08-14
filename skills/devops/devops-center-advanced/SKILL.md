@@ -1,6 +1,6 @@
 ---
 name: devops-center-advanced
-description: "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup."
+description: "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup — use admin/devops-process-documentation."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

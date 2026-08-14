@@ -1,6 +1,6 @@
 ---
 name: consent-management-marketing
-description: "Email consent management in Marketing Cloud: configuring Subscription Centers, building Preference Centers on CloudPages, enforcing CAN-SPAM and GDPR requirements, and handling opt-out propagation. Trigger keywords: unsubscribe handling, CAN-SPAM compliance, GDPR consent tracking, publication lists, subscription center, preference center, opt-out, double opt-in, Privacy Center, MC consent. NOT for general GDPR compliance in Sales/Service Cloud, not for Salesforce CRM consent objects (ContactPointTypeConsent), not for Einstein consent scoring."
+description: "Email consent management in Marketing Cloud: configuring Subscription Centers, building Preference Centers on CloudPages, enforcing CAN-SPAM and GDPR requirements, and handling opt-out propagation. Trigger keywords: unsubscribe handling, CAN-SPAM compliance, GDPR consent tracking, publication lists, subscription center, preference center, opt-out, double opt-in, Privacy Center, MC consent. NOT for subscriber key and suppression lists — use data/subscriber-data-management. NOT for the CRM consent data model or MC-to-CRM sync — use architect/marketing-consent-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

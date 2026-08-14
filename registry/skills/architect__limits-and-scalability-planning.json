@@ -117,9 +117,9 @@
     "fc0081095a3753c3353f",
     "ffc13ee29d21c95f73b4"
   ],
-  "content_hash": "0e2d79782ff1a8b04bd2c1ff427e285f198cc7df2b19f4af27df04c2b7512230",
+  "content_hash": "808c449b9c55f50bad2b2c47d9e48ca091f1d820e44f32eafc1cab8802ed8bd3",
   "dependencies": [],
-  "description": "Use when planning a new org build for scale, auditing an existing org for governor limit exposure, or investigating a limit-related incident. Trigger phrases: 'org is hitting governor limits', 'how many custom objects can we have', 'will our data volume cause performance issues', 'batch job keeps failing with limit errors', 'planning for 10 million records', 'platform event throughput limits', 'SOQL limit exceeded in production'. NOT for code-level optimization (use apex-cpu-and-heap-optimization), NOT for individual SOQL query tuning (use apex/soql-optimization), NOT for Batch Apex authoring mechanics (use apex/batch-apex).",
+  "description": "Use when planning a new org build for scale, auditing an existing org for governor limit exposure, or investigating a limit-related incident. Trigger phrases: 'org is hitting governor limits', 'how many custom objects can we have', 'will our data volume cause performance issues', 'batch job keeps failing with limit errors', 'planning for 10 million records', 'platform event throughput limits', 'SOQL limit exceeded in production'. NOT for one transaction's limits - use apex/governor-limits. NOT for tuning an individual SOQL query - use data/soql-query-optimization. NOT for Batch Apex authoring mechanics - use apex/batch-apex-patterns.",
   "file_location": "skills/architect/limits-and-scalability-planning",
   "id": "architect/limits-and-scalability-planning",
   "inputs": [

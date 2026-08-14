@@ -40,6 +40,7 @@
     "b1a5e302a7036b7b35eb",
     "b1f4df30ceca31111cfe",
     "bb92c330c05a7dc7a9c8",
+    "c782b7e9781d64ff7b16",
     "ce3c9c8de362993892dc",
     "d0c8b1cfa3b6d8872b8c",
     "d90bcc03830e6f646234",
@@ -55,9 +56,9 @@
     "f99a4c0139596e8abb5a",
     "ffd46c259b3c7e296100"
   ],
-  "content_hash": "e1868d7949dc947a48ea74677ff1781affcf18c8dfabdaab6ee9b26be6246ea5",
+  "content_hash": "9f218c1233d88f860055ad02dd12ff5b1dc6149b170d87cbf7dfd63fe0c05829",
   "dependencies": [],
-  "description": "Working with Salesforce Files at the data layer \u2014 `ContentVersion` (the binary content + version metadata), `ContentDocument` (the parent / shareable handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file size limit and the 10 MB feed-attached limit, the deprecated `Attachment` object, the `Document` object (Classic-only), and Files Connect for external file sources. Covers SOQL patterns to enumerate files attached to a record, Apex insert / link patterns, sharing implications of `ShareType` and `Visibility`, and the migration path from the legacy Attachment object. NOT for LWC file upload UI components (see lwc/lwc-file-upload-patterns), NOT for static-resource bundling (see lwc/static-resources).",
+  "description": "Working with Salesforce Files at the data layer \u2014 `ContentVersion` (binary content + version metadata), `ContentDocument` (the shareable parent handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file and 10 MB feed-attached limits, the deprecated `Attachment` object, the Classic-only `Document` object, and Files Connect for external sources. Covers SOQL to enumerate files on a record, Apex insert / link patterns, and `ShareType` / `Visibility` sharing implications. NOT for bulk-migrating Classic Attachments and Notes over to Files \u2014 use data/attachment-to-files-migration. NOT for the file upload UI in a component \u2014 use lwc/file-upload-patterns.",
   "file_location": "skills/data/salesforce-files-architecture",
   "id": "data/salesforce-files-architecture",
   "inputs": [
@@ -99,7 +100,7 @@
   "templates": [
     "skills/data/salesforce-files-architecture/templates/salesforce-files-architecture-template.md"
   ],
-  "updated": "2026-05-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

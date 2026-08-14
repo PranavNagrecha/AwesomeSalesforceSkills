@@ -1,6 +1,6 @@
 ---
 name: lwc-performance-budgets
-description: "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. Does NOT cover runtime optimization techniques, Lightning page tuning, or general LCP causes (see lwc-performance)."
+description: "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. NOT for runtime optimization techniques, Lightning page tuning, or general LCP causes — use lwc/lwc-performance."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

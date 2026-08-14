@@ -1,6 +1,6 @@
 ---
 name: flow-http-callout-action
-description: "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic."
+description: "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for registering an OpenAPI spec as an External Service — use flow/flow-external-services. NOT for Apex callout logic and mock tests — use apex/callouts-and-http-integrations."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

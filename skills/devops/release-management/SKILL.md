@@ -1,6 +1,6 @@
 ---
 name: release-management
-description: "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment)."
+description: "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for Salesforce's own seasonal platform release (Spring/Summer/Winter) readiness — release notes triage, Release Updates, Sandbox Preview opt-in (use admin/salesforce-release-preparation); this skill governs YOUR release train, not Salesforce's. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment)."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -11,7 +11,6 @@ triggers:
   - "what is the rollback strategy if a production deployment fails"
   - "how do I version Salesforce metadata in an org-based project"
   - "how do I use quick deploy to speed up deployment night"
-  - "our deployment is happening near the Salesforce seasonal release upgrade"
 tags:
   - release-management
   - release-planning

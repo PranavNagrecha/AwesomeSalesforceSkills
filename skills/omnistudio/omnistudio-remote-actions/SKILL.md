@@ -1,6 +1,6 @@
 ---
 name: omnistudio-remote-actions
-description: "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element', 'VlocityOpenInterface2', 'Send/Response JSON Path'. NOT for Integration Procedure internal design (use integration-procedures) or generic Apex callout patterns (use apex integration skills)."
+description: "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element'. NOT for Integration Procedure internal design (use integration-procedures) or generic Ap — use omnistudio/omnistudio-error-handling-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,7 +34,7 @@ dependencies:
   - integration-procedures
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 runtime_orphan: true
 ---
 

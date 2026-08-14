@@ -1,6 +1,6 @@
 ---
 name: fsc-deployment-patterns
-description: "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) — including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation, Participant Role custom metadata, and namespace-aware packaging. Triggers: 'FSC deployment fails', 'Person Accounts must be enabled before deploying household record types', 'CDS share table not populating after deploy', 'namespace mismatch FinServ__ vs standard objects', 'IndustriesSettings metadata not taking effect'. NOT for general Salesforce metadata deployment patterns (use pre-deployment-checklist or metadata-api-coverage-gaps), NOT for FSC data model design decisions (use fsc-data-model), NOT for FSC architecture planning (use fsc-architecture-patterns)."
+description: "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) — including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation. NOT for general Salesforce metadata deployment patterns (use pre-deployment-checklist or — use architect/fsc-architecture-patterns."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

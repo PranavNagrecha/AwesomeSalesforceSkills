@@ -1,6 +1,6 @@
 ---
 name: well-architected-review
-description: "Use when conducting a formal Salesforce Well-Architected Framework (WAF) review of an org or solution design. Covers all three pillars: Trusted (security, compliance), Easy (user experience, adoption), and Adaptable (scalability, maintainability). Produces a structured assessment with findings and recommendations. Triggers: well-architected review, WAF assessment, org architecture review, architecture health check, trusted easy adaptable. NOT for deep-dives into individual pillars (use security-architecture-review, limits-and-scalability-planning, or technical-debt-assessment) or for implementation guidance."
+description: "Use when conducting a formal Salesforce Well-Architected Framework (WAF) review of an org or solution design. Covers all three pillars: Trusted (security, compliance), Easy (user experience, adoption), and Adaptable (scalability, maintainability). Produces a structured assessment with findings and recommendations. Triggers: well-architected review, WAF assessment, org architecture review, architecture health check, trusted easy adaptable. NOT for a security-only deep-dive — use architect/security-architecture-review. NOT for a dead-code and automation-overlap audit — use architect/technical-debt-assessment."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

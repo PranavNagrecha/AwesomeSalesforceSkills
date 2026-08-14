@@ -1,6 +1,6 @@
 ---
 name: slack-salesforce-integration-setup
-description: "Use this skill when setting up or troubleshooting the Salesforce for Slack managed app — including connecting a Salesforce org to a Slack workspace, configuring the three-party admin handshake, linking Slack channels to Salesforce records, enabling record preview sharing, and managing org-level limits. Triggers on: Salesforce for Slack app not connecting, Slack org connection setup, Salesforce record sharing in Slack, Slack workspace admin approval, connecting Salesforce to Slack. NOT for building custom Slack apps or Slack bots (separate development platform), not for Slack Workflow Builder Salesforce connector (use slack-workflow-builder skill), not for Flow-based Slack messaging (use flow-for-slack skill)."
+description: "Use this skill when setting up or troubleshooting the Salesforce for Slack managed app — including connecting a Salesforce org to a Slack workspace, configuring the three-party admin handshake, linking Slack channels. NOT for building custom Slack apps or Slack bots (separate development platform), not fo — use integration/slack-workflow-builder."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

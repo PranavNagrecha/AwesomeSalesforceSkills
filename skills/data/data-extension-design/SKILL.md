@@ -1,6 +1,6 @@
 ---
 name: data-extension-design
-description: "Use this skill when designing, creating, or troubleshooting Marketing Cloud Data Extensions — including sendable vs. non-sendable DE selection, primary key composition, data retention configuration, Send Relationship mapping, and performance indexing. Trigger keywords: data extension, sendable DE, send relationship, DE primary key, data retention, Marketing Cloud data model, DE columns, subscriber key mapping. NOT for CRM (Sales/Service Cloud) custom object design, Marketing Cloud Connect object sync configuration, or Contact Builder attribute group architecture beyond simple relationship type selection."
+description: "Use this skill when designing, creating, or troubleshooting Marketing Cloud Data Extensions — including sendable vs. non-sendable DE selection, primary key composition, data retention configuration, Send Relationship mapping, and performance indexing. Trigger keywords: data extension, sendable DE, send relationship, DE primary key, data retention, Marketing Cloud data model, DE columns, subscriber key mapping. NOT for the whole MC data model, Contact Key linkage, or CRM-to-MC flow — use architect/marketing-data-architecture. NOT for synchronized DEs that stop updating — use data/marketing-cloud-data-sync."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

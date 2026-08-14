@@ -51,12 +51,13 @@
     "ed819d23854dcaba14e5",
     "eda875d0388f5b52491b",
     "edb71413e4ee3566e8ff",
+    "efbcc5bb63ca4e61bb30",
     "fd6d49b079e3c520b599",
     "ff374d951e0006da58d0"
   ],
-  "content_hash": "f04d6297ba4416e5b4f33c0556d4f4af7321faa6eed4df00b7f27d25bdbb891f",
+  "content_hash": "9e34c4b1d6ee836f435cb93d91568619a3683bff2ccd7ed18f7552c9fb137850",
   "dependencies": [],
-  "description": "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for built-in debug logs or Developer Console (use debug-logs-and-developer-console), NOT for exception capture and error propagation (use error-handling-framework), NOT for Event Monitoring (use security skills).",
+  "description": "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for System.debug vs durable logging \u2014 use apex/debug-and-logging. NOT for exception capture \u2014 use apex/error-handling-framework.",
   "file_location": "skills/apex/custom-logging-and-monitoring",
   "id": "apex/custom-logging-and-monitoring",
   "inputs": [
@@ -99,7 +100,7 @@
   "templates": [
     "skills/apex/custom-logging-and-monitoring/templates/custom-logging-and-monitoring-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

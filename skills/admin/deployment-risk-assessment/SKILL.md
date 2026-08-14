@@ -1,6 +1,6 @@
 ---
 name: deployment-risk-assessment
-description: "Use when a practitioner needs to classify the risk level of an upcoming Salesforce deployment, define rollback trigger conditions, or assign decision authority before the release window opens. Triggers: 'how risky is this release', 'what needs rollback planning', 'classify deployment risk', 'pre-deployment risk checklist', 'rollback decision authority', 'high risk metadata types'. NOT for executing the deployment itself, writing CI/CD pipeline code, or troubleshooting failures after a deployment has already run — use change-management-and-deployment for execution planning and devops/deployment-error-troubleshooting for post-failure diagnosis."
+description: "Use when a practitioner needs to classify the risk level of an upcoming Salesforce deployment, define rollback trigger conditions, or assign decision authority before the release window opens. Triggers: 'how risky is this release', 'what needs rollback planning', 'classify deployment risk', 'pre-deployment risk checklist', 'rollback decision authority', 'high risk metadata types'. NOT for executing the deployment itself, writing CI/CD pipeline code, or troubleshooting failures after a deployment has already run — use admin/change-management-and-deployment for execution planning and devops/deployment-error-troubleshooting for post-failure diagnosis."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: flexcard-container-composition
-description: "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard events, flexcard datasource. Does NOT cover: the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Experience Cloud theming."
+description: "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard. NOT for the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Exp — use admin/flexcard-requirements."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

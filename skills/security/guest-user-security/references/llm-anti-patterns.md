@@ -95,3 +95,27 @@ The audit is still correct advice — the stated reason is not:
 ```
 
 **Detection hint:** any sentence pairing a guest-user permission-set capability with the verb *added*, *introduced*, *now allows* or *new attack surface* and a release name. Every dated change in this area removes access. A quick check on any such claim: if the release note title contains the word "Remove," the guidance describing it as a grant has inverted it.
+
+---
+
+## 8. Rate-limiting guests with `UserInfo.getUserId()`
+
+**What the LLM generates wrong:** `String key = 'upload:' + UserInfo.getUserId(); Cache.Org.get(key);`
+
+**Why it happens:** Authenticated Apex tutorials key caches on the running user.
+
+**Correct pattern:** The Experience Cloud guest user is a **single** User record for every anonymous visitor. Key on sanitized IP + server nonce, or you have built a global bucket. Document fail-open vs fail-closed.
+
+**Detection hint:** `UserInfo.getUserId()` inside a class reachable from a guest Experience Cloud page, used as a cache or counter key.
+
+---
+
+## 9. Trusting a client-supplied record Id on the guest path
+
+**What the LLM generates wrong:** `@AuraEnabled public static Application__c getApp(Id appId) { return [SELECT … FROM Application__c WHERE Id = :appId]; }`
+
+**Why it happens:** CRUD controllers take an Id. Guest Apex is still system mode.
+
+**Correct pattern:** Resolve the row from a server-minted session token (HMAC at rest). Never query by an Id the browser sent. Children by traversal.
+
+**Detection hint:** Guest-reachable Apex with an `Id` parameter and no token/HMAC check.

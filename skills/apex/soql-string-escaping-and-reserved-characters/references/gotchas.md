@@ -65,3 +65,13 @@ flags `\T` as a typo.
 **How to avoid:** the alphabetic escape sequences are case-insensitive — `\n` and `\N` both mean
 newline, `\t` and `\T` both mean tab. Only `\uXXXX` requires its lowercase `u`, with four hex
 digits following.
+
+---
+
+## Gotcha 6: `_` in `LIKE` Is a Single-Character Wildcard — `LIKE '%__c'` Matches Almost Everything
+
+**What happens:** A field-debt query `WHERE DeveloperName LIKE '%__c'` is meant to find custom fields. In SOQL `LIKE`, `_` matches **any single character**. The pattern matches `Account`, `Contact`, and every standard object whose API name is at least two characters plus anything. Counts explode; custom-field inventories are garbage.
+
+**When it occurs:** Tooling/EntityDefinition scans, report-type field lists, "find all custom fields" Apex.
+
+**How to avoid:** Escape the underscore: `LIKE '%\\_\\_c'` (or bind a string that contains escaped `_`). Prefer `DurableId` / `QualifiedApiName` ending-in checks in Apex after an unfiltered describe, not LIKE on `__c`.

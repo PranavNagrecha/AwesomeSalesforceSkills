@@ -1,6 +1,6 @@
 ---
 name: bulk-api-patterns
-description: "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps (use data-import-and-management), NOT for strategic load-size decisions or concurrency mode selection (use bulk-api-and-large-data-loads)."
+description: "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps — use admin/data-import-and-management. NOT for strategic load-size decisions or serial vs parallel concurrency mode — use data/bulk-api-and-large-data-loads."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

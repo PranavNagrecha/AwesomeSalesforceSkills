@@ -1,6 +1,6 @@
 ---
 name: data-cloud-vector-search-dev
-description: "Use this skill when developing Data Cloud vector search capabilities: configuring search indexes, selecting chunking strategies (Easy Setup vs Advanced Setup), generating embeddings via the Salesforce-managed model, calling the Query API with a Data Cloud access token, and wiring retrieval to Agentforce grounding. NOT for Data Cloud admin, data model design, or standard CRM Connected App token management."
+description: "Developing Data Cloud vector search: configuring search indexes, selecting chunking strategies (Easy Setup vs Advanced Setup), generating embeddings via the Salesforce-managed model, calling the Query API with a Data Cloud access token, and wiring retrieval to Agentforce grounding. NOT for admin-side index upkeep in Setup — refresh mode, PII field exclusion, rebuilds — use data/vector-database-management. NOT for end-to-end RAG pipeline design — use agentforce/rag-patterns-in-salesforce."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

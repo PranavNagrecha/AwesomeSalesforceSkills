@@ -49,9 +49,9 @@
     "f0496358005d9282fe8d",
     "f6ac66d1cc51d3ed3fa5"
   ],
-  "content_hash": "59b48fdb2dd390891db4f688955658ba9c4263694aa2a83f2778d7bd81d5437b",
+  "content_hash": "6130b35ece9d142e40fddcd91a641a6e76989c683024e1cc6fbaaace7a2fcf22",
   "dependencies": [],
-  "description": "Apex enum patterns \u2014 enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design (use admin/picklist-design).",
+  "description": "Apex enum patterns \u2014 enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design and value-set management \u2014 use admin/picklist-and-value-sets. NOT for reading picklist values at runtime via describe \u2014 use apex/apex-schema-describe.",
   "file_location": "skills/apex/apex-enum-patterns",
   "id": "apex/apex-enum-patterns",
   "inputs": [

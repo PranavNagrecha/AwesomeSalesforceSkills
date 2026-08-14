@@ -1,0 +1,98 @@
+[
+  {
+    "i": 3,
+    "query": "integrate with an external rest api",
+    "expected_skill": "apex/callouts-and-http-integrations",
+    "domain": "apex"
+  },
+  {
+    "i": 13,
+    "query": "we hired someone, how do I get them into Salesforce",
+    "expected_skill": "admin/user-management",
+    "domain": "admin"
+  },
+  {
+    "i": 23,
+    "query": "set up an approval when a discount is over 20 percent",
+    "expected_skill": "admin/approval-processes",
+    "domain": "admin"
+  },
+  {
+    "i": 33,
+    "query": "call an external REST API from Apex with OAuth",
+    "expected_skill": "apex/callouts-and-http-integrations",
+    "domain": "apex"
+  },
+  {
+    "i": 43,
+    "query": "should I use Flow or Apex for this",
+    "expected_skill": "admin/process-automation-selection",
+    "domain": "admin"
+  },
+  {
+    "i": 53,
+    "query": "my agentforce action returns the wrong record",
+    "expected_skill": "agentforce/agent-action-input-slot-extraction",
+    "domain": "agentforce"
+  },
+  {
+    "i": 63,
+    "query": "route cases to the right queue based on product",
+    "expected_skill": "admin/assignment-rules",
+    "domain": "admin"
+  },
+  {
+    "i": 73,
+    "query": "reduce our technical debt",
+    "expected_skill": "architect/technical-debt-assessment",
+    "domain": "architect"
+  },
+  {
+    "i": 83,
+    "query": "write down why we picked this design so the next team knows",
+    "expected_skill": "architect/architecture-decision-records",
+    "domain": "architect"
+  },
+  {
+    "i": 93,
+    "query": "our datatable chokes on 5000 rows",
+    "expected_skill": "lwc/lwc-virtualized-lists",
+    "domain": "lwc"
+  },
+  {
+    "i": 103,
+    "query": "store an api key somewhere safe for callouts",
+    "expected_skill": "integration/named-credentials-setup",
+    "domain": "integration"
+  },
+  {
+    "i": 113,
+    "query": "hand the conversation to a human when the agent is stuck",
+    "expected_skill": "agentforce/agentforce-agent-handoff-patterns",
+    "domain": "agentforce"
+  },
+  {
+    "i": 123,
+    "query": "force everyone onto mfa without locking out integrations",
+    "expected_skill": "security/mfa-enforcement-strategy",
+    "domain": "security"
+  },
+  {
+    "i": 133,
+    "query": "search across objects for a phone number",
+    "expected_skill": "data/sosl-search-patterns",
+    "domain": "data"
+  },
+  {
+    "i": 143,
+    "query": "hardcoded record type ids everywhere",
+    "expected_skill": "apex/apex-hardcoded-id-elimination",
+    "domain": "apex"
+  },
+  {
+    "i": 153,
+    "query": "translate picklist labels for the french team",
+    "expected_skill": "admin/multi-language-and-translation",
+    "domain": "admin"
+  }
+]

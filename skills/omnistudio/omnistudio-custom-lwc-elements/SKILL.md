@@ -1,6 +1,6 @@
 ---
 name: omnistudio-custom-lwc-elements
-description: "Creating and integrating custom Lightning Web Components within OmniScripts: LWC override patterns, pubsub event handling, custom validation, OmniStudio data passing conventions. Use when a standard OmniScript element cannot meet a UX requirement. NOT for standalone LWC development (use lwc/* skills). NOT for Integration Procedures (use integration-procedures). NOT for embedding an OmniScript inside an LWC (use omnistudio-lwc-integration)."
+description: "Creating and integrating custom Lightning Web Components within OmniScripts: LWC override patterns, pubsub event handling, custom validation, OmniStudio data passing conventions. Use when a standard OmniScript element cannot meet a UX requirement. NOT for standalone LWC development (use lwc/* skills) — use lwc/lwc-web-components-interop."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -145,5 +145,5 @@ If the org has no Slack and no Teams, an Embedded Service widget on the intranet
 - `agentforce/custom-agent-actions-apex` — custom Apex action authoring for HRIS read-only and read-write integrations
 - `agentforce/agent-channel-deployment` — Slack, Teams, Embedded Service channel configuration mechanics
 - `agentforce/agentforce-guardrails` — prompt-instruction guardrails, content policy, instruction-injection defense
-- `agentforce/grounding-knowledge-base-design` — Knowledge / Data Cloud grounding patterns for policy content
-- `architect/data-residency-and-localization` — GDPR, EU works-council, data-residency constraints when the agent reads cross-region HR data
+- `agentforce/data-cloud-grounding-for-agentforce` — Data Cloud retrievers, DMO selection, and chunking when grounding the agent on policy content
+- `security/gdpr-data-privacy` — GDPR consent tracking, data-subject-request handling, and Privacy Center controls for the HR data the agent reads

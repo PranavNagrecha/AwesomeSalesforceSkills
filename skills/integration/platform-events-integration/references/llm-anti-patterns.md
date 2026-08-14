@@ -24,8 +24,13 @@ Pub/Sub API (RECOMMENDED for new development):
 CometD / Streaming API (LEGACY):
 - HTTP long-polling or WebSocket
 - Subscribe only (cannot publish via CometD)
-- Limited replay support (-1 for all retained, -2 for new only)
+- Limited replay support (-1 = new events only; -2 = all retained events)
 - Endpoint: /cometd/XX.0
+- v64.0+: the SERVER can initiate a disconnect (infrastructure auto-scaling,
+  more frequent on Hyperforce). The client must add a listener for the
+  /meta/disconnect channel and reconnect after receiving one, resuming from
+  the stored replayId. The long-poll loop alone does not cover this, and the
+  reference client libraries do not do it for you.
 
 Use Pub/Sub API for all new external Platform Event consumers.
 CometD is acceptable for existing implementations or simple use cases.
@@ -37,7 +42,7 @@ CometD is acceptable for existing implementations or simple use cases.
 
 ## Anti-Pattern 2: Not Handling Replay ID Gaps for Durable Subscribers
 
-**What the LLM generates:** "Store the last ReplayId and use it to resume subscription" without handling the scenario where the stored ReplayId has expired (events are retained for 72 hours for standard events, 72 hours for high-volume events).
+**What the LLM generates:** "Store the last ReplayId and use it to resume subscription" without handling the scenario where the stored ReplayId has expired (events are retained for 72 hours for high-volume events — every event definable today — and 24 hours for legacy standard-volume events).
 
 **Why it happens:** Replay ID persistence is a standard pattern, but the edge case where the stored ID is older than the retention window (causing the subscription to fail) is not commonly covered.
 
@@ -51,8 +56,11 @@ Replay ID strategy for durable external subscribers:
 3. Handle ReplayId expiration:
    - If the stored ReplayId is older than 72 hours, it has expired
    - The subscription will fail or miss events
-   - Fall back to ReplayPreset.EARLIEST (-1) to get all retained events
-   - Or use ReplayPreset.LATEST (-2) if processing old events is not needed
+   - Fall back to ReplayPreset.EARLIEST to get all retained events
+     (CometD equivalent: replayId -2)
+   - Or ReplayPreset.LATEST if old events are not needed (CometD: replayId -1)
+   - ReplayPreset is a Pub/Sub API enum (LATEST / EARLIEST / CUSTOM); the
+     numbers above are the CometD replay IDs, not values of the enum
 
 4. Implement dead letter handling:
    - If the subscriber cannot process an event, store it for retry
@@ -85,8 +93,12 @@ Standard Platform Events:
 - Batch publish via Composite API: up to 10 events per composite subrequest
 
 High-Volume Platform Events:
-- Higher throughput (millions per day)
-- Requires separate licensing or entitlement
+- Hourly publishing allocation: 250,000/hour on Enterprise, Performance and
+  Unlimited; 50,000/hour on Developer
+- NO separate license is required — new platform events are high volume by
+  default. The Platform Event Add-On License buys MORE allocation
+  (+25,000 published/hour; separately +100,000 delivered per 24 hours),
+  not access to the tier.
 - Published via REST API or Pub/Sub API
 
 Monitor usage:
@@ -145,10 +157,10 @@ change when CDC already does this natively.
 ```text
 Platform Event delivery guarantees:
 
-Standard Platform Events:
+Standard-Volume Platform Events (legacy, pre-Spring '19):
 - At-least-once delivery (duplicates are possible)
 - Events are ordered by publish timestamp
-- Events retained for 72 hours (for replay)
+- Events retained for 24 hours (for replay)
 
 High-Volume Platform Events:
 - At-least-once delivery
@@ -190,6 +202,6 @@ Consumer design requirements:
 
 **Correct version:** The hourly publishing allocation is per org, not per tier: **250,000/hour** for high-volume events on Enterprise, Performance, and Unlimited; **50,000/hour** on Developer; add-on capacity is sold in **+25,000/hour** increments. Standard-volume (legacy) events have their own, *lower*, allocation of 100,000/hour on EE/Perf/Unlimited — so the tiers do differ, but in the opposite direction from the fabricated table, and neither tier is unlimited. Separately, event *delivery* to CometD/empApi subscribers is metered on a 24-hour basis and is a different allocation; do not merge the two into one row.
 
-**Compounding error:** the tier choice is not live work. After Spring '19 you cannot define a new standard-volume event, and Salesforce retires publish and subscribe for standard-volume events in **Winter '27**. Advice framed as "pick standard or high-volume" is answering a question that no longer exists; the real question for an org holding legacy events is migration sequencing.
+**Compounding error:** the tier choice is not live work. Salesforce: "You can no longer define new standard-volume custom platform events. New platform events are high volume by default. Standard-volume custom platform events will be retired in **Summer '27**." Advice framed as "pick standard or high-volume" is answering a question that no longer exists; the real question for an org holding legacy events is migration sequencing. Note the symmetric failure, produced by models trained on the Spring '25 / Summer '25 doc editions, which projected retirement in **Summer '25**: asserting that standard-volume events *have already been retired* and that the org's existing ones have stopped firing. The date moved out by two years. Both errors are wrong in opposite directions, and both are checkable against one sentence on the allocations page.
 
 **Detection hint:** `grep -rn 'Unlimited (platform capacity)\|High-Volume.*[Uu]nlimited' <files>` — no platform event publishes without an allocation, so "unlimited" in a platform-event limits table is always wrong. More generally, flag any hourly platform-event figure written without an edition qualifier: the allocation differs across editions, so a correct citation cannot be a bare number.

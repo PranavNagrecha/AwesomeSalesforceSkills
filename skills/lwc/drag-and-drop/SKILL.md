@@ -1,6 +1,6 @@
 ---
 name: drag-and-drop
-description: "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning."
+description: "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, accessible announcements, and file drop zones. NOT for kanban migration from legacy Lightning."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

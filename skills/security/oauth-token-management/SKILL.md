@@ -29,9 +29,9 @@ outputs:
 dependencies:
   - integration/oauth-flows-and-connected-apps
   - security/connected-app-security-policies
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-08-14
 ---
 
 # OAuth Token Management
@@ -98,6 +98,7 @@ Salesforce documents **refresh token rotation** (see release notes for your edit
 | `invalid_grant` right after policy change | Compare old vs new refresh token policy and session timeouts | Stricter policy often invalidates existing refresh tokens |
 | Need to verify a token before a sensitive server action | Use documented **token introspection** where available and permitted | Avoid home-grown “call `/limits` as a ping” checks that do not reflect token state semantics |
 | Headless integration should never hold a refresh token | Prefer JWT bearer or another flow that matches the trust model | Fewer long-lived bearer artifacts to protect |
+| User frozen **and** all refresh tokens revoked, with no admin action or policy change | Check the client's egress IP before auditing org IP settings; expect Salesforce-side containment for anonymizing VPN/proxy/high-risk IPs | Since April 24, 2026 this applies to all Connected App and API traffic; unfreezing alone does not hold and no allowlist is documented |
 
 ---
 

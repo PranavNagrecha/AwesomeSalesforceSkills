@@ -1,6 +1,6 @@
 ---
 name: flow-platform-events-integration
-description: "Use when Flow is a Platform Event publisher, subscriber, or both. Triggers: 'publish platform event from flow', 'platform-event-triggered flow', 'high-volume platform event', 'publish after commit vs immediate', 'PE subscriber error handling', 'integration fan-out from save'. NOT for Change Data Capture (see integration skills) or for generic async work that does not need pub/sub (see flow/scheduled-flows)."
+description: "Use when Flow is a Platform Event publisher, subscriber, or both. Triggers: 'publish platform event from flow', 'platform-event-triggered flow', 'high-volume platform event', 'publish after commit vs immediate', 'PE subscriber error handling', 'integration fan-out from save'. NOT for Change Data Capture — use integration/change-data-capture-integration. NOT for async work that needs no pub/sub — use flow/scheduled-flows."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

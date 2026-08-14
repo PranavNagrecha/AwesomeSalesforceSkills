@@ -1,6 +1,6 @@
 ---
 name: apex-queueable-patterns
-description: "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable'. NOT for basic async Apex mechanism selection (use async-apex), NOT for large-volume record processing where Batch Apex is the right tool (use batch-apex-patterns)."
+description: "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable'. NOT for choosing Queueable vs Batch — use apex/async-apex. NOT for large-volume chunked record processing — use apex/batch-apex-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

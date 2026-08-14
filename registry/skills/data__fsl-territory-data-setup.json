@@ -56,9 +56,9 @@
     "f0dce9ae569f537a5f71",
     "f60216548712c2fb4e06"
   ],
-  "content_hash": "b497fe66bad6192468940d6c7328827a325526dd56da8179349eaf1203057f68",
+  "content_hash": "94b62fe070af4628ea3d14596fb42cb9f6435e5c00687ba000e13eb3b4b11c23",
   "dependencies": [],
-  "description": "Use this skill when bulk loading Service Territory data: boundary polygons, ServiceTerritoryMember assignments, OperatingHours, TimeSlots, and territory hierarchy setup. Trigger keywords: service territory bulk load, KML polygon import FSL, ServiceTerritoryMember migration, OperatingHours data setup, PolygonUtils Apex. NOT for Enterprise Territory Management (ETM/Account Territories), admin-level territory configuration UI, or scheduling policy setup.",
+  "description": "Use this skill when bulk loading Service Territory data: boundary polygons, ServiceTerritoryMember assignments, OperatingHours, TimeSlots, and territory hierarchy setup. Trigger keywords: service territory bulk load, KML polygon import FSL, ServiceTerritoryMember migration, OperatingHours data setup, PolygonUtils Apex. NOT for ETM territory data \u2014 use data/territory-data-alignment. NOT for territory config in Setup \u2014 use admin/fsl-service-territory-setup.",
   "file_location": "skills/data/fsl-territory-data-setup",
   "id": "data/fsl-territory-data-setup",
   "inputs": [

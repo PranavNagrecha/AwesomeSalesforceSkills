@@ -1,6 +1,6 @@
 ---
 name: headless-experience-cloud
-description: "Use when building custom frontends (React, Vue, mobile, static sites) that consume Salesforce CMS content via the Connect REST API headless delivery endpoint. Triggers: 'headless Salesforce CMS', 'deliver CMS content to external frontend', 'React app Salesforce content API', 'custom frontend Experience Cloud data', 'CMS delivery channel API'. NOT for standard Experience Builder site development. NOT for CMS Connect (3rd-party CMS federation into Experience Builder). NOT for Experience Cloud LWC components rendered inside a site."
+description: "Use when building custom frontends (React, Vue, mobile, static sites) that consume Salesforce CMS content via the Connect REST API headless delivery endpoint. Triggers: 'headless Salesforce CMS', 'deliver CMS content to external frontend', 'React app. NOT for standard Experience Builder site development — use architect/knowledge-vs-external-cms."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

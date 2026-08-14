@@ -1,6 +1,6 @@
 ---
 name: wire-service-patterns
-description: "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for component communication or generic lifecycle issues when data provisioning is not the main concern."
+description: "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for forcing a refresh after DML — use lwc/lwc-wire-refresh-patterns. NOT for imperative Apex on a click — use lwc/lwc-imperative-apex."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

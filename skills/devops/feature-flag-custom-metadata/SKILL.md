@@ -1,6 +1,6 @@
 ---
 name: feature-flag-custom-metadata
-description: "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets."
+description: "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets — use admin/custom-metadata-types."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

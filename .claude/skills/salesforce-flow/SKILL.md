@@ -1,11 +1,11 @@
 ---
 name: salesforce-flow
-description: "Router for the 63 SfSkills `flow` skill packages. Flow Builder: record-triggered, screen, scheduled and orchestration flows, plus bulkification, fault handling, Flow-side limits, testing and versioning. Anything phrased as \"my flow\" belongs here even when the symptom is a limit that salesforce-apex also names. Use when the request mentions Flow, Flow Builder, record-triggered flow, screen flow, scheduled flow, subflow, fault path, flow element, orchestration, Process Builder migration, Workflow Rule migration, flow limit, flow hitting SOQL limit, too many SOQL queries in a flow, flow bulkification, Get Records performance. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 63 SfSkills `flow` skill packages. Flow Builder: record-triggered, screen, scheduled and orchestration flows, bulkification, fault handling, limits, testing. \"My flow\" belongs here even when salesforce-apex also names the limit. Nightly scheduling without naming code defaults here; apex takes it when code/class/Apex is named. Flow-vs-Apex choice before anything is built: admin/process-automation-selection. Use when the request mentions Flow, Flow Builder, record-triggered flow, screen flow, scheduled flow, subflow, fault path, flow element, orchestration, Process Builder migration, Workflow Rule migration, flow limit, flow hitting SOQL limit, too many SOQL queries in a flow, flow bulkification, Get Records performance. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce flow — SfSkills domain router
 
-Flow Builder: record-triggered, screen, scheduled and orchestration flows, plus bulkification, fault handling, Flow-side limits, testing and versioning. Anything phrased as "my flow" belongs here even when the symptom is a limit that salesforce-apex also names.
+Flow Builder: record-triggered, screen, scheduled and orchestration flows, bulkification, fault handling, limits, testing. "My flow" belongs here even when salesforce-apex also names the limit. Nightly scheduling without naming code defaults here; apex takes it when code/class/Apex is named. Flow-vs-Apex choice before anything is built: admin/process-automation-selection.
 
 **63 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/flow/<slug>/SKILL.md`. They are not

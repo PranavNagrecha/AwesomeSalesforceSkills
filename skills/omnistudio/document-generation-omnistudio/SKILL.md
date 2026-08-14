@@ -1,6 +1,6 @@
 ---
 name: document-generation-omnistudio
-description: "Generating documents (PDF, DOCX, PPTX) from OmniStudio using Document Templates, OmniDataTransform token mapping, and OmniScript or Integration Procedure orchestration. Use when building client-side interactive or server-side batch document generation flows. NOT for Salesforce CPQ document generation. NOT for standard Salesforce mail merge or Lightning email templates. NOT for Contract Lifecycle Management (CLM) native document generation."
+description: "Generating documents (PDF, DOCX, PPTX) from OmniStudio using Document Templates, OmniDataTransform token mapping, and OmniScript or Integration Procedure orchestration. Use when building client-side interactive or server-side batch document generation flows. NOT for Salesforce CPQ document generation — use apex/fsc-document-generation."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -40,7 +40,7 @@ dependencies:
   - omnistudio/omniscript-design-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 runtime_orphan: true
 ---
 

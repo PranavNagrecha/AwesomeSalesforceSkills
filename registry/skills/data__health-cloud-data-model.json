@@ -92,9 +92,9 @@
     "fa27ec3042ca40710c8e",
     "fc71ab37bd91d1dfdbcf"
   ],
-  "content_hash": "4d99062bd2eb8332285f50cede019f5ad5db89d9d45bc87437243ca94b5a6887",
+  "content_hash": "303ce52c2f8c756c3cff997cb4d056f5a962d61d0975b435b57ea529c60125c9",
   "dependencies": [],
-  "description": "Use this skill when choosing, enabling, or querying Health Cloud clinical data objects \u2014 including the dual-layer architecture of legacy managed-package EHR objects (HC24__ namespace) and FHIR R4-aligned standard objects (ClinicalEncounter, HealthCondition, CarePlan, etc.). Covers setup prerequisites, object relationships, migration considerations, and integration strategy. NOT for standard Salesforce data model or generic CRM objects.",
+  "description": "Use this skill when choosing, enabling, or querying Health Cloud clinical data objects \u2014 including the dual-layer architecture of legacy managed-package EHR objects (HC24__ namespace) and FHIR R4-aligned standard objects (ClinicalEncounter, HealthCondition, CarePlan, etc.). Covers setup prerequisites, object relationships, and migration considerations. NOT for mapping a specific FHIR R4 resource field-by-field onto these objects \u2014 use data/fhir-data-mapping. NOT for calling the FHIR Healthcare API or the SObject API against clinical data \u2014 use apex/health-cloud-apis.",
   "file_location": "skills/data/health-cloud-data-model",
   "id": "data/health-cloud-data-model",
   "inputs": [

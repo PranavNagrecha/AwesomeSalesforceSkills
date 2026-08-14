@@ -94,9 +94,9 @@
     "fabbf56cfda2e2df2a9e",
     "fad49b192c85508d475d"
   ],
-  "content_hash": "88cc4c796431e514e0ecc865b40e2de23ef7cda57df429a49aef491ff8c13d19",
+  "content_hash": "eb551bab44e71f7bd5e17f1faf2677593b2eba35cfd616c9a93c1526e4c699e1",
   "dependencies": [],
-  "description": "Use when configuring or troubleshooting the B2B/B2C Commerce product catalog \u2014 ProductCatalog, ProductCategory, ProductCategoryProduct, WebStoreCatalog, CommerceEntitlementPolicy, product attributes, and product variants. Trigger keywords: product catalog, product category, commerce catalog, entitlement policy, product variants, product attributes, catalog visibility. NOT for CPQ product catalog (bundles, options, price rules) or for loading standard Product2/Pricebook2 data outside Commerce.",
+  "description": "Use when configuring or troubleshooting the B2B/B2C Commerce product catalog \u2014 ProductCatalog, ProductCategory, ProductCategoryProduct, WebStoreCatalog, CommerceEntitlementPolicy, product attributes, and product variants. Trigger keywords: product catalog, product category, commerce catalog, entitlement policy, product variants, product attributes, catalog visibility. NOT for taxonomy, attribute strategy or category navigation design \u2014 use admin/commerce-catalog-strategy. NOT for search ranking, facets or index rebuilds \u2014 use apex/commerce-search-customization. NOT for CPQ catalogs.",
   "file_location": "skills/admin/commerce-product-catalog",
   "id": "admin/commerce-product-catalog",
   "inputs": [

@@ -64,9 +64,9 @@
     "f337e7138abb81ea7110",
     "fe6f47ffef90d68e8fab"
   ],
-  "content_hash": "19c20772824c96d9591c334c29b11e297afcea1aa630b2ac4db00cdd702daef5",
+  "content_hash": "fa166bec0db2aed5e977487b35b8454530e9cfe8605dc635dd423e87594d10b8",
   "dependencies": [],
-  "description": "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks (use debug-and-logging), and NOT for writing test classes (use apex-test-class-standards).",
+  "description": "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks \u2014 use apex/debug-and-logging. NOT for writing test classes \u2014 use apex/test-class-standards.",
   "file_location": "skills/apex/debug-logs-and-developer-console",
   "id": "apex/debug-logs-and-developer-console",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: mcae-lead-scoring-and-grading
-description: "Use this skill when configuring MCAE (Account Engagement / Pardot) lead scoring models, grading profiles, score decay rules, or automation rules that fire on score/grade thresholds. Covers: scoring point values per activity, score decay for inactivity, Profiles for fit grading, combined MQL definitions (Score + Grade), and automation rules vs completion actions. NOT for Einstein Lead Scoring (Sales Cloud), not for Marketing Cloud Engagement journey scoring, not for Salesforce native lead scoring without Account Engagement."
+description: "Use this skill when configuring MCAE (Account Engagement / Pardot) lead scoring models, grading profiles, score decay rules, or automation rules that fire on score/grade thresholds. Covers: scoring point values per activity, score decay for inactivity, Profiles for fit grading, combined MQL definitions (Score + Grade), and automation rules vs completion actions. NOT for defining the MQL model before build — use admin/lead-scoring-requirements. NOT for Engagement Studio nurture programs — use admin/lead-nurture-journey-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

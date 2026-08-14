@@ -1,6 +1,6 @@
 ---
 name: calculation-procedure-design
-description: "Design OmniStudio Calculation Procedures and Calculation Matrices for pricing, rating, and rules-heavy scoring. Trigger keywords: calculation procedure, calculation matrix, rating engine, pricing matrix, expression set, decision matrix, OmniStudio rules. Does NOT cover: generic Apex-only pricing code, Salesforce CPQ price rules (different product), or Flow-based decision logic."
+description: "Design Calculation Procedures and Matrices for pricing, rating, and rules-heavy scoring. Triggers: calculation procedure, calculation matrix, expression set, decision matrix. NOT for Salesforce CPQ price rules — use admin/cpq-pricing-rules. NOT for Flow decision logic — use flow/flow-decision-element-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -18,7 +18,7 @@
 ## Anti-Patterns
 
 1. **"Protected = secret" without managed-package context** — Engineers read "Protected" in the Salesforce docs and assume it means "encrypted and hidden from everyone." It means "hidden from subscribers of a managed package." In an unmanaged DX project the protection is zero. Always pair the Protected designation with explicit managed-package packaging plans.
-2. **Hardcoded "temporary" secrets** — `private static final String API_KEY = 'sk_live_...'` with a TODO comment. The secret is now in version control, in CI logs, in every developer's clone, and in any compiled artifact. There is no "temporary" — it is permanent the moment it is committed.
+2. **Hardcoded "temporary" secrets** — `private static final String API_KEY = 'sk_live_...'` with a "fix before prod" comment. The secret is now in version control, in CI logs, in every developer's clone, and in any compiled artifact. There is no "temporary" — it is permanent the moment it is committed.
 3. **Secret-bearing CMDT records committed to source control** — `customMetadata/*.md-meta.xml` files are pulled by `sf project retrieve` and committed alongside code. Without an explicit `.forceignore` rule, the secret value lives in git history.
 4. **No rotation procedure** — A secret with no documented rotation owner and cadence is a future incident. Treat rotation runbooks as a deliverable equal to the storage decision.
 5. **`System.debug` of secret values** — Debug logs are downloadable artifacts retained for hours and archived for years in Event Monitoring. Logging a secret once leaks it persistently.
@@ -26,9 +26,9 @@
 ## Official Sources Used
 
 - Custom Metadata Types — Protect Sensitive Data — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_security.htm
-- Named Credentials — https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm
-- Shield Platform Encryption — https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm
+- Apex Developer Guide — Named Credentials as Callout Endpoints — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm
+- Metadata API Developer Guide — PlatformEncryptionSettings — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformencryptionsettings.htm
 - `@NamespaceAccessible` annotation — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm
-- Protect Custom Settings — https://help.salesforce.com/s/articleView?id=sf.cs_protected.htm
+- Apex Developer Guide — Custom Settings (Protected visibility in managed packages) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_customsettings.htm
 - Apex Crypto class reference — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm
 - Salesforce Well-Architected — Secure pillar — https://architect.salesforce.com/well-architected/trusted/secure

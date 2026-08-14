@@ -1,6 +1,6 @@
 ---
 name: lwc-lds-writes
-description: "Use when an LWC must create, update, or delete records via Lightning Data Service (`lightning/uiRecordApi` — `createRecord`, `updateRecord`, `deleteRecord`) or via `lightning-record-edit-form` / `lightning-record-form`. Triggers: 'updateRecord cache not refreshing', 'createRecord returns DUPLICATES_DETECTED', 'updateRecord input shape with field references', 'lightning-record-edit-form submit not committing', 'should I use LDS write or imperative Apex DML'. NOT for read-only wires (use lwc/wire-service-patterns), NOT for refreshing wired data after a write (use lwc/lwc-wire-refresh-patterns), and NOT for Apex DML from LWC (use apex/dml-patterns)."
+description: "Use when an LWC must create, update, or delete records via Lightning Data Service (`lightning/uiRecordApi` — `createRecord`, `updateRecord`, `deleteRecord`) or via `lightning-record-edit-form` / `lightning-record-form`. Triggers: 'updateRecord cache not refreshing', 'createRecord returns DUPLICATES_DETECTED', 'updateRecord input shape with field references', 'lightning-record-edit-form submit not committing', 'should I use LDS write or imperative Apex DML'. NOT for read-only wires (use lwc/wire-service-patterns), NOT for refreshing wired data after a write (use lwc/lwc-wire-refresh-patterns), and NOT for Apex DML from LWC (use apex/apex-dml-patterns)."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -220,5 +220,5 @@ For "should this be Flow / Apex / LDS at all?", read `standards/decision-trees/a
 - `lwc/wire-service-patterns` — for the read path and reactive parameters; LDS writes complement, not replace, this skill
 - `lwc/lwc-wire-refresh-patterns` — for the post-write refresh path (`refreshApex`, `RefreshView`, `getRecordNotifyChange`/`notifyRecordUpdateAvailable`)
 - `lwc/lwc-base-component-recipes` — for `lightning-record-edit-form` and `lightning-record-form` configuration patterns
-- `apex/dml-patterns` — for the Apex DML alternative when LDS writes are not the right fit (multi-record, system context, transaction boundary)
+- `apex/apex-dml-patterns` — for the Apex DML alternative when LDS writes are not the right fit (multi-record, system context, transaction boundary)
 - `standards/decision-trees/automation-selection.md` — for the "Flow vs LWC vs Apex" decision before reaching for any of the above

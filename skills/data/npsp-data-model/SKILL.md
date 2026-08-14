@@ -1,6 +1,6 @@
 ---
 name: npsp-data-model
-description: "Use this skill when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for standard Salesforce data model, Financial Services Cloud data model, or Program Management Module (PMM) data model."
+description: "Use when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for the constituent 360 household model, CRLP rollups or Program Management (PMM) objects — use data/nonprofit-data-architecture. NOT for configuring Enhanced Recurring Donations — use admin/recurring-donations-setup."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -36,7 +36,7 @@
 
 **Apex security findings:**
 - Dynamic SOQL found in a legacy LoanApplicationController that concatenated the status filter from a picklist value passed through the Aura component. While picklist values are constrained in the UI, direct API calls can supply arbitrary strings. **High** finding — rewritten to use a bind variable.
-- Five Apex classes using `without sharing` were reviewed. Three had legitimate system-context reasons (batch processing, trigger on insert before user context established). Two had no documented reason and were refactored.
+- Five Apex classes using `without sharing` were reviewed. Three had legitimate system-context reasons (batch processing, and a trigger handler that has to roll up to parent records the running user cannot see). Two had no documented reason and were refactored.
 
 **Shield assessment:**
 - No HIPAA or FedRAMP requirement; bank account numbers stored in custom fields meet the "financial account numbers" criterion.

@@ -103,12 +103,12 @@
     "facd4eb34fadf5f5d6f2",
     "fb1125a28c6536f896b5"
   ],
-  "content_hash": "b3b0842908790a14af8383b252aa5dfdd75aeaadb74d606857a091729e62e18f",
+  "content_hash": "5b52186b78361293933a3fd3c8f3c19dda02f4c285896179a5383bee0ff85222",
   "dependencies": [
     "omnistudio/omnistudio-lwc-integration",
     "omnistudio/omniscript-design-patterns"
   ],
-  "description": "Creating and integrating custom Lightning Web Components within OmniScripts: LWC override patterns, pubsub event handling, custom validation, OmniStudio data passing conventions. Use when a standard OmniScript element cannot meet a UX requirement. NOT for standalone LWC development (use lwc/* skills). NOT for Integration Procedures (use integration-procedures). NOT for embedding an OmniScript inside an LWC (use omnistudio-lwc-integration).",
+  "description": "Creating and integrating custom Lightning Web Components within OmniScripts: LWC override patterns, pubsub event handling, custom validation, OmniStudio data passing conventions. Use when a standard OmniScript element cannot meet a UX requirement. NOT for standalone LWC development (use lwc/* skills) \u2014 use lwc/lwc-web-components-interop.",
   "file_location": "skills/omnistudio/omnistudio-custom-lwc-elements",
   "id": "omnistudio/omnistudio-custom-lwc-elements",
   "inputs": [

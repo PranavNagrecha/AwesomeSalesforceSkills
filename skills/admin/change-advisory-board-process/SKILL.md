@@ -1,6 +1,6 @@
 ---
 name: change-advisory-board-process
-description: "Use when designing, implementing, or auditing a Change Advisory Board (CAB) process for Salesforce deployments — covering change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for record-level approval workflows (use Salesforce Approval Processes for business-object approvals), NOT for detailed pipeline automation scripting (see devops-process-documentation or pre-deployment-checklist), and NOT for Salesforce DevOps Center pipeline configuration."
+description: "Design, implement, or audit a Change Advisory Board (CAB) process for Salesforce deployments: change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for scoring how risky one release is - use admin/deployment-risk-assessment. NOT for executing or troubleshooting the deployment itself - use admin/change-management-and-deployment."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: private-connect-setup
-description: "Configure Private Connect between Salesforce and AWS/Azure for traffic to stay on private networks. NOT for standard internet callouts."
+description: "Configure Private Connect between Salesforce and AWS/Azure for traffic to stay on private networks. NOT for standard internet callouts — use architect/hybrid-integration-architecture."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

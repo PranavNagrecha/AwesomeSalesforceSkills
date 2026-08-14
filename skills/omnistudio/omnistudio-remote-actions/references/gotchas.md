@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When the conditional step's visibility toggles based on earlier step data and the user revises their inputs. Each visibility transition re-initializes the step and re-fires Fire and Forget actions.
 
 **How to avoid:** Guard the server-side logic with idempotency checks (e.g., check for existing records before inserting). Alternatively, switch to On Click invoke mode so the action fires only on explicit user intent. If the action must fire automatically, use a Set Values element with a flag to track whether the action has already executed and skip re-execution.
+
+---
+
+## Gotcha 6: The Aura Endpoint Is the Gate, Not the OmniScript Button
+
+**What happens:** Call path is `ACTION$execute` → `omnistudiocore.BusinessProcessDisplayController.GenericInvoke2NoCont`. "Pass the token on every OmniScript Remote Action" is a client convention. A crafted invoke skips the script.
+
+**When it occurs:** Guest Omni; token designs wired only in LWC wrappers.
+
+**How to avoid:** Server-side checks on every guest-reachable Apex/IP. Default to **IP Action** (one round trip, one Required Permission) unless Apex must own sharing. Do not take ContextId from the client as authorization — see `omnistudio-security` §7.

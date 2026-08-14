@@ -1,6 +1,6 @@
 ---
 name: continuation-callouts
-description: "Use when making long-running HTTP callouts from Visualforce or LWC that exceed the synchronous callout timeout limit, using the Apex Continuation class for async callout execution. NOT for synchronous callouts (use callouts-and-http-integrations) or queueable async patterns."
+description: "Use when making long-running HTTP callouts from Visualforce or LWC that exceed the synchronous callout timeout limit, using the Apex Continuation class for async callout execution. NOT for ordinary synchronous callouts and Named Credential setup — use apex/callouts-and-http-integrations. NOT for choosing between @future, Queueable, and Continuation — use integration/callout-limits-and-async-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

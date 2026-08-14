@@ -1,6 +1,6 @@
 ---
 name: ampscript-development
-description: "Use this skill when writing, debugging, or reviewing AMPscript in Marketing Cloud email bodies, subject lines, preheaders, SMS, push notifications, or Cloud Pages — including Lookup/LookupRows data retrieval, IF/ELSEIF conditional blocks, FOR loops over rowsets, and inline personalization. NOT for Server-Side JavaScript (SSJS), REST API calls from content, SQL Query Activities, or Journey Builder configuration."
+description: "Use this skill when writing, debugging, or reviewing AMPscript in Marketing Cloud email bodies, subject lines, preheaders, SMS, push notifications, or Cloud Pages — including Lookup/LookupRows data retrieval, IF/ELSEIF conditional blocks, FOR loops over rowsets, and inline personalization. NOT for Journey Builder configuration. NOT for Server-Side JavaScript (SSJS), WSProxy, or REST API calls from content — use apex/ssjs-server-side-javascript. NOT for SQL Query Activities in Automation Studio — use data/marketing-cloud-sql-queries."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

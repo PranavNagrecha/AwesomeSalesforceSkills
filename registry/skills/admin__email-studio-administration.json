@@ -98,9 +98,9 @@
     "f90dad7a006f518dff9a",
     "f9cbc03eaf6c551866ba"
   ],
-  "content_hash": "189002daaf9bbbbd97af4c7af58251d829fdb361fecc13ab50be5233c573f3f7",
+  "content_hash": "d3a779d10706bb517e646bb11edeb7c7e162272713f723e445f4b28bc994af1c",
   "dependencies": [],
-  "description": "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) email, SMS/push channel setup, or Journey Builder orchestration design.",
+  "description": "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) \u2014 use admin/mcae-pardot-setup. NOT for Journey Builder orchestration \u2014 use admin/journey-builder-administration.",
   "file_location": "skills/admin/email-studio-administration",
   "id": "admin/email-studio-administration",
   "inputs": [

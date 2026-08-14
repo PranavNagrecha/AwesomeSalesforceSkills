@@ -54,9 +54,9 @@
     "e70a9fd8327cc9005ee2",
     "fa2929e0cb76dfa75830"
   ],
-  "content_hash": "51c6c7d3ae6eae23f7502b7708e922629c8f4878b1849c13661ba958b6033777",
+  "content_hash": "931f30ca1b409851270b016d92058b64793c63bf9582675656cb5322a1102c71",
   "dependencies": [],
-  "description": "Decide whether an existing Apex trigger should be rewritten as a Flow, and execute the migration safely. Covers the decision criteria (complexity, ownership, performance), side-by-side rollout, test-coverage parity, and the inverse case (recognize when Flow should stay Apex). NOT for migrating Process Builder / Workflow Rule to Flow (use those migration skills). NOT for brand-new automation decisions (use automation-selection.md).",
+  "description": "Decide whether an existing Apex trigger should be rewritten as a Flow, and execute the migration safely. Covers the decision criteria (complexity, ownership, performance), side-by-side rollout, test-coverage. NOT for migrating Process Builder / Workflow Rule to Flow (use those migration skills) \u2014 use flow/process-builder-to-flow-migration.",
   "file_location": "skills/flow/flow-migration-from-trigger",
   "id": "flow/flow-migration-from-trigger",
   "inputs": [

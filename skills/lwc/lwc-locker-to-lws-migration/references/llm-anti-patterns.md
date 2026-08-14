@@ -127,3 +127,31 @@ new Chart(canvas, { data: this.chartData, options: this.opts });
 **Correct pattern:** `lws.disabled` (where it appears in legacy docs) is an **org-level** toggle, not a component-level one. The current canonical control is the **Use Lightning Web Security for Lightning web components** checkbox in **Session Settings**, with metadata at `SecuritySettings.lwsForLwcEnabled`. There is no per-bundle flag.
 
 **Detection hint:** any generated `*-meta.xml` that contains `lws.disabled`, `lwsDisabled`, or similar at component scope is wrong. Reject and replace with the org-level toggle plus a per-component fix plan.
+
+---
+
+## Anti-Pattern 9: Emitting the `data:` URL download recipe (blocked by LWS since Summer '26)
+
+**What the LLM generates:** asked to download a CSV/PDF from an LWC, the model emits the pre-2025 recipe — build `'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)`, assign it to an anchor's `href`, set `download`, `click()`. Asked whether that is safe under LWS, it asserts `data:` URLs are fine because "LWS only restricts `javascript:` and iframe/object `src` schemes."
+
+**Why it happens:** the anchor + `data:` URL idiom was *the* published LWC export recipe for years and worked under both Locker and LWS. Summer '26 distorted `HTMLAnchorElement.prototype.href` to block the `data:` scheme; a model trained before that emits the old recipe with full confidence, and the failure is silent — no exception to correct it.
+
+**Correct pattern:**
+
+```js
+// WRONG — href assignment is distorted under LWS on Summer '26+; download silently no-ops.
+const a = document.createElement('a');
+a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+a.download = 'export.csv';
+a.click();
+
+// RIGHT — blob: object URL, origin-bound, revoked after use.
+const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+const anchor = document.createElement('a');
+anchor.href = url;
+anchor.download = 'export.csv';
+anchor.click();
+URL.revokeObjectURL(url); // release the handle — it is not garbage-collected on its own
+```
+
+**Detection hint:** grep any generated or reviewed LWC for a `data:` literal flowing into `.href` (`href = 'data:`, `setAttribute('href', 'data:`, or a template-bound `href` whose getter returns a `data:` string). Flag every hit on a Summer '26+ org. The skill-local checker `scripts/check_lwc_locker_to_lws_migration.py` reports these as P1. A missing `URL.revokeObjectURL` after a `createObjectURL` download is a leak, not a break — fix it, but do not report it as the download failure.

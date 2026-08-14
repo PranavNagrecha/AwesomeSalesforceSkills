@@ -57,9 +57,9 @@
     "f78a31bbf396806e089a",
     "fa76ce761752cd77803e"
   ],
-  "content_hash": "e689226e40e7d43e3278b38f2db3d9b9f847dca0ca23c3731508298144daefbc",
+  "content_hash": "d7f430d6a274e148dfaa9f3f4a793cf59de4d2ff53dfb89fb5d92fba4d23df49",
   "dependencies": [],
-  "description": "Use this skill when building custom LWC actions for the FSL Mobile app: barcode scanning, GPS capture, photo/signature capture, or custom guided workflows on mobile. Trigger keywords: FSL Mobile custom action, lightning__GlobalAction FSL, barcode scanner LWC, mobileCapabilities, Nimbus plugin, FSL lightning SDK. NOT for standard Salesforce Mobile App quick actions, standard Experience Cloud pages, or desktop Lightning Experience LWC components.",
+  "description": "Use this skill when building custom LWC actions for the FSL Mobile app: barcode scanning, GPS capture, photo/signature capture, or custom guided workflows on mobile. Trigger keywords: FSL Mobile custom action, lightning__GlobalAction FSL, barcode scanner LWC, mobileCapabilities, Nimbus plugin, FSL lightning SDK. NOT for offline priming, deep links or the legacy HTML5 toolkit \u2014 use apex/fsl-mobile-app-extensions. NOT for LWC in the standard Salesforce mobile app \u2014 use lwc/lwc-offline-and-mobile.",
   "file_location": "skills/apex/fsl-custom-actions-mobile",
   "id": "apex/fsl-custom-actions-mobile",
   "inputs": [

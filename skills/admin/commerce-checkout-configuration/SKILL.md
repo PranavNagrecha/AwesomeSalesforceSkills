@@ -1,6 +1,6 @@
 ---
 name: commerce-checkout-configuration
-description: "Use this skill when configuring Salesforce B2B or D2C Commerce checkout: payment methods, shipping/tax integration, guest checkout, order summary setup, and CartCheckoutSession state orchestration. Trigger keywords: checkout flow, payment adapter, shipping tax integration, guest checkout, order summary, CartCheckoutSession, Managed Checkout, Commerce checkout flow. NOT for CPQ quoting, Checkout.com account management, or Service Cloud Order Management post-fulfillment logic."
+description: "Use this skill when configuring Salesforce B2B or D2C Commerce checkout: payment methods, shipping/tax integration, guest checkout, order summary setup, and CartCheckoutSession state orchestration. Trigger keywords: checkout flow, payment adapter, shipping tax integration, guest checkout, order summary, CartCheckoutSession, Managed Checkout, Commerce checkout flow. NOT for deciding the checkout design before build (LWR vs Aura) — use admin/commerce-checkout-flow-design. NOT for writing the CommercePayments adapter class — use apex/commerce-payment-integration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

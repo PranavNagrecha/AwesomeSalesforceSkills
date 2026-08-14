@@ -122,9 +122,9 @@
     "fd74b19c0633574459e6",
     "fe53f61eff08b8a8175f"
   ],
-  "content_hash": "ee82494bb37bd85cbbb00fda35e538ad6dbf7413fce9821a6d06480aaef6a828",
+  "content_hash": "7a8dd738a38a9051ebe2afb6aa2568c4ab982104bd106f5c67c8d74403067027",
   "dependencies": [],
-  "description": "Use when building custom LWC Quick Actions, Global Actions, deep links, or offline data extensions for the Salesforce Field Service (FSL) native mobile app. Trigger keywords: FSL mobile extension, LWC action FSL, field service deep link, offline custom action, FSL mobile toolkit. NOT for LWC in standard Salesforce mobile app or Lightning Experience.",
+  "description": "Use when building custom LWC Quick Actions, Global Actions, deep links, or offline data extensions for the Salesforce Field Service (FSL) native mobile app. Trigger keywords: FSL mobile extension, LWC action FSL, field service deep link, offline custom action, FSL mobile toolkit. NOT for barcode, GPS, or camera capture \u2014 use apex/fsl-custom-actions-mobile. NOT for enabling the app, Mobile Settings, or branding \u2014 use admin/fsl-mobile-app-setup.",
   "file_location": "skills/apex/fsl-mobile-app-extensions",
   "id": "apex/fsl-mobile-app-extensions",
   "inputs": [

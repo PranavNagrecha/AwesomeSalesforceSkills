@@ -1,6 +1,6 @@
 ---
 name: apex-dml-patterns
-description: "Use when choosing between DML statements and Database class methods, handling partial success, managing savepoints, or using Database.DMLOptions for assignment rules and duplicate handling. Trigger keywords: 'Database.insert allOrNone false', 'partial DML success apex', 'SaveResult isSuccess', 'database merge apex', 'DML exception handling'. NOT for SOQL query patterns (use soql-fundamentals or apex-soql-relationship-queries), NOT for sharing model setup (use apex-managed-sharing-patterns)."
+description: "Use when choosing between DML statements and Database class methods, handling partial success, or using Database.DMLOptions for assignment rules and duplicate handling. Trigger keywords: 'Database.insert allOrNone false', 'partial DML success apex', 'SaveResult isSuccess', 'database merge apex', 'DML exception handling'. NOT for savepoint placement and rollback after a failure — use apex/apex-savepoint-and-rollback. NOT for SOQL query patterns — use apex/soql-fundamentals."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

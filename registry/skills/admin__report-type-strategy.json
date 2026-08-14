@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "01ace1be1254d11d17eb",
     "10bd96cbe990fdea8395",
     "1679b8b3382ce2a27fee",
     "167b4752727733face47",
@@ -18,12 +19,15 @@
     "4a92cadbb2b097d9b1b5",
     "4aa2ac79c33c47cbf52e",
     "4b23e0edb4a05557a80c",
+    "584b1b96627f68fc02b3",
     "5e4b72b3afaf0dae5af3",
     "62f7c689330b5349abd9",
     "7872db378e23bca2a727",
     "799f5341fb7ae0c556b0",
+    "8a01336ef0477d4437c1",
     "8a34bf2bdd8f102587ca",
     "8f8579f44fed39676a90",
+    "925de55f5b446a600d37",
     "979ab9e55e23904dcdc1",
     "99d63757985238b65803",
     "9c975adcff92e70e4f88",
@@ -50,9 +54,9 @@
     "fcbc2e4903dd8305abd5",
     "fd2655b6c6461ea5235e"
   ],
-  "content_hash": "7ed838721a9aa4e9516f95a8cbc464fcb5b05e215bc8e6afa0310bfa72c6317b",
+  "content_hash": "861a0bf01e72ff0756c1e3a7719aa7a432da56b4f4d4fd6e24d49789e6243e2b",
   "dependencies": [],
-  "description": "Custom Report Type design \u2014 when to create a CRT vs use the standard, A-with-B-without and A-without-B joins, primary/secondary/related-via-lookup objects, the 60-field display limit, and field-set vs cross-join layouts. NOT for individual report definitions (use admin/report-design) or dashboards (use admin/dashboard-design).",
+  "description": "Custom Report Type design \u2014 when to create a CRT vs use the standard, A-with-B-without and A-without-B joins, primary/secondary/related-via-lookup objects, the 60-field display limit, and field-set vs cross-join layouts. NOT for building the report or dashboard itself once the report type exists \u2014 use admin/reports-and-dashboards-fundamentals.",
   "file_location": "skills/admin/report-type-strategy",
   "id": "admin/report-type-strategy",
   "inputs": [
@@ -94,7 +98,7 @@
   "templates": [
     "skills/admin/report-type-strategy/templates/report-type-strategy-template.md"
   ],
-  "updated": "2026-05-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

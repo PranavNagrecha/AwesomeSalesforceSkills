@@ -1,6 +1,6 @@
 ---
 name: callout-limits-and-async-patterns
-description: "Use when designing or troubleshooting Apex callouts that approach governor limits: choosing between synchronous callouts, @future, Queueable, Continuation, or async chaining strategies. NOT for HTTP request construction or Named Credential setup (use named-credentials-setup)."
+description: "Use when designing or troubleshooting Apex callouts that approach governor limits: choosing between synchronous callouts, @future, Queueable, Continuation, or async chaining strategies. NOT for the @future rules themselves — primitive-only parameters, no chaining, the 50-per-transaction cap — use apex/apex-future-method-patterns. NOT for building the HttpRequest, handling the response, or mocking the callout in tests — use apex/callouts-and-http-integrations. NOT for configuring the Named Credential or External Credential itself — use integration/named-credentials-setup."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

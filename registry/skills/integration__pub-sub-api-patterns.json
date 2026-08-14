@@ -84,9 +84,9 @@
     "fe0fd32e5cf5bb9fa871",
     "fe57dbb1e1c7263b32c8"
   ],
-  "content_hash": "d42c4da805c270b2fcb69c399d308afc668cf2f44f5a83087de8b195751f89a4",
+  "content_hash": "d2871fedc726481dc0122678a116b0ca37d057b742bb8fd37e4ad898a4051f2a",
   "dependencies": [],
-  "description": "Use this skill when building or debugging gRPC-based Pub/Sub API integrations for subscribing to or publishing Salesforce Platform Events, Change Data Capture events, or custom channels \u2014 including auth flow, flow control, event replay, Managed Subscriptions, and language client setup. Triggers on: Pub/Sub API gRPC subscription, subscribe to platform events via gRPC, event replay with Pub/Sub API, managed event subscription Salesforce, FetchRequest flow control. NOT for legacy PushTopic API (deprecated), not for legacy Streaming API via CometD or EMP Connector (use those for legacy integrations only), not for Flow-based platform event triggers (use flow/flow-trigger-patterns skill).",
+  "description": "Use this skill when building or debugging gRPC-based Pub/Sub API integrations for subscribing to or publishing Salesforce Platform Events, Change Data Capture events, or custom channels \u2014 including auth flow, flow control, event replay, Managed Subscriptions, and language client setup. Triggers on: Pub/Sub API gRPC subscription, subscribe to platform events via gRPC, event replay with Pub/Sub API, managed event subscription Salesforce, FetchRequest flow control. NOT for enabling CDC and choosing which entities stream record changes \u2014 use integration/change-data-capture-integration. NOT for publishing or subscribing to a Platform Event from a Flow \u2014 use flow/flow-platform-events-integration.",
   "file_location": "skills/integration/pub-sub-api-patterns",
   "id": "integration/pub-sub-api-patterns",
   "inputs": [

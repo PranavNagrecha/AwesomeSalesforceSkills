@@ -159,3 +159,23 @@ For personalized scheduled delivery:
 ```
 
 **Detection hint:** Any mention of "send the subscription to multiple users" without noting that all recipients receive the same data should be flagged.
+
+---
+
+## Anti-Pattern: AND-Stacking Independent Stage Dates
+
+**What the LLM generates:** Four "date not blank" filters ANDed on a funnel tile named for one event.
+
+**Correct pattern:** One date filter per stage. Independent stamps are sparse; AND reports the rarest intersection.
+
+**Detection hint:** Multiple `Date_*` / stage-stamp field filters with AND and no OR.
+
+---
+
+## Anti-Pattern: Leaving Business Vocabulary in Bucket Fields
+
+**What the LLM generates:** "Bucket Amount into Hot / Warm / Cold and filter on the bucket" as the durable definition of those words.
+
+**Correct pattern:** If many reports filter the same bucket, promote to a formula or picklist before deleting reports.
+
+**Detection hint:** Cleanup plans that delete reports without inventorying bucket definitions.

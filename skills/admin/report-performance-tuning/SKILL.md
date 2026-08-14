@@ -16,6 +16,8 @@ triggers:
   - "async report execution via Analytics API for large data sets"
   - "scheduled dashboard refresh not keeping up with data changes"
   - "I want to a report or dashboard is slow"
+  - "report cannot open more than 50000 rows"
+  - "tabular report dump as excel substitute"
 tags:
   - reports
   - dashboards
@@ -41,7 +43,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Report Performance Tuning

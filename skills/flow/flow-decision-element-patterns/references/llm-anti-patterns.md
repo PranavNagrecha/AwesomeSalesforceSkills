@@ -53,3 +53,19 @@ outcomes, or extract sub-flow. Depth cap = 2.
 **Why it happens:** assumes AND binds tighter.
 
 **Correct pattern:** parenthesise explicitly: `(1 AND 2) OR 3`.
+
+## Anti-Pattern 7: Hardcoded User Id or Last Name in a Decision
+
+**What the LLM generates:** `CreatedById Equals 005…` or
+`Owner.LastName Equals "Patel"` as the routing rule.
+
+**Why it happens:** the org already works that way; copying metadata
+looks like configuration.
+
+**Correct pattern:** Custom Permission, Queue, Public Group, or
+Custom Metadata that stores a User/Queue Id. A literal `005` in
+Flow XML dies on deactivation and sandbox refresh with no compile
+error — the flow still runs, that outcome never fires.
+
+**Detection hint:** `<stringValue>005` inside a Decision, or a
+LastName/FirstName equality used as access control.

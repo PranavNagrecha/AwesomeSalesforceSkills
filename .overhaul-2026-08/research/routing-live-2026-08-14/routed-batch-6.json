@@ -1,0 +1,167 @@
+[
+  {
+    "query": "bulk load records into salesforce",
+    "expected": "data/bulk-api-and-large-data-loads",
+    "router_picked": "data",
+    "router_correct": true,
+    "skill_picked": "data/bulk-api-and-large-data-loads",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router description owns bulk loads / Data Loader / Bulk API. Index gloss triggers match bulk api, large data load, batch insert; top3 also data-loader-and-tools and bulk-api-patterns.",
+    "miss_reason": null
+  },
+  {
+    "query": "what breaks if we turn on person accounts",
+    "expected": "data/person-accounts",
+    "router_picked": "data",
+    "router_correct": true,
+    "skill_picked": "data/person-accounts",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Data router owns data-model enablement. person-accounts gloss is enabling/configuring/troubleshooting Person Accounts and B2C model impact; edge-case PA duplicate skill redirects here for enablement.",
+    "miss_reason": null
+  },
+  {
+    "query": "deactivate a user but keep their records",
+    "expected": "admin/user-management",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/user-management",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin user-setup triggers. user-management gloss explicitly lists deactivating a departing employee; delegated-administration redirects deactivation itself here.",
+    "miss_reason": null
+  },
+  {
+    "query": "the record page is loading really slowly",
+    "expected": "admin/lightning-page-performance-tuning",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/lightning-page-performance-tuning",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Declarative Lightning record page (not named LWC). Gloss triggers: record page takes too long to load / EPT high / too many components.",
+    "miss_reason": null
+  },
+  {
+    "query": "justify sharing model changes to leadership",
+    "expected": "admin/sharing-and-visibility",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/sharing-and-visibility",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Security router defers designing the sharing model to admin. sharing-and-visibility covers OWD / role hierarchy / sharing rules—the model being justified.",
+    "miss_reason": null
+  },
+  {
+    "query": "set up CI for a Salesforce project",
+    "expected": "devops/continuous-integration-testing",
+    "router_picked": "devops",
+    "router_correct": true,
+    "skill_picked": "devops/github-actions-for-salesforce",
+    "correct": false,
+    "expected_in_top3": true,
+    "why_picked": "DevOps CI/CD. github-actions gloss triggers CI pipeline / sfdx ci / workflow yaml for greenfield CI setup; continuous-integration-testing and tooling-selection were #2/#3 (test-level vs tool choice).",
+    "miss_reason": "GENUINE_OVERLAP"
+  },
+  {
+    "query": "knowledge articles aren't showing up in search",
+    "expected": "admin/knowledge-base-administration",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/knowledge-base-administration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Knowledge admin (channels, data categories, publishing) vs generic global-search-configuration. knowledge-base-administration triggers Knowledge setup / Data Category visibility / publishing workflow.",
+    "miss_reason": null
+  },
+  {
+    "query": "moving vlocity components between orgs keeps breaking",
+    "expected": "omnistudio/omnistudio-deployment-datapacks",
+    "router_picked": "omnistudio",
+    "router_correct": true,
+    "skill_picked": "omnistudio/omnistudio-deployment-datapacks",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "OmniStudio router names Vlocity/DataPack. deployment-datapacks gloss is export/import of OmniStudio components via DataPacks; CI/CD pattern redirects manual DataPack ops here.",
+    "miss_reason": null
+  },
+  {
+    "query": "score this org against the well architected framework",
+    "expected": "architect/well-architected-review",
+    "router_picked": "architect",
+    "router_correct": true,
+    "skill_picked": "architect/well-architected-review",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Architect description names Well-Architected. Gloss triggers: well-architected review, WAF assessment, architecture health check.",
+    "miss_reason": null
+  },
+  {
+    "query": "one component throws and the whole page goes blank",
+    "expected": "lwc/lwc-error-boundaries",
+    "router_picked": "lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/lwc-error-boundaries",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "LWC component failure blanking a page. Gloss: isolate errors so one failure does not blank an entire page via errorCallback.",
+    "miss_reason": null
+  },
+  {
+    "query": "the same message got processed twice and created duplicates",
+    "expected": "integration/idempotent-integration-patterns",
+    "router_picked": "integration",
+    "router_correct": true,
+    "skill_picked": "integration/idempotent-integration-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Message processed twice → integration idempotency, not user-facing duplicate rules. Gloss: retry-safe integrations; redirects ordinary duplicate-management to admin.",
+    "miss_reason": null
+  },
+  {
+    "query": "record triggered flow keeps re-firing itself",
+    "expected": "flow/recursion-and-re-entry-prevention",
+    "router_picked": "flow",
+    "router_correct": true,
+    "skill_picked": "flow/recursion-and-re-entry-prevention",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Flow router for record-triggered. Gloss triggers: flow re-firing on same record / updates field then runs again / infinite loop.",
+    "miss_reason": null
+  },
+  {
+    "query": "run the health check and fix what it flags",
+    "expected": "security/security-health-check",
+    "router_picked": "security",
+    "router_correct": true,
+    "skill_picked": "security/security-health-check",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Salesforce Security Health Check. Gloss: running, interpreting, or acting on Health Check results; org-hardening points here for Health Check gaps.",
+    "miss_reason": null
+  },
+  {
+    "query": "cpu time limit exceeded on a big transaction",
+    "expected": "apex/apex-cpu-and-heap-optimization",
+    "router_picked": "apex",
+    "router_correct": true,
+    "skill_picked": "apex/apex-cpu-and-heap-optimization",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex description lists CPU time. Exact gloss trigger 'CPU time limit exceeded'; governor-limits is the generic redirect target.",
+    "miss_reason": null
+  },
+  {
+    "query": "grant a team temporary admin rights",
+    "expected": "admin/delegated-administration",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/delegated-administration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin permission/user setup from router description. delegated-administration gloss: let non-system-admins manage groups/passwords/assignments without full SysAdmin; user-management redirects delegated admin setup here via related triggers.",
+    "miss_reason": null
+  }
+]

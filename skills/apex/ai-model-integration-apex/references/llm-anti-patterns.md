@@ -150,3 +150,27 @@ Cache.Org.put(CACHE_KEY, token, CACHE_TTL_SECONDS);
 ```
 
 **Detection hint:** `System.debug` calls containing the variable holding the token, or DML inserting/updating a record with a field assigned the token string value.
+
+---
+
+## Anti-Pattern 7: Recalling `sfdc_ai__Default*` Model API Names From Memory Instead of Copying Them
+
+**What the LLM generates:** A plausible-looking model API name that is not on the Supported Models page — the vendor-less `sfdc_ai__DefaultClaudeSonnet`, where every Claude entry the page actually lists carries the hosting vendor (`sfdc_ai__DefaultBedrockAnthropicClaude5Sonnet`) — or a name that was current at training time but now carries a retirement note, such as `sfdc_ai__DefaultVertexAIGeminiPro30` ("Retired on Apr 23, 2026"). The invented name sits one edit away from a real one, which is exactly why it survives review. The same recall failure produces the claim that the roster is OpenAI-only, missing the Anthropic Claude, Amazon Nova, NVIDIA Nemotron and Google Vertex Gemini families the page lists alongside it.
+
+**Why it happens:** The names look derivable, so the model completes a pattern rather than retrieving a string — and the roster does not actually follow one pattern. Some entries carry a vendor segment (`sfdc_ai__DefaultBedrockAnthropicClaude5Sonnet`, `sfdc_ai__DefaultVertexAIGemini35Flash`) and others do not (`sfdc_ai__DefaultGPT5`), so no naming rule can be extrapolated from the ones you happen to remember. Nothing in Apex catches the error either, because the model API name is an untyped `String` argument: a wrong name compiles cleanly and only fails once the callout runs. A retired name does not even fail then; requests are rerouted to a replacement model (see Gotcha 6).
+
+**Correct pattern:**
+
+```apex
+// The model API name is an untyped String — the compiler cannot validate it.
+// Copy it verbatim from the Supported Models page, never from memory:
+// https://developer.salesforce.com/docs/ai/agentforce/guide/supported-models.html
+// Confirmed on that page 2026-08-13:
+//   sfdc_ai__DefaultOpenAIGPT4OmniMini          — chat / generation
+//   sfdc_ai__DefaultOpenAITextEmbeddingAda_002  — embeddings
+
+// Then resolve it from Custom Metadata rather than a per-class constant, so a
+// dated retirement is an edit — see Anti-Pattern 4 for the AI_Model_Config__mdt lookup.
+```
+
+**Detection hint:** Any `sfdc_ai__Default` literal the author did not copy from the Supported Models page. Do not try to judge a name by its shape — the live roster mixes vendor-segmented names with bare ones, so a plausible shape proves nothing and an unfamiliar one is not evidence of a fabrication. Presence on the page is the only test.

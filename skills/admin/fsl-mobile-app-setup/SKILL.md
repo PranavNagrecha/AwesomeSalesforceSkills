@@ -1,6 +1,6 @@
 ---
 name: fsl-mobile-app-setup
-description: "Use this skill when configuring, extending, or troubleshooting the Salesforce Field Service (FSL) Mobile app for field technicians — including offline priming strategy, app extensions, deep linking, and custom branding. Trigger keywords: FSL mobile, Field Service mobile app, offline priming, mobile extension toolkit, app extensions for field service. NOT for standard Salesforce Mobile app configuration, Lightning App Builder layouts for desktop, or Field Service Lightning dispatcher console setup."
+description: "Use this skill when configuring, extending, or troubleshooting the Salesforce Field Service (FSL) Mobile app for field technicians — including offline priming strategy, app extensions, deep linking, and custom branding. Trigger keywords: FSL mobile, Field Service mobile app, offline priming, mobile extension toolkit, app extensions for field service. NOT for coding the LWC quick action or offline extension itself — use apex/fsl-mobile-app-extensions. NOT for technician job lifecycle, signature capture, or parts consumption — use admin/fsl-mobile-workflow-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

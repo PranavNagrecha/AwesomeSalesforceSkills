@@ -172,3 +172,40 @@ User. Enumerate sites first; audit each.
 
 **Detection hint.** Any audit checklist that does not enumerate
 sites.
+
+---
+
+## Anti-Pattern 8: Asserting the omitted-sharing default without an `apiVersion`
+
+**What the LLM generates.**
+
+```apex
+// "No keyword needed — classes default to with sharing now."
+public class PublicCaseController {
+    @AuraEnabled(cacheable=true)
+    public static List<Case> getPublicCases() { /* ... */ }
+}
+```
+
+**Why it happens.** The model learned one row of a version-gated
+table and states it flat. Newer training data over-generalises the
+Summer '26 default; older data makes the mirror-image mistake and
+calls the omitted default `inherited sharing` or `without sharing`.
+Both are wrong as unqualified claims.
+
+**Correct pattern.** The answer depends on the `apiVersion` in the
+class's `.cls-meta.xml`, not the org's release, so an answer that
+names no version is unsafe whichever way it lands. Write the
+declaration explicitly — omitting it is a review defect even where
+it happens to resolve to `with sharing`. The full resolution order,
+including the inheritance-chain rule, is in gotchas.md § 3; the
+separate database-operation access mode that flipped at the same
+version is tabled in
+[`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version)
+§ *Apex security idiom by API version*.
+
+**Detection hint.** Any guest-reachable `@AuraEnabled` or
+`@RestResource` class with no sharing keyword, and any answer
+stating the omitted default without naming an `apiVersion`. A
+standalone bare `@RestResource` class at ≤ 66.0 is the P0 — it
+resolves to `without sharing`.

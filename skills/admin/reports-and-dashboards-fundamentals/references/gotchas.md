@@ -81,3 +81,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** The folder namespace is shared across both asset types — per Salesforce Help, "You can't have more than one report or dashboard folder with the same name as another report or dashboard folder." Separately, creating a subfolder requires the **Create Report Folders** user permission (or **Create Dashboard Folders** for dashboards) *plus* manage access on the root folder of that tree. Access to the reports inside the folder grants nothing here. Up to 3 subfolder levels are allowed.
 
 **How to avoid:** Prefix folder names by asset type ("RPT — Sales Ops", "DSH — Sales Ops") so the shared namespace never collides, and settle tree depth up front against the 3-level ceiling rather than discovering it mid-migration. When delegating folder maintenance, grant **Create Report Folders** / **Create Dashboard Folders** plus Manage access on the one specific root folder — not blanket "Manage Reports in Public Folders", which grants manage access to every public report folder in the org.
+
+---
+
+## Gotcha 9: Stacked Date Filters AND — A Funnel Tile Reports the Rarest Stamp
+
+**What happens:** Four "has this date" field filters AND together. Later stage stamps are sparse, so a tile named for one event reports a fraction of the truth with no error.
+
+**When it occurs:** Stage-funnel dashboards built by stacking "Date LOI not blank AND Date QoE not blank AND …"
+
+**How to avoid:** One date filter per stage. OR-combine if a range is wanted. Never AND independent stage stamps. Row-level formulas for "days in stage" belong on the **record**, not as four ANDed report filters.
+
+---
+
+## Gotcha 10: Bucket Fields Are Undeclared Business Logic
+
+**What happens:** A four-word vocabulary ("Hot" / "Warm" / …) exists only inside report XML, filtered in hundreds of reports. Delete the reports and the definition of Hot is gone. It is not a field, not a formula, not a picklist.
+
+**When it occurs:** Marketing score banding, temperature, segmentation invented in the report builder because creating a field needed a ticket.
+
+**How to avoid:** If more than a handful of reports filter on the same bucket, promote it to a formula or picklist **before** report cleanup. Inventory buckets as part of field-debt, not as report clutter.

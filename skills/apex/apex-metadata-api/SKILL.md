@@ -1,6 +1,6 @@
 ---
 name: apex-metadata-api
-description: "Use when Apex code must create or update metadata programmatically at runtime — custom fields, objects, picklist values, labels, or other supported types — using the Metadata namespace (Metadata.Operations, Metadata.DeployCallback). Triggers: 'Metadata.Operations', 'Metadata.CustomField from Apex', 'deploy metadata from Apex', 'enqueueDeployment', 'create a custom field programmatically', 'post-install script metadata setup'. NOT for Metadata API REST/SOAP (use metadata-api-and-package-xml) and NOT for reading Custom Metadata Type configuration rows in Apex (use custom-metadata-in-apex)."
+description: "Use when Apex code must create or update metadata programmatically at runtime — custom fields, objects, picklist values, labels, or other supported types — using the Metadata namespace (Metadata.Operations, Metadata.DeployCallback). Triggers: 'Metadata.Operations', 'Metadata.CustomField from Apex', 'deploy metadata from Apex', 'enqueueDeployment', 'create a custom field programmatically', 'post-install script metadata setup'. NOT for zip-based Metadata API REST/SOAP deploys — use apex/metadata-api-and-package-xml. NOT for reading Custom Metadata Type configuration rows in Apex — use apex/custom-metadata-in-apex. NOT for compiling a class or querying ApexClass / ApexCodeCoverage from outside the org — use apex/tooling-api-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: connected-app-troubleshooting
-description: "Troubleshooting Connected App OAuth flows — IP relaxation vs IP restriction, refresh token policy traps (default kills the connection on first refresh), session-revocation semantics, the OAuth error-code catalog (`invalid_grant`, `invalid_client_id`, `unsupported_grant_type`), per-user vs admin-pre-approved flows, and the user-policy check (Connected App must be assigned to the user via profile / permset). Covers the Login History debug trail and the test-once-with-real-credentials sanity check before integrations go live. NOT for designing the OAuth flow itself (use security/oauth-flows-and-connected-apps), NOT for SAML troubleshooting (use admin/sso-saml-troubleshooting)."
+description: "Troubleshooting Connected App OAuth flows — IP relaxation vs IP restriction, refresh token policy traps (default kills the connection on first refresh), session-revocation semantics, the OAuth error-code catalog (`invalid_grant`, `invalid_client_id`, `unsupported_grant_type`), per-user vs admin-pre-approved flows, and the user-policy check (Connected App must be assigned to the user via profile / permset). Covers the Login History debug trail. NOT for designing the OAuth flow itself — use integration/oauth-flows-and-connected-apps. NOT for a SAML / SSO login failure — use security/sso-saml-troubleshooting."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

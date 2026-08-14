@@ -1,6 +1,6 @@
 ---
 name: clinical-data-requirements
-description: "Use this skill when defining clinical data model requirements for Health Cloud: HL7/FHIR data mapping, interoperability requirements, FHIR R4-aligned object activation, CodeableConcept constraints, and middleware translation requirements. NOT for data migration procedures, Apex integration code, or generic data architecture unrelated to clinical interoperability."
+description: "Use this skill when defining clinical data model requirements for Health Cloud: HL7/FHIR data mapping, interoperability requirements, FHIR R4-aligned object activation, CodeableConcept constraints, and middleware translation requirements. NOT for the field-level mapping work itself — use data/fhir-data-mapping. NOT for choosing legacy HC24__ EHR objects vs standard clinical objects — use data/health-cloud-data-model."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

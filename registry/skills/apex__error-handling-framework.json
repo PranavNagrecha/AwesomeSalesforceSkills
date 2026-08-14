@@ -126,9 +126,9 @@
     "fc0f3d86e0744ce9667a",
     "ffacce4d4f4bd60b89fe"
   ],
-  "content_hash": "606f477d727e08bb5137293748eb7a1bcd320b38a5225a76fa6c12aa5d999211",
+  "content_hash": "bded702d40f1158e9cf62a572f8ec7b3bc84f7b49477ca6edbe4313c9d1d5166",
   "dependencies": [],
-  "description": "Use when designing or implementing a cross-cutting Apex error handling framework: custom exception hierarchies, rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading, or a unified catch/log/rethrow utility class. Trigger keywords: 'error framework', 'centralized logging', 'rollback-safe log', 'BatchApexErrorEvent', 'correlation ID async', 'AuraHandledException boundary', 'Error_Log__c design'. NOT for individual try/catch block syntax help, basic DmlException handling, or choosing between synchronous and asynchronous execution models.",
+  "description": "Use when designing a cross-cutting Apex error handling framework: custom exception hierarchies, centralized rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading across async, Error_Log__c design, AuraHandledException boundary. NOT for a single try/catch or DmlException question \u2014 use apex/exception-handling. NOT for dead-letter, circuit-breaker and event-replay design in an integration \u2014 use integration/error-handling-in-integrations.",
   "file_location": "skills/apex/error-handling-framework",
   "id": "apex/error-handling-framework",
   "inputs": [

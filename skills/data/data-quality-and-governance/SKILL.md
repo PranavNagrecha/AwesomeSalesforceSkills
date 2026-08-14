@@ -1,6 +1,6 @@
 ---
 name: data-quality-and-governance
-description: "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy) across a Salesforce org. Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for Duplicate Rules configuration step-by-step UI setup (use duplicate-management skill). NOT for bulk data migration execution (use data-migration skill)."
+description: "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy). Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for configuring matching and duplicate rules in Setup — use admin/duplicate-management. NOT for executing a bulk data migration — use data/data-migration-planning."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

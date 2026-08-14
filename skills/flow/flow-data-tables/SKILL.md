@@ -1,6 +1,6 @@
 ---
 name: flow-data-tables
-description: "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows."
+description: "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows — use flow/screen-flow-choice-component-selection."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

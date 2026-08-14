@@ -2,7 +2,7 @@
 name: lwc-local-development
 description: "Use when previewing Lightning web components, Lightning apps, or Experience (LWR) sites in real time during development with Live Preview (formerly Local Dev) — the `sf lightning dev app` / `sf lightning dev site` / `sf lightning dev component` CLI commands and the Live Preview VS Code extension — including single-component preview with platform-module access (LDS wire adapters, `@salesforce` scoped modules, Apex controllers) and knowing which edits live-reload vs need a manual redeploy. Triggers: 'preview my LWC without deploying', 'set up local dev live reload', 'run sf lightning dev component', 'why don't new @api properties show on save'. NOT for Jest unit testing (use lwc/lwc-testing), NOT for the Apex/Flow Unified Testing / Test Discovery & Test Runner APIs (a separate, LWC-unrelated capability), and NOT for CI/production deployment."
 category: lwc
-salesforce-version: "Winter '26+"
+salesforce-version: "Spring '26+"
 well-architected-pillars:
   - Operational Excellence
   - Security
@@ -21,7 +21,7 @@ tags:
 inputs:
   - "An authenticated SFDX project (sfdx-project.json) connected to a sandbox or scratch org"
   - "The LWC bundle, Lightning app, or Experience (LWR) site you want to preview"
-  - "The @salesforce/plugin-lightning-dev CLI plugin installed, or the Live Preview VS Code extension"
+  - "The @salesforce/plugin-lightning-dev CLI plugin (auto-installed with Salesforce CLI), or the Live Preview VS Code extension"
   - "For mobile app preview: Xcode (iOS) or Android Studio (Android)"
 outputs:
   - "A running local Live Preview server rendering the component/app/site with real-time reload"
@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 # LWC Local Development
@@ -44,9 +44,9 @@ This skill activates when a developer wants to see Lightning web component chang
 Gather this context before working on anything in this domain:
 
 - **Confirm you're targeting a non-production org.** Live Preview works against production, sandbox, and scratch orgs, but Salesforce recommends running it against **sandbox or scratch orgs only** — preview loads real org data and metadata into a local server. Have an authenticated SFDX project (`sfdx-project.json`) pointed at that org.
-- **Install the plugin or extension.** The commands come from the versioned `@salesforce/plugin-lightning-dev` CLI plugin (`sf plugins install @salesforce/plugin-lightning-dev`). The Live Preview VS Code extension wraps the single-component flow in the IDE. On first run the CLI prompts you to enable the feature — press Enter / `y`. Enabling requires the **View Setup** and **Customize Application** permissions.
+- **CLI ships the plugin.** "The Salesforce CLI automatically installs the Live Preview plugin for you." Do not tell people to `sf plugins install @salesforce/plugin-lightning-dev` as a prerequisite — `sf update` is enough to get the latest commands. The Live Preview VS Code extension wraps the single-component flow in the IDE. On first run the CLI prompts you to enable the feature — press Enter / `y`. Enabling requires the **View Setup** and **Customize Application** permissions.
 - **Know it's LWC-only.** Live Preview cannot render Aura components: "Live Preview only lets you preview Lightning web components. You can't use it to test Aura components in your app or site preview." An app or site that mixes Aura will preview the LWC parts only.
-- **Respect the maturity nuance.** The overall app/site preview tooling is **GA**. Single-component preview (`sf lightning dev component`) was **Beta as of Winter '26** — the release that added platform-module access — and reached **GA as "Single Component Live Preview" starting the week of April 13, 2026**. In the VS Code extension, LWC preview is GA while **React component preview is Beta**. Do not state a maturity the release notes don't give.
+- **Do not invent a maturity label the docs don't give.** App, site, and single-component preview (`sf lightning dev component`) are documented Live Preview tools. The docs do not attach a GA/Beta label to single-component preview on that page. In the VS Code extension, React component preview is a distinct surface from LWC preview — do not collapse them.
 
 ---
 
@@ -60,7 +60,7 @@ Live Preview exposes three CLI commands, each backed by the `plugin-lightning-de
 |---|---|---|
 | `sf lightning dev app` | A Lightning Experience app on desktop or the Salesforce mobile app | `-t/--device-type desktop\|ios\|android`, `-i/--device-id` |
 | `sf lightning dev site` | An Experience Builder (LWR) site in the browser | `-n/--name` (site name) |
-| `sf lightning dev component` | A single LWC in isolation | `-n/--name` (component), `-c/--client-select` (pick in-browser) |
+| `sf lightning dev component` | A single LWC in isolation | `-n/--name` (component). Starting Winter '26, `-o/--target-org` is required unless the target-org config variable is set. Switch components from the **Project Components** sidebar. The LWC Developer Guide flag table lists `-o`, `-n`, `--flags-dir`, `--json` — not `-c`. |
 
 The server watches your local source and pushes changes to the running preview as you save.
 
@@ -86,7 +86,7 @@ For `app`/`site` preview, run `sf project deploy start` for the changed metadata
 
 ### Single-component preview and platform-module access
 
-`sf lightning dev component` renders one component on a dedicated preview page, decoupled from any app or record page. As of Winter '26 it "supports access to platform modules, such as Lightning Data Service wire adapters, `@salesforce` scoped modules, and Apex controllers" — so a component that reads live data through LDS wires or Apex renders with real org data, not just static mocks. Use `-c/--client-select` to choose which component to preview from the browser.
+`sf lightning dev component` renders one component on a dedicated preview page, decoupled from any app or record page. As of Winter '26 it "supports access to platform modules, such as Lightning Data Service wire adapters, `@salesforce` scoped modules, and Apex controllers" — so a component that reads live data through LDS wires or Apex renders with real org data, not just static mocks. Switch components from the **Project Components** sidebar on the preview page. Starting Winter '26 you must pass `-o/--target-org` (or have the target-org config variable set).
 
 ### What it does NOT cover
 
@@ -103,7 +103,7 @@ For `app`/`site` preview, run `sf project deploy start` for the changed metadata
 
 **When to use:** iterating on one component's markup, styling, or logic against real org data, without wiring it into an app or record page.
 
-**How it works:** from the project root run `sf lightning dev component -o mySandbox` (add `-n myComponent` or `-c` to select), then edit the bundle. Template/CSS/JS-method edits reload live; when you add an `@api` property or change a `@wire`, refresh the browser. The component pulls LDS/Apex data through its normal wires.
+**How it works:** from the project root run `sf lightning dev component -o mySandbox` (add `-n myComponent` to select), then edit the bundle. Template/CSS/JS-method edits reload live; when you add an `@api` property or change a `@wire`, refresh the browser. The component pulls LDS/Apex data through its normal wires. Switch components from the Project Components sidebar. The LWC Developer Guide's component flag table does not list `-c/--client-select`.
 
 **Why not the alternative:** deploying and clicking through an app page for every tweak is slow and pollutes the org with iteration noise; single-component preview keeps the loop local and fast.
 
@@ -119,7 +119,7 @@ For `app`/`site` preview, run `sf project deploy start` for the changed metadata
 
 **When to use:** previewing LWR Experience Cloud site changes before publishing.
 
-**How it works:** `sf lightning dev site -o mySandbox -n MySite` renders the site locally in the browser. This is desktop-only; Aura sites are not supported (see `lwc/lwr-site-development` for the publish-freeze model).
+**How it works:** `sf lightning dev site -o mySandbox -n MySite` renders the site locally in the browser. This is desktop-only; Aura sites are not supported (see `lwc/lwr-site-development` for the publish-freeze model). Add `--get-latest` to refresh the local cache after Experience Builder changes. Starting Spring '26, `--ssr` is not supported — do not pass it.
 
 ---
 
@@ -141,9 +141,9 @@ For `app`/`site` preview, run `sf project deploy start` for the changed metadata
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Verify prerequisites** — confirm an authenticated SFDX project against a **sandbox or scratch** org, the `View Setup` + `Customize Application` permissions, and `@salesforce/plugin-lightning-dev` installed (`sf plugins --core` / `sf plugins install @salesforce/plugin-lightning-dev`).
+1. **Verify prerequisites** — confirm an authenticated SFDX project against a **sandbox or scratch** org and the `View Setup` + `Customize Application` permissions. The Live Preview plugin is auto-installed with Salesforce CLI (`sf update` if commands are missing). Do not treat `sf plugins install @salesforce/plugin-lightning-dev` as a required first step.
 2. **Pick the command** — component vs app vs site from the Decision Guidance table; add `-t ios|android` only if the native SDK is present.
-3. **Start the preview** — run the command with `-o <org>` (and `-n`/`-c` as needed); on first run press Enter to enable the feature.
+3. **Start the preview** — run the command with `-o <org>` (and `-n` as needed); on first run press Enter to enable the feature.
 4. **Edit and observe** — make changes and watch for live reload; when a change is in the manual list (`@api`, `@wire`, `@salesforce` imports, `.js-meta.xml`), redeploy (`sf project deploy start`) + restart for apps/sites, or refresh the browser for a single component.
 5. **Validate readiness** — run `scripts/check_lwc_local_development.py --project-dir <root>` to flag Aura bundles that can't be previewed and LWC bundles missing a valid `.js-meta.xml`.
 6. **Hand off to real tests** — Live Preview confirms rendering; run Jest (`lwc/lwc-testing`) and deploy through the normal pipeline for anything beyond visual iteration.
@@ -158,7 +158,7 @@ Run through these before marking work in this area complete:
 - [ ] The correct command was used for the surface (component / app / site) and any mobile SDK was present
 - [ ] Changes in the manual-reload list were redeployed or the browser refreshed — not assumed to hot-reload
 - [ ] No Aura component was expected to render via Live Preview
-- [ ] Maturity was stated correctly (single-component preview: Beta in Winter '26, GA week of April 13, 2026; React-in-VS-Code preview: Beta)
+- [ ] Maturity was not invented — do not label single-component preview Beta/GA unless the current LWC Developer Guide page does
 - [ ] Final verification did not rely on preview alone — Jest and a real deploy still ran
 
 ---
@@ -188,3 +188,8 @@ Non-obvious platform behaviors that cause real production problems:
 - `lwc/lwc-testing` — Jest unit testing for LWC; the assertion layer Live Preview does **not** provide. Use both: preview to see it, Jest to prove it.
 - `lwc/lwr-site-development` — the LWR Experience Cloud model, including the publish-time freeze that `sf lightning dev site` lets you sidestep during iteration.
 - `devops/unlocked-package-development` — the deploy/packaging pipeline that takes over once local iteration is done.
+
+## Official Sources Used
+
+- Run a Live Component Preview — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-test-components.html — Live Preview rename from Local Dev in Spring '26; CLI auto-installs the plugin; `sf lightning dev app` / `site` / `component`; `--ssr` unsupported starting Spring '26; target-org required for single-component preview starting Winter '26. (verified 2026-08-14)
+

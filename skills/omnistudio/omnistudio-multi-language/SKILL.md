@@ -1,6 +1,6 @@
 ---
 name: omnistudio-multi-language
-description: "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone."
+description: "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone — use admin/multi-language-and-translation."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

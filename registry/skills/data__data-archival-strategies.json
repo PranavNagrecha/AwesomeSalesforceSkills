@@ -110,9 +110,9 @@
     "f899a6ea280e27f5fde6",
     "fa9369424204d038bb54"
   ],
-  "content_hash": "3cfa9a4231f70eb999ee436237e757efa95f87ab1bef03f54cd631481114e0e0",
+  "content_hash": "a8a2feb2014b8d6e8559484e75a1edc33792d6ee36976e29849be57161a9be7c",
   "dependencies": [],
-  "description": "Use when planning how to archive aging Salesforce records to reduce storage costs, maintain query performance, and meet retention policies. Covers Big Object archival, external storage via Heroku or S3, field history truncation, recycle bin behavior, and soft-delete patterns. Triggers: storage limit reached, archive old records, Big Objects, field history too large, recycle bin overflow, data retention policy. NOT for migrating data to a new org (use data-migration-planning) or cleaning up duplicate records (use duplicate-management).",
+  "description": "Use when planning how to archive aging Salesforce records to reduce storage costs, maintain query performance, and meet retention policies. Covers Big Object archival, external storage via Heroku or S3, field history truncation, recycle bin behavior, and soft-delete patterns. Triggers: storage limit reached, archive old records, Big Objects, field history too large, recycle bin overflow, data retention policy. NOT for finding out what is eating your storage right now \u2014 use data/data-storage-management. NOT for a scheduled job that just deletes aged records \u2014 use data/batch-data-cleanup-patterns.",
   "file_location": "skills/data/data-archival-strategies",
   "id": "data/data-archival-strategies",
   "inputs": [

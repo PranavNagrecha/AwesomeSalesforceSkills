@@ -99,12 +99,12 @@
     "fce7cd74cc2c4c1e27fe",
     "ffeb1909c9bfbc1add19"
   ],
-  "content_hash": "b3a1798da4cb42fb6fc7ca76e9a3954c5c18099fcd1485c583fe7dbc2720df4f",
+  "content_hash": "cfc7ae46a17da59cb365e95efedf920edc902789a3a4e12fbdfb7552e84d0fce",
   "dependencies": [
     "fsl-resource-management",
     "fsl-service-territory-setup"
   ],
-  "description": "Use this skill to configure and manage Field Service Lightning workforce capacity \u2014 covering ServiceResourceCapacity for individual resource caps, WorkCapacityLimit for territory-level demand throttling, and reporting strategies for capacity vs. utilization analysis. NOT for Omni-Channel capacity, NOT for FSL scheduling policy rule configuration, and NOT for FSL resource skill or preference setup (see fsl-resource-management).",
+  "description": "Use this skill to configure and manage Field Service Lightning workforce capacity \u2014 covering ServiceResourceCapacity for individual resource caps, WorkCapacityLimit for territory-level demand throttling, and reporting strategies for capacity vs. utilization analysis. NOT for resource skills, certifications, or preference setup \u2014 use admin/fsl-resource-management. NOT for work rules and service objectives \u2014 use admin/fsl-scheduling-policies. NOT for Omni-Channel agent capacity \u2014 use architect/omni-channel-capacity-model.",
   "file_location": "skills/admin/fsl-capacity-planning",
   "id": "admin/fsl-capacity-planning",
   "inputs": [

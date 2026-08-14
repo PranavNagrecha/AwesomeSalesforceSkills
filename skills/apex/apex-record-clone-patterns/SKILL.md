@@ -1,6 +1,6 @@
 ---
 name: apex-record-clone-patterns
-description: "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration (use bulk-api-and-large-data-loads). NOT for record snapshots (use field-history-tracking)."
+description: "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration — use data/bulk-api-and-large-data-loads. NOT for record snapshots — use data/field-history-tracking."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-07-06
+updated: 2026-08-14
 ---
 
 # Data Cloud Code Extensions
@@ -71,8 +71,8 @@ Three pieces work together locally: **Salesforce CLI** (2.130.9+), the **Code Ex
 ```
 my-code-extension/
 ├── Dockerfile              # used for containerized builds/deployments — don't modify
-├── requirements.txt        # pip packages your script needs for deployment
-├── requirements-dev.txt    # packages for local development and testing only
+├── requirements.txt        # pip packages your script needs for deployment — add runtime deps here
+├── requirements-dev.txt    # scaffold-owned local-dev pins — don't modify
 ├── payload/
 │   ├── config.json         # Data 360 deployment configuration
 │   └── entrypoint.py       # the Python file implementing your transform logic
@@ -140,7 +140,7 @@ All execution logs land in a dedicated system Data Lake Object, `DataCustomCodeL
 1. **Verify eligibility** — edition (Developer/Enterprise/Performance/Unlimited), Code Extension enabled in Feature Manager, no BYOK, Data Cloud Architect permission set assigned to whoever will run/monitor/migrate.
 2. **Choose the surface** — batch data transform script vs. search-index chunking function; confirm the runtime contract fits (parity rules for scripts, no-DLO/DMO-access and stateless batching for functions).
 3. **Set up the toolchain** — Python 3.11, Azul Zulu OpenJDK 17.x, Docker Desktop; Salesforce CLI 2.130.9+; Code Extension plugin 0.1.5+; `salesforce-data-customcode` SDK; authenticate with `sf org login web` (add the environment-specific flags from the setup guide) against the sandbox.
-4. **Scaffold and implement** — build on the generated project; put logic in `payload/entrypoint.py`, deployment pip dependencies in `requirements.txt` (dev-only ones in `requirements-dev.txt`); do not modify the `Dockerfile`; log nothing sensitive to stdout.
+4. **Scaffold and implement** — build on the generated project; put logic in `payload/entrypoint.py` and runtime pip dependencies in `requirements.txt`. Do not modify the `Dockerfile` or the scaffold's `requirements-dev.txt`. Log nothing sensitive to stdout.
 5. **Validate locally, then in the sandbox** — run against the sandbox, deploy, wire it to a batch data transform (script) or select it as the chunking strategy in the search index's Advanced Setup (function), and review the `DataCustomCodeLogs__dll` output.
 6. **Govern and promote** — manually assign and audit governance tags on any target DLOs/DMOs the script creates or updates; then build a DevOps Data Kit (manually add referenced DLOs/DMOs; the code extension auto-includes with the transform) and deploy in dependency order to production.
 7. **Monitor in production** — watch the Logs DLO after the first scheduled runs; confirm no sensitive data appears in log output.
@@ -156,7 +156,7 @@ Run through these before marking work in this area complete:
 - [ ] Script preserves object-type parity (DLO→DLO / DMO→DMO) and DMO targets are transform-type DMOs
 - [ ] Function processes each request independently and never tries to read DLOs/DMOs at runtime
 - [ ] No PII, credentials, or sensitive data written to stdout / the Logs DLO
-- [ ] `Dockerfile` unmodified; deployment deps in `requirements.txt`, dev-only deps in `requirements-dev.txt`
+- [ ] `Dockerfile` and scaffold `requirements-dev.txt` unmodified; runtime deps only in `requirements.txt`
 - [ ] Governance tags manually assigned and audited on DLOs/DMOs the script creates or updates
 - [ ] Promotion plan uses a DevOps Data Kit with DLOs/DMOs added manually and the fixed deploy order respected
 - [ ] No GA/Beta claim, no non-Python language, no unsupported surface asserted anywhere in the deliverable
@@ -177,7 +177,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Code extension project | `Dockerfile` (don't modify), `requirements.txt`, `requirements-dev.txt`, `payload/config.json`, `payload/entrypoint.py` |
+| Code extension project | `Dockerfile` (don't modify), `requirements.txt` (runtime deps), scaffold `requirements-dev.txt` (don't modify), `payload/config.json`, `payload/entrypoint.py` |
 | Deployed custom script + batch data transform | On-demand or scheduled transform running the Python on isolated, ephemeral Data 360 compute |
 | Deployed custom function + search-index wiring | Chunking strategy selected in the search index's Advanced Setup |
 | DevOps Data Kit | Promotion bundle: DLOs/DMOs (manual) → code extension (auto) → batch transform, deployed in that order |

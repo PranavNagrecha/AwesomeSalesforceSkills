@@ -12,6 +12,8 @@
 
 **Currency vs. Subscriber Compatibility:** Managed package ISVs must balance running on the latest version (for security and features) against supporting subscribers on older orgs. The `apiVersion` in a managed package determines the minimum subscriber org version required.
 
+**Currency vs. Record Visibility (the 67.0 boundary):** Raising an Apex class to API version 67.0 or later tightens a platform default — a class with no sharing keyword moves from `without sharing` to `with sharing`. That is the safer posture, but it narrows what the code can see, and the classes most likely to have relied on the old default are the ones whose job is to see everything: roll-up helpers, sharing-recalculation utilities, low-privilege batch jobs. The resolution is not to hold the tier at 66.0. It is to make the intended mode explicit before the bump, which decouples currency from visibility instead of trading one against the other. See Gotcha 6 in `gotchas.md`.
+
 **Automation vs. Manual Review:** CI gates that auto-reject old versions prevent drift but can block legitimate work (e.g., a hotfix to a legacy component that cannot be safely upgraded yet). A threshold-based approach (reject below minimum, warn within tolerance) balances automation with flexibility.
 
 ## Anti-Patterns
@@ -29,5 +31,8 @@
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce KB 000389618 — "Salesforce Platform API Versions 21.0 through 30.0 Retirement" (deprecated Summer '22, retired Summer '25; REST 410 GONE / SOAP 500 UNSUPPORTED_API_VERSION / Bulk 400 InvalidVersion; verified 2026-08-01) — https://help.salesforce.com/s/articleView?id=000389618&language=en_US&type=1
 - Salesforce API End-of-Life Policy — https://help.salesforce.com/s/articleView?id=000381744&type=1
-- Salesforce Developer Blog: API Retirement Tools (Oct 2024) — https://developer.salesforce.com/blogs
+- REST API End-of-Life Policy (REST API Developer Guide) — confirms 7.0–20.0 "retired and unavailable" as of Summer '22 and 21.0–30.0 as of Summer '25, a supported band of "Versions 31.0 through 67.0" with no deprecated-but-serving band beneath it, and that REST "returns the 410:GONE error code" (verified 2026-08-13) — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/api_rest_eol.htm
+- SOAP API End-of-Life Policy (SOAP API Developer Guide) — confirms the same two retirement waves and the SOAP-side `500:UNSUPPORTED_API_VERSION` error code (verified 2026-08-13) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/api_eol_soap.htm
+- New Tools to Help Prepare for API Version Retirement (Salesforce Developer Blog, Oct 2024) — confirms the third protocol string, Bulk API "400: InvalidVersion" (verified 2026-08-13) — https://developer.salesforce.com/blogs/2024/10/new-tools-to-help-prepare-for-api-version-retirement
+- Using the with sharing, without sharing, and inherited sharing Keywords (Apex Developer Guide) — confirms "In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode", the inheritance-chain rule, and that "Apex triggers can't have an explicit sharing declaration" (verified 2026-08-13) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm
 - LWC Component Versioning (Spring '25) — https://developer.salesforce.com/docs/platform/lwc/guide

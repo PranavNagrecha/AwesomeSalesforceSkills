@@ -1,6 +1,6 @@
 ---
 name: custom-metadata-in-apex
-description: "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for setup-only administration with no Apex behavior, packaging, or deployment concern."
+description: "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for the Setup-side CMT vs Custom Settings choice — use admin/custom-metadata-types-and-settings. NOT for Hierarchy Custom Settings — use apex/apex-custom-settings-hierarchy."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

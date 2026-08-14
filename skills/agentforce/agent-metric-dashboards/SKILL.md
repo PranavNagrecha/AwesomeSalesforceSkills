@@ -1,6 +1,6 @@
 ---
 name: agent-metric-dashboards
-description: "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring."
+description: "Build the executive KPI dashboard for Agentforce: adoption, deflection, latency, cost, quality — KPI definitions, data sources, CRM Analytics lenses, alert thresholds. NOT for the platform's own session tracing, Agent Analytics and health monitoring — use agentforce/agentforce-observability. NOT for scoring agent answer quality offline — use agentforce/agentforce-eval-harness."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: development-documentation-standards
-description: "Use when establishing or enforcing documentation standards for Salesforce development — writing ApexDoc comments (the JavaDoc-derived /** */ format with @param/@return/@throws and the other block/inline tags), applying Apex naming conventions, or defining org-wide design/documentation standards stored centrally. Trigger keywords: ApexDoc, code comments, doc tags, @param, @return, @throws, naming conventions, design standards, maintainability, in-source documentation. NOT for authoring end-user help articles or release notes (use devops/release-notes work), NOT for LWC/JSDoc component docs, and NOT for standing up a specific doc-generator product/site — this skill covers the in-source comment and standards conventions themselves, not a hosted documentation tool."
+description: "Standards for Salesforce dev documentation — README, ADR, runbook, release note templates. Triggers: dev documentation standards, ADR template, runbook Salesforce. NOT for automated release notes — use devops/release-notes-automation."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

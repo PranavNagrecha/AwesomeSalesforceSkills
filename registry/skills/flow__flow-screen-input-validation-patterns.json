@@ -98,9 +98,9 @@
     "fbf819f115da25dee4db",
     "fee7fb8c4b131ad00a7f"
   ],
-  "content_hash": "9f09117e3bd4da438e3fb83097913d9eb7a00b00a00b083e213f11d788e979f7",
+  "content_hash": "0791816d501f650106e746da6e6081625ec3143e659e8e76f42bdb5d801a0606",
   "dependencies": [],
-  "description": "Design input validation inside Screen Flow screens using component-level <validationRule> (formula + errorMessage), isRequired, cross-field rules on the second field, reactive components, and screen-level Decision fallbacks for cross-screen checks. Trigger keywords: screen flow validation rule, EndDate after StartDate validation in flow screen, block Next button until input valid. NOT for record-level Validation Rules \u2014 see admin/validation-rules-and-formulas. NOT for Apex-side input checks \u2014 see apex/input-validation-patterns.",
+  "description": "Design input validation inside Screen Flow screens using component-level <validationRule> (formula + errorMessage), isRequired, cross-field rules on the second field, reactive components, and screen-level Decision fallbacks for cross-screen checks. Trigger keywords: screen flow validation rule, EndDate after StartDate validation in flow screen, block Next button until input valid. NOT for record-level Validation Rules \u2014 use admin/validation-rules. NOT for choosing screen components or overall screen UX \u2014 use flow/screen-flows.",
   "file_location": "skills/flow/flow-screen-input-validation-patterns",
   "id": "flow/flow-screen-input-validation-patterns",
   "inputs": [

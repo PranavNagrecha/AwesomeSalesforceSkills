@@ -1,6 +1,6 @@
 ---
 name: data-migration-planning
-description: "Use when planning, reviewing, or troubleshooting a Salesforce data migration — covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics (use data-import-and-management). NOT for schema or data model design (use data-model-design-patterns). NOT for ongoing ETL pipeline architecture."
+description: "Use when planning, reviewing, or troubleshooting a Salesforce data migration — covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics — use admin/data-import-and-management. NOT for schema or data model design — use data/data-model-design-patterns."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

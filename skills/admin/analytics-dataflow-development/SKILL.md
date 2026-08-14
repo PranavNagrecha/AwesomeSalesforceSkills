@@ -1,6 +1,6 @@
 ---
 name: analytics-dataflow-development
-description: "Use this skill when building, debugging, or optimizing CRM Analytics dataflows — defining node types (sfdcDigest, Append, Augment, computeExpression, computeRelative, Flatten, dim2mea, sfdcRegister), scheduling runs, handling run failures, and tuning performance. NOT for standard data processing outside CRM Analytics, for recipe-based data prep, or for SAQL dashboard query tuning."
+description: "Use this skill when building, debugging, or optimizing CRM Analytics dataflows — defining node types (sfdcDigest, Append, Augment, computeExpression, computeRelative, Flatten, dim2mea, sfdcRegister), scheduling runs, handling run failures, and tuning performance. NOT for doing the same transformation in a Data Prep recipe — use admin/analytics-recipe-design. NOT for dataset field types, refresh schedules, or row limits — use admin/analytics-dataset-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

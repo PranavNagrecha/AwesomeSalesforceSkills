@@ -1,6 +1,6 @@
 ---
 name: quote-to-cash-requirements
-description: "Use when gathering, designing, or validating the end-to-end quote-to-cash process on standard Salesforce: Opportunity to Quote (with line items) to Synced Quote to Approval Process to Quote PDF to Order creation. Trigger keywords: quote approval, discount policy, quote PDF limits, order from quote, quote sync, quote template. NOT for CPQ/Revenue Cloud pricing rules, discount schedules, or guided selling — use CPQ skills for those."
+description: "Use when designing or validating the end-to-end quote-to-cash process on standard Salesforce: Opportunity to Quote to Synced Quote to Approval Process to Quote PDF to Order creation. Trigger keywords: quote approval, discount policy, quote PDF limits, order from quote, quote sync, quote template. NOT for CPQ pricing rules or discount schedules — use admin/cpq-pricing-rules. NOT for building the quote template itself — use admin/quotes-and-quote-templates."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

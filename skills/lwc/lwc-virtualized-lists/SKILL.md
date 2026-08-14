@@ -1,6 +1,6 @@
 ---
 name: lwc-virtualized-lists
-description: "Hand-built virtual / windowed list rendering in LWC for datasets above the 1,000-row × 5-column threshold where `lightning-datatable` degrades. Covers the four core mechanics — fixed-window state, IntersectionObserver-based scroll sentinels, stable item keys, server-side pagination caps (50 rows/page) — and the shadow-DOM gotchas that make the standard browser virtual-list libraries unreliable inside Lightning. NOT for the built-in `lightning-datatable` with `enable-infinite-loading` (use that first; this skill is the answer when datatable can't keep up), NOT for `lightning-tree-grid`."
+description: "Hand-built virtual/windowed list rendering in LWC for datasets above datatable limits — IntersectionObserver sentinels. Triggers: virtual list LWC, windowed rendering, infinite scroll custom. NOT for built-in lightning-datatable infinite loading — use lwc/lwc-datatable-advanced. NOT for simple lists under ~100 rows — use lwc/virtualized-lists."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

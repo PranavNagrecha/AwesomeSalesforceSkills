@@ -76,9 +76,9 @@
     "f68e46bc536b9fc2392e",
     "fb78aaea36eed60eec01"
   ],
-  "content_hash": "7618abeffd60064cc677e259722ad24c2b9f6a27de3a199b8ab599c9e3b83faf",
+  "content_hash": "d700196c7ab9e6dd6e97351920bdf7fe35c79ef95f32f1906dc5250f7512dbb9",
   "dependencies": [],
-  "description": "Hand-built virtual / windowed list rendering in LWC for datasets above the 1,000-row \u00d7 5-column threshold where `lightning-datatable` degrades. Covers the four core mechanics \u2014 fixed-window state, IntersectionObserver-based scroll sentinels, stable item keys, server-side pagination caps (50 rows/page) \u2014 and the shadow-DOM gotchas that make the standard browser virtual-list libraries unreliable inside Lightning. NOT for the built-in `lightning-datatable` with `enable-infinite-loading` (use that first; this skill is the answer when datatable can't keep up), NOT for `lightning-tree-grid`.",
+  "description": "Hand-built virtual/windowed list rendering in LWC for datasets above datatable limits \u2014 IntersectionObserver sentinels. Triggers: virtual list LWC, windowed rendering, infinite scroll custom. NOT for built-in lightning-datatable infinite loading \u2014 use lwc/lwc-datatable-advanced. NOT for simple lists under ~100 rows \u2014 use lwc/virtualized-lists.",
   "file_location": "skills/lwc/lwc-virtualized-lists",
   "id": "lwc/lwc-virtualized-lists",
   "inputs": [

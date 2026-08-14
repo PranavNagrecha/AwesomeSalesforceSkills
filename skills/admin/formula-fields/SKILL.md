@@ -1,6 +1,6 @@
 ---
 name: formula-fields
-description: "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that."
+description: "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for a formula field slowing a SOQL query or blocking an index — use apex/formula-field-performance-and-limits. NOT for Formula resources inside a Flow — use flow/flow-formula-and-expression-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

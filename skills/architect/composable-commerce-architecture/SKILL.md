@@ -1,6 +1,6 @@
 ---
 name: composable-commerce-architecture
-description: "Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability over B2C/B2B Commerce. NOT for the standard B2C Storefront UX (use b2c-commerce-storefront-setup). NOT for Salesforce Order Management basics (use salesforce-order-management-setup)."
+description: "Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability over B2C/B2B Commerce. NOT for the supported PWA Kit on Managed Runtime composable storefront — use architect/headless-commerce-architecture. NOT for standard B2C storefront setup — use admin/b2c-commerce-store-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

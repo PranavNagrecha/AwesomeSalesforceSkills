@@ -1,6 +1,6 @@
 ---
 name: cross-cloud-data-deployment
-description: "Cross-cloud data deployment: designing the data handoff when an implementation spans Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, Commerce Cloud. Shared keys, identity resolution, sync vs event, CDC, Data Cloud as hub. NOT for single-cloud data model design (use sales-cloud-core-setup or service-cloud-core-setup). NOT for integration pattern selection (use integration-pattern-selection decision tree)."
+description: "Cross-cloud data deployment: designing the data handoff when an implementation spans Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, Commerce Cloud. Shared keys, identity resolution, sync vs event, CDC, Data Cloud as hub. NOT for configuring the Data Cloud identity-resolution ruleset itself — use admin/data-cloud-identity-resolution. NOT for designing Data Cloud DMOs and their relationships — use data/data-cloud-data-model-objects. NOT for integration pattern selection — use the integration-pattern-selection decision tree."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

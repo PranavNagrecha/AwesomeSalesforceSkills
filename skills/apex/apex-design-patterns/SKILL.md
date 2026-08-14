@@ -1,6 +1,6 @@
 ---
 name: apex-design-patterns
-description: "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure."
+description: "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for the fflib library — use apex/fflib-enterprise-patterns. NOT for splitting one class — use apex/apex-class-decomposition-pattern."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

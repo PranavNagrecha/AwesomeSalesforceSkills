@@ -1,6 +1,6 @@
 ---
 name: apex-user-and-permission-checks
-description: "Use when Apex needs to check what the running user is, can see, or can do — via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for FLS/CRUD (use Security.stripInaccessible or `with user_mode`), sharing rules, or external user license logic."
+description: "Use when Apex needs to check what the running user is, can see, or can do — via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for CRUD/FLS enforcement — use apex/apex-stripinaccessible-and-fls-enforcement. NOT for creating or assigning custom permissions in Setup — use admin/custom-permissions."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

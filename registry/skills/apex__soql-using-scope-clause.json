@@ -75,9 +75,9 @@
     "f009630af211a699e225",
     "fefa2bb0152c6e2d53e9"
   ],
-  "content_hash": "b8ac226a04897c63ecdc9e54d5508f510b9aeff9a283012052b8a3c85609f84e",
+  "content_hash": "4966d00d9594d211d7ea9b32dbb15af996e0ad209707ac4956c2d41dccf480b1",
   "dependencies": [],
-  "description": "Use when writing or reviewing a SOQL query (in Apex, a selector, or via the API) that must return only a subset of records defined by ownership, team, territory, delegation, or an active scoping rule \u2014 through the optional USING SCOPE filterScope clause (mine, everything, team, delegated, my_territory, my_team_territory, mine_and_my_groups, scopingRule) placed after FROM and before WHERE. Also covers the mandatory USING SCOPE EVERYTHING requirement for the Scoping Rules SOQL operator. NOT a sharing/FLS enforcement mechanism (use WITH USER_MODE + with sharing + CRUD/FLS for that), NOT the Metadata API ListView filterScope enum (different casing and value set), and NOT for authoring scoping rules beyond their SOQL-operator criteria.",
+  "description": "Use when writing or reviewing a SOQL query (in Apex, a selector, or via the API) that must return only a subset of records defined by ownership, team, territory, delegation, or an active scoping rule \u2014 through the optional USING SCOPE filterScope clause (mine, everything, team, delegated, my_territory, my_team_territory, mine_and_my_groups, scopingRule) placed after FROM and before WHERE. Also covers the mandatory USING SCOPE EVERYTHING requirement for the Scoping Rules SOQL operator. NOT for plain SELECT / WHERE / ORDER BY syntax \u2014 use apex/soql-fundamentals. NOT for WITH USER_MODE or CRUD/FLS enforcement \u2014 use apex/soql-security. NOT for the with sharing / without sharing choice \u2014 use apex/apex-with-without-sharing-decision. NOT the Metadata API ListView filterScope enum (different casing and value set), and NOT for authoring scoping rules beyond their SOQL-operator criteria.",
   "file_location": "skills/apex/soql-using-scope-clause",
   "id": "apex/soql-using-scope-clause",
   "inputs": [

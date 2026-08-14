@@ -47,9 +47,9 @@
     "fab836e38e0f23bd5dfe",
     "ffd6450ebf4a18673042"
   ],
-  "content_hash": "94138722e928ade7da7a5e4054d07e46c05a63d8dd13efc12a76fff977581160",
+  "content_hash": "5009e2e8cb4a4f24f4382bd1c9d7c7f398f29d514bcece791266e3b270c157fc",
   "dependencies": [],
-  "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
+  "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning \u2014 use devops/scratch-org-pools.",
   "file_location": "skills/devops/scratch-org-snapshots",
   "id": "devops/scratch-org-snapshots",
   "inputs": [

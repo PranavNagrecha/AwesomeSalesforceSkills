@@ -1,6 +1,6 @@
 ---
 name: apex-security-patterns
-description: "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'stripInaccessible', 'AuraEnabled security', 'CRUD FLS'. NOT for SOQL injection review alone — use apex/soql-security for query-specific hardening."
+description: "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'AuraEnabled security', 'what execution context does this class run in', 'system mode vs user mode'. NOT for remediating a CRUD/FLS finding — use apex/apex-stripinaccessible-and-fls-enforcement for stripInaccessible, AccessType, SObjectAccessDecision and WITH USER_MODE mechanics. NOT for SOQL injection review alone — use apex/soql-security."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -20,6 +20,7 @@ triggers:
   - "secure Apex service layer review"
   - "verify inner class and subclass sharing inheritance"
   - "check default sharing mode after API 67 version bump"
+  - "batch or integration Apex returning fewer rows after the user mode default"
 inputs:
   - "entry point such as AuraEnabled, REST, Flow-invocable, trigger handler, or Batch"
   - "required data access model for records, objects, and fields"
@@ -29,9 +30,9 @@ outputs:
   - "review findings for sharing, CRUD/FLS, and system-context risks"
   - "secure service-layer pattern for reads and writes"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 Use this skill when Apex security needs to be explicit rather than assumed. The purpose is to choose the right sharing model, enforce CRUD and FLS deliberately on reads and writes, and prevent user-facing entry points from silently operating in broader system context than intended.
@@ -58,13 +59,15 @@ Two inheritance and call-chain rules trip up reviewers who assume sharing "flows
 - **Class inheritance and inner classes behave differently.** A class *without* its own declaration that `extends` a parent adopts the parent's sharing mode across the chain. But inner classes do **not** adopt the outer (container) class's mode — each inner class needs its own declaration or it falls back to the version default.
 - **`inherited sharing` resolves at the entry point.** When an `inherited sharing` class is itself the top-level entry point — an Aura component controller, an `@AuraEnabled` method called from LWC, a Visualforce controller, an Apex REST service, or an asynchronous Apex class — it runs in `with sharing`. It runs `without sharing` only when explicitly called from an already-established `without sharing` context. This is what makes `inherited sharing` the least-surprising default for reusable services.
 
-### Triggers Are Always `without sharing` But DML Defaults To User Mode
+### Triggers Split The Two Axes — Sharing Is Fixed, Access Mode Is Not
 
-Apex triggers cannot carry an explicit sharing keyword and always run implicitly in a `without sharing` context. That does not mean trigger DML ignores field and object permissions: database operations run in user mode unless system mode is explicitly specified, and user mode overrides the trigger's `without sharing` context for the operation. Review trigger logic on the record-visibility axis (it sees everything) separately from the CRUD/FLS axis (user-mode DML still applies).
+Apex triggers cannot carry an explicit sharing keyword and always run implicitly in a `without sharing` context. That context is fixed at every API version — you cannot declare it away. What it does **not** fix is whether any given operation actually bypasses the running user's sharing rules, because the access mode is a separate axis and it overrides the context. Per the Apex Developer Guide, "database operations within trigger bodies, including SOQL queries, SOSL queries, DML statements, and Database methods, run in user mode unless system mode is explicitly specified. User mode overrides the trigger's `without sharing` context and effectively enforces a `with sharing` context in the trigger body."
 
-### Record Access Is Not CRUD/FLS Enforcement
+That default is version-gated exactly like a class's, on the `apiVersion` in the trigger's own `.trigger-meta.xml`: user mode at 67.0 and later, system mode at 66.0 and earlier. So a bare SOQL in a 67.0 trigger body returns only the rows the running user can see — do not assume a trigger sees everything. Individual operations inside the body can still opt out with `WITH SYSTEM_MODE`, `as system`, or `AccessLevel.SYSTEM_MODE`; such an operation bypasses object- and field-level permissions **and** falls back to the trigger's own `without sharing` context for record visibility, so it genuinely does see every row. Review the two axes separately, and keep security-sensitive logic in a handler class where the sharing axis is yours to choose too.
 
-This is the most common misconception in Apex security. `with sharing` affects row visibility; it does not automatically enforce object permissions or field-level security. Reads and writes still need explicit handling such as `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, `Security.stripInaccessible`, or Schema describe checks depending on whether the design should fail fast or degrade gracefully.
+### The Default Access Mode Is Set By The Class, Not By The Org
+
+`with sharing` affects row visibility; it does not by itself decide object permissions or field-level security. What decides those is the `apiVersion` in the class's `.cls-meta.xml`. At API 67.0 and later, SOQL, SOSL, DML, and `Database` methods run in user mode by default, so CRUD, FLS, and sharing are enforced with no keyword at all. At 66.0 and earlier the default is system mode and every bit of enforcement is opt-in. A Summer '26 org runs both kinds of class side by side, so never assert either behaviour flatly — read the `apiVersion`, then read the row that applies in [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version). The version-independent point still holds: `Security.stripInaccessible` remains the tool for graceful degradation, because user mode fails the whole operation instead of trimming it.
 
 ### User-Facing Entry Points Need Explicit Security
 
@@ -104,6 +107,7 @@ Teams often secure queries and then perform unsafe DML on fields the user should
 | User-facing code reads data for the current user | Explicit user-context read pattern such as `WITH USER_MODE` | Sharing alone is not enough |
 | User-facing code updates records | `Security.stripInaccessible` before DML | Prevents unauthorized field writes |
 | Documented admin or maintenance process truly needs elevated access | Narrow `without sharing` helper with explicit justification | Keeps privilege elevation contained |
+| Integration, batch, or platform-utility code on a 67.0+ class must see all rows and fields | Explicit `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` plus a `// reason:` comment | Elevation is now the opt-in half; silence means user mode and silently fewer rows |
 
 
 ## Recommended Workflow
@@ -123,7 +127,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] Every public or global Apex class declares `with`, `without`, or `inherited sharing` intentionally rather than relying on the API 67.0+ `with sharing` default.
 - [ ] Inner classes and `extends`-only subclasses have their intended sharing verified — inner classes do not inherit the outer class's mode, and undeclared subclasses adopt the parent's mode.
 - [ ] Cross-call sharing is judged by where each method is defined, not by the sharing mode of the caller.
-- [ ] Triggers are reviewed as implicitly `without sharing` for visibility, with DML still checked for the correct user-mode/system-mode intent.
+- [ ] Triggers are reviewed on both axes separately: the implicit `without sharing` context cannot be declared away at any version, but it decides row visibility only for operations that actually run in system mode — trigger-body operations follow the version-gated default access mode, user mode overrides the context, and each operation can opt out with `WITH SYSTEM_MODE` / `as system`.
+- [ ] The class's `.cls-meta.xml` `apiVersion` was read before judging any query or DML as secured or unsecured, and no `WITH SECURITY_ENFORCED` survives on a 67.0+ class.
 - [ ] Reviews distinguish record access from CRUD/FLS enforcement instead of conflating them.
 - [ ] User-facing entry points enforce access in both reads and writes.
 - [ ] `without sharing` usage is narrow, justified, and documented.
@@ -138,7 +143,9 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 4. **Secure read patterns and secure write patterns are different** — a class can query safely and still perform unsafe DML if writes are not sanitized.
 5. **Relying on the sharing default is fragile** — in API 67.0+ an undeclared class runs `with sharing`, so uplifting older code or bumping the API version can silently flip enforcement; declare the mode explicitly.
 6. **Inner classes do not inherit the outer class's sharing** — a `with sharing` outer class does not make its inner classes safe; each inner class needs its own declaration.
-7. **A trigger's `without sharing` context does not disable FLS** — trigger DML still runs in user mode unless system mode is explicitly requested.
+7. **A trigger's `without sharing` context does not decide its access mode** — the context is fixed and undeclarable, but it only governs operations that run in system mode; database operations in the body follow the version-gated default (user mode at 67.0+, system mode at ≤66.0), and a user-mode operation overrides the `without sharing` context and enforces sharing for that operation.
+8. **`WITH SECURITY_ENFORCED` stops compiling at API 67.0** — it was removed from SOQL `SELECT` in Apex; `WITH USER_MODE` is the replacement for both SOQL and SOSL.
+9. **The user-mode default is gated on the class, not the org** — a Summer '26 org still runs a class pinned to 58.0 in system mode, so read the `apiVersion` before calling code secure or insecure.
 
 ## Output Artifacts
 

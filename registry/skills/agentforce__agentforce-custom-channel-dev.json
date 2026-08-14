@@ -122,11 +122,11 @@
     "fcff24ce8dc578648e80",
     "fe2b2a770dd01611e701"
   ],
-  "content_hash": "888a78b0912f4bab71a817ff0449e81bdfb8bb5f9ed466dcb1328677395e9213",
+  "content_hash": "5d6c9f44a7ffd43d106eb7dfcc0484b566db85b35faa274da404e511a3928543",
   "dependencies": [
     "agentforce/agent-channel-deployment"
   ],
-  "description": "Use this skill when building custom channel integrations with the Agentforce Agent API or BYOC (Bring Your Own Channel) for CCaaS \u2014 covering session lifecycle management, webhook handling, externalSessionKey design, sequenceId sequencing, BYOC Interaction API integration, and conversation state management. NOT for standard channels (Embedded Service, Slack, SMS/MMS via standard Messaging). NOT for agent-channel-deployment (which handles standard channel setup and activation). NOT for custom agent actions or Apex topics.",
+  "description": "Use this skill when building custom channel integrations with the Agentforce Agent API or BYOC (Bring Your Own Channel) for CCaaS \u2014 covering session lifecycle management, webhook handling, externalSessionKey design, sequenceId sequencing, BYOC Interaction API integration, and conversation state management. NOT for standing up a standard channel (Embedded Service, Slack, Experience Cloud, Messaging) \u2014 use agentforce/agent-channel-deployment. NOT for writing the Apex actions the agent invokes \u2014 use agentforce/custom-agent-actions-apex.",
   "file_location": "skills/agentforce/agentforce-custom-channel-dev",
   "id": "agentforce/agentforce-custom-channel-dev",
   "inputs": [

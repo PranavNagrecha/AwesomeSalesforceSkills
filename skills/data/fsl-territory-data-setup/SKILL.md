@@ -1,6 +1,6 @@
 ---
 name: fsl-territory-data-setup
-description: "Use this skill when bulk loading Service Territory data: boundary polygons, ServiceTerritoryMember assignments, OperatingHours, TimeSlots, and territory hierarchy setup. Trigger keywords: service territory bulk load, KML polygon import FSL, ServiceTerritoryMember migration, OperatingHours data setup, PolygonUtils Apex. NOT for Enterprise Territory Management (ETM/Account Territories), admin-level territory configuration UI, or scheduling policy setup."
+description: "Use this skill when bulk loading Service Territory data: boundary polygons, ServiceTerritoryMember assignments, OperatingHours, TimeSlots, and territory hierarchy setup. Trigger keywords: service territory bulk load, KML polygon import FSL, ServiceTerritoryMember migration, OperatingHours data setup, PolygonUtils Apex. NOT for ETM territory data — use data/territory-data-alignment. NOT for territory config in Setup — use admin/fsl-service-territory-setup."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

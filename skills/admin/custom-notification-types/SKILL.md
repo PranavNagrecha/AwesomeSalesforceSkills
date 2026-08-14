@@ -1,6 +1,6 @@
 ---
 name: custom-notification-types
-description: "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for email alerts (use email-templates-and-alerts). NOT for in-app bell notifications alone (use chatter-feed-customization)."
+description: "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for choosing channels, consent, or notification-fatigue policy — use admin/custom-notification-type-design. NOT for email alerts — use admin/email-templates-and-alerts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

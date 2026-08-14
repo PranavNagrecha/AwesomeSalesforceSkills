@@ -1,6 +1,6 @@
 ---
 name: net-zero-cloud-setup
-description: "Use this skill when configuring Salesforce Net Zero Cloud — including Scope 1/2/3 emission source modeling via the StnryAssetCrbnFtprnt / VehicleAssetCrbnFtprnt / Scope3CrbnFtprnt object families, emission factor library setup (EmssnFctr / EmssnFctrSet), DPE-driven carbon calculation jobs, supplier engagement scoring, and CSRD / ESRS / TCFD disclosure pack mapping. Triggers on: Net Zero Cloud setup, Sustainability Cloud carbon accounting, Scope 1 2 3 emissions Salesforce, emission factor library, supplier engagement Net Zero, ESG disclosure pack mapping. NOT for ESG content scoring (use Marketing Cloud), NOT for general financial reporting (use Accounting Subledger), NOT for energy-only utility billing (use Energy & Utilities Cloud)."
+description: "Use this skill when configuring Salesforce Net Zero Cloud — Scope 1/2/3 emission source modeling via the StnryAssetCrbnFtprnt / VehicleAssetCrbnFtprnt / Scope3CrbnFtprnt object families, emission factor library setup (EmssnFctr / EmssnFctrSet), DPE-driven carbon calculation jobs, supplier engagement scoring, and CSRD / ESRS / TCFD disclosure pack mapping. Triggers on: Net Zero Cloud setup, Sustainability Cloud carbon accounting, Scope 1 2 3 emissions Salesforce, emission factor library, supplier engagement Net Zero, ESG disclosure pack mapping. NOT for running the ESRS / CSRD / SASB / GRI / CDP report builders or the double-materiality assessment that produces the actual disclosure — use integration/sustainability-reporting."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -180,15 +180,13 @@ The mapping happens in the disclosure pack configuration: which CrbnFtprnt total
 
 ## Recommended Workflow
 
-1. Confirm Net Zero Cloud license; verify standard objects appear in Object Manager.
-2. Identify the disclosure framework(s) in scope; this drives which scopes and categories are mandatory.
-3. Activate the appropriate `EmssnFctrSet` for operating regions (Salesforce-bundled or custom).
-4. Load stationary asset carbon footprint records and activity rows per period.
-5. Load vehicle asset carbon footprint records for owned fleet.
-6. For Scope 3, materially-assess and load only the categories in scope (most orgs cover 4–6 of 15).
-7. Activate the carbon calculation DPE definitions; run once manually to backfill, then schedule recurring runs.
-8. Configure the disclosure pack(s) for the framework(s) in scope; verify roll-up metrics match expected totals.
-9. Document the inventory boundary (operational control vs. equity share vs. financial control), the base year, and the factor sets used in the audit log.
+1. **Confirm license and framework scope.** Verify Net Zero Cloud license and that standard objects appear in Object Manager; identify disclosure framework(s) in scope — this drives mandatory scopes and categories.
+2. **Activate emission factors.** Activate the appropriate `EmssnFctrSet` for operating regions (Salesforce-bundled or custom, with audit metadata if custom).
+3. **Load activity data by scope.**
+   - Scope 1/2: stationary asset carbon footprint records and activity rows per period; vehicle asset carbon footprint records for owned fleet.
+   - Scope 3: materially assess first; load only categories in scope (most orgs cover 4–6 of 15).
+4. **Activate and schedule carbon calculations.** Activate the carbon calculation DPE definitions; run once manually to backfill, then schedule recurring runs.
+5. **Configure disclosure and audit trail.** Configure disclosure pack(s) for framework(s) in scope; verify roll-up metrics match expected totals. Document inventory boundary (operational control vs. equity share vs. financial control), base year, and factor sets used.
 
 ---
 

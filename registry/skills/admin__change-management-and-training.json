@@ -70,9 +70,9 @@
     "f9a5982faed71944b7c8",
     "fc23ed7777c3578b58a4"
   ],
-  "content_hash": "f7a19dcae071ef67995fb2e324639c62c409798cb774e76df86971f6243abd95",
+  "content_hash": "853c75d12ee8a8159a07b48ee506dcd1b963014a485ffa173b6f46bfb08edd9a",
   "dependencies": [],
-  "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment).",
+  "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion \u2014 use admin/change-management-and-deployment. NOT for adoption of an Agentforce or Einstein AI feature \u2014 use admin/ai-adoption-change-management.",
   "file_location": "skills/admin/change-management-and-training",
   "id": "admin/change-management-and-training",
   "inputs": [

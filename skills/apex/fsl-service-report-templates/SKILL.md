@@ -1,6 +1,6 @@
 ---
 name: fsl-service-report-templates
-description: "Use this skill when designing, generating, or troubleshooting Field Service service report templates — covers the createServiceReport REST action (API v40.0+), ServiceReportLayout configuration, DigitalSignature capture, Document Builder (Winter '25+) with conditional logic via Flow, and PDF storage as ContentDocument/ContentVersion. NOT for quote templates, custom Visualforce pages, or Experience Cloud document generation."
+description: "Use this skill when designing, generating, or troubleshooting Field Service service report templates — covers the createServiceReport REST action (API v40.0+), ServiceReportLayout configuration, DigitalSignature capture, Document Builder (Winter '25+) with conditional logic via Flow, and PDF storage as ContentDocument/ContentVersion. NOT for Quote PDF templates — use apex/quote-pdf-customization. NOT for Visualforce PDF generation — use apex/pdf-generation-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

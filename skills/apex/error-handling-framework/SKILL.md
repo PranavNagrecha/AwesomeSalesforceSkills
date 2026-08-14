@@ -1,6 +1,6 @@
 ---
 name: error-handling-framework
-description: "Use when designing or implementing a cross-cutting Apex error handling framework: custom exception hierarchies, rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading, or a unified catch/log/rethrow utility class. Trigger keywords: 'error framework', 'centralized logging', 'rollback-safe log', 'BatchApexErrorEvent', 'correlation ID async', 'AuraHandledException boundary', 'Error_Log__c design'. NOT for individual try/catch block syntax help, basic DmlException handling, or choosing between synchronous and asynchronous execution models."
+description: "Use when designing a cross-cutting Apex error handling framework: custom exception hierarchies, centralized rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading across async, Error_Log__c design, AuraHandledException boundary. NOT for a single try/catch or DmlException question — use apex/exception-handling. NOT for dead-letter, circuit-breaker and event-replay design in an integration — use integration/error-handling-in-integrations."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

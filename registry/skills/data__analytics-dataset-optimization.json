@@ -105,9 +105,9 @@
     "fe6c7e0fc22787cf47e8",
     "ffe5a7fe09256adf13ad"
   ],
-  "content_hash": "bdbf1f2e8a375d34725de6f88d7173c3da92aa9487df19348db44eb5df38c78d",
+  "content_hash": "ea50d031298b50eab6d12c930d897d97d1eb000c333f140d699a5eaef7adf532",
   "dependencies": [],
-  "description": "Use this skill when tuning CRM Analytics dataset performance through field selection, date granularity choices, dataset splitting strategy, and run-budget optimization. Trigger keywords: dataset too many fields, SAQL timeseries slow, epoch vs date storage, dataset field count limit, dataset partition, split dataset by year, CRM Analytics performance tuning. NOT for SOQL optimization, Salesforce report tuning, Data Cloud segmentation performance, or choosing between analytics tools.",
+  "description": "Use this skill when tuning CRM Analytics dataset performance through field selection, date granularity choices, dataset splitting strategy, and run-budget optimization. Trigger keywords: dataset too many fields, SAQL timeseries slow, epoch vs date storage, dataset field count limit, dataset partition, split dataset by year, CRM Analytics performance tuning. NOT for creating a dataset, refresh schedules, or wrong field types \u2014 use admin/analytics-dataset-management. NOT for a slow SOQL query on Salesforce objects \u2014 use data/soql-query-optimization.",
   "file_location": "skills/data/analytics-dataset-optimization",
   "id": "data/analytics-dataset-optimization",
   "inputs": [

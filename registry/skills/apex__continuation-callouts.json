@@ -124,9 +124,9 @@
     "f84a0bf5b5f0b008f228",
     "fb7732eb1f0491aede57"
   ],
-  "content_hash": "a35ac0dc700b190cdf61eec46ee47a14c4040b6a60ae0156659dd2ae5f429b1b",
+  "content_hash": "26ada26e802b1b46ae757648ff4d11a38d28bb6d73077b0da6041c4b949d405b",
   "dependencies": [],
-  "description": "Use when making long-running HTTP callouts from Visualforce or LWC that exceed the synchronous callout timeout limit, using the Apex Continuation class for async callout execution. NOT for synchronous callouts (use callouts-and-http-integrations) or queueable async patterns.",
+  "description": "Use when making long-running HTTP callouts from Visualforce or LWC that exceed the synchronous callout timeout limit, using the Apex Continuation class for async callout execution. NOT for ordinary synchronous callouts and Named Credential setup \u2014 use apex/callouts-and-http-integrations. NOT for choosing between @future, Queueable, and Continuation \u2014 use integration/callout-limits-and-async-patterns.",
   "file_location": "skills/apex/continuation-callouts",
   "id": "apex/continuation-callouts",
   "inputs": [

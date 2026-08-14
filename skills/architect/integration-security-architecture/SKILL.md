@@ -1,6 +1,6 @@
 ---
 name: integration-security-architecture
-description: "Architecture-layer guidance for securing Salesforce integrations: mTLS mutual authentication, OAuth 2.0 flow selection, API gateway placement, IP allowlisting strategy on Hyperforce, and certificate lifecycle management. Trigger keywords: mTLS, mutual TLS, Hyperforce IP allowlisting, Salesforce Private Connect, certificate limit, integration authentication architecture. NOT for basic Connected App setup, Named Credential field configuration, or Apex callout code patterns — see integration/named-credentials-setup and integration/apex-callouts-and-limits."
+description: "Architecture-layer guidance for securing Salesforce integrations: mTLS mutual authentication, OAuth 2.0 flow selection, API gateway placement, IP allowlisting strategy on Hyperforce, and certificate lifecycle management. Trigger keywords: mTLS, mutual TLS, Hyperforce IP allowlisting, Salesforce Private Connect, certificate limit, integration authentication architecture. NOT for wiring mTLS onto one Named Credential — use integration/mutual-tls-callouts. NOT for Named Credential and External Credential field setup — use integration/named-credentials-setup. NOT for connected app registration and OAuth app setup — use admin/connected-apps-and-auth. NOT for Apex callout code patterns — use apex/callouts-and-http-integrations."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

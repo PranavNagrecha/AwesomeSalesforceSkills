@@ -1,6 +1,6 @@
 ---
 name: flow-cross-object-updates
-description: "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates. NOT for Process Builder (migrate-workflow-pb covers migration). Use when building flows that must write to a related record."
+description: "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates — use flow/flow-loop-element-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

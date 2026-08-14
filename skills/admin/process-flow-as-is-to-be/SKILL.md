@@ -1,6 +1,6 @@
 ---
 name: process-flow-as-is-to-be
-description: "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams with one lane per actor (user, system, integration, customer), explicit decision points, parallel paths, exception/sad-path handling, and per-step automation-tier annotations (Flow / Apex / Approval / Platform Event / Manual / Integration) that drive downstream build decisions. Use when discovery has named a business process and the team needs a structured map before any Flow, Apex, or Approval Process is built. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Sales-specific stage design (use sales-process-mapping). NOT for fundraising stewardship process mapping (use fundraising-process-mapping). NOT for FSL appointment scheduling flows (use fsl-scheduling-policies). NOT for actually building the Flow (use skills/flow/* and agents/flow-builder/AGENT.md). NOT for pure UI-side user journeys (use persona-and-journey-mapping-sf)."
+description: "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams — one lane per actor, explicit decision points, parallel and exception/sad paths, and per-step automation-tier annotations that drive downstream build decisions. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Opportunity stage and exit-criteria design — use admin/sales-process-mapping. NOT for picking Flow vs Apex for one requirement — use admin/process-automation-selection."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -314,7 +314,7 @@ Non-obvious platform behaviors that cause real production problems:
 - fsl-scheduling-policies — FSL appointment scheduling variant
 - persona-and-journey-mapping-sf — UI-side user journey companion; pair with this skill to cover both process and journey perspectives
 - approval-processes — consumed by `[APPROVAL]`-tagged steps in the To-Be
-- flow/record-triggered-flows — consumed by `[FLOW]`-tagged steps
+- flow/record-triggered-flow-patterns — consumed by `[FLOW]`-tagged steps
 
 ## Related Decision Trees
 

@@ -1,6 +1,6 @@
 ---
 name: flow-deployment-and-packaging
-description: "Move a Flow from sandbox to production reliably — source format, version-on-deploy semantics, deploy vs activate, dependency bundling, Change Set vs SFDX vs Unlocked vs Managed, validate-then-quick-deploy, and rollback by activating a prior version. NOT for source-driven setup or branching strategy — see devops/salesforce-dx-project-structure and devops/source-tracking-and-conflict-resolution."
+description: "Move a Flow from sandbox to production reliably — source format, version-on-deploy semantics, deploy vs activate, dependency bundling, Change Set vs SFDX vs Unlocked vs Managed, validate-then-quick-deploy, and rollback by activating a prior version. NOT for paused interviews surviving a deploy or the two-active-versions race — use devops/flow-deployment-activation-ordering. NOT for source-tracking conflicts between sandbox and repo — use devops/source-tracking-and-conflict-resolution. NOT for branching strategy — use devops/git-branching-for-salesforce."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

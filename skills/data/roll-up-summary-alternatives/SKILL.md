@@ -1,6 +1,6 @@
 ---
 name: roll-up-summary-alternatives
-description: "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'DLRS', 'aggregate trigger', 'summary count on parent', 'roll-up limitation'. NOT for ordinary master-detail roll-up fields that fit native limits without extra design tradeoffs."
+description: "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on. NOT for ordinary master-detail roll-up fields that fit native limits without extra desig — use apex/cross-object-formula-and-rollup-performance."
 category: data
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

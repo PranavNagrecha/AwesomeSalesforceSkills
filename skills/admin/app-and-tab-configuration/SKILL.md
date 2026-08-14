@@ -1,6 +1,6 @@
 ---
 name: app-and-tab-configuration
-description: "Use this skill to create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for Experience Cloud site apps (use experience-cloud skills), NOT for configuring page layouts or record pages (use Lightning App Builder), NOT for permission set architecture (use permission-set-architecture)."
+description: "Create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for console navigation, workspace tabs and subtabs - use admin/service-console-configuration. NOT for the record page or app page inside the app - use admin/lightning-app-builder-advanced."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -80,9 +80,9 @@
     "fb8c87c41578b1d87965",
     "fb97b014de4e68ce652c"
   ],
-  "content_hash": "0eb1251847e0820fcdcdf13f1efddb35e626ba29420b86d0bae7b803373a5317",
+  "content_hash": "a68afe4eab19b814edf7f5de9d385ac94815e032590c77df0d5807f6dd08093e",
   "dependencies": [],
-  "description": "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics via SOQL on core platform objects or the CRM Analytics B2B Commerce template. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analytics, or general Salesforce report builder usage.",
+  "description": "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analy \u2014 use data/analytics-data-governance.",
   "file_location": "skills/data/commerce-analytics-data",
   "id": "data/commerce-analytics-data",
   "inputs": [

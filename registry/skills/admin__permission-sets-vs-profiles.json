@@ -11,11 +11,14 @@
     "1654f82e041b0a3a2521",
     "1abd7f2c1a22bfe98f0e",
     "1c80dec72e946d6d5492",
+    "2023310497aead925030",
     "2143b1355d073ca42a3e",
     "279a20ee647cdf400ed2",
     "2adaa3a36e0bb9ca7e9e",
     "2fdf6d99a0abfce2f835",
     "30a1c1013b3c0c022d71",
+    "3488ad02da15565d0ef7",
+    "3865cfc7e5a9f2df95f0",
     "3a17e9bf3c4487d3c1d7",
     "3d50d3847d01a7f4bf45",
     "41d78e83b0b6433549ee",
@@ -38,26 +41,27 @@
     "793ec367bf6491e696a0",
     "796e11f4c4ba29bdd4d0",
     "7e5969a4f761e9faa832",
-    "83caf6a0cffc2cab9fda",
     "8506d83173f2c35b715f",
     "85aa2705b666eb1ff4d5",
     "8992b92de62a017c8e80",
     "89c27c36359b4d673488",
+    "8be6ced5fbd0a799134f",
     "926d4850341935771512",
     "9b84e7ea31bb2c595d90",
     "a006fa5a51ff4d5bef83",
     "a669952c7062406ff083",
     "a863f43413e792579b95",
     "adb2d727816462907b09",
+    "aee50992971f5d8a221f",
     "b372767c11168ef5bf93",
     "b729f2617f0e43fc933e",
     "b8b64f3c1d23fff0586d",
+    "c0324e1590072b570335",
     "c11991c7ba111949300a",
     "c499ca9a0a4ee0c099c1",
     "c67fa40c44950dc25b28",
     "cbee42e172c794f9c269",
     "ccd406f1009b44e07ba2",
-    "d16a329d33cd0d143ca4",
     "d1b8c36a8190c7428161",
     "d32372c53a12da8436b2",
     "d3a60020a0cf0ca2eea2",
@@ -72,7 +76,7 @@
     "fec6345e6f26e62cb4f5",
     "ff744190cd55f783e23a"
   ],
-  "content_hash": "abd99237a7a43f0a6e4b3f1224ecddca905ba504c5f7e81e39d6349fc32c27e1",
+  "content_hash": "7a7cca00bb548be6ed66ce255fa4805178505bfbb09cee6ad04a21cf730b77a2",
   "dependencies": [],
   "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access \u2014 use admin/sharing-and-visibility for that.",
   "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -85,7 +89,8 @@
   "name": "permission-sets-vs-profiles",
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 least-privilege and governance framing",
-    "Metadata API Developer Guide \u2014 profile and permission metadata movement constraints"
+    "Metadata API Developer Guide \u2014 profile and permission metadata movement constraints",
+    "[Salesforce Help 003834041 \u2014 \"Permissions in Profiles Retirement Cancelled\" (published 6 Jun 2026)](https://help.salesforce.com/s/articleView?id=003834041&language=en_US&type=1) \u2014 confirms the Spring '26 retirement of permissions in profiles was cancelled with no replacement end-of-life date, that profile-based permissions are still supported (\"for now\", in the article's words), that Salesforce now only *recommends* a permission set\u2013led model, and enumerates the six settings it assigns to profiles (default assigned apps, default record types and page layouts, login hours, login IP ranges, password policies, session settings) (verified 2026-08-13)"
   ],
   "outputs": [
     "permission model recommendation",
@@ -112,7 +117,7 @@
   "templates": [
     "skills/admin/permission-sets-vs-profiles/templates/permission-set-design-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

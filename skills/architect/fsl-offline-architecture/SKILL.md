@@ -1,6 +1,6 @@
 ---
 name: fsl-offline-architecture
-description: "Use this skill when designing FSL Mobile offline-first architecture: data priming strategy, priming limits, conflict resolution patterns, and sync failure handling. Trigger keywords: FSL offline priming, briefcase sync FSL, offline data limits, conflict resolution MERGE_ACCEPT_YOURS, ghost records FSL. NOT for LWC offline-and-mobile (generic LWC offline, covered by lwc/lwc-offline-and-mobile), standard Salesforce Mobile App offline, or Experience Cloud offline."
+description: "Use this skill when designing FSL Mobile offline-first architecture: data priming strategy, priming limits, conflict resolution patterns, and sync failure handling. Trigger keywords: FSL offline priming, briefcase sync FSL, offline data limits, conflict resolution MERGE_ACCEPT_YOURS, ghost records FSL. NOT for offline in the standard mobile app — use lwc/lwc-mobile-offline-and-briefcase. NOT for installing, branding or extending the FSL mobile app — use admin/fsl-mobile-app-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

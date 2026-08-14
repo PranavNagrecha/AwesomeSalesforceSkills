@@ -1,6 +1,6 @@
 ---
 name: sso-saml-troubleshooting
-description: "Diagnosing broken SAML SSO into Salesforce — IdP-initiated vs SP-initiated flows, signing-certificate validity / expiry, NameID format mismatches, RelayState handling, audience / entityId / issuer mismatches, clock skew, the SAML Assertion Validator in Setup, the Login History debug log, and the My Domain prerequisite for SSO. Covers the standard diagnostic loop: read the SAML response, identify which check failed, fix at the IdP or SP. NOT for OAuth / OpenID Connect SSO (see security/oauth-openid-troubleshooting), NOT for setting up SSO from scratch (see security/sso-saml-setup)."
+description: "Troubleshoot SAML SSO failures — assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration — use admin/connected-apps-and-auth."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: cpq-product-catalog-setup
-description: "Use this skill when setting up or modifying product bundles, product options, product rules, configuration attributes, and product features in Salesforce CPQ. Trigger keywords: CPQ product bundle, product rule, option constraint, feature configuration, dynamic bundle, filter rule, configuration attribute, bundle nesting. NOT for standard Salesforce Products & Pricebooks (use the products-and-pricebooks skill), CPQ pricing rules or discount schedules, or quote template/document configuration."
+description: "Use this skill when setting up or modifying product bundles, product options, product rules, configuration attributes, and product features in Salesforce CPQ. Trigger keywords: CPQ product bundle, product rule, option constraint, feature configuration, dynamic bundle, filter rule, configuration attribute, bundle nesting. NOT for plain Products and Pricebooks without CPQ — use admin/products-and-pricebooks. NOT for moving an existing CPQ catalog between orgs — use data/product-catalog-migration-cpq. NOT for price rules, price actions or discount schedules — use admin/cpq-pricing-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

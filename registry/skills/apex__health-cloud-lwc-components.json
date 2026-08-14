@@ -71,12 +71,12 @@
     "f2032d671f6aaa526656",
     "f5913c994c7642fa2da3"
   ],
-  "content_hash": "ce373271d82b433b5d899b2ce3f3dc125d85e31afaf1871f716f58dc706e695b",
+  "content_hash": "3c83018d9c6d00a40cc13e56bd052f16f35d2948991a4aa6ecb92effd87b314d",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-timeline"
   ],
-  "description": "Use this skill when building custom LWC components for Health Cloud: extending patient card configurations, building custom timeline components using TimelineObjectDefinition metadata, creating care plan visualizations, and surfacing clinical data via LWC. NOT for standard LWC development unrelated to Health Cloud clinical components, or OmniStudio FlexCard development.",
+  "description": "Use this skill when building custom LWC components for Health Cloud: extending patient card configurations, building custom timeline components using TimelineObjectDefinition metadata, creating care plan visualizations, and surfacing clinical data via LWC. NOT for configuring Industries Timeline \u2014 use admin/health-cloud-timeline. NOT for Health Cloud Apex \u2014 use apex/health-cloud-apex-extensions.",
   "file_location": "skills/apex/health-cloud-lwc-components",
   "id": "apex/health-cloud-lwc-components",
   "inputs": [

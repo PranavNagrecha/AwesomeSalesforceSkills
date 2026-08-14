@@ -60,11 +60,11 @@
     "ee5856d6a8c05a66cf10",
     "f54cf7cf65d9024d0c15"
   ],
-  "content_hash": "3610e8c825bf1fc7a36849cc0645b8cc37500b1ce35e33dd9f4c80a5b94e2a14",
+  "content_hash": "e7f18d894823fe07ec4a9a812439a026d546da26d4c0784d9a0c28938dc0b222",
   "dependencies": [
     "architect/fsl-optimization-architecture"
   ],
-  "description": "Use this skill when designing FSL for multiple geographic regions or timezones: territory timezone configuration, cross-territory resource assignment, concurrent optimization serialization, and regional scheduling boundaries. Trigger keywords: multi-region FSL, FSL timezone territories, cross-territory resource scheduling, concurrent optimization territories, international FSL deployment. NOT for multi-org strategy, single-timezone single-region FSL deployments, or Experience Cloud multi-region (covered by architect/multi-org-strategy).",
+  "description": "Use this skill when designing FSL for multiple geographic regions or timezones: territory timezone configuration, cross-territory resource assignment, and concurrent optimization serialization. Trigger keywords: multi-region FSL, FSL timezone territories, cross-territory resource scheduling, concurrent optimization territories, international FSL deployment. NOT for choosing an optimization mode or fixing Global optimization timeouts \u2014 use architect/fsl-optimization-architecture. NOT for creating a territory, its operating hours or polygon in Setup \u2014 use admin/fsl-service-territory-setup.",
   "file_location": "skills/architect/fsl-multi-region-architecture",
   "id": "architect/fsl-multi-region-architecture",
   "inputs": [

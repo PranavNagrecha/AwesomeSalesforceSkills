@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-engagement-setup
-description: "Use this skill when configuring Marketing Cloud Engagement (formerly ExactTarget): business units, user roles, sender profiles, delivery profiles, send classifications, and account-level settings. NOT for MCAE/Pardot or Marketing Cloud Account Engagement configuration."
+description: "Use this skill when configuring Marketing Cloud Engagement (formerly ExactTarget): business units, user roles, sender profiles, delivery profiles, send classifications, and account-level settings. NOT for MCAE / Account Engagement (Pardot) setup — use admin/mcae-pardot-setup. NOT for designing a multi-brand parent/child BU hierarchy — use architect/multi-bu-marketing-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

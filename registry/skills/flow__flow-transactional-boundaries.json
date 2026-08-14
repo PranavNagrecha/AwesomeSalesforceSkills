@@ -87,9 +87,9 @@
     "f89285768b1ef0d6202c",
     "fb4a38250d0f89a8a926"
   ],
-  "content_hash": "3525f1866a29f22147ba63cc8596368c7c01579830bee9800d672acd477fa8d2",
+  "content_hash": "515176d070500f5ddb9641c66f93c3c8726d85f958aa81b14ce52512ca6c3549",
   "dependencies": [],
-  "description": "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the exact semantics of each Flow entry point. NOT for choosing Flow vs Apex (use automation-selection.md). NOT for Flow-to-Flow invocation contracts (use subflows-and-reusability).",
+  "description": "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the. NOT for choosing Flow vs Apex (use automation-selection \u2014 use flow/record-triggered-flow-patterns.",
   "file_location": "skills/flow/flow-transactional-boundaries",
   "id": "flow/flow-transactional-boundaries",
   "inputs": [

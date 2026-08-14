@@ -358,7 +358,9 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
         "permission set, profile, validation rule, report, dashboard, queue, "
         "approval process, user setup, sharing rule, org-wide default, OWD, "
         "role hierarchy, record access, record visibility, who can see this "
-        "record, duplicate rule, matching rule, duplicate prevention",
+        "record, duplicate rule, matching rule, duplicate prevention, "
+        "clean up duplicates, merge governance, Spring release, seasonal "
+        "release, Release Updates, Sandbox Preview",
     ),
     "agentforce": (
         "Agentforce and Einstein: agents, topics, actions, prompt templates, "
@@ -369,10 +371,13 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
     ),
     "apex": (
         "Apex and SOQL: triggers, Apex governor limits, async processing, "
-        "OUTBOUND HTTP callouts, security enforcement, and the test patterns "
-        "that keep them deployable. Owns calling an external API FROM "
-        "Salesforce; salesforce-integration owns the inbound direction.",
-        "Apex, trigger, SOQL, SOSL, Apex governor limit, batch, queueable, "
+        "OUTBOUND HTTP callouts, security enforcement, and test patterns. "
+        "Owns calling an external API FROM Salesforce; "
+        "salesforce-integration owns inbound. Generic nightly scheduling "
+        "without naming code belongs to salesforce-flow. Codebase security "
+        "review belongs to salesforce-security. NOT for SOSL — use "
+        "salesforce-data.",
+        "Apex, trigger, SOQL, Apex governor limit, batch, queueable, "
         "@future, schedulable, test class, CPU time, heap, with sharing, "
         "StripInaccessible, callout, HTTP callout, HttpRequest, call an "
         "external API, consume a REST API from Apex, Named Credential in "
@@ -387,14 +392,14 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
         "HA/DR, technical debt",
     ),
     "data": (
-        "Data model, data movement and data quality: migrations, bulk data "
-        "loads and extracts, query optimisation, cleaning up duplicates that "
-        "already exist, archival and storage. For PREVENTING duplicates with "
-        "matching and duplicate rules, use salesforce-admin instead.",
-        "data model, data migration, data load, Data Loader, Bulk API data "
-        "load, load millions of records, external id, deduplication at "
-        "volume, merge existing duplicates, skinny table, custom index, "
-        "archival, data storage, storage limit",
+        "Data model, data movement and data quality: migrations, bulk loads, "
+        "query optimisation, deduplicating at volume, archival. Ordinary-volume "
+        "duplicate cleanup and prevention use salesforce-admin; come here for "
+        "hundreds-of-thousands+ dedup or third-party tools. LDV architecture "
+        "uses salesforce-architect.",
+        "data model, data migration, data load, Data Loader, Bulk API, "
+        "external id, deduplication at volume, archival, SOSL, cross-object "
+        "search, sandbox seed data, SandboxPostCopy, native Data Seeding",
     ),
     "devops": (
         "Salesforce delivery: source tracking, packaging, branching, CI/CD "
@@ -405,9 +410,11 @@ DOMAIN_META: dict[str, tuple[str, str]] = {
     ),
     "flow": (
         "Flow Builder: record-triggered, screen, scheduled and orchestration "
-        "flows, plus bulkification, fault handling, Flow-side limits, testing "
-        "and versioning. Anything phrased as \"my flow\" belongs here even "
-        "when the symptom is a limit that salesforce-apex also names.",
+        "flows, bulkification, fault handling, limits, testing. \"My flow\" "
+        "belongs here even when salesforce-apex also names the limit. "
+        "Nightly scheduling without naming code defaults here; apex takes it "
+        "when code/class/Apex is named. Flow-vs-Apex choice before anything "
+        "is built: admin/process-automation-selection.",
         "Flow, Flow Builder, record-triggered flow, screen flow, scheduled "
         "flow, subflow, fault path, flow element, orchestration, "
         "Process Builder migration, Workflow Rule migration, flow limit, "
@@ -904,12 +911,39 @@ def _clip_keywords(text: str, limit: int) -> str:
     return ", ".join(kept) + f", {GLOSS_ELLIPSIS}"
 
 
+# The destination half of a redirect: "(use admin/duplicate-management)",
+# "- use data/soql-query-optimization", "use the async-selection decision tree".
+# This is the single highest-value token on a roster line, because it is the
+# only part that tells a reader WHERE TO GO instead.
+_REDIRECT_TARGET_RE = re.compile(
+    r"[-—–(]?\s*use\s+(?:the\s+)?(?:`?[a-z][a-z0-9-]*/[a-z0-9][a-z0-9-]*`?"
+    r"|[a-z][a-z0-9-]*\s+decision\s+tree)\)?",
+    re.IGNORECASE,
+)
+
+
+def _redirect_target(clause: str) -> str:
+    """The trailing `use <target>` of a NOT-for clause, normalised, else ''."""
+    matches = list(_REDIRECT_TARGET_RE.finditer(clause))
+    if not matches:
+        return ""
+    return matches[-1].group(0).strip(" -—–()").rstrip(".")
+
+
 def _clip_clauses(text: str, limit: int) -> str:
     """Truncate a run of `NOT for …` clauses at a WHOLE-CLAUSE boundary.
 
     A half-clause redirect ("NOT for duplicate rule config (use admin/dup…")
     is worse than none: it names a destination the reader cannot resolve. So
     clauses are kept whole or dropped whole.
+
+    When even the FIRST clause overflows, the word-clip fallback used to cut
+    the clause's tail — which is exactly where the `use <target>` lives. On the
+    1,027 shipped glosses that destroyed the redirect target on 55% of the
+    lines that had one, in a file whose own header tells the reader that
+    "a `NOT for X - use Y` clause is the most useful thing on the line". So the
+    target is now re-attached after clipping: the reader loses some of the
+    subject list, never the destination.
     """
     if len(text) <= limit:
         return text
@@ -925,11 +959,21 @@ def _clip_clauses(text: str, limit: int) -> str:
             break
         kept.append(clause)
         used += cost
-    if not kept:
-        # Even the first clause overflows; a word-clipped redirect still names
-        # its subject, which is more than dropping it entirely.
-        return _clip_words(clauses[0], limit)
-    return " ".join(kept)
+    if kept:
+        return " ".join(kept)
+
+    # Even the first clause overflows. Word-clip its subject, but keep the
+    # destination — dropping "use X" is what makes a redirect unresolvable.
+    first = clauses[0]
+    target = _redirect_target(first)
+    if not target:
+        return _clip_words(first, limit)
+    tail = f" {GLOSS_ELLIPSIS} {target}"
+    head = _clip_words(first, max(0, limit - len(tail)))
+    if not head:
+        # No room for both; the destination alone still routes the reader.
+        return target if len(target) <= limit else _clip_words(first, limit)
+    return head[: -len(f" {GLOSS_ELLIPSIS}")].rstrip(" ,;:-—") + tail if head.endswith(GLOSS_ELLIPSIS) else head + tail
 
 
 def build_gloss(description: str, limit: int = MAX_GLOSS_CHARS) -> str:

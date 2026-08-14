@@ -1,6 +1,6 @@
 ---
 name: apex-dynamic-soql-binding-safety
-description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and the interaction with WITH USER_MODE / WITH SECURITY_ENFORCED. NOT for static SOQL — see apex-soql-fundamentals. NOT for FLS enforcement on results — see soql-security or apex-stripinaccessible-and-fls-enforcement."
+description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE / WITH SECURITY_ENFORCED interaction. NOT for reviewing a query for injection or CRUD/FLS generally — use apex/soql-security. NOT for Schema.describe and runtime type inspection — use apex/dynamic-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

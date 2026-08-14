@@ -83,9 +83,9 @@
     "f7ff60e003a1e1264dc9",
     "fcbe0b4caa29349419d8"
   ],
-  "content_hash": "750c25efe3c02e58c5bb7fb5f315837164b96acd1351aae168e4cd4145219ced",
+  "content_hash": "92bb52af494bd0bec235fe587af525cca91b592d91e795cc03718147454d0d73",
   "dependencies": [],
-  "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
+  "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for creating the object itself - use admin/object-creation-and-design. NOT for formula field logic - use admin/formula-fields. NOT for picklist value set management - use admin/picklist-and-value-sets.",
   "file_location": "skills/admin/custom-field-creation",
   "id": "admin/custom-field-creation",
   "inputs": [

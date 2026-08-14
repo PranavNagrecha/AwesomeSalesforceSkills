@@ -85,9 +85,9 @@
     "fa69b6fda5e014cf896f",
     "ff952d24c17b2e900f3d"
   ],
-  "content_hash": "367d5f0b751927381dbbefecceb0a86bea385f34519d9abf61e4b16c5a66c594",
+  "content_hash": "31fb7e229b9b0a44bcefdb7f6fafd0cc81f100d9b97fb8d789ac61b04f07b70a",
   "dependencies": [],
-  "description": "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for internal Lightning apps, Lightning App Builder configuration, or Flow orchestration inside an existing site.",
+  "description": "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for coding LWR themes or custom components \u2014 use lwc/lwr-site-development. NOT for deploying a finished site to another org \u2014 use devops/experience-cloud-deployment-admin.",
   "file_location": "skills/admin/experience-cloud-site-setup",
   "id": "admin/experience-cloud-site-setup",
   "inputs": [

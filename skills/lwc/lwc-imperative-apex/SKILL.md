@@ -1,6 +1,6 @@
 ---
 name: lwc-imperative-apex
-description: "Call Apex methods imperatively from LWC — on button click, lifecycle hooks, or conditional logic. Covers import syntax, cacheable vs non-cacheable, async/await patterns, error handling, loading states, and Promise.all. NOT for wire service (use wire-service-patterns) and NOT for testing Apex mocks (use lwc-testing)."
+description: "Call Apex methods imperatively from LWC — on button click, lifecycle hooks, or conditional logic. Covers import syntax, cacheable vs non-cacheable, async/await patterns, error handling, loading states, and Promise.all. NOT for reactive @wire reads — use lwc/wire-service-patterns. NOT for mocking the call in a Jest test — use lwc/lwc-testing."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

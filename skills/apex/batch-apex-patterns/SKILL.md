@@ -1,6 +1,6 @@
 ---
 name: batch-apex-patterns
-description: "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for generic async choice discussions where Queueable or Future might still be the better tool."
+description: "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for choosing Batch vs Queueable vs Future — use apex/async-apex. NOT for running one batch after another — use apex/apex-batch-chaining."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

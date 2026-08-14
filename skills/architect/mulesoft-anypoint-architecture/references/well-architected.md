@@ -35,7 +35,7 @@ CloudHub 2.0 private spaces allow VPC-level isolation without sacrificing MuleSo
 
 - `integration/api-led-connectivity` — For designing the Experience/Process/System API layer pattern
 - `integration/mulesoft-salesforce-connector` — For Salesforce Connector configuration within Mule applications
-- `integration/hybrid-integration-architecture` — For decisions about MuleSoft vs. Salesforce-native integration
+- `integration/middleware-integration-patterns` — For decisions about MuleSoft vs. Salesforce-native integration
 
 ---
 

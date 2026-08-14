@@ -62,9 +62,9 @@
     "f55f9c9f97fdb4fc6913",
     "fe1bfe3188a80346269e"
   ],
-  "content_hash": "8d8049fc19dd1378bce3646dfe7a10b52698e8907ed2c2bc533748d8001de607",
+  "content_hash": "127d899a9933d78b69e0a0e021921f9329137a166269f08de3b6b2aaf2011adc",
   "dependencies": [],
-  "description": "Use when designing or implementing volunteer management in Salesforce for nonprofits using NPSP or Nonprofit Cloud \u2014 covers V4S managed package objects vs. NPC-native volunteer objects, hours tracking, scheduling, and recognition workflows. NOT for HR systems, commercial employee volunteering programs, or Field Service Lightning crew management.",
+  "description": "Use when designing or implementing volunteer management in Salesforce for nonprofits using NPSP or Nonprofit Cloud \u2014 covers V4S managed package objects vs. NPC-native volunteer objects, hours tracking, scheduling, and recognition workflows. NOT for planning an NPSP-to-Nonprofit-Cloud migration \u2014 use architect/nonprofit-cloud-vs-npsp-migration. NOT for donor lifecycle and moves-management requirements \u2014 use admin/donor-lifecycle-requirements. NOT for HR systems, commercial employee volunteering programs, or Field Service Lightning crew management.",
   "file_location": "skills/data/volunteer-management-requirements",
   "id": "data/volunteer-management-requirements",
   "inputs": [

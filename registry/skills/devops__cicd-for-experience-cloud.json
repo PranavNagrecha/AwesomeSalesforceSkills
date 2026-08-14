@@ -78,9 +78,9 @@
     "fdb81c1215668deaa6e4",
     "fde93941630fa7393dcd"
   ],
-  "content_hash": "1788c76d8f9362b3987efe3fdc5c36a2c65d89a18badac4fa7fd76de13f94424",
+  "content_hash": "0499104ef1235b542b4b8919df3ecaa96e8c4938651ef22713b5329765dd3eec",
   "dependencies": [],
-  "description": "CI/CD pipeline patterns for Experience Cloud sites \u2014 the layer between sfdx-project metadata deploys and a working production site. Covers GitHub Actions / Jenkins / GitLab pipeline shapes for ExperienceBundle / DigitalExperienceBundle deploys, BrandingSet + ExperiencePropertyTypeBundle promotion, guest-user permission-set automation, custom-domain / CDN binding scripts, and the ordering rules that make the difference between a clean deploy and a half-applied site. NOT for the metadata-shape details (use devops/experience-cloud-deployment-dev), NOT for generic SFDX CI/CD (use devops/sfdx-cicd-pipeline).",
+  "description": "CI/CD pipeline patterns for Experience Cloud sites \u2014 the layer between sfdx-project metadata deploys and a working production site. Covers GitHub Actions / Jenkins / GitLab pipeline shapes for ExperienceBundle / DigitalExperienceBundle deploys, BrandingSet + ExperiencePropertyTypeBundle promotion, guest-user permission-set automation, custom-domain / CDN binding scripts, and the ordering rules that make the difference between a clean deploy and a half-applied site. NOT for the metadata-shape details (use devops/experience-cloud-deployment-dev), NOT for generic SFDX CI/CD (use architect/ci-cd-pipeline-architecture).",
   "file_location": "skills/devops/cicd-for-experience-cloud",
   "id": "devops/cicd-for-experience-cloud",
   "inputs": [
@@ -99,7 +99,7 @@
     "Network \u2014 Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_network.htm",
     "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
     "Sibling skill (bundle internals) \u2014 `skills/devops/experience-cloud-deployment-dev/SKILL.md`",
-    "Sibling skill (generic SFDX CI/CD) \u2014 `skills/devops/sfdx-cicd-pipeline/SKILL.md` (where one exists)"
+    "Sibling skill (generic CI/CD pipeline design) \u2014 `skills/architect/ci-cd-pipeline-architecture/SKILL.md`"
   ],
   "outputs": [
     "Pipeline job definitions (`.github/workflows/*.yml`, Jenkinsfile, etc.) for the deploy",

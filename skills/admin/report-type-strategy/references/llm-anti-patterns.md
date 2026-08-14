@@ -103,3 +103,23 @@ breaks every report on the CRT.
 
 **Detection hint.** Any "edit the CRT join semantics" suggestion
 without acknowledging the recreation cost.
+
+---
+
+## Anti-Pattern 8: Leaving the Report Type In Development After the Reports Ship
+
+**What the LLM generates.** "Leave the CRT In Development until we're sure, then share the folder."
+
+**Correct pattern.** `<deployed>false</deployed>` hides those reports from non-admins. Dashboards and admins still run them. Flip Deployed when the type is the contract, not when the last report is pretty.
+
+**Detection hint.** Folder names for end users plus report types still `deployed>false`.
+
+---
+
+## Anti-Pattern 9: Child-Field Filter Plus WITHOUT Cross-Filter
+
+**What the LLM generates.** "Accounts without Contacts, filtered to Contact Created Date this year."
+
+**Correct pattern.** WITHOUT means the child is absent — there is no child date to filter. Use with-or-without plus a cross-filter, or two reports.
+
+**Detection hint.** A WITHOUT cross-filter and a `Contact.` / child-object field filter on the same report.

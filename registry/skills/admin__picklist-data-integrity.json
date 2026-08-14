@@ -69,9 +69,9 @@
     "f8753dcf9309aa705aaa",
     "fed7ae0927fa1c9fc550"
   ],
-  "content_hash": "bc3ac7a96dce74f4344c567fa2ef9eeb7bd65ed189885fe34a00692fa8107f4c",
+  "content_hash": "b4af93fff8af8f8f1900e35b84b8eff88994300d66062c22444842fd7d55d756",
   "dependencies": [],
-  "description": "Picklist governance for Salesforce admins \u2014 Restricted vs Unrestricted, Global Value Sets vs local picklists, value deactivation that breaks reports, dependent picklists with deactivated controllers, and the 'value not in picklist' phantom-data problem. Covers the per-record-type value selection model, the API-vs-label mismatch trap, and the mass-replace-values runbook. NOT for selection-list UX (that's LWC styling), NOT for the architectural decision of when to use a picklist vs lookup vs custom metadata.",
+  "description": "Picklist governance for Salesforce admins \u2014 Restricted vs Unrestricted, Global Value Sets vs local picklists, value deactivation that breaks reports, dependent picklists with deactivated controllers, and the 'value not in picklist' phantom-data problem. Covers the per-record-type value selection model, the API-vs-label mismatch trap, and the mass-replace-values runbook. NOT for auditing an org where invalid values already exist or record-type mappings have drifted \u2014 use admin/picklist-field-integrity-issues. NOT for creating a picklist field or wiring up a dependent picklist \u2014 use admin/picklist-and-value-sets.",
   "file_location": "skills/admin/picklist-data-integrity",
   "id": "admin/picklist-data-integrity",
   "inputs": [

@@ -104,7 +104,7 @@ WHERE Owner.Name = 'Tier 1 Support'
 
 ```
 Prefer flat public group membership:
-  - Add Roles and Subordinates directly to the group
+  - Add Roles and Internal Subordinates directly to the group
   - Avoid groups-within-groups beyond one level of nesting
   - Each additional nesting level multiplies sharing recalculation cost
 
@@ -143,3 +143,34 @@ Diagnosis:
 ```
 
 **Detection hint:** If the generated advice uses "queue" and "public group" interchangeably in the same sentence without distinguishing their roles, flag it and clarify the distinction.
+
+---
+
+## Anti-Pattern 7: Emitting the Pre-Secure-Roles `roleAndSubordinates` API Name
+
+**What the LLM generates:** `<sharedTo><roleAndSubordinates>Sales_Manager</roleAndSubordinates></sharedTo>` in sharing rule metadata, SOQL filtering on the `RoleAndSubordinates` group, or Setup instructions telling the admin to pick "Roles and Subordinates" from the member-type picker — with no warning that existing code, flows, components and integrations must be rewritten.
+
+**Why it happens:** The old name dominates training data, and Salesforce currently translates old references dynamically, so the wrong output still deploys and still returns rows. The model gets no failure signal, and neither does the reviewer until the transition period ends.
+
+**Correct pattern:**
+
+```
+Metadata API:  roleAndSubordinates  →  roleAndSubordinatesInternal
+SOQL / API:    RoleAndSubordinates  →  RoleAndSubordinatesInternal
+Setup picker:  "Roles and Subordinates" → "Roles and Internal Subordinates"
+
+Enforced in sandboxes Summer '25. In production, Winter '26 — but only in
+orgs created after 8 February 2024 that had not enabled digital experiences.
+Do not assert the new name is live in an org you have not checked.
+
+Keep roleAndSubordinates when the org has digital experiences enabled and
+Experience Cloud site users are on external account roles other than a
+shared person account role — that is the condition under which the
+Metadata API still exposes the field.
+
+Always add: dynamic translation is transitional; the references must be
+updated manually in SOQL, Apex, flows, Lightning components, integrations,
+Metadata API deployments and installed packages.
+```
+
+**Detection hint:** Grep generated metadata for `<roleAndSubordinates>` and generated queries for the `'RoleAndSubordinates'` string literal. Either one is a prompt to check the target org, not an automatic defect — it is correct in a digital-experiences org, and it is still live in a production org that has not taken the Winter '26 release update. What should always be flagged is emitting the old name with no mention that the rename happened.

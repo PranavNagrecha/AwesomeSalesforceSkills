@@ -1,6 +1,6 @@
 ---
 name: subscription-lifecycle-requirements
-description: "Use when documenting, reviewing, or gathering requirements for Salesforce CPQ subscription lifecycle behavior: how amendments, renewals, upgrades, downgrades, and cancellations must work for a specific business. Trigger keywords: subscription requirements, amendment requirements, renewal requirements, proration requirements, co-termination, subscription ledger, upgrade downgrade policy. NOT for CPQ setup or configuration, not for Apex amendment API implementation, and not for Revenue Cloud advanced order management."
+description: "Use when documenting, reviewing, or gathering requirements for Salesforce CPQ subscription lifecycle behavior: how amendments, renewals, upgrades, downgrades, and cancellations must work for a specific business. Trigger keywords: subscription requirements, amendment requirements, renewal requirements, proration requirements, co-termination, subscription ledger, upgrade downgrade policy. NOT for configuring CPQ amendments and renewals — use admin/contract-and-renewal-management. NOT for amendment architecture — use architect/subscription-management-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

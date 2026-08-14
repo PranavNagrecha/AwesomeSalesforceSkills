@@ -67,9 +67,9 @@
     "f8f0ca16501bb167185d",
     "fbc39952b30f03f4e796"
   ],
-  "content_hash": "811f98caa622bcff1d05ad3b845d8e6740ec97636f0b98c5551237fa2f1d3ee2",
+  "content_hash": "6af96764550dd3624750c684cda9bd69822a05d27bcc1b8b75b6bf3ca86ced96",
   "dependencies": [],
-  "description": "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for SFDX source-format details or sf CLI command syntax (use sf-cli-and-sfdx-essentials), and NOT for CI/CD pipeline automation (use devops skills).",
+  "description": "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for scripting retrieve/deploy in a CI pipeline \u2014 use devops/metadata-api-retrieve-deploy. NOT for sf CLI command syntax or DX source format \u2014 use apex/sf-cli-and-sfdx-essentials.",
   "file_location": "skills/apex/metadata-api-and-package-xml",
   "id": "apex/metadata-api-and-package-xml",
   "inputs": [

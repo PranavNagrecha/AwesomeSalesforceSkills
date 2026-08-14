@@ -73,9 +73,9 @@
     "fb83807aa5e06f1ff4ce",
     "ff24ebec9ab4e8268234"
   ],
-  "content_hash": "8316f6d670df9ad7ad703a7178c13e7681e0a05ed20aa32e6596fb496c8ec3bb",
+  "content_hash": "8b6a69c33c93ec23c4408bf693b9cb5189e17f5a0f263ec9515ccc9483804ac8",
   "dependencies": [],
-  "description": "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring. Covers: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for SOQL performance tuning (use soql-optimization-patterns). NOT for Bulk API payload issues (use bulk-api-2-patterns).",
+  "description": "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for one object's own query restrictions, required filters or row caps - use apex/soql-object-limits-and-restrictions. NOT for a query that works but is slow - use data/soql-query-optimization.",
   "file_location": "skills/admin/salesforce-object-queryability",
   "id": "admin/salesforce-object-queryability",
   "inputs": [

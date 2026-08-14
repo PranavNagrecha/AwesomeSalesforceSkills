@@ -72,9 +72,9 @@
     "f7cf59ffa4f1814941bc",
     "f97a5f31b4a6656190c9"
   ],
-  "content_hash": "2c115365a0d1a5daaabeaca0675194c053578ee6450cf050a7b6ee93b363282e",
+  "content_hash": "f6e2d9c263b8801f993a9d6a92496055fb1497149c4e89337fdfbe5738e24a5d",
   "dependencies": [],
-  "description": "Time-based execution in Salesforce Flow \u2014 Scheduled Paths in record-triggered flows (delays measured against a record date or trigger fire time), the Wait element in autolaunched / orchestration flows, scheduled flows that run on a cron-like cadence, and the time-zone rules that decide when 'tomorrow at 9 AM' actually fires. Covers the offset semantics (`+N` days vs `-N` days from a date field), the requeueing behavior on the source record changing, and the workflow-rule-time-based-action replacement playbook. NOT for the basic `Decision` or `Loop` element (that's plain Flow), NOT for Apex `System.scheduleBatch` (different runtime, see apex/scheduled-apex).",
+  "description": "Time-based execution in Salesforce Flow \u2014 Scheduled Paths in record-triggered flows (delays measured against a record date or trigger fire time), the Wait element in autolaunched / orchestration flows, scheduled flows on a cron-like cadence, the offset semantics (`+N` days vs `-N` days from a date field), requeueing when the source record changes, the time-zone rules that decide when 'tomorrow at 9 AM' actually fires, and the workflow-rule-time-based-action replacement playbook. NOT for tuning Scheduled Path batch size or monitoring Paused Flow Interviews \u2014 use admin/scheduled-path-patterns. NOT for scheduling Apex itself \u2014 use apex/apex-scheduled-jobs.",
   "file_location": "skills/flow/flow-time-based-patterns",
   "id": "flow/flow-time-based-patterns",
   "inputs": [

@@ -68,3 +68,13 @@ If you generate the key in the same line as the first callout, a retry that re-r
 ## 9. `Retry-After` header is in seconds OR an HTTP-date
 
 The 429 / 503 `Retry-After` header per RFC 7231 can be either a delta-seconds integer ("120") or an HTTP-date ("Fri, 31 Dec 2027 23:59:59 GMT"). Handle both. In sync context with a 120s cap, if `Retry-After > remaining_budget`, dead-letter immediately rather than burn the rest of the transaction sleeping.
+
+---
+
+## 10. Timeout After Partial Delivery Is the Default Multi-System Failure
+
+**What happens:** Salesforce waits for every downstream to ack in one synchronous transaction (one JSON to middleware, fan-out to N systems). The 120-second **cumulative** callout cap fires **after** system A has already accepted. The applicant retries. Without a persisted application number / correlation Id as an idempotency key, the retry duplicates filings. There is no named UX state for "A succeeded, B never saw it."
+
+**When it occurs:** "Show Submitted only after all source systems acknowledge." Adding a real-time eligibility call into the same blocking wait makes it worse.
+
+**How to avoid:** Size the sync wait for the **worst** downstream now. Persist the correlation Id on the Salesforce record **before** the first callout (gotcha 8). Define partial-success and timeout as first-class states. Fire PDF / evidence generation in **parallel** so it does not eat the 120s budget — but do not purge the intake row until the evidence artifact is confirmed stored.

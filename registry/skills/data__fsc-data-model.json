@@ -93,11 +93,11 @@
     "fc2be24e9979a4fd0913",
     "ff074dcae5a9c97e316e"
   ],
-  "content_hash": "42b4bae477f3e9653c7f24946da5d5cabb8d3ea368f8f3c63c84b814b135a253",
+  "content_hash": "b9d37ea9d941f7e90c6b2db5492fdd2ac220671629a37ab00c12dc730f1a0171",
   "dependencies": [
     "data/person-accounts"
   ],
-  "description": "Use when designing, querying, or troubleshooting the Financial Services Cloud data model \u2014 including managed-package (FinServ__ namespace) and Core FSC (standard objects, no namespace) object structures, household relationship modeling, financial account ownership, and the FSC rollup framework. Trigger keywords: FSC data model, FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountParty, FinServ namespace, household rollup, AssetsAndLiabilities, FinancialGoal, LifeEvent, AccountContactRelation FSC. NOT for standard Salesforce data model or non-FSC financial objects.",
+  "description": "Use when designing, querying, or troubleshooting the Financial Services Cloud data model \u2014 including managed-package (FinServ__ namespace) and Core FSC (standard objects, no namespace) object structures, household relationship modeling, financial account ownership, and the FSC rollup framework. Trigger keywords: FSC data model, FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountParty, FinServ namespace, household rollup, AssetsAndLiabilities, FinancialGoal, LifeEvent, AccountContactRelation FSC. NOT for setting up financial accounts and roles in Setup \u2014 use admin/financial-account-setup. NOT for household membership and rollup scheduling \u2014 use admin/household-model-configuration.",
   "file_location": "skills/data/fsc-data-model",
   "id": "data/fsc-data-model",
   "inputs": [

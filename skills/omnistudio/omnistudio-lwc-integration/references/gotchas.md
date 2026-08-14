@@ -59,3 +59,21 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** The parent LWC does not specify `hide-nav-bar="true"` and also renders its own navigation buttons that call into the OmniScript. Both sets of buttons are rendered, leading to duplicate controls or conflicting state transitions.
 
 **How to avoid:** Decide up front whether the OmniScript's built-in navigation bar or the parent LWC's navigation controls should drive step progression. If the parent LWC controls navigation, set `hide-nav-bar="true"` on the OmniScript component. If the OmniScript's built-in nav is used, remove any duplicate controls from the parent LWC.
+
+---
+
+## Gotcha 7: Standard-Runtime Wrapper `record-id` Is Still a Client ContextId
+
+**What happens:** A thin Experience Cloud LWC hosts `omnistudio-omnistudio-standard-runtime-wrapper` with type/subtype/language/`record-id`. That record-id is whatever the page or query string supplied. DocGen variants use `OmniscriptBaseMixin` + pubsub + `prefill` to re-enable the script after PDF — a race if the prefill shape is wrong.
+
+**When it occurs:** Community pages that "just wrap" standard runtime.
+
+**How to avoid:** Keep wrappers thin. Authorize the record on the server (session token), then pass a resolved Id. Document the prefill contract. Mixed Classic designer + `isWebCompEnabled` + standard-runtime wrapper is a compile mismatch — pick one designer per Type/SubType family.
+
+---
+
+## Gotcha 8: Activating an LWC OmniScript Without the Compiled `cf*` Bundle Renders Blank
+
+**What happens:** `isWebCompEnabled=true` OmniScripts and FlexCards generate custom LWCs (`cf…`) **at activate**. Those bundles are often absent from git. Deploy metadata without activate, or activate without deploying the generated LWC, yields a blank card / runtime error. Hand-editing `cf*` is overwritten on next activate.
+
+**How to avoid:** Activate in CI (or retrieve generated LWCs after activate). Do not hand-edit `cf*`. Treat activate as a compile step, not a flag.

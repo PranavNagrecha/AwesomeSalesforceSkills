@@ -1,6 +1,6 @@
 ---
 name: data-cloud-zero-copy-federation
-description: "Use this skill when configuring or troubleshooting Data Cloud Zero Copy / Lakehouse Federation against Snowflake, Databricks, BigQuery, or Redshift — including external Data Lake Object setup, query semantics through federation, refresh and cache behavior, and choosing federation versus physical ingestion. Triggers on: Data Cloud federated DLO setup, query latency against external warehouse, Snowflake/Databricks/BigQuery integration with Data Cloud, federation vs ingestion decision. NOT for physical Ingestion API streaming/bulk patterns (use data-cloud-integration-strategy), not for CRM Analytics external connectors (use analytics-external-data), not for outbound Data Cloud activation to external systems (use data-cloud-activation-development)."
+description: "Use this skill when configuring or troubleshooting Data Cloud Zero Copy / Lakehouse Federation against Snowflake, Databricks, BigQuery, or Redshift — including external Data Lake Object setup, query semantics, refresh/cache behavior, and federation versus physical ingestion. NOT for physical Ingestion API streaming/bulk — use integration/data-cloud-integration-strategy. NOT for CRM Analytics external connectors — use data/analytics-external-data. NOT for outbound Data Cloud activation — use integration/data-cloud-activation-development."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

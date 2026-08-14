@@ -67,9 +67,9 @@
     "fd5abffb93673ec956d3",
     "ff3920d99b5e3eecf2a6"
   ],
-  "content_hash": "13877cd64ce2d8d6e6db72b7837be84c4cc0cf51f9c8044efd5bd550b043a5d3",
+  "content_hash": "53336fee5b5492aee8dfe0febc88f53efdad2f534e9499b801d0e75168ae2fd3",
   "dependencies": [],
-  "description": "Use when Apex needs to check what the running user is, can see, or can do \u2014 via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for FLS/CRUD (use Security.stripInaccessible or `with user_mode`), sharing rules, or external user license logic.",
+  "description": "Use when Apex needs to check what the running user is, can see, or can do \u2014 via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for CRUD/FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for creating or assigning custom permissions in Setup \u2014 use admin/custom-permissions.",
   "file_location": "skills/apex/apex-user-and-permission-checks",
   "id": "apex/apex-user-and-permission-checks",
   "inputs": [

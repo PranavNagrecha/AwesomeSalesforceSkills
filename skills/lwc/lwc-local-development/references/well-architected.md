@@ -38,9 +38,11 @@
 
 ## Official Sources Used
 
-- Preview Components with Live Preview (Test Components / Get Started) — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-test-components.html
-- Winter '26 for Developers (Local Dev Beta single-component preview; unified testing note) — https://developer.salesforce.com/blogs/2025/09/winter26-developers
+- Run a Live Component Preview — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-test-components.html — "Live Preview was previously called Local Dev. In Spring ‘26, we rebranded this feature to reflect the real-time nature of the preview tools."; "The Salesforce CLI automatically installs the Live Preview plugin for you."; commands `sf lightning dev app` / `site` / `component`; `--ssr` unsupported starting Spring '26; `-o/--target-org` required for single-component preview starting Winter '26. The page does not attach a GA/Beta label to Single Component Live Preview. (verified 2026-08-14)
+- Winter '26 for Developers — https://developer.salesforce.com/blogs/2025/09/winter26-developers — historical Local Dev / unified-testing distinction; vocabulary on that post is pre-rename.
 - Salesforce CLI Lightning Dev plugin (`@salesforce/plugin-lightning-dev`) — https://github.com/salesforcecli/plugin-lightning-dev
-- Preview a Single Component with Local Dev (Beta) release note (256) — https://help.salesforce.com/s/articleView?id=release-notes.rn_lwc_single_component_preview.htm&language=en_US&release=256&type=5
-- Single Component Live Preview GA release note (262) — https://help.salesforce.com/s/articleView?language=en_US&id=release-notes.rn_lwc_single_component.htm&release=262&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+## Contradiction log
+
+- A Help release note titled "Preview a Single Lightning Web Component in Your Browser (Generally Available)" exists, but Help pages return an SPA shell here, so the GA date is **not asserted**. Do not quote a week-of-April-13 GA from memory.

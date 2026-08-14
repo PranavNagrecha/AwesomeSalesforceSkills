@@ -28,9 +28,9 @@
     "fb5f831f7fef60986e0a",
     "fddc82e858f991127db0"
   ],
-  "content_hash": "b9f8914370be4190173a4b3f72f78eefac53fe6d8bcb42a85980d0e1fa93df2b",
+  "content_hash": "d6a5ec81a97b54c5cf41db69c51f44c9d44172265c5073fab9ddba2f1bbeda70",
   "dependencies": [],
-  "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
+  "description": "Build the executive KPI dashboard for Agentforce: adoption, deflection, latency, cost, quality \u2014 KPI definitions, data sources, CRM Analytics lenses, alert thresholds. NOT for the platform's own session tracing, Agent Analytics and health monitoring \u2014 use agentforce/agentforce-observability. NOT for scoring agent answer quality offline \u2014 use agentforce/agentforce-eval-harness.",
   "file_location": "skills/agentforce/agent-metric-dashboards",
   "id": "agentforce/agent-metric-dashboards",
   "inputs": [

@@ -72,9 +72,9 @@
     "f5c9be5fe7faf4737881",
     "f5e1c7f2dc25f6de554f"
   ],
-  "content_hash": "e7761fc8ae91e561387020647dcd4eb0d2794d991d3433e3a03007e1cb74dc01",
+  "content_hash": "1dc2ddf435105495b6f78fa8aa543136ee9d669bb936b48e41270da537fc07dd",
   "dependencies": [],
-  "description": "Apex String class methods, Pattern/Matcher regex, text parsing, template rendering, and the null-safety landmines that bite every Apex programmer eventually. Covers `String.split` trailing-empty-drop semantics, `Pattern.compile` static-final caching, `Matcher.group` ordering rules, and the `String.format` MessageFormat-vs-printf trap. NOT for formula functions (FORMULA / TEXT in formula fields), NOT for SOQL string-bind escaping (see apex/dynamic-soql).",
+  "description": "Apex String class methods, Pattern/Matcher regex, text parsing, template rendering, and null-safety landmines. Covers `String.split` trailing-empty-drop semantics, `Pattern.compile` static-final caching, `Matcher.group` ordering rules, and the `String.format` MessageFormat-vs-printf trap. NOT for catastrophic backtracking or the 1M char regex cap \u2014 use apex/apex-regex-and-pattern-matching. NOT for SOQL literal escaping \u2014 use apex/soql-string-escaping-and-reserved-characters.",
   "file_location": "skills/apex/apex-string-and-regex",
   "id": "apex/apex-string-and-regex",
   "inputs": [

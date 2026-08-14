@@ -77,13 +77,13 @@
     "fa1e5646784e9bcfa7b2",
     "fc6393536de91142fb90"
   ],
-  "content_hash": "7f50243aacf56f5305409775e74dec43cbedb1439964ea2525a8676a0be51ae2",
+  "content_hash": "2f08bf3a696046a7f523ce4b5067dff4d2b83cde1b0d1bd7a3695476baccdcce",
   "dependencies": [
     "oauth-flows-and-connected-apps",
     "rest-api-patterns",
     "retry-and-backoff-patterns"
   ],
-  "description": "Designing and configuring MuleSoft Anypoint Salesforce Connector flows: API selection (SOAP/REST/Bulk/Streaming), OAuth 2.0 JWT Bearer auth, watermark-based incremental sync with Object Store, batch processing with record-level error isolation, and replay topic subscriptions. Use when building Mule 4 flows that read from or write to Salesforce, migrating from Mule 3 watermark to Mule 4 Object Store, or troubleshooting connector authentication and API limits. NOT for native Salesforce-to-Salesforce integration without MuleSoft (use platform-events-integration or change-data-capture-integration). NOT for generic REST callout patterns from Apex (use rest-api-patterns).",
+  "description": "Designing and configuring MuleSoft Anypoint Salesforce Connector flows: API selection (SOAP/REST/Bulk/Streaming), OAuth 2.0 JWT Bearer auth, watermark-based incremental sync with Object Store, batch processing with record-level error isolation. NOT for native Salesforce-to-Salesforce integration without MuleSoft \u2014 use integration/platform-events-integration or integration/change-data-capture-integration. NOT for generic REST callouts from Apex \u2014 use integration/rest-api-patterns.",
   "file_location": "skills/integration/mulesoft-salesforce-connector",
   "id": "integration/mulesoft-salesforce-connector",
   "inputs": [

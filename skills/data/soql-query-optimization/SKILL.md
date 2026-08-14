@@ -1,6 +1,6 @@
 ---
 name: soql-query-optimization
-description: "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for Apex CPU or heap governor limit issues (use apex-cpu-and-heap-optimization) or for writing basic SOQL (use soql-fundamentals)."
+description: "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for org-wide large-data-volume architecture — ownership or account data skew, Big Object archival, tens of millions of rows on one object — use architect/large-data-volume-architecture. NOT for the custom-index or composite-index request itself — use data/custom-index-requests. NOT for Apex CPU or heap governor limits — use apex/apex-cpu-and-heap-optimization. NOT for writing basic SOQL — use apex/soql-fundamentals."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

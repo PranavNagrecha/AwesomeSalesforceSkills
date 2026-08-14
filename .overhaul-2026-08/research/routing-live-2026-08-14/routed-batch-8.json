@@ -1,0 +1,167 @@
+[
+  {
+    "query": "track field history",
+    "expected": "data/field-history-tracking",
+    "router_picked": "salesforce-security",
+    "router_correct": false,
+    "skill_picked": "data/field-history-tracking",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Security description names field audit trail. field-audit-trail gloss: Shield FAT configuration/retention; NOT for field history tracking — use data/field-history-tracking. Followed that redirect.",
+    "miss_reason": null
+  },
+  {
+    "query": "set up single sign on",
+    "expected": "security/sso-saml-troubleshooting",
+    "router_picked": "salesforce-security",
+    "router_correct": true,
+    "skill_picked": "admin/connected-apps-and-auth",
+    "correct": false,
+    "expected_in_top3": true,
+    "why_picked": "Security description names SSO/SAML. sso-saml-troubleshooting gloss is assertion errors / SSO login failure; NOT for initial SSO configuration — use admin/connected-apps-and-auth. Query is setup, so followed the NOT.",
+    "miss_reason": "LABEL_ARBITRARY"
+  },
+  {
+    "query": "build a report showing opportunities with no activity in 30 days",
+    "expected": "admin/reports-and-dashboards",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/reports-and-dashboards",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin description names report/dashboard. Gloss triggers 'report', 'pipeline report', 'cross-filter' — no-activity-in-30-days is the cross-filter pattern. Top3 also report-type-strategy (A-with-B-without) and reports-and-dashboards-fundamentals ('how do I build a report').",
+    "miss_reason": null
+  },
+  {
+    "query": "clean up duplicate accounts",
+    "expected": "admin/duplicate-management",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/duplicate-management",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin description names 'clean up duplicates'. Gloss triggers 'clean up duplicate records', 'dedupe', 'matching rule'. Data router defers ordinary-volume cleanup here.",
+    "miss_reason": null
+  },
+  {
+    "query": "our security review flagged CRUD FLS issues",
+    "expected": "apex/apex-stripinaccessible-and-fls-enforcement",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/apex-stripinaccessible-and-fls-enforcement",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex description names StripInaccessible and security enforcement. Gloss: use stripInaccessible to enforce CRUD/FLS. soql-security triggers 'security review finding' but NOT for enforcing FLS before DML — redirects here. Top3 also soql-security and apex-security-patterns.",
+    "miss_reason": null
+  },
+  {
+    "query": "what's the deal with unlocked packages",
+    "expected": "devops/unlocked-package-development",
+    "router_picked": "salesforce-devops",
+    "router_correct": true,
+    "skill_picked": "devops/unlocked-package-development",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "DevOps description names unlocked package. Gloss: designing/creating/versioning/installing unlocked packages. package-development-strategy is the managed-vs-unlocked choice; 2GP skill redirects unlocked here.",
+    "miss_reason": null
+  },
+  {
+    "query": "expose Salesforce data to an external app securely",
+    "expected": "integration/rest-api-patterns",
+    "router_picked": "salesforce-integration",
+    "router_correct": true,
+    "skill_picked": "integration/rest-api-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Integration owns inbound / external system calling Salesforce. rest-api-patterns triggers Salesforce REST API, REST CRUD, OAuth Bearer token. Top3 also oauth-flows-and-connected-apps (client auth) and api-governance-and-rate-limits.",
+    "miss_reason": null
+  },
+  {
+    "query": "integration procedure takes 30 seconds to come back",
+    "expected": "omnistudio/omnistudio-performance",
+    "router_picked": "salesforce-omnistudio",
+    "router_correct": true,
+    "skill_picked": "omnistudio/omnistudio-performance",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "OmniStudio description names Integration Procedure. omnistudio-performance gloss: diagnosing slow OmniStudio runtime. Top3 also integration-procedure-cacheable-patterns (cut latency) and omnistudio-asynchronous-data-operations (long-running IPs).",
+    "miss_reason": null
+  },
+  {
+    "query": "pick between mulesoft and point to point callouts",
+    "expected": "integration/middleware-integration-patterns",
+    "router_picked": "salesforce-integration",
+    "router_correct": true,
+    "skill_picked": "integration/middleware-integration-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Integration description names MuleSoft/middleware. Gloss triggers 'which iPaaS should I use', 'when do I need middleware for Salesforce'. Connector skill is Anypoint config, not the middleware-vs-P2P choice.",
+    "miss_reason": null
+  },
+  {
+    "query": "how do we roll back a bad release fast",
+    "expected": "devops/rollback-and-hotfix-strategy",
+    "router_picked": "salesforce-devops",
+    "router_correct": true,
+    "skill_picked": "devops/rollback-and-hotfix-strategy",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "DevOps description names release and rollback. Gloss: planning/executing metadata rollbacks and emergency hotfixes. Beat release-management (trains/versioning) and change-set-deployment.",
+    "miss_reason": null
+  },
+  {
+    "query": "one callout per record is blowing the 100 limit",
+    "expected": "integration/callout-limits-and-async-patterns",
+    "router_picked": "salesforce-apex",
+    "router_correct": false,
+    "skill_picked": "apex/governor-limits",
+    "correct": false,
+    "expected_in_top3": false,
+    "why_picked": "Integration description sends outbound callouts to Apex; Apex owns callout + governor limit. governor-limits gloss triggers bulkification and limit errors; featured as the limit table. Top3 also callouts-and-http-integrations and async-apex. Expected skill lives on the integration index, which this router split never opens.",
+    "miss_reason": "WRONG_ROUTER"
+  },
+  {
+    "query": "wait three days then send a reminder",
+    "expected": "flow/pause-elements-and-wait-events",
+    "router_picked": "salesforce-flow",
+    "router_correct": true,
+    "skill_picked": "flow/pause-elements-and-wait-events",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Flow owns delayed automation without naming Apex. pause-elements-and-wait-events triggers 'pause element', 'wait element'. Top3 also flow-time-based-patterns (scheduled-path delays) and scheduled-flows (recurring, which this is not).",
+    "miss_reason": null
+  },
+  {
+    "query": "soql on a 20 million row object times out",
+    "expected": "data/soql-query-optimization",
+    "router_picked": "salesforce-data",
+    "router_correct": true,
+    "skill_picked": "data/soql-query-optimization",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Data description owns query optimisation; Apex SOQL timeout at volume is selectivity/index, not syntax. Skill name matches; custom-index-requests NOT-for redirects query-opt techniques here. Gloss NOT is org-wide LDV architecture — kept that as #2 (architect/large-data-volume-architecture).",
+    "miss_reason": null
+  },
+  {
+    "query": "mixed dml operation error when creating a user",
+    "expected": "apex/mixed-dml-and-setup-objects",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/mixed-dml-and-setup-objects",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex runtime exception. Gloss triggers 'MIXED_DML_OPERATION', 'setup object DML error', 'cannot insert User and Account together'. apex-system-runas is the test workaround and redirects the error outside tests here.",
+    "miss_reason": null
+  },
+  {
+    "query": "we need a queue for the tier two team",
+    "expected": "admin/queues-and-public-groups",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/queues-and-public-groups",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin description names queue. Gloss triggers queue, queue membership, case queue. assignment-rules NOT-for creating the queue redirects here.",
+    "miss_reason": null
+  }
+]

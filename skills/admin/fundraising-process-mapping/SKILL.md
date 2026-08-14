@@ -1,6 +1,6 @@
 ---
 name: fundraising-process-mapping
-description: "Use this skill when designing or documenting nonprofit fundraising lifecycle stages, donor pipeline workflows, cultivation-to-stewardship cycles, major gift solicitation sequences, or Salesforce Opportunity sales process configuration for NPSP or Nonprofit Cloud. Trigger keywords: fundraising lifecycle, donor pipeline, cultivation stage, solicitation workflow, major gift process, moves management, NPSP Opportunity stages, stewardship cycle, NPC fundraising stages. NOT for implementation of Engagement Plans, gift entry processing, payment integration, or recurring donation configuration."
+description: "Use when designing nonprofit fundraising lifecycle stages, donor pipeline workflows, cultivation-to-stewardship cycles, or Salesforce Opportunity sales process configuration for NPSP or Nonprofit Cloud. Trigger keywords: fundraising lifecycle, donor pipeline, cultivation stage, solicitation workflow, major gift process, moves management, NPSP Opportunity stages, stewardship cycle, NPC fundraising stages. NOT for lapsed donor re-engagement or portfolio segmentation — use admin/donor-lifecycle-requirements. NOT for Engagement Plan setup — use admin/npsp-engagement-plans."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

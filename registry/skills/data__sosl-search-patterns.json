@@ -70,9 +70,9 @@
     "f93f895d12fc66721e64",
     "ff9f75a645230928d4af"
   ],
-  "content_hash": "7100e713592f742d9e962f19096ca44a3e587c1b9825c6f836190d4ebb3046f5",
+  "content_hash": "4669871691fa60fd844baa5edc14a5dcd2bc75b1778f78536e0b76c909281722",
   "dependencies": [],
-  "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool.",
+  "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection', 'search across objects', 'search all objects at once', 'find a phone number or email across objects', 'search multiple sObjects'. NOT for a search that silently drops matches or stops at 250 rows \u2014 use data/sosl-search-result-limits. NOT for WITH SNIPPET, HIGHLIGHT, or DATA CATEGORY scoping \u2014 use data/sosl-with-clauses.",
   "file_location": "skills/data/sosl-search-patterns",
   "id": "data/sosl-search-patterns",
   "inputs": [

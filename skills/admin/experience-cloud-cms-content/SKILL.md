@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-cms-content
-description: "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for Salesforce Knowledge articles, CMS Connect to external CMS platforms, or Experience Builder layout/theming work."
+description: "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for moderating member-posted content — use admin/experience-cloud-moderation. NOT for Knowledge vs an external CMS or CMS Connect — use architect/knowledge-vs-external-cms."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

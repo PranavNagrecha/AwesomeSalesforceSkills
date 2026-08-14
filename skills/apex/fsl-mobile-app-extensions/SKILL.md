@@ -1,6 +1,6 @@
 ---
 name: fsl-mobile-app-extensions
-description: "Use when building custom LWC Quick Actions, Global Actions, deep links, or offline data extensions for the Salesforce Field Service (FSL) native mobile app. Trigger keywords: FSL mobile extension, LWC action FSL, field service deep link, offline custom action, FSL mobile toolkit. NOT for LWC in standard Salesforce mobile app or Lightning Experience."
+description: "Use when building custom LWC Quick Actions, Global Actions, deep links, or offline data extensions for the Salesforce Field Service (FSL) native mobile app. Trigger keywords: FSL mobile extension, LWC action FSL, field service deep link, offline custom action, FSL mobile toolkit. NOT for barcode, GPS, or camera capture — use apex/fsl-custom-actions-mobile. NOT for enabling the app, Mobile Settings, or branding — use admin/fsl-mobile-app-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

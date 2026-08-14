@@ -1,6 +1,6 @@
 ---
 name: common-apex-runtime-errors
-description: "Diagnosing and resolving common Apex runtime exceptions: NullPointerException, QueryException, DmlException, ListException, LimitException, TypeException. Use when debugging Apex runtime failures or writing defensive code. NOT for error handling framework design (use error-handling-framework). NOT for governor limit prevention strategies (use governor-limits). NOT for structuring try/catch blocks (use exception-handling)."
+description: "Diagnosing and resolving common Apex runtime exceptions: NullPointerException, QueryException, DmlException, ListException, LimitException, TypeException. Use when debugging Apex runtime failures or writing defensive code. NOT for structuring try/catch — use apex/exception-handling. NOT for a cross-cutting error framework — use apex/error-handling-framework. NOT for governor-limit prevention — use apex/governor-limits."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

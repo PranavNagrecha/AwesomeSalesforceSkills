@@ -1,6 +1,6 @@
 ---
 name: soql-security
-description: "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for record-sharing design unless the main issue is Apex query security."
+description: "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for enforcing FLS on records before DML — use apex/apex-stripinaccessible-and-fls-enforcement. NOT for the with sharing / without sharing choice — use apex/apex-with-without-sharing-decision."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

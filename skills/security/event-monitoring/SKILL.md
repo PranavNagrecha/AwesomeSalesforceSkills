@@ -1,6 +1,6 @@
 ---
 name: event-monitoring
-description: "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). NOT for custom platform event publishing/subscribing (use platform-events-apex)."
+description: "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs — use apex/debug-logs-and-developer-console. NOT for custom platform event publishing/subscribing — use apex/platform-events-apex."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

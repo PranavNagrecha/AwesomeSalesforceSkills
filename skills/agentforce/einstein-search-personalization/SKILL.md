@@ -1,6 +1,6 @@
 ---
 name: einstein-search-personalization
-description: "Einstein Search personalization: configure search result ranking, promoted results, searchable objects, and Natural Language Search (NLS) for Lightning Experience. Triggers when users ask about search personalization signals, why search results feel irrelevant, how to enable NLS conversational queries, or how to manage Einstein Search settings in Setup. NOT for SOSL query authoring, Experience Cloud search customization, or Commerce storefront search tuning."
+description: "Einstein Search personalization: configure search result ranking, promoted results, searchable objects, and Natural Language Search (NLS) for Lightning Experience. Triggers when users ask about search personalization signals, why search results feel irrelevant, how to enable NLS conversational queries, or how to manage Einstein Search settings in Setup. NOT for search on an Experience Cloud site or community portal — use lwc/experience-cloud-search-customization. NOT for B2B or D2C Commerce storefront product search and facets — use apex/commerce-search-customization."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

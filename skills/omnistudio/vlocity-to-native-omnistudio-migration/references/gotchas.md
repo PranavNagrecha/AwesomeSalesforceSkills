@@ -59,3 +59,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When an org uses Vlocity OmniOut — the Vlocity mechanism for embedding OmniStudio components in non-Salesforce web pages. Native OmniStudio provides a different approach to external embedding (Experience Cloud / Digital Experiences, or LWC Out) that does not directly replicate all Vlocity OmniOut capabilities as of Spring '25.
 
 **How to avoid:** Inventory all OmniOut usage before starting the migration. Evaluate whether the native OmniStudio external embedding approach (Experience Cloud guest user access, or LWC Out for external sites) meets the business requirements. If there is a gap, document it as a migration blocker and do not decommission the Vlocity managed package until a native equivalent is confirmed. This is one of the most common reasons migration timelines extend beyond initial estimates.
+
+---
+
+## Gotcha 7: Standard Runtime On Does Not Unpin `VlocityOpenInterface` Apex
+
+**What happens:** `enableStandardOmniStudioRuntime=true` and `enableOmniStudioMetadata=true` while the managed package is still installed. LWC wrappers use `omnistudio-omnistudio-standard-runtime-wrapper`. Guest-reachable landing controllers and DocGen token builders still `implements omnistudio.VlocityOpenInterface, Callable`. Those classes compile against the **package** interface and move on the package calendar, not core.
+
+**When it occurs:** "We switched to standard runtime so seasonal Salesforce releases don't touch Omni."
+
+**How to avoid:** Inventory every VOI/Callable. Minimize the surface; prefer native Remote Action / Invocable where possible. Regression-compile after package bumps **and** after core upgrades. Dual calendars until the last `implements omnistudio.VlocityOpenInterface` is gone.

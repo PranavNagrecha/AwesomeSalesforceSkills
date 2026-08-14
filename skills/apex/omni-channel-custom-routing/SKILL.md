@@ -1,6 +1,6 @@
 ---
 name: omni-channel-custom-routing
-description: "Use this skill to implement Apex-driven custom routing logic for Omni-Channel work items using PendingServiceRouting and SkillRequirement objects. Trigger keywords: PendingServiceRouting, SkillRequirement, IsReadyForRouting, skills-based routing, custom routing Apex. Also orients you to the declarative alternative (Skills-Based Routing setup, Skill Mapping Sets) and to the Skill object's assignment join records (SkillUser, SkillProfile, ServiceResourceSkill) so you can choose config-over-code before writing Apex. Not a step-by-step declarative admin guide, and NOT for Omni-Channel queue-based routing setup or Einstein Classification routing rules."
+description: "Use this skill to implement Apex-driven custom routing logic for Omni-Channel work items using PendingServiceRouting and SkillRequirement objects. Trigger keywords: PendingServiceRouting, SkillRequirement, IsReadyForRouting, skills-based routing, custom routing Apex. Also orients you to the declarative alternative (Skill Mapping Sets) and to the Skill assignment join records (SkillUser, SkillProfile, ServiceResourceSkill) so you can choose config-over-code before writing Apex. NOT for Omni-Channel Setup config — use admin/omni-channel-routing-setup. NOT for capacity weights — use architect/omni-channel-capacity-model."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

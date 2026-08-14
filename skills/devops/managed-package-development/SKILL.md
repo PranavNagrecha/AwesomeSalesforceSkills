@@ -1,6 +1,6 @@
 ---
 name: managed-package-development
-description: "Use when building or maintaining Salesforce first-generation managed packages (1GP) for ISV distribution — covers namespace registration, packaging org structure, PostInstall/UninstallHandler Apex interface, push upgrades, Flow version management, and subscriber org considerations. NOT for second-generation managed packages (2GP), unlocked packages, or AppExchange listing setup."
+description: "Building or maintaining Salesforce first-generation managed packages (1GP) for ISV distribution: namespace registration, packaging org structure, PostInstall/UninstallHandler Apex, push upgrades, Flow version management, subscriber org considerations. NOT for choosing between unmanaged, unlocked, 1GP and 2GP — use devops/package-development-strategy. NOT for 2GP packaging — use devops/second-generation-managed-packages."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

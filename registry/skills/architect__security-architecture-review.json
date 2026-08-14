@@ -37,6 +37,7 @@
     "68082b6068cf87858df8",
     "68de564c0df5ac466e33",
     "6e6ef34872f512859821",
+    "7245311a0fe93f68753e",
     "724b1acc31348a371eef",
     "72a9c7b8ce8218eb4c32",
     "749b709a23e0bc644526",
@@ -56,6 +57,7 @@
     "900b84a6b284320dd50b",
     "91d35e43a78c723cb3c5",
     "92036872bef5e39c5ec0",
+    "920d6dd93165e73d8629",
     "93e4491d0fd1f1f91804",
     "9695c718ddc028759de9",
     "9b87ae51c0ab98a183fc",
@@ -92,9 +94,9 @@
     "f468aea47fd9410fc133",
     "ffd7a448722a4ce98b08"
   ],
-  "content_hash": "5d87b288a89c99dc98ccc1efc1ee4ee3784ea4b9e7b71c2397a049a1aaea0f17",
+  "content_hash": "74970618637ef43557c2cdfb90a6f1018e3aec04fa6f64318842d852f57d5eae",
   "dependencies": [],
-  "description": "Use when conducting a dedicated security architecture review of a Salesforce org \u2014 assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce. NOT for implementing security fixes (use security/* skills). NOT for the Salesforce Security Health Check UI (use security-health-check skill). NOT for a full WAF review across all pillars (use well-architected-review).",
+  "description": "Use when conducting a dedicated security architecture review of a Salesforce org \u2014 assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce. NOT for auditing Apex or LWC code line-by-line for CRUD/FLS, SOQL injection and XSS \u2014 use security/secure-coding-review-checklist. NOT for a full Well-Architected review across all three pillars \u2014 use architect/well-architected-review.",
   "file_location": "skills/architect/security-architecture-review",
   "id": "architect/security-architecture-review",
   "inputs": [

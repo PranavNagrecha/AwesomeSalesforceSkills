@@ -109,7 +109,7 @@ Based on the recommendation above, the next skills to use for implementation:
 |---|---|
 | Custom Metadata Types chosen | `admin/custom-metadata-types`, `apex/custom-metadata-in-apex` |
 | LWC chosen | `lwc/` skill suite |
-| Platform Events chosen | `integration/platform-events` |
+| Platform Events chosen | `integration/platform-events-integration` |
 | Change Data Capture chosen | (search `scripts/search_knowledge.py "change data capture"`) |
 | OmniStudio chosen | `omnistudio/omniscript-design-patterns` |
 | Automation tool decision still needed | `admin/process-automation-selection` |

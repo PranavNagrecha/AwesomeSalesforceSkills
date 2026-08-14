@@ -98,7 +98,7 @@
     "fcf7bc2e0bb59e8d2714",
     "fff00d7f00b39e7be59a"
   ],
-  "content_hash": "79dcb86660b5535513c5edeffb3632750794e9b0deece2084ebd8878579fda2e",
+  "content_hash": "5e790dad3405899235ec54273439fad50e191175d0dfc570008e97c7c6c6e1e7",
   "dependencies": [
     "devops/salesforce-cli-automation"
   ],

@@ -1,6 +1,6 @@
 ---
 name: einstein-prediction-builder
-description: "Einstein Prediction Builder for creating custom binary classification predictions on Salesforce objects: field selection, training data requirements, model activation, score embedding, and monitoring. NOT for Einstein Discovery (Tableau CRM Analytics) or Agentforce agent creation."
+description: "Einstein Prediction Builder for creating custom binary classification predictions on Salesforce objects: field selection, training data requirements, model activation, score embedding, and monitoring. NOT for authoring an Einstein Discovery story in CRM Analytics Studio — use admin/einstein-discovery-setup. NOT for multiclass or regression predictions and programmatic Discovery scoring — use agentforce/einstein-discovery-development. NOT for judging whether the training dataset is usable, feature leakage and quality thresholds — use data/ai-training-data-preparation."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

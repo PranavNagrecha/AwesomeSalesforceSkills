@@ -1,6 +1,6 @@
 ---
 name: recursive-trigger-prevention
-description: "Use when debugging or preventing recursive Apex trigger behavior, especially around self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry scenarios. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for general trigger-framework structure unless recursion is the actual design problem."
+description: "Use when debugging or preventing recursive Apex trigger behavior — self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for how to structure the trigger handler itself — use apex/trigger-framework. NOT for switching a trigger off for a data load — use apex/apex-trigger-bypass-and-killswitch-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: banking-lending-architecture
-description: "Architecture guidance for Salesforce FSC banking and Digital Lending: loan origination platform design, ResidentialLoanApplication data model, payment processing integration patterns, and account servicing workflow architecture. NOT for implementation-level OmniScript development, FSC Insurance Cloud, or generic CRM data modeling."
+description: "Architecture guidance for Salesforce FSC banking and Digital Lending: loan origination platform design, ResidentialLoanApplication data model, payment processing integration patterns, and account servicing workflow architecture. NOT for FSC Insurance policy, claims or underwriting architecture — use architect/insurance-cloud-architecture. NOT for the FSC data-model choice and Compliant Data Sharing design — use architect/fsc-architecture-patterns."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

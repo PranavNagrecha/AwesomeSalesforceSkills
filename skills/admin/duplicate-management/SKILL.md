@@ -1,6 +1,6 @@
 ---
 name: duplicate-management
-description: "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice'. NOT for choosing data-load tooling unless duplicate control is the main problem."
+description: "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Covers cleaning up duplicates that already exist at ordinary volume: merge sequencing, survivorship, stewardship ownership. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice', 'clean up duplicate records', 'clean up duplicate accounts'. NOT for cleanup at volume — hundreds of thousands of records, batch merge jobs, DemandTools/Cloudingo — use data/large-scale-deduplication. NOT for which field values and child records the platform keeps in a merge - use data/record-merge-implications."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -16,6 +16,10 @@ triggers:
   - "how do I prevent duplicates on data load"
   - "survivorship rules for merging accounts"
   - "duplicate rules isn't working"
+  - "clean up duplicate records"
+  - "we have a lot of duplicate accounts, how do we clean them up"
+  - "clean up duplicate accounts"
+  - "we already have duplicates, how do we get rid of them"
 inputs: ["duplicate scenarios", "merge policy", "stewardship owners"]
 outputs: ["duplicate strategy", "merge governance recommendations", "duplicate control findings"]
 dependencies: []

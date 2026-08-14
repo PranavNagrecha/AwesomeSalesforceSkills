@@ -1,6 +1,6 @@
 ---
 name: eda-data-model-and-patterns
-description: "Education Data Architecture (EDA) data model deep dive: Contact-centric, Affiliations, Relationships, Account record types (Academic Program, Educational Institution, Sports Organization), Course_Offering__c, Term__c, Course_Connection__c patterns. NOT for Education Cloud setup (use education-cloud-eda-setup). NOT for generic data modeling."
+description: "Education Data Architecture (EDA) data model deep dive: Contact-centric, Affiliations, Relationships, Account record types (Academic Program, Educational Institution, Sports Organization), Course_Offering__c, Term__c, Course_Connection__c patterns. NOT for Education Cloud setup, student success hub and advisor workflows — use admin/education-cloud-eda-setup. NOT for generic object and relationship modeling — use data/data-model-design-patterns."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

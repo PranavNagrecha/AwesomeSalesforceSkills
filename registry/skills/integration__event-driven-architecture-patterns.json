@@ -113,9 +113,9 @@
     "ff155b62243b9ff8165e",
     "ff900f0d01b308158474"
   ],
-  "content_hash": "4c93aadda4c645f968ae8958822e488ce22ef7a394548f185435358e8de93ad5",
+  "content_hash": "7093c75f91367d3eb379e2df214841a1d4e9df3ce6111f87a4dc1bd25f8ef610",
   "dependencies": [],
-  "description": "Use when choosing between Salesforce event-driven mechanisms \u2014 Platform Events, Change Data Capture (CDC), Streaming API (PushTopic), and Outbound Messages \u2014 to determine which pattern fits a given integration requirement. Trigger keywords: platform events vs CDC, choose event pattern, event-driven integration design, streaming API vs platform events, outbound message vs platform event, event architecture comparison. NOT for implementing any single pattern (use platform-events-integration, change-data-capture-integration, or streaming-api-and-pushtopic for that), and NOT for automation tool selection between Flow and Apex.",
+  "description": "Use when choosing between Salesforce event-driven mechanisms \u2014 Platform Events, Change Data Capture (CDC), Streaming API (PushTopic), and Outbound Messages \u2014 to determine which pattern fits a given integration requirement. Triggers: platform events vs CDC, choose event pattern, streaming API vs platform events. NOT for implementing a single pattern \u2014 use integration/platform-events-integration, integration/change-data-capture-integration, or integration/streaming-api-and-pushtopic.",
   "file_location": "skills/integration/event-driven-architecture-patterns",
   "id": "integration/event-driven-architecture-patterns",
   "inputs": [

@@ -64,12 +64,12 @@
     "f1637c8a8a490d193857",
     "f37ce61b6ce443d57fe2"
   ],
-  "content_hash": "2525774d971dae591219a1cd6d3dc9014663c5e4f41dbb3e169c522e5985bf30",
+  "content_hash": "132d3d3fb198b236f0f287b13588a171c9f7cf8ce74856de05a18bbc0396aace",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/continuous-integration-testing"
   ],
-  "description": "Use this skill when automating Salesforce work with the unified Salesforce CLI (`sf`, v2): shell scripts, Make/npm tasks, cron jobs, and CI steps that need stable flags, `--json` output, org aliases, bulk/data commands, plugins, and non-interactive auth patterns. Trigger keywords: sf CLI automation, sfdx migration, JSON output CI, sf project deploy script, sf data bulk, CLI plugins, target-org alias, machine-readable CLI. NOT for choosing or wiring a specific CI platform (GitHub Actions, GitLab, Jenkins, Bitbucket, Azure DevOps\u2014use those devops skills), VS Code Salesforce extensions, or Copado/Gearset release management UIs.",
+  "description": "Automating Salesforce work with the unified Salesforce CLI (`sf`, v2): shell scripts, Make/npm tasks, cron jobs and CI steps needing stable flags, `--json` output, org aliases, bulk/data commands, plugins, non-interactive auth. Trigger keywords: sf CLI automation, sfdx migration, JSON output CI, sf project deploy script, sf data bulk, CLI plugins, target-org alias, machine-readable CLI. NOT for basic sf commands, org auth or first DX project setup \u2014 use apex/sf-cli-and-sfdx-essentials. NOT for writing your own sf plugin \u2014 use devops/sf-cli-plugin-authoring.",
   "file_location": "skills/devops/salesforce-cli-automation",
   "id": "devops/salesforce-cli-automation",
   "inputs": [

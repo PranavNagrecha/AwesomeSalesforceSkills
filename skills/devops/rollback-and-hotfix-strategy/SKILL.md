@@ -1,6 +1,6 @@
 ---
 name: rollback-and-hotfix-strategy
-description: "Planning and executing metadata rollbacks and emergency hotfixes in Salesforce orgs. Use when a production deployment causes regression and needs to be reverted, or when an urgent fix must bypass the normal release pipeline. Covers pre-deploy archive bundles, quick deploy for hotfixes, non-rollbackable component handling, and hotfix branch isolation. NOT for routine CI/CD pipeline setup (use continuous-integration-testing). NOT for destructive changes authoring (use destructive-changes-deployment)."
+description: "Planning and executing metadata rollbacks and emergency hotfixes in Salesforce orgs. Use when a production deployment causes regression and needs to be reverted, or when an urgent fix must bypass the normal release pipeline. NOT for routine CI/CD pipeline setup (use continuous-integration-testing) — use admin/change-management-and-deployment."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

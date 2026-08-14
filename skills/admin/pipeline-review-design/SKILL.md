@@ -1,6 +1,6 @@
 ---
 name: pipeline-review-design
-description: "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories to the inspection view, configuring Days in Stage and other metrics, setting review cadence, and interpreting pipeline change signals for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for building custom dashboards or reports (use reports-and-dashboards skill). NOT for enabling Einstein Opportunity Scoring or AI insights (use einstein-copilot-for-sales skill). NOT for setting up Collaborative Forecasts or forecast types (use collaborative-forecasts skill)."
+description: "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories into the inspection view, Days in Stage and other deal-change metrics, and pipeline review cadence for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for the Revenue Intelligence app, Einstein deal insights, or forecast-accuracy dashboards — use admin/revenue-intelligence-setup. NOT for forecast types, quotas, or forecast hierarchy setup — use admin/collaborative-forecasts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

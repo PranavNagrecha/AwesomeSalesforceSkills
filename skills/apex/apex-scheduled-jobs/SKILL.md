@@ -1,6 +1,6 @@
 ---
 name: apex-scheduled-jobs
-description: "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. NOT for Batch Apex scheduling (use batch-apex-patterns) or Flow scheduled paths."
+description: "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes — use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup — use admin/batch-job-scheduling-and-monitoring."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

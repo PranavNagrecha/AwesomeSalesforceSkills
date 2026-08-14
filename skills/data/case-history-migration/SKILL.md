@@ -1,6 +1,6 @@
 ---
 name: case-history-migration
-description: "Use when migrating historical Case records — including CaseComments, EmailMessages, email attachments, and related files — from a legacy system into Salesforce Service Cloud. Covers strict object load order, EmailMessage Status='3' permanent locking, ContentDocumentLink Bulk API limitation, CaseHistory non-insertable constraint, and EmailMessageRelation setup. NOT for generic multi-object data migration planning (use data-migration-planning). NOT for ongoing email sync or Einstein Activity Capture configuration. NOT for Contact or Account record migration."
+description: "Use when migrating historical Case records — including CaseComments, EmailMessages, email attachments, and related files — from a legacy system into Salesforce Service Cloud. Covers strict object load order, EmailMessage Status='3' permanent locking, ContentDocumentLink Bulk API limitation, CaseHistory non-insertable constraint, and EmailMessageRelation setup. NOT for archiving or purging Case data already in the org — use data/service-data-archival. NOT for generic multi-object migration planning and rollback — use data/data-migration-planning."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

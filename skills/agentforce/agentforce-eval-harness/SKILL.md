@@ -1,6 +1,6 @@
 ---
 name: agentforce-eval-harness
-description: "Author and run offline evals for Agentforce agents: fixture format, scoring rubrics, regression baselines, CI integration, prompt-change safety. Use BEFORE every prompt or tool change. Covers multi-turn transcripts, refusal checks, tool-call correctness, grounding accuracy. NOT for online A/B testing (use observability). NOT for general Salesforce test-class patterns (use apex-testing-patterns)."
+description: "Author and run offline evals for Agentforce agents: fixture format, scoring rubrics, hallucination checks, regression baselines, CI integration, prompt-change safety. Trigger keywords: agent eval, hallucination, doesn't hallucinate, agentforce offline evals, rubric for agent response. NOT for deciding which layers of testing the agent needs — use agentforce/agentforce-testing-strategy. NOT for Testing Center, AiEvaluationDefinition or sf agent test runs — use agentforce/agent-testing-and-evaluation."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -21,6 +21,9 @@ triggers:
   - "rubric for agent response"
   - "agent eval fixture format"
   - "agent test harness"
+  - "test that my AI agent doesn't hallucinate"
+  - "agent hallucination eval"
+  - "agent eval"
 inputs:
   - Agent under test (with topics, actions, prompts)
   - Production transcripts or synthetic scenarios
@@ -33,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Eval Harness

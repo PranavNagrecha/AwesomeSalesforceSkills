@@ -70,9 +70,9 @@
     "f7d504014c62e05d594e",
     "fe7bf0fa4ec80761fa1f"
   ],
-  "content_hash": "5b80bff024525a655965518f1d1584d0b94c6e9e5eb9f2ea01186ecd31147c54",
+  "content_hash": "d5ba73d5b4379592623283f72c7dedd927c4d888c6039dcf3cd0fae087ad3a68",
   "dependencies": [],
-  "description": "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for custom settings or custom metadata types (use custom-metadata-types). NOT for platform cache (use caching-strategies).",
+  "description": "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for translating picklist values, field labels or layouts \u2014 use admin/multi-language-and-translation. NOT for config values in custom metadata or custom settings \u2014 use admin/custom-metadata-types.",
   "file_location": "skills/admin/custom-label-management",
   "id": "admin/custom-label-management",
   "inputs": [

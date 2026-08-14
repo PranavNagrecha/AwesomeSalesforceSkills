@@ -1,6 +1,6 @@
 ---
 name: pr-policy-templates
-description: "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection."
+description: "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection — use agentforce/agentforce-prompt-versioning."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

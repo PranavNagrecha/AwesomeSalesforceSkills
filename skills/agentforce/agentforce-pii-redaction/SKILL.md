@@ -1,6 +1,6 @@
 ---
 name: agentforce-pii-redaction
-description: "Redact PII before it reaches Agentforce prompts, models, and logs. Trigger keywords: agentforce pii, pii redaction, data masking llm, einstein trust layer, prompt pii filter, audit pii leakage. Does NOT cover: Shield Platform Encryption at-rest (separate skill), GDPR data subject requests, or classic field-level security policy."
+description: "Redact PII in your own code before it reaches Agentforce prompts, models, and logs. Trigger keywords: agentforce pii, pii redaction, data masking llm, prompt pii filter, audit pii leakage. NOT for turning on the platform's own masking, zero-retention and audit-trail controls — use agentforce/einstein-trust-layer. NOT for masking PII in a refreshed sandbox — use security/sandbox-data-masking."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -9,7 +9,6 @@ well-architected-pillars:
   - Reliability
 triggers:
   - "redact pii before llm"
-  - "einstein trust layer pii"
   - "mask pii in prompt"
   - "agent audit pii leak"
   - "pii taxonomy for agents"

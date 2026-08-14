@@ -1,6 +1,6 @@
 ---
 name: industries-data-migration
-description: "Use this skill when bulk-migrating data into Salesforce Industries clouds — including InsurancePolicy and its child objects for Insurance, ServicePoint/Premise for Energy and Utilities, or subscriber/account hierarchies for Communications. Trigger keywords: insurance policy migration, InsurancePolicyCoverage load order, ServicePoint bulk load, Premise hierarchy, E&U data migration, telco subscriber migration, utility account import, industries object dependency. NOT for generic Salesforce data migration planning, FSC FinancialAccount migration, Health Cloud patient data migration, or Experience Cloud user migration."
+description: "Use this skill when bulk-migrating data into Salesforce Industries clouds — including InsurancePolicy and its child objects for Insurance, ServicePoint/Premise for Energy and Utilities, or subscriber/account hierarchies for Communications. Trigger keywords: insurance policy migration, InsurancePolicyCoverage load order, ServicePoint bulk load, Premise hierarchy, E&U data migration, telco subscriber migration, utility account import, industries object dependency. NOT for generic migration planning — use data/data-migration-planning. NOT for Health Cloud patient data — use data/patient-data-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

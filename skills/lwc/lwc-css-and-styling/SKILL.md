@@ -1,6 +1,6 @@
 ---
 name: lwc-css-and-styling
-description: "Styling LWC components — SLDS design tokens, --slds-c-* component styling hooks, scoped CSS via shadow DOM, ::part() for restyling base components, light DOM (lwc:render-mode='light'), and the usual gotchas (CSS doesn't pierce shadow boundaries, !important fights specificity, SLDS upgrades break hand-rolled selectors). NOT for SLDS Blueprints/icon usage (use lwc/lwc-slds-icons) or Aura styling (Aura is deprecated)."
+description: "Styling LWC components — SLDS design tokens, --slds-c-* styling hooks, scoped CSS via shadow DOM, ::part() for restyling base components, light DOM (lwc:render-mode='light'), why CSS doesn't pierce the shadow boundary, !important vs specificity, and SLDS upgrades breaking hand-rolled selectors. NOT for app-scope theming or SLDS 2 hook migration — use lwc/lwc-styling-hooks. NOT for picking shadow vs light DOM — use lwc/lwc-shadow-vs-light-dom-decision."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

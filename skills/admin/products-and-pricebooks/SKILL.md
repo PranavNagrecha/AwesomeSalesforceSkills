@@ -1,6 +1,6 @@
 ---
 name: products-and-pricebooks
-description: "Use when configuring the Salesforce product catalog and pricing structure: creating Product2 records, setting up Standard and custom Pricebooks, managing PricebookEntry junction records, enabling multi-currency pricing, configuring Product Schedules (Revenue and Quantity), or troubleshooting incorrect prices on Opportunity line items and Quotes. Triggers: 'add product to pricebook', 'pricebook entry', 'standard pricebook', 'product catalog', 'multi-currency product pricing', 'product schedule', 'revenue schedule', 'quantity schedule', 'deactivate product'. NOT for CPQ (Salesforce Revenue Cloud / SBQQ) product configuration, CPQ pricing rules, or CPQ bundle setup. NOT for Quote template layout or PDF generation."
+description: "Use when configuring the Salesforce product catalog and pricing structure: creating Product2 records, setting up Standard and custom Pricebooks, managing PricebookEntry junction records, enabling multi-currency pricing, configuring Product Schedules (Revenue and Quantity), or troubleshooting incorrect prices on Opportunity line items and Quotes. Triggers: 'add product to pricebook', 'pricebook entry', 'standard pricebook', 'product catalog', 'multi-currency product pricing', 'product schedule', 'revenue schedule', 'quantity schedule', 'deactivate product'. NOT for bulk catalog loads — use data/product-catalog-data-model. NOT for CPQ bundles and product rules — use admin/cpq-product-catalog-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

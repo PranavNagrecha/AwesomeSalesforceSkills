@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-authentication
-description: "Use when building custom login pages, social SSO flows, self-registration flows, or passwordless OTP login for Experience Cloud (community) sites. Trigger keywords: custom login page Experience Cloud, social SSO community portal, passwordless login Experience Cloud, self-registration custom flow, headless authentication community, auth provider OIDC SAML site. NOT for internal SSO configuration (use identity/sso skills). NOT for standard username/password authentication with no customization."
+description: "Experience Cloud authentication customization — login pages, self-registration, social sign-on. Triggers: Experience Cloud login, community auth, self-registration. NOT for multi-IdP enterprise SSO — use lwc/experience-cloud-multi-idp-sso."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

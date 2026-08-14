@@ -1,6 +1,6 @@
 ---
 name: omni-channel-routing-setup
-description: "Configuring Salesforce Omni-Channel routing from scratch or updating existing routing: enabling Omni-Channel, creating Service Channels, configuring Routing Configurations (queue-based and skills-based), setting up Presence Statuses and Presence Configurations, assigning skills to Service Resources, and defining Skills-Based Routing Rules. Trigger keywords: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing, presence status, service channel, routing rules. NOT for capacity model design (use omni-channel-capacity-model). NOT for OmniStudio FlexCards or DataRaptors. NOT for Omni-Channel Supervisor dashboard analysis."
+description: "Configuring Salesforce Omni-Channel routing from scratch or updating existing routing: enabling Omni-Channel, creating Service Channels, configuring Routing Configurations (queue-based and skills-based), setting up Presence Statuses and Presence Configurations, assigning skills to Service Resources, and defining Skills-Based Routing Rules. Trigger keywords: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing, presence status, service channel, routing rules. NOT for agent capacity units and channel weighting — use architect/omni-channel-capacity-model. NOT for Apex routing via PendingServiceRouting — use apex/omni-channel-custom-routing."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

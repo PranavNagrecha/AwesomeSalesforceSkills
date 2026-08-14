@@ -1,6 +1,6 @@
 ---
 name: custom-logging-and-monitoring
-description: "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for built-in debug logs or Developer Console (use debug-logs-and-developer-console), NOT for exception capture and error propagation (use error-handling-framework), NOT for Event Monitoring (use security skills)."
+description: "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for System.debug vs durable logging — use apex/debug-and-logging. NOT for exception capture — use apex/error-handling-framework."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Custom Logging and Monitoring

@@ -1,6 +1,6 @@
 ---
 name: lwc-quick-actions
-description: "Use when building a Lightning Web Component that runs from a record page quick-action button — either a screen action that renders UI in a modal or a headless action that invokes logic with no UI. Triggers: 'lwc quick action on record page', 'headless quick action no ui', 'closeactionscreenevent not working', 'how to pass recordid into quick action lwc', 'quick action vs flow action', 'quick action modal size'. NOT for Flow screen components — use `lwc-in-flow-screens` — and NOT for global actions without a record context or for list-view bulk actions that do not receive a single `recordId`."
+description: "Use when building a Lightning Web Component that runs from a record page quick-action button — either a screen action that renders UI in a modal or a headless action that invokes logic with no UI. Triggers: 'lwc quick action on record page', 'headless quick action no ui', 'closeactionscreenevent not working', 'how to pass recordid into quick action lwc'. NOT for Flow screen components — use lwc/lwc-in-flow-screens. NOT for global actions without a record context — use admin/global-actions-and-quick-actions."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

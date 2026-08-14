@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Partner orgs, ISV installations, and any org where OmniStudio was installed via the managed package (as opposed to the standard Salesforce Industries license that uses the native metadata type). You can tell by checking whether `OmniInteractionConfig` has a namespace prefix in Setup.
 
 **How to avoid:** Identify the OmniStudio deployment mode before building any deployment pipeline. For managed-package orgs, use the OmniStudio Migration Tool (available in AppExchange) rather than raw SFDX commands. Document the deployment approach in the project's `salesforce-context.md` so subsequent contributors do not repeat the investigation.
+
+---
+
+## Gotcha 6: Guest FlexCard Sharing by Name Ignores `IsActive`
+
+**What happens:** OmniProcess guest share can filter `IsActive=true`. OmniUiCard guest share is often **Name = …**. Inactive versions of that Name remain readable and, with Scale Cache, executable. A card with 11 version files is 11 readable artifacts.
+
+**When it occurs:** Public dashboards; "share the card so the guest page loads."
+
+**How to avoid:** Share the active uniqueName (or a permission that does not wildcard Name). Delete superseded versions. Parent-card IP as the data source — child cards with their own SOQL multiply queries **and** bypasses. See `omnistudio-security` §8.

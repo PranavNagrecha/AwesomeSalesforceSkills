@@ -100,9 +100,9 @@
     "fd34f56377314c3729ef",
     "fe81102f585861b6eaa3"
   ],
-  "content_hash": "28b6cc1f3dc976b147029adcd0746346bd4c9a59c92a5f4800ce2e69d6bd5177",
+  "content_hash": "8ee8fe41f232bd973e1446f77c9be8e3c2f5eda527b2712dacddcd200fb6fd6d",
   "dependencies": [],
-  "description": "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for Apex test class design patterns, test data factory architecture, or LWC Jest testing.",
+  "description": "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for standing up a GitHub Actions workflow \u2014 use devops/github-actions-for-salesforce. NOT for Apex test class design \u2014 use apex/test-class-standards. NOT for LWC Jest testing \u2014 use lwc/lwc-testing.",
   "file_location": "skills/devops/continuous-integration-testing",
   "id": "devops/continuous-integration-testing",
   "inputs": [
@@ -150,7 +150,7 @@
   "templates": [
     "skills/devops/continuous-integration-testing/templates/continuous-integration-testing-template.md"
   ],
-  "updated": "2026-07-07",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.1.0"
 }

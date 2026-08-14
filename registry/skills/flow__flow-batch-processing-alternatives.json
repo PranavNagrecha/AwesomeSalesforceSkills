@@ -43,9 +43,9 @@
     "e3f68247022ff4b7dc28",
     "e8a42752877baac2752e"
   ],
-  "content_hash": "8c28b780f99e664d08e4d2fa85b11bf93997ce191391e1375adb420eacbb2c8e",
+  "content_hash": "16e0e4486a68bb8a39dfa75cab892282b722d89618b05722fd6f1cf006843127",
   "dependencies": [],
-  "description": "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex Queueable/Batch escalation. Does NOT cover choosing async across a general workflow (see async-selection decision tree).",
+  "description": "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex. NOT for choosing async across a general workflow (see async-selection decision tree) \u2014 use flow/flow-large-data-volume-patterns.",
   "file_location": "skills/flow/flow-batch-processing-alternatives",
   "id": "flow/flow-batch-processing-alternatives",
   "inputs": [

@@ -146,14 +146,14 @@
     "fcc619c8852502111e11",
     "fecc6493ef5907081e82"
   ],
-  "content_hash": "6180cad5535bc416f76461b3f1e2b90c5ebd676f9081336674a21d929e2b8091",
+  "content_hash": "694eb673ea200ba6556a827f7d2380a4b0252692a49ad0f7aee6f27057e96a65",
   "dependencies": [
     "industries-insurance-setup",
     "industries-communications-setup",
     "industries-energy-utilities-setup",
     "omniscript-flow-design-requirements"
   ],
-  "description": "Use when designing or customizing industry-specific guided processes in Salesforce Industries clouds: insurance claims lifecycle (FNOL through closure), telecom order management decomposition, and utility service request workflows. Trigger keywords: FNOL process design, claims OmniScript customization, Industries order decomposition workflow, utility service order design, insurance claim lifecycle stages, telecom commercial-to-technical order flow. NOT for generic Screen Flow process design, standard Service Cloud Case workflows, OmniStudio runtime setup, EPC service catalog configuration, or initial cloud org activation.",
+  "description": "Use when designing or customizing industry-specific guided processes in Salesforce Industries clouds: insurance claims lifecycle (FNOL through closure), telecom order management decomposition, and utility service request workflows. Trigger keywords: FNOL process design, claims OmniScript customization, Industries order decomposition workflow, utility service order design, insurance claim lifecycle stages, telecom commercial-to-technical order flow. NOT for the Industries object model \u2014 use architect/industries-data-model. NOT for Insurance Cloud licensing and policy architecture \u2014 use architect/insurance-cloud-architecture.",
   "file_location": "skills/admin/industries-process-design",
   "id": "admin/industries-process-design",
   "inputs": [

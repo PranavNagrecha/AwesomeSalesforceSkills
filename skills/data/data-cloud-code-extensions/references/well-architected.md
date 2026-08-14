@@ -22,8 +22,8 @@
   on the first failed data-kit component, so ordering and completeness are reliability
   concerns, not just process hygiene.
 - **Performance** — keep the deployed container lean: runtime dependencies only in
-  `requirements.txt`, dev/test packages in `requirements-dev.txt`, and the Dockerfile
-  unmodified so builds stay reproducible.
+  `requirements.txt`. The setup guide marks both the `Dockerfile` and `requirements-dev.txt`
+  as don't-modify; extra local test tools stay in the developer venv, not the deployed package.
 
 ## Architectural Tradeoffs
 
@@ -60,5 +60,9 @@
 - Use Custom Scripts in Data 360 (object-type parity, Logs DLO, governance tags) — https://developer.salesforce.com/docs/data/data-cloud-code-ext/guide/use-custom-script.html
 - Use Custom Functions in Data 360 (chunking contract, payload types, logging cautions) — https://developer.salesforce.com/docs/data/data-cloud-code-ext/guide/use-custom-function.html
 - Migrate Code Extension to Production (DevOps Data Kits, deployment order) — https://developer.salesforce.com/docs/data/data-cloud-code-ext/guide/migrate-code-to-prod.html
-- The Salesforce Developer's Guide to the Summer '26 Release (isolated containers, Python-only, roadmap) — https://developer.salesforce.com/blogs/2026/06/the-salesforce-developers-guide-to-the-summer-26-release
+- The Salesforce Developer's Guide to the Summer '26 Release — https://developer.salesforce.com/blogs/2026/06/the-salesforce-developers-guide-to-the-summer-26-release — isolated containers; local SDK/CLI authoring; Logs DLO; DevOps data kit auto-includes the code extension with the transform. (verified 2026-08-14)
 - How to Power Data 360 with Code Extension (ephemeral compute: spin up per task, tear down after, "no residual footprint or persistent backdoor access"; runtime isolation) — https://www.salesforce.com/blog/power-data-360-code-extension/
+
+## Contradiction log
+
+- The Summer '26 developer blog says code extensions support "deploying functions for complex batch data transformations … and deploying scripts that implement custom chunking logic." The Code Extension developer guide (Tier 1) is the opposite: **scripts** run as a batch data transform; **functions** run in the search-index pipeline. The guide wins. Do not copy the blog's swapped labels.

@@ -1,6 +1,6 @@
 ---
 name: soft-credits-and-matching
-description: "Use this skill when configuring or troubleshooting NPSP soft credits, partial soft credits, or matching gift workflows — including OpportunityContactRole-based credit attribution, npsp__Partial_Soft_Credit__c records, and the Find Matched Gifts process. NOT for gift entry staging flows, recurring donation setup, or non-NPSP Salesforce Fundraising (Gift object) credit configurations."
+description: "Use this skill when configuring or troubleshooting NPSP soft credits, partial soft credits, or matching gift workflows — including OpportunityContactRole-based credit attribution, npsp__Partial_Soft_Credit__c records, and the Find Matched Gifts process. NOT for gift entry templates or batch gift entry — use admin/gift-entry-and-processing. NOT for importing historical gifts and credits — use data/gift-history-import."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: sandbox-data-isolation-gotchas
-description: "Use this skill when a sandbox has reached out to production systems, sent emails to real users, run live scheduled jobs, or leaked sensitive data after a refresh. Triggers: 'sandbox sent email to real customers', 'scheduled job fired against production API', 'integration hit live system from sandbox', 'Contact email not changed to .invalid', 'SandboxPostCopy did not run'. NOT for planning sandbox refresh cycles (use sandbox-refresh-and-templates), NOT for selecting sandbox types or counts (use environment-strategy), and NOT for scrubbing PII after copy (use sandbox-data-masking if that skill exists — otherwise document the masking logic in SandboxPostCopy)."
+description: "Use this skill when a sandbox has reached out to production systems, sent emails to real users, run live scheduled jobs, or leaked sensitive data after a refresh. Triggers: 'sandbox sent email to real customers', 'scheduled job fired against production API', 'integration hit live system from sandbox', 'Contact email not changed to .invalid', 'SandboxPostCopy did not run'. NOT for masking or scrubbing PII in the copied records — use security/sandbox-data-masking. NOT for refresh cadence or sandbox templates — use devops/sandbox-refresh-and-templates. NOT for picking a sandbox type — use admin/sandbox-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: cumulusci-automation
-description: "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests, and running cci flows in CI pipelines with JWT-based authentication. Covers task class_path/options wiring, flow step ordering, org and source declarations, cross-project reuse via sources, and the standard flow library (dev_org, qa_org, ci_feature, install_beta). NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use scratch-org-pools), unlocked or managed package versioning (use unlocked-package-development or second-generation-managed-packages), or Salesforce-native DevOps Center pipelines (use devops-center-pipeline)."
+description: "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance. NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use sc — use devops/bitbucket-pipelines-for-salesforce."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

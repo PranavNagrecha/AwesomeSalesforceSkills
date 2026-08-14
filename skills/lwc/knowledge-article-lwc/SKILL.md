@@ -1,6 +1,6 @@
 ---
 name: knowledge-article-lwc
-description: "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles — covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience Cloud guest access. NOT for Knowledge admin setup (article types, data categories, channels), Einstein Article Recommendations configuration, or Flow-based article surfacing."
+description: "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles — covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience. NOT for Knowledge admin setup (article types, data categories, channels), Einstein Artic — use admin/knowledge-base-administration."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

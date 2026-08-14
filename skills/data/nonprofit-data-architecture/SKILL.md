@@ -1,6 +1,6 @@
 ---
 name: nonprofit-data-architecture
-description: "Use this skill when designing or querying the NPSP data model — constituent 360, household accounts, giving history rollups, and program participation. Trigger keywords: NPSP data model, household account, constituent record, giving rollups, CRLP, program engagement, ServiceDelivery, npo02__ fields. NOT for standard data model design, Nonprofit Cloud (NPC) data model, FSC household groups, or platform data modeling outside the NPSP context."
+description: "Use this skill when designing or querying the NPSP data model — constituent 360, household accounts, giving history rollups, and program participation. Trigger keywords: NPSP data model, household account, constituent record, giving rollups, CRLP, program engagement, ServiceDelivery, npo02__ fields. NOT for NPSP namespace prefixes, GAU allocations or recurring-donation object API names — use data/npsp-data-model. NOT for the Nonprofit Cloud (NPC) data model or an NPSP-to-NPC move — use architect/nonprofit-cloud-vs-npsp-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

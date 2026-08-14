@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-vs-mcae-selection
-description: "Use this skill when selecting between Marketing Cloud Engagement (MCE) and Marketing Cloud Account Engagement (MCAE/Pardot) for a Salesforce marketing implementation. Trigger keywords: MCE vs MCAE, Marketing Cloud vs Pardot, B2B vs B2C marketing platform, which marketing cloud product, marketing platform selection. NOT for implementation configuration of either product — this skill covers platform selection only, not setup, campaign build-out, or integration implementation."
+description: "Use this skill when selecting between Marketing Cloud Engagement (MCE) and Marketing Cloud Account Engagement (MCAE/Pardot) for a Salesforce marketing implementation. Trigger keywords: MCE vs MCAE, Marketing Cloud vs Pardot, B2B vs B2C marketing platform, which marketing cloud product, marketing platform selection. NOT for configuring an MCAE business unit and its Salesforce connector — use admin/mcae-pardot-setup. NOT for setting up MCE business units, roles and sender profiles — use admin/marketing-cloud-engagement-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -100,9 +100,9 @@
     "f9af9f75eb68d4b0d0a9",
     "ff9f49e787400dc49f5b"
   ],
-  "content_hash": "587610139c82b974ab48c6a569307da449b441eced1904453f931fd78e107d9a",
+  "content_hash": "f8fd67f027359db078f4f6a7fb9138ba2285211709c326d111ac77afbd687281",
   "dependencies": [],
-  "description": "Use when setting up, configuring, or troubleshooting Marketing Cloud Journey Builder \u2014 including entry sources, activities, decision splits, wait activities, goals, exit criteria, journey versions, test mode, or journey analytics. Triggers: 'journey builder setup', 'entry source configuration', 'decision split not routing', 'exit criteria not removing contacts', 'goal not tracking conversion', 'journey version publishing', 'journey re-entry settings', 'wait activity date field'. NOT for Flow-based automation, Marketing Cloud Account Engagement (Pardot) engagement programs, or Salesforce core automation rules.",
+  "description": "Use when setting up, configuring, or troubleshooting Marketing Cloud Journey Builder \u2014 including entry sources, activities, decision splits, wait activities, goals, exit criteria, journey versions, test mode, or journey analytics. Triggers: 'journey builder setup', 'entry source configuration', 'decision split not routing', 'exit criteria not removing contacts', 'goal not tracking conversion', 'journey version publishing', 'journey re-entry settings', 'wait activity date field'. NOT for coding a custom activity or entry source \u2014 use apex/marketing-cloud-custom-activities. NOT for business units and sender profiles \u2014 use admin/marketing-cloud-engagement-setup.",
   "file_location": "skills/admin/journey-builder-administration",
   "id": "admin/journey-builder-administration",
   "inputs": [

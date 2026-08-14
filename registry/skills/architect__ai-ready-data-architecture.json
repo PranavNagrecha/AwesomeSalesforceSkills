@@ -86,9 +86,9 @@
     "fee47188da7204f2ce73",
     "ff037dc26d2b75e1b52a"
   ],
-  "content_hash": "9ad2f17e39302f519b9c153c1d95d8a8cd914cdbf2d257a1b4dd2a62bc813142",
+  "content_hash": "8b789f07ac7b8cce6366ca31b9dd93523949a0668aa2f216e33647d54c8694e3",
   "dependencies": [],
-  "description": "Use when designing or auditing a Salesforce data architecture to support AI features \u2014 Einstein, Agentforce, Data Cloud, or custom ML models. Covers field-level data quality requirements, structured vs unstructured data placement, embedding-ready text field design, knowledge article structure for RAG grounding, Data Cloud harmonized data model, Einstein Feature Store patterns, grounding data for Agentforce actions, AI-ready field naming conventions, and data freshness requirements for model retraining. Trigger phrases: design data model for AI, make Salesforce data AI-ready, data quality for Einstein, grounding data for Agentforce, Data Cloud for AI, RAG data architecture Salesforce. NOT for Data Cloud initial setup and licensing, not for LWC or Flow implementation, not for general data migration, not for Einstein Analytics dashboard design.",
+  "description": "Use when designing or auditing a Salesforce data architecture to support AI features \u2014 Einstein, Agentforce, Data Cloud, or custom ML models. Covers field-level data quality requirements, structured vs unstructured data placement, embedding-ready text field design, knowledge article structure for RAG grounding, Data Cloud harmonized data model, Einstein Feature Store patterns, AI-ready field naming conventions, and data freshness requirements for model retraining. Trigger phrases: design data model for AI, make Salesforce data AI-ready, data quality for Einstein, grounding data for Agentforce, Data Cloud for AI, RAG data architecture Salesforce. NOT for building the RAG grounding pipeline \u2014 use agentforce/rag-patterns-in-salesforce. NOT for Einstein Discovery or Prediction Builder training-data prep \u2014 use data/ai-training-data-preparation.",
   "file_location": "skills/architect/ai-ready-data-architecture",
   "id": "architect/ai-ready-data-architecture",
   "inputs": [

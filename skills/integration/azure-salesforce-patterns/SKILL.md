@@ -1,6 +1,6 @@
 ---
 name: azure-salesforce-patterns
-description: "Azure integration patterns for Salesforce — pick between the native Azure Service Bus Connector, Azure Functions / API Management as the callout target, Data 360 (Data Cloud) Azure Blob Storage ingestion, Azure AD as IdP via SAML/OIDC, and the Power Platform Salesforce connector. Decision matrix + auth model guidance (Named Credentials with External Credentials, OAuth 2.0 client-credentials, JWT Bearer, SAML). NOT for AWS integration (see integration/aws-salesforce-patterns), NOT for MuleSoft as the integration backbone, NOT for in-Azure architecture details (Function code style, Service Bus topic/queue topology), NOT for Marketing Cloud-to-Azure data shares."
+description: "Azure integration patterns for Salesforce — pick between the native Azure Service Bus Connector, Azure Functions / API Management as the callout target, Data 360 (Data Cloud) Azure Blob Storage ingestion, Azure AD as IdP via SAML/OIDC, and the Power Platform Salesforce connector. Decision matrix + auth model guidance (Named Credentials with External Credentials, OAuth 2.0 client-credentials, JWT Bearer, SAML). NOT for AWS — use integration/aws-salesforce-patterns. NOT for point-to-point vs hub-and-spoke — use admin/integration-pattern-selection."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: cti-adapter-development
-description: "Use when building or debugging a browser-based CTI softphone adapter using the Salesforce Open CTI JavaScript API — covers callcenter.xml definition, Lightning utility item registration, core API methods (enableClickToDial, onClickToDial, screenPop, setSoftphonePanelHeight, saveLog), call logging as Task, and the lightning-click-to-dial LWC component. NOT for Service Cloud Voice Amazon Connect setup, Omni-Channel routing configuration, or CTI adapter AppExchange package selection."
+description: "Use when building or debugging a browser-based CTI softphone adapter using the Salesforce Open CTI JavaScript API — covers callcenter.xml definition, Lightning utility item registration, core API methods (enableClickToDial, onClickToDial, screenPop, setSoftphonePanelHeight, saveLog), call logging as Task, and the lightning-click-to-dial LWC component. NOT for Service Cloud Voice / Amazon Connect setup — use admin/service-cloud-voice-setup. NOT for Omni-Channel routing — use admin/omni-channel-routing-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

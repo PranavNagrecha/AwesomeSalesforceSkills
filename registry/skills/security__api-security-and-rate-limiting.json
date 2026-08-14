@@ -131,9 +131,9 @@
     "f4b80f10be8e35cecb2a",
     "fbb90f8a57ab145ed134"
   ],
-  "content_hash": "ea7788dd5a6b36686d1c95c3a569eadcbbe253d9d98a966a7e1aa599ed94a629",
+  "content_hash": "b5ac2e5e2e1def11405475272d6cc0bebf31e78abd42777bc4cc51bc6e8389ca",
   "dependencies": [],
-  "description": "Use when configuring, auditing, or troubleshooting API rate limits, Connected App OAuth scope restriction, Connected App IP restrictions, API session policies, or API usage monitoring in a Salesforce org. Trigger keywords: 'API rate limit', '429 error', 'OAuth scope restriction', 'Connected App IP restriction', 'API usage monitoring', 'concurrent API limits', 'Bulk API limits'. NOT for OAuth flow implementation, token exchange mechanics, or general Connected App setup \u2014 use security/oauth-flows-and-connected-apps for those.",
+  "description": "API rate limits, Connected App scope restriction, OAuth API security auditing. Triggers: API rate limit, Connected App scopes, API security audit. NOT for Connected App policy design \u2014 use security/connected-app-security-policies. NOT for OAuth setup \u2014 use admin/connected-apps-and-auth.",
   "file_location": "skills/security/api-security-and-rate-limiting",
   "id": "security/api-security-and-rate-limiting",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: screen-flow-accessibility
-description: "Use when building Screen Flows that must meet accessibility standards (WCAG 2.1 AA, Salesforce accessibility guidelines). Covers keyboard navigation, focus order, labels, error messaging, color contrast, and screen reader compatibility. Does NOT cover LWC a11y (see lwc-accessibility) or general record-page a11y."
+description: "Screen Flow accessibility — WCAG 2.1 AA, labels, keyboard, error announcements. Triggers: accessible Screen Flow, Flow WCAG, screen reader Flow. NOT for LWC component a11y inside screens — use lwc/lwc-accessibility."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -32,7 +32,9 @@ def parse_args() -> argparse.Namespace:
             "  - Vague or empty topic descriptions in GenAiPlugin files\n"
             "  - Missing plannerInstructions in GenAiPlannerBundle\n"
             "  - .agent files present without corresponding XML metadata\n"
-            "  - API version mismatch hints"
+            "  - AiAuthoringBundle missing its .agent / .bundle-meta.xml pair\n"
+            "  - API version mismatch hints (GenAiPlannerBundle needs v64.0+, "
+            "AiAuthoringBundle needs v65.0+)"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -236,8 +238,12 @@ def check_sfdx_project_api_version(manifest_dir: Path) -> list[str]:
     except OSError:
         return issues
 
-    # Extract apiVersion value
-    version_match = re.search(r'"apiVersion"\s*:\s*"?([0-9]+(?:\.[0-9]+)?)"?', content)
+    # Extract the API version pin. The documented sfdx-project.json property is
+    # "sourceApiVersion"; "apiVersion" is a common hand-written variant that the
+    # CLI ignores, so match both and let the messages name the correct key.
+    version_match = re.search(
+        r'"(?:source)?[Aa]piVersion"\s*:\s*"?([0-9]+(?:\.[0-9]+)?)"?', content
+    )
     if not version_match:
         return issues
 
@@ -249,11 +255,58 @@ def check_sfdx_project_api_version(manifest_dir: Path) -> list[str]:
     bundle_files = find_files_by_suffix(manifest_dir, ".genAiPlannerBundle-meta.xml")
     if bundle_files and api_version < 64.0:
         issues.append(
-            f"sfdx-project.json specifies apiVersion {api_version} but "
-            "GenAiPlannerBundle metadata files are present. GenAiPlannerBundle requires "
-            "API v64.0+ (Spring '26). Set apiVersion to 64.0 or higher in sfdx-project.json, "
-            "or replace GenAiPlannerBundle with GenAiPlanner (compatible with v60–v63)."
+            f"sfdx-project.json pins API version {api_version} but "
+            "GenAiPlannerBundle metadata files are present. GenAiPlannerBundle replaces "
+            "GenAiPlanner in API v64.0 and later (v64.0 is Summer '25, NOT Spring '26). "
+            "Set \"sourceApiVersion\" to 64.0 or higher in sfdx-project.json, or replace "
+            "GenAiPlannerBundle with GenAiPlanner (available in API v60.0-63.0)."
         )
+
+    authoring_bundles = find_files_by_suffix(manifest_dir, ".bundle-meta.xml")
+    if authoring_bundles and api_version < 65.0:
+        issues.append(
+            f"sfdx-project.json pins API version {api_version} but AiAuthoringBundle "
+            "files are present. AiAuthoringBundle is supported beginning with API v65.0 "
+            "(Winter '26). Set \"sourceApiVersion\" to 65.0 or higher, or the Agent Script "
+            "source will be excluded from retrieves without any error."
+        )
+
+    return issues
+
+
+def check_authoring_bundle_pairing(manifest_dir: Path) -> list[str]:
+    """Check that each Agent Script bundle has both required files.
+
+    An AiAuthoringBundle is a directory under aiAuthoringBundles/ holding
+    <Name>.agent (the Agent Script source) and <Name>.bundle-meta.xml. A retrieve
+    that produced only one of the pair captured an incomplete agent.
+    """
+    issues: list[str] = []
+
+    bundle_metas = find_files_by_suffix(manifest_dir, ".bundle-meta.xml")
+    for meta_file in bundle_metas:
+        name = meta_file.name[: -len(".bundle-meta.xml")]
+        if not (meta_file.parent / f"{name}.agent").exists():
+            issues.append(
+                f"AiAuthoringBundle '{meta_file.name}' has no sibling '{name}.agent' file. "
+                "The .agent file is the Agent Script source and the design-time source of "
+                "truth; the compiled GenAiPlugin/GenAiPlannerBundle metadata is a build "
+                "artifact. Re-retrieve the AiAuthoringBundle before committing."
+            )
+
+    for agent_file in find_files_by_suffix(manifest_dir, ".agent"):
+        if agent_file.name.endswith(".agent-meta.xml"):
+            continue
+        if agent_file.parent.parent.name != "aiAuthoringBundles":
+            continue
+        name = agent_file.stem
+        if not (agent_file.parent / f"{name}.bundle-meta.xml").exists():
+            issues.append(
+                f"Agent Script file '{agent_file.name}' is under aiAuthoringBundles/ but has "
+                f"no '{name}.bundle-meta.xml' sibling. Without it the bundle cannot deploy, "
+                "and its 'target' field is what decides whether the deploy lands the agent in "
+                "draft state (target omitted) or commits the agent version (target set)."
+            )
 
     return issues
 
@@ -274,6 +327,7 @@ def check_agent_script_dsl(manifest_dir: Path) -> list[str]:
     issues.extend(check_genai_planner_bundle(manifest_dir))
     issues.extend(check_bot_version_has_planner_reference(manifest_dir))
     issues.extend(check_agent_files_have_metadata(manifest_dir))
+    issues.extend(check_authoring_bundle_pairing(manifest_dir))
     issues.extend(check_sfdx_project_api_version(manifest_dir))
 
     return issues

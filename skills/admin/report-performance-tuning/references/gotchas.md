@@ -77,3 +77,13 @@ This is a hard refusal, not a degradation — no partial result, no truncation, 
 **When it occurs:** Any report combining filter logic with a cross filter. The same exclusion applies to standard report filters — per Salesforce Help, "You can't apply filter logic to standard report filters," and "Filter logic doesn't apply to cross filters." Only the numbered field filters participate.
 
 **How to avoid:** Before writing filter logic, confirm every condition it must cover is a field filter. Cross filters and standard filters (the date range and scope selectors at the top of the builder) cannot be made optional through logic — if an OR branch must include a cross-object condition, build separate reports or move the condition into a formula field that can be filtered as a field filter.
+
+---
+
+## Gotcha 8: Interactive Reports That Return More Than 50,000 Rows Cannot Be Opened
+
+**What happens:** The report "runs" and is unopenable. Tabular dumps used as Excel substitutes hit this wall. Tabular reports also cannot feed most dashboard charts. Zero scheduled dashboard-refresh jobs (`CronTrigger` JobType 3) means every number is as stale as the last click. Subscriptions owned by deactivated users deliver to nobody.
+
+**When it occurs:** Lead / CampaignMember / activity list-dumps; "export everything" reports.
+
+**How to avoid:** Metric tiles and summary/matrix reports, not tabular dumps. Async Analytics API or Bulk API for extracts. Schedule dashboard refresh. Re-point subscriptions before offboarding. Do not read LastRunDate as adoption.

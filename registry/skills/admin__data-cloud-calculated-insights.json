@@ -83,9 +83,9 @@
     "fd2b815094ad09796ce5",
     "fd5779a6ee5dcc89262d"
   ],
-  "content_hash": "210dcb8a91693a7f7f1b159ab6a677922a3117b6b80e86a63878638666b472c8",
+  "content_hash": "126b1d99bb7f471f8ea06cab4c294bd8a9f6680a7bb394ceabfe118443daf632",
   "dependencies": [],
-  "description": "Guides creation, design, and maintenance of Calculated Insights in Data Cloud: SQL authoring, dimension/measure definition, scheduling, streaming insights, and insight configuration tradeoffs. Trigger keywords: calculated insight, CI SQL, insight measure, insight dimension, streaming insight, insight schedule, Data Cloud metric, insight refresh. NOT for standard formula fields on sObjects, CRM Analytics SAQL metrics, or Data Cloud segment filter conditions that do not persist as insights.",
+  "description": "Create, design, and maintain Calculated Insights in Data Cloud: SQL authoring, dimension and measure definition, scheduling, streaming insights. Trigger keywords: calculated insight, CI SQL, insight measure, insight dimension, streaming insight, insight schedule, Data Cloud metric, insight refresh. NOT for segment filters, audiences and activation - use admin/data-cloud-segmentation. NOT for ingestion, DLO to DMO mapping and identity resolution - use data/data-cloud-data-streams.",
   "file_location": "skills/admin/data-cloud-calculated-insights",
   "id": "admin/data-cloud-calculated-insights",
   "inputs": [

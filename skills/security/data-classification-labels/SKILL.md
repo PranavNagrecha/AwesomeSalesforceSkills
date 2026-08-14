@@ -1,6 +1,6 @@
 ---
 name: data-classification-labels
-description: "Classify Salesforce fields by data sensitivity and compliance category using the four built-in classification attributes (SecurityClassification, ComplianceGroup, BusinessOwnerId, BusinessStatus). Covers Metadata API deployment, Tooling API querying, and Einstein Data Detect recommendations. NOT for data masking, Shield Platform Encryption, or runtime access control enforcement."
+description: "Classify Salesforce fields by data sensitivity and compliance category using the four built-in classification attributes (SecurityClassification, ComplianceGroup, BusinessOwnerId, BusinessStatus). Covers Metadata API. NOT for data masking, Shield Platform Encryption, or runtime access control enforcement — use data/data-quality-and-governance."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

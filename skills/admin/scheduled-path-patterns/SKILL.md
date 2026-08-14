@@ -1,6 +1,6 @@
 ---
 name: scheduled-path-patterns
-description: "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for Scheduled Flow (use scheduled-flow-patterns). NOT for time-based workflow rules (use migrate-workflow-pb)."
+description: "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for picking between Scheduled Path, Wait and Scheduled Flow, or migrating time-based workflow rules — use flow/flow-time-based-patterns. NOT for a flow that runs on a recurring schedule — use flow/scheduled-flows."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

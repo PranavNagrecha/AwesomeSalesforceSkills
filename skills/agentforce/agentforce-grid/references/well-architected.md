@@ -56,4 +56,4 @@
 - Trailhead: Agentforce Grid module — https://trailhead.salesforce.com/content/learn/modules/agentforce-grid
 - Trailhead: Explore Data with Agentforce Grid — https://trailhead.salesforce.com/content/learn/modules/agentforce-grid/explore-data-with-agentforce-grid
 - Generative AI Usage (metering) (Salesforce Help) — https://help.salesforce.com/s/articleView?language=en_US&id=ai.generative_ai_usage.htm
-- Winter '26 Release announcement (Salesforce News) — https://www.salesforce.com/news/stories/winter-2026-product-release-announcement/
+- Salesforce Introduces New Flexible Agentforce Pricing (Newsroom, 15 May 2025) — https://www.salesforce.com/news/press-releases/2025/05/15/agentforce-flexible-pricing-news/ — "$500 USD per 100,000 Credits"; "One Agentforce action consumes 20 Flex Credits ($0.10 USD)"; "All customers with Enterprise Edition or above can get 100,000 Flex Credits for $0 with Salesforce Foundations"; conversational pricing remains "$2 per conversation". Help article 004811240 (Agentforce Pricing) is the in-product rate card but returns an SPA shell — do not treat it as verified here. (verified 2026-08-14)

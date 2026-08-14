@@ -1,6 +1,6 @@
 ---
 name: migration-from-change-sets-to-sfdx
-description: "Use when planning or executing a migration from change-set-based deployments to Salesforce DX source-driven development. Trigger keywords: 'migrate from change sets', 'move to SFDX', 'convert metadata to source format', 'sf project convert mdapi', 'source-driven development adoption'. NOT for greenfield SFDX project setup (use sf-cli-and-sfdx-essentials), unlocked package design (use unlocked-package-development), or DevOps Center pipeline creation (use devops-center-pipeline)."
+description: "Use when planning or executing a migration from change-set-based deployments to Salesforce DX source-driven development. Trigger keywords: 'migrate from change sets', 'move to SFDX', 'convert metadata to source format'. NOT for greenfield SFDX project setup (use sf-cli-and-sfdx-essentials), unlocked package — use apex/sf-cli-and-sfdx-essentials."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

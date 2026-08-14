@@ -1,6 +1,6 @@
 ---
 name: package-development-strategy
-description: "Use this skill when deciding between Salesforce package development approaches — unmanaged, unlocked, 1GP managed, or 2GP managed — including namespace selection, ISV distribution requirements, upgrade path design, and AppExchange packaging strategy. Trigger keywords: should I use managed or unlocked package, Salesforce package type selection, 2GP vs 1GP managed package, namespace decision Salesforce, ISV AppExchange packaging, unlocked package strategy. NOT for individual package creation steps, scratch org setup, or day-to-day package version build commands."
+description: "Deciding between Salesforce package development approaches — unmanaged, unlocked, 1GP managed, 2GP managed — namespace selection, ISV distribution requirements, upgrade path design, AppExchange packaging strategy. Trigger keywords: should I use managed or unlocked package, Salesforce package type selection, 2GP vs 1GP managed package, namespace decision Salesforce, ISV AppExchange packaging, unlocked package strategy. NOT for creating and versioning an unlocked package — use devops/unlocked-package-development. NOT for 2GP build, patch and AppExchange steps — use devops/second-generation-managed-packages."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

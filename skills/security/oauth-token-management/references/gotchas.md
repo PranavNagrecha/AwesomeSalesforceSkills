@@ -39,3 +39,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Teams that manage Connected Apps only through Setup in some environments and metadata in others.
 
 **How to avoid:** Treat retrieved `connectedApps/*.connectedApp` metadata as the reconciliation source for CI checks; retrieve after policy changes.
+
+---
+
+## Gotcha 5: Salesforce revokes refresh tokens itself for anonymizing-VPN egress — no admin action involved
+
+**What happens:** A user or integration is frozen and every OAuth refresh token granted to that user is revoked, with no matching change in Setup, no policy edit, and nothing in the org's own IP settings. Salesforce contained the account on its own: the documented actions are that the account "will be frozen", "All OAuth refresh tokens granted to the user will be revoked", and an email goes to org admins from Salesforce Security. This is not a Login IP Range, Trusted IP Range, or login-hours failure, and the affected user must contact an admin to restore access.
+
+**When it occurs:** Traffic egressing from anonymizing VPNs, proxies, or high-risk IP addresses. Salesforce began enhanced measures on November 20, 2025 and expanded them to **all Connected App and API traffic** beginning April 24, 2026 — which is what pulls headless integrations and middleware into scope, not just interactive browser logins. Attribute this by date: the source page names no release.
+
+**How to avoid:** Pin integration egress to stable, attributable addresses (fixed NAT or a named egress gateway) rather than a commercial VPN or proxy pool, and confirm what your middleware host actually egresses from — cloud-hosted workers are the common surprise. There is **no documented opt-out or allowlist**, so an admin who only unfreezes the user has not fixed it: "Containment actions apply as soon as misuse is detected", and users "must ensure they are no longer connecting from an anonymizing VPN, proxies, or high-risk IP address before reauthorizing" or they are contained again. The documented restore path is to review the session in Session Management, unfreeze the account, have the user reauthenticate and reset their password, then reauthorize the connected apps — budget for a full re-authorization, because the refresh tokens are already gone.
+
+---
+
+## Gotcha 6: Partner apps lose the right to turn OAuth hardening back off
+
+**What happens:** A team enables PKCE or Refresh Token Rotation on an ISV Connected App or External Client App, a client breaks, and they go to switch it off — but the toggle is one-way. Salesforce states "After PKCE is enabled, partners won't be permitted to disable" and "After RTR is enabled, Partners won't be permitted to disable."
+
+**When it occurs:** Partner-distributed Connected Apps and External Client Apps only. This is an ISV/AgentExchange obligation with a compliance deadline of **May 11, 2026** for all four required controls — PKCE, Refresh Token Rotation, "Limit Idle Refresh Token Time-to-Live (TTL) to 30 Days", and "Enforce Refresh Token IP Allowlist". It is not a blanket org-level change, so do not tell a customer their internal Connected App inherited it.
+
+**How to avoid:** Rehearse each control in a scratch or partner test org **before** enabling it in the distributed app. PKCE and RTR are irreversible on their own, and the other two lock as well once you self-attest: after the Review Controls attestation "the security controls are locked and can't be disabled" — only the IP ranges stay editable. Two constraints bite late: the idle-TTL control means Salesforce "invalidates the idle refresh token after 30 days", which kills the store-one-refresh-token-forever design for any consumer that syncs less often than monthly; and the IP allowlist caps at "A total of 256 IP addresses ... across all IP ranges" and should be enabled "only if your CA/ECA uses a callback URL that is not a: Localhost, Salesforce org, Custom URL scheme". Non-compliance risks "the Partner Application's AgentExchange de-listing and/or Salesforce's temporary or permanent suspension of the Partner Application's interoperation with Salesforce's services."

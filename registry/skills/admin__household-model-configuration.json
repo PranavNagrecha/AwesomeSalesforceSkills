@@ -114,10 +114,10 @@
     "fc92f1336a8f0f95f580",
     "fde40fce4a5052e74f81"
   ],
-  "content_hash": "17a2bcd71da2fec4e1d6d8e98ad5d8e09e1c73df8b0f92ae5e5d66ccc5eb2b0c",
+  "content_hash": "584da30356006c23d879a72526ad9cb080b82b8339f3d49eff4c47696e96cc81",
   "dependencies": [
     "admin/financial-account-setup",
-    "admin/person-accounts"
+    "data/person-accounts"
   ],
   "description": "Use this skill when configuring the Financial Services Cloud (FSC) household data model \u2014 including Household record type setup, Primary Group assignment, ACR-based membership, rollup field inclusion, and batch rollup scheduling. NOT for NPSP household account configuration (use admin/npsp-household-accounts), non-FSC Account hierarchies, or standard Contact-Account relationships outside of FSC.",
   "file_location": "skills/admin/household-model-configuration",

@@ -63,9 +63,9 @@
     "f7838d7fc90648c46084",
     "feeb5df27ff7ec79500d"
   ],
-  "content_hash": "f7f4e28dbe42e0e1439b10f5c150a74e161457c23822240495bd7692ccf259e3",
+  "content_hash": "fbdad9f9e6ebb9acc7b6444b622f50699fbb5231346482264f2d3b7f6ed10b60",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for generic async choice discussions where Queueable or Future might still be the better tool.",
+  "description": "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for choosing Batch vs Queueable vs Future \u2014 use apex/async-apex. NOT for running one batch after another \u2014 use apex/apex-batch-chaining.",
   "file_location": "skills/apex/batch-apex-patterns",
   "id": "apex/batch-apex-patterns",
   "inputs": [

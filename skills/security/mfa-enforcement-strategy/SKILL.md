@@ -1,6 +1,6 @@
 ---
 name: mfa-enforcement-strategy
-description: "Plan and operate Salesforce org-wide multi-factor authentication (MFA) enforcement: verification methods, phased rollout, SSO and API-only considerations, exemptions, and operational readiness. NOT for designing Login Flow post-authentication logic, IP allowlists, or conditional step-up policies—use ip-range-and-login-flow-strategy, network-security-and-trusted-ips, or transaction-security-policies instead."
+description: "Org-wide MFA rollout strategy, phased enablement, exception governance, and audit. Triggers: MFA rollout plan, MFA policy, MFA governance. NOT for per-user-type enforcement patterns — use security/mfa-enforcement-patterns."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: clinical-decision-support
-description: "Use this skill when implementing clinical decision support in Health Cloud: creating ClinicalAlert records via Apex or Flow, ingesting CareGap records from external clinical rules engines, displaying CDS alerts in FlexCard UIs, and integrating the Business Rules Engine for custom protocol checks. NOT for standard Flow automation unrelated to clinical decision support, or for clinical rules engine design outside of Salesforce."
+description: "Use this skill when implementing clinical decision support in Health Cloud: creating ClinicalAlert records via Apex or Flow, ingesting CareGap records from external clinical rules engines, displaying CDS alerts in FlexCard UIs, and integrating the Business Rules Engine for custom protocol checks. NOT for care plan lifecycle Apex hooks — use apex/health-cloud-apex-extensions. NOT for FHIR ingestion — use apex/fhir-integration-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

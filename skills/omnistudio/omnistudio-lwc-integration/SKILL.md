@@ -1,6 +1,6 @@
 ---
 name: omnistudio-lwc-integration
-description: "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag, seed data JSON, OmniScript launch from LWC. NOT for standalone LWC development, standard Flow embedding, or OmniScript-to-OmniScript embedding."
+description: "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag. NOT for standalone LWC development, standard Flow embedding, or OmniScript-to-OmniScript embedding."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -41,13 +41,17 @@ dependencies:
   - omnistudio/integration-procedures
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 runtime_orphan: true
 ---
 
 # OmniStudio LWC Integration
 
-This skill activates when the work involves crossing the boundary between OmniStudio components and Lightning Web Components. Use it when embedding an OmniScript on a Lightning page, registering a custom LWC as an OmniScript element, calling an OmniScript programmatically from LWC, or invoking an Integration Procedure from a Lightning component. NOT for standalone LWC development, standard Screen Flow embedding, or OmniScript-to-OmniScript nesting.
+This skill activates when the work involves crossing the boundary between OmniStudio components and Lightning Web Components. Use it when embedding an OmniScript on a Lightning page, registering a custom LWC as an OmniScript element, calling an OmniScript programmatically from LWC, or invoking an Integration Procedure from a Lightning component.
+
+**LWR Experience Cloud (Spring '26 GA):** FlexCards and OmniScripts are supported on **LWR** Experience Cloud sites — plan for site-template constraints and test on LWR, not only internal Lightning pages.
+
+**Standard base components (Winter '26+):** Prefer **`lightning-omnistudio-omniscript`** and **`lightning-omnistudio-flexcard`** from the Lightning Component Library on Standard Runtime — they ship without a managed-package install. Managed-package tags (`c-omni-script`, etc.) remain for legacy runtimes.
 
 ---
 

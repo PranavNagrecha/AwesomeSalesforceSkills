@@ -1,6 +1,6 @@
 ---
 name: oauth-flows-and-connected-apps
-description: "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for record-level sharing design or for simple Named Credential usage when the auth-flow decision is already settled."
+description: "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for creating and configuring the connected app or External Client App itself in Setup — use admin/connected-apps-and-auth. NOT for wiring the Named Credential and External Credential that carry the chosen flow — use integration/named-credentials-setup. NOT for a live token failure such as invalid_grant after refresh, or token rotation and revocation — use security/oauth-token-management."
 category: integration
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

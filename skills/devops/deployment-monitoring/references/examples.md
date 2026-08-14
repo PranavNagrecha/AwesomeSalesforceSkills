@@ -39,14 +39,14 @@ while true; do
       echo "Deployment succeeded."
       exit 0
       ;;
-    Failed|Canceled)
+    Failed|SucceededPartial|FinalizingDeployFailed|Canceled)
       echo "Deployment $STATUS — component failures:"
       echo "$REPORT" | jq '.result.details.componentFailures[] | {file: .fileName, type: .problemType, line: .lineNumber, message: .problem}'
       echo "Apex test failures:"
       echo "$REPORT" | jq '.result.details.runTestResult.failures[] | {method: .methodName, message: .message}' 2>/dev/null || true
       exit 1
       ;;
-    Pending|InProgress)
+    Pending|InProgress|FinalizingDeploy|Canceling)
       sleep "$POLL_INTERVAL"
       ;;
     *)
@@ -57,7 +57,7 @@ while true; do
 done
 ```
 
-**Why it works:** The `--async` flag decouples submission from monitoring so the pipeline survives terminal reconnects. The loop polls every 30 seconds rather than blocking, and the `case` statement maps each possible `status` value explicitly. Component failures are extracted from `details.componentFailures[]` rather than relying on the human-readable summary, making the output parseable by downstream log aggregation tools.
+**Why it works:** The `--async` flag decouples submission from monitoring so the pipeline survives terminal reconnects. The loop polls every 30 seconds rather than blocking, and the `case` statement maps each of the nine `DeployStatus` values explicitly — all five terminal values exit, and the four transient ones (`Pending`, `InProgress`, `FinalizingDeploy`, `Canceling`) keep polling. Component failures are extracted from `details.componentFailures[]` rather than relying on the human-readable summary, making the output parseable by downstream log aggregation tools.
 
 ---
 
@@ -91,7 +91,13 @@ def poll_deployment(instance_url: str, access_token: str, deploy_id: str,
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json",
     }
-    terminal_statuses = {"Succeeded", "Failed", "Canceled"}
+    # All five terminal DeployStatus values. Omitting SucceededPartial or
+    # FinalizingDeployFailed makes this loop run until the caller kills it.
+    terminal_statuses = {
+        "Succeeded", "SucceededPartial", "Failed",
+        "FinalizingDeployFailed", "Canceled",
+    }
+    failed_statuses = {"Failed", "SucceededPartial", "FinalizingDeployFailed"}
 
     while True:
         req = urllib.request.Request(endpoint, headers=headers)
@@ -109,7 +115,7 @@ def poll_deployment(instance_url: str, access_token: str, deploy_id: str,
         print(f"Status: {status} | {deployed}/{total} components | {errors} errors")
 
         if status in terminal_statuses:
-            if status == "Failed":
+            if status in failed_statuses:
                 failures = result.get("details", {}).get("componentFailures", [])
                 for f in failures:
                     print(f"  FAIL [{f.get('componentType')}] {f.get('fileName')} "

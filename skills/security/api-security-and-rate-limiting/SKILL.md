@@ -1,6 +1,6 @@
 ---
 name: api-security-and-rate-limiting
-description: "Use when configuring, auditing, or troubleshooting API rate limits, Connected App OAuth scope restriction, Connected App IP restrictions, API session policies, or API usage monitoring in a Salesforce org. Trigger keywords: 'API rate limit', '429 error', 'OAuth scope restriction', 'Connected App IP restriction', 'API usage monitoring', 'concurrent API limits', 'Bulk API limits'. NOT for OAuth flow implementation, token exchange mechanics, or general Connected App setup — use security/oauth-flows-and-connected-apps for those."
+description: "API rate limits, Connected App scope restriction, OAuth API security auditing. Triggers: API rate limit, Connected App scopes, API security audit. NOT for Connected App policy design — use security/connected-app-security-policies. NOT for OAuth setup — use admin/connected-apps-and-auth."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

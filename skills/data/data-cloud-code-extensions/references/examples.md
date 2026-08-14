@@ -65,7 +65,7 @@ breaks deployment in ways that look like platform errors.
 my-transform/
 ├── Dockerfile              # containerized builds/deployments — DON'T MODIFY
 ├── requirements.txt        # pip packages the script needs AT DEPLOYMENT
-├── requirements-dev.txt    # local development/testing packages ONLY
+├── requirements-dev.txt    # scaffold-owned local-dev pins — DON'T MODIFY
 ├── payload/
 │   ├── config.json         # Data 360 deployment configuration
 │   └── entrypoint.py       # your batch-transform logic lives here
@@ -77,8 +77,8 @@ my-transform/
 Rules of thumb:
 
 - New runtime dependency (e.g. a parsing library)? Add it to `requirements.txt`.
-- Test-only dependency (e.g. pytest)? `requirements-dev.txt` — it must not bloat the
-  deployed container.
+- Do not edit the scaffold `requirements-dev.txt` (setup guide: don't modify). Extra test
+  tools stay in the local venv so they never ship in the deployed container.
 - All transform logic goes in `payload/entrypoint.py`; `payload/config.json` carries the
   deployment configuration.
 - Start from the scaffold's `examples/` folder for working SDK usage rather than writing

@@ -1,0 +1,98 @@
+[
+  {
+    "i": 0,
+    "query": "create a validation rule",
+    "expected_skill": "admin/validation-rules",
+    "domain": "admin"
+  },
+  {
+    "i": 10,
+    "query": "manage picklist values",
+    "expected_skill": "admin/picklist-and-value-sets",
+    "domain": "admin"
+  },
+  {
+    "i": 20,
+    "query": "give someone access to an object without changing their profile",
+    "expected_skill": "admin/permission-sets-vs-profiles",
+    "domain": "admin"
+  },
+  {
+    "i": 30,
+    "query": "too many SOQL queries 101 error",
+    "expected_skill": "apex/governor-limits",
+    "domain": "apex"
+  },
+  {
+    "i": 40,
+    "query": "load data in the right order when objects reference each other",
+    "expected_skill": "data/data-migration-planning",
+    "domain": "data"
+  },
+  {
+    "i": 50,
+    "query": "set up SSO with Okta",
+    "expected_skill": "security/sso-saml-troubleshooting",
+    "domain": "security"
+  },
+  {
+    "i": 60,
+    "query": "screen flow needs to show different fields based on a picklist",
+    "expected_skill": "flow/flow-reactive-screen-components",
+    "domain": "flow"
+  },
+  {
+    "i": 70,
+    "query": "the org is a mess where do I start",
+    "expected_skill": "architect/technical-debt-assessment",
+    "domain": "architect"
+  },
+  {
+    "i": 80,
+    "query": "dataraptor extract is returning nothing at all",
+    "expected_skill": "omnistudio/omnistudio-debugging",
+    "domain": "omnistudio"
+  },
+  {
+    "i": 90,
+    "query": "the child component can't tell the parent something changed",
+    "expected_skill": "lwc/lwc-custom-event-patterns",
+    "domain": "lwc"
+  },
+  {
+    "i": 100,
+    "query": "sfdx project layout for a team of eight",
+    "expected_skill": "devops/salesforce-dx-project-structure",
+    "domain": "devops"
+  },
+  {
+    "i": 110,
+    "query": "keep the agent from answering questions outside its job",
+    "expected_skill": "agentforce/agentforce-guardrails",
+    "domain": "agentforce"
+  },
+  {
+    "i": 120,
+    "query": "how do I write a test for a flow",
+    "expected_skill": "flow/flow-testing",
+    "domain": "flow"
+  },
+  {
+    "i": 130,
+    "query": "storage is at 95 percent and we can't load anything",
+    "expected_skill": "data/data-storage-management",
+    "domain": "data"
+  },
+  {
+    "i": 140,
+    "query": "what order do things actually run in when a record saves",
+    "expected_skill": "apex/order-of-execution-deep-dive",
+    "domain": "apex"
+  },
+  {
+    "i": 150,
+    "query": "build a formula that shows days since last contact",
+    "expected_skill": "admin/formula-fields",
+    "domain": "admin"
+  }
+]

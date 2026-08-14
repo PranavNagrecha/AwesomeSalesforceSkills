@@ -55,9 +55,9 @@
     "f89531723e8239c67764",
     "f919301a293e4c236406"
   ],
-  "content_hash": "f0dae22236e83555d90e87e8b88af3c88bab82d1bbe68b8756dd8f0042eb3f21",
+  "content_hash": "71b89dfa183843690e9829f18dc08b7173782b7337996dbc45c9a3cef75b2bff",
   "dependencies": [],
-  "description": "Use this skill when designing FSL integrations: ERP parts/inventory sync, GPS/fleet management integration, IoT-triggered work order creation, and customer notification workflows. Trigger keywords: FSL ERP integration, ProductConsumed ERP sync, GPS fleet integration FSL, IoT work order trigger, customer notification FSL integration. NOT for generic Salesforce integration patterns, FSC integration (covered by architect/fsc-integration-patterns-dev), or Health Cloud integration.",
+  "description": "Use this skill when designing FSL integrations: ERP parts/inventory sync, GPS/fleet management integration, IoT-triggered work order creation, and customer notification workflows. Trigger keywords: FSL ERP integration, ProductConsumed ERP sync, GPS fleet integration FSL, IoT work order trigger, customer notification FSL integration. NOT for Financial Services Cloud integration design \u2014 use architect/fsc-architecture-patterns. NOT for bulk-loading Work Order and Service Appointment history \u2014 use data/fsl-work-order-migration.",
   "file_location": "skills/architect/fsl-integration-patterns",
   "id": "architect/fsl-integration-patterns",
   "inputs": [

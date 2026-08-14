@@ -6,6 +6,7 @@
     "04052169af4dd0324841",
     "07253d054f1497d65c5d",
     "0bacd80ebfb465c4d571",
+    "0d6df27988aba48415c2",
     "0f5e7fb0dea524a28230",
     "11015bd78bb6063b830a",
     "122672dd1c9d730d1b18",
@@ -81,9 +82,9 @@
     "fc2fa3ce866d5cdc7b35",
     "fc8a6d4a575b59c9f2f1"
   ],
-  "content_hash": "69053cf3cbe21c4692bc615a08ead2a94ca11f7f8de80bfa7664d5f82ac4a7f1",
+  "content_hash": "9a5138f12337c02d4afa51129446931a536699730d02d3926b68adc1acc92c41",
   "dependencies": [],
-  "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
+  "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for why the API or an integration ignores a dependency matrix - use admin/field-dependency-and-controlling. NOT for cleaning up degraded, unrestricted or orphaned picklist values - use admin/picklist-field-integrity-issues. NOT for record type picklist filtering - use admin/record-types-and-page-layouts.",
   "file_location": "skills/admin/picklist-and-value-sets",
   "id": "admin/picklist-and-value-sets",
   "inputs": [
@@ -134,7 +135,7 @@
   "templates": [
     "skills/admin/picklist-and-value-sets/templates/picklist-and-value-sets-template.md"
   ],
-  "updated": "2026-04-03",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

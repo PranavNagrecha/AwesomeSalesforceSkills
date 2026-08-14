@@ -1,6 +1,6 @@
 ---
 name: path-and-guidance
-description: "Use when setting up, customizing, or troubleshooting the Salesforce Path component on Opportunity, Lead, Case, or custom objects. Triggers: 'add guidance to stages', 'key fields on path', 'celebrate closed won', 'path not showing', 'configure path steps', 'confetti on stage change'. NOT for Sales Process configuration, validation rules that enforce required fields, or Kanban board setup."
+description: "Use when setting up, customizing, or troubleshooting the Salesforce Path component on Opportunity, Lead, Case, or custom objects. Triggers: 'add guidance to stages', 'key fields on path', 'celebrate closed won', 'path not showing', 'configure path steps', 'confetti on stage change'. NOT for creating the stage picklist — use admin/opportunity-management. NOT for in-app prompts — use admin/in-app-guidance-and-walkthroughs."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

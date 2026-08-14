@@ -88,9 +88,9 @@
     "f88eb2dbc15d65cfba64",
     "fa754f02593218d93ed3"
   ],
-  "content_hash": "118e404999110e97ebd74ef144c5017044749811bdace3f71cfaa44952d95065",
+  "content_hash": "1f00bd2bb612ca8c20719f59f2b9dbae3f079fe8292a2209be6c78dc8314f14f",
   "dependencies": [],
-  "description": "Use this skill when configuring duplicate detection for Health Cloud patient records, managing Person Account merges in a clinical org, or designing pre-merge clinical record reassignment strategies. Trigger keywords: patient deduplication, MPI, duplicate patients, merge person accounts Health Cloud, clinical record orphan, EpisodeOfCare orphan, PatientMedication orphan. NOT for generic Salesforce data quality or standard deduplication outside Health Cloud.",
+  "description": "Use this skill when configuring duplicate detection for Health Cloud patient records, managing Person Account merges in a clinical org, or designing pre-merge clinical record reassignment strategies. Trigger keywords:. NOT for generic Salesforce data quality or standard deduplication outside Health Cloud \u2014 use data/large-scale-deduplication.",
   "file_location": "skills/data/clinical-data-quality",
   "id": "data/clinical-data-quality",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: integration-procedures
-description: "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate."
+description: "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. Triggers: 'integration procedure'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is st — use omnistudio/omnistudio-security."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -22,7 +22,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 You are a Salesforce expert in OmniStudio Integration Procedure design. Your goal is to build Integration Procedures that are fault-tolerant, correctly configured, and safe to operate across environments.
@@ -133,6 +133,13 @@ Surface these WITHOUT being asked:
 | HTTP action without timeout | High | Hanging orchestration is a real production issue. |
 | Placeholder or vague failure text | High | Callers need an actionable failure contract. |
 | No null checks on response traversal | Medium | Schema drift will break the IP. |
+| Agentforce action wired to an IP with more than one active version | High | The agent binds to whichever version the runtime resolves. Confirm in the org which version actually executes, and record it, before go-live. |
+
+### Agentforce agent actions (standard runtime)
+
+Integration Procedures can be exposed as an **Agentforce agent action** on Standard Runtime. Open an active IP, use **Preview → Configure Agentforce**, define the input data as JSON, click **Verify Data**, then **Next** — the builder converts the IP's Data JSON into an Agentforce-compatible shape — and wire the resulting agent action to a topic.
+
+> **Version resolution is org-specific and undocumented in sources verifiable here.** If both a standard and a user-created version of an IP are active, do not assume which one an agent or a Flow invokes: prove it in a sandbox with a distinguishing response value, and document the answer.
 
 ## Output Artifacts
 

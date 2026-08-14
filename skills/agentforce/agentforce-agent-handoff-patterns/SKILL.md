@@ -1,6 +1,6 @@
 ---
 name: agentforce-agent-handoff-patterns
-description: "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow — including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design)."
+description: "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow — including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic scope and selector design — use agentforce/agent-topic-design. NOT for the overall Einstein Bot plus Agentforce estate topology — use architect/conversational-ai-architecture."
 category: agentforce
 salesforce-version: "Spring '26+"
 well-architected-pillars:
@@ -170,5 +170,5 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 
 - `agentforce/agent-topic-design` — topic scope that informs scope-based handoffs.
 - `agentforce/agentforce-guardrails` — guardrails that fire authorization handoffs.
-- `admin/omni-channel-routing-design` — destination queue design.
+- `admin/omni-channel-routing-setup` — destination queue design.
 - `agentforce/agentforce-service-ai-setup` — service-agent integration.

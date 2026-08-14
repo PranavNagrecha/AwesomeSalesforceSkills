@@ -56,9 +56,9 @@
     "fa4abf720bad29ceb8ac",
     "fccc7ffacd97d7813ef5"
   ],
-  "content_hash": "9f9f24a2c0f79dad4cede50919e55e2f5fe4a62f756d68457f99fc0086eb195c",
+  "content_hash": "816d0dfd16470c950c56755aa44249d6acae592a7d645946bf1987a1db7a5ab5",
   "dependencies": [],
-  "description": "Use this skill when setting up or extending Salesforce Loyalty Management \u2014 including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job activation, partner loyalty configuration, and member portal setup on Experience Cloud. Triggers on: Loyalty Management setup, loyalty tier setup Salesforce, qualifying points vs redemption points, DPE batch job for loyalty, partner loyalty program Salesforce, loyalty member portal. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalty via Sales Cloud (standard opportunity, not loyalty program), not for general Experience Cloud site setup (use experience-cloud-setup skill).",
+  "description": "Use this skill when setting up or extending Salesforce Loyalty Management \u2014 including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalt \u2014 use architect/loyalty-program-architecture.",
   "file_location": "skills/integration/loyalty-management-setup",
   "id": "integration/loyalty-management-setup",
   "inputs": [

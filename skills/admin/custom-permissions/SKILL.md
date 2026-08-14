@@ -1,6 +1,6 @@
 ---
 name: custom-permissions
-description: "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag'. NOT for permission sets (use permission-set-architecture)."
+description: "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag'. NOT for gating Apex service code and its tests — use apex/apex-custom-permissions-check. NOT for permission set design — use admin/permission-set-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

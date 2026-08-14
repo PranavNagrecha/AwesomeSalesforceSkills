@@ -1,6 +1,6 @@
 ---
 name: knowledge-article-import
-description: "Use this skill when bulk-importing Knowledge articles into Salesforce from an external source using the ZIP-based import mechanism. Trigger keywords: knowledge import, article import, migrate help center, bulk upload articles, CSV article import, knowledge base migration. NOT for Knowledge admin setup (article types, data categories, permission sets), ongoing article management, or translation workflows once articles are live."
+description: "Use this skill when bulk-importing Knowledge articles into Salesforce from an external source using the ZIP-based import mechanism. Trigger keywords: knowledge import, article import, migrate help center, bulk upload articles, CSV article import, knowledge base migration. NOT for converting existing Classic article types to Lightning Knowledge — use admin/knowledge-classic-to-lightning. NOT for Knowledge setup, record types, data categories and publishing workflow — use admin/knowledge-base-administration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

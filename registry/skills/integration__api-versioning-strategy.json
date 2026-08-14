@@ -41,9 +41,9 @@
     "f972cedd28d9038c7159",
     "fdfd23b41f9881dcaf3a"
   ],
-  "content_hash": "5939adaec99da65206a6dc0096f842d245fcb253f8765a53c4c98951a499dc82",
+  "content_hash": "147b5e6b92ffdbb29d82e848ef81f0a406cd46144b3f03cb4215eccc5d222016",
   "dependencies": [],
-  "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
+  "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs \u2014 use apex/apex-rest-services.",
   "file_location": "skills/integration/api-versioning-strategy",
   "id": "integration/api-versioning-strategy",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: omnistudio-lwc-omniscript-migration
-description: "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design."
+description: "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design — use omnistudio/omnistudio-lwc-integration."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

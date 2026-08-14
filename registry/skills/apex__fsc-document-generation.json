@@ -91,11 +91,11 @@
     "f579322183bc9136b67b",
     "f64476fc38886d2fc0b9"
   ],
-  "content_hash": "dba90304c26cf910da9ae4ee9aad3a347fdeb6f5104c177a3eefabd055efd3cd",
+  "content_hash": "5b1e6cc10631230e9be128166d80403a40e6e3d269406c8acb274048d8de6014",
   "dependencies": [
     "omnistudio/document-generation-omnistudio"
   ],
-  "description": "Use this skill when designing or implementing FSC compliance document generation workflows \u2014 FINRA disclosure packets, account statements, consent records, and regulatory delivery confirmations using OmniStudio DocGen with FSC data models. Trigger keywords: OmniStudio DocGen FSC, disclosure document generation, account statement PDF, AuthorizationForm document, FINRA disclosure workflow, compliance document batch, DataRaptor document template, DocGen permission set license. NOT for general OmniStudio DocGen mechanics unrelated to FSC compliance, standard Salesforce document templates, or Document Builder (excluded from PCI scope).",
+  "description": "Use this skill when designing or implementing FSC compliance document generation workflows \u2014 FINRA disclosure packets, account statements, consent records, and regulatory delivery confirmations using OmniStudio DocGen with FSC data models. Trigger keywords: OmniStudio DocGen FSC, disclosure document generation, account statement PDF, AuthorizationForm document, FINRA disclosure workflow, compliance document batch, DataRaptor document template, DocGen permission set license. NOT for general OmniStudio DocGen mechanics \u2014 use omnistudio/document-generation-omnistudio. NOT for KYC/AML data collection setup \u2014 use admin/compliance-documentation-requirements.",
   "file_location": "skills/apex/fsc-document-generation",
   "id": "apex/fsc-document-generation",
   "inputs": [

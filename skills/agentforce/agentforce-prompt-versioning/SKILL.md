@@ -1,6 +1,6 @@
 ---
 name: agentforce-prompt-versioning
-description: "Version Prompt Templates and agent topic prompts: source-control shape, change review, model-version pinning, A/B, and rollback. Trigger keywords: prompt template versioning, prompt changelog, prompt rollback, A/B prompt test, agentforce prompt release. Does NOT cover: prompt engineering tips, general LLM fine-tuning, or Classify / Einstein Generate studio UI walkthroughs."
+description: "Version Prompt Templates and agent topic prompts: source-control shape, change review, model-version pinning, A/B, and rollback. Trigger keywords: prompt template versioning, prompt changelog, prompt rollback, A/B prompt test, agentforce prompt release. NOT for the CMDT-backed binding that swaps the live template version without a redeploy — use agentforce/prompt-template-versioning. NOT for authoring the template itself — use agentforce/prompt-builder-templates. NOT for prompt engineering tips, general LLM fine-tuning, or Classify / Einstein Generate studio UI walkthroughs."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

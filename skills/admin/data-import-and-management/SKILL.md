@@ -1,6 +1,6 @@
 ---
 name: data-import-and-management
-description: "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that."
+description: "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for sequencing a whole multi-object migration with automation bypass and rollback — use data/data-migration-planning. NOT for choosing the upsert key itself — use data/external-id-strategy."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

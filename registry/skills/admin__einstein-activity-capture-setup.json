@@ -98,9 +98,9 @@
     "fa61cb6a2745631645d0",
     "ff79ef38189284f26b80"
   ],
-  "content_hash": "856b999a613449fd46433a84eeb85ebf0bb32c502199d7d5fae930e27b8867e6",
+  "content_hash": "5eb504f2957c5769e6ccae4acdfc47e1154cd9481860bdc569ce898c5ee781f6",
   "dependencies": [],
-  "description": "Configure Einstein Activity Capture (EAC) for an org: enable the feature, create Configuration profiles, set auth type (User-Level or Org-Level OAuth), define email and calendar sync scope, configure excluded domains and privacy settings, assign users, and verify sync health. NOT for manual activity logging, Einstein Opportunity Scoring setup, Pipeline Inspection, or troubleshooting email deliverability outside EAC.",
+  "description": "Configure Einstein Activity Capture (EAC) for an org: enable the feature, create Configuration profiles, set auth type (User-Level or Org-Level OAuth), define email and calendar sync scope, excluded domains and privacy settings, assign users, verify sync health. NOT for querying synced emails or events in SOQL, Apex or reports \u2014 use apex/einstein-activity-capture-api. NOT for Opportunity Scoring or Pipeline Inspection \u2014 use agentforce/einstein-copilot-for-sales.",
   "file_location": "skills/admin/einstein-activity-capture-setup",
   "id": "admin/einstein-activity-capture-setup",
   "inputs": [

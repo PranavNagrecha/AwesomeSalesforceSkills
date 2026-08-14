@@ -14,6 +14,12 @@ documented in this skill:
      sequence (step A → step B → step C inside the stage). Steps
      within a stage run in parallel; in-stage sequencing is a smell
      that the design wanted multiple stages.
+  4. Interactive step missing reserved `ActionInput__RecordId` —
+     deploy fails with "A context record is required for interactive
+     steps."
+
+The Flow metadata uses `orchestratedStages` / `stageSteps` /
+`stepSubtype` (API 53.0+). Older samples used `stages`.
 
 Stdlib only.
 
@@ -56,7 +62,9 @@ def _scan_flow(path: Path) -> list[str]:
     if not _is_orchestration(root):
         return findings
 
-    stages = root.findall(f"{_NS_TAG}stages")
+    stages = root.findall(f"{_NS_TAG}orchestratedStages") or root.findall(
+        f"{_NS_TAG}stages"
+    )
     if not stages:
         return findings
 
@@ -118,6 +126,27 @@ def _scan_flow(path: Path) -> list[str]:
                     "(references/llm-anti-patterns.md § 2)"
                 )
 
+    # Smell 4: interactive steps missing ActionInput__RecordId.
+    for stage in stages:
+        for step in stage.findall(f"{_NS_TAG}stageSteps"):
+            subtype_el = step.find(f"{_NS_TAG}stepSubtype")
+            subtype = (subtype_el.text or "") if subtype_el is not None else ""
+            if subtype != "InteractiveStep":
+                continue
+            param_names = [
+                (n.text or "")
+                for n in step.findall(f"{_NS_TAG}inputParameters/{_NS_TAG}name")
+            ]
+            if "ActionInput__RecordId" not in param_names:
+                step_name_el = step.find(f"{_NS_TAG}name")
+                step_name = step_name_el.text if step_name_el is not None else "<unnamed>"
+                findings.append(
+                    f"{path}: interactive step `{step_name}` is missing "
+                    "ActionInput__RecordId — deploy fails with "
+                    "'A context record is required for interactive steps' "
+                    "(references/gotchas.md § 14)"
+                )
+
     return findings
 
 
@@ -137,7 +166,8 @@ def main() -> int:
         description=(
             "Scan Flow Orchestration metadata for design anti-patterns "
             "(single-stage single-step overkill, hardcoded user assignees, "
-            "in-stage sequential connectors)."
+            "in-stage sequential connectors, interactive steps missing "
+            "ActionInput__RecordId)."
         ),
     )
     parser.add_argument(

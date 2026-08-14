@@ -64,4 +64,4 @@
 - Network — Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_network.htm
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
 - Sibling skill (bundle internals) — `skills/devops/experience-cloud-deployment-dev/SKILL.md`
-- Sibling skill (generic SFDX CI/CD) — `skills/devops/sfdx-cicd-pipeline/SKILL.md` (where one exists)
+- Sibling skill (generic CI/CD pipeline design) — `skills/architect/ci-cd-pipeline-architecture/SKILL.md`

@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 runtime_orphan: true
 runtime_orphan_reason: "No current runtime agent authors or reviews Agentforce Grid worksheets; Grid is a no-code, spreadsheet-style bulk AI/data-ops tool in Agentforce Studio operated directly by admins/analysts, not an artifact any of the 47 runtime agents scaffold or audit."
 ---
@@ -81,6 +81,8 @@ Because columns process left to right and reference earlier columns, **order is 
 ### Metering and Flex Credits
 
 Grid runs consume metered compute. "Testing through Agentforce Grid is metered to account for required compute resources," and that metering applies across the whole AI lifecycle, not just testing — "Agentforce Grid usage is metered regardless of the AI lifecycle phase in which it's used." Usage draws on **Flex Credits**, and a **Billing Calculator** estimates the credits-per-row cost before you run. Because every AI/action column runs once per row, cost scales with (rows × AI/action columns) — a small unit cost multiplied across a wide worksheet.
+
+Do **not** cost a Grid run at a flat **$2 per conversation**. That SKU still exists. Flex Credits, announced 15 May 2025, are the default commercial model and are **not** release-gated. As of that newsroom announcement: packs are **$500 USD per 100,000 Credits**; **one Agentforce action consumes 20 Flex Credits ($0.10 USD)**; **Enterprise Edition and above can get 100,000 Flex Credits for $0 with Salesforce Foundations**. Grid meters **actions × rows**, not conversations — use the Billing Calculator, then convert with the current pack rate. Commercial rates change independently of platform releases; re-confirm before quoting a number in a live estimate.
 
 ---
 

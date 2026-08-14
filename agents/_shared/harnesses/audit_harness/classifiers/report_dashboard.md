@@ -62,6 +62,6 @@ None. Report + dashboard mechanical patching is error-prone: column definitions 
 ## What This Classifier Does NOT Do
 
 - Does not delete or modify reports / dashboards / folders.
-- Does not migrate to CRM Analytics (`architect/crm-analytics-migration` scope when that skill lands).
+- Does not migrate reports or dashboards to CRM Analytics.
 - Does not refresh dashboards or run report subscriptions.
 - Does not modify folder sharing.

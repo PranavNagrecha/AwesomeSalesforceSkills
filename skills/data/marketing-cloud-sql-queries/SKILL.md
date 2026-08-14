@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-sql-queries
-description: "Use this skill when writing, debugging, or optimizing SQL Query Activities in Salesforce Marketing Cloud Automation Studio. Trigger keywords: SFMC SQL, Marketing Cloud query activity, system data views, _Sent _Open _Click, Automation Studio SQL, SELECT INTO data extension. NOT for SOQL (Salesforce CRM queries against sObjects), NOT for standard SQL databases, NOT for Data Cloud ANSI SQL, NOT for Query Studio as a standalone topic."
+description: "Use this skill when writing, debugging, or optimizing SQL Query Activities in Salesforce Marketing Cloud Automation Studio. Trigger keywords: SFMC SQL, Marketing Cloud query activity, system data views, _Sent _Open _Click, Automation Studio SQL, SELECT INTO data extension. NOT for the schema, fields, and retention of the _Sent / _Open / _Click data views themselves — use apex/marketing-cloud-data-views. NOT for tuning a slow SOQL query against Salesforce CRM sObjects — use data/soql-query-optimization."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

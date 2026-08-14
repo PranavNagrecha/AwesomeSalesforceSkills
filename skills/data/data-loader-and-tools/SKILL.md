@@ -1,6 +1,6 @@
 ---
 name: data-loader-and-tools
-description: "Use this skill when selecting or configuring Salesforce data load tools: Data Loader, Data Import Wizard, Workbench, Salesforce Inspector, or Salesforce CLI for import/export. Trigger keywords: data loader configuration, import wizard, bulk data load, workbench SOQL, salesforce inspector, data export, csv import salesforce, data migration tool selection. NOT for Bulk API development — use the integration or apex skills for Bulk API coding."
+description: "Use this skill when selecting or configuring Salesforce data load tools: Data Loader, Data Import Wizard, Workbench, Salesforce Inspector, or Salesforce CLI for import/export. Trigger keywords: data loader configuration, import wizard, bulk data load, workbench SOQL, salesforce inspector, data export, csv import salesforce, data migration tool selection. NOT for mapping CSV columns to field API names — use data/data-loader-csv-column-mapping. NOT for coding a Bulk API 2.0 job and retrieving its failed records — use data/bulk-api-and-large-data-loads."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

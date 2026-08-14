@@ -1,6 +1,6 @@
 ---
 name: lwc-shadow-vs-light-dom-decision
-description: "Use when deciding whether a Lightning Web Component should keep the default Shadow DOM or opt into Light DOM via `static renderMode = 'light'`. Covers CSS scoping, third-party CSS-framework compatibility, accessibility implications, Experience Cloud LWR vs internal-app constraints, performance differences, and event composition. NOT a generic Light DOM how-to (see lwc/lwc-light-dom). NOT a CSS styling reference (see lwc/lwc-styling-and-slds). NOT for managed-package distribution rules — that is a hard constraint and Light DOM is forbidden there."
+description: "Decide Shadow DOM vs Light DOM for an LWC — Salesforce distribution rules, Locker/LWS, third-party library needs. Triggers: shadow vs light DOM, renderMode decision. NOT for implementing Light DOM after the decision — use lwc/lwc-light-dom."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

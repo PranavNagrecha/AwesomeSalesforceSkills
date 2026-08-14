@@ -90,9 +90,9 @@
     "fa5733b803d6d7c42c20",
     "fd71f1689a7d2c866ee7"
   ],
-  "content_hash": "35bbaac9666f3ce787ed1ed6a2a1b7cb270f560d1c3324f1d81d9ae78e6d148c",
+  "content_hash": "ab70146990af08ac87dd287fa094a61ce3618e416764934b556232a58932e768",
   "dependencies": [],
-  "description": "Use this skill when configuring or extending search on an Experience Cloud site \u2014 covering Search Manager scope configuration, LWR vs Aura search component selection, federated search setup, guest user search access, and custom search result components. NOT for SOSL/SOQL query development. NOT for internal Salesforce global search or Einstein Search for agents.",
+  "description": "Use this skill when configuring or extending search on an Experience Cloud site \u2014 covering Search Manager scope configuration, LWR vs Aura search component selection, federated search setup, guest user search access, and custom search result components. NOT for SOSL/SOQL query development \u2014 use lwc/experience-cloud-lwc-components.",
   "file_location": "skills/lwc/experience-cloud-search-customization",
   "id": "lwc/experience-cloud-search-customization",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: batch-data-cleanup-patterns
-description: "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for data archival to external storage (use data-archival-strategies)."
+description: "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for archiving records to Big Objects or external storage instead of deleting them — use data/data-archival-strategies. NOT for deleting unused fields, flows and other metadata — use admin/org-cleanup-and-technical-debt."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Batch Data Cleanup Patterns

@@ -1,6 +1,6 @@
 ---
 name: field-history-tracking
-description: "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityFieldHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail)."
+description: "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityFieldHistory, custom __History), and troubleshooting missing records. NOT for Shield Field Audit Trail, FieldHistoryArchive, or keeping history past 18 months — use security/field-audit-trail. NOT for CreatedDate, LastModifiedDate, or SystemModstamp behavior — use admin/system-field-behavior-and-audit."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

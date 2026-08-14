@@ -1,6 +1,6 @@
 ---
 name: headless-commerce-api
-description: "Use this skill when building custom headless storefronts that call Salesforce Commerce API (SCAPI) — including Shopper API authentication with SLAS OAuth2 JWT tokens, integrating Commerce SDK React hooks, wiring Shopper Basket/Checkout APIs, and handling SCAPI-specific load-shedding and caching behavior. NOT for standard LWR storefront configuration, declarative Experience Builder layouts, legacy OCAPI integrations, or architecture-level headless decisions — use admin/headless-commerce-architecture for pattern selection."
+description: "Use this skill when building custom headless storefronts that call Salesforce Commerce API (SCAPI) — including Shopper API authentication with SLAS OAuth2 JWT tokens, integrating Commerce SDK React hooks, wiring Shopper Basket/Checkout APIs, and handling SCAPI-specific load-shedding and caching behavior. NOT for order submission or order status — use apex/commerce-order-api. NOT for PWA Kit, Managed Runtime, or latency-budget architecture decisions — use architect/headless-commerce-architecture."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

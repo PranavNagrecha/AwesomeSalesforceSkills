@@ -1,6 +1,6 @@
 ---
 name: cpq-guided-selling
-description: "Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard: building Quote Process records, defining ProcessInput questions that filter products by field value, mapping user responses to Product2 classification fields, and choosing the right search type (Standard, Enhanced, or Custom). Trigger keywords: CPQ guided selling, quote process wizard, product selection wizard, SBQQ__QuoteProcess__c, SBQQ__ProcessInput__c, guided product selection, auto select product, product search plugin. NOT for OmniStudio product selection flows, standard Salesforce pricebook product browsing, CPQ product bundle configuration, or CPQ pricing rules."
+description: "Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard: Quote Process records, ProcessInput questions that filter products by field value, mapping answers to Product2 classification fields, and search type choice (Standard, Enhanced, Custom). Trigger keywords: CPQ guided selling, quote process wizard, product selection wizard, SBQQ__QuoteProcess__c, SBQQ__ProcessInput__c, guided product selection, auto select product, product search plugin. NOT for bundles, product options, or product rules — use admin/cpq-product-catalog-setup. NOT for writing a custom ProductSearchPlugin in Apex — use apex/cpq-apex-plugins."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

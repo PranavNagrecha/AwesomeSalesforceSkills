@@ -50,9 +50,9 @@
     "e310b3abfeffdbebb577",
     "f8d80b0aa1d2b28f66d9"
   ],
-  "content_hash": "3abf03b3a73d7b155ca65569802c9dc5cb559fd1fade67d0bbc8c5721b705c88",
+  "content_hash": "d1d91e0886e349264fb8b11a3aba9f923055af63d38e35e7ec3f11292c311de8",
   "dependencies": [],
-  "description": "Use when generating customer- or stakeholder-facing release notes from git history, Jira/ADO ticket links, and Salesforce metadata diffs at deploy time. Triggers: 'auto-generate release notes', 'changelog from commits', 'release notes from PR titles', 'what changed in this deployment'. NOT for managed-package version creation, push upgrades, or org assessment.",
+  "description": "Use when generating customer- or stakeholder-facing release notes from git history, Jira/ADO ticket links, and Salesforce metadata diffs at deploy time. Triggers: 'auto-generate release notes', 'changelog from commits', 'release. NOT for managed-package version creation, push upgrades, or org assessment \u2014 use admin/salesforce-release-preparation.",
   "file_location": "skills/devops/release-notes-automation",
   "id": "devops/release-notes-automation",
   "inputs": [

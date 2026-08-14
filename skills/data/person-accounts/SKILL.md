@@ -1,6 +1,6 @@
 ---
 name: person-accounts
-description: "Use when enabling, configuring, or troubleshooting Person Accounts in a Salesforce org — includes B2C data model design, IsPersonAccount flag handling, Account-Contact behavior differences, reporting impact, migration planning, and integration requirements. NOT for standard B2B Account/Contact modeling. NOT for managing business accounts that share an org with Person Accounts."
+description: "Use when enabling, configuring, or troubleshooting Person Accounts in a Salesforce org — includes B2C data model design, IsPersonAccount flag handling, Account-Contact behavior differences, reporting impact, migration planning, and integration requirements. NOT for standard B2B Account/Contact modeling."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: flow-record-save-order-interaction
-description: "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. Does NOT cover writing trigger handlers, approval process setup, or workflow rule migration."
+description: "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. NOT for choosing before-save vs after-save for one flow — use flow/record-triggered-flow-patterns. NOT for picking which tool stamps a field on save — use admin/workflow-field-update-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

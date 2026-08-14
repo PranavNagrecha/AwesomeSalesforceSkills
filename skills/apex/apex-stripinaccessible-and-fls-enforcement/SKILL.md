@@ -1,6 +1,6 @@
 ---
 name: apex-stripinaccessible-and-fls-enforcement
-description: "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, when to prefer WITH USER_MODE on the SOQL itself, and integration with the SecurityUtils template. NOT for class-level sharing keyword choice (with sharing / without sharing / inherited sharing — see apex-sharing-keywords). NOT for managed sharing or Apex managed sharing recalculations (see sharing-selection decision tree)."
+description: "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, and when to prefer WITH USER_MODE on the SOQL itself. NOT for the with sharing / without sharing keyword choice — use apex/apex-with-without-sharing-decision. NOT for SOQL injection review — use apex/soql-security."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -20,6 +20,8 @@ triggers:
   - "apex aura controller exposing fields the running user cannot read"
   - "sobjectaccessdecision getrecords getremovedfields how to use"
   - "should i call stripinaccessible after a user_mode soql query"
+  - "our security review flagged crud and fls issues"
+  - "appexchange security review crud fls finding remediation"
 inputs:
   - User-supplied SObject records about to be inserted, updated, or upserted
   - Query results that will be returned to a less-privileged caller (LWC, REST, Aura)

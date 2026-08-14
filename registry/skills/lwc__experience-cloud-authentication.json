@@ -79,9 +79,9 @@
     "f301978974434b3b3096",
     "f482b7f7db1243b90f99"
   ],
-  "content_hash": "2499d7a827427d235bfc7b4a292a2fddd14256265e09b6711dc114a9280fb15a",
+  "content_hash": "b5615677459f17646e12b12a3def72828000db39b9b3573da5f7c9954e580af7",
   "dependencies": [],
-  "description": "Use when building custom login pages, social SSO flows, self-registration flows, or passwordless OTP login for Experience Cloud (community) sites. Trigger keywords: custom login page Experience Cloud, social SSO community portal, passwordless login Experience Cloud, self-registration custom flow, headless authentication community, auth provider OIDC SAML site. NOT for internal SSO configuration (use identity/sso skills). NOT for standard username/password authentication with no customization.",
+  "description": "Experience Cloud authentication customization \u2014 login pages, self-registration, social sign-on. Triggers: Experience Cloud login, community auth, self-registration. NOT for multi-IdP enterprise SSO \u2014 use lwc/experience-cloud-multi-idp-sso.",
   "file_location": "skills/lwc/experience-cloud-authentication",
   "id": "lwc/experience-cloud-authentication",
   "inputs": [

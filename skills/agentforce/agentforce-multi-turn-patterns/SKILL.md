@@ -1,6 +1,6 @@
 ---
 name: agentforce-multi-turn-patterns
-description: "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic handoff, and the right abstractions for accumulating state across turns. NOT for single-turn agent actions (use agent-actions). NOT for channel-specific conversation UX (use agent-channel-deployment)."
+description: "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic handoff, and the right abstractions for accumulating state across turns. NOT for deciding the topic boundaries themselves or out-of-scope behavior — use agentforce/agent-topic-design. NOT for single-turn agent actions and their input/output contracts — use agentforce/agent-actions."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

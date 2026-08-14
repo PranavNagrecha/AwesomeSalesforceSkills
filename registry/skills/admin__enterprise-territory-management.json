@@ -99,9 +99,9 @@
     "fddb40a17d0e3bd14cb0",
     "fe6882130f24757bbda1"
   ],
-  "content_hash": "290ae9a8be1f8ceede1ebde77731f4b7b73bdba903c25a68810bba461829a405",
+  "content_hash": "68577ab930f7369982bb78045933377dbc1df8ab1a9b793284582b691a159700",
   "dependencies": [],
-  "description": "Use this skill when configuring or troubleshooting Salesforce Enterprise Territory Management (ETM): territory models, territory types, territory hierarchies, account assignment rules, opportunity territory assignment, and forecast by territory. Trigger keywords: territory model, territory hierarchy, ETM, assign accounts to territories, territory forecast, territory activation. NOT for role hierarchy (use sharing-and-visibility). NOT for Legacy/Original Territory Management (pre-ETM).",
+  "description": "Use when configuring or troubleshooting Salesforce Enterprise Territory Management (ETM): territory models, territory types, territory hierarchies, account assignment rules, opportunity territory assignment, and forecast by territory. Trigger keywords: territory model, territory hierarchy, ETM, assign accounts to territories, territory forecast, territory activation. NOT for choosing the coverage model first \u2014 use admin/territory-design-requirements. NOT for role hierarchy \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/admin/enterprise-territory-management",
   "id": "admin/enterprise-territory-management",
   "inputs": [

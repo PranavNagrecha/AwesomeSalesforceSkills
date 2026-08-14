@@ -236,4 +236,4 @@ Use this mode when the team has identified a legacy feature and needs a migratio
 - `apex/custom-metadata-in-apex` — use when the storage decision is made and the question is Apex access and caching patterns for Custom Metadata.
 - `lwc/` skills — use for LWC component authoring after the UI framework decision is made.
 - `omnistudio/omniscript-design-patterns` — use when OmniStudio has been selected and OmniScript design specifics are needed.
-- `integration/platform-events` — use when Platform Events has been chosen and design specifics are needed.
+- `integration/platform-events-integration` — use when Platform Events has been chosen and design specifics are needed.

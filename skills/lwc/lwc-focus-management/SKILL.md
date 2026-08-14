@@ -1,6 +1,6 @@
 ---
 name: lwc-focus-management
-description: "Use when building LWCs that need to manage focus explicitly — modal dialogs, wizard flows, dynamic inserts, list updates, error summaries, and focus after async work. Covers focus restoration, focus traps, programmatic focus across shadow DOM, and patterns for announcing changes to assistive tech. Does NOT cover general LWC a11y audit (see lwc-accessibility)."
+description: "Focus trap, restore, and programmatic focus in modals, wizards, and dynamic lists. Triggers: focus trap LWC, focus restore, tabindex modal. NOT for general LWC accessibility review — use lwc/lwc-accessibility."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

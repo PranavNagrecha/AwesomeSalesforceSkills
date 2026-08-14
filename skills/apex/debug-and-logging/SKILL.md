@@ -1,6 +1,6 @@
 ---
 name: debug-and-logging
-description: "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for exception taxonomy design alone or for non-Apex observability platforms by themselves."
+description: "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for trace flag setup, reading a log, or the Developer Console — use apex/debug-logs-and-developer-console. NOT for building a custom Log__c framework — use apex/custom-logging-and-monitoring."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

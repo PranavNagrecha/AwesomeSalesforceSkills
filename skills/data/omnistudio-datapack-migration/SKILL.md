@@ -127,14 +127,17 @@ These are distinct tools for different scenarios:
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. Confirm source and target orgs are running the same OmniStudio runtime type — if not, stop and use the OmniStudio Migration Assistant instead.
-2. List all components to migrate and their current active version numbers from the source org.
-3. Query the target org for existing components with the same Type, Sub Type, and Version Number — identify any version-number collisions before export.
-4. Run `packExport` from the source org; if draft versions are required, use the Spring '25+ all-versions export option explicitly.
-5. Inspect the exported DataPack JSON to confirm all expected components and versions are included — drafts are silently omitted in default export mode.
-6. Resolve any version collisions: either increment the source version number or prepare to use `--overwrite` flag on import.
-7. Run `packDeploy` with the `--activate` flag on the target org; `--activate` is mandatory — importing without it creates/updates the record but leaves the previous version active.
-8. Post-import: verify each component in the target org shows the expected version number in Active status; spot-check one component in Preview mode to confirm it runs correctly.
+1. **Confirm this is a DataPack migration at all, then inventory the source.**
+   - Confirm source and target orgs are running the same OmniStudio runtime type — if not, stop and use the OmniStudio Migration Assistant instead.
+   - List all components to migrate and their current active version numbers from the source org.
+2. **Detect version-number collisions before you export.** Query the target org for existing components with the same Type, Sub Type, and Version Number. A collision found here is a version bump; the same collision found after import is a silent no-op you will not be told about.
+3. **Export, then read the export.**
+   - Run `packExport` from the source org; if draft versions are required, use the Spring '25+ all-versions export option explicitly.
+   - Inspect the exported DataPack JSON to confirm all expected components and versions are included — drafts are silently omitted in default export mode.
+4. **Resolve collisions, then import with activation.**
+   - Resolve any version collisions: either increment the source version number or prepare to use the `--overwrite` flag on import.
+   - Run `packDeploy` with the `--activate` flag on the target org; `--activate` is mandatory — importing without it creates/updates the record but leaves the previous version active.
+5. **Verify the import actually took.** Confirm each component in the target org shows the expected version number in Active status; spot-check one component in Preview mode to confirm it runs correctly.
 
 ---
 

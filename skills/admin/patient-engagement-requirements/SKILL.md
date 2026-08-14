@@ -1,6 +1,6 @@
 ---
 name: patient-engagement-requirements
-description: "Use this skill when defining patient engagement portal requirements for Health Cloud: appointment scheduling, secure in-portal messaging, health assessments, patient education, and self-service features. NOT for Experience Cloud site configuration, OmniStudio development, or standard CRM portal setup unrelated to clinical patient engagement."
+description: "Use this skill when defining patient engagement portal requirements for Health Cloud: appointment scheduling, secure in-portal messaging, health assessments, patient education, and self-service features. NOT for care team workflows, SDOH barriers and care gaps — use admin/care-coordination-requirements. NOT for patient portal licensing and cloud topology — use architect/health-cloud-multi-cloud-strategy."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

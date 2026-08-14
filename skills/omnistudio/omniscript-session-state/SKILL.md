@@ -1,6 +1,6 @@
 ---
 name: omniscript-session-state
-description: "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns)."
+description: "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. NOT for OmniScript UI step layout — use omnistudio/omniscript-design-patterns. NOT for general Flow pause/resume — use flow/pause-elements-and-wait-events."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,7 +32,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # OmniScript Session State

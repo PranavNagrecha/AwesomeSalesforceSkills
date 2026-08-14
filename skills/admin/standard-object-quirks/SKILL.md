@@ -1,6 +1,6 @@
 ---
 name: standard-object-quirks
-description: "Guidance on non-obvious runtime behaviors of Salesforce standard objects — polymorphic lookups, lead conversion field loss, PersonAccount dual-nature, CaseComment trigger isolation, and Activity date fields. NOT for schema documentation or data modeling; NOT for custom object design; NOT for field-level security configuration."
+description: "Guidance on non-obvious runtime behaviors of Salesforce standard objects — polymorphic lookups, lead conversion field loss, PersonAccount dual-nature, CaseComment trigger isolation, and Activity date fields. NOT for the Activity object model — use admin/activity-and-task-patterns. NOT for writing TYPEOF queries — use apex/apex-polymorphic-soql."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

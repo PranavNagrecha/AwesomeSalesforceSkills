@@ -112,7 +112,9 @@ enablement, **not supported with BYOK**, Data Cloud Architect permission set to 
 migrate, Python-only today with more languages and Data 360 surfaces planned but not shipped.
 
 **Detection hint:** "generally available," "beta," a non-Python language, or an availability
-claim with no accompanying BYOK/edition/permission caveat.
+claim with no accompanying BYOK/edition/permission caveat. Also flag swapping the two
+surfaces: the Code Extension Guide is scripts = batch data transform, functions = search-index
+chunking. The Summer '26 developer blog inverts those labels — do not copy the blog's swap.
 
 ---
 
@@ -125,9 +127,9 @@ or advice that "any Python 3.x works."
 version pins look like suggestions.
 
 **Correct pattern:** the scaffold's `Dockerfile` is used for containerized builds and
-deployments — **don't modify it**. Add runtime pip dependencies to `requirements.txt`
-(dev-only ones to `requirements-dev.txt`), and develop on **Python 3.11** specifically with
-Azul Zulu OpenJDK 17.x and Docker Desktop.
+deployments — **don't modify it**. The setup guide also marks `requirements-dev.txt` as
+**don't modify**. Add runtime pip dependencies to `requirements.txt` only, and develop on
+**Python 3.11** specifically with Azul Zulu OpenJDK 17.x and Docker Desktop.
 
-**Detection hint:** any diff touching `Dockerfile`, or setup instructions naming a Python
-version other than 3.11.
+**Detection hint:** any diff touching `Dockerfile` or the scaffold `requirements-dev.txt`,
+or setup instructions naming a Python version other than 3.11.

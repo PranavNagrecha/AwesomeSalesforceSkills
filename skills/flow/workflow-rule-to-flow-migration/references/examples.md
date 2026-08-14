@@ -4,7 +4,7 @@
 
 **Context:** A Contact Workflow Rule fires when `LeadSource` is set to "Web" and updates `Rating` to "Hot". No ISCHANGED criteria, no task actions.
 
-**Problem:** The team wants the fastest migration path before the December 31 2025 deadline.
+**Problem:** The rule still runs — end of support did not stop it — but the team wants it off unsupported infrastructure by the fastest path available.
 
 **Solution:**
 1. Setup > Migrate to Flow > select "Contact Rating Updater" rule > Convert

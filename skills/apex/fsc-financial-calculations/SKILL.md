@@ -1,6 +1,6 @@
 ---
 name: fsc-financial-calculations
-description: "Use this skill when implementing custom financial calculation logic in Financial Services Cloud — including portfolio performance metrics (IRR, TWR), wealth rollup recalculation after bulk loads, custom Apex aggregation for objects outside native FSC rollup scope, and Data Processing Engine integration for large-scale writeback. NOT for standard declarative rollup summaries on supported out-of-the-box FSC objects, nor for configuring the FSC Rollup-by-Lookup admin UI itself."
+description: "Custom financial calculation logic in Financial Services Cloud — portfolio performance metrics (IRR, TWR), wealth rollup recalculation after bulk loads, custom Apex aggregation for objects outside native FSC rollup scope, Data Processing Engine writeback. NOT for disabling FSC's built-in triggers, Compliant Data Sharing, or FSC action handlers — use apex/fsc-apex-extensions. NOT for declarative rollup and Rollup-by-Lookup setup in the FSC admin UI — use admin/financial-account-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

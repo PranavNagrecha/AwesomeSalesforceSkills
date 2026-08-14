@@ -1,6 +1,6 @@
 ---
 name: clinical-data-quality
-description: "Use this skill when configuring duplicate detection for Health Cloud patient records, managing Person Account merges in a clinical org, or designing pre-merge clinical record reassignment strategies. Trigger keywords: patient deduplication, MPI, duplicate patients, merge person accounts Health Cloud, clinical record orphan, EpisodeOfCare orphan, PatientMedication orphan. NOT for generic Salesforce data quality or standard deduplication outside Health Cloud."
+description: "Use this skill when configuring duplicate detection for Health Cloud patient records, managing Person Account merges in a clinical org, or designing pre-merge clinical record reassignment strategies. Trigger keywords:. NOT for generic Salesforce data quality or standard deduplication outside Health Cloud — use data/large-scale-deduplication."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

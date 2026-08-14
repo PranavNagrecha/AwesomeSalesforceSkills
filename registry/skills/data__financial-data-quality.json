@@ -141,11 +141,11 @@
     "fbe25de4e7570060c288",
     "fc712e7d494638d990c2"
   ],
-  "content_hash": "db543cb87c0218259d945c80e79d91980325600682502c5b64b7adbe84a1ed4b",
+  "content_hash": "1c1c1b000fe648fa98cf9b5bbb4b9f9ec166c072e4eae4bc1b749e385f269cde",
   "dependencies": [
     "data/fsc-data-model"
   ],
-  "description": "Use when validating FinancialAccount record integrity in Financial Services Cloud, detecting duplicate financial records, or reconciling FSC data against core banking and custodial source systems. Trigger keywords: FinancialAccount validation, FSC duplicate detection, financial record reconciliation, stale household KPIs, FinancialHolding data quality, FSC data integrity. NOT for generic Salesforce data quality, Duplicate Rules setup on standard objects, or bulk data migration execution.",
+  "description": "Use when validating FinancialAccount record integrity in Financial Services Cloud, detecting duplicate financial records, or reconciling FSC data against core banking and custodial source systems. Trigger keywords: FinancialAccount validation, FSC duplicate detection, financial record reconciliation, stale household KPIs, FinancialHolding data quality, FSC data integrity. NOT for the one-time bulk load of FSC accounts and holdings \u2014 use data/financial-account-migration. NOT for generic org-wide data quality gates and governance \u2014 use data/data-quality-and-governance. NOT for matching and duplicate rules on standard objects \u2014 use admin/duplicate-management.",
   "file_location": "skills/data/financial-data-quality",
   "id": "data/financial-data-quality",
   "inputs": [

@@ -104,12 +104,12 @@
     "fd9264f0c3fe8d720c63",
     "fe27013b91900706fe8c"
   ],
-  "content_hash": "2d3abb4558d937da09edce8ed548cdf05df371c9b7e1ae93aa636b896a065688",
+  "content_hash": "9afb0a7e38aa97988ddf9a1e5e84f301752ebe3bad45a7543fdcdac10077a78b",
   "dependencies": [
     "npsp-household-accounts",
     "gift-entry-and-processing"
   ],
-  "description": "Use this skill when configuring or troubleshooting NPSP soft credits, partial soft credits, or matching gift workflows \u2014 including OpportunityContactRole-based credit attribution, npsp__Partial_Soft_Credit__c records, and the Find Matched Gifts process. NOT for gift entry staging flows, recurring donation setup, or non-NPSP Salesforce Fundraising (Gift object) credit configurations.",
+  "description": "Use this skill when configuring or troubleshooting NPSP soft credits, partial soft credits, or matching gift workflows \u2014 including OpportunityContactRole-based credit attribution, npsp__Partial_Soft_Credit__c records, and the Find Matched Gifts process. NOT for gift entry templates or batch gift entry \u2014 use admin/gift-entry-and-processing. NOT for importing historical gifts and credits \u2014 use data/gift-history-import.",
   "file_location": "skills/admin/soft-credits-and-matching",
   "id": "admin/soft-credits-and-matching",
   "inputs": [

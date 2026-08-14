@@ -72,13 +72,13 @@
     "fa5f98f8901ddb947842",
     "ff7b98f9135074f699f0"
   ],
-  "content_hash": "baa294b38875314526fdd8833a35382f4a08fdd4f47b517b6f80f3ea408c5818",
+  "content_hash": "8a83bbe773e156e728a3c8bccd3a7f3339c544d5fe518a4a7a3cb89b3129a598",
   "dependencies": [
     "mulesoft-salesforce-connector",
     "rest-api-patterns",
     "named-credentials-setup"
   ],
-  "description": "Use when designing a multi-system integration architecture using the three-layer API-led connectivity pattern (System, Process, Experience APIs), deciding how many layers to apply, mapping Salesforce as a system-layer endpoint or experience-layer consumer, or evaluating how Agentforce and MuleSoft Agent Fabric leverage API-led patterns. Triggers: 'API-led connectivity', 'system API process API experience API', 'MuleSoft integration layers', 'application network'. NOT for configuring MuleSoft Anypoint Salesforce Connector flows (use mulesoft-salesforce-connector). NOT for Salesforce REST API CRUD patterns (use rest-api-patterns). NOT for event-driven architecture without an API layer (use event-driven-architecture-patterns).",
+  "description": "Use when designing a multi-system integration architecture on the three-layer API-led connectivity pattern (System, Process, Experience APIs), deciding how many layers to apply, mapping Salesforce as a system-layer endpoint or experience-layer consumer, or how Agentforce and MuleSoft Agent Fabric use API-led patterns. Triggers: 'API-led connectivity', 'system API process API experience API', 'MuleSoft integration layers', 'application network'. NOT for governing the API platform itself \u2014 catalog, versioning, deprecation policy, rate limits, multi-consumer strategy \u2014 use architect/api-led-connectivity-architecture. NOT for picking an iPaaS vendor or deciding whether you need middleware at all \u2014 use integration/middleware-integration-patterns.",
   "file_location": "skills/integration/api-led-connectivity",
   "id": "integration/api-led-connectivity",
   "inputs": [

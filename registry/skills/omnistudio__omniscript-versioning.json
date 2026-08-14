@@ -4,6 +4,7 @@
     "01a8a92826e23d7bd571",
     "08ee97f2bd481c335e7b",
     "0a33907a7049b76fc4a0",
+    "0fb875880ddce3f4ffe2",
     "170297f24fe59430e91c",
     "1ce2ef6203e51a6c5dbe",
     "1e8f9e28d7775c4e01fc",
@@ -57,7 +58,7 @@
     "f91202debc0526950d2a",
     "ff5c740323c6ff262c0e"
   ],
-  "content_hash": "77e846097e5be48fc04328305b68c04627cc97765f0a87bdc919a8fc737093c4",
+  "content_hash": "4983597a49c0912d12b8fc98c2e0a1e4e20e1a5b1b233bcdc260344c6a29467f",
   "dependencies": [],
   "description": "Use when managing OmniScript versions: activating new versions, deactivating prior versions, testing a specific version before activation, rolling back to a previous version, or understanding version identity (Type/Subtype/Language triplet). NOT for OmniStudio deployment or DataPack migration (use omnistudio/omnistudio-deployment-datapacks).",
   "file_location": "skills/omnistudio/omniscript-versioning",
@@ -100,7 +101,7 @@
   "templates": [
     "skills/omnistudio/omniscript-versioning/templates/omniscript-versioning-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

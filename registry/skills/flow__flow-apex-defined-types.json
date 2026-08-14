@@ -37,12 +37,12 @@
     "fb9c48408da1312b98ad",
     "fd265d60d57f03a331bf"
   ],
-  "content_hash": "101749881e8464bfaec64b316301f4ad5c3a2403a4c936905e4b69ec2ec45e5b",
+  "content_hash": "7b8ccacb55defe6b2db19ab748d1f58ed4b0d4ab35f1e9f1be4e8b0cf8ce4e1a",
   "dependencies": [
     "flow/flow-http-callout-action",
     "flow/flow-invocable-from-apex"
   ],
-  "description": "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable, @AuraEnabled class, flow http callout response. Does NOT cover building HTTP Callout Actions themselves, External Services schema, or raw Apex invocable methods.",
+  "description": "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable. NOT for building HTTP Callout Actions themselves, External Services schema, or raw Apex  \u2014 use flow/flow-external-services.",
   "file_location": "skills/flow/flow-apex-defined-types",
   "id": "flow/flow-apex-defined-types",
   "inputs": [

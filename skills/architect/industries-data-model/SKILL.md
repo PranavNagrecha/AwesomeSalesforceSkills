@@ -1,6 +1,6 @@
 ---
 name: industries-data-model
-description: "Reference guide for Salesforce Industries cloud data models: Insurance Cloud (InsurancePolicy hierarchy), Communications Cloud (Account record types, BillingAccount), Energy & Utilities (ServicePoint, ServiceContract), and Health Cloud (CarePlan, FHIR-aligned patient objects). NOT for standard Sales/Service Cloud data model or FSC retail banking model."
+description: "Reference guide for Salesforce Industries cloud data models: Insurance Cloud (InsurancePolicy hierarchy), Communications Cloud (Account record types, BillingAccount), Energy & Utilities (ServicePoint, ServiceContract), and Health Cloud (CarePlan, FHIR-aligned patient objects). NOT for Health Cloud clinical objects in depth, HC24 vs FHIR R4 — use data/health-cloud-data-model. NOT for insurance module licensing, claims and underwriting design — use architect/insurance-cloud-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

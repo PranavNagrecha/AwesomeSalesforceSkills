@@ -78,9 +78,9 @@
     "fcab782a50ac5976679f",
     "ff8b6a1e394b98d20096"
   ],
-  "content_hash": "9dae53dce28c454843e196588cc336fa3cb1f4073f964a826d5b5df29e1c411a",
+  "content_hash": "08eead96c5ca4d6d1436fae12abef0329ff52739cdf4cff34eace8abf157655d",
   "dependencies": [],
-  "description": "Use when an LWC must create, update, or delete records via Lightning Data Service (`lightning/uiRecordApi` \u2014 `createRecord`, `updateRecord`, `deleteRecord`) or via `lightning-record-edit-form` / `lightning-record-form`. Triggers: 'updateRecord cache not refreshing', 'createRecord returns DUPLICATES_DETECTED', 'updateRecord input shape with field references', 'lightning-record-edit-form submit not committing', 'should I use LDS write or imperative Apex DML'. NOT for read-only wires (use lwc/wire-service-patterns), NOT for refreshing wired data after a write (use lwc/lwc-wire-refresh-patterns), and NOT for Apex DML from LWC (use apex/dml-patterns).",
+  "description": "Use when an LWC must create, update, or delete records via Lightning Data Service (`lightning/uiRecordApi` \u2014 `createRecord`, `updateRecord`, `deleteRecord`) or via `lightning-record-edit-form` / `lightning-record-form`. Triggers: 'updateRecord cache not refreshing', 'createRecord returns DUPLICATES_DETECTED', 'updateRecord input shape with field references', 'lightning-record-edit-form submit not committing', 'should I use LDS write or imperative Apex DML'. NOT for read-only wires (use lwc/wire-service-patterns), NOT for refreshing wired data after a write (use lwc/lwc-wire-refresh-patterns), and NOT for Apex DML from LWC (use apex/apex-dml-patterns).",
   "file_location": "skills/lwc/lwc-lds-writes",
   "id": "lwc/lwc-lds-writes",
   "inputs": [

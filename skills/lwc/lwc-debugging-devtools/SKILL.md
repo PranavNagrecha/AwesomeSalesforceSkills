@@ -1,6 +1,6 @@
 ---
 name: lwc-debugging-devtools
-description: "Use when you need to diagnose live Lightning Web Component behavior in the browser — setting breakpoints, stepping through @wire emits, inspecting component state with the Lightning Component Inspector, reading wire-adapter network traffic, and interpreting symptoms like silent render failures or 'works in dev but not in prod'. Triggers: 'how to set breakpoint in lwc', 'source maps missing', 'enable debug mode', 'lightning inspector chrome extension', 'lwc wire not emitting'. NOT for Jest test failures — use `lwc-testing` — and NOT for Apex debug logs, which are an Apex debugging concern. Specific runtime error messages (wire undefined, querySelector returns null, NavigationMixin errors) belong in `common-lwc-runtime-errors`; this skill covers the debug TOOLING itself."
+description: "Use when you need to diagnose live Lightning Web Component behavior in the browser — setting breakpoints, stepping through @wire emits, inspecting component state with the Lightning Component Inspector, reading. NOT for Jest test failures — use `lwc-testing` — and NOT for Apex debug logs, which are  — use lwc/common-lwc-runtime-errors."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

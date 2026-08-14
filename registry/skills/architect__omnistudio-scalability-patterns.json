@@ -104,7 +104,7 @@
     "fa96859618edfd301c6d",
     "fc63e0193adfd0df60ef"
   ],
-  "content_hash": "617bc8d2c43944475b4e94867f4e75e45328aeae9446791fece5e3ccd08ccdab",
+  "content_hash": "526fb0165652659173b161c711b7623a56da7336b49876134bd0f7c137299e59",
   "dependencies": [],
   "description": "Use when OmniStudio components are degrading under high concurrent user load, when Integration Procedures are hitting governor limits at portal scale, or when designing an OmniStudio deployment for thousands of simultaneous Experience Cloud users. Trigger keywords: OmniScript concurrency, Integration Procedure SOQL limits portal, Queueable Chainable, Direct Platform Access, LWR CDN Experience Cloud high volume. NOT for generic scalability planning (use architect/limits-and-scalability-planning), NOT for single-session performance tuning (use omnistudio/omnistudio-performance).",
   "file_location": "skills/architect/omnistudio-scalability-patterns",

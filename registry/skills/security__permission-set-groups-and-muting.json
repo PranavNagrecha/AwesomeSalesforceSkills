@@ -47,9 +47,9 @@
     "e31e599312c5c49a44cb",
     "e5f43b35df7e5350c45a"
   ],
-  "content_hash": "1d5c902f461abbe33c4cc5128a787fcc2ab1d1a2fd30ffcd8dbb01244aa9cf15",
+  "content_hash": "85023ebae297586e4ee0310a6c3fc7187eeb4cfd3e0d95d2d26762b544ebb873",
   "dependencies": [],
-  "description": "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission set', 'profiles to permission sets', 'PSG architecture', 'muted permissions'. NOT for record-sharing design or CRUD/FLS review in Apex code.",
+  "description": "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission. NOT for record-sharing design or CRUD/FLS review in Apex code \u2014 use admin/permission-set-architecture.",
   "file_location": "skills/security/permission-set-groups-and-muting",
   "id": "security/permission-set-groups-and-muting",
   "inputs": [

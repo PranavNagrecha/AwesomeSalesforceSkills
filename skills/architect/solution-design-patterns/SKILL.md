@@ -1,6 +1,6 @@
 ---
 name: solution-design-patterns
-description: "Use when selecting the right automation layer (Flow, Apex, LWC) for a new feature, reviewing an existing design for technical debt, or troubleshooting a mismatched automation architecture. Triggers: 'should I use Flow or Apex', 'declarative vs programmatic', 'which layer should handle this', 'automation design review', 'should I use LWC or standard components', 'is this over-engineered'. NOT for individual feature design (use role-specific skills), NOT for detailed Apex implementation (use apex/ skills), NOT for LWC component authoring (use lwc/ skills), NOT for Flow-specific build steps (use flow/ skills)."
+description: "Use when selecting the right automation layer (Flow, Apex, LWC) for a new feature, reviewing an existing design for technical debt, or troubleshooting a mismatched automation architecture. Triggers: 'should I use Flow or Apex', 'declarative vs programmatic', 'which layer should handle this', 'automation design review', 'should I use LWC or standard components', 'is this over-engineered'. NOT for picking before-save Flow vs trigger vs invocable Apex on one record-save requirement — use admin/process-automation-selection. NOT for Custom Metadata vs Custom Settings, LWC vs Aura or Platform Events vs CDC — use architect/platform-selection-guidance."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -113,9 +113,9 @@
     "f45a7b8d6d1e02b03ad0",
     "f993ab5ec5ef21fadc5d"
   ],
-  "content_hash": "54b122741173651f09b797cc4fba6b323abf5bf67735ca50f37163c400c51ebd",
+  "content_hash": "c13b7454e5f17d2dfa52c1dff096b65eb291760b358973ab8ea2799c86e758b3",
   "dependencies": [],
-  "description": "Decide and audit the security boundary a Flow runs at \u2014 System Context With Sharing, System Context Without Sharing, or User Context \u2014 plus the per-element runInMode override and the implications for sharing rules, FLS, CRUD, and $User/$Profile/$Permission merge fields. NOT for Apex sharing keywords (see apex/with-without-sharing-and-context). NOT for record-access troubleshooting at the user level (see security/record-access-troubleshooting).",
+  "description": "Flow runtime sharing context \u2014 run in user vs system mode, record access in Flow. Triggers: Flow sharing, run in system mode, Flow user context. NOT for Apex sharing declarations \u2014 use apex/apex-with-without-sharing-decision.",
   "file_location": "skills/flow/flow-runtime-context-and-sharing",
   "id": "flow/flow-runtime-context-and-sharing",
   "inputs": [

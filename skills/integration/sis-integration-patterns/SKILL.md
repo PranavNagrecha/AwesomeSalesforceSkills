@@ -1,6 +1,6 @@
 ---
 name: sis-integration-patterns
-description: "Use this skill when designing or implementing an integration between a Student Information System (SIS) — such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or Workday Student — and Salesforce Education Cloud. Covers the canonical Education Cloud data model objects (AcademicTermEnrollment, CourseOfferingParticipant, CourseOfferingPtcpResult, LearnerProfile, PersonAcademicCredential), external ID / upsert keying strategies using SIS-native identifiers (Banner PIDM, PeopleSoft EMPLID), batch nightly upsert patterns, Change Data Capture (CDC) for enrollment status writeback, and MuleSoft/middleware watermark patterns. Trigger keywords: SIS integration, Banner integration, PeopleSoft integration, Education Cloud data model, enrollment sync, grade writeback, AcademicTermEnrollment, LearnerProfile upsert. NOT for Salesforce Admissions Connect application processing, Financial Aid integration, Learning Management System (LMS) integrations, or general ETL tooling not involving Education Cloud objects."
+description: "Use this skill when designing or implementing an integration between a Student Information System (SIS) — such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or. NOT for Salesforce Admissions Connect application processing, Financial Aid integration — use architect/sales-cloud-integration-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

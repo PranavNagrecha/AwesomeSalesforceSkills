@@ -1,6 +1,6 @@
 ---
 name: lwc-chart-and-visualization
-description: "Charts and visualization in LWC: Chart.js, D3, Plotly via Static Resources; Lightning chart components; performance patterns for 10k+ data points; accessibility; SLDS theming. NOT for CRM Analytics embedding (use crm-analytics-foundation). NOT for Tableau embedding (use tableau-salesforce-connector)."
+description: "Charts and visualization in LWC: Chart.js, D3, Plotly via Static Resources; Lightning chart components; performance patterns for 10k+ data points; accessibility; SLDS theming. NOT for CRM Analytics embedding — use admin/crm-analytics-app-creation. NOT for Tableau embedding — use lwc/tableau-embedding-in-lightning."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

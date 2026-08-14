@@ -36,7 +36,7 @@ Bulk-reassign those records to a new queue or a default user before deleting the
 
 **When it occurs:** Orgs that model complex organizational hierarchies using nested groups, or that use a single "mega-group" containing many sub-groups for convenience. Becomes critical during active user provisioning periods (onboarding batches, reorgs) when multiple membership changes occur in short succession.
 
-**How to avoid:** Keep public group membership as flat as possible. Add Roles or Roles and Subordinates directly to the group instead of wrapping them in nested groups. If nesting is unavoidable, limit to one level of nesting and avoid changing membership during business hours. Monitor the Sharing Recalculation job in Setup → Background Jobs when membership changes are made.
+**How to avoid:** Keep public group membership as flat as possible. Add Roles or Roles and Internal Subordinates directly to the group instead of wrapping them in nested groups. If nesting is unavoidable, limit to one level of nesting and avoid changing membership during business hours. Monitor the Sharing Recalculation job in Setup → Background Jobs when membership changes are made.
 
 ---
 
@@ -65,3 +65,26 @@ Remove the user from each queue and group before or immediately after deactivati
 **When it occurs:** When a team expects to be notified individually about new queue assignments but the queue email is either not configured, points to an unmonitored alias, or is assumed to fan out to all members.
 
 **How to avoid:** Set the queue email to a monitored team distribution list (not an individual's mailbox). Communicate to the team that queue email is a team-level notification, not a per-member alert. If per-member notification is required, configure a Flow that runs on record assignment and sends individual emails, or use Omni-Channel which has its own presence and routing notifications.
+
+---
+
+## Gotcha 6: The "Roles and Subordinates" Group Was Renamed — Old API Names Are Only Temporarily Translated
+
+**What happens:** Secure Roles changed the default role-hierarchy sharing group so that turning on Digital Experiences no longer silently exposes those records to external site users. Salesforce Help states that "the default sharing group available for roles and subordinates before you enable digital experiences is now displayed as Roles and Internal Subordinates instead of Roles and Subordinates." The rename is not cosmetic — the API names changed with it. In the Metadata API, `<sharedTo><roleAndSubordinates>` becomes `<roleAndSubordinatesInternal>`; in SOQL and the SOAP/REST APIs, `RoleAndSubordinates` becomes `RoleAndSubordinatesInternal`. The old `roleAndSubordinates` field survives only in orgs matching a narrow condition: the Metadata API reference says it "is only available when digital experiences is enabled for your org and Experience Cloud site users are created with external account roles other than a shared person account role."
+
+**When it occurs:** In sandboxes since Summer '25, enforced by the "Enable Secure Roles Behavior and Update Sharing Group References in Sandboxes" release update; in production since Winter '26, enforced by "Enable Secure Roles Behavior and Update Sharing Group References in Production." **Production enforcement was scoped, not universal** — Salesforce Help states the update "was enforced in all production orgs created after February 8, 2024 that hadn't enabled digital experiences," and lists production orgs that already have digital experiences enabled with Experience Cloud site users on external account roles as not impacted. An older production org that has not yet taken the release update can still be showing the old label and accepting the old API name, so check Setup → Release Updates in the target org before rewriting its metadata. Salesforce softens the transition — it "dynamically updates remaining 'RoleAndSubordinates' references to 'RoleAndSubordinatesInternal' in SOQL and remaining 'roleAndSubordinates' references to 'roleAndSubordinatesInternal' in Metadata API deployments" — so stale code appears to work and then breaks when the translation stops. Manual updates are still required.
+
+**How to avoid:** Sweep every queue, public group, and sharing rule artifact for the old name before the translation window closes. Affected surfaces named by Salesforce include SOQL queries, Apex, flows, Lightning components, API integrations, Metadata API deployments, and installed packages.
+
+```soql
+-- Current group type value for the role-hierarchy sharing group:
+SELECT Id, Name, Type FROM Group WHERE Type = 'RoleAndSubordinatesInternal'
+-- Was: WHERE Type = 'RoleAndSubordinates'
+```
+
+```xml
+<!-- Sharing rule metadata — current form -->
+<sharedTo><roleAndSubordinatesInternal>Sales_Manager</roleAndSubordinatesInternal></sharedTo>
+```
+
+In Setup, pick "Roles and Internal Subordinates" from the member-type and share-with pickers. Guidance or screenshots that tell an admin to pick "Roles and Subordinates" no longer match the UI in an enforced org — verify which of the two your target org actually shows rather than assuming, since the production rollout did not reach every org at once.

@@ -1,6 +1,6 @@
 ---
 name: email-deliverability-strategy
-description: "Use this skill when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for email template design, HTML/CSS email coding, or Journey Builder message configuration."
+description: "Use when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for building a Marketing Cloud email — use admin/email-studio-administration. NOT for unsubscribe and consent — use admin/consent-management-marketing."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

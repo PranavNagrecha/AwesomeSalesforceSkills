@@ -1,6 +1,6 @@
 ---
 name: ai-training-data-preparation
-description: "Use this skill when preparing data for Salesforce Einstein ML features: Einstein Discovery story creation, Einstein Prediction Builder model setup, feature field selection, outcome definition, data quality thresholds, and leakage detection. Trigger keywords: Einstein Discovery data requirements, training data for Einstein, ML feature engineering, Einstein Prediction Builder data prep, AI model training data. NOT for generic CRM data quality management, Data Cloud ingestion pipeline setup, or standard CRM Analytics dashboard analytics."
+description: "Judging whether Salesforce data is fit to train an Einstein model: feature field selection, outcome definition, data quality and fill-rate thresholds, leakage detection. Trigger keywords: Einstein Discovery data requirements, training data for Einstein, ML feature engineering, Einstein Prediction Builder data prep, AI model training data. NOT for authoring the story in CRM Analytics Studio — use admin/einstein-discovery-setup. NOT for setting up the prediction itself — use agentforce/einstein-prediction-builder."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

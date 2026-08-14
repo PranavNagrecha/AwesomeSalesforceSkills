@@ -1,6 +1,6 @@
 ---
 name: financial-data-quality
-description: "Use when validating FinancialAccount record integrity in Financial Services Cloud, detecting duplicate financial records, or reconciling FSC data against core banking and custodial source systems. Trigger keywords: FinancialAccount validation, FSC duplicate detection, financial record reconciliation, stale household KPIs, FinancialHolding data quality, FSC data integrity. NOT for generic Salesforce data quality, Duplicate Rules setup on standard objects, or bulk data migration execution."
+description: "Use when validating FinancialAccount record integrity in Financial Services Cloud, detecting duplicate financial records, or reconciling FSC data against core banking and custodial source systems. Trigger keywords: FinancialAccount validation, FSC duplicate detection, financial record reconciliation, stale household KPIs, FinancialHolding data quality, FSC data integrity. NOT for the one-time bulk load of FSC accounts and holdings — use data/financial-account-migration. NOT for generic org-wide data quality gates and governance — use data/data-quality-and-governance. NOT for matching and duplicate rules on standard objects — use admin/duplicate-management."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

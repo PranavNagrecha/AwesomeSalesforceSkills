@@ -76,9 +76,9 @@
     "f90b0fd9c1096995a1c4",
     "ff76376194f2ae8b54ac"
   ],
-  "content_hash": "dd6a8f6064fb648c996dce59ef274ae874f1faa618e02b8cc67f1ed6ba489745",
+  "content_hash": "a537eb73d6807ab8bd8223650ccf2339e1471175174460439ecb69658a871ac5",
   "dependencies": [],
-  "description": "Architecture pattern for assembling a zero-trust posture in Salesforce \u2014 there is no single zero-trust toggle. The pattern composes High-Assurance Sessions, Real-Time Event Monitoring (RTEM) Transaction Security Policies, Login Flows for conditional access, Event Monitoring for continuous verification, Mobile Security for device compliance, and a Permission Set Group strategy that defaults-deny. Covers the gotcha that not all RTEM event types support TSP enforcement (IdentityVerificationEvent and MobileEmailEvent do NOT). NOT for MFA-only rollouts (see security/mfa-enforcement-strategy), NOT for the LLM-side Einstein Trust Layer (different concept), NOT for Apex CRUD/FLS enforcement patterns (see apex/apex-stripinaccessible-and-fls-enforcement).",
+  "description": "Architecture pattern for assembling a zero-trust posture in Salesforce \u2014 there is no single zero-trust toggle. The pattern composes High-Assurance Sessions, Real-Time Event Monitoring (RTEM) Transaction Security Policies, Login Flows for conditional access, Event Monitoring for continuous verification, Mobile Security for device compliance, and a Permission Set Group strategy that defaults-deny. Covers the gotcha that not all RTEM event types support TSP enforcement (IdentityVerificationEvent and MobileEmailEvent do NOT). NOT for the LLM-side Einstein Trust Layer, an unrelated concept despite the shared word \u2014 use agentforce/einstein-trust-layer. NOT for MFA-only rollouts \u2014 use security/mfa-enforcement-strategy. NOT for Apex CRUD/FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement.",
   "file_location": "skills/architect/zero-trust-salesforce-patterns",
   "id": "architect/zero-trust-salesforce-patterns",
   "inputs": [

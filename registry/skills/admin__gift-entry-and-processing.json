@@ -90,9 +90,9 @@
     "f5fd41d0bb6c1735ed16",
     "f82f59517c550660a207"
   ],
-  "content_hash": "bba89f40e5b7d970f3d11e575a1bf0b40277825e743de4c033a6570f06851426",
+  "content_hash": "5ec071900103fe3c2a6c5e6b82fb05656f1f199bcb353bc6e0aba953fa248364",
   "dependencies": [],
-  "description": "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for standard opportunity creation or direct GiftTransaction DML outside the Gift Entry framework.",
+  "description": "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for a one-time migration of historical gift data \u2014 use data/gift-history-import. NOT for soft credits or matching gifts \u2014 use admin/soft-credits-and-matching.",
   "file_location": "skills/admin/gift-entry-and-processing",
   "id": "admin/gift-entry-and-processing",
   "inputs": [

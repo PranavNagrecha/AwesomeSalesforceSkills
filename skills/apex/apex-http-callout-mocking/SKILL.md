@@ -1,6 +1,6 @@
 ---
 name: apex-http-callout-mocking
-description: "HttpCalloutMock for Apex tests: HttpCalloutMock interface, StaticResourceCalloutMock, MultiStaticResourceCalloutMock, Test.setMock, multi-call mocks for pagination, error-path mocks. NOT for the callout code itself (use callouts-and-http-integrations). NOT for WSDL callouts (use apex-wsdl2apex-patterns)."
+description: "HttpCalloutMock for Apex tests: HttpCalloutMock interface, StaticResourceCalloutMock, MultiStaticResourceCalloutMock, Test.setMock, multi-call mocks for pagination, error-path mocks. NOT for writing the callout itself — use apex/callouts-and-http-integrations. NOT for stubbing an Apex collaborator — use apex/apex-mocking-and-stubs."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

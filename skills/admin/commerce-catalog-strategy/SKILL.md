@@ -1,6 +1,6 @@
 ---
 name: commerce-catalog-strategy
-description: "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for catalog configuration — object creation, WebStoreCatalog wiring, entitlement policies, or product assignment steps are covered by admin/commerce-product-catalog."
+description: "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for wiring the catalog itself — WebStoreCatalog, entitlement policies, product assignment — use admin/commerce-product-catalog. NOT for configuring searchable or facetable attributes, sort rules and index rebuilds — use apex/commerce-search-customization."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -193,4 +193,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `admin/commerce-product-catalog` — Use for the configuration execution that follows this strategy: creating ProductCatalog records, wiring WebStoreCatalog, assigning products to categories, configuring entitlement policies
 - `admin/b2b-vs-b2c-requirements` — Use when the store type has not yet been decided; determines which platform constraints apply before catalog strategy begins
-- `admin/commerce-search-customization` — Use after catalog strategy is complete to configure search boosting rules, synonym management, and search result merchandising
+- `apex/commerce-search-customization` — Use after catalog strategy is complete to tune storefront search: searchable and facetable attributes, sort rules, index rebuilds, and Einstein product recommendations

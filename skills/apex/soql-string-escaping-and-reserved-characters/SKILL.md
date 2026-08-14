@@ -1,6 +1,6 @@
 ---
 name: soql-string-escaping-and-reserved-characters
-description: "Use when a SOQL single-quoted string literal contains a character that must be escaped: an apostrophe in a name (O'Brien, Bob's BBQ), a backslash, a tab/newline/other control character, a Unicode character via \\uXXXX, or a literal LIKE wildcard (\\_ or \\%). Covers the backslash escape character, the full quoted-string escape-sequence table, the two reserved characters (single quote and backslash) that must always be escaped, the LIKE-only \\_ / \\% wildcard escapes, the hard-error rule for any other backslash use, and String.escapeSingleQuotes on the Apex side. NOT for choosing bind variables vs concatenation or SOQL-injection defense-in-depth (see apex/apex-dynamic-soql-binding-safety and apex/soql-security), NOT for general SELECT/WHERE/ORDER BY syntax (see apex/soql-fundamentals), NOT for Apex String/regex methods (see apex/apex-string-and-regex)."
+description: "Use when a SOQL single-quoted string literal contains a character that must be escaped: an apostrophe in a name (O'Brien, Bob's BBQ), a backslash, a tab/newline/other control character, a Unicode character via \\uXXXX, or a literal LIKE wildcard (\\_ or \\%). Covers the backslash escape character, the full quoted-string escape-sequence table, the two reserved characters (single quote and backslash) that must always be escaped, the LIKE-only \\_ / \\% wildcard escapes, the hard-error rule for any other backslash use, and String.escapeSingleQuotes on the Apex side. NOT for binding untrusted input into dynamic SOQL — use apex/apex-dynamic-soql-binding-safety. NOT for SOQL-injection review or CRUD/FLS enforcement — use apex/soql-security. NOT for Apex String/regex methods — use apex/apex-string-and-regex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-08-14
 ---
 
 # SOQL String Escaping and Reserved Characters

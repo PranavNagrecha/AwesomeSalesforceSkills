@@ -80,11 +80,11 @@
     "ff9eabde38193babf881",
     "ffce2d85f17b19898244"
   ],
-  "content_hash": "37d05950f299d4e1e5afcdefaf7267961be55a2437020826209ffd69329e16bc",
+  "content_hash": "b9b36c2b8faec1e9da4fb1180024ac35bc2697a1ebf15efee513586920f301b4",
   "dependencies": [
     "unlocked-package-development"
   ],
-  "description": "Designing, orchestrating, and maintaining multi-package architectures in Salesforce DX: dependency DAG design, layered package decomposition, install ordering, cross-package API contracts, mono-repo vs. multi-repo layout, and CI/CD pipeline sequencing for projects with two or more unlocked or managed packages. NOT for single-package creation or versioning (see unlocked-package-development), 2GP managed-package ISV workflows (see second-generation-managed-packages), or change-set deployments.",
+  "description": "Designing, orchestrating, and maintaining multi-package architectures in Salesforce DX: dependency DAG design, layered package decomposition, install ordering, cross-package API contracts, mono-repo vs multi-repo layout, and CI/CD sequencing for two or more packages. NOT for single-package creation or versioning \u2014 use devops/unlocked-package-development. NOT for 2GP managed-package ISV workflows \u2014 use devops/second-generation-managed-packages.",
   "file_location": "skills/devops/multi-package-development",
   "id": "devops/multi-package-development",
   "inputs": [

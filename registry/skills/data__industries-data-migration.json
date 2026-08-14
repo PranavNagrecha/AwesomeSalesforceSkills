@@ -113,12 +113,12 @@
     "fc4507061da57d8ba195",
     "fc5400b57084eb75b3d1"
   ],
-  "content_hash": "3bba6f968d9607e4a53b3750f539dbe4bf284189310ba852e912f93dd7e33b0d",
+  "content_hash": "4ebc2117680da659f12c45a4e6aca0719d90527a6542edcb87f8666d0847e0a3",
   "dependencies": [
     "data/data-migration-planning",
     "data/industries-data-model"
   ],
-  "description": "Use this skill when bulk-migrating data into Salesforce Industries clouds \u2014 including InsurancePolicy and its child objects for Insurance, ServicePoint/Premise for Energy and Utilities, or subscriber/account hierarchies for Communications. Trigger keywords: insurance policy migration, InsurancePolicyCoverage load order, ServicePoint bulk load, Premise hierarchy, E&U data migration, telco subscriber migration, utility account import, industries object dependency. NOT for generic Salesforce data migration planning, FSC FinancialAccount migration, Health Cloud patient data migration, or Experience Cloud user migration.",
+  "description": "Use this skill when bulk-migrating data into Salesforce Industries clouds \u2014 including InsurancePolicy and its child objects for Insurance, ServicePoint/Premise for Energy and Utilities, or subscriber/account hierarchies for Communications. Trigger keywords: insurance policy migration, InsurancePolicyCoverage load order, ServicePoint bulk load, Premise hierarchy, E&U data migration, telco subscriber migration, utility account import, industries object dependency. NOT for generic migration planning \u2014 use data/data-migration-planning. NOT for Health Cloud patient data \u2014 use data/patient-data-migration.",
   "file_location": "skills/data/industries-data-migration",
   "id": "data/industries-data-migration",
   "inputs": [

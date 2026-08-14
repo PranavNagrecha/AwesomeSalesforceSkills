@@ -110,12 +110,12 @@
     "fd691393dd62c7448288",
     "fffa3c0a6045816317fe"
   ],
-  "content_hash": "425d225bdc57ef483a4abf56f2a83e16d6b7ea3f879996690f1a08d28c752aef",
+  "content_hash": "e17580f8600a3625d974d302ed3e7f9b7ba2443adadaa69ac9fce89bab01a43f",
   "dependencies": [
     "devops/github-actions-for-salesforce",
     "admin/custom-metadata-types"
   ],
-  "description": "Use this skill when configuring, reviewing, or troubleshooting how environment-specific values \u2014 endpoint URLs, client IDs, thresholds, feature flags \u2014 are managed across Salesforce orgs without hardcoding. Triggers: 'named credential per environment', 'custom metadata for config', 'sfdx string replacement', 'CI variable substitution', 'secrets in org configuration', 'org-specific values'. NOT for sandbox refresh automation (use sandbox-refresh-and-templates), NOT for general deployment pipeline setup (use github-actions-for-salesforce or bitbucket-pipelines-for-salesforce), and NOT for per-user or per-profile configuration overrides.",
+  "description": "Use this skill when configuring, reviewing, or troubleshooting how environment-specific values \u2014 endpoint URLs, client IDs, thresholds, feature flags \u2014 are managed across Salesforce orgs without hardcoding. Triggers:. NOT for sandbox refresh automation (use sandbox-refresh-and-templates), NOT for general  \u2014 use data/deployment-data-dependencies.",
   "file_location": "skills/devops/environment-specific-value-injection",
   "id": "devops/environment-specific-value-injection",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: external-user-data-sharing
-description: "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for internal sharing model configuration. NOT for internal user roles and hierarchies. NOT for guest user profile hardening."
+description: "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for the internal sharing model — OWD, role hierarchy, sharing rules — use admin/sharing-and-visibility. NOT for guest-user record access or site hardening — use security/experience-cloud-security."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -75,9 +75,9 @@
     "fd220906874547a9bfe0",
     "fe23a2f9818a9c52ffba"
   ],
-  "content_hash": "426575cae61f4c0067c2c6800649f80575eeb7be70d5138c5cf1a842783a0007",
+  "content_hash": "07cd5bd278ef3e4e558f9b33ed0e6b0b2cd6213630d30ed87dbcc80321686cb5",
   "dependencies": [],
-  "description": "Use when preparing a Salesforce metadata deployment for production and need a structured gate-check before releasing. Trigger keywords: 'pre-deploy checklist', 'what to check before deploying', 'validation deploy', 'deploy readiness', 'quick deploy window', 'checkOnly deploy', 'pre-release backup'. NOT for post-deployment smoke tests (use post-deployment-validation), full cutover sequencing (use go-live-cutover-planning), or change set UI workflow (use change-set-deployment).",
+  "description": "Use when preparing a Salesforce metadata deployment for production and need a structured gate-check before releasing. Trigger keywords: 'pre-deploy checklist', 'what to check before deploying', 'validation deploy', 'deploy readiness', 'quick deploy window', 'checkOnly deploy', 'pre-release backup'. NOT for verifying the release after the metadata lands \u2014 use devops/post-deployment-validation. NOT for sequencing a full go-live cutover, code freeze and go/no-go gates \u2014 use devops/go-live-cutover-planning.",
   "file_location": "skills/devops/pre-deployment-checklist",
   "id": "devops/pre-deployment-checklist",
   "inputs": [

@@ -4,6 +4,8 @@
     "06385dabc895005735db",
     "0ef7eb05f4576a2267f2",
     "0f1383cc58bf1f91902f",
+    "0fa09fd18ec8f892e82c",
+    "1163aa99941441075f55",
     "130e7f974163dc8f8889",
     "19ae32c1386d3b3e4cee",
     "1a4177c21fc59b24bda7",
@@ -11,6 +13,7 @@
     "2f8e74c28ff765ab37f7",
     "34b50274931a61e8349d",
     "352ac847d0ef9ece1352",
+    "3897fdedeec285240147",
     "3b621e78be5cc3d5a86f",
     "45ed90b2246724461760",
     "48c3b30d19578451552d",
@@ -46,9 +49,9 @@
     "f59b3b184aebbee37592",
     "f720bd362f001807a10e"
   ],
-  "content_hash": "c8e537029513922cd9079e25a78bd19e2681570d28b221b7e9ad8f91a277f5d0",
+  "content_hash": "3c31e67b851fa679b74bf1547815925a76655008e8770073a9829f4236e26d7a",
   "dependencies": [],
-  "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns).",
+  "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. NOT for OmniScript UI step layout \u2014 use omnistudio/omniscript-design-patterns. NOT for general Flow pause/resume \u2014 use flow/pause-elements-and-wait-events.",
   "file_location": "skills/omnistudio/omniscript-session-state",
   "id": "omnistudio/omniscript-session-state",
   "inputs": [
@@ -88,7 +91,7 @@
   "templates": [
     "skills/omnistudio/omniscript-session-state/templates/session-design.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

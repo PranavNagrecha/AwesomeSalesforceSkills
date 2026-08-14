@@ -1,6 +1,6 @@
 ---
 name: lightning-app-builder-advanced
-description: "Advanced Lightning App Builder usage: component visibility filters, custom page templates, Dynamic Forms, Dynamic Actions, page performance optimization, LWC targetConfig for record pages. Use when building complex record pages or custom app templates. NOT for basic page layout configuration. NOT for LWC component development (use lwc/* skills). NOT for Dynamic Forms basics (use dynamic-forms-and-actions)."
+description: "Advanced Lightning App Builder usage: component visibility filters, custom page templates, Dynamic Forms, Dynamic Actions, page performance optimization, LWC targetConfig constraints on record pages. Use when building complex record pages or custom app templates. NOT for Dynamic Forms basics — use admin/dynamic-forms-and-actions. NOT for exposing an LWC via js-meta.xml targets — use lwc/lwc-app-builder-config."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

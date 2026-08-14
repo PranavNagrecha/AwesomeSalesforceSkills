@@ -1,6 +1,6 @@
 ---
 name: apex-outbound-email-patterns
-description: "Apex outbound email via Messaging.SingleEmailMessage — OrgWideEmailAddress, ReplyTo and Reply-To header semantics, EmailTemplate merging with whatId/targetObjectId, attachment patterns, daily governor limits, and the difference between transactional sends and Email Alerts. NOT for inbound email handling (use apex/inbound-email-handler) or Marketing Cloud sends (use integration/marketing-cloud-rest-api)."
+description: "Apex outbound email via Messaging.SingleEmailMessage — OrgWideEmailAddress, ReplyTo and Reply-To header semantics, EmailTemplate merging with whatId/targetObjectId, attachment patterns, daily governor limits, and transactional sends vs Email Alerts. NOT for processing email that arrives into Salesforce — use apex/apex-email-services. NOT for Marketing Cloud sends — use apex/marketing-cloud-api."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: lwr-site-development
-description: "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud — including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities (Build Your Own Aura template). NOT for standard Experience Builder drag-and-drop configuration without code."
+description: "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud — including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities or no-code Experience Builder setup — use admin/experience-cloud-site-setup. NOT for one component's guest access — use lwc/experience-cloud-lwc-components."
 category: lwc
 salesforce-version: "Spring '26+"
 well-architected-pillars:

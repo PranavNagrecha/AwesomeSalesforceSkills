@@ -52,9 +52,9 @@
     "e53cdd137be67f87b71e",
     "ee26130f2e8d1090cc4c"
   ],
-  "content_hash": "d4610e5f3d74bf9d92e81d7444e211e4963386921acb8a6ed58ee407c61cb513",
+  "content_hash": "6a8201ee1387fd46e7d1b2320a5ebe742a58a97eadb50f8462208cdc3f668a42",
   "dependencies": [],
-  "description": "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) \u2014 external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan content version', 'quarantine uploaded file', 'clamav salesforce', 'file upload security'. NOT for field-level data validation.",
+  "description": "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) \u2014 external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan. NOT for field-level data validation \u2014 use integration/file-and-document-integration.",
   "file_location": "skills/security/file-upload-virus-scanning",
   "id": "security/file-upload-virus-scanning",
   "inputs": [

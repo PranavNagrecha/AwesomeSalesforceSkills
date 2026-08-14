@@ -1,6 +1,6 @@
 ---
 name: soql-fundamentals
-description: "Use this skill when writing or debugging SOQL queries: SELECT syntax, WHERE filters, ORDER BY, LIMIT, OFFSET, relationship queries (child-to-parent and parent-to-child), aggregate functions (COUNT, SUM, AVG, MIN, MAX), and date literals. Trigger keywords: soql, query, SELECT FROM WHERE. NOT for SOQL security enforcement (use soql-security), query optimization and index tuning (use soql-query-optimization), or SOSL full-text search."
+description: "Use this skill when writing or debugging SOQL queries: SELECT syntax, WHERE filters, ORDER BY, LIMIT, OFFSET, relationship queries (child-to-parent and parent-to-child), aggregate functions (COUNT, SUM, AVG, MIN, MAX), and date literals. Trigger keywords: soql, query, SELECT FROM WHERE. NOT for SOQL injection or CRUD/FLS enforcement — use apex/soql-security. NOT for query performance and index tuning — use data/soql-query-optimization. NOT for SOSL cross-object / full-text search — use data/sosl-search-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

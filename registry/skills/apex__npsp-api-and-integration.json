@@ -73,11 +73,11 @@
     "fbffdccd22e24dace85e",
     "fe7fca6d53e742cd28ce"
   ],
-  "content_hash": "6f7fc65a57166925197468e09738cd39692e41820d397f7de3b203d364b3b385",
+  "content_hash": "03b4a353a745876a7a60960edca983dd5b86a1ea45e273d6c4a2795d90bb1d4d",
   "dependencies": [
     "npsp-trigger-framework-extension"
   ],
-  "description": "NPSP programmatic integration patterns: BDI gift processing API for bulk gift ingestion, ERD Schedules and Installments API for recurring donation data, and wealth screening integration via AppExchange managed packages. NOT for standard Salesforce REST/BULK API, NPSP PMM integration, or Nonprofit Cloud (NPC) native API patterns.",
+  "description": "NPSP programmatic integration patterns: BDI gift processing API for bulk gift ingestion, ERD Schedules and Installments API for recurring donation data, and wealth screening integration via AppExchange managed packages. NOT for a one-off historical gift migration through the NPSP Data Importer \u2014 use data/gift-history-import. NOT for choosing the payment gateway or wealth-screening architecture \u2014 use architect/fundraising-integration-patterns. NOT for Nonprofit Cloud (NPC) native APIs or NPSP PMM.",
   "file_location": "skills/apex/npsp-api-and-integration",
   "id": "apex/npsp-api-and-integration",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: consent-data-model-health
-description: "Use this skill when designing, implementing, querying, or troubleshooting the Health Cloud consent data model — specifically the five-object HIPAA authorization hierarchy (DataUsePurpose → AuthorizationForm → AuthorizationFormText → AuthorizationFormDataUse → AuthorizationFormConsent). Trigger keywords: authorization form consent, ConsentGiverId, AuthorizationFormConsent SOQL, CareProgramEnrollee consent gate, PHI consent trail, consent hierarchy setup. NOT for marketing consent or standard email opt-out tracking. NOT for ContactPointConsent or ContactPointTypeConsent objects used in Marketing Cloud or standard Salesforce Privacy Center."
+description: "Designing, querying, or troubleshooting the Health Cloud consent data model — the five-object HIPAA authorization hierarchy (DataUsePurpose → AuthorizationForm → AuthorizationFormText → AuthorizationFormDataUse → AuthorizationFormConsent). Trigger keywords: authorization form consent, ConsentGiverId, AuthorizationFormConsent SOQL, CareProgramEnrollee consent gate, PHI consent trail, consent hierarchy setup. NOT for the Setup configuration of authorization forms, consent templates, and withdrawal handling — use admin/health-cloud-consent-management. NOT for marketing or GDPR opt-out on ContactPointTypeConsent — use security/gdpr-data-privacy."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -55,9 +55,9 @@
     "f9a599d25b5b60b83c31",
     "fd8c197b1b13db51b8d6"
   ],
-  "content_hash": "08229f1c30f1954e0c14ec6ace57980885854051f0ad57c6fbd26831b7bcd790",
+  "content_hash": "4f15749bb0ff8f4f6e8e19c4368cc991bcd0411d0df8b410ff9f058c0abd2c10",
   "dependencies": [],
-  "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
+  "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic scope and selector design \u2014 use agentforce/agent-topic-design. NOT for the overall Einstein Bot plus Agentforce estate topology \u2014 use architect/conversational-ai-architecture.",
   "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
   "id": "agentforce/agentforce-agent-handoff-patterns",
   "inputs": [

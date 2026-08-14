@@ -1,6 +1,6 @@
 ---
 name: fsl-integration-patterns
-description: "Use this skill when designing FSL integrations: ERP parts/inventory sync, GPS/fleet management integration, IoT-triggered work order creation, and customer notification workflows. Trigger keywords: FSL ERP integration, ProductConsumed ERP sync, GPS fleet integration FSL, IoT work order trigger, customer notification FSL integration. NOT for generic Salesforce integration patterns, FSC integration (covered by architect/fsc-integration-patterns-dev), or Health Cloud integration."
+description: "Use this skill when designing FSL integrations: ERP parts/inventory sync, GPS/fleet management integration, IoT-triggered work order creation, and customer notification workflows. Trigger keywords: FSL ERP integration, ProductConsumed ERP sync, GPS fleet integration FSL, IoT work order trigger, customer notification FSL integration. NOT for Financial Services Cloud integration design — use architect/fsc-architecture-patterns. NOT for bulk-loading Work Order and Service Appointment history — use data/fsl-work-order-migration."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

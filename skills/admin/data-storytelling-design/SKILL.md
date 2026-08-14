@@ -1,6 +1,6 @@
 ---
 name: data-storytelling-design
-description: "Use this skill when designing data stories and narrative-driven analytics experiences in Salesforce: structuring CRM Analytics dashboards for executive communication, using text widgets and conditional highlights for contextual annotation, building sequential narrative in Tableau Story sheets, or using Einstein Discovery narrative REST API endpoints for machine-generated insight text. Trigger keywords: data storytelling dashboard, executive analytics narrative, CRM Analytics text widget annotation, Tableau story sheet, smart data discovery narrative API. NOT for technical chart-type selection, SAQL query construction, recipe node configuration, or CRM Analytics field binding mechanics."
+description: "Designing data stories and narrative-driven analytics in Salesforce: structuring CRM Analytics dashboards for executive communication, text widgets and conditional highlights for annotation, sequential narrative in Tableau Story sheets, and Einstein Discovery narrative REST endpoints. Trigger keywords: data storytelling dashboard, executive analytics narrative, CRM Analytics text widget annotation, Tableau story sheet, smart data discovery narrative API. NOT for building the Einstein Discovery story or prediction definition - use admin/einstein-discovery-setup. NOT for choosing between Reports, CRM Analytics and Tableau - use admin/einstein-analytics-basics."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

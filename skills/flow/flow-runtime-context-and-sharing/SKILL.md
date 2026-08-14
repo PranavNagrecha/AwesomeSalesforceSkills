@@ -1,6 +1,6 @@
 ---
 name: flow-runtime-context-and-sharing
-description: "Decide and audit the security boundary a Flow runs at — System Context With Sharing, System Context Without Sharing, or User Context — plus the per-element runInMode override and the implications for sharing rules, FLS, CRUD, and $User/$Profile/$Permission merge fields. NOT for Apex sharing keywords (see apex/with-without-sharing-and-context). NOT for record-access troubleshooting at the user level (see security/record-access-troubleshooting)."
+description: "Flow runtime sharing context — run in user vs system mode, record access in Flow. Triggers: Flow sharing, run in system mode, Flow user context. NOT for Apex sharing declarations — use apex/apex-with-without-sharing-decision."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

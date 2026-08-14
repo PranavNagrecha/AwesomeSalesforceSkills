@@ -1,6 +1,6 @@
 ---
 name: opportunity-management
-description: "Configuring Salesforce opportunity management: sales stages, sales processes, opportunity record types, Path configuration, opportunity teams, opportunity splits, and forecasting categories. Use when setting up or restructuring the opportunity lifecycle for Sales Cloud. NOT for Collaborative Forecasts setup (use collaborative-forecasts skill). NOT for CPQ pricing or product configuration (use Revenue Cloud skills). NOT for territory-based forecasting alignment (use enterprise-territory-management skill)."
+description: "Configuring Salesforce opportunity management: sales stages, sales processes, opportunity record types, Path configuration, opportunity teams, opportunity splits, and forecasting categories. Use when setting up or restructuring the opportunity lifecycle for Sales Cloud. NOT for forecast types, rollup methods, quotas or manager adjustments — use admin/collaborative-forecasts. NOT for agreeing what the stages and exit criteria should be before any build — use admin/sales-process-mapping. NOT for CPQ pricing or product configuration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

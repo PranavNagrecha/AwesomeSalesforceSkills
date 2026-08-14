@@ -44,3 +44,25 @@ fetch; only bubble errors from the live path.
 
 **Correct pattern:** audit every cached field for user-specificity
 before picking the partition.
+
+---
+
+## Anti-Pattern 6: Org Cache on a Guest IP Because the Inputs "Look Unique"
+
+**What the LLM generates:** Org-segment cache keyed by the IP input map. Guest A and guest B with the same form fields share a payload.
+
+**Why it happens:** Input signature feels like a tenant key.
+
+**Correct pattern:** No Org-segment cache on guest, portal, or PII Integration Procedures. Put a server-resolved subject in the key if you must cache. Designer Preview will not catch this (`ignoreCache` defaults true).
+
+**Detection hint:** Procedure Configuration cache type Org plus an IP reachable via `GenericInvoke2NoCont` as guest.
+
+---
+
+## Anti-Pattern 7: Proving Cache in Designer Preview
+
+**What the LLM generates:** Two Preview runs, elapsed-ms compared, "cache works."
+
+**Why it happens:** Preview is where authors live.
+
+**Correct pattern:** Preview `ignoreCache` defaults true, so the run never saves. Set it false, assert `vlcCacheResult` / `vlcCacheKey`, and clear with `ConnectApi.OmniDesignerConnect.ClearIntegrationProcedureCache`. Failed IPs are not cached — an intermittent fault looks like a permanent miss.

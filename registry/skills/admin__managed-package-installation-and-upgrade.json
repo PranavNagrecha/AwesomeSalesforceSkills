@@ -91,7 +91,7 @@
     "fae154efae55986ec57e",
     "fead5b4e6f9cca6ecefd"
   ],
-  "content_hash": "2471621bf4516b935f5aefa831b703e60f9607f2d41890b74f5c6104d8d3a3d9",
+  "content_hash": "2a0448c5f33e26ae29125d6d3cdcbd333ed1b717e65c3b0e966dce24effaed41",
   "dependencies": [],
   "description": "Use when a subscriber admin is installing, upgrading, or rolling back a managed package (1GP or 2GP) sourced from AppExchange or a private install URL \u2014 covers pre-install evaluation, sandbox dry runs, license and dependency checks, the install/upgrade audit trail, post-install configuration the package's InstallHandler cannot perform, and uninstall fallback. NOT for building managed packages as an ISV (use devops/managed-package-development), unlocked-package development (use devops/unlocked-package-development), or AppExchange listing setup.",
   "file_location": "skills/admin/managed-package-installation-and-upgrade",

@@ -1,6 +1,6 @@
 ---
 name: sales-cloud-architecture
-description: "Use when designing or reviewing a Sales Cloud solution architecture covering process automation strategy, integration points, data model decisions, and scalability planning. Triggers: 'design a Sales Cloud architecture for enterprise org', 'Sales Cloud data model and automation strategy', 'how to architect Sales Cloud for high-volume pipeline management'. NOT for individual feature configuration (use admin/opportunity-management or admin/lead-management), NOT for CPQ-specific decisions (use architect/cpq-vs-standard-products-decision), NOT for integration implementation details (use architect/sales-cloud-integration-patterns)."
+description: "Use when designing or reviewing a Sales Cloud solution architecture covering process automation strategy, integration points, data model decisions, and scalability planning. Triggers: 'design a Sales Cloud architecture for enterprise org', 'Sales Cloud data model and automation strategy', 'how to architect Sales Cloud for high-volume pipeline management'. NOT for individual feature configuration (use admin/opportunity-management or admin/lead-management-and-conversion), NOT for CPQ-specific decisions (use architect/cpq-vs-standard-products-decision), NOT for integration implementation details (use architect/sales-cloud-integration-patterns)."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

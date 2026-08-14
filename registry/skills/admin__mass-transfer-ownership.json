@@ -24,6 +24,7 @@
     "7bfd88d4c411396d1d24",
     "8354183a6fd431bc67a0",
     "8959e810eb1cc4483fa2",
+    "90ce6e950279baaf9c46",
     "916a7991316ec8ce10e1",
     "9b188c486a234b36920f",
     "9f4562339a16d1ed0a8b",
@@ -32,6 +33,7 @@
     "ae608cf4b1714814cdac",
     "b42fd180a78131c8a92d",
     "b5d24f30028884b5993c",
+    "c09da9fc1122cad10797",
     "c12f1ae06bfacffd54af",
     "c9e60291b65db4e38cf1",
     "ca717a1653fc5a024944",
@@ -50,9 +52,9 @@
     "fe95b1e32d280ccf0c99",
     "ffa560938172b22252ce"
   ],
-  "content_hash": "c0f1c3155600cb369cea97e1d5e947d41ab9a6cd6f12f45c14ee9d414a62d165",
+  "content_hash": "aef22c51a3562b0d8efd7a00e7d7ca0b38907d36b51aa11b9f3706401b73f856",
   "dependencies": [],
-  "description": "Use when re-assigning record OwnerId across many records \u2014 territory realignment, employee departure, region split, integration cleanup. Triggers: 'mass transfer accounts', 'reassign opportunities to new owner', 'transfer all records on user deactivation', 'OwnerId migration'. NOT for assignment rules, queue routing, or single-record manual transfer.",
+  "description": "Use when re-assigning record OwnerId across many records \u2014 territory realignment, employee departure, region split, integration cleanup. Triggers: 'mass transfer accounts', 'reassign opportunities to new owner', 'transfer all records on user deactivation', 'OwnerId migration'. NOT for auto-assigning new records \u2014 use admin/assignment-rules. NOT for territory assignment data \u2014 use data/territory-data-alignment.",
   "file_location": "skills/admin/mass-transfer-ownership",
   "id": "admin/mass-transfer-ownership",
   "inputs": [

@@ -141,5 +141,5 @@ Notes:
 
 - `skills/flow/flow-platform-events-integration` — the full skill backing this template.
 - `skills/flow/flow-transactional-boundaries` — why after-save is mandatory for publishing.
-- `skills/integration/platform-events-architecture` — cross-system pub/sub architecture.
+- `skills/integration/platform-events-integration` — cross-system pub/sub architecture.
 - `standards/decision-trees/integration-pattern-selection.md` — when Platform Events are the right integration pattern.

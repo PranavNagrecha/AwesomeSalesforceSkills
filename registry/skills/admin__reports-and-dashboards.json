@@ -39,6 +39,7 @@
     "67649c368617d5d1e7eb",
     "682bdc25e77c2349f225",
     "6f471c67ab67b0a707ba",
+    "702111e70a59eb173624",
     "7088c70379ed3fb5641a",
     "70be49d691b75ccb1bb0",
     "758ca283bfb265ff19d1",
@@ -46,6 +47,7 @@
     "7beefbfde8923091187e",
     "7e46b0804a991e889df4",
     "808b09cac31bc42566aa",
+    "81676973e0fc1f46c721",
     "88c8f5bc8909fff7a5bc",
     "88d8b4e916cd24da4fba",
     "89dd67435872de3d530d",
@@ -70,23 +72,27 @@
     "c663e4b2cd45945e5bec",
     "c6d02001c48a3a59de71",
     "c764ada0387c6b902b23",
+    "c98c3665dea556d25a3e",
     "cb6e22e4cca1b5f5d36f",
     "ce3bfe36f562bad9ec0d",
+    "d164965a7820853e0007",
     "d8a25c46e027fe31a383",
     "d91d3e33ed32e9b6c50a",
     "dd901400570251884d8b",
     "e04296a7af2aa3872278",
+    "e4b258c46f17199143db",
     "e7086de80a41e4109a79",
     "ecd93119944c58b94542",
     "ed5525a90c53828d29e4",
     "ee41db9eabc5c0a9acb0",
     "f46c232a213e8aeceb4c",
     "f4c0f883b700d95b47a9",
-    "f6e5c66498af07d4f168"
+    "f6e5c66498af07d4f168",
+    "ff14c493244105acea66"
   ],
-  "content_hash": "026b96a070cb8d354a9d9d5bae0cf18c0d4bb1b24c9f0ea18aacd5fe1ac7d8a7",
+  "content_hash": "d6cc41bcf0436f2390af737a37f6d006a44fdc00e3652810fde8b5c9a4e1d7ee",
   "dependencies": [],
-  "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
+  "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for choosing a report type, bucket fields, summary formulas or joined-report limits \u2014 use admin/reports-and-dashboards-fundamentals. NOT for Einstein Analytics / CRM Analytics \u2014 use admin/einstein-analytics-basics.",
   "file_location": "skills/admin/reports-and-dashboards",
   "id": "admin/reports-and-dashboards",
   "inputs": [
@@ -131,7 +137,7 @@
   "templates": [
     "skills/admin/reports-and-dashboards/templates/dashboard-design-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

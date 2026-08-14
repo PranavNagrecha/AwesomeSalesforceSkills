@@ -1,6 +1,6 @@
 ---
 name: data-model-documentation
-description: "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the data model (use object-creation-and-design or architect skills) or for optimizing queries against the model (use soql-query-optimization)."
+description: "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the model or choosing lookup vs master-detail — use data/data-model-design-patterns. NOT for generating the Mermaid or PlantUML diagram — use architect/salesforce-erd-and-diagramming."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -110,9 +110,9 @@
     "fc6e3b8792c04eeef047",
     "fd9145b486860e30cd67"
   ],
-  "content_hash": "b9124616a53781928033efb1f41701ba8227c10228b7af16e8e6e01fb35810d0",
+  "content_hash": "8917a4e1f0ce44325c068dcb39d13983ea674a419697a679a9e62b2131f8d6af",
   "dependencies": [],
-  "description": "Use when authoring, reviewing, or maintaining Salesforce DevOps operational documents \u2014 runbooks, environment matrices, deployment guides, and post-deploy validation checklists. Triggers: 'runbook', 'environment matrix', 'deployment guide', 'pre-deploy checklist', 'post-deploy validation', 'how do I document a deployment', 'rollback procedure template'. NOT for release planning, project scheduling, CI/CD pipeline code, or change advisory board process governance.",
+  "description": "Use when authoring, reviewing, or maintaining Salesforce DevOps operational documents \u2014 runbooks, environment matrices, deployment guides, and post-deploy validation checklists. Triggers: 'runbook', 'environment matrix', 'deployment guide', 'pre-deploy checklist', 'post-deploy validation', 'how do I document a deployment', 'rollback procedure template'. NOT for what actually belongs on the pre-deploy gate \u2014 use devops/pre-deployment-checklist. NOT for release calendar, versioning, or go/no-go governance \u2014 use devops/release-management.",
   "file_location": "skills/admin/devops-process-documentation",
   "id": "admin/devops-process-documentation",
   "inputs": [

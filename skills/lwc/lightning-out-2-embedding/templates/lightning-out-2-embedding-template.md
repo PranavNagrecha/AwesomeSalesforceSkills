@@ -17,9 +17,11 @@ python3 ../scripts/check_lightning_out_2_embedding.py --host-dir .
 - [ ] Component to embed is a **custom LWC** (not Aura, not a standard component used directly).
 - [ ] A Lightning Out 2.0 app exists in the **Lightning Out 2.0 App Manager**; copy its
       generated `<script>` element and 18-digit `app-id`.
-- [ ] The host domain `<<HOST_ORIGIN>>` is allowlisted for cross-origin use.
-- [ ] Target users are **authenticated Salesforce users**, and their browsers allow
-      **third-party cookies** (required).
+- [ ] The host domain `<<HOST_ORIGIN>>` is registered in the **Lightning Out 2.0 App Manager**
+      (Spring '26+) and in the **Trusted Domains** allowlist under Session Settings.
+- [ ] **Cross-domain Salesforce session cookies** are enabled in the org (admin-side), and
+      target users are **authenticated Salesforce users** whose browsers allow **third-party
+      cookies** (user-side). Both halves are required.
 - [ ] A backend endpoint can return a Salesforce access token / Session ID for the current
       user, and exchange it for a frontdoor URL via the **UI Bridge API**. Never expose the
       token in static content.

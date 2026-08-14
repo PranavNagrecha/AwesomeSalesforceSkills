@@ -1,6 +1,6 @@
 ---
 name: github-actions-for-salesforce
-description: "Use this skill to set up, review, or troubleshoot GitHub Actions CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Apex test gates, and branch-conditional deployments. Trigger keywords: github actions, CI pipeline, jwt auth, sfdx ci, workflow yaml, github secrets, apex coverage threshold. NOT for other CI tools such as Jenkins, Copado, Bitbucket Pipelines, or Azure DevOps."
+description: "Use this skill to set up, review, or troubleshoot GitHub Actions CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Apex test gates, and branch-conditional deployments. Trigger keywords: github actions, CI pipeline, jwt auth, sfdx ci, workflow yaml, github secrets, apex coverage threshold. NOT for GitLab CI — use devops/gitlab-ci-for-salesforce. NOT for Bitbucket Pipelines — use devops/bitbucket-pipelines-for-salesforce."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -89,6 +89,8 @@ Do not commit `server.key` to the repository. Do not use GitHub Variables (unenc
 ### Apex Test Gating with Coverage Thresholds
 
 The `sf apex run test` command supports `--code-coverage` to collect per-class coverage. Deployment via `sf project deploy start` enforces the platform's 75% org-wide threshold at the time of deploy if you use `--test-level RunLocalTests` or `RunAllTestsInOrg`. For finer control in CI — fail the build before deployment if a specific threshold is not met — run tests separately first, parse the JSON results, and use a shell check to fail the step.
+
+**Flow tests in CI (Winter '26+).** Autolaunched Flow tests are no longer Flow-Builder-only. Add a parallel gate with `sf flow run test --target-org target-org --code-coverage --tests FlowTesting.MyFlowTest` (requires **View All Data**) or use the Beta unified runner `sf logic run test --test-category Flow`. Flow tests use the **`FlowTesting`** namespace prefix in `--tests` / `--class-names`. See `apex/tooling-api-patterns` for Tooling API discovery details.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: data-skew-and-sharing-performance
-description: "Diagnose and mitigate Salesforce data skew — ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) — that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. NOT for sharing model design decisions (use sharing-and-visibility) or query optimization (use soql-query-optimization)."
+description: "Diagnose and mitigate Salesforce data skew — ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) — that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. NOT for planning and batching a recalculation job — use data/sharing-recalculation-performance. NOT for designing the sharing model itself — use admin/sharing-and-visibility."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,0 +1,167 @@
+[
+  {
+    "query": "write apex unit tests",
+    "expected": "apex/test-class-standards",
+    "router_picked": "apex",
+    "router_correct": true,
+    "skill_picked": "apex/test-class-standards",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: Apex test patterns. Index: test-class-standards gloss is writing/reviewing Apex tests (SeeAllData, Test.startTest, assertions); factory redirects away.",
+    "miss_reason": null
+  },
+  {
+    "query": "audit who has modify all data",
+    "expected": "security/privileged-access-management",
+    "router_picked": "security",
+    "router_correct": true,
+    "skill_picked": "security/privileged-access-management",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: privileged-access / security audit over admin permset design. Index: privileged-access-management explicitly names Modify All Data audit trails.",
+    "miss_reason": null
+  },
+  {
+    "query": "our picklist has 400 values and nobody knows which are used",
+    "expected": "admin/picklist-data-integrity",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/picklist-data-integrity",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: picklist is an admin trigger. Index: picklist-data-integrity owns governance/value-deactivation; field-integrity-issues is for already-invalid values, not unused-value cleanup.",
+    "miss_reason": null
+  },
+  {
+    "query": "share data between two lightning web components",
+    "expected": "lwc/component-communication",
+    "router_picked": "lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/component-communication",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: LWC component communication. Index: component-communication is the LMS vs @api pattern chooser; message-channel/state-management are narrower mechanics.",
+    "miss_reason": null
+  },
+  {
+    "query": "when do I need a queueable instead of a future method",
+    "expected": "apex/async-apex",
+    "router_picked": "apex",
+    "router_correct": true,
+    "skill_picked": "apex/async-apex",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: queueable/@future named in apex gloss. Index: async-apex triggers include future method and queueable-vs-*; future/queueable pattern skills redirect selection here.",
+    "miss_reason": null
+  },
+  {
+    "query": "ground a prompt template in CRM data",
+    "expected": "agentforce/prompt-builder-templates",
+    "router_picked": "agentforce",
+    "router_correct": true,
+    "skill_picked": "agentforce/prompt-builder-templates",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: grounding + prompt templates. Index: prompt-builder-templates triggers grounding/merge fields/Prompt Builder; Data Cloud grounding is RAG/retriever, not CRM merge-field grounding.",
+    "miss_reason": null
+  },
+  {
+    "query": "set up business hours and holidays for SLAs",
+    "expected": "admin/entitlements-and-milestones",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/entitlements-and-milestones",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: declarative SLA/case config → admin. Index has no business-hours/holiday package; entitlements-and-milestones is the Case SLA skill (business hours feed entitlement clocks).",
+    "miss_reason": null
+  },
+  {
+    "query": "our omniscript loses everything the user typed when they navigate back",
+    "expected": "omnistudio/omniscript-session-state",
+    "router_picked": "omnistudio",
+    "router_correct": true,
+    "skill_picked": "omnistudio/omniscript-session-state",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: OmniScript named. Index: omniscript-session-state covers persist mid-flow state across navigation/refresh.",
+    "miss_reason": null
+  },
+  {
+    "query": "what should our disaster recovery plan look like",
+    "expected": "architect/ha-dr-architecture",
+    "router_picked": "architect",
+    "router_correct": true,
+    "skill_picked": "architect/ha-dr-architecture",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: HA/DR in architect gloss. Index: ha-dr-architecture is DR strategy; backup product/restore redirects to data.",
+    "miss_reason": null
+  },
+  {
+    "query": "convert an old aura component to lwc",
+    "expected": "lwc/aura-to-lwc-migration",
+    "router_picked": "lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/aura-to-lwc-migration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: Aura migration trigger. Index: aura-to-lwc-migration is the dedicated Aura→LWC package.",
+    "miss_reason": null
+  },
+  {
+    "query": "notify an outside system the moment a record changes",
+    "expected": "integration/outbound-webhook-from-salesforce",
+    "router_picked": "integration",
+    "router_correct": true,
+    "skill_picked": "integration/outbound-webhook-from-salesforce",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: outbound notify/CDC/PE is integration (not Apex callout how-to). Index: outbound-webhook gloss is POST to third party after record change; CDC is streaming alternative in top3.",
+    "miss_reason": null
+  },
+  {
+    "query": "decide which topics the agent should own",
+    "expected": "agentforce/agent-topic-design",
+    "router_picked": "agentforce",
+    "router_correct": true,
+    "skill_picked": "agentforce/agent-topic-design",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: agent topic. Index: agent-topic-design triggers topic design / scope boundary / topic selector.",
+    "miss_reason": null
+  },
+  {
+    "query": "guest users can see too much on our public site",
+    "expected": "security/guest-user-security",
+    "router_picked": "security",
+    "router_correct": true,
+    "skill_picked": "security/guest-user-security",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: guest user security trigger. Index: guest-user-security hardens guest profile / unauthenticated access; audit sibling is adjacent in top3.",
+    "miss_reason": null
+  },
+  {
+    "query": "refreshing the sandbox wiped the data the testers needed",
+    "expected": "data/sandbox-refresh-data-strategies",
+    "router_picked": "data",
+    "router_correct": true,
+    "skill_picked": "data/sandbox-refresh-data-strategies",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: sandbox seed / SandboxPostCopy in data gloss (vs devops refresh mechanics). Index: sandbox-refresh-data-strategies is seed-after-refresh.",
+    "miss_reason": null
+  },
+  {
+    "query": "one page layout per record type is unmanageable",
+    "expected": "admin/dynamic-forms-migration",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/dynamic-forms-migration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router: page layout / record type → admin. Index: dynamic-forms-migration is migrating Page Layouts off record pages; record-types-and-page-layouts / strategy-at-scale are setup/refactor alternatives in top3.",
+    "miss_reason": null
+  }
+]

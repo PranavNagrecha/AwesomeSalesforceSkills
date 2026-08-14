@@ -1,6 +1,6 @@
 ---
 name: revenue-recognition-requirements
-description: "Use this skill to configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation in compliance with ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c records missing', 'how to configure blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up before revenue schedule generation', 'revenue schedule did not update after contract amendment', 'performance obligation allocation for bundled products', 'distribution method for revenue spread', 'ASC 606 implementation in Salesforce Billing'. NOT for billing schedule setup (see billing-schedule-setup skill), NOT for standard Salesforce CPQ quoting, NOT for OpportunityLineItem native Revenue Schedules (standard platform feature unrelated to Salesforce Billing), NOT for Salesforce Revenue Cloud (Revenue Lifecycle Management)."
+description: "Configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation under ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c missing', 'blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up', 'performance obligation allocation for bundled products', 'distribution method', 'ASC 606 in Salesforce Billing'. NOT for billing schedules, invoice plans and invoice runs - use admin/billing-schedule-setup. NOT for invoice-to-payment mismatches at month-end close - use data/billing-data-reconciliation."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -236,4 +236,4 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `admin/billing-schedule-setup` — Configure billing schedules and invoice runs (separate from revenue recognition; both may apply to the same product)
-- `admin/cpq-order-management` — Understand how CPQ Quote-to-Order flow creates OrderProducts that drive both billing and revenue schedule generation
+- `admin/quote-to-cash-process` — Understand how CPQ Quote-to-Order flow creates OrderProducts that drive both billing and revenue schedule generation

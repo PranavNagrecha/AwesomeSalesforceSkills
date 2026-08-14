@@ -1,6 +1,6 @@
 ---
 name: record-types-and-page-layouts
-description: "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for sharing rules or FLS — record types don't control data access."
+description: "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for layout explosion across many profiles — use admin/record-type-strategy-at-scale. NOT for sharing rules — use admin/sharing-and-visibility. NOT for FLS — use admin/permission-sets-vs-profiles."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -47,9 +47,9 @@
     "f43f6e75424a4abbb61f",
     "f74e7185ab60ecaf193c"
   ],
-  "content_hash": "82174a5f5286db703d1855427d08e4d953b14f05172da9e2696ee98649658899",
+  "content_hash": "dab1a5b0d2f900896ab254f6f12775055e282d2c8dfba5109a744ebd2fb5b8eb",
   "dependencies": [],
-  "description": "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling, retry/back-off, IAM, and monitoring. Does NOT cover consuming external events in Salesforce (see pub-sub-api or salesforce-connect).",
+  "description": "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling. NOT for consuming external events in Salesforce (see pub-sub-api or salesforce-connect) \u2014 use integration/aws-salesforce-patterns.",
   "file_location": "skills/integration/event-relay-configuration",
   "id": "integration/event-relay-configuration",
   "inputs": [

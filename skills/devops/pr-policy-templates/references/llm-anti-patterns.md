@@ -2,7 +2,7 @@
 
 Scope: the review policy that sits on top of a Salesforce source tree — ownership rules,
 required checks, and the template that carries deployment context. Branching model belongs
-to `devops/branching-strategy-salesforce`; pipeline construction to
+to `devops/git-branching-for-salesforce`; pipeline construction to
 `devops/github-actions-for-salesforce`. This file is about the policy, and specifically
 about the parts that are Salesforce-shaped rather than generic.
 

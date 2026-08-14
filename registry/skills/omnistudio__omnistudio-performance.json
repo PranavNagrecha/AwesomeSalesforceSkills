@@ -50,6 +50,7 @@
     "678054135c69886940ff",
     "6c03f83b98cd9dcf119d",
     "6c12f079b749614ff40f",
+    "6fb49558a0e361042c95",
     "7015f4a97d5ecdd7e22d",
     "71212f79ee660633ce93",
     "7192b4f10f33a9d2b11b",
@@ -60,6 +61,7 @@
     "795f745d96c1a97f199c",
     "7cfe599afa7d4543d943",
     "82df5ea2a6d9554bc204",
+    "840d0cc8a7e4a33953cf",
     "8a0325822a3e6ba3b2fb",
     "8f557a7f3d0bace3e506",
     "90c8fab1b22b95e9b297",
@@ -67,6 +69,7 @@
     "9b02925877bb9cc479d0",
     "9fcc52652cb84e1fce34",
     "a2c4601b3b55b0b91dc0",
+    "a3ba43f6e13e9a5e989d",
     "a3d908958e3458b51e47",
     "a3e58bf7126a30154f14",
     "a803a0faf3e8ae2ffa80",
@@ -99,15 +102,16 @@
     "ec696cc62e0444799c2d",
     "ed0c5ebbe9a70c10a26e",
     "efed23ecf5de1b0ce3c0",
+    "f0a8cb2dcc95ba73b8dc",
     "f219adfb480fcc1004a2",
     "f31af1d9dbcd5f1302da",
     "f855ca872f50d34192b0",
     "f858482c30f20f0b33e9",
     "fcae3202955d2f471260"
   ],
-  "content_hash": "4d963f1ed270d9462fb96054f906b39a2bfe22cf6d4414291406dcbdc98d2803",
+  "content_hash": "163fb0dafbcb3675efd6ec3822adce799734c835156142fead777f87d8efd01d",
   "dependencies": [],
-  "description": "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering delays, or async IP fire-and-forget patterns. Triggers: 'OmniScript slow', 'Integration Procedure timeout', 'DataRaptor cache', 'FlexCard loading too long', 'reduce API calls OmniStudio'. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill). NOT for OmniScript step design or journey UX (use omniscript-design-patterns skill).",
+  "description": "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill) \u2014 use omnistudio/integration-procedure-cacheable-patterns.",
   "file_location": "skills/omnistudio/omnistudio-performance",
   "id": "omnistudio/omnistudio-performance",
   "inputs": [
@@ -156,7 +160,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-performance/templates/omnistudio-performance-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

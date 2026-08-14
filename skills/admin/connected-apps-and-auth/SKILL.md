@@ -1,6 +1,6 @@
 ---
 name: connected-apps-and-auth
-description: "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them."
+description: "Use when designing, reviewing, or troubleshooting Salesforce connected apps, External Client Apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for OAuth error codes you are already seeing — use admin/connected-app-troubleshooting. NOT for External Credential principal-type setup steps — use integration/named-credentials-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

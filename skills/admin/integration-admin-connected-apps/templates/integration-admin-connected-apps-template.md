@@ -59,6 +59,7 @@ Use this template when configuring or auditing a Connected App for an integratio
 
 - [ ] Review Connected App OAuth Usage for orphaned/inactive sessions
 - [ ] Review uninstalled apps still in use (September 2025 blocking policy)
+- [ ] Confirm no integration depends on "Use Any API Client" to self-authorize an uninstalled app (blocked since the week of December 8, 2025 when API Access Control is enabled)
 - [ ] Review Refresh Token Policy — tokens older than policy window should be revoked
 
 ## Notes

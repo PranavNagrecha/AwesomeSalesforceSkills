@@ -40,12 +40,12 @@
     "f6929babb8cbf0fd47a2",
     "ffbd185319c61d560bc2"
   ],
-  "content_hash": "6ad0c49cc6a7a1adcd1175be33c1509ec55044df3be88664402f11bdb51b7884",
+  "content_hash": "66c84d900d2cd6253fa113fea4833cb2c06506a9fca94492f8f66cf804d8fda3",
   "dependencies": [
     "lwc/lwc-performance",
     "devops/pipeline-secrets-management"
   ],
-  "description": "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. Does NOT cover runtime optimization techniques, Lightning page tuning, or general LCP causes (see lwc-performance).",
+  "description": "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. NOT for runtime optimization techniques, Lightning page tuning, or general LCP causes \u2014 use lwc/lwc-performance.",
   "file_location": "skills/lwc/lwc-performance-budgets",
   "id": "lwc/lwc-performance-budgets",
   "inputs": [

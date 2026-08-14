@@ -110,9 +110,9 @@
     "fe5a8346afc9b3ca1a73",
     "fe6c5897c6fd48fe460f"
   ],
-  "content_hash": "cfa280ce45538bcb3ab70bfe305d56beb9fdac977b8698e14c7c2250f3230b91",
+  "content_hash": "0eef30c91c42b2b14c4c7b9e263a193725456e8679693ad4db9d702b84be2ce9",
   "dependencies": [],
-  "description": "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for internal (Employee) user management, internal profile or permission-set assignments, or Experience Cloud page-layout / component design.",
+  "description": "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for choosing which external user license to buy \u2014 use architect/experience-cloud-licensing-model. NOT for what records external users can see \u2014 use security/experience-cloud-security.",
   "file_location": "skills/admin/experience-cloud-member-management",
   "id": "admin/experience-cloud-member-management",
   "inputs": [

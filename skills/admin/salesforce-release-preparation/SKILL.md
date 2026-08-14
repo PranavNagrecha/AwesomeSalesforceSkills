@@ -1,6 +1,6 @@
 ---
 name: salesforce-release-preparation
-description: "Use when preparing for a Salesforce seasonal release — triaging release notes, reviewing Release Updates, opting into Sandbox Preview, and communicating change impact to stakeholders. Triggers: 'upcoming Salesforce release', 'release notes triage', 'Release Updates', 'sandbox preview opt-in', 'release readiness checklist', 'production upgrade date', 'feature impact', 'critical update'. NOT for deploying org-specific changes between sandboxes (use change-management-and-deployment), nor for long-term sandbox environment design (use sandbox-strategy)."
+description: "Use when preparing for a Salesforce seasonal release — triaging release notes, reviewing Release Updates, opting into Sandbox Preview, and communicating change impact to stakeholders. Triggers: 'upcoming Salesforce release', 'release notes triage', 'Release Updates', 'sandbox preview opt-in', 'release readiness checklist', 'production upgrade date', 'feature impact', 'critical update', 'roll out the Spring release safely', 'is our org ready for the Spring release'. NOT for planning your own release train — use devops/release-management. NOT for user training and go-live comms — use admin/change-management-and-training."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -31,10 +31,11 @@ triggers:
   - sandbox preview opt-in before production upgrade
   - which Release Updates need action before enforcement
   - communicating Salesforce upgrade impact to stakeholders
+  - OmniStudio standard runtime vs managed package upgrade calendar
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # Salesforce Release Preparation
@@ -72,6 +73,11 @@ Release Updates (formerly Critical Updates) are targeted behavior changes that S
 - **Opt-In Available**: the admin can voluntarily activate it now to test early.
 - **Auto-Activation Scheduled**: Salesforce will activate it automatically on a published date unless the admin acts.
 - **Enforced**: the behavior change is permanent and cannot be toggled off.
+
+Two qualifiers the status list alone does not convey:
+
+- **The enforcement release can move.** When adoption lags, Salesforce postpones enforcement by a cycle — "Restrict User Access to Run Flows" was scheduled for Winter '25 and was enforced in Winter '26. Re-read the enforcement release from Setup > Release Updates every cycle instead of carrying forward the date logged last time, and keep postponed updates on the checklist as "re-confirm next cycle" rather than closing them.
+- **Not every behavior change is gated by a Release Update.** Salesforce also enables changes progressively across all orgs with no toggle anywhere in Setup, opening a Release Update only for the part it cannot change unilaterally — in the case below, behavior originating from Apex and flows. Release Updates triage is necessary but not sufficient; the release notes still have to be read. See `references/gotchas.md` Gotcha 7 for the asynchronous sharing recalculation case.
 
 Release Updates are managed in Setup > Release Updates. Each update includes a description, an enforcement date, and a test-activation toggle. Admins should activate and test every non-enforced update in a sandbox before the auto-activation date. Allowing auto-activation without prior testing means any breakage surfaces first in production.
 
@@ -147,6 +153,7 @@ Run through these before marking release preparation complete:
 - [ ] Production upgrade date confirmed from trust.salesforce.com for the org's specific instance
 - [ ] Release notes triaged using Feature Impact filter for Admin, Developer, and End User items
 - [ ] All Release Updates in Setup > Release Updates reviewed; enforcement dates logged
+- [ ] Enforcement release re-confirmed this cycle for every pending Release Update, including any carried over from a prior cycle (published enforcement releases get postponed)
 - [ ] Each Release Update activated and tested in a sandbox; no unresolved Apex test failures
 - [ ] At least one sandbox enrolled in Sandbox Preview (or documented reason for skipping)
 - [ ] Stakeholder communication brief drafted and approved by release sponsor

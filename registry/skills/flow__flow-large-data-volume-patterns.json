@@ -58,11 +58,11 @@
     "faa1f7782e9420320c19",
     "fb2afdeb96ae0e4b0dff"
   ],
-  "content_hash": "25e0ad3b2605c6d8eb97a278321a1f37f9f70c75c76b669578b2dea52b03f3d8",
+  "content_hash": "ddf414f33b27f23b512143067cf0bde784b329e018ba1a76bab4fdd00bfe9e48",
   "dependencies": [
     "flow/flow-bulkification"
   ],
-  "description": "Use when Flows must stay healthy at large data volumes: total SOQL rows returned per transaction, unbounded Get Records, collection sizing, scheduled or record-triggered scale, and when to cap or move work async. Triggers: 'Too many query rows 50001 flow', 'Get Records returns too many rows', 'LDV flow design', 'flow collection limit', 'record triggered flow production data volume'. NOT for writing or tuning Batch Apex jobs, Bulk API 2.0 data loads, or general Flow Builder UX when volume and governor ceilings are not the concern.",
+  "description": "Use when Flows must stay healthy at large data volumes: total SOQL rows returned per transaction, unbounded Get Records, collection sizing, scheduled or record-triggered scale, and when to cap or move work async. Triggers: 'Too many query rows 50001 flow', 'Get Records returns too many rows', 'LDV flow design', 'flow collection limit', 'record triggered flow production data volume'. NOT for loop and per-iteration query patterns \u2014 use flow/flow-bulkification. NOT for Batch Apex jobs \u2014 use apex/batch-apex-patterns.",
   "file_location": "skills/flow/flow-large-data-volume-patterns",
   "id": "flow/flow-large-data-volume-patterns",
   "inputs": [

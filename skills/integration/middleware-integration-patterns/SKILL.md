@@ -1,6 +1,6 @@
 ---
 name: middleware-integration-patterns
-description: "Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) for Salesforce connectivity, or when determining whether a scenario requires middleware at all versus native Salesforce capabilities. Triggers: 'which iPaaS should I use', 'MuleSoft vs Boomi vs Workato', 'when do I need middleware for Salesforce', 'message transformation orchestration middleware'. NOT for MuleSoft Anypoint Salesforce Connector configuration (use mulesoft-salesforce-connector). NOT for API-led connectivity layer design (use api-led-connectivity). NOT for native Salesforce-to-Salesforce integration, Platform Events, or CDC."
+description: "Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) for Salesforce connectivity, or when determining whether a scenario requires middleware at all versus native Salesforce capabilities. Triggers: 'which iPaaS should I use', 'MuleSoft vs Boomi vs Workato', 'when do I need middleware for Salesforce'. NOT for MuleSoft Anypoint Salesforce Connector configuration — use integration/mulesoft-salesforce-connector. NOT for API-led connectivity layer design — use integration/api-led-connectivity."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: multi-language-and-translation
-description: "Use when configuring Salesforce Translation Workbench, translating custom labels, picklist values, field labels, page layout sections, or Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for Marketing Cloud email localization, NOT for Apex string formatting by locale (use formula fields or Apex String.format patterns), NOT for multi-currency (use currency management admin)."
+description: "Configure Salesforce Translation Workbench and translate custom labels, picklist values, field labels, page layout sections, or the Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for creating the Custom Label records or referencing them from Apex/LWC — use admin/custom-label-management. NOT for locale formatting and RTL layout inside a component — use lwc/lwc-internationalization."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

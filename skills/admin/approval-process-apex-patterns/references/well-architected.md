@@ -64,6 +64,6 @@
 - Object Reference: ProcessInstance / ProcessInstanceWorkitem — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_processinstance.htm
 - Approval Process Considerations — https://help.salesforce.com/s/articleView?id=sf.approvals_considerations.htm&type=5
 - Remove Pending Approval Requests (Mass Transfer Approval Requests) — https://help.salesforce.com/s/articleView?id=sf.data_approval_requests_remove.htm&type=5
-- Sibling skill — `skills/admin/approval-process-design/SKILL.md`
+- Sibling skill — `skills/admin/approval-processes/SKILL.md`
 - Sibling skill — `skills/flow/flow-orchestration-patterns/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

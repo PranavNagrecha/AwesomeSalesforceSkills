@@ -58,9 +58,9 @@
     "f9d23f0ade7253c8960d",
     "fc5c8ec9b3605dccd0bd"
   ],
-  "content_hash": "dd8dd39f74331db44a65d44d7e8bb963ddc8a62810b9672449d8b838306476f4",
+  "content_hash": "9d06890e397a0d565e52990a9c634f54a5662abd43bd199d965ac1a00e6713a9",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for 'Too many query rows' at LDV scale \u2014 use flow/flow-large-data-volume-patterns. NOT for refactoring one Loop element \u2014 use flow/flow-loop-element-patterns.",
   "file_location": "skills/flow/flow-bulkification",
   "id": "flow/flow-bulkification",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: einstein-discovery-setup
-description: "Use this skill when an admin needs to create an Einstein Discovery story in CRM Analytics Studio, configure prediction definitions, deploy writeback fields, set up what-if analysis, or manage model refresh and activation. Trigger keywords: Einstein Discovery story, prediction definition, writeback field, CRM Analytics Studio, model refresh, what-if analysis, bulk scoring, prediction field, 1OR prefix. NOT for Prediction Builder (Einstein Prediction Builder is a separate product requiring no CRM Analytics license). NOT for the developer API path (programmatic scoring via the Connect REST API — see einstein-discovery-development skill)."
+description: "Use this skill when an admin needs to create an Einstein Discovery story in CRM Analytics Studio, configure prediction definitions, deploy writeback fields, set up what-if analysis, or manage model refresh and activation. Trigger keywords: Einstein Discovery story, prediction definition, writeback field, CRM Analytics Studio, model refresh, what-if analysis, bulk scoring, prediction field, 1OR prefix. NOT for the Einstein Discovery Flow action or model-health monitoring in Model Manager — use admin/einstein-discovery-deployment. NOT for Einstein Prediction Builder, a separate product needing no CRM Analytics license — use agentforce/einstein-prediction-builder. NOT for programmatic scoring through the Connect REST API — use agentforce/einstein-discovery-development."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

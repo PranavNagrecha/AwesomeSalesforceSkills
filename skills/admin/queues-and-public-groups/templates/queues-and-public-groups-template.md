@@ -100,7 +100,7 @@ Run through these before marking configuration complete:
 - [ ] All queues are associated with the correct supported objects
 - [ ] Queue email is a monitored team alias, not an individual inbox
 - [ ] All queue members are active users; deactivated users are not present
-- [ ] Public group membership reviewed — correct roles vs. roles+subordinates selected
+- [ ] Public group membership reviewed — correct Roles vs. Roles and Internal Subordinates selected
 - [ ] Group nesting depth reviewed — flat preferred for high-volume objects
 - [ ] Sharing rules referencing groups have been tested by logging in as a group member
 - [ ] SOQL queries for queue-owned records use `Owner.Type = 'Queue'`

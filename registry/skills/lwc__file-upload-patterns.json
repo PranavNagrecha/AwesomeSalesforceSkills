@@ -48,9 +48,9 @@
     "f814d093f3316c66fe90",
     "f8cd41234b742e678e97"
   ],
-  "content_hash": "93b6bebf84aec4275bae3c74446cfe439a448d92a8e1bcc0cee57a1e1c0d6546",
+  "content_hash": "a845f591346b169665dba481fcaea45d08a40b546b02610153c501c661936cd4",
   "dependencies": [],
-  "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
+  "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns \u2014 use data/salesforce-files-architecture.",
   "file_location": "skills/lwc/file-upload-patterns",
   "id": "lwc/file-upload-patterns",
   "inputs": [

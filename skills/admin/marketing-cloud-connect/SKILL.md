@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-connect
-description: "Use this skill when configuring or troubleshooting Marketing Cloud Connect (MC Connect) — the managed package that links a Salesforce org to a Marketing Cloud account. Covers connector user setup, synchronized data sources, scope configuration, tracking sync, and triggered sends. NOT for MCAE (Marketing Cloud Account Engagement / Pardot) connector setup."
+description: "Use this skill when configuring or troubleshooting Marketing Cloud Connect (MC Connect) — the managed package that links a Salesforce org to a Marketing Cloud account. Covers connector user setup, synchronized data sources, scope configuration, tracking sync, and triggered sends. NOT for MCAE/Pardot connector setup — use admin/mcae-pardot-setup. NOT for synced data extension failures — use data/marketing-cloud-data-sync."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

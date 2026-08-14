@@ -60,9 +60,9 @@
     "fd62b65c90d30d4957d7",
     "fdad5186376f382c9bf1"
   ],
-  "content_hash": "15f81c33dc01aef76510637662c18228cea3a3d00638a181893dfad8806788fc",
+  "content_hash": "4c15180a94c9cb8e6a06a7097e8a7156a6532c960c17857f02d2227c886e454c",
   "dependencies": [],
-  "description": "Use when configuring Remote Site Settings to allow Apex callouts to external URLs, or when distinguishing Remote Site Settings from CSP Trusted Sites for Lightning component resource loading. NOT for Named Credentials (use named-credential-configuration).",
+  "description": "Use when configuring Remote Site Settings to allow Apex callouts to external URLs, or distinguishing them from CSP Trusted Sites for Lightning component resource loading. NOT for storing an endpoint and its auth as a Named Credential \u2014 use integration/named-credentials-setup. NOT for allow-listing a URL the browser itself loads (script, iframe, fetch) \u2014 use security/csp-and-trusted-urls.",
   "file_location": "skills/admin/remote-site-settings",
   "id": "admin/remote-site-settings",
   "inputs": [

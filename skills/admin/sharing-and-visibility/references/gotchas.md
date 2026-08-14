@@ -65,3 +65,13 @@ Mass update 500,000 records
 Criteria-based rule depends on Status__c
 Result: recalculation becomes part of the operational risk
 ```
+
+---
+
+## View All Data as the Sharing Model Leaves Private Children Orphaned
+
+**What happens:** OWD on the primary object is Private, but every internal user has **View All Data** (or object View All). Sharing rules were never built. Tasks/Events stay Private and owned by people who left. Reports on "my team's activities" are empty; everyone can still see every Account.
+
+**When it bites you:** Reporting-heavy, automation-light orgs; "we just gave everyone admin-lite."
+
+**How to avoid it:** VAD is a bypass, not a model. If the real model is "everyone sees Accounts," set OWD accordingly and **do not** hide behind VAD. Activity OWD is independent — inactive owners plus Private Tasks means the activity graph is dark even when the parent is wide open. Reassign or open activity access **before** celebrating Account visibility.

@@ -32,20 +32,45 @@ release never happened. Verify each setting explicitly.
 
 ---
 
-## Gotcha 3: `without sharing` is not the default sharing mode
+## Gotcha 3: An omitted sharing declaration is not `inherited sharing` — and what it means flipped at API 67.0
 
-**What happens.** Apex class with `@AuraEnabled` methods has no
-sharing declaration. Default is `inherited sharing`, which inherits
-the calling context's sharing — for an Aura / LWC call from the
-guest user, that becomes a complex chain. Many devs assume
-`with sharing` is the default. It is not.
+**What happens.** A guest-reachable class carries no sharing
+keyword and the reviewer scores it as `inherited sharing`. It is
+not — that is a keyword you write, and an omitted declaration is a
+separate rule that Summer '26 changed. The Apex Developer Guide
+(API 67.0) states "Apex without an explicit sharing declaration runs
+as `with sharing` by default". At API 66.0 and earlier the mode is
+resolved from the class instead, in this order: `with sharing` if
+any class in its inheritance chain is saved at 67.0 or later, or if
+it is an Aura controller or an `@AuraEnabled` method called from a
+Lightning web component; the calling class's mode if it isn't an
+Apex entry point; "Otherwise, the class runs in `without sharing`
+mode."
 
-**When it occurs.** Quick prototypes that never had a sharing
-declaration added.
+**When it occurs.** Legacy guest-reachable classes that never had a
+declaration added. The gate is the `apiVersion` in the class's
+`.cls-meta.xml`, not the org's release — a Summer '26 org still runs
+a class pinned to 58.0 under the old rules.
 
-**How to avoid.** Make sharing declarations explicit and required
-in code review. Default to `with sharing` for any guest-reachable
-class.
+**How to avoid.** Read the `.cls-meta.xml` before scoring. The P0 is
+a standalone bare `@RestResource` class pinned to ≤ 66.0: no Aura or
+LWC entry point and no 67.0+ ancestor, so it lands on the
+"otherwise" branch and runs `without sharing` — a full sharing
+bypass on a public endpoint. Bare `@AuraEnabled`-from-LWC classes
+are the mild case (`with sharing` at every version). Either way,
+declare it: Salesforce's guidance is to "always include an explicit
+sharing declaration."
+
+**One caveat no version changes.** "Apex triggers can't have an
+explicit sharing declaration" and they always run in a
+`without sharing` context. Database operations inside a trigger body
+default to user mode — which reapplies the running user's sharing
+and so overrides that context — only at `apiVersion` 67.0+; at
+≤ 66.0 they default to system mode and the bypass stands. That
+adjacent flip is tabled in
+[`AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version)
+§ *Apex security idiom by API version*, which covers access mode,
+not the class declaration rule above.
 
 ---
 

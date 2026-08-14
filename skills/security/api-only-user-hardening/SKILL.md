@@ -1,6 +1,6 @@
 ---
 name: api-only-user-hardening
-description: "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening."
+description: "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening — use admin/integration-user-management."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

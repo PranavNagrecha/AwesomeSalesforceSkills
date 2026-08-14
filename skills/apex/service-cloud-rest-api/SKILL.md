@@ -1,6 +1,6 @@
 ---
 name: service-cloud-rest-api
-description: "Use this skill when integrating with Salesforce Service Cloud REST APIs — specifically the Knowledge REST API (/knowledgeManagement/ for authoring, /support/knowledgeWithSEO/ for guest retrieval) and the Messaging for In-App and Web (MIAW) Enhanced Chat API. Trigger keywords: Knowledge article retrieval, data category filtering, URL-name lookup, Enhanced Chat API, legacy Chat REST API migration. NOT for generic REST API callouts from Apex (use apex__http-callouts), NOT for Salesforce REST API CRUD on standard objects, NOT for Einstein Bot configuration."
+description: "Use this skill when integrating with Salesforce Service Cloud REST APIs — specifically the Knowledge REST API (/knowledgeManagement/ for authoring, /support/knowledgeWithSEO/ for guest retrieval) and the Messaging for In-App and Web (MIAW) Enhanced Chat API. Trigger keywords: Knowledge article retrieval, data category filtering, URL-name lookup, Enhanced Chat API, legacy Chat REST API migration. NOT for Salesforce REST API CRUD on standard objects, NOT for Einstein Bot configuration, NOT for generic REST API callouts from Apex — use apex/callouts-and-http-integrations. NOT for setting up the MIAW Messaging Channel or Embedded Service Deployment in Setup — use admin/messaging-and-chat-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

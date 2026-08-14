@@ -119,3 +119,27 @@ release notes don't give.
 
 **Detection hint:** any GA date other than Winter '26, or language calling 2.0 an "extension" or
 "enhancement" of the beta.
+
+---
+
+## Anti-Pattern 8: Answering 2.0 setup from the beta's requirements page
+
+**What the LLM generates:** a 2.0 setup list assembled entirely from the beta's requirements
+page — CORS allowlist, Lightning Locker, an Aura dependency app — with none of the 2.0 steps
+Spring '26 actually documents; plus a flat "`app-id` is required as of Spring '26," which reads
+as an org-release gate.
+
+**Why it happens:** that page's h1 is "Lightning Out (Beta) Requirements", so it looks like *the*
+Lightning Out requirements page and dominates training data; and release labels get attached to
+whichever noun is nearest.
+
+**Correct pattern:** for 2.0, register the host domain in the **Lightning Out 2.0 App Manager**
+and in the **Trusted Domains allowlist in Session Settings** (Spring '26), and enable
+cross-domain Salesforce session cookies in the org. The `app-id` gate is *when the app was
+created*: an app created before Spring '26 doesn't need the attribute, on any org release. The
+developer guide states no full org-setup list of its own — it defers to "Prepare to Build a
+Lightning Out 2.0 App" in Salesforce Help, so cite that rather than reconstructing the list.
+
+**Detection hint:** a 2.0 setup answer that never mentions the App Manager host domain or
+Trusted Domains, or an `app-id` claim phrased against the org's release rather than the app's
+creation date.

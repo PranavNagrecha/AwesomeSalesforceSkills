@@ -1,6 +1,6 @@
 ---
 name: data-cloud-identity-resolution
-description: "Use this skill when configuring or troubleshooting Data Cloud identity resolution rulesets — matching rules, reconciliation rules, unified profiles, and cross-device identity linking. Trigger keywords: identity resolution ruleset, unified individual, match rule, reconciliation rule, unified profile, cross-device identity, Data Cloud deduplication, cluster creation. NOT for CRM duplicate management (Duplicate Rules / Matching Rules on standard objects), and NOT for Experience Cloud or Salesforce Identity login deduplication."
+description: "Use this skill when configuring or troubleshooting Data Cloud identity resolution rulesets — matching rules, reconciliation rules, unified profiles, and cross-device identity linking. Trigger keywords: identity resolution ruleset, unified individual, match rule, reconciliation rule, unified profile, cross-device identity, Data Cloud deduplication, cluster creation. NOT for CRM duplicate and matching rules — use admin/duplicate-management. NOT for overall Data Cloud layer and activation design — use architect/data-cloud-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -229,5 +229,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `data/data-cloud-data-streams` — Ensure data streams are mapped to Individual and Contact Point DMOs before identity resolution can be configured
 - `architect/data-cloud-architecture` — Covers end-to-end Data Cloud architecture patterns including multi-ruleset design in shared orgs
-- `data/data-cloud-ingestion-api` — Ingestion API pattern for pushing identity attributes (email, phone, device ID) into Data Cloud from external systems
+- `integration/data-cloud-ingestion-api` — Ingestion API pattern for pushing identity attributes (email, phone, device ID) into Data Cloud from external systems
 - `admin/data-cloud-provisioning` — Org setup prerequisites including Starter Data Bundle configuration that affects ruleset slot availability

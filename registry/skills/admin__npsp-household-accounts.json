@@ -93,9 +93,9 @@
     "fde5c91dd7363d99042c",
     "fe7d0d2017f403b23874"
   ],
-  "content_hash": "2ee0f56d6114f29461b4d4cc2c87448e69c2b4f3960e9dfe09bc616dc57e4303",
+  "content_hash": "a3792e1849f35e913bc67264a817fa6cdf7d6b621a7b0d0da49147b77248fc52",
   "dependencies": [],
-  "description": "Use this skill to configure and manage NPSP Household Accounts: household naming rules, formal/informal greeting formats, primary contact designation, household merges, and household splits. Trigger keywords: NPSP household naming, household account not updating, merge duplicate households NPSP, household greeting customization, primary affiliation NPSP. NOT for FSC Household Groups (Financial Services Cloud uses AccountContactRelationship junction \u2014 incompatible model).",
+  "description": "Use this skill to configure and manage NPSP Household Accounts: household naming rules, formal/informal greeting formats, primary contact designation, household merges, and household splits. Trigger keywords: NPSP household naming, household account not updating, merge duplicate households NPSP, household greeting customization, primary affiliation NPSP. NOT for FSC (Financial Services Cloud) households \u2014 use admin/household-model-configuration. NOT for bulk-loading constituents and households into NPSP \u2014 use data/constituent-data-migration.",
   "file_location": "skills/admin/npsp-household-accounts",
   "id": "admin/npsp-household-accounts",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: integration-user-management
-description: "Use when setting up or auditing dedicated Salesforce integration users — including the Salesforce Integration user license, API-only profile, permission set layering, MFA waiver configuration, and login monitoring. NOT for standard user management."
+description: "Use when setting up or auditing a dedicated Salesforce integration user — Salesforce Integration user license, API-only profile, permission set layering, MFA waiver, and login monitoring. NOT for creating human users, roles, or login hours — use admin/user-management. NOT for login IP ranges, session lifetime, or OAuth client-credential hardening — use security/api-only-user-hardening."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -143,13 +143,15 @@ For detecting anomalous integration behavior:
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Identify the integration's data requirements** — Document which Salesforce objects and fields the integration reads, creates, updates, and deletes. This determines the minimum permission set scope.
-2. **Provision the Salesforce Integration user license** — Confirm the org has available Salesforce Integration user licenses. If not, work with the account team to add them.
-3. **Create the integration user** — In Setup > Users > New User, set License to "Salesforce Integration" and Profile to "Minimum Access - API Only Integrations." Use a service account email address that routes to a monitored team alias, not an individual.
-4. **Create and configure a permission set** — Create a permission set named descriptively (e.g., `MuleSoft_Opportunity_Integration`). Add object CRUD permissions and FLS for only the required objects and fields. Assign to the integration user.
-5. **Configure MFA waiver (if needed)** — If the org enforces MFA for API logins, grant the MFA waiver to the integration user via permission or user settings before testing authentication.
-6. **Connect the user to a Connected App** — Ensure the integration's connected app is set to "Admin approved users are pre-authorized" and assigned to the integration user's permission set or profile.
-7. **Test authentication and data access** — Authenticate as the integration user and make a test API call to each object the integration uses. Confirm the expected records are accessible and no unexpected objects or fields are visible.
-8. **Document the integration user** — Record the user's username, assigned permission sets, connected apps, and MFA waiver status in the integration documentation. Schedule a quarterly review to confirm the access profile still reflects the integration's actual needs.
+2. **Provision the license and create the user.**
+   - Confirm the org has available Salesforce Integration user licenses. If not, work with the account team to add them.
+   - In Setup > Users > New User, set License to "Salesforce Integration" and Profile to "Minimum Access - API Only Integrations." Use a service account email address that routes to a monitored team alias, not an individual.
+3. **Create and configure a permission set** — Create a permission set named descriptively (e.g., `MuleSoft_Opportunity_Integration`). Add object CRUD permissions and FLS for only the required objects and fields. Assign to the integration user.
+4. **Wire up authentication.**
+   - MFA waiver (if needed): if the org enforces MFA for API logins, grant the MFA waiver to the integration user via permission or user settings before testing authentication.
+   - Connected App: ensure the integration's connected app is set to "Admin approved users are pre-authorized" and assigned to the integration user's permission set or profile.
+5. **Test authentication and data access** — Authenticate as the integration user and make a test API call to each object the integration uses. Confirm the expected records are accessible and no unexpected objects or fields are visible.
+6. **Document the integration user** — Record the user's username, assigned permission sets, connected apps, and MFA waiver status in the integration documentation. Schedule a quarterly review to confirm the access profile still reflects the integration's actual needs.
 
 ---
 

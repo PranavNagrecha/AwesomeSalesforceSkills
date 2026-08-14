@@ -64,8 +64,8 @@ that's the most direct interpretation of "turn it off".
 that handler, or assign the `Bypass_Triggers` Custom Permission to the
 loader user. No code change.
 
-**Detection hint:** commented-out `new .*TriggerHandler\(\)\.run\(\)` or
-`//.*TODO.*re-enable` patterns in trigger files.
+**Detection hint:** commented-out `new .*TriggerHandler\(\)\.run\(\)` calls, or a
+comment matching `//\s*(TEMPORARILY DISABLED|re-enable)` in a `.trigger` file.
 
 ---
 

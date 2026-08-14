@@ -102,9 +102,9 @@
     "fa501de65fc87a415f42",
     "fa5cd986e8326a37c976"
   ],
-  "content_hash": "1bfa9e121de1e7f45d9ff57490036c4a92ce25e132926ac7bcce78fed01f283b",
+  "content_hash": "2439b0b531dd578051e8462c5847e9d7bc33967de8ba65fbe3ea9f0de6b7fb9e",
   "dependencies": [],
-  "description": "Use this skill when building or customizing Lightning Web Components for B2B Commerce or D2C LWR storefronts \u2014 product display tiles, cart line-item components, checkout step components, wishlist buttons, and product comparison widgets that rely on Commerce Storefront wire adapters from the commerce namespace. NOT for standard LWC development outside a Commerce store context, not for Aura-based Community Builder components, and not for legacy B2B Commerce (CloudCraze) Aura widgets.",
+  "description": "Use this skill when building or customizing Lightning Web Components for B2B Commerce or D2C LWR storefronts \u2014 product display tiles, cart line-item components, checkout step components, wishlist buttons, and. NOT for standard LWC development outside a Commerce store context, not for Aura-based Co \u2014 use lwc/experience-cloud-lwc-components.",
   "file_location": "skills/lwc/commerce-lwc-components",
   "id": "lwc/commerce-lwc-components",
   "inputs": [

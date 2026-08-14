@@ -1,6 +1,6 @@
 ---
 name: integration-procedure-cacheable-patterns
-description: "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and safe fallback on cache miss/stale. Does NOT cover general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side caching."
+description: "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and. NOT for general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side — use architect/omnistudio-scalability-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,7 +32,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Integration Procedure Cacheable Patterns

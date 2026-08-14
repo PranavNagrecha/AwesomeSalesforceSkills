@@ -153,5 +153,6 @@ workbook's specific lifecycle.
 `committed`, `in-progress`, `executed`, `verified`, `change-requested`.
 Anything else is rejected.
 
-**Detection hint:** `check_workbook.py` validates the enum and flags
-`TBD`, `TODO`, `?`, `WIP`, or empty cells.
+**Detection hint:** `check_workbook.py` validates the enum and flags every
+member of its `PLACEHOLDER_STATUS_TOKENS` set — `TBD`, `WIP`, `DOING`,
+`NEXT`, `?`, a bare to-do marker, and empty cells.

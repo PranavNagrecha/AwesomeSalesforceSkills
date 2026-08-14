@@ -156,7 +156,14 @@ For multi-line scripts (>2k chars), `POST` to the same endpoint with the body in
 
 Coverage is **not** persisted across deploys to non-production orgs the same way it is to production; in scratch/sandbox orgs, every deploy of a class invalidates its coverage rows.
 
----
+### Flow tests in CI (Tooling API 65.0+, CLI)
+
+Flow tests moved from Flow Builder-only to CLI- and Tooling-API-addressable in Winter '26. Use them when a CI gate must cover autolaunched flow logic, not only Apex.
+
+- **CLI:** `sf flow run test --target-org ALIAS --code-coverage --tests FlowTesting.MyFlowTest` (requires **View All Data**). Discover tests with the Tooling **Retrieve Unit Tests** resource (`/tooling/runTestsAsynchronous/` family) — available in Tooling API **65.0+**; the `category=flow` filter arrives in **66.0+**. Flow tests live in the **`FlowTesting`** namespace (`FlowTesting.<FlowTestName>` or `FlowTesting.<Namespace>.<FlowTestName>` for packaged tests).
+- **Unified runner (Beta):** `sf logic run test --test-category Flow` runs Apex and Flow tests in one invocation — see `devops/github-actions-for-salesforce` for CI wiring.
+
+Do not assume Flow coverage appears in Apex-only harvesters — query Flow test results separately or use `--code-coverage` on the flow/ logic test commands.
 
 ## Common Patterns
 
@@ -216,16 +223,19 @@ Coverage is **not** persisted across deploys to non-production orgs the same way
 
 Step-by-step for an agent or practitioner building Tooling-API tooling:
 
-1. Confirm the workflow truly needs Tooling API (not Metadata API or Data API). Use the Decision Guidance table above.
-2. Choose REST (default) or SOAP (legacy clients only). All examples in this skill assume REST.
-3. Establish auth: OAuth user token for IDE-like tools; JWT bearer service account for unattended automation. Verify the principal has the permissions required for the chosen workflow (Modify Metadata + Author Apex for compiles, View All Data for reading other users' logs).
-4. Pick the API version. Tooling API tracks Salesforce releases — for production tools, pin to a specific version (e.g., `v59.0`) and bump deliberately, not implicitly.
-5. Implement the request shape per the chosen pattern (single-class save, coverage harvest, log capture, schema crawl, heap dump, anonymous Apex). Code against the smallest necessary primitive — don't over-orchestrate.
-6. For async workflows (`ContainerAsyncRequest`, `runTestsAsynchronous`, `ApexExecutionOverlayAction` capture), implement polling with bounded retries and exponential backoff. Always have a max-wait ceiling and a clear failure path.
-7. Always clean up scratch sObjects: delete `MetadataContainer`s, expire/delete `TraceFlag`s, delete `ApexExecutionOverlayAction`s when the capture is consumed. Orphan accumulation degrades org performance.
-8. Cache aggressively. `EntityDefinition` and `FieldDefinition` rows change rarely; `ApexCodeCoverageAggregate` only changes after test runs. Use `LastModifiedDate` in the WHERE clause to fetch only deltas.
-9. Treat Tooling API limits the same as Data API limits — counts against the org's 24h API limit. Instrument your tool with limit telemetry from the response headers (`Sforce-Limit-Info`).
-10. Handle rate-limit responses (`REQUEST_LIMIT_EXCEEDED`) with backoff plus user-facing messaging — Tooling API does not have its own retry-after header.
+1. **Confirm the workflow truly needs Tooling API** (not Metadata API or Data API). Use the Decision Guidance table above.
+2. **Choose the transport and pin the version.**
+   - REST (default) or SOAP (legacy clients only). All examples in this skill assume REST.
+   - Tooling API tracks Salesforce releases — for production tools, pin to a specific version (e.g., `v59.0`) and bump deliberately, not implicitly.
+3. **Establish auth:** OAuth user token for IDE-like tools; JWT bearer service account for unattended automation. Verify the principal has the permissions required for the chosen workflow (Modify Metadata + Author Apex for compiles, View All Data for reading other users' logs).
+4. **Implement the request shape per the chosen pattern** (single-class save, coverage harvest, log capture, schema crawl, heap dump, anonymous Apex). Code against the smallest necessary primitive — don't over-orchestrate.
+   - For async workflows (`ContainerAsyncRequest`, `runTestsAsynchronous`, `ApexExecutionOverlayAction` capture), implement polling with bounded retries and exponential backoff. Always have a max-wait ceiling and a clear failure path.
+5. **Clean up and cache.**
+   - Always clean up scratch sObjects: delete `MetadataContainer`s, expire/delete `TraceFlag`s, delete `ApexExecutionOverlayAction`s when the capture is consumed. Orphan accumulation degrades org performance.
+   - Cache aggressively. `EntityDefinition` and `FieldDefinition` rows change rarely; `ApexCodeCoverageAggregate` only changes after test runs. Use `LastModifiedDate` in the WHERE clause to fetch only deltas.
+6. **Instrument for limits.**
+   - Treat Tooling API limits the same as Data API limits — counts against the org's 24h API limit. Instrument your tool with limit telemetry from the response headers (`Sforce-Limit-Info`).
+   - Handle rate-limit responses (`REQUEST_LIMIT_EXCEEDED`) with backoff plus user-facing messaging — Tooling API does not have its own retry-after header.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: npsp-household-accounts
-description: "Use this skill to configure and manage NPSP Household Accounts: household naming rules, formal/informal greeting formats, primary contact designation, household merges, and household splits. Trigger keywords: NPSP household naming, household account not updating, merge duplicate households NPSP, household greeting customization, primary affiliation NPSP. NOT for FSC Household Groups (Financial Services Cloud uses AccountContactRelationship junction — incompatible model)."
+description: "Use this skill to configure and manage NPSP Household Accounts: household naming rules, formal/informal greeting formats, primary contact designation, household merges, and household splits. Trigger keywords: NPSP household naming, household account not updating, merge duplicate households NPSP, household greeting customization, primary affiliation NPSP. NOT for FSC (Financial Services Cloud) households — use admin/household-model-configuration. NOT for bulk-loading constituents and households into NPSP — use data/constituent-data-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

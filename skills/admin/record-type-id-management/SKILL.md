@@ -1,6 +1,6 @@
 ---
 name: record-type-id-management
-description: "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for record-type strategy or when to use record types (use admin-foundation or data-model-design)."
+description: "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for deciding whether to use record types at all — use admin/record-types-and-page-layouts. NOT for layout/profile explosion at scale — use admin/record-type-strategy-at-scale. NOT for hard-coded Profile, Queue or User IDs in Apex — use apex/apex-hardcoded-id-elimination."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -142,4 +142,4 @@ Use as `RecordTypes.idFor(Account.SObjectType, 'Business_Account')`. Cached by t
 
 - `apex/apex-mocking-and-stubs` — mocking Schema.describe in tests
 - `data/data-model-design-patterns` — record-type strategy itself
-- `devops/cicd-pipeline-design` — CI regex hooks
+- `devops/salesforce-code-analyzer` — CI static-analysis gate

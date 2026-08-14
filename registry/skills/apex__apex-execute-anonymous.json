@@ -77,9 +77,9 @@
     "fe7b88250cfbd0c13e5e",
     "fef50f5c3cbe680898e7"
   ],
-  "content_hash": "d84735ea867d6d4adee05f3d1d47f9353b27c23c99705b49e6f4351960eece5d",
+  "content_hash": "fb04792ebafba12e064c435991dad1d76369d67a07e981536dc9d9556ab3dfb7",
   "dependencies": [],
-  "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management).",
+  "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for trace flags or reading the log output \u2014 use apex/debug-logs-and-developer-console. NOT for async job design \u2014 use apex/async-apex.",
   "file_location": "skills/apex/apex-execute-anonymous",
   "id": "apex/apex-execute-anonymous",
   "inputs": [

@@ -107,9 +107,9 @@
     "fd212d6e400e633e013a",
     "fd9398d3a174a16e328d"
   ],
-  "content_hash": "8446934486f800c8d54088b0d9ba2c2f14ae9c6b5ded73369f228755b0ed8f71",
+  "content_hash": "699b9601bb3731449fd5c39febebcf0ba3efd5e0aad77c872f003cd1300f91bc",
   "dependencies": [],
-  "description": "Use this skill when integrating with Salesforce Industries-specific API layers \u2014 Insurance Policy Business Connect API, Communications Cloud TM Forum Open APIs (TMF679, TMF680, etc.), Energy and Utilities Update Asset Status API, and Service Process Studio Connect APIs. Trigger keywords: Insurance policy issuance API, endorsement API, TMF679, Communications Cloud REST API, Update Asset Status, Service Process API, InsurancePolicy Connect API, sfiEnergy, industry-specific REST endpoint. NOT for standard Salesforce REST API, SOAP API, Bulk API, or platform event integration unrelated to an industry vertical.",
+  "description": "Endpoint path, payload and error handling for a named Salesforce Industries API \u2014 Insurance Policy Business Connect, Communications Cloud TM Forum Open APIs (TMF679, TMF680), Energy and Utilities Update Asset Status, Service Process Studio Connect. Trigger keywords: Insurance policy issuance API, endorsement API, TMF679, Communications Cloud REST API, Update Asset Status, Service Process API, InsurancePolicy Connect API, sfiEnergy, industry-specific REST endpoint. NOT for designing the integration to a policy admin, BSS/OSS or CIS backend \u2014 use architect/industries-integration-architecture. NOT for standard Salesforce REST API CRUD on non-industry sObjects \u2014 use integration/rest-api-patterns.",
   "file_location": "skills/omnistudio/industries-api-extensions",
   "id": "omnistudio/industries-api-extensions",
   "inputs": [

@@ -101,14 +101,14 @@
     "f57dbbb5c8f899402603",
     "fa02be5f21fff4a6a911"
   ],
-  "content_hash": "b9e1947f498f446c90be4771f950541267b68fb0e8d81c9c01978bea916dab1a",
+  "content_hash": "c611367a39994f9808a076b557a9abc702678aa09e845c37890ffe0a3e09365f",
   "dependencies": [
     "mulesoft-salesforce-connector",
     "api-led-connectivity",
     "integration-pattern-selection",
     "error-handling-in-integrations"
   ],
-  "description": "Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) for Salesforce connectivity, or when determining whether a scenario requires middleware at all versus native Salesforce capabilities. Triggers: 'which iPaaS should I use', 'MuleSoft vs Boomi vs Workato', 'when do I need middleware for Salesforce', 'message transformation orchestration middleware'. NOT for MuleSoft Anypoint Salesforce Connector configuration (use mulesoft-salesforce-connector). NOT for API-led connectivity layer design (use api-led-connectivity). NOT for native Salesforce-to-Salesforce integration, Platform Events, or CDC.",
+  "description": "Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) for Salesforce connectivity, or when determining whether a scenario requires middleware at all versus native Salesforce capabilities. Triggers: 'which iPaaS should I use', 'MuleSoft vs Boomi vs Workato', 'when do I need middleware for Salesforce'. NOT for MuleSoft Anypoint Salesforce Connector configuration \u2014 use integration/mulesoft-salesforce-connector. NOT for API-led connectivity layer design \u2014 use integration/api-led-connectivity.",
   "file_location": "skills/integration/middleware-integration-patterns",
   "id": "integration/middleware-integration-patterns",
   "inputs": [

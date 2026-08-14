@@ -1,6 +1,6 @@
 ---
 name: einstein-analytics-data-model
-description: "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) — the multi-layer metadata system that controls field display labels, aliases, number formatting, date formatting, measure/dimension classification, and color palettes on CRM Analytics datasets. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics. NOT for dataflow development, recipe node configuration, dataset ingestion setup, standard dashboard design, or SAQL query construction — those are covered by analytics-dataflow-development and analytics-recipe-design."
+description: "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) — the multi-layer metadata system controlling field display labels, aliases, number and date formatting, measure/dimension classification, and dataset versioning. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics. NOT for recipe node configuration — use admin/analytics-recipe-design. NOT for dataflow development, node types, and scheduling — use admin/analytics-dataflow-development."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

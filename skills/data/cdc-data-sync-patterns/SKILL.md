@@ -1,6 +1,6 @@
 ---
 name: cdc-data-sync-patterns
-description: "Use this skill when designing or troubleshooting the replication lifecycle for CDC-based data synchronization: day-0 full load, incremental delta processing, replay ID management, gap event fallback, and ordering/deduplication using transactionKey and sequenceNumber. NOT for CDC admin setup (entity selection, channel configuration, edition limits — see integration/change-data-capture-integration). NOT for Apex CDC trigger subscribers."
+description: "Use this skill for the replication lifecycle of CDC-based data synchronization: day-0 full load, incremental delta processing, replay ID management, gap event fallback, and ordering/deduplication using transactionKey and sequenceNumber. NOT for CDC entity selection, channel config, or edition limits — use integration/change-data-capture-integration. NOT for checking whether the two systems actually match — use data/data-reconciliation-patterns."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

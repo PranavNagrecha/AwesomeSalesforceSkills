@@ -37,6 +37,24 @@ filter recommendation.
 
 ---
 
+## Anti-Pattern 2b: Costing Grid at $2 per conversation
+
+**What the LLM generates:** "Agentforce costs $2 per conversation, so this Grid run of 5,000
+rows is $10,000."
+
+**Why it happens:** Dreamforce '24 launched the per-conversation SKU; Flex Credits (announced
+15 May 2025) became the default unit and Grid meters **actions × rows**, not conversations.
+
+**Correct pattern:** cost Grid in Flex Credits using the Billing Calculator. As of the 15 May
+2025 newsroom announcement: $500 USD per 100,000 Credits; one action consumes 20 Flex Credits
+($0.10 USD); EE+ orgs can receive 100,000 Flex Credits with Salesforce Foundations. The
+$2/conversation SKU still exists but is the wrong unit for a worksheet. Re-confirm current
+rates before quoting a live estimate — pricing is commercial, not release-gated.
+
+**Detection hint:** a dollar total derived by multiplying row count (or "conversations") by $2.
+
+---
+
 ## Anti-Pattern 3: Building a forward or unresolvable column reference
 
 **What the LLM generates:** a worksheet where an action or AI column references a column placed

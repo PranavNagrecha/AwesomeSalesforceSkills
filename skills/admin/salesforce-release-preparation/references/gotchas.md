@@ -49,3 +49,33 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When teams use community-reported enforcement dates as the source of truth instead of checking Setup > Release Updates in their own org, which shows the enforcement date specific to that org.
 
 **How to avoid:** Always read the enforcement date directly from Setup > Release Updates in the org being prepared, not from external summaries. The date shown in that screen is the authoritative date for that specific org and instance.
+
+---
+
+## Gotcha 6: A Release Update's Enforcement Release Can Be Postponed to a Later Release
+
+**What happens:** Salesforce publishes an enforcement release with each Release Update, but that release is not a commitment. When adoption lags, Salesforce pushes enforcement out a cycle. "Restrict User Access to Run Flows" was scheduled to be enforced in Winter '25; Salesforce postponed it and enforced it in Winter '26. Teams that logged the original release, watched it pass without incident, and closed the item as "handled" carried a stale entry into the cycle that actually enforced it. When it did land, the FAQ article states: "The FlowSites org perm is deprecated. A user's ability to run a flow is restricted unless the correct profile or permission set to run the flow is granted." Scope it correctly before acting on it: the restriction covers flows a user launches directly — screen flows and autolaunched flows — which now require **Run Flows** (or **Manage Flow**, which also covers creating, updating, and deleting flows) granted through a profile or permission set. Flows the platform runs on a record's behalf are not in scope; the article lists record-triggered, scheduled-triggered, and platform-event-triggered flows among the unaffected types. Do not grant Run Flows to a population merely because automation touches their records.
+
+**When it occurs:** When the release readiness checklist records an enforcement date once and treats it as immutable, or when a postponement is read as a cancellation. The postponed update is the dangerous one precisely because the team has already rehearsed ignoring it.
+
+**How to avoid:** Re-read the enforcement release from Setup > Release Updates in every preparation cycle rather than carrying forward the date logged last cycle. Keep postponed updates on the checklist with the status "postponed — re-confirm next cycle," never "done." For the flow update specifically, verify that every profile or permission set covering a persona who launches screen or autolaunched flows directly actually grants Run Flows before the enforcing release upgrades production.
+
+---
+
+## Gotcha 7: Not Every Breaking Behavior Change Arrives as a Toggleable Release Update
+
+**What happens:** Some platform changes are enabled progressively across all orgs with no entry in Setup > Release Updates at all, and a Release Update is opened later covering only the slice Salesforce could not change unilaterally. Asynchronous sharing recalculation is the live example: the behavior "was introduced in Summer '25 and rolled out over several releases. Salesforce completed the enablement of this updated behavior in all orgs in April 2026." After large group or role changes, related owner-based sharing rules and account owner share records may now be recalculated asynchronously, while "The group or role changes are processed synchronously (no change from current behavior)." The accompanying Release Update — "Update Apex Code and Flows for Changed Sharing Recalculation Behavior" — is available in Spring '26 and enforced in Spring '27, and governs only changes originating from Apex code and flows, which keep running synchronously until enforcement.
+
+**When it occurs:** When Release Updates triage is treated as the complete inventory of breaking changes for a release, so a change with no toggle is never assigned an owner or a sandbox test.
+
+**How to avoid:** Treat Setup > Release Updates as necessary but not sufficient — the release notes still have to be triaged for behavior changes that ship without a toggle. Scope this one honestly before raising it: the article notes that "Most group membership or role changes don't lead to asynchronous sharing recalculation." It matters for orgs with large data volumes and very high ownership data skew, orgs whose Apex or flows modify group membership or roles, and code that depends on share records being available immediately. Where it applies, the recalculation stages are observable in the Setup Audit Trail — synchronous group/role processing appears as one row, with two further rows marking the start and completion of the asynchronous recalculation.
+
+---
+
+## Gotcha 8: OmniStudio Standard Runtime and the Managed Package Ride Different Calendars
+
+**What happens:** The team treats "the Salesforce upgrade weekend" as one event. `enableStandardOmniStudioRuntime=true` puts OmniScripts / IPs / Data Mappers on the **core** calendar. The `omnistudio` managed package stays on the **package** calendar. They remain bonded through `omnistudio.VlocityOpenInterface` / `Callable`. A core upgrade can change standard-runtime behaviour while the package (and every `without sharing` Callable helper) has not moved, or the reverse.
+
+**When it occurs:** Public-sector and Experience Cloud orgs that switched on standard runtime but still invoke Apex via VlocityOpenInterface. Guest-hardening CRUC opt-outs, leftover Live Experience networks, and Locker vs LWS (`lockerServiceNext`) each follow yet another clock.
+
+**How to avoid:** Score upgrade exposure **by layer**, not by product name: core platform, OmniStudio standard runtime, OmniStudio package, Auth. Providers, guest sharing, BRE / Decision Matrices. For each layer record which calendar it follows, whether a failure is detectable in Apex tests, and the blast radius. Do not close a seasonal cycle as "no Apex impact" when the guest OmniScript path never ran in the test suite.

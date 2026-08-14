@@ -83,11 +83,11 @@
     "f9ae1f90669e618910d3",
     "fb5c0938485d93f69654"
   ],
-  "content_hash": "4b3eb54e6d1def2e67facb18041f55d06baecc1eb464211d0683349bbf3d5bce",
+  "content_hash": "a27bb6111f09f49294f8ee117236117f9906137820046895ff40d28c52e455a4",
   "dependencies": [
     "apex/trigger-framework"
   ],
-  "description": "Use when extending the NPSP Trigger-Driven Trigger Management (TDTM) framework with custom Apex handler classes \u2014 covering class authorship, DmlWrapper return patterns, Trigger_Handler__c registration, load order, recursion guards, and test isolation. NOT for standard Apex triggers outside of NPSP, general trigger-handler framework design, or Nonprofit Cloud (NPC) which replaced NPSP in new orgs.",
+  "description": "Use when extending the NPSP Trigger-Driven Trigger Management (TDTM) framework with custom Apex handler classes \u2014 covering class authorship, DmlWrapper return patterns, Trigger_Handler__c registration, load order, recursion guards, and test isolation. NOT for trigger-handler framework design outside NPSP \u2014 use apex/trigger-framework. NOT for NPSP vs Nonprofit Cloud (NPC) \u2014 use architect/npsp-vs-nonprofit-cloud-decision.",
   "file_location": "skills/apex/npsp-trigger-framework-extension",
   "id": "apex/npsp-trigger-framework-extension",
   "inputs": [

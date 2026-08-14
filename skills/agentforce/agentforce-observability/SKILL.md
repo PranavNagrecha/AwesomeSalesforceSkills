@@ -1,6 +1,6 @@
 ---
 name: agentforce-observability
-description: "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Einstein Trust Layer audit logging (use einstein-trust-layer), NOT for agent topic design or guardrails (use agent-topic-design or agentforce-guardrails), NOT for LLM prompt debugging (this skill covers session metrics and conversation trace, not prompt engineering)."
+description: "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Trust Layer audit logging — use agentforce/einstein-trust-layer. NOT for designing the topic boundaries and guardrails that cause the misrouting you are seeing in the data — use agentforce/agentforce-guardrails."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

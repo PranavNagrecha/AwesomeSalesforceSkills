@@ -1,6 +1,6 @@
 ---
 name: volunteer-management-requirements
-description: "Use when designing or implementing volunteer management in Salesforce for nonprofits using NPSP or Nonprofit Cloud — covers V4S managed package objects vs. NPC-native volunteer objects, hours tracking, scheduling, and recognition workflows. NOT for HR systems, commercial employee volunteering programs, or Field Service Lightning crew management."
+description: "Use when designing or implementing volunteer management in Salesforce for nonprofits using NPSP or Nonprofit Cloud — covers V4S managed package objects vs. NPC-native volunteer objects, hours tracking, scheduling, and recognition workflows. NOT for planning an NPSP-to-Nonprofit-Cloud migration — use architect/nonprofit-cloud-vs-npsp-migration. NOT for donor lifecycle and moves-management requirements — use admin/donor-lifecycle-requirements. NOT for HR systems, commercial employee volunteering programs, or Field Service Lightning crew management."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

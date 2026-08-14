@@ -133,3 +133,15 @@ Reference and that the docs do not assign a GA/Beta/Pilot status; don't invent o
 
 **Detection hint:** any "Generally Available", "Beta", or "since <release>" claim about SOQL
 escape sequences that isn't backed by a release-notes citation.
+
+---
+
+## Anti-Pattern 7: `LIKE '%__c'` to Find Custom Fields
+
+**What the LLM generates:** `WHERE DeveloperName LIKE '%__c'` or `QualifiedApiName LIKE '%__c'`.
+
+**Why it happens:** `__c` looks like a suffix. In `LIKE`, `_` is any single character.
+
+**Correct pattern:** Escape underscores (`LIKE '%\\_\\_c'`) or filter in Apex after describe (`endsWith('__c')` on the API name, not LIKE). Never use unescaped `_` in a LIKE meant to be literal.
+
+**Detection hint:** `LIKE '%__c'` or `LIKE '%_c'` without backslash-escaped underscores.

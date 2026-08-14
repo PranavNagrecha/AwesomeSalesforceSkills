@@ -113,9 +113,9 @@
     "ff20f0ecefc2bc43e60b",
     "ff45bf285ea091f4445c"
   ],
-  "content_hash": "0d8fbcde1e1f27b5e04c5343a90db55ffa2919509de5954904f2499879f5d50e",
+  "content_hash": "d58b832a15051f4d0dba192b094a1edc37e27450cfa1e7edeb4c9ee791b1d74c",
   "dependencies": [],
-  "description": "Use this skill when selecting which Salesforce Industries (vertical) cloud fits a customer's industry and requirements \u2014 evaluating data model compatibility, licensing implications, and customization vs configuration tradeoffs before committing to a vertical cloud. Trigger keywords: which industry cloud should I use, Communications Cloud vs Health Cloud, Industries licensing, vertical cloud selection, Salesforce Industries portfolio, industry cloud comparison. NOT for implementation of any individual vertical cloud \u2014 this skill covers pre-purchase and pre-implementation selection only, not configuration, data migration, or OmniStudio component development.",
+  "description": "Use this skill when selecting which Salesforce Industries (vertical) cloud fits a customer's industry and requirements \u2014 evaluating data model compatibility, licensing implications, and customization vs configuration tradeoffs before committing to a vertical cloud; pre-purchase selection only, not configuration or OmniStudio development. Trigger keywords: which industry cloud should I use, Communications Cloud vs Health Cloud, Industries licensing, vertical cloud selection, Salesforce Industries portfolio, industry cloud comparison. NOT for Industries CPQ vs Salesforce CPQ selection \u2014 use omnistudio/industries-cpq-vs-salesforce-cpq. NOT for the object model of a chosen vertical \u2014 use architect/industries-data-model.",
   "file_location": "skills/architect/industries-cloud-selection",
   "id": "architect/industries-cloud-selection",
   "inputs": [

@@ -72,9 +72,9 @@
     "fc7872f31b513dcaf08f",
     "ff0990850a030e8a5cf7"
   ],
-  "content_hash": "74408a52bfb8a83b0249ea10537a25fb4ca00cae8e0d17bff5773719c4adc561",
+  "content_hash": "0ac0e3062ccb9b3c1fe66f5afd6184b3e9bd1f5b187df15ee1b29de065d3fff4",
   "dependencies": [],
-  "description": "Use when designing or implementing CI/CD pipelines for OmniStudio components \u2014 DataPack export/import, versioning, environment promotion, and automated deployment. NOT for standard Salesforce metadata CI/CD or Apex-only pipelines.",
+  "description": "CI/CD pipelines for OmniStudio \u2014 DataPack export/import, versioning, env promotion. Triggers: OmniStudio CI/CD, DataPack pipeline, OmniStudio deployment. NOT for manual DataPack operations \u2014 use omnistudio/omnistudio-deployment-datapacks.",
   "file_location": "skills/omnistudio/omnistudio-ci-cd-patterns",
   "id": "omnistudio/omnistudio-ci-cd-patterns",
   "inputs": [

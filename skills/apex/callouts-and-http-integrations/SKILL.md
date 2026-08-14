@@ -1,6 +1,6 @@
 ---
 name: callouts-and-http-integrations
-description: "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock'. NOT for inbound Apex REST service design or non-HTTP integration architecture."
+description: "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock'. NOT for exposing Apex as an inbound REST endpoint — use apex/apex-rest-services. NOT for SOAP callouts generated from a WSDL — use apex/apex-wsdl2apex-patterns. NOT for the per-transaction callout ceiling or moving callouts async to stay under it — use integration/callout-limits-and-async-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

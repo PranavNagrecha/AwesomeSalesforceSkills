@@ -1,6 +1,6 @@
 ---
 name: change-data-capture-admin
-description: "Use when enabling, configuring, or monitoring Change Data Capture (CDC) entity selection, channel enrichment, and delivery usage limits from an admin perspective. NOT for CDC Apex trigger implementation (use change-data-capture-integration)."
+description: "Use when enabling, configuring, or monitoring Change Data Capture (CDC) entity selection, channel enrichment, and delivery usage limits from an admin perspective. NOT for writing an Apex change-event trigger — use apex/change-data-capture-apex. NOT for subscribing an external system over Pub/Sub or CometD — use integration/change-data-capture-integration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

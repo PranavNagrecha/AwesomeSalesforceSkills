@@ -1,6 +1,6 @@
 ---
 name: dynamic-forms-and-actions
-description: "Use this skill to configure Dynamic Forms (field and section visibility on Lightning record pages) and Dynamic Actions (button/action visibility rules) using Lightning App Builder. Covers enabling Dynamic Forms, converting page layout fields to Dynamic Form components, writing field visibility rules (field value, profile, permission, record type, device), and controlling action bar visibility per record context. NOT for page layout design or record type assignment (use record-types-and-page-layouts). NOT for building custom LWC components."
+description: "Configure Dynamic Forms (field and section visibility on Lightning record pages) and Dynamic Actions (button and action visibility rules) in Lightning App Builder — enabling Dynamic Forms, converting page layout fields with the Upgrade Now wizard, writing field visibility rules (field value, profile, permission, record type, device), and controlling action bar visibility. NOT for page layout design or record type assignment — use admin/record-types-and-page-layouts. NOT for a full layout-to-Dynamic-Forms migration across record types or profiles — use admin/dynamic-forms-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

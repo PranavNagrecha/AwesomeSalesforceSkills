@@ -184,16 +184,19 @@ Live Tracking emits breadcrumb events (a new record per location ping at the con
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. Confirm license tier. Ask which Maps package(s) the customer holds (Maps, Advanced, Routing, Live Tracking). Match the work plan to the entitlement.
-2. Identify source objects. Which records need to plot? (Account is most common; Lead, Opportunity, Case, custom objects also supported.) Capture the address-field mapping per object.
-3. Install in sandbox first. Install the package(s) in install order (base → Advanced → Routing). Document any post-install wizard steps the customer's admin must run with their credentials.
-4. Configure geocoding per source object. Set address-source fields, enable real-time geocoding, schedule the initial batch geocode. Validate ≥ 90% success on a sample.
-5. Build the visualization. `MapsLayer__c` per record set (e.g., "Open Opportunities," "Active Accounts in Territory"); Lightning Maps component on home page or app tab.
-6. (If polygon territories) Build TerritoryPlan + polygons in Maps Advanced. Configure assignment rules. Run the assignment batch and validate coverage.
-7. (If routing) Configure routing parameters per cohort (max stops, service time, start/end). Train users on the Optimize button.
-8. (If live tracking) HR/legal approval first. Configure ping interval and retention. Build the archival job before enablement.
-9. Permission-set assignments. The Maps permission set must be assigned to the user cohort — package install does not assign it.
-10. Validate end-to-end in sandbox before promoting to production. Run the full user workflow (open Maps → filter → plot → route) with a real cohort member.
+1. Scope the work against the entitlement and the data.
+   - Confirm license tier. Ask which Maps package(s) the customer holds (Maps, Advanced, Routing, Live Tracking). Match the work plan to the entitlement.
+   - Identify source objects. Which records need to plot? (Account is most common; Lead, Opportunity, Case, custom objects also supported.) Capture the address-field mapping per object.
+2. Install in sandbox first. Install the package(s) in install order (base → Advanced → Routing). Document any post-install wizard steps the customer's admin must run with their credentials.
+3. Configure geocoding per source object. Set address-source fields, enable real-time geocoding, schedule the initial batch geocode. Validate ≥ 90% success on a sample.
+4. Build the visualization. `MapsLayer__c` per record set (e.g., "Open Opportunities," "Active Accounts in Territory"); Lightning Maps component on home page or app tab.
+5. Add the tier-gated modules that are in scope.
+   - (If polygon territories) Build TerritoryPlan + polygons in Maps Advanced. Configure assignment rules. Run the assignment batch and validate coverage.
+   - (If routing) Configure routing parameters per cohort (max stops, service time, start/end). Train users on the Optimize button.
+   - (If live tracking) HR/legal approval first. Configure ping interval and retention. Build the archival job before enablement.
+6. Grant access and validate before promoting.
+   - Permission-set assignments. The Maps permission set must be assigned to the user cohort — package install does not assign it.
+   - Validate end-to-end in sandbox before promoting to production. Run the full user workflow (open Maps → filter → plot → route) with a real cohort member.
 
 ---
 

@@ -8,6 +8,7 @@
     "1cb86c38bf2597fb1540",
     "364ecc6517a4a8a118f7",
     "372841d031efb1f5d689",
+    "37af8276b59b95b13e83",
     "3bf1f2e43092298ccff0",
     "3c4580075750978abd17",
     "42b0ca3e0a3c4c3f9a81",
@@ -28,8 +29,10 @@
     "8465b002d1422dbdc369",
     "8de52f891e586352a6b1",
     "909f45bfc6e05982b196",
+    "9720779221bdd895aae8",
     "977d06d00c2cfd8ead24",
     "a4b158f53f14acf16b3b",
+    "a864ddd33201244afee4",
     "abd3e409c56a3ae7ddfe",
     "b01927e565fba94b98b9",
     "b4c0436183710cb08bad",
@@ -45,13 +48,16 @@
     "de3c66b6db787877af72",
     "defad7d3b7c10cc5c942",
     "dfcf5a338ac330f42588",
+    "ef12e6d71a79625f2183",
+    "f16da31bd655625fd7bc",
     "f474efef59e7248823db",
     "f4e51e37c1d15d100632",
     "f544da914bf8ad23dc98",
     "f66849ebcd3a47d6e704",
+    "fa7d9155d89cab4b3c53",
     "fa8ecbb57c227219050b"
   ],
-  "content_hash": "2cc5cdced42125d6699fc3cbc39391f5b3949880b293ca65305352ad3dfa5d5a",
+  "content_hash": "37e135c1b4f3967d2aa58ec0c95550268876c5ea88bcdbe8cdd5053a54c15654",
   "dependencies": [],
   "description": "Use when SOQL ORDER BY behavior with NULL values surprises a query \u2014 null records sorting before non-null, paginated results inconsistent across pages, NULLS FIRST/LAST clauses needed. Triggers: 'soql nulls first', 'soql null sort order', 'pagination missing records with null fields', 'order by skipping null records', 'consistent ordering with optional fields'. NOT for general SOQL optimization (use data/soql-query-optimization) or for ordering of relationship-traversed fields.",
   "file_location": "skills/apex/soql-null-ordering-patterns",
@@ -67,7 +73,8 @@
     "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "SOQL ORDER BY Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_orderby.htm",
-    "SOQL OFFSET Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_offset.htm"
+    "SOQL OFFSET Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_offset.htm",
+    "**Spring '26 Release Notes (PDF), \"Use Updated Empty Value Placement in List View Sorting\"** \u2014 confirms that \"When you sort a list view, blank fields, or null values, now are treated as the highest value in the dataset\" where \"Previously, Salesforce treated blank fields as the lowest value,\" and that the change \"applies to Lightning Experience in all editions.\" Scoped to list views; it does not change the SOQL ORDER BY default, which the SOQL reference still gives as \"By default, null values are sorted first.\" (verified 2026-08-13) \u2014 https://resources.docs.salesforce.com/rel1/doc/en-us/static/pdf/salesforce_spring26_release_notes.pdf"
   ],
   "outputs": [
     "corrected ORDER BY with NULLS FIRST/LAST or composite tiebreaker",
@@ -94,7 +101,7 @@
   "templates": [
     "skills/apex/soql-null-ordering-patterns/templates/soql-null-ordering-patterns-template.md"
   ],
-  "updated": "2026-04-30",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

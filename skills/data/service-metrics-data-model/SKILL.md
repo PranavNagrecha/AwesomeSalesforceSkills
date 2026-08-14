@@ -1,6 +1,6 @@
 ---
 name: service-metrics-data-model
-description: "Use when designing or reporting on Salesforce Service Cloud service metrics — covers the Case, Entitlement, and CaseMilestone object model, MTTR derivation via BusinessHours.diff(), IsViolated semantics, and ElapsedTimeInMins field usage for SLA reporting. Trigger keywords: MTTR, mean time to resolve, case milestone, entitlement SLA, IsViolated, CaseMilestone, first response time, resolution time, service KPI. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) dashboards or Field Service Lightning work order metrics."
+description: "Use when designing or reporting on Salesforce Service Cloud service metrics — covers the Case, Entitlement, and CaseMilestone object model, MTTR derivation via BusinessHours.diff(), IsViolated semantics, and ElapsedTimeInMins field usage for SLA reporting. Trigger keywords: MTTR, mean time to resolve, case milestone, entitlement SLA, IsViolated, CaseMilestone, first response time, resolution time, service KPI. NOT for setting up entitlement processes and milestones in Setup — use admin/entitlements-and-milestones. NOT for completing or reacting to milestones in Apex — use apex/entitlement-apex-hooks."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

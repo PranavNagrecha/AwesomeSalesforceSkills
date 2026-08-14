@@ -1,6 +1,6 @@
 ---
 name: pub-sub-api-patterns
-description: "Use this skill when building or debugging gRPC-based Pub/Sub API integrations for subscribing to or publishing Salesforce Platform Events, Change Data Capture events, or custom channels — including auth flow, flow control, event replay, Managed Subscriptions, and language client setup. Triggers on: Pub/Sub API gRPC subscription, subscribe to platform events via gRPC, event replay with Pub/Sub API, managed event subscription Salesforce, FetchRequest flow control. NOT for legacy PushTopic API (deprecated), not for legacy Streaming API via CometD or EMP Connector (use those for legacy integrations only), not for Flow-based platform event triggers (use flow/flow-trigger-patterns skill)."
+description: "Use this skill when building or debugging gRPC-based Pub/Sub API integrations for subscribing to or publishing Salesforce Platform Events, Change Data Capture events, or custom channels — including auth flow, flow control, event replay, Managed Subscriptions, and language client setup. Triggers on: Pub/Sub API gRPC subscription, subscribe to platform events via gRPC, event replay with Pub/Sub API, managed event subscription Salesforce, FetchRequest flow control. NOT for enabling CDC and choosing which entities stream record changes — use integration/change-data-capture-integration. NOT for publishing or subscribing to a Platform Event from a Flow — use flow/flow-platform-events-integration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

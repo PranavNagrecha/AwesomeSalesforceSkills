@@ -59,3 +59,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** In multi-package projects when a developer forgets the `--target-metadata-dir` flag or does not specify the package.
 
 **How to avoid:** In multi-package projects, always specify which package to target: `sf project retrieve start --package-name <PackageName>`. Review retrieved file paths before committing.
+
+---
+
+## Gotcha 7: Stale "Never Move Files" Advice and the Source Mobility Opt-Out
+
+**What happens:** Pre-Winter '26 guidance holds that moving a metadata file between package directories makes source tracking see the component as deleted and then recreated, so teams refuse to reorganize `packageDirectories` mid-project or reset tracking afterwards to clear the churn. The Winter '26 CLI release changed the default: "With source mobility you can move source files within your local Salesforce DX project without the source-tracking feature determining that you've deleted and then recreated a metadata component." Source mobility is enabled by default.
+
+**When it occurs:** Splitting a single `force-app` into multi-package directories, or moving a component out of `unpackaged/` into a packaged directory. The old delete-plus-recreate churn now reappears only when source mobility has been switched off.
+
+**How to avoid:** Do not treat `sf project reset tracking` as a restructuring ritual. Check two things before blaming source tracking for phantom deletes. First the CLI version — source mobility is a Salesforce CLI feature controlled by a CLI environment variable, not an org setting, so a pipeline pinned to an `sf` release older than Winter '26 still produces delete-plus-recreate churn whatever release the org is on. Second `SF_DISABLE_SOURCE_MOBILITY`, which defaults to `false`; setting it to `true` restores the old behaviour. Audit CI runner images and shell profiles for both, and pin the variable explicitly if a pipeline depends on one behaviour or the other. Note this covers moving files; it is not documented as covering renames, so plan renames separately.

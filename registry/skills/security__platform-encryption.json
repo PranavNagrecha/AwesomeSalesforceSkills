@@ -111,9 +111,9 @@
     "fcf2c37eecad904b7b7f",
     "fde9274ab950b098ed0d"
   ],
-  "content_hash": "3c39c301a2252b9befde440338f32b6cb0a043e3dfc37c59c9b2979b28175d42",
+  "content_hash": "666189b876d8ec8146c4b76ab1c5551226ea6266a11341ed247bc474590dee01",
   "dependencies": [],
-  "description": "Use this skill when deciding which Salesforce fields to encrypt at rest, choosing between deterministic and probabilistic schemes, managing tenant secrets and keys (including BYOK and Cache-Only Keys), and satisfying compliance mandates for data-at-rest encryption. NOT for TLS/transport encryption, Classic Encrypted Text fields, or field masking without Shield. Trigger keywords: Shield Platform Encryption, data at rest, AES-256, tenant secret, BYOK, key rotation, encrypted search.",
+  "description": "Use this skill when deciding which Salesforce fields to encrypt at rest, choosing. Trigger keywords: Shield Platform Encryption, data at rest, AES-256, tenant secret, BYOK, key rotation, encrypted search. NOT for TLS/transport encryption, Classic Encrypted Text fields, or field masking withou \u2014 use architect/salesforce-shield-architecture.",
   "file_location": "skills/security/platform-encryption",
   "id": "security/platform-encryption",
   "inputs": [

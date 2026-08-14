@@ -1,6 +1,6 @@
 ---
 name: omniscript-flow-design-requirements
-description: "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins — covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements."
+description: "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins — covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for building the OmniScript or moving logic into an Integration Procedure — use omnistudio/omniscript-design-patterns. NOT for FlexCard requirements — use admin/flexcard-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -177,5 +177,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `omnistudio/omniscript-design-patterns` — use after requirements are complete to implement the OmniScript in the Designer
 - `omnistudio/integration-procedures` — use when requirements identify multi-object or external API data needs
-- `admin/omnistudio-vs-standard-decision` — use before requirements gathering to confirm OmniScript is the right tool
+- `architect/omnistudio-vs-standard-decision` — use before requirements gathering to confirm OmniScript is the right tool
 - `admin/flexcard-requirements` — companion skill for FlexCard requirements that may embed or launch OmniScripts

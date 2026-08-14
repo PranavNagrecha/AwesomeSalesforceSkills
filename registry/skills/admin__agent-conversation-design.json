@@ -98,9 +98,9 @@
     "f886c3105b0663acecf8",
     "fd34f0832a4e95f80287"
   ],
-  "content_hash": "dd61fbcd31e99a21f6cfd76ff23952f065f51a740228bfa047ae65c9ea1929bc",
+  "content_hash": "64f4d7e288cb1648c25db9e0841d43681e88db4d497dacf747540a7f85b4c2bf",
   "dependencies": [],
-  "description": "Use when writing or auditing the conversational copy layer of a Salesforce bot or Agentforce agent: utterance authoring strategy, fallback message copy, escalation-criteria phrasing, and persona-consistent dialog scripting across channels. NOT for platform configuration (bot builder setup, topic metadata wiring, action mapping, or Agentforce deployment) \u2014 see architect/einstein-bot-architecture and agentforce/agentforce-persona-design for those concerns.",
+  "description": "Use when writing or auditing the conversational copy layer of a Salesforce bot or Agentforce agent: utterance authoring strategy, fallback message copy, escalation-criteria phrasing, and persona-consistent dialog scripting across channels. NOT for designing the bot dialog structure, intent model, or handoff architecture \u2014 use architect/einstein-bot-architecture. NOT for encoding agent tone in Agentforce system instructions \u2014 use agentforce/agentforce-persona-design.",
   "file_location": "skills/admin/agent-conversation-design",
   "id": "admin/agent-conversation-design",
   "inputs": [

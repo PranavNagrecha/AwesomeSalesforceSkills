@@ -89,3 +89,23 @@ or revocation considerations.
 ```
 
 **Detection hint:** Absolute language (“no tokens”, “no OAuth”) paired with JWT sales pitch.
+
+---
+
+## Anti-Pattern 6: Diagnosing Salesforce-side account containment as an org misconfiguration
+
+**What the LLM generates:** For “our integration user was frozen and its refresh tokens are gone,” a checklist of Login IP Ranges, Trusted IP Ranges, login-hours policy, and password lockout — ending in “unfreeze the user in Setup and reissue the token,” often with an offer to add the address to an allowlist.
+
+**Why it happens:** Every account-freeze cause in the training data is an org-configured one. Salesforce automatically containing accounts for anonymizing-VPN, proxy, or high-risk-IP egress — frozen account, all OAuth refresh tokens revoked, admin email from Salesforce Security — is a platform-side control no org setting created, so it is absent from a pre-2026 corpus.
+
+**Correct pattern:**
+
+```
+Before auditing org IP settings, ask whether the client egresses through a VPN,
+proxy, or cloud IP pool. If so, treat it as Salesforce-side containment: unfreezing
+alone does not hold, because containment reapplies on detection and the user must
+stop egressing from that address before reauthorizing. No opt-out or allowlist is
+documented. Refresh tokens are already revoked, so plan a full re-authorization.
+```
+
+**Detection hint:** An unfreeze-and-retry remedy with no question about egress IP, or any claim that the source address can be exempted or allowlisted.

@@ -1,6 +1,6 @@
 ---
 name: apex-future-method-patterns
-description: "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable patterns (use apex-queueable-patterns). NOT for Batch Apex (use apex-batch-patterns)."
+description: "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable job design — use apex/apex-queueable-patterns. NOT for Batch Apex — use apex/batch-apex-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

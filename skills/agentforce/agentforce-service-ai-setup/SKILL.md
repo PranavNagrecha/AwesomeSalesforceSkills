@@ -1,6 +1,6 @@
 ---
 name: agentforce-service-ai-setup
-description: "Use this skill to verify prerequisites, license entitlements, and org readiness before enabling Einstein for Service AI features: Case Classification, Article Recommendations, Reply Recommendations, and Work Summaries. Trigger keywords: Einstein for Service setup, enable Case Classification, enable Article Recommendations, enable Reply Recommendations, enable Work Summaries, Einstein generative AI prerequisites, Data Cloud for Work Summaries. NOT for core Agentforce agent setup, Agent Builder topic design, Einstein Copilot configuration, ongoing optimization of already-running features, or Einstein Trust Layer configuration."
+description: "Verify prerequisites, license entitlements, and org readiness before enabling Einstein for Service AI features: Case Classification, Article Recommendations, Reply Recommendations, and Work Summaries. Trigger keywords: Einstein for Service setup, enable Case Classification, enable Article Recommendations, enable Reply Recommendations, enable Work Summaries, Einstein generative AI prerequisites, Data Cloud for Work Summaries. NOT for tuning or troubleshooting a feature that is already live — classification accuracy, recommendations not appearing — use agentforce/einstein-copilot-for-service. NOT for building the agent itself — use agentforce/agentforce-agent-creation. NOT for its topic boundary design — use agentforce/agent-topic-design."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

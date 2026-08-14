@@ -188,4 +188,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - **admin/einstein-analytics-basics** — Use for implementation guidance on CRM Analytics datasets, recipes, dataflows, and dashboard design. This decision skill stops at the recommendation; einstein-analytics-basics covers the build.
 - **architect/insurance-cloud-architecture** — Use when the analytics decision is happening inside an Insurance Cloud or Financial Services Cloud org where industry data model constraints affect the platform choice.
-- **data/industries-data-model** — Use when the analytics data sources include Industry Cloud objects and you need to understand the data model before evaluating CRM Analytics dataset design.
+- **architect/industries-data-model** — Use when the analytics data sources include Industry Cloud objects and you need to understand the data model before evaluating CRM Analytics dataset design.

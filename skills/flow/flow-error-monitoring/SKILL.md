@@ -1,6 +1,6 @@
 ---
 name: flow-error-monitoring
-description: "Set up monitoring + alerting for Flow runtime errors at org scale: routing fault emails, Flow runtime error reports, custom centralized logging (Integration_Log__c), escalation thresholds, and trend detection. NOT for diagnosing a specific flow error (use flow-runtime-error-diagnosis). NOT for debug-mode setup (use flow-debugging)."
+description: "Set up monitoring + alerting for Flow runtime errors at org scale: routing fault emails, Flow runtime error reports, custom centralized logging (Integration_Log__c), escalation thresholds, and trend detection. NOT for diagnosing a specific flow error — use flow/flow-runtime-error-diagnosis. NOT for debug-mode setup — use flow/flow-debugging."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

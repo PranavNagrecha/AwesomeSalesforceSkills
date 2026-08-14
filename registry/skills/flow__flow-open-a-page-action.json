@@ -80,9 +80,9 @@
     "fd26de0746cfdcad3116",
     "fe0b76e2d56c8ea23bfa"
   ],
-  "content_hash": "a5f85a2f15676fa8a4da869f77174556eacba4bfebb1edf84308519dc96c0e74",
+  "content_hash": "ada7c0636e5be842703645b96d55d1b39e78cdb9e4dbe313c407a9771b121f22",
   "dependencies": [],
-  "description": "Use when a Screen Flow needs to send the user to another page \u2014 the native Open a Page action (Summer '26) that opens a Salesforce record or an external URL directly from a flow, configured through its Where to Open Page input, so you no longer need a custom LWC, a Redirect local action, or a retURL URL hack. Triggers: 'Open a Page flow action', 'navigate to record after screen flow', 'Where to Open Page', 'open URL from flow without LWC'. NOT for launching/embedding a flow (see flow/screen-flows), NOT for building a custom navigation LWC screen component (see flow/flow-screen-lwc-components), and NOT for navigation from Apex or Aura.",
+  "description": "Use when a Screen Flow needs to send the user to another page \u2014 the native Open a Page action (Summer '26) that opens a Salesforce record or an external URL directly from a flow. NOT for launching/embedding a flow ( \u2014 use flow/screen-flows. NOT for building a custom navigation LWC screen component ( \u2014 use flow/flow-screen-lwc-components.",
   "file_location": "skills/flow/flow-open-a-page-action",
   "id": "flow/flow-open-a-page-action",
   "inputs": [

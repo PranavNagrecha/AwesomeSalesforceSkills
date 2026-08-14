@@ -1,6 +1,6 @@
 ---
 name: subscriber-data-management
-description: "Use this skill when configuring or troubleshooting Marketing Cloud subscriber identity, opt-in/opt-out status, list membership, suppression, or deduplication behavior. Triggers include: setting up Subscriber Key, diagnosing duplicate sends, handling global unsubscribes, configuring Auto-Suppression Lists, or auditing subscriber status across Business Units. NOT for CRM contact management in Sales/Service Cloud, not for SFMC audience segmentation via Data Extensions alone, and not for Email Studio content authoring."
+description: "Use this skill when configuring or troubleshooting Marketing Cloud subscriber identity, opt-in/opt-out status, list membership, suppression, or deduplication behavior. Triggers include: setting up Subscriber Key. NOT for CRM contact management in Sales/Service Cloud, not for SFMC audience segmentatio — use apex/marketing-cloud-data-views."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

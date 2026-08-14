@@ -84,3 +84,39 @@ session out of the page source.
 
 **How to avoid:** always set `frontdoor-url` at runtime from a value fetched through your own
 authenticated backend and the UI Bridge API — never in checked-in or served static markup.
+
+---
+
+## Gotcha 7: The cookie requirement has an org half as well as a browser half
+
+**What happens:** every developer's browser is configured correctly, third-party cookies are
+allowed, and the session still never establishes — so the team keeps re-testing the browser
+setting that isn't the problem.
+
+**When it occurs:** the org-side setting is off. The limitations page states both halves:
+"Lightning Out 2.0 requires third-party, or cross-origin, cookies. End users must enable
+third-party cookies in their browser. Additionally, make sure that cross-domain Salesforce
+session cookies are enabled in your org."
+
+**How to avoid:** treat this as two separate preconditions with two separate owners — the end
+user (browser third-party cookies) and the admin (cross-domain Salesforce session cookies in
+the org). Verify the org half once, up front, before debugging any individual browser. Pair it
+with the domain registration: since Spring '26 the host domain goes in the Lightning Out 2.0
+App Manager **and** in the Trusted Domains allowlist under Session Settings.
+
+---
+
+## Gotcha 8: The beta and Lightning Web Security can't coexist
+
+**What happens:** an org enables Lightning Web Security as part of a routine hardening or
+Locker-migration project, and every remaining Lightning Out (beta) embed stops working.
+
+**When it occurs:** any org still on `$Lightning.use()` when LWS is switched on. The beta
+requirements page is explicit: "Lightning Out (beta) isn't supported when Lightning Web
+Security is enabled. We recommend Lightning Web Security as the preferred security architecture
+for most orgs, but you must use Lightning Locker instead if you use Lightning Out (beta)."
+
+**How to avoid:** treat the LWS enablement date — not a beta retirement date — as the deadline
+for migrating to Lightning Out 2.0. Inventory `$Lightning.use(` across host apps before the LWS
+change, and note the inversion when you migrate: the beta *requires* Locker, while under 2.0 it
+is LWS that blocks loading the library from inside a component (Gotcha 2).

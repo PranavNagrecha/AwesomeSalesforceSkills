@@ -1,6 +1,6 @@
 ---
 name: revenue-intelligence-setup
-description: "Revenue Intelligence setup: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics platform admin (use analytics-studio-admin). NOT for forecasting category setup only (use forecasting-and-quotas)."
+description: "Revenue Intelligence setup: activating the RI app and its CRM Analytics assets, Einstein deal insights, the opportunity-change waterfall, and forecast-accuracy analytics for sales leaders. NOT for configuring the Pipeline Inspection view, its metrics and review cadence - use admin/pipeline-review-design. NOT for forecast types, categories, rollups and quotas - use admin/collaborative-forecasts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -128,6 +128,6 @@ Head of sales reviews forecast vs actual across the last four quarters per segme
 
 ## Related Skills
 
-- `admin/forecasting-and-quotas` — upstream setup requirement
+- `admin/collaborative-forecasts` — upstream setup requirement
 - `admin/einstein-activity-capture-setup` — insight source
 - `admin/analytics-dashboard-design` — custom extensions

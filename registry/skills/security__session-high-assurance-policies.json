@@ -60,9 +60,9 @@
     "f0d884228715d17a503c",
     "f5e65b33764f50f7f319"
   ],
-  "content_hash": "2d4a6a8d025237820fea2da702bb0e82be96c43af8b181646869ff75339456b9",
+  "content_hash": "e1ebb6cdeb3f160cfab873d27cba2ad5e0257ae3bde3fab48e9be637f18e9dbf",
   "dependencies": [],
-  "description": "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX.",
+  "description": "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX \u2014 use admin/org-setup-and-configuration.",
   "file_location": "skills/security/session-high-assurance-policies",
   "id": "security/session-high-assurance-policies",
   "inputs": [

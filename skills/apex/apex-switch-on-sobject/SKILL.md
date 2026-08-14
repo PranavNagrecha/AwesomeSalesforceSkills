@@ -1,6 +1,6 @@
 ---
 name: apex-switch-on-sobject
-description: "Apex switch-on-SObjectType patterns — type dispatching across SObject collections, polymorphic handlers, the typed-variable binding that makes `when SObjectType varName` more than a tag check. Covers the single-type-per-when-block restriction, the null branch, the no-fall-through rule, and why `Type.forName()` cannot be used in a switch expression. NOT for basic Apex switch syntax on Integer / String / enum (use Apex Developer Guide directly), NOT for dynamic field access (see apex/dynamic-apex)."
+description: "Apex switch-on-SObjectType patterns — type dispatching across SObject collections, polymorphic handlers, the typed-variable binding that makes `when SObjectType varName` more than a tag check. Covers the single-type-per-when-block restriction, the null branch, the no-fall-through rule, and why `Type.forName()` cannot be used in a switch expression. NOT for `switch on` over an enum — use apex/apex-enum-patterns. NOT for plain Integer / String switch syntax (Apex Developer Guide). NOT for dynamic field access — use apex/dynamic-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

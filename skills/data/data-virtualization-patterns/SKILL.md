@@ -1,6 +1,6 @@
 ---
 name: data-virtualization-patterns
-description: "Choosing between virtualizing external data into Salesforce (External Objects via Salesforce Connect / OData / cross-org adapter) and replicating it (Bulk API ingest into a custom object). Covers OData 2.0 / 4.0 adapter mechanics, indirect lookup keys, the per-callout limits and the per-transaction callout cap, what External Objects cannot do (no triggers, no validation rules, no workflow / flow record-triggers, no reports beyond joined-style limits, limited search), and the Salesforce-to-Salesforce cross-org variant. NOT for plain REST callouts (see integration/named-credential-patterns), NOT for ETL / one-time data migration (see data/data-migration-strategy)."
+description: "Choosing between virtualizing external data into Salesforce (External Objects via Salesforce Connect / OData 2.0 / 4.0 / cross-org adapter) and replicating it into a custom object. Covers indirect lookup keys, per-transaction callout caps, and what External Objects cannot do (no triggers, no validation rules, no record-triggered flows, limited reporting and search). NOT for plain REST callouts with no External Object — use apex/callouts-and-http-integrations. NOT for one-time ETL or a data migration that copies the data in — use data/data-migration-planning."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

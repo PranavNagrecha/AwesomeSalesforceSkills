@@ -227,7 +227,11 @@ def check_for_any_policies(manifest_dir: Path) -> list[str]:
             "INFO: No TransactionSecurityPolicy metadata found "
             f"(searched '{manifest_dir}' recursively for *.transactionSecurityPolicy). "
             "If this org uses Transaction Security, retrieve the metadata with: "
-            "sf project retrieve start -m TransactionSecurityPolicy"
+            "sf project retrieve start -m TransactionSecurityPolicy. "
+            "Note: absence of policy metadata in source does not mean the org enforces "
+            "no policy — eligible Event Monitoring and Shield orgs may carry a "
+            "Salesforce-deployed default ReportEvent policy that no one authored "
+            "(see references/gotchas.md Gotcha 6). Confirm against Setup, not source."
         )
 
     return issues

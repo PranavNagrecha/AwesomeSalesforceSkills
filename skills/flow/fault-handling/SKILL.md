@@ -1,6 +1,6 @@
 ---
 name: fault-handling
-description: "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling; NOT for Apex exception handling (see apex/exception-handling-patterns)."
+description: "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for diagnosing a fault email you already got — use flow/flow-runtime-error-diagnosis. NOT for Apex exception handling — use apex/exception-handling."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

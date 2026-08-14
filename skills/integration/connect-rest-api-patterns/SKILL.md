@@ -1,6 +1,6 @@
 ---
 name: connect-rest-api-patterns
-description: "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD."
+description: "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD — use integration/graphql-api-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

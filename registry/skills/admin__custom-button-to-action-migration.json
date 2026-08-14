@@ -94,9 +94,9 @@
     "fe3c25ab1b3347149a9e",
     "fe70f5d06aa93ac23e82"
   ],
-  "content_hash": "721d22e7aa02079687d709c35ee28471ad9fb6cd033717818930ddb821f159d4",
+  "content_hash": "5cd123624a5a6b5715a996dc78c8df1d07d4e1d689dad5f1920cd85800f9f2e0",
   "dependencies": [],
-  "description": "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute \u2192 Apex action, navigation alerts \u2192 toast events, MassAction.update \u2192 record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/quick-actions-and-flow-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced).",
+  "description": "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute \u2192 Apex action, navigation alerts \u2192 toast events, MassAction.update \u2192 record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/global-actions-and-quick-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced).",
   "file_location": "skills/admin/custom-button-to-action-migration",
   "id": "admin/custom-button-to-action-migration",
   "inputs": [

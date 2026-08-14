@@ -70,9 +70,9 @@
     "f81f22d75416337b2a96",
     "f843296bc37f6f22fdb7"
   ],
-  "content_hash": "40e556b72471cd57edef96919a42f5f09f07974cba42b22001fa23b040ba5697",
+  "content_hash": "c3d1669e4e181d221c057d767d580b0797d82cfdf1fb24822f0e21be69d0e085",
   "dependencies": [],
-  "description": "Use when setting up, configuring, or troubleshooting Salesforce Sales Engagement (formerly High Velocity Sales) cadences, call scripts, email templates, work queue, or rep assignment. Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', 'Sales Engagement permission set'. NOT for Marketing Cloud campaigns, Marketing Cloud Account Engagement (Pardot) journeys, or custom Apex email services.",
+  "description": "Use when setting up, configuring, or troubleshooting Salesforce Sales Engagement (formerly High Velocity Sales) cadences, call scripts, email templates, work queue, or rep assignment. Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', 'Sales Engagement permission set'. NOT for cadence enrollment from Apex \u2014 use apex/sales-engagement-api. NOT for MCAE/Pardot nurture \u2014 use admin/lead-nurture-journey-design.",
   "file_location": "skills/admin/sales-engagement-cadences",
   "id": "admin/sales-engagement-cadences",
   "inputs": [

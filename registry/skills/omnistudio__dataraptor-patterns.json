@@ -38,6 +38,7 @@
     "a98d421db2af0c1afcd7",
     "b3d183693a2ad34d7c3d",
     "b554fcf7104b05495e79",
+    "b737dfffecce65e78414",
     "b7ec957efdf37d8d4e1b",
     "bd13cbe13b4446c4c10b",
     "bea20059aea52435814b",
@@ -45,6 +46,7 @@
     "c7f6d25b712d076fa641",
     "caaeb373bdcee9b2920f",
     "cad29b07db0d4c2c0362",
+    "cfc93112a441cfc85708",
     "d1e734a7230380825f6d",
     "d5e2782de58d6714acba",
     "e35087d1d1df21942de9",
@@ -56,9 +58,9 @@
     "f91bbef4bb186eae7656",
     "fe52ccf556621a6715f0"
   ],
-  "content_hash": "69dee334b4da40a4d2c30ced4e4fbbcb4f9f1a4f1c9b48cd8798b849d0ff2525",
+  "content_hash": "c9b61f26c88f4d7a19f49e701aba0dfee7b5ab2c8f63b7a0249c01a07bcb8c38",
   "dependencies": [],
-  "description": "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself.",
+  "description": "Design DataRaptors \u2014 Extract vs Turbo Extract vs Transform vs Load, mapping, performance. Triggers: DataRaptor Extract, Turbo Extract, DataRaptor Load, DataRaptor Transform, OmniStudio data mapping. NOT for Extract/Load debugging \u2014 use omnistudio/dataraptor-load-and-extract. NOT for transform optimization \u2014 use omnistudio/dataraptor-transform-optimization.",
   "file_location": "skills/omnistudio/dataraptor-patterns",
   "id": "omnistudio/dataraptor-patterns",
   "inputs": [
@@ -99,7 +101,7 @@
   "templates": [
     "skills/omnistudio/dataraptor-patterns/templates/dataraptor-patterns-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

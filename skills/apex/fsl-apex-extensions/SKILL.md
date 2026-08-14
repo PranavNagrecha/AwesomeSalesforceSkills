@@ -1,6 +1,6 @@
 ---
 name: fsl-apex-extensions
-description: "Use when writing Apex that calls Field Service Lightning scheduling APIs — AppointmentBookingService, ScheduleService, GradeSlotsService, or OAAS — to book, schedule, grade, or optimize service appointments programmatically. Trigger keywords: FSL Apex namespace, GetSlots, schedule service appointment via code, appointment booking API, FSL optimization API. NOT for standard Apex patterns unrelated to FSL, admin-level scheduling policy configuration, or declarative FSL scheduling."
+description: "Use when writing Apex that calls Field Service Lightning scheduling APIs — AppointmentBookingService, ScheduleService, GradeSlotsService, or OAAS — to book, schedule, grade, or optimize service appointments programmatically. Trigger keywords: FSL Apex namespace, GetSlots, schedule service appointment via code, appointment booking API, FSL optimization API. NOT for scheduling policy or work rule config — use admin/fsl-scheduling-policies. NOT for optimization-mode and territory-sizing design — use architect/fsl-optimization-architecture."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

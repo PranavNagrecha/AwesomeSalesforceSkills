@@ -1,6 +1,6 @@
 ---
 name: flexcard-design-patterns
-description: "Use when designing, building, or reviewing OmniStudio FlexCards — including data source selection, card states, actions, conditional visibility, flyout configuration, and child card iteration. Triggers: 'FlexCard', 'card template', 'flyout', 'card action', 'card state', 'data source', 'child card', 'conditional visibility'. NOT for OmniScript design, standalone LWC development, or Apex controller architecture outside the FlexCard context."
+description: "Design FlexCard layout, data sources, states, actions, and child-card iteration. Triggers: FlexCard, card states, flyout, child card. NOT for FlexCard state across navigation — use omnistudio/flexcard-state-management. NOT for admin requirements — use admin/flexcard-requirements."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -35,7 +35,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # FlexCard Design Patterns

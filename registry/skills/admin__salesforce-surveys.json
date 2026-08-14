@@ -59,9 +59,9 @@
     "f2c8b9ecc41dab31cbb7",
     "f4c7c2f341056fa3a468"
   ],
-  "content_hash": "b24bba462e102d08b24aca37d07c92cc57d3af8d5c3cb3ef0c4f97c60a260834",
+  "content_hash": "0e457819cb8a914a721afd449c2598154c0257bddf2e402a5fe56d032ee1c7cb",
   "dependencies": [],
-  "description": "Use when designing, configuring, distributing, or troubleshooting Salesforce Surveys and Feedback Management. Triggers: 'create a survey', 'NPS score', 'survey invitation', 'survey response report', 'customer feedback form', 'guest user survey access'. NOT for custom-built LWC form components or third-party survey tools like SurveyMonkey or Qualtrics.",
+  "description": "Use when designing, configuring, distributing, or troubleshooting Salesforce Surveys and Feedback Management. Triggers: 'create a survey', 'NPS score', 'survey invitation', 'survey response report', 'customer feedback form', 'guest user survey access'. NOT for choosing between CSAT, NPS, and CES as your CX metric \u2014 use architect/customer-effort-scoring. NOT for third-party survey tools like SurveyMonkey or Qualtrics.",
   "file_location": "skills/admin/salesforce-surveys",
   "id": "admin/salesforce-surveys",
   "inputs": [

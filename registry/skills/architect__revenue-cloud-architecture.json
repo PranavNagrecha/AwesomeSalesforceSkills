@@ -54,9 +54,9 @@
     "de6a083c9a67838bb133",
     "f7a2387832adfd7d2957"
   ],
-  "content_hash": "a4f8c3dcdfad31dca0061bde4db39a5123460a81e1ad6ec84574c18e0dc601f4",
+  "content_hash": "9039ce2903be86999a3cdb317eee40d1ff54c7a3f0631e73bfc77371cfb3d28b",
   "dependencies": [],
-  "description": "Architecting on Salesforce Revenue Cloud (Revenue Lifecycle Management \u2014 RLM, the successor to CPQ-Plus + Billing). Covers the five RLM domains (Product Catalog & Pricing, Transaction Management, Contract Lifecycle Management, Order-to-Cash, Billing), the canonical data model (Product2 / PricebookEntry / Quote / Order / OrderItem / Contract / Asset / BillingSchedule / Invoice / LegalEntity), multi-entity scoping via LegalEntity, the RLM \u2194 ERP integration patterns (CDC + MuleSoft preferred over point-to-point trigger callouts), and the disambiguation between native RLM and the legacy `blng__` Salesforce Billing managed package and `SBQQ__` CPQ classic. NOT for declarative CPQ classic config (see omnistudio/cpq-classic-config), NOT for Subscription Management billing patterns predating RLM (see architect/cpq-architecture-patterns).",
+  "description": "Architecting on Salesforce Revenue Cloud (Revenue Lifecycle Management \u2014 RLM, the successor to CPQ-Plus + Billing). Covers the five RLM domains (Product Catalog & Pricing, Transaction Management, Contract Lifecycle Management, Order-to-Cash, Billing), the canonical data model (Product2 / PricebookEntry / Quote / Order / OrderItem / Contract / Asset / BillingSchedule / Invoice / LegalEntity), multi-entity scoping via LegalEntity, the RLM \u2194 ERP integration patterns (CDC + MuleSoft preferred over point-to-point trigger callouts), and the disambiguation between native RLM and the legacy `blng__` Salesforce Billing managed package and `SBQQ__` CPQ classic. NOT for implementing DRO fulfilment plans or Connect API billing schedules - use integration/revenue-lifecycle-management. NOT for CPQ classic bundle, pricing and quoting architecture - use architect/cpq-architecture-patterns.",
   "file_location": "skills/architect/revenue-cloud-architecture",
   "id": "architect/revenue-cloud-architecture",
   "inputs": [

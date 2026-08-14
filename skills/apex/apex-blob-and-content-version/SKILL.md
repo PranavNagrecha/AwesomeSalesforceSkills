@@ -1,6 +1,6 @@
 ---
 name: apex-blob-and-content-version
-description: "Use when Apex must create, persist, stream, or serve binary files — including uploading from LWC/REST, generating ContentVersion records, chunking large bodies, relating files to records via ContentDocumentLink, and handling the heap/payload limits that trip binary workflows. Triggers: 'ContentVersion VersionData Blob', 'upload file from LWC to Apex', 'large file heap limit Apex', 'ContentDocumentLink sharing'. NOT for generating PDFs (use pdf-generation-patterns); NOT for email attachment parsing (use apex-email-services)."
+description: "Use when Apex must create, persist, stream, or serve binary files — including uploading from LWC/REST, generating ContentVersion records, chunking large bodies, relating files to records via ContentDocumentLink, and handling the heap/payload limits that trip binary workflows. Triggers: 'ContentVersion VersionData Blob', 'upload file from LWC to Apex', 'large file heap limit Apex', 'ContentDocumentLink sharing'. NOT for the Files data model itself — use data/salesforce-files-architecture. NOT for generating PDFs — use apex/pdf-generation-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

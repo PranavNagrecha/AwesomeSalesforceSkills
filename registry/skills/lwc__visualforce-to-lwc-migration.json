@@ -97,9 +97,9 @@
     "f9290108f23ac36a6ab4",
     "f94656cb8032da06e48e"
   ],
-  "content_hash": "3c6a3b1ecbe1794ace9a4065cee96edade0b90a664b09fa6d3e06b8f17e380af",
+  "content_hash": "b9c5170efc267cb6c1f9c6f8128e6f96749870ae7f515cf2cc4310af920d77cc",
   "dependencies": [],
-  "description": "Migrating Visualforce pages and components to Lightning Web Components: controller-to-Apex-method translation, viewstate replacement, custom URL parameter handling, PageReference-to-NavigationMixin mapping, Lightning Out coexistence, and inline VF retention strategy. NOT for new LWC development from scratch (use lwc-fundamentals) or Aura-to-LWC migration (use aura-to-lwc-migration).",
+  "description": "Migrating Visualforce pages and components to Lightning Web Components: controller-to-Apex-method translation, viewstate replacement, custom URL parameter handling, PageReference-to-NavigationMixin mapping, Lightning Out. NOT for new LWC development from scratch (use lwc-fundamentals) or Aura-to-LWC migration \u2014 use lwc/navigation-and-routing.",
   "file_location": "skills/lwc/visualforce-to-lwc-migration",
   "id": "lwc/visualforce-to-lwc-migration",
   "inputs": [

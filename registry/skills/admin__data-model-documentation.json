@@ -61,9 +61,9 @@
     "f9509538a737c0e396b7",
     "fcce0da13e677995c4c4"
   ],
-  "content_hash": "bd7238d59c697cc07d098b3168c32519ab1f5ca46a406ce7799ad1c79be4c96b",
+  "content_hash": "95f78784d8228dfc8ea291177738adeeb48bc739e64c1a7a62aee57d27e4ad17",
   "dependencies": [],
-  "description": "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the data model (use object-creation-and-design or architect skills) or for optimizing queries against the model (use soql-query-optimization).",
+  "description": "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the model or choosing lookup vs master-detail \u2014 use data/data-model-design-patterns. NOT for generating the Mermaid or PlantUML diagram \u2014 use architect/salesforce-erd-and-diagramming.",
   "file_location": "skills/admin/data-model-documentation",
   "id": "admin/data-model-documentation",
   "inputs": [

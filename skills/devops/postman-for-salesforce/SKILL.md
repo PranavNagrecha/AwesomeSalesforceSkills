@@ -1,6 +1,6 @@
 ---
 name: postman-for-salesforce
-description: "Use when designing or auditing **Postman collections** that exercise Salesforce APIs — collection structure, OAuth authentication (Web Server, JWT bearer, Username-Password, Client Credentials), pre-request scripts that refresh access tokens, environment variables for sandbox vs prod, request chaining via collection variables, response visualizers, and the official Salesforce Postman collection from the Developer Hub. Triggers: 'set up postman for salesforce', 'postman oauth pre-request script', 'postman jwt bearer salesforce', 'postman environment variables instance url access token', 'salesforce postman collection import', 'postman chained requests bulk api job', 'postman session id refresh script'. NOT for general OAuth-flow design (use `security/oauth-flow-design`), Apex callouts from inside Salesforce (use `apex/apex-callout-patterns`), API performance load testing (use `devops/performance-testing-salesforce`), or running `sf` CLI commands (use `devops/salesforce-cli-automation`)."
+description: "Use when designing or auditing **Postman collections** that exercise Salesforce APIs — collection structure, OAuth authentication (Web Server, JWT bearer, Username-Password, Client Credentials), pre-request scripts that refresh access tokens, environment variables for sandbox vs prod, request chaining via collection variables, response visualizers, and the official Salesforce Postman collection from the Developer Hub. Triggers: 'set up postman for salesforce', 'postman oauth pre-request script', 'postman jwt bearer salesforce', 'postman environment variables instance url access token', 'salesforce postman collection import', 'postman chained requests bulk api job', 'postman session id refresh script'. NOT for general OAuth-flow design (use `integration/oauth-flows-and-connected-apps`), Apex callouts from inside Salesforce (use `apex/callouts-and-http-integrations`), API performance load testing (use `devops/performance-testing-salesforce`), or running `sf` CLI commands (use `devops/salesforce-cli-automation`)."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -48,7 +48,7 @@ runtime_orphan: true
 
 Activate when a developer or platform team is **building or auditing a Postman setup that exercises Salesforce APIs** — typically: importing the official Salesforce Postman collection, designing per-environment auth, writing a pre-request script that refreshes the access token, chaining a multi-step Bulk API ingest, or hardening a shared collection against credential leakage. The skill produces a concrete environment shape, an OAuth pre-request script for the chosen flow, and a collection structure that scales from one developer to a shared team workspace.
 
-This skill is not for choosing the OAuth flow itself (that's `security/oauth-flow-design`), generating Apex callouts (`apex/apex-callout-patterns`), running performance tests (`devops/performance-testing-salesforce`), or building external integrations (`integration/rest-api-patterns`). It assumes Postman is the chosen client; auditing whether Postman is the right tool versus `sf api request rest` or curl is out of scope.
+This skill is not for choosing the OAuth flow itself (that's `integration/oauth-flows-and-connected-apps`), generating Apex callouts (`apex/callouts-and-http-integrations`), running performance tests (`devops/performance-testing-salesforce`), or building external integrations (`integration/rest-api-patterns`). It assumes Postman is the chosen client; auditing whether Postman is the right tool versus `sf api request rest` or curl is out of scope.
 
 ---
 
@@ -262,14 +262,17 @@ The collection runner with a delay setting handles step 4's polling.
 
 1. Choose the OAuth flow per the requirements (interactive vs unattended, server-side credentials available, browser allowed). Document the choice in the collection README.
 2. Configure the Connected App in Salesforce: scopes (`api`, `refresh_token`, `openid` as needed), callback URL (Web Server only), policy "Admin approved users are pre-authorized," IP restrictions if applicable.
-3. Create the environment shape — `instanceUrl`, `accessToken`, `apiVersion`, `loginUrl`, `clientId`, `clientSecret` (Vault), and flow-specific keys (`username`, `jwtPrivateKey`, etc.).
-4. Write the pre-request script for the chosen flow at the **collection level** (not per-request). It runs before every request and refreshes the token only when needed.
-5. Build the collection structure: folder per API surface (Data, Tooling, Bulk, Connect), folder per workflow (Bulk Job Lifecycle, Composite Graph). Each request uses `{{instanceUrl}}/services/data/{{apiVersion}}/...`.
-6. For each request, write at least one `pm.test` assertion (status code, key field present). Without tests, a successful 200 hides response-body bugs.
-7. Document the environment-variable population steps in a "00 — Setup" markdown request at the top of the collection (Postman supports markdown in request descriptions).
-8. Export the collection JSON and commit to source control. Document the export ritual (Postman's auto-sync vs manual export) so the source-controlled copy doesn't drift.
-9. Run the full collection via the collection runner against a sandbox before merging changes. The runner enforces ordering and surfaces broken chains.
-10. For shared workspaces, audit Vault usage on every onboarding — a developer who imports the collection without populating Vault sees broken auth, not "missing secret" errors.
+3. Wire auth into the collection, never into individual requests:
+   - Create the environment shape — `instanceUrl`, `accessToken`, `apiVersion`, `loginUrl`, `clientId`, `clientSecret` (Vault), and flow-specific keys (`username`, `jwtPrivateKey`, etc.).
+   - Write the pre-request script for the chosen flow at the **collection level** (not per-request). It runs before every request and refreshes the token only when needed.
+4. Build the collection structure and make every request assert something:
+   - Folder per API surface (Data, Tooling, Bulk, Connect), folder per workflow (Bulk Job Lifecycle, Composite Graph). Each request uses `{{instanceUrl}}/services/data/{{apiVersion}}/...`.
+   - For each request, write at least one `pm.test` assertion (status code, key field present). Without tests, a successful 200 hides response-body bugs.
+5. Make the collection reproducible on someone else's machine:
+   - Document the environment-variable population steps in a "00 — Setup" markdown request at the top of the collection (Postman supports markdown in request descriptions).
+   - Export the collection JSON and commit to source control. Document the export ritual (Postman's auto-sync vs manual export) so the source-controlled copy doesn't drift.
+6. Run the full collection via the collection runner against a sandbox before merging changes. The runner enforces ordering and surfaces broken chains.
+7. For shared workspaces, audit Vault usage on every onboarding — a developer who imports the collection without populating Vault sees broken auth, not "missing secret" errors.
 
 ---
 
@@ -322,7 +325,7 @@ Non-obvious behaviors that bite Postman users hitting Salesforce:
 
 ## Related Skills
 
-- security/oauth-flow-design — for choosing among Web Server, JWT bearer, Username-Password, Client Credentials before building the Postman script
+- integration/oauth-flows-and-connected-apps — for choosing among Web Server, JWT bearer, Username-Password, Client Credentials before building the Postman script
 - integration/named-credentials-setup — when the long-term home for the same calls is Salesforce-side via a Named Credential, not Postman
 - integration/rest-api-patterns — for general Salesforce REST API usage; Postman is the test client, this skill the design surface
 - integration/bulk-api-2-patterns — for the underlying Bulk API 2.0 design covered by Pattern 2

@@ -1,6 +1,6 @@
 ---
 name: omnistudio-performance
-description: "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering delays, or async IP fire-and-forget patterns. Triggers: 'OmniScript slow', 'Integration Procedure timeout', 'DataRaptor cache', 'FlexCard loading too long', 'reduce API calls OmniStudio'. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill). NOT for OmniScript step design or journey UX (use omniscript-design-patterns skill)."
+description: "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill) — use omnistudio/integration-procedure-cacheable-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,8 @@ triggers:
   - "we are hitting API limits because OmniStudio makes too many calls per transaction"
   - "can I run an Integration Procedure asynchronously without blocking the user"
   - "omnistudio performance isn't working"
+  - "nested integration procedure chainOnStep 120 second timeout"
+  - "too many IP actions on one omniscript step"
 tags:
   - omnistudio-performance
   - integration-procedures
@@ -39,7 +41,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # OmniStudio Performance

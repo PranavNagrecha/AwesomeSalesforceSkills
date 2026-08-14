@@ -1,6 +1,6 @@
 ---
 name: agent-security-review
-description: "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check)."
+description: "Pre-production security checklist for Agentforce deployments: agent run-as permission scope, grounding-source data classification, action write-scope, audit trail. NOT for the full go-live readiness gate covering cost telemetry, rate limits, rollout and rollback — use agentforce/agentforce-production-readiness-checklist. NOT for a general org security review — use security/security-health-check."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

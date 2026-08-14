@@ -33,6 +33,21 @@ GROUP_METADATA_PATHS = [
     "force-app/main/default/groups",
 ]
 
+# Superseded SharedTo role-hierarchy elements.
+#   roleAndSubordinates  -> roleAndSubordinatesInternal under Secure Roles
+#                           (sandboxes Summer '25, production Winter '26).
+#   rolesAndSubordinates -> superseded separately, by roleAndSubordinates, at
+#                           API 22.0. There is no rolesAndSubordinatesInternal.
+# Reported for review, never as an issue. roleAndSubordinates is still correct
+# in orgs with digital experiences enabled whose Experience Cloud site users
+# are on external account roles other than a shared person account role, and
+# production enforcement reached only orgs created after 2024-02-08 that had
+# not enabled digital experiences, so a hit here is not proof of a defect.
+LEGACY_ROLE_GROUP_ELEMENTS = [
+    "<roleAndSubordinates>",
+    "<rolesAndSubordinates>",
+]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -143,6 +158,19 @@ def scan_metadata_for_group_references(base: Path) -> list[str]:
     return sorted(set(references))
 
 
+def scan_metadata_for_legacy_role_groups(base: Path) -> list[str]:
+    """Return XML files still using the pre-Secure-Roles roleAndSubordinates element."""
+    hits: list[str] = []
+    for xml_file in base.rglob("*.xml"):
+        try:
+            content = xml_file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if any(element in content for element in LEGACY_ROLE_GROUP_ELEMENTS):
+            hits.append(str(xml_file.relative_to(base)))
+    return sorted(set(hits))
+
+
 def check_queue_issues(queue: dict) -> list[str]:
     """Return a list of issue strings for a parsed queue summary."""
     issues: list[str] = []
@@ -241,6 +269,27 @@ def main() -> int:
         print(f"Files referencing queue or group patterns ({len(refs)}):")
         for r in refs:
             print(f"  {r}")
+        print()
+
+    # --- Scan for pre-Secure-Roles sharing group references ---
+    legacy = scan_metadata_for_legacy_role_groups(base)
+    if legacy:
+        found_any = True
+        print(f"Files using a superseded role-hierarchy element ({len(legacy)}):")
+        for path in legacy:
+            print(f"  {path}")
+        print(
+            "  REVIEW: <rolesAndSubordinates> is superseded at API 22.0 and should "
+            "always be replaced. <roleAndSubordinates> becomes "
+            "<roleAndSubordinatesInternal> under Secure Roles, EXCEPT in an org with "
+            "digital experiences enabled whose Experience Cloud site users are on "
+            "external account roles other than a shared person account role."
+        )
+        print(
+            "  Confirm against Setup -> Release Updates in the target org: production "
+            "enforcement reached only orgs created after 2024-02-08 that had not "
+            "enabled digital experiences."
+        )
         print()
 
     # --- Report issues ---

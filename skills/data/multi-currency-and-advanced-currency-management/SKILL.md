@@ -1,6 +1,6 @@
 ---
 name: multi-currency-and-advanced-currency-management
-description: "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern."
+description: "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for what convertCurrency() allows in WHERE/ORDER BY or querying CurrencyType and DatedConversionRate — use data/currency-management-patterns. NOT for wrong converted amounts in Sales Cloud reports and roll-ups — use architect/multi-currency-sales-architecture."
 category: data
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

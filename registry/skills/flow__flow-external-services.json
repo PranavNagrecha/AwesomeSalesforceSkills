@@ -88,11 +88,11 @@
     "fd383ae373b79e264ce4",
     "ff2aecfe56fd29d7652b"
   ],
-  "content_hash": "c5d19d2d7bc5edc5830604c56169c10297b8b8047d059bc460bbd23dae955171",
+  "content_hash": "3d19e370b41b4a196eff38595e96892a8958f4aaa08907cc1766dfc3c3a3c705",
   "dependencies": [
     "named-credentials-setup"
   ],
-  "description": "Use when calling external REST APIs from Salesforce Flow without writing Apex: registering API specs as External Services, using generated invocable actions in Flow Builder, using Flow's built-in HTTP Callout action (GA Spring '24+), configuring Named Credentials for authentication, mapping inputs/outputs, and handling fault paths. Trigger keywords: 'External Services', 'HTTP Callout action in Flow', 'call REST API from Flow', 'register OpenAPI spec', 'Flow HTTP action'. NOT for Apex callouts, Apex HttpRequest patterns, OmniStudio Integration Procedures, or Platform Event publishing.",
+  "description": "Use when calling external REST APIs from Salesforce Flow without writing Apex: registering API specs as External Services, using generated invocable actions in Flow Builder, using Flow's built-in HTTP Callout action (GA Spring '24+), configuring Named Credentials for authentication, mapping inputs/outputs, and handling fault paths. Trigger keywords: 'External Services', 'HTTP Callout action in Flow', 'call REST API from Flow', 'register OpenAPI spec', 'Flow HTTP action'. NOT for writing the callout in Apex \u2014 use apex/callouts-and-http-integrations. NOT for shaping a complex JSON response into Flow variables \u2014 use flow/flow-apex-defined-types.",
   "file_location": "skills/flow/flow-external-services",
   "id": "flow/flow-external-services",
   "inputs": [

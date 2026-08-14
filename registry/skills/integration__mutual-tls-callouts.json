@@ -44,9 +44,9 @@
     "d8325a5c192caa73e701",
     "ef7d902e8be2ec05655a"
   ],
-  "content_hash": "09ef787f80d06e43034f5f8fe4983f4f7495eb0e9807f8132e88003ae0698d24",
+  "content_hash": "6f35576c093c61a232b7812978dce864a0d961f9c08e94cc385d9980f35a7dbf",
   "dependencies": [],
-  "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
+  "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth \u2014 use architect/integration-security-architecture.",
   "file_location": "skills/integration/mutual-tls-callouts",
   "id": "integration/mutual-tls-callouts",
   "inputs": [

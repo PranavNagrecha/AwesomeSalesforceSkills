@@ -1,6 +1,6 @@
 ---
 name: custom-agent-actions-apex
-description: "Use when building custom Apex-based actions for Agentforce agents: designing @InvocableMethod classes for Atlas Reasoning Engine invocation, defining input/output schema, handling errors, and managing security context. NOT for standard out-of-the-box agent actions, Flow-based actions, or general @InvocableMethod usage in Flow (use flow/* skills)."
+description: "Building custom Apex-based actions for Agentforce agents: designing @InvocableMethod classes for Atlas Reasoning Engine invocation, defining input/output schema, handling errors, and managing security context. NOT for choosing between Apex, Flow, External Service and prompt-template tool shapes — use agentforce/agentforce-tool-use-patterns. NOT for the Apex test class that covers each action branch — use agentforce/agent-action-unit-tests."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

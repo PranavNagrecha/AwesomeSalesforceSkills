@@ -78,9 +78,11 @@
     "c0c231a6ee8c14a75788",
     "c644e7af5b93c456abc3",
     "c771c0ce2265039ad5f7",
+    "c96581b1773762161846",
     "cc741cee626c3a743f23",
     "d1c3251a4ad6b3b2c15d",
     "d1cf447b823510a1c470",
+    "d2f66a2526b94f16e921",
     "d3aa84d8a89a7a2ca053",
     "d508c533f31a2562c092",
     "d79c15282e4dc11b8bc9",
@@ -95,9 +97,9 @@
     "f2ab3d12b7efa316f3d4",
     "fd91067751e871f7f6da"
   ],
-  "content_hash": "75ccc6a3d5f77e7bd8a07e078172c9dcd34e9ef75c1546d63216e31a29dee812",
+  "content_hash": "27f58249e2b81071599b4bdcde8e4062763a7f4914026ff21ea5b1a15b4b289b",
   "dependencies": [],
-  "description": "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components.",
+  "description": "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components \u2014 use data/omnistudio-datapack-migration.",
   "file_location": "skills/omnistudio/omnistudio-deployment-datapacks",
   "id": "omnistudio/omnistudio-deployment-datapacks",
   "inputs": [
@@ -141,7 +143,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-deployment-datapacks/templates/omnistudio-deployment-datapacks-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

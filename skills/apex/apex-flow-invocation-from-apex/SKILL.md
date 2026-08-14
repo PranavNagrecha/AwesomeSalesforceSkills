@@ -1,6 +1,6 @@
 ---
 name: apex-flow-invocation-from-apex
-description: "Use when invoking Autolaunched Flows from Apex via `Flow.Interview.createInterview`. Covers parameter typing, output retrieval, governor boundaries, and when to inline logic instead. NOT for Apex-from-Flow (`@InvocableMethod`), Process Builder, Screen Flow invocation, or Flow Orchestrator stages."
+description: "Use when invoking Autolaunched Flows from Apex via `Flow.Interview.createInterview`. Covers parameter typing, output retrieval, governor boundaries, and when to inline logic instead. NOT for writing the `@InvocableMethod` class a Flow calls — use apex/invocable-methods. NOT for starting the same flow from the REST API, a Platform Event, or a subflow — use flow/auto-launched-flow-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

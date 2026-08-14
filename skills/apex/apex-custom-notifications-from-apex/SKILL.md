@@ -1,6 +1,6 @@
 ---
 name: apex-custom-notifications-from-apex
-description: "Use when sending Custom Notifications (bell icon / mobile push) from Apex via `Messaging.CustomNotification`. Covers target resolution, Notification Type discovery, recipient limits, and async-safe sending. NOT for email (Messaging.SingleEmailMessage), Chatter @mentions, Flow-triggered notifications, or Mobile Publisher push."
+description: "Use when sending Custom Notifications (bell icon / mobile push) from Apex via `Messaging.CustomNotification`. Covers target resolution, Notification Type discovery, recipient limits, and async-safe sending. NOT for creating the Notification Type in Setup — use admin/custom-notification-types. NOT for sending it from Flow — use flow/flow-email-and-notifications."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

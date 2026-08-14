@@ -1,6 +1,6 @@
 ---
 name: soap-api-patterns
-description: "Use when designing, implementing, or reviewing Salesforce SOAP API integrations — covering enterprise vs partner WSDL selection, login() and session management, core operations (query/create/update/upsert/delete), and Metadata API SOAP usage. Trigger keywords: 'enterprise WSDL', 'partner WSDL', 'login() call', 'sessionId', 'SOAP API', 'WSC', 'force-wsc', 'Ant Migration Tool', '.NET SOAP integration'. NOT for REST API, Bulk API 2.0, or GraphQL API."
+description: "Use when designing, implementing, or reviewing Salesforce SOAP API integrations — covering enterprise vs partner WSDL. Trigger keywords: 'enterprise WSDL', 'partner WSDL', 'login() call', 'sessionId', 'SOAP API', 'WSC', 'force-wsc', 'Ant Migration Tool', '.NET SOAP integration'. NOT for REST API, Bulk API 2 — use apex/apex-wsdl2apex-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: flow-formula-and-expression-patterns
-description: "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =, VALUE/TEXT/DATETIMEVALUE coercion, time-zone differences between TODAY/NOW, and the 5,000-character formula limit. NOT for record-level formula fields on objects — see admin/formula-fields. NOT for Validation Rule formulas (different runtime context) — see admin/validation-rules."
+description: "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects — — use admin/formula-fields. NOT for Validation Rule formulas (different runtime context) — — use admin/validation-rules."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

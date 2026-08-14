@@ -1,6 +1,6 @@
 ---
 name: metadata-api-retrieve-deploy
-description: "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages)."
+description: "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for what package.xml can hold or deploy-order concepts — use apex/metadata-api-and-package-xml. NOT for a delete that fails on a still-referenced component — use devops/destructive-changes-deployment."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

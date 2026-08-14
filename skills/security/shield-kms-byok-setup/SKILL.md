@@ -1,6 +1,6 @@
 ---
 name: shield-kms-byok-setup
-description: "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking."
+description: "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking — use security/platform-encryption."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

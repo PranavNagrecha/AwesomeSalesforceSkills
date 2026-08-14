@@ -1,4 +1,4 @@
-# Lwc Drag And Drop — Work Template
+# LWC Drag and Drop — Work Template
 
 Use this template when working on tasks in this area.
 
@@ -10,23 +10,29 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Answers to the Before Starting questions from SKILL.md:
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- Interaction shape (kanban, sortable list, file drop, tree reorder):
+- Target devices — touch has no native HTML5 drag:
+- Accessibility obligation, and the keyboard path that satisfies it:
+- Custom MIME type for the payload, defined once:
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Native HTML5 drag, or a third-party library for touch and keyboard support — and why:
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
+From the review checklist in SKILL.md, plus the failure modes in `references/gotchas.md`:
 
-- [ ] TODO
-- [ ] TODO
+- [ ] `event.preventDefault()` in `dragover` (otherwise `drop` never fires)
+- [ ] Visual state reset in `dragend`, not `drop`
+- [ ] `dragenter`/`dragleave` handle child-element bubbling
+- [ ] `setData('text/plain', ...)` set alongside any custom MIME
+- [ ] Keyboard alternative present (arrow keys and/or a Move-to menu)
+- [ ] Foreign drops rejected cleanly by checking the custom MIME
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Deviations from the standard pattern, and the reason for each:
+

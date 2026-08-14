@@ -46,9 +46,9 @@
     "f71b0c639efd38603c8f",
     "f818bb9871e8e1c0423c"
   ],
-  "content_hash": "e381f4f49429c5bc184ec6d5f8f933645944ad02402ba8c79497fa4668c11e1f",
+  "content_hash": "5196aaac74b480783e86a59e7a95ad5d1ff7eecbf6a9f380718eca3e0f1a19f5",
   "dependencies": [],
-  "description": "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced domains, sandbox url change, oauth login host. Does NOT cover: end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuration.",
+  "description": "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced. NOT for end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuratio \u2014 use admin/connected-app-troubleshooting.",
   "file_location": "skills/security/oauth-redirect-and-domain-strategy",
   "id": "security/oauth-redirect-and-domain-strategy",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: subscription-management-architecture
-description: "Use when designing or evaluating Salesforce CPQ subscription lifecycle architecture: amendment flow, renewal automation, co-termination design, or billing integration at the contract level. Trigger keywords: amendment architecture, renewal automation, co-termination design, subscription ledger, large-scale amendment, billing schedule, swap pattern, SBQQ__Subscription__c. NOT for billing setup, standard Salesforce contracts without CPQ, or Revenue Cloud advanced order management."
+description: "Use when designing or evaluating Salesforce CPQ subscription lifecycle architecture: amendment flow, renewal automation, co-termination design, or billing integration at the contract level. Trigger keywords: amendment architecture, renewal automation, co-termination design, subscription ledger, large-scale amendment, billing schedule, swap pattern, SBQQ__Subscription__c. NOT for configuring amendment and renewal quotes - use admin/contract-and-renewal-management. NOT for bundle design or pricing-engine performance - use architect/cpq-architecture-patterns."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

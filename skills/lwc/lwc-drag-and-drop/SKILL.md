@@ -1,6 +1,6 @@
 ---
 name: lwc-drag-and-drop
-description: "HTML5 drag-and-drop API in LWC — draggable=\"true\", dataTransfer.setData / getData, ondragover preventDefault, drop zones, visual hover state, accessibility (keyboard alternatives, aria-grabbed deprecation), and shadow DOM event leakage. NOT for sortable lists where a UI library (Sortable.js) is already in use, or for file-upload drops (use lwc/lwc-file-upload-drop)."
+description: "HTML5 drag-and-drop API in LWC — draggable=\"true\", dataTransfer.setData / getData, ondragover preventDefault, drop zones, visual hover state, accessibility (keyboard alternatives, aria-grabbed deprecation), and shadow DOM event leakage. NOT for uploading a file the user dropped on the component — use lwc/file-upload-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

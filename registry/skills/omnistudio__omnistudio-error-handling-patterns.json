@@ -3,6 +3,7 @@
   "chunk_ids": [
     "0343fed38e8ecbaa21e6",
     "0425fd1d033579e8be4a",
+    "0e2d2b3154bf709ff6bd",
     "1573079980fb3de64909",
     "17ff1e3ba6b2166a178c",
     "1a1c7119570ecdf6c969",
@@ -13,6 +14,7 @@
     "3deaf02abaa257d759a3",
     "407e15e9a9d9e1fedd87",
     "4231f8e69a4611fa3e11",
+    "44c50cc59e9e9c092c34",
     "4794c0cdf573b64d574f",
     "4d0b61fd8b279219c749",
     "507b13dbd9b965726f18",
@@ -35,6 +37,7 @@
     "8fdf64c4935c37fe4362",
     "912c43eee96faa248874",
     "91b136a489d34c3caef0",
+    "97052938cd7468a2c6d0",
     "9951f8fa2b4c54818159",
     "9d177dad683c74e08c32",
     "aae5450843d0640c0025",
@@ -44,6 +47,7 @@
     "bc0cd660fe66f9041f9a",
     "bed411f6c41de88d7804",
     "cffa5598a19b37e430c6",
+    "d1449edca2b92ad4e397",
     "d17347afe2a71e99da73",
     "da9a61b1eaefbf8de7df",
     "db5e0d6fc8f3bb22708a",
@@ -54,9 +58,9 @@
     "f698b9cead68b130167e",
     "fac28af1d1357344f90e"
   ],
-  "content_hash": "2a8880935f1317eefae5c8e73dee787727147ca382bc61758a0571d48b62e99f",
+  "content_hash": "4efb9333da33d57a92f5bf7ac2ea138d61c37a44ef26180d577e878acd2b080d",
   "dependencies": [],
-  "description": "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards \u2014 error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault', 'dataraptor error handling', 'omniscript retry', 'flexcard action failure'. NOT for general Apex exception design or Flow fault paths.",
+  "description": "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards \u2014 error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault'. NOT for general Apex exception design or Flow fault paths \u2014 use data/omnistudio-metadata-management.",
   "file_location": "skills/omnistudio/omnistudio-error-handling-patterns",
   "id": "omnistudio/omnistudio-error-handling-patterns",
   "inputs": [
@@ -95,7 +99,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-error-handling-patterns/templates/fault-routing-matrix.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

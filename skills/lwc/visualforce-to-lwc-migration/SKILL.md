@@ -1,6 +1,6 @@
 ---
 name: visualforce-to-lwc-migration
-description: "Migrating Visualforce pages and components to Lightning Web Components: controller-to-Apex-method translation, viewstate replacement, custom URL parameter handling, PageReference-to-NavigationMixin mapping, Lightning Out coexistence, and inline VF retention strategy. NOT for new LWC development from scratch (use lwc-fundamentals) or Aura-to-LWC migration (use aura-to-lwc-migration)."
+description: "Migrating Visualforce pages and components to Lightning Web Components: controller-to-Apex-method translation, viewstate replacement, custom URL parameter handling, PageReference-to-NavigationMixin mapping, Lightning Out. NOT for new LWC development from scratch (use lwc-fundamentals) or Aura-to-LWC migration — use lwc/navigation-and-routing."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

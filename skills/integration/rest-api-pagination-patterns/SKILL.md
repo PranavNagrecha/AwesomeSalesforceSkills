@@ -1,6 +1,6 @@
 ---
 name: rest-api-pagination-patterns
-description: "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for Bulk API (use bulk-api-patterns). NOT for GraphQL connection pagination (use graphql-api-patterns)."
+description: "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for REST CRUD or Composite — use integration/rest-api-patterns. NOT for GraphQL pagination — use integration/graphql-api-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -45,9 +45,9 @@
     "ea18f3ab4c842a974801",
     "f2804401eeae82fd71d4"
   ],
-  "content_hash": "4eb2e0808152d02a09dae83b7055ad7c8bab58b6a67f6afdb1dc4cf9a89a1f4d",
+  "content_hash": "065d1657ba137228e981bc3d0e2c0ad0a1e5d778423fa17cb04029f43d8c7bcf",
   "dependencies": [],
-  "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
+  "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself \u2014 use apex/sf-cli-and-sfdx-essentials.",
   "file_location": "skills/devops/sfdx-hardis-integration",
   "id": "devops/sfdx-hardis-integration",
   "inputs": [

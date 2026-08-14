@@ -184,4 +184,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `integration/api-led-connectivity` — For designing the Experience/Process/System API layer pattern within MuleSoft
 - `integration/mulesoft-salesforce-connector` — For configuring the Salesforce connector within a Mule application
-- `integration/hybrid-integration-architecture` — For decisions about when MuleSoft vs. Salesforce-native integration is appropriate
+- `integration/middleware-integration-patterns` — For decisions about when MuleSoft vs. Salesforce-native integration is appropriate

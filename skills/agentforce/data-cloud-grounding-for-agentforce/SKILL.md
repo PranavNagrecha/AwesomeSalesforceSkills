@@ -1,6 +1,6 @@
 ---
 name: data-cloud-grounding-for-agentforce
-description: "Use when grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. Does NOT cover Data Cloud ingestion pipelines or Data Cloud identity resolution tuning."
+description: "Grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. NOT for building or tuning the vector index itself — chunk size, embedding model, Query API — use agentforce/data-cloud-vector-search-dev. NOT for the end-to-end Knowledge-article RAG build — use agentforce/rag-patterns-in-salesforce. NOT for Data Cloud ingestion pipelines — use data/data-cloud-data-streams. NOT for identity resolution ruleset tuning — use admin/data-cloud-identity-resolution."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

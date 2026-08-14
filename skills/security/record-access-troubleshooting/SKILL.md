@@ -1,6 +1,6 @@
 ---
 name: record-access-troubleshooting
-description: "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for field-level security (use field-level-security-audit). NOT for designing sharing (use sharing-selection decision tree)."
+description: "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for remediating a CRUD/FLS finding — use apex/apex-stripinaccessible-and-fls-enforcement. NOT for designing the sharing model itself — use admin/sharing-and-visibility."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

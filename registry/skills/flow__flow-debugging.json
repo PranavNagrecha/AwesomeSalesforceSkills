@@ -73,9 +73,9 @@
     "fe236161d1063a4d7ae2",
     "ff854a256e8341901b7d"
   ],
-  "content_hash": "be40ad6d2d0311352646908cb663c4bdd9a8a351729553d1e46dcd40cc90ba70",
+  "content_hash": "dcb06d4e3bd6a035d458a00e25ebd72086eb491485dfc7ef0cc12daa9208e323",
   "dependencies": [],
-  "description": "Use when diagnosing a Flow that does not run, runs but produces wrong results, fails silently, or shows an unexpected fault email. Triggers: 'flow debug mode', 'flow not running', 'flow interview log', 'fault email', 'record-triggered flow not firing', 'debug run as user', 'flow test suite'. NOT for Apex debugging (use debug-and-logging), NOT for designing fault connectors (use fault-handling), NOT for fixing governor-limit failures caused by bulk volume (use flow-bulkification).",
+  "description": "Use when diagnosing a Flow that does not run, runs but produces wrong results, fails silently, or shows an unexpected fault email. Triggers: 'flow debug mode', 'flow not running', 'flow interview log', 'fault email', 'record-triggered flow not firing', 'debug run as user', 'flow test suite'. NOT for designing the fault path itself \u2014 use flow/fault-handling. NOT for Apex debug logs, trace flags, or the Developer Console \u2014 use apex/debug-logs-and-developer-console.",
   "file_location": "skills/flow/flow-debugging",
   "id": "flow/flow-debugging",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: flow-testing
-description: "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior."
+description: "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior — use flow/flow-debugging."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -35,6 +35,8 @@ updated: 2026-04-28
 Use this skill when a Flow works in a demo but nobody can yet prove it is safe to change. Flow testing is not one tool — it is a test STRATEGY that combines declarative Flow Tests where they fit, focused debug runs for diagnosis, deliberate test data, and extra coverage at custom component or Apex boundaries when the Flow itself is not the whole system.
 
 Unlike Apex, Flow does not have a forced test-coverage gate at deploy time. This makes flow testing strictly a discipline problem, not a tooling problem. Teams that rely on "I clicked through it once in sandbox" as their coverage story are one change away from a production incident with no regression safety net. This skill exists to make that discipline concrete.
+
+**FlowTest scope expansion (Spring '26, API 66.0+).** Flow Tests are no longer record-triggered-only. The FlowTest metadata type documents testing **record-triggered, autolaunched, and Data Cloud-triggered** flows before activation. The **`testType`** field (`FlowTestType`, API 66.0+) supports **`WithAssertion`** — automated comparison of actual flow outcomes against user-defined expected outcomes. Wire CI with `sf flow run test` (see `devops/github-actions-for-salesforce` and `apex/tooling-api-patterns`).
 
 ## Before Starting
 

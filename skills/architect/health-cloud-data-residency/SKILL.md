@@ -1,6 +1,6 @@
 ---
 name: health-cloud-data-residency
-description: "Use this skill when architecting Health Cloud orgs that must satisfy geographic data residency, HIPAA, GDPR, or national health-data regulations on Hyperforce — including scoping the HIPAA BAA, mapping transient processing exceptions, and documenting which features require separate compliance addenda. NOT for generic multi-region Salesforce architecture unrelated to healthcare data, and NOT for non-healthcare data residency requirements (use a general Hyperforce architecture skill for those)."
+description: "Use this skill when architecting Health Cloud orgs that must satisfy geographic data residency, HIPAA, GDPR, or national health-data regulations on Hyperforce — scoping the HIPAA BAA, mapping transient processing exceptions, and the features that require separate compliance addenda. NOT for choosing a Hyperforce region or planning a Hyperforce migration outside healthcare — use architect/hyperforce-architecture. NOT for Shield encryption and HIPAA technical safeguards — use architect/hipaa-compliance-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

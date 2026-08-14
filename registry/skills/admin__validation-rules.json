@@ -6,6 +6,7 @@
     "1a131a050b22c5deef88",
     "1df54e10de1fdd90be5c",
     "252fc1694914b3b749ad",
+    "2652cdb3cf11303e0d2e",
     "26d2c854c44e7f87c289",
     "2aac45ff6365fa43ae24",
     "2ab69ff73df77a1439d5",
@@ -63,7 +64,7 @@
     "f72ce657c520fa80c4d6",
     "fa1227e7a34c59ed6bcb"
   ],
-  "content_hash": "3ac87b8df2d91b9ccd14664318bc03da1cdf28da000812c0879b1ce1c6c66e2a",
+  "content_hash": "138ede7a547460d8e0ffc7e3b1c78e535f9eb443e7a96e2f37df7f3cdc41a858",
   "dependencies": [],
   "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
   "file_location": "skills/admin/validation-rules",
@@ -103,7 +104,7 @@
   "templates": [
     "skills/admin/validation-rules/templates/validation-rule-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

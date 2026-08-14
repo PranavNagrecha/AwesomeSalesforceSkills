@@ -1,6 +1,6 @@
 ---
 name: callout-and-dml-transaction-boundaries
-description: "Use when diagnosing, preventing, or refactoring the 'You have uncommitted work pending' CalloutException caused by mixing DML and callouts in the same Apex transaction. Triggers: 'uncommitted work pending', 'callout after DML', 'DML between callouts'. NOT for general HTTP callout construction, Named Credential setup, or async Apex design in isolation."
+description: "Use when diagnosing, preventing, or refactoring the 'You have uncommitted work pending' CalloutException caused by mixing DML and callouts in the same Apex transaction. Triggers: 'uncommitted work pending', 'callout after DML', 'DML between callouts'. NOT for the callout itself — use apex/callouts-and-http-integrations. NOT for rollback semantics — use apex/apex-savepoint-and-rollback."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

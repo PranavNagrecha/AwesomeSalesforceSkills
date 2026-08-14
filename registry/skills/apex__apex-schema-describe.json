@@ -64,9 +64,9 @@
     "f9dee01e26527a887e8b",
     "fdfd7a352b0f12dab838"
   ],
-  "content_hash": "41dcba6b26d92b1c17ec25a62dd05d9d2c828bf85c19fe399c1e7891e0a20d59",
+  "content_hash": "b1bdc96f64ee88a793a1814d9c9238584ce3badb6bdf43950a3df801bfd6a246",
   "dependencies": [],
-  "description": "Apex Schema describe API patterns \u2014 `Schema.getGlobalDescribe()`, `SObjectType.getDescribe()`, `DescribeFieldResult`, `getPicklistValues()`, and the per-namespace describe cost. Covers the lazy-vs-eager describe pattern (cache the SObjectType reference, not the full describe), the `SObjectField.getDescribe()` overhead at scale, and the FLS / record-type metadata access patterns. NOT for SOQL injection prevention via Schema (use apex/dynamic-soql), NOT for the Tooling API metadata layer (use apex/tooling-api).",
+  "description": "Apex Schema describe API patterns \u2014 `Schema.getGlobalDescribe()`, `SObjectType.getDescribe()`, `DescribeFieldResult`, `getPicklistValues()`, the per-namespace describe cost, the lazy-vs-eager caching pattern, `SObjectField.getDescribe()` overhead at scale, and the FLS / record-type metadata access patterns. NOT for building dynamic SOQL or dynamic field get/put \u2014 use apex/dynamic-apex. NOT for the Tooling API metadata layer \u2014 use apex/tooling-api-patterns.",
   "file_location": "skills/apex/apex-schema-describe",
   "id": "apex/apex-schema-describe",
   "inputs": [

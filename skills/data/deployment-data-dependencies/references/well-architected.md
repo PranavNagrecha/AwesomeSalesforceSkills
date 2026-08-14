@@ -19,7 +19,7 @@ Deployment runbooks must explicitly list data migration steps alongside metadata
 ## Cross-Skill References
 
 - `data/data-migration-planning` — Full data migration strategy and tool selection
-- `devops/deployment-pipeline-design` — CI/CD pipeline design including data migration stages
+- `architect/ci-cd-pipeline-architecture` — CI/CD pipeline design including data migration stages
 - `data/sandbox-refresh-data-strategies` — Reference data seeding strategies for sandboxes
 
 ## Official Sources Used

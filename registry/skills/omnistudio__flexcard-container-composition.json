@@ -48,11 +48,11 @@
     "ed97af3ef322fa07cb85",
     "f030c8c2493451a9d212"
   ],
-  "content_hash": "8de89d2aab5cdbfe4b10a6a22bbecdc023658617065e7cc55228cbf4bbea9a5d",
+  "content_hash": "84b717d4de32639a161ff7cb2589f568330c13c4cc401f6aff70f066950219b9",
   "dependencies": [
     "omnistudio/integration-procedure-cacheable-patterns"
   ],
-  "description": "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard events, flexcard datasource. Does NOT cover: the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Experience Cloud theming.",
+  "description": "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard. NOT for the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Exp \u2014 use admin/flexcard-requirements.",
   "file_location": "skills/omnistudio/flexcard-container-composition",
   "id": "omnistudio/flexcard-container-composition",
   "inputs": [

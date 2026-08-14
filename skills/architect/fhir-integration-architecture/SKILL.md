@@ -1,6 +1,6 @@
 ---
 name: fhir-integration-architecture
-description: "Use this skill when architecting how Health Cloud connects to external EHR/EMR systems via FHIR R4 — covering integration pattern selection, transformation layer design, MuleSoft Accelerator usage, and EMR bidirectional sync topology. NOT for individual FHIR REST API call implementation, NOT for FHIR object-level data mapping or Apex code that reads/writes specific Health Cloud objects, and NOT for HL7 v2 message parsing internals."
+description: "Use this skill when architecting how Health Cloud connects to external EHR/EMR systems via FHIR R4 — integration pattern selection, transformation layer design, MuleSoft Accelerator usage, and EMR bidirectional sync topology. NOT for writing the FHIR calls or HL7 v2 conversion in Apex — use apex/fhir-integration-patterns. NOT for mapping a FHIR resource to an object — use data/fhir-data-mapping."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

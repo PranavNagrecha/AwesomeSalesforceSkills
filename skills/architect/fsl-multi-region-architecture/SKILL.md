@@ -1,6 +1,6 @@
 ---
 name: fsl-multi-region-architecture
-description: "Use this skill when designing FSL for multiple geographic regions or timezones: territory timezone configuration, cross-territory resource assignment, concurrent optimization serialization, and regional scheduling boundaries. Trigger keywords: multi-region FSL, FSL timezone territories, cross-territory resource scheduling, concurrent optimization territories, international FSL deployment. NOT for multi-org strategy, single-timezone single-region FSL deployments, or Experience Cloud multi-region (covered by architect/multi-org-strategy)."
+description: "Use this skill when designing FSL for multiple geographic regions or timezones: territory timezone configuration, cross-territory resource assignment, and concurrent optimization serialization. Trigger keywords: multi-region FSL, FSL timezone territories, cross-territory resource scheduling, concurrent optimization territories, international FSL deployment. NOT for choosing an optimization mode or fixing Global optimization timeouts — use architect/fsl-optimization-architecture. NOT for creating a territory, its operating hours or polygon in Setup — use admin/fsl-service-territory-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

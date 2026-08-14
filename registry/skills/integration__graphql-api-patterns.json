@@ -57,9 +57,9 @@
     "fbe882e5e233176e96e2",
     "fde20e4970ebcd09fa19"
   ],
-  "content_hash": "64a781b6ba79d1bd5d470fe2319c5a57b2588d80ae5707a0adb02790ebf77741",
+  "content_hash": "f09e20d66a656ca8ce33229be2db9d38b895f4d5ed090519198574542510e56b",
   "dependencies": [],
-  "description": "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API', 'lightning/graphql', 'uiGraphQLApi', 'GraphQL pagination', 'GraphQL vs REST'. NOT for building a custom GraphQL server or for generic REST integration design with no GraphQL surface.",
+  "description": "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API'. NOT for building a custom GraphQL server or for generic REST integration design with no  \u2014 use integration/rest-api-patterns.",
   "file_location": "skills/integration/graphql-api-patterns",
   "id": "integration/graphql-api-patterns",
   "inputs": [

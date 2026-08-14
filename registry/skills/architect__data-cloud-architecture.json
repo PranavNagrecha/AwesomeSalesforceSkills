@@ -115,9 +115,9 @@
     "fc226298924253288177",
     "fec2b1df20ebcb10f473"
   ],
-  "content_hash": "42c7d64ff11d21bce71ef79b318bfb2c4411e993cabab825a79f4216a0dc2138",
+  "content_hash": "ef75d10b147182b2e515005ee272dabcafd8161204c7cf623b755f5ed9a52ecf",
   "dependencies": [],
-  "description": "Use when designing or evaluating a Data Cloud implementation architecture \u2014 covering data lake strategy (DSO/DLO/DMO layers), identity resolution rule design, activation target configuration, and segmentation strategy. Trigger phrases: Data Cloud architecture design, identity resolution strategy, activation target setup, data lakehouse layers, unified profile design, Data Cloud segment activation, DMO mapping strategy, golden profile design. NOT for individual data stream ingestion setup, not for Data Cloud licensing questions, not for Marketing Cloud journey builder, not for individual calculated insight formulas.",
+  "description": "Use when designing or evaluating a Data Cloud implementation architecture \u2014 covering data lake strategy (DSO/DLO/DMO layers), identity resolution rule design, activation target configuration, and segmentation strategy. Trigger phrases: Data Cloud architecture design, identity resolution strategy, activation target setup, data lakehouse layers, unified profile design, Data Cloud segment activation, DMO mapping strategy, golden profile design. NOT for configuring a data stream, DLO-to-DMO mapping or Calculated Insights \u2014 use data/data-cloud-data-streams. NOT for choosing between Data Cloud and CRM Analytics \u2014 use architect/data-cloud-vs-analytics-decision.",
   "file_location": "skills/architect/data-cloud-architecture",
   "id": "architect/data-cloud-architecture",
   "inputs": [

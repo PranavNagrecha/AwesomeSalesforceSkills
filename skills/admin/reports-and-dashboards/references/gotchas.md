@@ -99,3 +99,45 @@
 - When creating a Custom Report Type, explicitly choose the join type for each related object
 - Ask: "Should records without [related object] still appear in the report?" If yes → outer join
 - Test with a record you know has no related records — does it appear?
+
+---
+
+## SpecifiedUser Dashboards Die With the Running User
+
+**What happens:** Dashboard `dashboardType` is `SpecifiedUser`. Every component runs in that user's security context. Deactivate the user and refresh/subscriptions fail silently or with "the running user is inactive." Viewers see stale stored results. This is the highest-ratio operational failure on reporting-heavy orgs.
+
+**When it bites you:** Small firms where one admin is the SpecifiedUser on every dashboard; PE/search-fund shops after a departure.
+
+**How to avoid it:**
+- Prefer `LoggedInUser` (dynamic) when the audience should see *their* data.
+- If SpecifiedUser is required (one shared "ops" view), the running user must be a **named integration/service user that never leaves**, not a human.
+- Inventory `runningUser` on every dashboard before offboarding. Re-point or convert to LoggedInUser in the same change as deactivation.
+- Do not treat LastRunDate as adoption — dashboard refresh and auditors inflate it. `LastViewedDate` is per-user and is the honest signal.
+
+---
+
+## Mixed Report `filterScope` on One Dashboard Silently Undercounts
+
+**What happens:** Neighbouring tiles mix `organization` and `team` (or `mine`) with no UI cue. Readers compare 2,400 vs 13,000 as if they were the same population.
+
+**When it bites you:** Pipeline health / KPI dashboards cloned from a personal report.
+
+**How to avoid it:** QA every component's scope against the dashboard's intended audience. Org-wide tiles cannot sit next to team-scoped tiles unless the title says so. Record sharing, report `filterScope`, and dashboard running user are **three independent layers**.
+
+---
+
+## Licence-Gated Columns Look Like a Broken Report
+
+**What happens:** Same report type, same API version, same FLS. Analytics REST returns ~40 columns with a Marketing Cloud / ListEmail PSL and ~20 without. Unlicensed runs look empty. Teams write "the org cannot report on unique opens."
+
+**When it bites you:** Marketing / email engagement reports; B2BMA / CRMA seats; Data Cloud reports on an unconfigured tenant.
+
+**How to avoid it:** Check **entitlement** before "field missing." Never conclude capability from one login. Production vs sandbox can differ on which PSLs are assigned.
+
+---
+
+## Zero Dashboard Filters Produce Clone Farms
+
+**What happens:** Twelve identical 6-component dashboards instead of one dashboard with `dashboardFilters`. Year-stamped and person-named copies follow.
+
+**How to avoid it:** Filter-first. A clone per company / year / person is a smell. Salesforce-shipped dashboards often already demonstrate filters — copy that, not the 12 folders.

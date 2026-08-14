@@ -1,6 +1,6 @@
 ---
 name: contract-and-renewal-management
-description: "Use when configuring or troubleshooting Salesforce CPQ contract creation, subscription management, amendment quotes, or renewal quotes. Trigger keywords: contract, amendment, renewal, subscription, co-termination, SBQQ__Subscription__c. NOT for standard Salesforce contracts without CPQ, nor for Revenue Cloud advanced order management."
+description: "Use when configuring or troubleshooting Salesforce CPQ contract creation, subscription management, amendment quotes, or renewal quotes. Trigger keywords: contract, amendment, renewal, subscription, co-termination, SBQQ__Subscription__c. NOT for designing the amendment/renewal architecture or swap pattern — use architect/subscription-management-architecture. NOT for amending or renewing contracts from Apex — use apex/cpq-api-and-automation."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

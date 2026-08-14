@@ -1,6 +1,6 @@
 ---
 name: analytics-requirements-gathering
-description: "Use this skill to elicit, document, and validate CRM Analytics requirements — covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications — before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for standard Salesforce Reports and Dashboards requirements, CRM Analytics implementation, SAQL query development, or KPI formula definition (use analytics-kpi-definition)."
+description: "Use this skill to elicit, document, and validate CRM Analytics requirements — covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications — before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for the formula and target behind each KPI — use admin/analytics-kpi-definition. NOT for building the dashboard once requirements are agreed — use admin/analytics-dashboard-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -130,15 +130,18 @@ Requirements must specify each transformation explicitly — the developer canno
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. Determine whether CRM Analytics is required or if standard Reports can serve the need — document this decision with the rationale.
-2. Confirm CRM Analytics license availability in the org before proceeding.
-3. List all reporting questions stakeholders need the analytics to answer — these drive the data model.
-4. For each reporting question: identify the data source type (Salesforce object sync / external connector / Data Cloud / CSV) and document it in the data source matrix.
-5. For each data source: list the specific fields needed (not just the object) — unnecessary fields increase dataflow runtime.
-6. Document transformation requirements: joins needed, computed fields, date dimension derivations, and field renames for consistency.
-7. Build the audience matrix: list all user roles, what rows each can see, and whether they need different layouts.
-8. Specify drill-down paths: for each summary visualization, document what level of detail users should be able to drill into.
-9. Review with stakeholders and the developer to confirm the requirements are complete and buildable before dataset design begins.
+1. **Qualify the platform decision.**
+   - Determine whether CRM Analytics is required or if standard Reports can serve the need — document this decision with the rationale.
+   - Confirm CRM Analytics license availability in the org before proceeding.
+2. **List all reporting questions** stakeholders need the analytics to answer — these drive the data model.
+3. **Build the data source matrix.**
+   - For each reporting question: identify the data source type (Salesforce object sync / external connector / Data Cloud / CSV) and document it in the matrix.
+   - For each data source: list the specific fields needed (not just the object) — unnecessary fields increase dataflow runtime.
+4. **Document transformation requirements:** joins needed, computed fields, date dimension derivations, and field renames for consistency.
+5. **Define audience and navigation.**
+   - Build the audience matrix: list all user roles, what rows each can see, and whether they need different layouts.
+   - Specify drill-down paths: for each summary visualization, document what level of detail users should be able to drill into.
+6. **Review with stakeholders and the developer** to confirm the requirements are complete and buildable before dataset design begins.
 
 ---
 
@@ -181,5 +184,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `admin/analytics-kpi-definition` — use after requirements gathering to define KPI formulas and targets before build
-- `data/saql-query-development` — downstream implementation skill using requirements from this document
+- `admin/saql-query-development` — downstream implementation skill using requirements from this document
 - `admin/requirements-gathering-for-sf` — general Salesforce requirements gathering companion skill

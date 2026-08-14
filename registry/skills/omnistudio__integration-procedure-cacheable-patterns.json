@@ -38,8 +38,11 @@
     "cf55314fd8e8f966d91b",
     "dbfaba683822819a1110",
     "e0dea7a0868b00e7414f",
+    "e5b62d5d820da3ea5f8f",
     "e6fd3fe8b8b32cbae7aa",
+    "eabdb6672c1c64a368f5",
     "ed7d5350b5cad04aed88",
+    "ef8c848a8d6c927452d1",
     "f1f4e9db6cea28d93152",
     "f2c57ac6f775a178d844",
     "f77c1e2bf20e44b4e705",
@@ -47,9 +50,9 @@
     "fe8bd331b10e443ca0bf",
     "ff447b1cc8845222a853"
   ],
-  "content_hash": "6dd660d59c1756e0052192f9ed86dfa90bfae8da5164e5c03801e5eeca71f1f2",
+  "content_hash": "57ab9244dfc0a639089504b92594047e6b19359c92fa776331d88add2ad4c5f7",
   "dependencies": [],
-  "description": "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and safe fallback on cache miss/stale. Does NOT cover general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side caching.",
+  "description": "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and. NOT for general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side \u2014 use architect/omnistudio-scalability-patterns.",
   "file_location": "skills/omnistudio/integration-procedure-cacheable-patterns",
   "id": "omnistudio/integration-procedure-cacheable-patterns",
   "inputs": [
@@ -89,7 +92,7 @@
   "templates": [
     "skills/omnistudio/integration-procedure-cacheable-patterns/templates/cache-design.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

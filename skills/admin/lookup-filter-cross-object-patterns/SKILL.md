@@ -1,6 +1,6 @@
 ---
 name: lookup-filter-cross-object-patterns
-description: "Use when designing or repairing lookup filters that constrain a child lookup using fields from the parent record (or a sibling record on the same object). Triggers: 'limit lookup based on another field', 'cross-object lookup filter', 'lookup filter $Source vs $User'. NOT for filter logic on report types, list views, or duplicate matching rules."
+description: "Design or repair lookup filters that constrain a child lookup using fields from the parent record (or a sibling record on the same object). Triggers: 'limit lookup based on another field', 'cross-object lookup filter', 'lookup filter $Source vs $User'. NOT for choosing lookup vs master-detail - use admin/lookup-and-relationship-design. NOT for duplicate matching rule criteria - use admin/duplicate-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

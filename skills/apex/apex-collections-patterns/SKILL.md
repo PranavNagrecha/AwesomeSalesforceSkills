@@ -1,6 +1,6 @@
 ---
 name: apex-collections-patterns
-description: "Use when designing, reviewing, or debugging Apex code that relies on List, Set, or Map collections in triggers, batch classes, or service layers — especially for bulkification, heap management, and safe null handling. Trigger keywords: 'Map<Id, SObject>', 'containsKey', 'retainAll', 'putAll', 'Set intersection', 'heap limit', 'collection in loop', 'unbounded accumulation'. NOT for SOQL query optimization (use soql-fundamentals), NOT for async job design (use apex-queueable-patterns or batch-apex-patterns), NOT for platform cache strategies (use platform-cache)."
+description: "Use when designing, reviewing, or debugging Apex code that relies on List, Set, or Map collections in triggers, batch classes, or service layers — especially for bulkification, heap management, and safe null handling. Trigger keywords: 'Map<Id, SObject>', 'containsKey', 'retainAll', 'putAll', 'Set intersection', 'heap limit', 'collection in loop', 'unbounded accumulation'. NOT for SOQL query optimization — use apex/soql-fundamentals. NOT for async job design — use apex/apex-queueable-patterns or apex/batch-apex-patterns. NOT for Platform Cache strategies — use apex/platform-cache."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

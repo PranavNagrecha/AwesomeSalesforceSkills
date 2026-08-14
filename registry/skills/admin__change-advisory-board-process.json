@@ -106,12 +106,12 @@
     "ff697e15f47a8b7c3cad",
     "fff83116dcb7ec2ef8a9"
   ],
-  "content_hash": "208a94a4caf1042816c50fd4ec34b51daf9c82ec8148e8650c9f24ff47296214",
+  "content_hash": "8a775424be3d5a18b13f21550aea7606234dc61d9f91926198839bf90ee4f8d4",
   "dependencies": [
     "admin/deployment-risk-assessment",
     "admin/devops-process-documentation"
   ],
-  "description": "Use when designing, implementing, or auditing a Change Advisory Board (CAB) process for Salesforce deployments \u2014 covering change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for record-level approval workflows (use Salesforce Approval Processes for business-object approvals), NOT for detailed pipeline automation scripting (see devops-process-documentation or pre-deployment-checklist), and NOT for Salesforce DevOps Center pipeline configuration.",
+  "description": "Design, implement, or audit a Change Advisory Board (CAB) process for Salesforce deployments: change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for scoring how risky one release is - use admin/deployment-risk-assessment. NOT for executing or troubleshooting the deployment itself - use admin/change-management-and-deployment.",
   "file_location": "skills/admin/change-advisory-board-process",
   "id": "admin/change-advisory-board-process",
   "inputs": [

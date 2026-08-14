@@ -119,12 +119,12 @@
     "fdca68df0b4b2d738b87",
     "fe1479c577db832c321c"
   ],
-  "content_hash": "8d69546793632a71d1394307b0a5cfb2cbc2cffd9e9f5dfa08b8354414f2cf80",
+  "content_hash": "fba219ecc5ff35406d6e088101e50a4e2fd08f1d2f76f20c1148d1264ccc7e5b",
   "dependencies": [
     "apex/commerce-payment-integration",
     "admin/commerce-checkout-configuration"
   ],
-  "description": "Use this skill when designing or diagnosing end-to-end integration between Salesforce B2B or D2C Commerce and external systems \u2014 including ERP pricing/inventory, PIM product sync, payment gateways, shipping providers, tax engines, and order management systems (OMS). Covers CartExtension Apex namespace (PricingCartCalculator, ShippingCartCalculator, InventoryCartCalculator), RegisteredExternalService custom metadata, payment gateway architecture, and Product2 External ID patterns. NOT for generic Salesforce integration (platform events, Mulesoft, REST APIs unrelated to commerce), NOT for CommercePayments adapter implementation details (see apex/commerce-payment-integration), NOT for storefront UI or LWC development.",
+  "description": "Use this skill when designing or diagnosing end-to-end integration between Salesforce B2B or D2C Commerce and external systems \u2014 including ERP pricing/inventory, PIM product sync, payment gateways, shipping providers, tax engines, and order management systems (OMS). Covers CartExtension Apex namespace (PricingCartCalculator, ShippingCartCalculator, InventoryCartCalculator), RegisteredExternalService custom metadata, payment gateway architecture, and Product2 External ID patterns. NOT for CommercePayments adapter implementation \u2014 use apex/commerce-payment-integration. NOT for generic non-commerce Salesforce integration (Platform Events, MuleSoft, REST APIs), NOT for storefront UI or LWC development.",
   "file_location": "skills/architect/commerce-integration-patterns",
   "id": "architect/commerce-integration-patterns",
   "inputs": [

@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any time a migrated flow hits a DML error (e.g., validation rule block, record lock, field required error).
 
 **How to avoid:** After running the tool, manually add Fault Path connectors to every DML element in the generated flow before activation. Route faults to a custom error message screen (for screen flows) or log to a platform event / custom object (for background flows). Reference `templates/flow/FaultPath_Template` for the canonical fault-handling pattern.
+
+---
+
+## Gotcha 6: Same-Record Date Stamps Do Not Belong in After-Save Process Builder
+
+**What happens:** Each stage change writes `Date_LOI__c` / `Date_QoE__c` via a **separate after-save** Process Builder (or after-save Flow). The record is updated again in the same transaction family, firing other automation, and reports that AND those stamps together undercount. Before-save Fast Field Updates would set the stamp with no extra DML.
+
+**When it occurs:** Pipeline-on-Account (or any object used as a deal) with one PB per date field.
+
+**How to avoid:** One **before-save** record-triggered Flow: if Stage changed to X and date is blank, set the date. Do not migrate each PB 1:1 into its own after-save Flow. See `standards/decision-trees/automation-selection.md`.

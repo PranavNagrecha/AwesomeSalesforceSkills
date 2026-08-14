@@ -34,3 +34,9 @@
   URL: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm
 - Metadata API Developer Guide — Source Format
   URL: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Salesforce Developers Blog — The Salesforce Developer's Guide to the Winter '26 Release
+  URL: https://developer.salesforce.com/blogs/2025/09/winter26-developers
+  Confirms source mobility ships in Winter '26 and that `SF_DISABLE_SOURCE_MOBILITY` (default `false`) is the opt-out — moving files inside a DX project no longer registers as a delete plus recreate. (verified 2026-08-13)
+- Salesforce CLI Setup Guide — Salesforce CLI Environment Variables
+  URL: https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_dev_cli_env_variables.htm
+  Confirms the `SF_DISABLE_SOURCE_MOBILITY` description and that its default of `false` means source mobility is enabled by default. (verified 2026-08-13)

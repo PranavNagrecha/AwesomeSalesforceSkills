@@ -38,7 +38,7 @@ const MIME = 'application/x-acme-card';
 
 export default class Kanban extends LightningElement {
     @track columns = [
-        { id: 'todo',  label: 'To Do',  cards: [{id:'a',title:'A'},{id:'b',title:'B'}] },
+        { id: 'backlog', label: 'Backlog', cards: [{id:'a',title:'A'},{id:'b',title:'B'}] },
         { id: 'doing', label: 'Doing',  cards: [] },
         { id: 'done',  label: 'Done',   cards: [] }
     ];

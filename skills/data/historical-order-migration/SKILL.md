@@ -1,6 +1,6 @@
 ---
 name: historical-order-migration
-description: "Use when loading historical CPQ orders, contracts, subscriptions, and assets into Salesforce CPQ so that future renewals and amendments work correctly — covering the CPQ Legacy Data Upload mechanism, strict object load sequencing, required field values, and pre/post-load configuration. NOT for opportunity migration (use opportunity-pipeline-migration). NOT for standard Salesforce Orders without CPQ. NOT for asset-based renewal model orgs. NOT for quoting net-new business."
+description: "Use when loading historical CPQ orders, contracts, subscriptions, and assets into Salesforce CPQ so that future renewals and amendments work correctly — covering the CPQ Legacy Data Upload mechanism, strict object load sequencing, required field values, and pre/post-load configuration. NOT for non-CPQ order history — use data/commerce-order-history-migration. NOT for the CPQ catalog — use data/product-catalog-migration-cpq."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

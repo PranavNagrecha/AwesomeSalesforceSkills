@@ -1,6 +1,6 @@
 ---
 name: lwc-template-refs
-description: "Use when an LWC needs a stable, typed handle to a specific DOM element it owns — focusing inputs, imperatively validating a known form field, invoking a `@api` method on a child component, or migrating fragile `this.template.querySelector('.css-class')` code to the modern `lwc:ref` directive. Triggers: 'this.template.querySelector fragile', 'lwc:ref not working inside for:each', 'how to focus an input from lwc', 'refs undefined in connectedcallback', 'migrating querySelector to lwc:ref'. NOT for querying elements inside `for:each` iterators — refs do not work there — and NOT for cross-shadow queries of child custom elements' internals."
+description: "Use when an LWC needs a stable, typed handle to a specific DOM element it owns — focusing inputs, imperatively validating a known form field, invoking a `@api` method on a child component, or migrating fragile. NOT for querying elements inside `for:each` iterators — refs do not work there — and NOT — use lwc/lwc-focus-management."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

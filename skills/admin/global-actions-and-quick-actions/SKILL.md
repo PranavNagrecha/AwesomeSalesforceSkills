@@ -1,6 +1,6 @@
 ---
 name: global-actions-and-quick-actions
-description: "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for Flow-triggered actions or Next Best Action recommendations (use flow/* or agentforce skills). NOT for Apex-defined actions."
+description: "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for building an LWC that runs as a quick action — use lwc/lwc-quick-actions. NOT for converting Classic JavaScript or URL buttons — use admin/custom-button-to-action-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

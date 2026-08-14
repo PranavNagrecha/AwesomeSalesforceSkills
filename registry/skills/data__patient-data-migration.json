@@ -100,13 +100,13 @@
     "fd2d9d7bf7f9e3f8660d",
     "fec0f4e2d6646936a77a"
   ],
-  "content_hash": "d9fad54014603fd877224d14407f49d321c1061aafbde24dffc1ea505d6eeb14",
+  "content_hash": "04bfd3b5fa98856302e8699ec86675371fee01677b36fb217c339f2f4d3766cb",
   "dependencies": [
     "data/health-cloud-data-model",
     "data/clinical-data-quality",
     "data/consent-data-model-health"
   ],
-  "description": "Use this skill when migrating patient records into Salesforce Health Cloud, including Person Account (Patient record type) setup, clinical history objects, and care plan data. Trigger keywords: patient migration, EMR import, EHR to Health Cloud, clinical data load, care plan history migration, HIPAA-compliant data import. NOT for generic data migration, non-patient CRM data, or marketing cloud contact imports.",
+  "description": "Use this skill when migrating patient records into Salesforce Health Cloud, including Person Account (Patient record type) setup, clinical history objects, and care plan data. Trigger keywords: patient migration, EMR import, EHR to Health Cloud, clinical data load, care plan history migration, HIPAA-compliant data import. NOT for generic multi-object migration sequencing and rollback planning \u2014 use data/data-migration-planning. NOT for Insurance, Energy or Communications industry-cloud objects \u2014 use data/industries-data-migration.",
   "file_location": "skills/data/patient-data-migration",
   "id": "data/patient-data-migration",
   "inputs": [

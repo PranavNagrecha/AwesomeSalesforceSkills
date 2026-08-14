@@ -48,9 +48,9 @@
     "fe4133c9ffcf1ddec042",
     "ff3b96c77250b04115f2"
   ],
-  "content_hash": "406beafb8055a0d0a75d297dd76d0a10dabc63c9200c54adf96a7d6ab6d2b709",
+  "content_hash": "e813d90a184ae11e367cf768bf864fba7c741ec373ed413190b1ecccf4416677",
   "dependencies": [],
-  "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
+  "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies \u2014 use apex/sf-cli-and-sfdx-essentials.",
   "file_location": "skills/devops/sfdx-monorepo-patterns",
   "id": "devops/sfdx-monorepo-patterns",
   "inputs": [

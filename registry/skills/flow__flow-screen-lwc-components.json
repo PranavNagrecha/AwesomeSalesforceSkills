@@ -93,9 +93,9 @@
     "feaf5b5887616ecbdd81",
     "fec3c2c005766f80151e"
   ],
-  "content_hash": "3cec2018525aad3930136e0923f30608d3768f36b1e07c1fd74adcc41d153441",
+  "content_hash": "3769df8a558e4904f25a88c0eb9e2233ec5cd1178aacc0ee095fd33dea14be2e",
   "dependencies": [],
-  "description": "Design custom Lightning Web Components that render inside Screen Flow steps \u2014 covers the lightning__FlowScreen target, @api properties as Flow inputs/outputs, FlowAttributeChangeEvent propagation, FlowNavigationNext/Back/Finish/Pause events, the @api validate() hook, and design-time targetConfig wiring. NOT for custom property editors that configure flow elements at design time \u2014 see flow-custom-property-editors. NOT for the LWC implementation deep-dive \u2014 see lwc/lwc-in-flow-screens.",
+  "description": "Design custom Lightning Web Components that render inside Screen Flow steps \u2014 covers the lightning__FlowScreen target, @api properties as Flow inputs/outputs, FlowAttributeChangeEvent propagation, FlowNavigationNext/Back/Finish/Pause events, the @api validate() hook, and design-time targetConfig wiring. NOT for the Flow Builder design-time editor that configures it \u2014 use flow/flow-custom-property-editors. NOT for the LWC-side implementation deep-dive \u2014 use lwc/lwc-in-flow-screens.",
   "file_location": "skills/flow/flow-screen-lwc-components",
   "id": "flow/flow-screen-lwc-components",
   "inputs": [

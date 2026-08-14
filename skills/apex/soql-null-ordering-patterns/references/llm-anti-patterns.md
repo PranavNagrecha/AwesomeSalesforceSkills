@@ -78,3 +78,15 @@ ORDER BY Last_Activity_Date__c ASC NULLS_LAST
 **Correct pattern:** Custom indexes on nullable fields don't include nulls by default. High-null-percentage sort fields full-scan unless the index is configured for null inclusion (a Support request). Test with realistic data volumes before relying on the index.
 
 **Detection hint:** Any "this is fast because of the index" claim about a sort over a nullable field.
+
+---
+
+## Anti-Pattern 6: Claiming blanks sort first in a Salesforce list view
+
+**What the LLM generates:** "Blank values sort to the top in ascending order — to find the records missing this field, sort the list view ascending and read from the top."
+
+**Why it happens:** Training data predating Spring '26, when Salesforce "treated blank fields as the lowest value." Models also collapse SOQL and the list-view UI into a single rule, and those two stopped agreeing.
+
+**Correct pattern:** Since Spring '26, list-view sorting treats blanks "as the highest value in the dataset," so an ascending list-view sort *ends* with the blanks. SOQL is unchanged: an ascending SOQL sort still returns nulls first by default. State which surface a null-position claim applies to, and never carry one across the SOQL/list-view boundary.
+
+**Detection hint:** Any "sort ascending to find the empty ones" workflow, or any answer that offers one null-position rule for both SOQL and the list-view UI.

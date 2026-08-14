@@ -70,9 +70,9 @@
     "f0bbf9ded2883694cb25",
     "f54f0452ee562759037b"
   ],
-  "content_hash": "1b512cdbcc828fdbe82fc530561efcbe2dad91af41f911a43d649d2e841f8303",
+  "content_hash": "3aaf313912c62588c9c7b7e381161f11091ed557901e2634cd532781426824a9",
   "dependencies": [],
-  "description": "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework architecture (use apex-trigger-handler-framework). NOT for bulk patterns (use apex-bulkification-patterns).",
+  "description": "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework / handler architecture and one-trigger-per-object design \u2014 use apex/trigger-framework. NOT for bulk patterns and Map<Id, SObject> collection handling \u2014 use apex/apex-collections-patterns.",
   "file_location": "skills/apex/apex-trigger-context-variables",
   "id": "apex/apex-trigger-context-variables",
   "inputs": [

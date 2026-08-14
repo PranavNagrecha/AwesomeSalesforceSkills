@@ -130,12 +130,12 @@
     "fea906821516afa30d45",
     "ffe70d34711a259013ad"
   ],
-  "content_hash": "a62c72d742b8596b9b46dbbd58a4708a7e072d424949229d5a22b41c7b2ca1b8",
+  "content_hash": "93c1c95ceaa40a6e705f68d6e4012dfff2e0198e49528d6f142ccdd998558c0d",
   "dependencies": [
     "security/event-monitoring",
     "security/transaction-security-policies"
   ],
-  "description": "When to use: active or suspected Salesforce org compromise, unauthorized access investigation, attacker containment, forensic evidence collection from EventLogFile/LoginHistory, session revocation, OAuth token cleanup, eradication of attacker persistence, and post-incident recovery verification. Trigger keywords: org compromised, suspicious login, attacker access, session revocation, forensic investigation, breach response, event log forensics, login anomaly investigation, incident response runbook. Does NOT cover general security setup, permission set design, field-level security configuration, or proactive security hardening \u2014 those are separate skills. NOT for general security setup.",
+  "description": "When to use: active or suspected Salesforce org compromise, unauthorized access investigation, attacker containment, forensic evidence collection from EventLogFile/LoginHistory, session revocation, OAuth token cleanup. NOT for general security setup, permission set design, field-level security configuratio \u2014 use security/oauth-token-management.",
   "file_location": "skills/security/security-incident-response",
   "id": "security/security-incident-response",
   "inputs": [

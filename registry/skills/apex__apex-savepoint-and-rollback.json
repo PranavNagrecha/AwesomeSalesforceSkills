@@ -66,9 +66,9 @@
     "fe4d6d9ff172239ca928",
     "fff7c9889491a7e3e202"
   ],
-  "content_hash": "4f52f6435ceb31cb4f5fda560f799843f649757ec5118398449b1d79c943aebe",
+  "content_hash": "c37e27cfbd694496414d7229b204aefd08660ede7bd61b2505d6d984ad5b49b8",
   "dependencies": [],
-  "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns).",
+  "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics \u2014 use apex/apex-dml-patterns. NOT for Queueable chained rollback \u2014 use apex/apex-queueable-patterns.",
   "file_location": "skills/apex/apex-savepoint-and-rollback",
   "id": "apex/apex-savepoint-and-rollback",
   "inputs": [

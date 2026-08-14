@@ -59,9 +59,9 @@
     "ec850792eca826307d7f",
     "f6bab45612875b226943"
   ],
-  "content_hash": "95ddebbf221e37e46ce4472360f92a64dd21702875c2ddceb98122a3a21ba7a7",
+  "content_hash": "2cf283d05fd28422f4d0716cd2674c2c5dd95d2b92e7def072833595206065a5",
   "dependencies": [],
-  "description": "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. NOT for general bulkification (use flow-bulkification). NOT for Apex limits (use apex-governor-limits).",
+  "description": "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. NOT for general bulkification \u2014 use flow/flow-bulkification. NOT for Apex limits \u2014 use apex/governor-limits.",
   "file_location": "skills/flow/flow-governor-limits-deep-dive",
   "id": "flow/flow-governor-limits-deep-dive",
   "inputs": [

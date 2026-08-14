@@ -121,9 +121,9 @@
     "ff769a3ea1162182a0f6",
     "ffa3735fd9ed376b35fe"
   ],
-  "content_hash": "07c5338fdc13275bcc73ff72b79390033a8bfd6177da49cff4b75093db4a270a",
+  "content_hash": "4276885eae2793828f4b4b154cef24cfb99c20b90c1bfa5b1e3f0c809c0088b7",
   "dependencies": [],
-  "description": "Use when configuring Slack-specific Agentforce capabilities AFTER the basic Slack deployment is complete: enabling Slack-native actions, managing public vs. private action scope, mapping Salesforce-to-Slack user identity, or troubleshooting Slack action failures. Triggers: 'add General Slack Actions topic to agent', 'configure canvas creation for Agentforce in Slack', 'Agentforce private action requires user identity mapping', 'Slack agent cannot send DMs after deployment', 'Agentforce Look Up User action not working in Slack', 'how to map Slack users to Salesforce identities for private actions'. NOT for core Agentforce setup, NOT for basic Slack OAuth installation or DM vs channel-mention mode \u2014 those are covered by agentforce/agent-channel-deployment.",
+  "description": "Use when configuring Slack-specific Agentforce capabilities AFTER the basic Slack deployment is complete: enabling Slack-native actions, managing public vs. private action scope, mapping Salesforce-to-Slack user identity, or troubleshooting Slack action failures. Triggers: 'add General Slack Actions topic to agent', 'configure canvas creation for Agentforce in Slack', 'Agentforce private action requires user identity mapping', 'Slack agent cannot send DMs after deployment', 'Agentforce Look Up User action not working in Slack', 'how to map Slack users to Salesforce identities for private actions'. NOT for the initial Slack OAuth install, DM vs channel-mention mode, or core agent setup \u2014 use agentforce/agent-channel-deployment. NOT for sending a Slack message or creating a channel from a Flow \u2014 use flow/flow-for-slack.",
   "file_location": "skills/agentforce/agentforce-in-slack",
   "id": "agentforce/agentforce-in-slack",
   "inputs": [

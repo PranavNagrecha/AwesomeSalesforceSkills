@@ -39,3 +39,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any DataRaptor that reads fields that have Field-Level Security restrictions on the target profile, or that reads records that are not visible to the target user under sharing rules. Common in Healthcare, Financial Services, or community-facing deployments with strict permission sets.
 
 **How to avoid:** After DataRaptor Preview passes, execute the Integration Procedure or OmniScript that uses the DataRaptor as the target user in a deployed sandbox. Specifically check the output values for FLS-restricted fields — they will appear as null if the user lacks read permission on that field. Fix by adding the field to the target user's Field-Level Security setting, not by changing the DataRaptor mapping.
+
+---
+
+## Gotcha 5: Apex Green Does Not Mean the Portal Is Green
+
+**What happens:** Hundreds of OmniScripts, IPs, DataRaptors, and FlexCards carry the business logic. Apex tests never execute them. Guest paths cannot "debug as guest." A seasonal upgrade or an `OmniInteractionConfig` flip blanks cards with a green test run.
+
+**When it occurs:** Regulated Experience Cloud products; standard-runtime upgrades; merge-field / `restPath` changes.
+
+**How to avoid:** Persona UI smoke on published sites (guest and authenticated). Golden-path Omni flows per Type/SubType. Tracking groups (`OmniTrackingGroup`) are analytics, not tests. Run as the guest profile on the **published** site, not in Preview.
+
+---
+
+## Gotcha 6: `isTestProcedure=true` Must Never Be Active in Production
+
+**What happens:** Test Procedures mock HTTP in the designer. If one is activated (or left `isTestProcedure=true` and still invocable), production callouts hit the mock or skip the Named Credential.
+
+**When it occurs:** Designer fixtures promoted with the IP family.
+
+**How to avoid:** Assert `isTestProcedure=false` on every IP in the deploy bundle. Prefer unused Test Procedures over leftover `true`. Apex tests still belong on every `VlocityOpenInterface` class.

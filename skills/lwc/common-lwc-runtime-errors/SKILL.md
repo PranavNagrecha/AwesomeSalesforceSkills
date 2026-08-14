@@ -1,6 +1,6 @@
 ---
 name: common-lwc-runtime-errors
-description: "Diagnose and fix runtime errors in Lightning Web Components including wire adapter failures, shadow DOM boundary violations, event propagation mistakes, async rendering timing bugs, NavigationMixin errors, Lightning Locker vs Lightning Web Security conflicts, and slot projection problems. Triggers: 'wire adapter returns undefined', 'querySelector returns null in LWC', 'custom event not received by parent', 'LWC component not rendering after connected callback', 'NavigationMixin page reference error'. NOT for LWC fundamentals, build/deployment errors, or Aura component debugging."
+description: "Diagnose and fix runtime errors in Lightning Web Components including wire adapter failures, shadow DOM boundary violations, event propagation mistakes, async rendering timing bugs, NavigationMixin errors, Lightning Locker vs Lightning Web Security conflicts, and slot projection problems. Triggers: 'wire adapter returns undefined', 'querySelector returns null in LWC', 'custom event not received by parent', 'LWC component not rendering after connected callback', 'NavigationMixin page reference error'. NOT for LWC fundamentals, build/deployment errors, or Aura component debugging — use lwc/lwc-debugging-devtools."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -98,6 +98,10 @@ LWC enforces the shadow DOM specification: a component's template is encapsulate
 The correct approach is to communicate across component boundaries using the public API (`@api` properties and methods) or events — not DOM queries. If a parent genuinely needs to call a method on a child, use `@api` to expose that method and call it via a ref obtained from `this.template.querySelector` (which can reach the child's host element, not its internals).
 
 `querySelector` on `this` (not `this.template`) is also commonly misused. `this.querySelector` is not a standard LWC API.
+
+### Dynamic Event Listeners with `lwc:on` (Spring '26)
+
+When the set of DOM event listeners must change at runtime without editing the template, use **`lwc:on={handlerMap}`** — the directive binds an object's handler properties to the element (documented alongside `lwc:spread` in the LWC directives reference). Example: `<div lwc:on={boxEventHandlers}></div>` where `boxEventHandlers` is swapped in JavaScript. Prefer this over manual `addEventListener` / `removeEventListener` in `renderedCallback`, which is a common source of duplicate listeners and memory leaks.
 
 ### Lightning Locker vs Lightning Web Security
 

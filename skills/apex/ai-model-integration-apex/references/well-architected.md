@@ -20,7 +20,7 @@ AI model endpoints can fail, throttle, return non-200 status codes, or time out.
 
 **Cache granularity:** Caching the token (for legacy Einstein) is always correct. Caching model responses is a more complex tradeoff — cached responses avoid repeated callouts for identical inputs but may serve stale AI results if the model is updated or prompt context changes. Cache model responses only when inputs are deterministic and the response does not need to reflect model version changes within the cache TTL.
 
-**Model API name coupling:** `aiplatform.ModelsAPI` uses a model API name string at call time (e.g. `sfdc_ai__DefaultOpenAIGPT4OmniMini`). Hardcoding this string scatters a configuration value across classes. Store the model API name in a Custom Metadata Type or Custom Setting so it can be changed without a code deployment when the org's model configuration changes.
+**Model API name coupling:** `aiplatform.ModelsAPI` uses a model API name string at call time (e.g. `sfdc_ai__DefaultOpenAIGPT4OmniMini`). Hardcoding this string scatters a configuration value across classes. The sharper reason to externalise it is that the roster is versioned and models are retired on dated schedules, and requests to a retired model are rerouted to a replacement rather than rejected — so the coupling cost is not just a deployment, it is a silent change of model behind a prompt that was tuned for a different one. Store the model API name in a Custom Metadata Type or Custom Setting, and re-verify it against the Supported Models page each release.
 
 ## Anti-Patterns
 
@@ -31,6 +31,7 @@ AI model endpoints can fail, throttle, return non-200 status codes, or time out.
 ## Official Sources Used
 
 - Access Models API with Apex — Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/access-models-api-with-apex.html
+- Supported Models — Agentforce Developer Guide — https://developer.salesforce.com/docs/ai/agentforce/guide/supported-models.html — confirms the current `sfdc_ai__Default*` roster and its exact API-name strings, the "Retired on Apr 23, 2026" annotation on Vertex AI Gemini 3 Pro (`sfdc_ai__DefaultVertexAIGeminiPro30`), the rerouting of requests to a replacement model after a shutdown date, and the 65,536-token context ceiling that applies to all models when Einstein Trust Layer data masking is on (verified 2026-08-13)
 - Einstein Platform Services Developer Guide — https://www.salesforce.com/products/einstein/  (page retired — see host index for current equivalent)
 - Apex Developer Guide — Named Credentials as Callout Endpoints — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm

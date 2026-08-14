@@ -29,7 +29,7 @@
 
 - **integration/mulesoft-salesforce-connector** — Deep-dive on Anypoint Salesforce Connector: API selection (SOAP/REST/Bulk/Streaming), JWT Bearer auth, watermark, batch processing. Use when MuleSoft is selected as the middleware platform.
 - **integration/api-led-connectivity** — Multi-layer API architecture (System/Process/Experience APIs). Use when MuleSoft is selected and the integration architecture requires governed, reusable API layers across multiple consumers.
-- **integration/integration-pattern-selection** — Synchronous vs asynchronous vs event-driven pattern selection before middleware vendor selection.
+- **admin/integration-pattern-selection** — Synchronous vs asynchronous vs event-driven pattern selection before middleware vendor selection.
 - **integration/error-handling-in-integrations** — Retry strategies, dead-letter queue design, and compensating transaction patterns applicable across all middleware vendors.
 
 ## Official Sources Used

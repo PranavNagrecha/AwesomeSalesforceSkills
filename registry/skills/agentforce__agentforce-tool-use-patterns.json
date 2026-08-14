@@ -11,6 +11,7 @@
     "1eef7e790229588116e2",
     "2e369936feaf5c0fcd2d",
     "2e978c8822dcdf5bde0c",
+    "34ec46f20df86f2ab07d",
     "3513f64130646e6648f5",
     "39834ec6edfd07f9f482",
     "3b82896bf83bb549440f",
@@ -65,9 +66,9 @@
     "fb868e8c6376a08863cb",
     "ff6f7ee20a834049efa4"
   ],
-  "content_hash": "5f2c3fe99cd426b0365fb617dcf8c10a2cc43dacae699008e493122dfca545b6",
+  "content_hash": "028b8d92d2fb8723621db841377f8f093472c50358b13269afbf3a1df3883027",
   "dependencies": [],
-  "description": "Pick the right tool shape for each agent action: Apex invocable vs Flow action vs External Service vs Prompt Template vs Data Cloud retrieval. Covers action selection by use case, argument design for LLM clarity, return-shape contracts, error-surfacing, cost implications, and when to chain tools vs keep a single action. NOT for authoring a specific action (use custom-agent-actions-apex). NOT for topic design (use agent-topic-design).",
+  "description": "Pick the right tool shape for each agent action: Apex invocable vs Flow action vs External Service vs Prompt Template vs Data Cloud retrieval. Covers action selection by use case, argument design for LLM clarity, return-shape contracts, error-surfacing, cost implications, and when to chain tools vs keep a single action. NOT for designing or reviewing an action whose shape is already settled \u2014 naming, confirmation, error behavior \u2014 use agentforce/agent-actions. NOT for writing the Apex class itself \u2014 use agentforce/custom-agent-actions-apex.",
   "file_location": "skills/agentforce/agentforce-tool-use-patterns",
   "id": "agentforce/agentforce-tool-use-patterns",
   "inputs": [

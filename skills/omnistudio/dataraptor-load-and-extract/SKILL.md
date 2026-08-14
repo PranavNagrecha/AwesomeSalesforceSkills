@@ -1,6 +1,6 @@
 ---
 name: dataraptor-load-and-extract
-description: "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio."
+description: "Build or debug DataRaptor Extract and Load — multi-object extracts, upserts, iferror mapping. Triggers: DataRaptor Extract, DataRaptor Load, Turbo Extract debug. NOT for Extract vs Load design tradeoffs — use omnistudio/dataraptor-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

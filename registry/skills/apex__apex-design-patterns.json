@@ -58,9 +58,9 @@
     "f8cf2ac4f926b532fe10",
     "ff2aec9312459c364911"
   ],
-  "content_hash": "05533644581f70e6141ed494616d7dfc95c61989128ceb8ec7c93754121b996f",
+  "content_hash": "8f0f140b0144e4884fbbe48dad324b7cc3a20f29212686b31b70eed5dbdae005",
   "dependencies": [],
-  "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure.",
+  "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for the fflib library \u2014 use apex/fflib-enterprise-patterns. NOT for splitting one class \u2014 use apex/apex-class-decomposition-pattern.",
   "file_location": "skills/apex/apex-design-patterns",
   "id": "apex/apex-design-patterns",
   "inputs": [

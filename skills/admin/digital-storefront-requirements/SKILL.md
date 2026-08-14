@@ -1,6 +1,6 @@
 ---
 name: digital-storefront-requirements
-description: "Use when gathering or evaluating requirements for a Salesforce Commerce Cloud digital storefront — including branding strategy, content management approach, personalization, mobile experience, and accessibility compliance. Trigger keywords: SFRA branding, PWA Kit storefront, composable storefront, storefront accessibility, WCAG Commerce Cloud, overlay cartridge branding, mobile storefront, storefront personalization, content slots. NOT for Experience Cloud (Lightning Web Runtime portals, Digital Experiences) requirements — those are covered separately."
+description: "Use when gathering or evaluating requirements for a Salesforce Commerce Cloud digital storefront — branding strategy, content management approach, personalization, mobile experience, and accessibility compliance. Trigger keywords: SFRA branding, PWA Kit storefront, composable storefront, storefront accessibility, WCAG Commerce Cloud, overlay cartridge branding, mobile storefront, storefront personalization, content slots. NOT for building the site in Business Manager — use admin/b2c-commerce-store-setup. NOT for SCAPI design, Managed Runtime and caching strategy — use architect/headless-commerce-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

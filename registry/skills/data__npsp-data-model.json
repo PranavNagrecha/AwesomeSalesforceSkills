@@ -83,9 +83,9 @@
     "f2f616186f534b49abce",
     "fc3dba472a07decb6194"
   ],
-  "content_hash": "f44ad647fd0c209b728eb53f20d389679b4b66f29765b3a496249127c8372f49",
+  "content_hash": "91d3e803fbb678655732768f173acfcea4fb8536d2d6ca150b0d131602a0d767",
   "dependencies": [],
-  "description": "Use this skill when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for standard Salesforce data model, Financial Services Cloud data model, or Program Management Module (PMM) data model.",
+  "description": "Use when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for the constituent 360 household model, CRLP rollups or Program Management (PMM) objects \u2014 use data/nonprofit-data-architecture. NOT for configuring Enhanced Recurring Donations \u2014 use admin/recurring-donations-setup.",
   "file_location": "skills/data/npsp-data-model",
   "id": "data/npsp-data-model",
   "inputs": [

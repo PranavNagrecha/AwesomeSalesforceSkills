@@ -83,12 +83,12 @@
     "f3bbab116db4b5986e45",
     "fb1ff311d8baf1fb958f"
   ],
-  "content_hash": "41ec1b60f824e361445ff77db2f2825e9bbf10408a488dc1791f13520cbe7d03",
+  "content_hash": "ec0b6091512a2537f7cd35c0cb7ae55cd32768dc025f6b838faa96c31fe9f960",
   "dependencies": [
     "data/cpq-data-model",
     "apex/cpq-api-and-automation"
   ],
-  "description": "Use when diagnosing or resolving slow CPQ quote calculation, QLEx timeouts, or governor limit errors on large quotes. Trigger keywords: Large Quote Mode, QCP field declaration, quote calculation performance, SBQQ calculation timeout, async pricing. NOT for generic Apex performance tuning, CPQ pricing rule logic design, or billing engine performance.",
+  "description": "Use when diagnosing or resolving slow CPQ quote calculation, QLEx timeouts, or governor limit errors on large quotes. Trigger keywords: Large Quote Mode, QCP field declaration, quote calculation performance, SBQQ calculation timeout, async pricing. NOT for designing bundles and a pricing model that scales before the problem exists \u2014 use architect/cpq-architecture-patterns. NOT for writing the QCP or other SBQQ plugin interfaces themselves \u2014 use apex/cpq-apex-plugins.",
   "file_location": "skills/data/cpq-performance-optimization",
   "id": "data/cpq-performance-optimization",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: product-catalog-migration-commerce
-description: "Use when migrating product catalog data into Salesforce B2B Commerce — covers category hierarchy, product attributes, images, pricing, and variant structure using the Commerce Import API. NOT for CPQ product catalog migration, post-migration catalog configuration, or commerce catalog taxonomy planning."
+description: "Use when migrating product catalog data into Salesforce B2B Commerce — covers category hierarchy, product attributes, images, pricing, and variant structure using the Commerce Import API. NOT for configuring categories, entitlement policies and variants after the load — use admin/commerce-product-catalog. NOT for migrating the CPQ (SBQQ) catalog — use data/product-catalog-migration-cpq."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: user-access-policies
-description: "Configuring User Access Policies (UAP) to automatically assign or revoke permission sets and permission set groups based on user attributes. Use when automating permission provisioning on user create/update without Apex triggers. Covers policy configuration, filter criteria, evaluation order, and PSL assignment. NOT for permission set design (use permission-set-architecture). NOT for delegated user management (use delegated-administration)."
+description: "Configuring User Access Policies (UAP) to automatically assign or revoke permission sets and permission set groups based on user attributes. Use when automating permission provisioning on user create/update without Apex triggers. Covers policy configuration, filter criteria, evaluation order, and PSL assignment. NOT for permission set design — use admin/permission-set-architecture. NOT for delegated user admin — use admin/delegated-administration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

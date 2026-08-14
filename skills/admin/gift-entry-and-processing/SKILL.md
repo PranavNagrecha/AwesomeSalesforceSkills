@@ -1,6 +1,6 @@
 ---
 name: gift-entry-and-processing
-description: "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for standard opportunity creation or direct GiftTransaction DML outside the Gift Entry framework."
+description: "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for a one-time migration of historical gift data — use data/gift-history-import. NOT for soft credits or matching gifts — use admin/soft-credits-and-matching."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

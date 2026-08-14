@@ -1,6 +1,6 @@
 ---
 name: dataraptor-patterns
-description: "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself."
+description: "Design DataRaptors — Extract vs Turbo Extract vs Transform vs Load, mapping, performance. Triggers: DataRaptor Extract, Turbo Extract, DataRaptor Load, DataRaptor Transform, OmniStudio data mapping. NOT for Extract/Load debugging — use omnistudio/dataraptor-load-and-extract. NOT for transform optimization — use omnistudio/dataraptor-transform-optimization."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,7 +33,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
 # DataRaptor Patterns

@@ -84,9 +84,9 @@
     "fb42b9dfb8ab1e2533e6",
     "fed03edda792fb3ef2bd"
   ],
-  "content_hash": "e9d33fc59aa424597810bb90bf3324d288f1e5fd31e0f9524c375f1bd3dac225",
+  "content_hash": "d855fd614a8fafc862e56746b367eb4e173398458717e1f243edafd4dab77f09",
   "dependencies": [],
-  "description": "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for automated testing (use flow-testing or apex-test-class-standards). NOT for writing user stories or eliciting requirements (use requirements-gathering-for-sf). NOT for setting up sandboxes or environment strategy (use sandbox-strategy).",
+  "description": "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for Given/When/Then AC syntax \u2014 use admin/acceptance-criteria-given-when-then. NOT for automated Flow or Apex test coverage \u2014 use flow/flow-testing.",
   "file_location": "skills/admin/uat-and-acceptance-criteria",
   "id": "admin/uat-and-acceptance-criteria",
   "inputs": [

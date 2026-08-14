@@ -1,6 +1,6 @@
 ---
 name: cpq-quote-templates
-description: "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard Salesforce quote templates (Setup > Quote Templates), Visualforce-only PDF customization, or CPQ pricing rules and price books."
+description: "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard non-CPQ quote templates in Setup — use admin/quotes-and-quote-templates. NOT for a Visualforce-built quote PDF — use apex/quote-pdf-customization."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

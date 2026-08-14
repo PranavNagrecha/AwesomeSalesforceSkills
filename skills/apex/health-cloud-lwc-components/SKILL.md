@@ -1,6 +1,6 @@
 ---
 name: health-cloud-lwc-components
-description: "Use this skill when building custom LWC components for Health Cloud: extending patient card configurations, building custom timeline components using TimelineObjectDefinition metadata, creating care plan visualizations, and surfacing clinical data via LWC. NOT for standard LWC development unrelated to Health Cloud clinical components, or OmniStudio FlexCard development."
+description: "Use this skill when building custom LWC components for Health Cloud: extending patient card configurations, building custom timeline components using TimelineObjectDefinition metadata, creating care plan visualizations, and surfacing clinical data via LWC. NOT for configuring Industries Timeline — use admin/health-cloud-timeline. NOT for Health Cloud Apex — use apex/health-cloud-apex-extensions."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: analytics-external-data
-description: "Use when bringing non-Salesforce data into CRM Analytics via the External Data API, Data Connectors, or Live Datasets. Trigger keywords: InsightsExternalData, External Data API, live dataset, remote connection, Snowflake connector, BigQuery connector, Tableau Bridge, external CSV upload, analytics connector. NOT for standard data import into Salesforce objects. NOT for Salesforce object sync via dataflow local connectors. NOT for standard ETL into Sales or Service Cloud."
+description: "Use when bringing non-Salesforce data into CRM Analytics via the External Data API, Data Connectors, or Live Datasets. Trigger keywords: InsightsExternalData, External Data API, live dataset, remote connection, Snowflake connector, BigQuery connector, Tableau Bridge, external CSV upload, analytics connector. NOT for Salesforce object sync, sync schedules, or sync errors in Data Manager — use admin/analytics-data-manager. NOT for importing data into Salesforce objects themselves — use admin/data-import-and-management."
 category: data
 salesforce-version: "Spring '26+"
 well-architected-pillars:

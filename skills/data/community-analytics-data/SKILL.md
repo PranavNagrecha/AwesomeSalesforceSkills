@@ -1,6 +1,6 @@
 ---
 name: community-analytics-data
-description: "Use when analyzing Experience Cloud site analytics including login metrics, member engagement, page view tracking, and content performance. Triggers: Experience Cloud site analytics, community member engagement data, portal login tracking, page view reports community, GA4 Experience Cloud integration. NOT for CRM Analytics or Tableau CRM. NOT for internal Salesforce reporting on standard CRM objects."
+description: "Use when analyzing Experience Cloud site analytics including login metrics, member engagement, page view tracking, and content performance. Triggers: Experience Cloud site analytics, community member engagement data, portal login tracking, page view reports community, GA4 Experience Cloud integration. NOT for CRM Analytics / Tableau CRM — use admin/einstein-analytics-basics. NOT for designing reputation levels and the engagement program itself — use admin/community-engagement-strategy."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

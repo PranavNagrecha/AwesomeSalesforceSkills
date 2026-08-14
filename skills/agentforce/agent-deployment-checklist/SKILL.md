@@ -1,6 +1,6 @@
 ---
 name: agent-deployment-checklist
-description: "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management)."
+description: "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for the technical pre-prod verification behind those sign-off rows — cost telemetry, rate limits, canary rollout, latency benchmarks — use agentforce/agentforce-production-readiness-checklist. NOT for general Salesforce release management — use devops/release-management."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

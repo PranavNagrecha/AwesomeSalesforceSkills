@@ -1,0 +1,152 @@
+[
+  {
+    "query": "clean up duplicate records",
+    "expected": "admin/duplicate-management",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/duplicate-management",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin description names 'clean up duplicates' verbatim. Gloss trigger is the query itself: 'clean up duplicate records'. NOT-for volume cleanup redirects to data/large-scale-deduplication, which this query does not ask for."
+  },
+  {
+    "query": "my batch job keeps timing out",
+    "expected": "apex/batch-apex-patterns",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/batch-apex-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex description owns 'batch'. Gloss is 'designing, reviewing, or debugging Batch Apex' with AsyncApexJob / batch scope. Timing out is a batch-execute governor problem, not Queueable-vs-Batch selection (async-apex) or nightly-failure alerting."
+  },
+  {
+    "query": "why can't my user see the record their manager owns",
+    "expected": "security/record-access-troubleshooting",
+    "router_picked": "salesforce-security",
+    "router_correct": true,
+    "skill_picked": "security/record-access-troubleshooting",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Security description owns troubleshooting a specific record-access denial; admin owns designing OWD/role hierarchy. Gloss: 'Diagnose why a user can or cannot see/edit a record'."
+  },
+  {
+    "query": "mock an HTTP callout in a test class",
+    "expected": "apex/apex-http-callout-mocking",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/apex-http-callout-mocking",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex description names HttpCalloutMock and test class. Gloss is HttpCalloutMock / StaticResourceCalloutMock / Test.setMock. apex-mocking-and-stubs lists HttpCalloutMock but redirects per-endpoint HTTP mocks here."
+  },
+  {
+    "query": "how do I decide between platform events and change data capture",
+    "expected": "integration/event-driven-architecture-patterns",
+    "router_picked": "salesforce-integration",
+    "router_correct": true,
+    "skill_picked": "integration/event-driven-architecture-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Integration description names Platform Event and Change Data Capture. Gloss triggers: 'platform events vs CDC', 'choose event pattern'. NOT-for implementing a single pattern redirects away from this choose-between question."
+  },
+  {
+    "query": "our deployment keeps failing on test coverage",
+    "expected": "devops/deployment-error-troubleshooting",
+    "router_picked": "salesforce-devops",
+    "router_correct": true,
+    "skill_picked": "devops/deployment-error-troubleshooting",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Devops description owns deployment troubleshooting. Gloss triggers include 'deployment failed' and 'code coverage failed'. deployment-error-diagnosis redirects testLevel coverage models here."
+  },
+  {
+    "query": "build a customer portal where they can log cases",
+    "expected": "admin/experience-cloud-site-setup",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/experience-cloud-site-setup",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "No domain description names portal/Experience Cloud; admin is the declarative site-setup home. Gloss: create Experience Cloud site / community portal. portal-requirements-gathering says NOT for building — use experience-cloud-site-setup."
+  },
+  {
+    "query": "pull data into a flexcard without writing apex",
+    "expected": "omnistudio/flexcard-design-patterns",
+    "router_picked": "salesforce-omnistudio",
+    "router_correct": true,
+    "skill_picked": "omnistudio/flexcard-design-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Omnistudio description names FlexCard and DataRaptor. Gloss: 'Design FlexCard layout, data sources, states, actions'. Data sources without Apex is the FlexCard design question, not DataRaptor-only extract/load debugging."
+  },
+  {
+    "query": "are we going to run out of api calls at this growth rate",
+    "expected": "architect/org-limits-monitoring",
+    "router_picked": "salesforce-architect",
+    "router_correct": true,
+    "skill_picked": "architect/org-limits-monitoring",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Architect description owns scalability limits. Gloss triggers: 'set up alerts before we hit API limits', REST Limits resource. Closer than limits-and-scalability-planning, which talks governor limits / custom-object caps / data volume."
+  },
+  {
+    "query": "let users pick a record from a lookup in my component",
+    "expected": "lwc/lwc-record-picker",
+    "router_picked": "salesforce-lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/lwc-record-picker",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "LWC description owns Lightning Web Component. Gloss is lightning-record-picker (object/record filter). lwc-custom-lookup is the fully custom typeahead and redirects the base picker here."
+  },
+  {
+    "query": "an external service will post json to us, how do we receive it",
+    "expected": "integration/webhook-inbound-patterns",
+    "router_picked": "salesforce-integration",
+    "router_correct": true,
+    "skill_picked": "integration/webhook-inbound-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Integration description owns inbound webhook / external system calling Salesforce. Gloss: inbound webhook receiver via Apex REST. webhook-signature-verification redirects receiver end-to-end design here."
+  },
+  {
+    "query": "someone typed instructions into the chat to jailbreak our bot",
+    "expected": "agentforce/prompt-injection-defense",
+    "router_picked": "salesforce-agentforce",
+    "router_correct": true,
+    "skill_picked": "agentforce/prompt-injection-defense",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Agentforce description names prompt injection. Gloss: 'prompt-injection and jailbreak attacks' — the query's jailbreak/chat phrasing is the trigger."
+  },
+  {
+    "query": "rotate the credentials our integration user uses",
+    "expected": "security/service-account-credential-rotation",
+    "router_picked": "salesforce-security",
+    "router_correct": true,
+    "skill_picked": "security/service-account-credential-rotation",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Rotating credentials is org-hardening, not inbound-API design. Gloss: credential rotation for integration users; trigger 'rotate integration user'."
+  },
+  {
+    "query": "one class does everything and nobody wants to touch it",
+    "expected": "apex/apex-class-decomposition-pattern",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/apex-class-decomposition-pattern",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex owns classes. Gloss: 'When and how to split an Apex class into Domain / Service / Selector layers'. apex-design-patterns is the fat-trigger/controller framing; this query is a god class, not specifically a trigger."
+  },
+  {
+    "query": "guide reps through the stages with tips on each one",
+    "expected": "admin/path-and-guidance",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/path-and-guidance",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin is declarative Path/sales-process config. Gloss triggers: 'add guidance to stages', 'key fields on path', 'configure path steps'. in-app-guidance-and-walkthroughs redirects Path guidance here."
+  }
+]

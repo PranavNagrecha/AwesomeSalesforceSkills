@@ -1,6 +1,6 @@
 ---
 name: agent-topic-design
-description: "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping."
+description: "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) — use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out — Omni-Channel routing and the context package — use agentforce/agentforce-agent-handoff-patterns."
 category: agentforce
 salesforce-version: "Spring '26+"
 well-architected-pillars:

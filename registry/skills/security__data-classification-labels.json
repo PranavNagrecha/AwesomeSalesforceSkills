@@ -108,9 +108,9 @@
     "f9c5fb97b58f6126a22e",
     "fa882fb57321d1d73270"
   ],
-  "content_hash": "3bd6bdefc87831949846bb02e2d734a8271855bf9198dba89ce966ca96addbd4",
+  "content_hash": "73692eb71f811dc6d548fde8a8d3522225a828d0f3614cfc772f3dfd7a940f0b",
   "dependencies": [],
-  "description": "Classify Salesforce fields by data sensitivity and compliance category using the four built-in classification attributes (SecurityClassification, ComplianceGroup, BusinessOwnerId, BusinessStatus). Covers Metadata API deployment, Tooling API querying, and Einstein Data Detect recommendations. NOT for data masking, Shield Platform Encryption, or runtime access control enforcement.",
+  "description": "Classify Salesforce fields by data sensitivity and compliance category using the four built-in classification attributes (SecurityClassification, ComplianceGroup, BusinessOwnerId, BusinessStatus). Covers Metadata API. NOT for data masking, Shield Platform Encryption, or runtime access control enforcement \u2014 use data/data-quality-and-governance.",
   "file_location": "skills/security/data-classification-labels",
   "id": "security/data-classification-labels",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: omnistudio-admin-configuration
-description: "Use when configuring OmniStudio at the org level: enabling Standard Runtime, selecting the Runtime Namespace, assigning Permission Set Licenses, toggling feature settings, and granting Experience Cloud community access. Trigger keywords: OmniStudio Settings, Standard OmniStudio Runtime, managed package runtime, runtime namespace, OmniStudio Permission Set, OmniStudio PSL. NOT for OmniScript design, DataRaptor authoring, or namespace migration away from Vlocity packages."
+description: "Use when configuring OmniStudio at the org level: enabling Standard Runtime, selecting the Runtime Namespace, assigning Permission Set Licenses, toggling feature settings, and granting Experience Cloud community access. Trigger keywords: OmniStudio Settings, Standard OmniStudio Runtime, managed package runtime, runtime namespace, OmniStudio Permission Set, OmniStudio PSL. NOT for moving an org off the vlocity namespace — use omnistudio/vlocity-to-native-omnistudio-migration. NOT for deciding whether to adopt OmniStudio — use architect/omnistudio-vs-standard-decision."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -53,6 +53,7 @@ Gather this context before working on anything in this domain:
 - Which Salesforce edition and OmniStudio license are in use — Industries (included), standalone OmniStudio SKU, or Vlocity managed package?
 - Who needs access — internal builders, internal consumers only, or Experience Cloud / community users as well?
 - Has any component already been opened in the Standard OmniStudio designer? (If yes, that component cannot be reverted to managed package runtime.)
+- Is **Enhanced Runtime Performance** on or off? It is a security change, not a tuning knob — see below before recommending either state.
 
 ---
 
@@ -76,6 +77,17 @@ The **Runtime Namespace** field in OmniStudio Settings controls which managed pa
 - `vlocity_ps` — Public Sector Solutions
 
 Leaving this field blank or entering an incorrect namespace causes component activation failures that surface as generic errors. This field must match the actual installed namespace. If Standard Runtime is fully enabled and no managed package is present, set the namespace to `omnistudio`.
+
+### Enhanced Runtime Performance and User Mode
+
+**Enhanced Runtime Performance** is a toggle on the OmniStudio Settings page (Setup > Quick Find > Omnistudio Settings). It is a security change with a performance name. Salesforce Help describes it as ensuring "that Omnistudio communicates with the Salesforce Platform with in-platform capabilities instead of through Apex calls" — removing the Apex hop — and states that the setting makes all components execute in user mode, which "respects the access levels of the person performing an operation." Components that previously reached data through the managed package's Apex layer now stop at the running user's object and field permissions, so a user without the requisite object or field permissions cannot complete key actions.
+
+Two consequences an org-level setup must plan for:
+
+- **A prerequisite object grant.** Users need access to the **Omni Interaction Access Configuration** object; Salesforce documents this as a before-you-begin item, with a dedicated permission set. Beyond that, every persona running a component needs CRUD and FLS on everything its Data Mappers and Integration Procedures touch.
+- **It gates the Apex entry point.** Invoking Integration Procedures from Apex through the Connect API (documented as `ConnectAPI.OmniDesignerConnect.integrationProcedureExecute`) requires Enhanced Runtime Performance to be enabled; when it is disabled, Integration Procedure calls from Apex do not route through the Connect API. Copy that identifier from the help topic rather than recalling it — it is not in the Apex Reference Guide.
+
+Salesforce is explicit about rollout: do not enable the setting directly in production — test it in a production-like sandbox first. This is an org setting and is independent of the Apex `apiVersion` user-mode default, which is pinned per class in `.cls-meta.xml` — see [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version) for that separate rule.
 
 ### Permission Set Licenses and Assignment
 
@@ -160,6 +172,7 @@ Run through these before marking work in this area complete:
 - [ ] All target users have the `OmniStudioPSL` Permission Set License assigned.
 - [ ] Builders have `OmniStudio Admin`; consumers have `OmniStudio User`.
 - [ ] Experience Cloud community users have the community consumer custom permission.
+- [ ] **Enhanced Runtime Performance** state is deliberate and documented. If it is on, every consumer persona has been access-reviewed and has the Omni Interaction Access Configuration object, and the toggle was trialled in a production-like sandbox first.
 - [ ] A test OmniScript activates without errors and renders correctly for both admin and consumer user profiles.
 - [ ] Configuration is documented in the deployment runbook so sandbox refreshes replicate it.
 
@@ -173,6 +186,7 @@ Non-obvious platform behaviors that cause real production problems:
 2. **Blank Runtime Namespace causes silent activation failures** — the OmniStudio Settings page does not validate the namespace field on save; an empty value only surfaces as a cryptic activation error when a user first tries to activate a component.
 3. **PSL must precede permission set assignment** — attempting to assign `OmniStudio Admin` or `OmniStudio User` before assigning the underlying PSL will fail, sometimes silently, in bulk user provisioning scripts.
 4. **Community consumer permission is separate from standard user permission** — assigning `OmniStudio User` to a community profile is necessary but not sufficient; the community-consumer custom permission is an additional requirement that is easy to overlook.
+5. **Enhanced Runtime Performance re-scopes every component to user mode at once** — the toggle reads as tuning, but it makes all components execute in user mode org-wide, so narrow-profile consumers, Experience Cloud users, and guest users break first. Salesforce directs orgs not to enable it directly in production.
 
 ---
 

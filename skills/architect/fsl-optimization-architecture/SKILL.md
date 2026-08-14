@@ -1,6 +1,6 @@
 ---
 name: fsl-optimization-architecture
-description: "Use this skill when designing or evaluating the FSL scheduling engine architecture: optimization mode selection (Global/In-Day/Resource/Reshuffle), ESO adoption strategy, territory sizing for optimization, and fallback planning. Trigger keywords: FSL optimization engine, ESO enhanced scheduling, global optimization timeout, in-day optimization, OAAS architecture, territory optimization design. NOT for admin-level scheduling policy configuration, scheduling rule setup in Setup, or per-appointment scheduling API calls (covered by apex/fsl-scheduling-api)."
+description: "Use this skill when designing or evaluating the FSL scheduling engine architecture: optimization mode selection (Global/In-Day/Resource/Reshuffle), ESO adoption strategy, territory sizing for optimization, and fallback planning. Trigger keywords: FSL optimization engine, ESO enhanced scheduling, global optimization timeout, in-day optimization, OAAS architecture, territory optimization design. NOT for tuning an optimization run in Setup — use admin/fsl-scheduling-optimization-design. NOT for per-appointment scheduling API calls — use apex/fsl-scheduling-api."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

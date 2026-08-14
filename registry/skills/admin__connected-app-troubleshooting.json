@@ -70,9 +70,9 @@
     "f6b165f60db838a5ec75",
     "f8a42f8f0bcb4bc60d9b"
   ],
-  "content_hash": "b5d94d50a973bb20606eba0770647ffe701a29ce1a360baf910ca0b77e1c4ac3",
+  "content_hash": "b7a0126361067b96522162351ae9aa81d76ae29317ce8a3a6ecc7f7ce1950b95",
   "dependencies": [],
-  "description": "Troubleshooting Connected App OAuth flows \u2014 IP relaxation vs IP restriction, refresh token policy traps (default kills the connection on first refresh), session-revocation semantics, the OAuth error-code catalog (`invalid_grant`, `invalid_client_id`, `unsupported_grant_type`), per-user vs admin-pre-approved flows, and the user-policy check (Connected App must be assigned to the user via profile / permset). Covers the Login History debug trail and the test-once-with-real-credentials sanity check before integrations go live. NOT for designing the OAuth flow itself (use security/oauth-flows-and-connected-apps), NOT for SAML troubleshooting (use admin/sso-saml-troubleshooting).",
+  "description": "Troubleshooting Connected App OAuth flows \u2014 IP relaxation vs IP restriction, refresh token policy traps (default kills the connection on first refresh), session-revocation semantics, the OAuth error-code catalog (`invalid_grant`, `invalid_client_id`, `unsupported_grant_type`), per-user vs admin-pre-approved flows, and the user-policy check (Connected App must be assigned to the user via profile / permset). Covers the Login History debug trail. NOT for designing the OAuth flow itself \u2014 use integration/oauth-flows-and-connected-apps. NOT for a SAML / SSO login failure \u2014 use security/sso-saml-troubleshooting.",
   "file_location": "skills/admin/connected-app-troubleshooting",
   "id": "admin/connected-app-troubleshooting",
   "inputs": [
@@ -89,7 +89,7 @@
     "OAuth Authorization Flows \u2014 https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_flows.htm&type=5",
     "LoginHistory Object \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_loginhistory.htm",
     "JWT Bearer Flow \u2014 https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5",
-    "Sibling skill \u2014 `skills/security/oauth-flows-and-connected-apps/SKILL.md` (when one exists)",
+    "Sibling skill \u2014 `skills/integration/oauth-flows-and-connected-apps/SKILL.md`",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

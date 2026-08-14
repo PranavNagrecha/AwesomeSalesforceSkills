@@ -1,6 +1,6 @@
 ---
 name: omni-channel-reporting-data
-description: "Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup."
+description: "Omni-Channel analytics data: agent work records, queue metrics, capacity, wait times. Triggers: Omni-Channel reporting, agent work metrics, queue wait time. NOT for routing/capacity admin setup — use admin/omni-channel-routing-setup. NOT for capacity modeling architecture — use architect/omni-channel-capacity-model."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

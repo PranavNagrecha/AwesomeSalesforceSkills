@@ -1,0 +1,152 @@
+[
+  {
+    "query": "configure omni channel routing",
+    "expected": "admin/omni-channel-routing-setup",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/omni-channel-routing-setup",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing — query is configure + omni channel + routing. OmniStudio roster is OmniScripts/FlexCards, not Service Cloud Omni-Channel. Admin Voice gloss also redirects Omni-Channel setup here."
+  },
+  {
+    "query": "encrypt sensitive fields",
+    "expected": "security/platform-encryption",
+    "router_picked": "salesforce-security",
+    "router_correct": true,
+    "skill_picked": "security/platform-encryption",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router names Shield / platform encryption. Gloss triggers: Shield Platform Encryption, data at rest, AES-256, tenant secret. encrypted-field-query-patterns and gdpr-data-privacy both NOT-for field-level encryption → this package. Classification gloss is labels, not encrypting."
+  },
+  {
+    "query": "my trigger fires twice and I don't know why",
+    "expected": "apex/recursive-trigger-prevention",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/recursive-trigger-prevention",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: 'trigger recursion', 'recursive update', 'trigger firing multiple times' — 'fires twice' is that phrasing. trigger-framework lists recursion but is handler structure; bypass gloss NOT-for re-entry redirects here."
+  },
+  {
+    "query": "our reports are timing out on a big object",
+    "expected": "admin/report-performance-tuning",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/report-performance-tuning",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin router names report. Gloss triggers: 'report times out', 'report is slow', 'report row limit hit' — literal timeout. reports-and-dashboards is build/missing-data, not timeout; CRM Analytics is NOT-for'd."
+  },
+  {
+    "query": "encrypt a field that's already got data in it",
+    "expected": "security/platform-encryption",
+    "router_picked": "salesforce-security",
+    "router_correct": true,
+    "skill_picked": "security/platform-encryption",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Still Shield field encryption (existing rows are PE background encryption), not query patterns or BYOK. Query-patterns gloss is SOQL on encrypted fields; shield-deployment is product rollout sequencing; kms-byok NOT-for field masking redirects to platform-encryption."
+  },
+  {
+    "query": "flow is erroring for some users but not others",
+    "expected": "flow/flow-runtime-context-and-sharing",
+    "router_picked": "salesforce-flow",
+    "router_correct": true,
+    "skill_picked": "flow/flow-runtime-context-and-sharing",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: Flow sharing, run in system mode, Flow user context — 'some users but not others' is user vs system / record access, not a fault-connector design or a generic debug-mode issue. Debugging and runtime-error-diagnosis stay in top3 as diagnosis fallbacks."
+  },
+  {
+    "query": "handle retries when a callout fails",
+    "expected": "apex/apex-callout-retry-and-resilience",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/apex-callout-retry-and-resilience",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex owns outbound callouts. Gloss: bounded retry with backoff, queueable async retry chains, circuit-breaker. callouts-and-http-integrations is the callout itself; wsdl2apex NOT-for redirects here."
+  },
+  {
+    "query": "how do I unit test an omniscript",
+    "expected": "omnistudio/omnistudio-testing-patterns",
+    "router_picked": "salesforce-omnistudio",
+    "router_correct": true,
+    "skill_picked": "omnistudio/omnistudio-testing-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: OmniStudio testing, UTAM automation, OmniScript test. Debugging gloss is live runtime ('omniscript not working') and NOT-for testing. Versioning mentions testing a version, not unit-test patterns."
+  },
+  {
+    "query": "my wire adapter doesn't refresh after I save a record",
+    "expected": "lwc/lwc-wire-refresh-patterns",
+    "router_picked": "salesforce-lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/lwc-wire-refresh-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "refreshApex / getRecordNotifyChange / RefreshView after DML. wire-service-patterns lists refreshApex but NOT-for forcing a refresh after DML → this package. lwc-lds-writes is updateRecord cache shape; reactive-state also redirects wire refresh here."
+  },
+  {
+    "query": "which sandboxes do we actually need",
+    "expected": "devops/environment-strategy",
+    "router_picked": "salesforce-devops",
+    "router_correct": true,
+    "skill_picked": "devops/environment-strategy",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "DevOps router names environment strategy + sandbox. Triggers: 'how many environments do I need', 'environment planning', 'org topology'. Admin sandbox-strategy is type (Dev/Partial/Full) and NOT-for how many → this package. Refresh/templates is cadence, not inventory."
+  },
+  {
+    "query": "post a message into slack when a deal closes",
+    "expected": "flow/flow-for-slack",
+    "router_picked": "salesforce-flow",
+    "router_correct": true,
+    "skill_picked": "flow/flow-for-slack",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Flow Core Actions for Slack to send messages. flow-email-and-notifications also lists 'Slack notification flow' so it stays in top3, but this package is the Slack action surface. NOT-for Slack-native workflows calling Flow (integration/slack-workflow-builder)."
+  },
+  {
+    "query": "we still have old process builders to get rid of",
+    "expected": "flow/process-builder-to-flow-migration",
+    "router_picked": "salesforce-flow",
+    "router_correct": true,
+    "skill_picked": "flow/process-builder-to-flow-migration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Flow router names Process Builder migration. Gloss: Migrate Process Builder processes to record-triggered Flows. workflow-rule-to-flow and flow-migration-from-trigger both NOT-for PB → this package."
+  },
+  {
+    "query": "we need to keep 7 years of cases but not in the main object",
+    "expected": "data/data-archival-strategies",
+    "router_picked": "salesforce-data",
+    "router_correct": true,
+    "skill_picked": "data/data-archival-strategies",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: archive old records, Big Objects, data retention policy — 7 years off the Case object is retention + Big Object/external, not EmailMessage bloat. service-data-archival is attachment/email cleanup and NOT-for generic archival → this package; storage-management also redirects archival here."
+  },
+  {
+    "query": "log errors somewhere I can actually query later",
+    "expected": "apex/custom-logging-and-monitoring",
+    "router_picked": "salesforce-apex",
+    "router_correct": true,
+    "skill_picked": "apex/custom-logging-and-monitoring",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Custom logging framework with log sObject schema — queryable later, not Debug Log. debug-and-logging is System.debug vs durable choice; error-handling-framework is exception hierarchy / Platform Event capture. Queryable custom object is this package."
+  },
+  {
+    "query": "write acceptance criteria the devs can test",
+    "expected": "admin/acceptance-criteria-given-when-then",
+    "router_picked": "salesforce-admin",
+    "router_correct": true,
+    "skill_picked": "admin/acceptance-criteria-given-when-then",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Triggers: given when then, gherkin, test first acceptance criteria, BDD — AC the devs can test. uat-and-acceptance-criteria is UAT scripts for business testers; user-story-writing is As-A I-Want, and this gloss NOT-for story format redirects the other way."
+  }
+]

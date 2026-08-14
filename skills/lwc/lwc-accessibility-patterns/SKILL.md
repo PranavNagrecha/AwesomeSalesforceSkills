@@ -1,6 +1,6 @@
 ---
 name: lwc-accessibility-patterns
-description: "Use when implementing specific ARIA attributes, keyboard navigation patterns, screen reader live regions, WCAG 2.1 compliance, focus management, or accessible data tables in Lightning Web Components. Trigger keywords: ARIA, aria-live, aria-label, aria-labelledby, role=grid, tabindex, keydown handler, WCAG AA, focus trap, accessible datatable, shadow DOM ARIA boundary. NOT for general LWC styling, visual design, SLDS theming, or CSS that does not affect assistive-technology behavior."
+description: "Use when implementing ARIA attributes, keyboard navigation, live regions, WCAG 2.1, focus traps, or accessible datatables in LWCs. Triggers: aria-live, role=grid, focus trap, WCAG AA. NOT for a general accessibility review — use lwc/lwc-accessibility. NOT for SLDS theming without a11y behavior — use lwc/lwc-css-and-styling."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

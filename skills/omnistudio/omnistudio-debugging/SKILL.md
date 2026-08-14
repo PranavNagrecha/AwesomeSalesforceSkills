@@ -1,6 +1,6 @@
 ---
 name: omnistudio-debugging
-description: "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure failing', 'debug mode', 'action debugger', 'preview not running'. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path debugging."
+description: "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path d — use omnistudio/omnistudio-performance."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

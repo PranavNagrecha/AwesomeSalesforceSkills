@@ -83,3 +83,16 @@ AND(
 - Maintain a list of all integrations that write to each object
 - Use the bypass Custom Permission pattern for all integration users
 - Monitor integration failure rates after any metadata deployment (use a Salesforce dashboard or your integration platform's monitoring)
+
+---
+
+## A User Checkbox Bypass Is Not a Custom Permission
+
+**What happens:** Validation (or Flow) gates on `$User.Suspend_Rules__c` or a named User Id (`CreatedById = '005…'`). The checkbox is granted by whoever can edit User. The Id dies when the person leaves. Both look like a "bypass" in a screenshot.
+
+**When it bites you:** Small-team orgs that grew; PE / founder-led Salesforce; any rule that mentions a person.
+
+**How to avoid it:**
+- Bypass with `NOT($Permission.Bypass_Validation_Rules)` on a Custom Permission granted by Permission Set.
+- Rank: Custom Permission > User checkbox > Profile name > hardcoded `005` Id. Never ship the last two as the design.
+- Name-picklists ("who owns this") are not `Lookup(User)` — they cannot deactivate, reassign, or report as people.

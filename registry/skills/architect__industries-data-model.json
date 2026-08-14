@@ -87,12 +87,12 @@
     "f71420a7e1275beb2aa4",
     "f996eff01e6cf217d87e"
   ],
-  "content_hash": "a8f250525933a5cd38c4287ec040e201447fe949e7a8d3dadf25f3d248e005d6",
+  "content_hash": "a49674bf9701dff62376403522c5f0c88eedc2a33697b237563a547d853662c1",
   "dependencies": [
     "insurance-cloud-architecture",
     "fsc-architecture-patterns"
   ],
-  "description": "Reference guide for Salesforce Industries cloud data models: Insurance Cloud (InsurancePolicy hierarchy), Communications Cloud (Account record types, BillingAccount), Energy & Utilities (ServicePoint, ServiceContract), and Health Cloud (CarePlan, FHIR-aligned patient objects). NOT for standard Sales/Service Cloud data model or FSC retail banking model.",
+  "description": "Reference guide for Salesforce Industries cloud data models: Insurance Cloud (InsurancePolicy hierarchy), Communications Cloud (Account record types, BillingAccount), Energy & Utilities (ServicePoint, ServiceContract), and Health Cloud (CarePlan, FHIR-aligned patient objects). NOT for Health Cloud clinical objects in depth, HC24 vs FHIR R4 \u2014 use data/health-cloud-data-model. NOT for insurance module licensing, claims and underwriting design \u2014 use architect/insurance-cloud-architecture.",
   "file_location": "skills/architect/industries-data-model",
   "id": "architect/industries-data-model",
   "inputs": [

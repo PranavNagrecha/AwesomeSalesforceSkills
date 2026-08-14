@@ -55,5 +55,5 @@
 - Sandbox Refresh Considerations — https://help.salesforce.com/s/articleView?id=sf.data_sandbox_create.htm&type=5
 - Email Deliverability Settings — https://help.salesforce.com/s/articleView?id=sf.emailadmin_deliverability.htm&type=5
 - CronTrigger Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_crontrigger.htm
-- Sibling skill (sandbox strategy) — `skills/devops/sandbox-strategy-designer/SKILL.md`
+- Sibling skill (sandbox strategy) — `skills/admin/sandbox-strategy/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -78,9 +78,9 @@
     "fec2495eb5139e4c0ed4",
     "fefc481914e8f08d7c81"
   ],
-  "content_hash": "a1a1c989d6764f8dbea4e1ee721c47fb7587d303e9373bb0e90f2f67efd3369b",
+  "content_hash": "5165c06325063bc7bb4a5ed8de8b38046fe69f77dc3302a6f4bba6c2f6456770",
   "dependencies": [],
-  "description": "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline \u2014 including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle, release management. NOT for CLI-based deployment workflows, SFDX commands, unlocked packages, or change sets \u2014 those have separate skills.",
+  "description": "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline \u2014 including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle. NOT for CLI-based deployment or SFDX commands \u2014 use devops/salesforce-cli-automation. NOT for change sets \u2014 use devops/change-set-deployment. NOT for unlocked packages \u2014 use devops/unlocked-package-development.",
   "file_location": "skills/devops/devops-center-pipeline",
   "id": "devops/devops-center-pipeline",
   "inputs": [

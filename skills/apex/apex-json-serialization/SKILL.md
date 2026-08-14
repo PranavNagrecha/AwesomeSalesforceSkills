@@ -1,6 +1,6 @@
 ---
 name: apex-json-serialization
-description: "Use when serializing Apex objects to JSON strings or deserializing JSON responses into Apex types — especially for callout payloads, integration parsing, and controlling null field output. Trigger keywords: 'suppress null fields JSON Apex', 'deserialize JSON into Apex class', 'JSON parse unknown shape', 'TypeException JSON deserialize', 'JSONGenerator streaming'. NOT for REST endpoint response shaping (use apex-rest-services), NOT for Apex remote actions returning JSON to LWC."
+description: "Use when serializing Apex objects to JSON strings or deserializing JSON responses into Apex types — especially for callout payloads, integration parsing, and controlling null field output. Trigger keywords: 'suppress null fields JSON Apex', 'deserialize JSON into Apex class', 'JSON parse unknown shape', 'TypeException JSON deserialize', 'JSONGenerator streaming'. NOT for shaping a wrapper class for LWC — use apex/apex-wrapper-class-patterns. NOT for REST endpoint response shaping — use apex/apex-rest-services."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

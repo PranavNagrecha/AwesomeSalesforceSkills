@@ -1,6 +1,6 @@
 ---
 name: cross-cloud-deployment-patterns
-description: "Use when sequencing a deployment that spans multiple Salesforce clouds — Sales Cloud, Service Cloud, and Experience Cloud — and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. Triggers: 'ExperienceBundle deployment fails with no Network found', 'cross-cloud metadata dependency error', 'how do I deploy Experience Cloud with Sales Cloud together', 'DigitalExperienceBundle missing CustomSite reference', 'how to sequence multi-cloud deployment correctly'. NOT for single-cloud deployments (use pre-deployment-checklist), NOT for OmniStudio or Health Cloud deployment specifics (use health-cloud-deployment-patterns), NOT for package-based multi-cloud release strategy (use multi-package-development)."
+description: "Use when sequencing a deployment that spans multiple Salesforce clouds — Sales Cloud, Service Cloud, and Experience Cloud — and encountering reference errors, cascading metadata failures, or. NOT for single-cloud deployments (use pre-deployment-checklist), NOT for OmniStudio or H — use devops/experience-cloud-deployment-admin."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

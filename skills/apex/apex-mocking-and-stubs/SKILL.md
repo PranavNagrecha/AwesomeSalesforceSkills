@@ -1,6 +1,6 @@
 ---
 name: apex-mocking-and-stubs
-description: "Use when choosing or implementing Apex test doubles with `Test.setMock`, `HttpCalloutMock`, `StaticResourceCalloutMock`, or `StubProvider`, and when designing code seams to support those doubles cleanly. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for general Apex test design outside the mocking and seam problem."
+description: "Choosing and implementing Apex test doubles — `Test.setMock` and `StubProvider` — and designing the code seams they need. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for multi-response or per-endpoint HTTP mocks — use apex/apex-http-callout-mocking. NOT for general test design — use apex/test-class-standards."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

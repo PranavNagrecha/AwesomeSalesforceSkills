@@ -1,6 +1,6 @@
 ---
 name: permission-set-architecture
-description: "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege'. NOT for record-sharing model design or CRUD/FLS enforcement inside Apex."
+description: "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege'. NOT for PSG muting mechanics and recalculation order — use admin/permission-set-group-composition. NOT for record-sharing model design — use admin/sharing-and-visibility."
 category: admin
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

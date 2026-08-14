@@ -1,6 +1,6 @@
 ---
 name: constituent-data-migration
-description: "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads."
+description: "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, and donations loaded in the same run) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for a standalone gift-history load with payments, soft credits, GAU allocations or campaign attribution — use data/gift-history-import. NOT for Nonprofit Cloud (NPC) migration — use architect/nonprofit-cloud-vs-npsp-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

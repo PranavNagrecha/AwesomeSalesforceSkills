@@ -1,6 +1,6 @@
 ---
 name: fsl-resource-and-skill-data
-description: "Use this skill when bulk loading FSL ServiceResource records, ServiceResourceSkill data, skill certifications, capacity-based resource setup, and availability patterns. Trigger keywords: FSL resource migration, ServiceResourceSkill bulk load, skill certification tracking FSL, capacity-based resource, service resource availability. NOT for user provisioning, ServiceResource creation via UI, or ServiceTerritoryMember setup (covered by fsl-territory-data-setup)."
+description: "Use this skill when bulk loading FSL ServiceResource records, ServiceResourceSkill data, skill certifications, capacity-based resource setup, and availability patterns. Trigger keywords: FSL resource migration, ServiceResourceSkill bulk load, skill certification tracking FSL, capacity-based resource, service resource availability. NOT for configuring resources and skills in Setup rather than loading them — use admin/fsl-resource-management. NOT for ServiceTerritoryMember and territory bulk load — use data/fsl-territory-data-setup."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

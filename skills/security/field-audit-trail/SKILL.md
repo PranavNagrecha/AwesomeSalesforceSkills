@@ -1,6 +1,6 @@
 ---
 name: field-audit-trail
-description: "Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking)."
+description: "Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking) — use data/field-history-tracking."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

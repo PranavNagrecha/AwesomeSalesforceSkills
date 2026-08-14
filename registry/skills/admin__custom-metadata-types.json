@@ -65,9 +65,9 @@
     "f20f77da3ed7cd4c033b",
     "f87448e4e89e22e81988"
   ],
-  "content_hash": "36d74c9d587e185dd7fcdcf7b04364eff5e80d64d806cc342182ab1139296c66",
+  "content_hash": "74deb5f8ace2b36606492b9222d0e1d213cdc5841416089cc43fc01a3b6a0e40",
   "dependencies": [],
-  "description": "Use when designing deployable Salesforce configuration with Custom Metadata Types, especially when choosing between CMTs, Custom Settings, and Custom Objects, protecting packaged defaults, or exposing config to Apex, Flow, and formulas. Triggers: 'custom metadata vs custom settings', 'deployable config', 'protected custom metadata', 'feature flags in Salesforce'. NOT for high-churn transactional data, user-managed business records, or secret storage that should live in Named Credentials.",
+  "description": "Use when designing deployable Salesforce configuration with Custom Metadata Types, especially when choosing between CMTs, Custom Settings, and Custom Objects, protecting packaged defaults, or exposing config to Apex, Flow, and formulas. Triggers: 'custom metadata vs custom settings', 'deployable config', 'protected custom metadata', 'feature flags in Salesforce'. NOT for hierarchical Custom Settings resolution, getInstance/getValues, or their SOQL cost \u2014 use admin/custom-metadata-types-and-settings. NOT for high-churn transactional or user-managed business records \u2014 use admin/object-creation-and-design. NOT for secrets \u2014 use integration/named-credentials-setup.",
   "file_location": "skills/admin/custom-metadata-types",
   "id": "admin/custom-metadata-types",
   "inputs": [

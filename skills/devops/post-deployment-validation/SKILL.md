@@ -1,6 +1,6 @@
 ---
 name: post-deployment-validation
-description: "Verifying Salesforce deployments succeeded end-to-end after metadata lands in the target org. Covers validation deploys (checkOnly), quick deploy from validated IDs, Apex test result interpretation, Deployment Status page drill-down, and rollback strategies. NOT for writing Apex tests (use apex test patterns). NOT for CI/CD pipeline setup (use github-actions-for-salesforce or gitlab-ci-for-salesforce)."
+description: "Verifying a Salesforce deployment worked after the metadata landed: quick deploy from a validated ID, Apex test result interpretation, Deployment Status page drill-down, functional smoke testing, JUnit/coverage output for CI, and rollback strategies. NOT for polling a deploy that is still running or stuck Pending — use devops/deployment-monitoring. NOT for the gate-check before you click deploy — use devops/pre-deployment-checklist."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

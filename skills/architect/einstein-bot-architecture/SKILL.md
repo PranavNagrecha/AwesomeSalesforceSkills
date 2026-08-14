@@ -1,6 +1,6 @@
 ---
 name: einstein-bot-architecture
-description: "Use when designing conversational AI architecture on Salesforce: Einstein Bot dialog design, Agentforce Agent topic planning, intent models, NLU training strategy, bot-to-agent handoff, escalation paths, knowledge article surfacing, and bot analytics. Triggers: 'einstein bot architecture', 'agentforce dialog design', 'bot handoff to agent', 'intent model training'. NOT for bot implementation code, Apex action authoring, Flow screen design, or Omni-Channel routing rule configuration."
+description: "Use when designing conversational AI architecture on Salesforce: Einstein Bot dialog design, Agentforce Agent topic planning, intent models, NLU training strategy, bot-to-agent handoff, escalation paths, knowledge article surfacing, and bot analytics. Triggers: 'einstein bot architecture', 'agentforce dialog design', 'bot handoff to agent', 'intent model training'. NOT for multi-agent orchestration or Atlas Reasoning Engine behavior - use architect/conversational-ai-architecture. NOT for the fallback and escalation wording itself - use admin/agent-conversation-design."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

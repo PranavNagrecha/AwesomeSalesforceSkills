@@ -157,6 +157,34 @@ Query ApiTotalUsage event logs to detect deprecated version usage:
 | 7.0 – 20.0 | pre Summer '22 | Summer '22 |
 | 21.0 – 30.0 | Summer '22 | Summer '25 |
 
-The 3-year notice is the gap in the second row. Deprecated ≠ retired: a deprecated version still serves traffic. On retirement, REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, Bulk returns `400 InvalidVersion` — note these differ by protocol, so a client that only string-matches `UNSUPPORTED_API_VERSION` will silently mishandle the REST case.
+The 3-year notice is the gap in the second row. Deprecated ≠ retired: a deprecated version still serves traffic. On retirement, REST returns `410:GONE`, SOAP returns `500:UNSUPPORTED_API_VERSION`, Bulk returns `400:InvalidVersion` — note these differ by protocol, so a client that only string-matches `UNSUPPORTED_API_VERSION` will silently mishandle the REST case. The supported band is 31.0 through 67.0, with nothing deprecated-but-serving beneath it.
 
 **Detection hint:** grep for a version *range* spanning both waves (`7.0-30.0`, `7.0–30.0`) attached to a single date — the range itself is the tell, because Salesforce never retired 7.0 through 30.0 in one action. Second, structural and more generalisable: **any sentence of the form "the next X will follow the same pattern" in a dated reference document is a staleness trap** — it converts a snapshot into a forecast, and the forecast keeps reading as current long after the event it predicted has happened. Check such sentences against today's date before trusting them.
+
+---
+
+## Anti-Pattern: Asserting That Apex Runs `without sharing` by Default
+
+**What the LLM generates:**
+
+> "Apex classes run without sharing by default — if you omit the keyword, sharing rules are not enforced, so always add `with sharing` explicitly."
+
+**Why it happens:** That was true at every API version through 66.0, so it is overwhelmingly the majority statement in training data and reads as a settled platform fact rather than a versioned one. The Apex Developer Guide now says the reverse: "In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode." The model also inverts the risk. Its advice treats the missing keyword as a security hole; on a 67.0 class the omission is now the *safe* default, and the live hazard is the opposite one — code that quietly depended on implicit `without sharing` losing record visibility the moment its `apiVersion` is bumped.
+
+**Correct pattern:**
+
+```text
+The class's own apiVersion in .cls-meta.xml decides, not the org release:
+  <= 66.0   no keyword -> without sharing
+  >= 67.0   no keyword -> with sharing
+
+Any class in an inheritance chain saved at 67.0+ pulls the whole chain
+to with sharing. Triggers are exempt: they carry no sharing declaration
+at any version and always run in a without-sharing context.
+
+Full version-gated idiom matrix (do not restate it locally):
+  agents/_shared/AGENT_CONTRACT.md
+    § "Apex security idiom by API version"
+```
+
+**Detection hint:** Any unqualified sentence of the form "Apex is `without sharing` by default" — or its mirror, "Apex now runs `with sharing`" — that names no `apiVersion`. Both are wrong for roughly half of any real codebase mid-upgrade. The tell is the missing version qualifier, not the direction of the claim.

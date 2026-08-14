@@ -1,5 +1,29 @@
 # Examples — SOAP API Patterns
 
+## Before You Copy the `login()` Calls Below
+
+Examples 1–3 target API v63.0, where `login()` still functions — but do not carry that authentication step into new work. `login()` was removed in API 65.0 ("As of Winter '26 (API version 65.0), SOAP `login()` is no longer available. It will return an HTTP status code of 500 and the exception code `UNSUPPORTED_API_VERSION`") and retires in versions 31.0–64.0 when Summer '27 ships. In newly created orgs the running user also needs the **Any API Auth** permission. Read Gotcha 8 before designing an auth flow.
+
+Only the authentication step changes; the `query()`, `upsert()`, `create()`, and `queryMore()` code below is unaffected. In the Java/WSC examples (2 and 3), substitute the block below for the `setUsername()`/`setPassword()` pair. In the .NET example (1), the equivalent is to skip the `binding.login(...)` call entirely and set `binding.Url` to the OAuth `instance_url` plus `/services/Soap/c/67.0`, with `binding.SessionHeaderValue = new SessionHeader { sessionId = oauthAccessToken }`.
+
+```java
+// Replacement for login(): obtain an OAuth access token from an EXTERNAL CLIENT APP
+// (JWT bearer or client credentials flow), then inject it as the session id.
+// "SOAP API now accepts JWT-based access tokens from Salesforce OAuth flows in the
+//  sessionId header element, reaching parity with REST authentication."
+ConnectorConfig config = new ConnectorConfig();
+config.setSessionId(oauthAccessToken);                  // from the OAuth token response
+config.setServiceEndpoint(instanceUrl + "/services/Soap/u/67.0");  // instance_url from same response
+
+PartnerConnection connection = Connector.newConnection(config);
+// No login() call, no password, no security token, no serverUrl round-trip:
+// the OAuth response already supplied the instance URL.
+```
+
+Note that `instance_url` from the OAuth response replaces `LoginResult.serverUrl` — the "must switch to serverUrl" rule in Gotcha 2 still applies in spirit, it is just satisfied by a different field.
+
+---
+
 ## Example 1: .NET Integration Using the Enterprise WSDL
 
 **Context:** A manufacturing company has a legacy .NET ERP integration that pushes Account and Order records into Salesforce on a nightly batch. The org has custom fields on Account. The team wants to authenticate safely and upsert records with an external ID.

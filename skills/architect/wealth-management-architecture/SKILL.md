@@ -1,6 +1,6 @@
 ---
 name: wealth-management-architecture
-description: "Use this skill when designing or reviewing a Salesforce Financial Services Cloud (FSC) wealth management platform — covering advisor workspace configuration, client portal setup, portfolio data integration, Compliant Data Sharing, and FSC feature enablement decisions. NOT for investment product advice, financial planning calculations, or FSC Health Cloud configurations."
+description: "Use this skill when designing or reviewing a Salesforce Financial Services Cloud (FSC) wealth management platform — covering advisor workspace configuration, client portal setup, portfolio data integration, Compliant Data Sharing, and FSC feature enablement decisions. NOT for the org-wide FSC data-model choice (managed-package vs platform-native) — use architect/fsc-architecture-patterns. NOT for gathering wealth management requirements before design — use admin/wealth-management-requirements."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

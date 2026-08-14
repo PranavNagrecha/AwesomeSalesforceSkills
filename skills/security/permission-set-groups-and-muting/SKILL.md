@@ -1,6 +1,6 @@
 ---
 name: permission-set-groups-and-muting
-description: "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission set', 'profiles to permission sets', 'PSG architecture', 'muted permissions'. NOT for record-sharing design or CRUD/FLS review in Apex code."
+description: "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission. NOT for record-sharing design or CRUD/FLS review in Apex code — use admin/permission-set-architecture."
 category: security
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

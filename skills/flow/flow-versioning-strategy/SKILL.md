@@ -1,6 +1,6 @@
 ---
 name: flow-versioning-strategy
-description: "Manage Flow versions: activation policy, paused interview compatibility, cleanup cadence, and breaking-change detection. Trigger keywords: flow version management, activate flow version, paused interview, flow cleanup, flow breaking change, flow rollback. Does NOT cover: FlowDefinition metadata deploy order (see devops skill), Process Builder retirement, or Flow test coverage (separate skill)."
+description: "Manage Flow versions: activation policy, paused interview compatibility, cleanup cadence, and breaking-change detection. Trigger keywords: flow version management, activate flow version, paused interview, flow cleanup, flow breaking change, flow rollback. NOT for the deploy-time activation order of FlowDefinition metadata — use devops/flow-deployment-activation-ordering. NOT for moving a flow from sandbox to production — use flow/flow-deployment-and-packaging."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

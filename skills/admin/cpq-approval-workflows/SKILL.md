@@ -1,6 +1,6 @@
 ---
 name: cpq-approval-workflows
-description: "Use this skill when configuring or troubleshooting Salesforce CPQ Advanced Approvals: setting up SBAA__ApprovalRule__c, SBAA__ApprovalVariable__c for cross-line aggregation, SBAA__ApprovalChain__c for ordered approver sequences, escalation timeouts, Smart Approvals for re-quote skip logic, and permission set assignment for the Advanced Approvals managed package. Trigger keywords: CPQ Advanced Approvals, SBAA approval rule, approval variable, approval chain, discount approval, line-level approval, Smart Approvals, requote approval. NOT for standard Salesforce approval processes (use the approval-processes skill), CPQ pricing configuration (use cpq-pricing-rules), or quote template setup."
+description: "Configuring or troubleshooting Salesforce CPQ Advanced Approvals: SBAA__ApprovalRule__c, SBAA__ApprovalVariable__c for cross-line aggregation, SBAA__ApprovalChain__c for ordered approver sequences, escalation timeouts, Smart Approvals for re-quote skip logic, and the managed package's permission sets. Trigger keywords: CPQ Advanced Approvals, SBAA approval rule, approval variable, approval chain, discount approval, line-level approval, Smart Approvals, requote approval. NOT for standard non-CPQ Salesforce approval processes - use admin/approval-processes. NOT for CPQ price rules and discount schedules - use admin/cpq-pricing-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

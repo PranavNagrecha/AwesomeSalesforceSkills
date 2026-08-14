@@ -1,6 +1,6 @@
 ---
 name: salesforce-connect-external-objects
-description: "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for ordinary ETL or replicated-data designs where the data should live inside Salesforce."
+description: "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for the External Object configuration walkthrough and the full inventory of what they cannot do — triggers, validation rules, record-triggered flows, roll-ups, indirect lookup keys — use data/data-virtualization-patterns. NOT for keeping high-volume history inside Salesforce instead — use data/external-data-and-big-objects."
 category: integration
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

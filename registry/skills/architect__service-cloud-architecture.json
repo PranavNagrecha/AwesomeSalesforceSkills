@@ -92,9 +92,9 @@
     "fd9ea4a967c9e1c552bf",
     "ff67679b335d81414067"
   ],
-  "content_hash": "822d6f5fa031697994a378b25970f7fd56a0cc1167b3339e5311389f1b9b2276",
+  "content_hash": "0a98f0f1f67d5340f5095007591e9dd24dd8c75a03bfde1b39cd390206e0b05e",
   "dependencies": [],
-  "description": "Use when designing a Service Cloud solution end-to-end: channel strategy (phone, email, chat, messaging, social), routing model (queue-based vs skills-based Omni-Channel), knowledge strategy, entitlement and SLA enforcement, Einstein Bot / Agentforce deflection, and integration points. Triggers: service cloud architecture, case routing design, omni-channel strategy, contact center design, channel strategy, knowledge deflection, service console architecture. NOT for individual feature configuration (use admin/case-management), NOT for Einstein Bot conversation design (use agentforce/einstein-bot-architecture), NOT for telephony CTI implementation details.",
+  "description": "Use when designing a Service Cloud solution end-to-end: channel strategy (phone, email, chat, messaging, social), routing model (queue-based vs skills-based Omni-Channel), knowledge strategy, entitlement and SLA enforcement, Einstein Bot / Agentforce deflection, and integration points. Triggers: service cloud architecture, case routing design, omni-channel strategy, contact center design, channel strategy, knowledge deflection, service console architecture. NOT for case setup click-paths - use admin/case-management-setup. NOT for Einstein Bot dialog and intent design - use architect/einstein-bot-architecture.",
   "file_location": "skills/architect/service-cloud-architecture",
   "id": "architect/service-cloud-architecture",
   "inputs": [

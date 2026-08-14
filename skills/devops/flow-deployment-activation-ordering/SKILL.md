@@ -1,6 +1,6 @@
 ---
 name: flow-deployment-activation-ordering
-description: "Use when deploying Flow metadata across environments and worrying about activation order: which flow version becomes active, how paused interviews survive deploys, and how to avoid the 'two active versions for a moment' race. Covers SFDX / Metadata API deploy flags, 'Deploy as Active', rollback, and paused-interview safety. Does NOT cover Flow authoring best practices (see flow-bulkification) or general release management."
+description: "Deploying Flow metadata across environments when activation order matters: which flow version becomes active, how paused interviews survive deploys, avoiding the 'two active versions for a moment' race, SFDX / Metadata API deploy flags, 'Deploy as Active', rollback. NOT for Change Set vs SFDX vs package choice for a flow — use flow/flow-deployment-and-packaging. NOT for whether a change needs a new version or a new flow — use flow/flow-versioning-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -62,12 +62,7 @@ verification to make Flow deploys boring.
 5. **Communicate pause windows.** If paused interviews exist on the
    changing flow, delay deploy or accept that paused interviews may fail
    on resume.
-6. **Deploy.** Use `--test-level RunSpecifiedTests` when Apex callers
-   exist; Flow itself has no test framework parity.
-7. **Verify.** Re-query active versions post-deploy; run a smoke Flow
-   interview; check for spikes in Flow error emails.
-8. **Rollback plan.** Keep prior active version id; rollback = flip
-   pointer on `FlowDefinition`, not redeploy.
+6. **Deploy, verify, and plan rollback.** Use `--test-level RunSpecifiedTests` when Apex callers exist (Flow itself has no test framework parity). Re-query active versions post-deploy; run a smoke Flow interview; check for spikes in Flow error emails. Keep the prior active version id captured before deploy — rollback = flip the pointer on `FlowDefinition`, not redeploy.
 
 ## Active vs Inactive Deploy
 

@@ -1,6 +1,6 @@
 ---
 name: collaborative-forecasts
-description: "Use this skill when setting up, configuring, or troubleshooting Salesforce Collaborative Forecasts: forecast types, forecast categories, rollup methods, quota management, forecast hierarchy, manager adjustments, and pipeline inspection integration. Trigger keywords: forecast type, forecast category, cumulative rollup, individual rollup, quota, forecast adjustment, forecast hierarchy, opportunity splits forecasting, pipeline forecast. NOT for custom report-based forecasting. NOT for Classic Forecasts (Customizable Forecasting). NOT for Territory Management setup (use enterprise-territory-management skill)."
+description: "Set up, configure or troubleshoot Salesforce Collaborative Forecasts: forecast types, forecast categories, rollup methods, quota management, forecast hierarchy, manager adjustments, pipeline inspection integration. Trigger keywords: forecast type, forecast category, cumulative rollup, individual rollup, quota, forecast adjustment, forecast hierarchy, opportunity splits forecasting, pipeline forecast. NOT for configuring the opportunity stages, sales processes or split types themselves — use admin/opportunity-management. NOT for territory-based forecasting setup — use admin/enterprise-territory-management. NOT for Classic/Customizable Forecasting."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

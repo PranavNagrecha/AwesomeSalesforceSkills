@@ -1,6 +1,6 @@
 ---
 name: mass-transfer-ownership
-description: "Use when re-assigning record OwnerId across many records — territory realignment, employee departure, region split, integration cleanup. Triggers: 'mass transfer accounts', 'reassign opportunities to new owner', 'transfer all records on user deactivation', 'OwnerId migration'. NOT for assignment rules, queue routing, or single-record manual transfer."
+description: "Use when re-assigning record OwnerId across many records — territory realignment, employee departure, region split, integration cleanup. Triggers: 'mass transfer accounts', 'reassign opportunities to new owner', 'transfer all records on user deactivation', 'OwnerId migration'. NOT for auto-assigning new records — use admin/assignment-rules. NOT for territory assignment data — use data/territory-data-alignment."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -106,14 +106,16 @@ Account ownership change cascades to child Cases, Contacts, and Opportunities on
 
 ## Recommended Workflow
 
-1. Inventory: per-object record counts under the source-owner criteria. Write to a planning doc.
-2. Choose the tool from the decision table above. If mixed (e.g., Accounts via Mass Transfer + Cases via Data Loader), document each step with its order.
-3. Decide the cascade policy: do child Cases/Opportunities/Contacts follow the parent Account? Tick the Mass Transfer checkboxes accordingly, or queue follow-up Data Loader jobs for each child object.
-4. Decide the trigger/workflow policy: turn off email notifications via the "Send Email" checkbox (Mass Transfer Records UI), or set a custom-setting flag your triggers honor to short-circuit during the migration.
-5. For >100k on a single object, request Defer Sharing Calculations from Support before starting; resume recalc in a maintenance window.
-6. Execute in a sandbox first; capture timing and any trigger errors.
-7. Run in production with `AllOrNone=false` (Apex) or "Continue on error" (Data Loader) so a single bad record doesn't stop the batch. Capture the success+error CSVs as the audit trail.
-8. Validate: rerun the source-owner query — should return zero. Verify a sample of child-record ownership matches expectation.
+1. **Inventory:** per-object record counts under the source-owner criteria. Write to a planning doc.
+2. **Choose the tool** from the decision table above. If mixed (e.g., Accounts via Mass Transfer + Cases via Data Loader), document each step with its order.
+3. **Set the policies before executing.**
+   - Cascade: do child Cases/Opportunities/Contacts follow the parent Account? Tick the Mass Transfer checkboxes accordingly, or queue follow-up Data Loader jobs for each child object.
+   - Trigger/workflow: turn off email notifications via the "Send Email" checkbox (Mass Transfer Records UI), or set a custom-setting flag your triggers honor to short-circuit during the migration.
+   - Sharing: for >100k on a single object, request Defer Sharing Calculations from Support before starting; resume recalc in a maintenance window.
+4. **Execute.**
+   - Sandbox first; capture timing and any trigger errors.
+   - Then production with `AllOrNone=false` (Apex) or "Continue on error" (Data Loader) so a single bad record doesn't stop the batch. Capture the success+error CSVs as the audit trail.
+5. **Validate:** rerun the source-owner query — should return zero. Verify a sample of child-record ownership matches expectation.
 
 ---
 

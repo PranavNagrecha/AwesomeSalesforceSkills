@@ -50,9 +50,9 @@
     "f6add2107491863d5876",
     "ff2ea7a011c6a7448834"
   ],
-  "content_hash": "6e66e101163204d8f6eb1fbc7172fc6b7f762721849b4dd408cc66e30caf064e",
+  "content_hash": "6361d563a66cbff905e87115ffaa8e1cdd0b0d163cc6de46e6a78815e0a30964",
   "dependencies": [],
-  "description": "Lightning Data Service form components for LWC \u2014 when to use lightning-record-form vs lightning-record-edit-form vs lightning-record-view-form, output-field vs input-field, density modes, layout types (Compact/Full), and the platform-managed validation/save/error UI. NOT for fully custom form layouts (use lwc/lwc-custom-form-with-uiRecordApi) or aura:recordEditForm (Aura is deprecated for new work).",
+  "description": "lightning-record-form vs record-edit-form vs uiRecordApi for record create/edit in LWC. Triggers: lightning-record-form, record-edit-form, uiRecordApi form. NOT for fully custom forms \u2014 use lwc/lwc-forms-and-validation.",
   "file_location": "skills/lwc/lwc-lightning-record-forms",
   "id": "lwc/lwc-lightning-record-forms",
   "inputs": [

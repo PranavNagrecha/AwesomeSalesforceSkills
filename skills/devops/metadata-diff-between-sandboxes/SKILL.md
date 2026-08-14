@@ -1,6 +1,6 @@
 ---
 name: metadata-diff-between-sandboxes
-description: "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two sandboxes', 'org diff tool', 'metadata drift between UAT and prod', 'find missing metadata in target org'. NOT for code-level diffs in version control or for deploying packages."
+description: "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two. NOT for code-level diffs in version control or for deploying packages — use devops/metadata-api-coverage-gaps."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

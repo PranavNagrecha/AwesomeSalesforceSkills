@@ -132,9 +132,9 @@
     "f432c8a0cf8829aeec0f",
     "f688223fd4395940ba03"
   ],
-  "content_hash": "eb0959a2ab89d277e58e13bf37737b8c0d0f380c38024b034801642a4e58a9b5",
+  "content_hash": "46004c0238e8e8f93e3a982ee169eeedb537a2a2cffa6377a7137456ba5f03b0",
   "dependencies": [],
-  "description": "Move a Flow from sandbox to production reliably \u2014 source format, version-on-deploy semantics, deploy vs activate, dependency bundling, Change Set vs SFDX vs Unlocked vs Managed, validate-then-quick-deploy, and rollback by activating a prior version. NOT for source-driven setup or branching strategy \u2014 see devops/salesforce-dx-project-structure and devops/source-tracking-and-conflict-resolution.",
+  "description": "Move a Flow from sandbox to production reliably \u2014 source format, version-on-deploy semantics, deploy vs activate, dependency bundling, Change Set vs SFDX vs Unlocked vs Managed, validate-then-quick-deploy, and rollback by activating a prior version. NOT for paused interviews surviving a deploy or the two-active-versions race \u2014 use devops/flow-deployment-activation-ordering. NOT for source-tracking conflicts between sandbox and repo \u2014 use devops/source-tracking-and-conflict-resolution. NOT for branching strategy \u2014 use devops/git-branching-for-salesforce.",
   "file_location": "skills/flow/flow-deployment-and-packaging",
   "id": "flow/flow-deployment-and-packaging",
   "inputs": [

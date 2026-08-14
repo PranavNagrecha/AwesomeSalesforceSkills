@@ -133,6 +133,34 @@ If Compile All succeeds but the deployment still fails:
 
 **Detection hint:** If Compile All is presented as the final fix without a follow-up step to re-deploy and verify, the advice is incomplete.
 
+---
+
+## Anti-Pattern 7: Reaching for the MFA Waiver Permission to Unblock a Deploy or a Test User
+
+**What the LLM generates:** "Assign the Waive Multi-Factor Authentication for Exempt Users permission to your integration and automated-test users," or "your SSO users are covered by the IdP, so Salesforce MFA is not in scope for them."
+
+**Why it happens:** Both statements were true and heavily documented for years, so the training corpus is saturated with them. Years of runbooks, org configs and forum answers encode the waiver as *the* exemption mechanism, which keeps the advice reading as verifiable long after it stopped producing the effect being claimed.
+
+**Correct pattern:**
+
+```
+The waiver permission no longer automatically exempts anyone. Users who
+hold it are prompted to enroll in and use an MFA verifier at login, and a
+continuing exemption requires approval from Salesforce Support.
+
+SSO does not exempt a user either. The IdP must pass an MFA signal to
+Salesforce -- ACR (Authentication Context Class Reference) and AMR
+(Authentication Methods Reference). Without those signals, the user is
+prompted to enroll in Salesforce MFA.
+
+For the deploy question specifically: the permission's API field is
+removed from the PermissionSet and Profile object schema, so the fix for
+a failing Profile/PermissionSet deploy is to REMOVE the reference -- never
+to assign the permission somewhere else, and never to pin the API version
+lower (see Gotcha 6).
+```
+
+**Detection hint:** Any advice that resolves an MFA problem or a permission-deploy failure by assigning, re-assigning, or preserving the waiver permission is asserting an exemption mechanism that no longer works. Advice that names SSO as the reason a user is out of scope is the same error one layer up.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: commerce-analytics-data
-description: "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics via SOQL on core platform objects or the CRM Analytics B2B Commerce template. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analytics, or general Salesforce report builder usage."
+description: "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analy — use data/analytics-data-governance."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

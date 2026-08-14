@@ -1,6 +1,6 @@
 ---
 name: uat-and-acceptance-criteria
-description: "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for automated testing (use flow-testing or apex-test-class-standards). NOT for writing user stories or eliciting requirements (use requirements-gathering-for-sf). NOT for setting up sandboxes or environment strategy (use sandbox-strategy)."
+description: "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for Given/When/Then AC syntax — use admin/acceptance-criteria-given-when-then. NOT for automated Flow or Apex test coverage — use flow/flow-testing."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

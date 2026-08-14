@@ -59,9 +59,9 @@
     "fb7735648198fc713fa2",
     "fd964d4fde494eee7922"
   ],
-  "content_hash": "6b1b378bf804ff1a6d7f93a6ece887f6bc2d5cca7def9296ea102f78a191532d",
+  "content_hash": "5a02306f00541ade5b68a86af0dd83a33cd2d96c9b0b1db6f7de491a4905123e",
   "dependencies": [],
-  "description": "Use this skill when designing hybrid on-premises-to-Salesforce integration architectures: DMZ relay patterns, reverse proxy configuration, VPN connectivity, Salesforce Private Connect (AWS PrivateLink) topology, and data residency patterns for regulated data. Trigger keywords: on-premises to Salesforce integration network topology, DMZ relay Salesforce, hybrid integration VPN, Private Connect architecture, data residency Salesforce hybrid. NOT for cloud-to-cloud only integration patterns, OAuth or authentication mechanism design (use integration-security-architecture), or standard Connected App setup.",
+  "description": "Use this skill when designing hybrid on-premises-to-Salesforce integration architectures: DMZ relay patterns, reverse proxy configuration, VPN connectivity, and Salesforce Private Connect (AWS PrivateLink) topology. Trigger keywords: on-premises to Salesforce integration network topology, DMZ relay Salesforce, hybrid integration VPN, Private Connect architecture, data residency Salesforce hybrid. NOT for choosing the authentication mechanism \u2014 mTLS, OAuth flow, API gateway placement \u2014 use architect/integration-security-architecture. NOT for the Setup steps that configure Private Connect peering \u2014 use integration/private-connect-setup.",
   "file_location": "skills/architect/hybrid-integration-architecture",
   "id": "architect/hybrid-integration-architecture",
   "inputs": [

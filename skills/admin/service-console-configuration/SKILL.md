@@ -1,6 +1,6 @@
 ---
 name: service-console-configuration
-description: "Use this skill to configure a Lightning Service Console app in Salesforce — setting Console Navigation (split view), defining workspace tabs and subtabs, configuring the utility bar with Omni-Channel, Macros, and History, creating Quick Text entries, setting up keyboard shortcuts, and defining navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for generic Lightning app creation (use app-and-tab-configuration), NOT for Omni-Channel routing configuration (use omni-channel-routing), NOT for CTI adapter installation (use open-cti-setup), NOT for Einstein Bot or Messaging setup."
+description: "Use this skill to configure a Lightning Service Console app in Salesforce — Console Navigation (split view), workspace tabs and subtabs, the utility bar with Omni-Channel, Macros and History, Quick Text, keyboard shortcuts, and navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for opening or refreshing console tabs from code — use lwc/lwc-console-workspace-api. NOT for Omni-Channel routing setup — use admin/omni-channel-routing-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

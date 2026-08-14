@@ -1,6 +1,6 @@
 ---
 name: omnistudio-vs-flow-decision
-description: "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen flow', 'integration procedure vs subflow', 'flexcard vs lightning page'. NOT for general automation selection across Workflow/Process Builder/Apex (see automation-selection tree)."
+description: "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen. NOT for general automation selection across Workflow/Process Builder/Apex (see automatio — use architect/omnistudio-vs-standard-decision."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

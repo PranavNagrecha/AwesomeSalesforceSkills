@@ -1,6 +1,6 @@
 ---
 name: data-cloud-segmentation
-description: "Use this skill when creating, filtering, refreshing, or activating audience segments in Salesforce Data Cloud. Covers segment types (Standard, Real-Time, Waterfall, Dynamic, Data Kit), segment refresh schedules, activation field mapping, and audience publishing. NOT for Marketing Cloud Contact Builder segments, NPC Actionable Segmentation, or Experience Cloud audience targeting."
+description: "Create, filter, refresh, and activate audience segments in Salesforce Data Cloud: segment types (Standard, Real-Time, Waterfall, Dynamic, Data Kit), segment refresh schedules, activation field mapping, audience publishing. NOT for the SQL metrics a segment filters on - use admin/data-cloud-calculated-insights. NOT for ingestion, DLO to DMO mapping and identity resolution - use data/data-cloud-data-streams."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

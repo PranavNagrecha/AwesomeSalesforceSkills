@@ -1,6 +1,6 @@
 ---
 name: salesforce-mcp-server-setup
-description: "Use this skill to install and configure the salesforce-mcp-lib Apex package and npm stdio proxy so that an MCP client (Claude Desktop, Cursor, ChatGPT) can call Salesforce org data and logic via the Model Context Protocol. Trigger keywords: MCP server, salesforce-mcp-lib, Claude Desktop Salesforce, MCP proxy setup, Apex JSON-RPC, MCP Connected App. NOT for Salesforce Hosted MCP Servers (Agentforce-native hosted endpoints), NOT for Flow-based tool definitions, NOT for OmniStudio integrations."
+description: "Use this skill to install and configure the salesforce-mcp-lib Apex package and npm stdio proxy so that an MCP client (Claude Desktop, Cursor, ChatGPT) can call Salesforce org data and logic via the Model Context Protocol. Trigger keywords: MCP server, salesforce-mcp-lib, Claude Desktop Salesforce, MCP proxy setup, Apex JSON-RPC, MCP Connected App. NOT for writing the Apex tool classes the server exposes — use agentforce/mcp-tool-definition-apex. NOT for choosing between MCP, REST and Platform Events for external AI access — use architect/ai-agent-org-integration-architecture."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -43,7 +43,7 @@ updated: 2026-04-28
 
 This skill activates when a practitioner needs to install the salesforce-mcp-lib open-source package (MIT license, https://github.com/Damecek/salesforce-mcp-lib) and configure its two-component architecture — the Apex 2GP unlocked package running inside the org plus the Node.js stdio proxy running on the developer machine — so that an MCP-capable AI client such as Claude Desktop or Cursor can call Salesforce org data and business logic through the standardized Model Context Protocol.
 
-This is not a hosted Salesforce feature. It is a developer-operated, self-hosted bridge.
+This skill covers the **self-hosted** salesforce-mcp-lib bridge (Apex REST + Node.js stdio proxy). Salesforce also ships **Hosted MCP Servers (GA, Spring '26)** — OAuth-backed MCP tools with no JSON-RPC code of your own. Route new work to Hosted MCP when standard/custom servers cover the surface; use salesforce-mcp-lib when you need a bespoke Apex REST tool chain the hosted catalog does not expose.
 
 ---
 

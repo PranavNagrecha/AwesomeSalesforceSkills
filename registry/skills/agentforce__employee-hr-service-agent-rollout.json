@@ -91,7 +91,7 @@
     "f8ab21aa7f7b67913a20",
     "fcb5aa3d9eae78dc0eb5"
   ],
-  "content_hash": "7dc3b27bb9c4bb0d2380e72b6d512fb64c258d8e935525bb2b7f479ed17b496e",
+  "content_hash": "3257a16d752f19246e3ba4a04a23ea79952bcc61b57bb041fba6234ab7825f0a",
   "dependencies": [],
   "description": "Use when an org is rolling out an Agentforce-based HR / Employee Service agent for self-service workflows like leave requests, benefits questions, onboarding tasks, and time-off balance lookups. Covers Employee Agent licensing posture, knowledge-base grounding for HR policy, integration patterns with HRIS systems of record (Workday, ADP, BambooHR) \u2014 read-only vs read-write trade-offs, employee-vs-manager visibility model, PII handling under the Einstein Trust Layer, surface-placement decision (in-Salesforce vs Slack-first vs Teams-first), and rollout measurement (deflection, first-response time, employee CSAT). Triggers: 'we want an HR self-service agent for leave and benefits', 'employees keep emailing HR for time-off balance \u2014 can Agentforce answer that?', 'roll out Employee Service agent in Slack', 'wire HRIS into our Agentforce HR bot', 'how do we handle PII when the agent reads Workday', 'measure deflection on the HR agent we just launched'. NOT for general Agentforce agent build mechanics (use agentforce/agentforce-persona-design + agentforce/custom-agent-actions-apex), NOT for the channel deployment plumbing (use agentforce/agent-channel-deployment), NOT for prompt/instruction authoring (use agentforce/agentforce-guardrails).",
   "file_location": "skills/agentforce/employee-hr-service-agent-rollout",

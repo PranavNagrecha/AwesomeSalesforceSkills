@@ -80,11 +80,11 @@
     "fedd71277e77d8f34169",
     "ff5ff3f2d1e98e7024e0"
   ],
-  "content_hash": "070b4a46b08baf6a34b66f9ae3cb6e00ed077ae988d64dcef5b70053f8fc4958",
+  "content_hash": "27e14958778a0cda7ba7501f9f2becbf8c610fbe32213bfc86e65152b693435a",
   "dependencies": [
     "batch-apex-patterns"
   ],
-  "description": "Use this skill when implementing the Iterable<T> or Iterator<T> interfaces in Apex to create custom traversal logic, build lazy-evaluation data sources for Batch Apex, or stream large result sets without materializing an entire List. Trigger keywords: custom iterator, Iterable interface, Iterator interface, batch start iterable, lazy evaluation apex, streaming apex query, paginated batch. NOT for standard list iteration (use for-each on List directly), NOT for Batch Apex fundamentals (use batch-apex-patterns), NOT for Apex triggers or synchronous bulk patterns.",
+  "description": "Use this skill when implementing the Iterable<T> or Iterator<T> interfaces in Apex to create custom traversal logic, build lazy-evaluation data sources for Batch Apex, or stream large result sets without materializing an entire List. Trigger keywords: custom iterator, Iterable interface, Iterator interface, batch start iterable, lazy evaluation apex, streaming apex query, paginated batch. NOT for standard list iteration (use for-each on List directly). NOT for Batch Apex fundamentals \u2014 use apex/batch-apex-patterns. NOT for Map/List bulkification in triggers or services \u2014 use apex/apex-collections-patterns.",
   "file_location": "skills/apex/custom-iterators-and-iterables",
   "id": "apex/custom-iterators-and-iterables",
   "inputs": [

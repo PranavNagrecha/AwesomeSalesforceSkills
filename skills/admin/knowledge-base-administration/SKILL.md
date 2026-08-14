@@ -1,6 +1,6 @@
 ---
 name: knowledge-base-administration
-description: "Use this skill when setting up, configuring, or managing Salesforce Lightning Knowledge — including enabling the feature, designing record types on Knowledge__kav, configuring Data Categories for organization and visibility control, setting up publishing workflows, and layering approval processes. Trigger keywords: Lightning Knowledge setup, Knowledge article record types, Data Category visibility, Knowledge publishing workflow, Knowledge__kav configuration. NOT for Knowledge in Experience Cloud (use the experience-cloud-knowledge skill), NOT for Einstein Article Recommendations surfacing (use einstein-article-recommendations skill), NOT for Knowledge search tuning or Apex programmatic article management."
+description: "Use this skill when setting up, configuring, or managing Salesforce Lightning Knowledge — enabling the feature, designing record types on Knowledge__kav, configuring Data Categories for organization and visibility control, setting up publishing workflows, and layering approval processes. Trigger keywords: Lightning Knowledge setup, Knowledge article record types, Data Category visibility, Knowledge publishing workflow, Knowledge__kav configuration. NOT for converting Classic Article Types to Lightning — use admin/knowledge-classic-to-lightning. NOT for bulk-loading articles from an external help center — use data/knowledge-article-import."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

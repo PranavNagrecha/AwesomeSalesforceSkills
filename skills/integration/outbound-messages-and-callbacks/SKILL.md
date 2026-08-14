@@ -1,6 +1,6 @@
 ---
 name: outbound-messages-and-callbacks
-description: "Use when implementing or troubleshooting Salesforce Outbound Messages — the workflow-triggered SOAP notification mechanism that pushes record field values to an external HTTPS endpoint. Trigger keywords: outbound message not delivering, configure outbound message endpoint, SOAP callback from Salesforce, workflow rule sends notification to external system, outbound message retry loop, acknowledgment SOAP response, session ID in outbound message. NOT for Platform Events, Change Data Capture, REST callouts from Apex, or selecting between event-driven mechanisms (use event-driven-architecture-patterns for selection)."
+description: "Use when implementing or troubleshooting Salesforce Outbound Messages — the workflow-triggered SOAP notification that pushes record field values to an external HTTPS endpoint, plus the listener's SOAP acknowledgment and the session-ID callback pattern. Trigger keywords: outbound message not delivering, configure outbound message endpoint, SOAP callback from Salesforce, workflow rule sends notification to external system, outbound message retry loop, acknowledgment SOAP response, session ID in outbound message. NOT for pushing JSON to a REST endpoint or a Flow/Apex-triggered push — use integration/outbound-webhook-from-salesforce. NOT for deciding between Outbound Messages, Platform Events and CDC in the first place — use integration/event-driven-architecture-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

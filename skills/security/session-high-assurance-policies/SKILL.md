@@ -1,6 +1,6 @@
 ---
 name: session-high-assurance-policies
-description: "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX."
+description: "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX — use admin/org-setup-and-configuration."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: salesforce-object-queryability
-description: "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring. Covers: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for SOQL performance tuning (use soql-optimization-patterns). NOT for Bulk API payload issues (use bulk-api-2-patterns)."
+description: "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for one object's own query restrictions, required filters or row caps - use apex/soql-object-limits-and-restrictions. NOT for a query that works but is slow - use data/soql-query-optimization."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

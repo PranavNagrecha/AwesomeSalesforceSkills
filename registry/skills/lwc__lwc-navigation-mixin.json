@@ -63,9 +63,9 @@
     "fc9fb41871c2a894e5ad",
     "fd9dfa81f3b1011bd468"
   ],
-  "content_hash": "f386ad09d3c51faa72096931451c9cfd992f1d580d470287ce8f90d14d6e0281",
+  "content_hash": "6c44a781bb4a3e8ccfaf2596963948860f28d4aeb4107f7d067d32e560205cd7",
   "dependencies": [],
-  "description": "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns).",
+  "description": "Navigate between Lightning pages, records, and apps from LWC via NavigationMixin. Triggers: NavigationMixin, navigate, standard__recordPage. NOT for URL/deep-link strategy across apps \u2014 use lwc/navigation-and-routing. NOT for cross-tab state \u2014 use lwc/lwc-cross-tab-state-sync.",
   "file_location": "skills/lwc/lwc-navigation-mixin",
   "id": "lwc/lwc-navigation-mixin",
   "inputs": [

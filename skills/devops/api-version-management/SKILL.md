@@ -1,6 +1,6 @@
 ---
 name: api-version-management
-description: "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. Covers version drift detection, retirement risk analysis, and upgrade planning. NOT for REST/SOAP API design patterns (use rest-api-patterns or soap-api-patterns), OAuth configuration (use oauth-flows-and-connected-apps), or Metadata API deployment mechanics (use change-set-deployment or unlocked-package-development)."
+description: "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. NOT for REST/SOAP API design patterns (use rest-api-patterns or soap-api-patterns), OAut — use integration/api-versioning-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -96,11 +96,11 @@
     "f2d4e4a9b513e4bee7f2",
     "f6d26ca58c65d7adfed0"
   ],
-  "content_hash": "6e702e06f07e5beda21d18d27ad10faff10815d3d71a79676da5d0e67f011ba8",
+  "content_hash": "585bc2664b1695035abf327de9ccd4c0fcb6a70ebe8daee9f894306b7be093e5",
   "dependencies": [
     "governor-limits"
   ],
-  "description": "Recovering from and preventing Apex governor limit errors: proactive Limits class checkpoints, savepoint-based partial recovery, BatchApexErrorEvent scope recovery, CPU timeout analysis, limit-safe coding patterns. Use when diagnosing LimitException failures or designing limit-safe Apex. NOT for general limits overview (use limits-and-scalability-planning). NOT for bulkification patterns (use governor-limits).",
+  "description": "Recovering from and preventing Apex governor limit errors: proactive Limits class checkpoints, savepoint-based partial recovery, BatchApexErrorEvent scope recovery, CPU timeout analysis, limit-safe coding patterns. Use when diagnosing LimitException failures or designing limit-safe Apex. NOT for org-level capacity planning \u2014 use architect/limits-and-scalability-planning. NOT for bulkification patterns \u2014 use apex/governor-limits.",
   "file_location": "skills/apex/governor-limit-recovery-patterns",
   "id": "apex/governor-limit-recovery-patterns",
   "inputs": [

@@ -151,7 +151,61 @@ manually for high-stakes orchestrations.
 
 **Detection hint.** Any orchestration metadata change advice that
 doesn't address in-flight orchestrations is missing the impact
-analysis.
+analysis. Any sentence that prints "running orchestrations stay on
+the version they started on" as platform law is unsourced — that
+claim is not in Help, release notes, or the Object Reference.
+
+---
+
+## Anti-Pattern 10: Evaluation flow that returns `isComplete` / `shouldExit` / anything except the reserved name
+
+**What the LLM generates.** An autolaunched flow with a Boolean
+output named `isComplete` or `stageDone`, assigned as the stage
+exit evaluation flow.
+
+**Why it happens.** "Return a boolean" is the whole instruction the
+model remembers.
+
+**Correct pattern.** Output variable **must** be named
+`isOrchestrationConditionMet`. Any other name is discarded
+silently. Help: `platform.orchestrator_considerations_evaluation_flows`.
+
+**Detection hint.** An evaluation flow whose Boolean output is not
+exactly `isOrchestrationConditionMet`.
+
+---
+
+## Anti-Pattern 11: Assignee as a 15- or 18-character User Id
+
+**What the LLM generates.** `<assignee><stringValue>005…</stringValue></assignee>`
+or "assign to `$Record.OwnerId`".
+
+**Why it happens.** Every other Salesforce API takes an Id.
+
+**Correct pattern.** Interactive-step `<stringValue>` assignees are
+**usernames**, resolved and `IsActive`-checked at **deploy**. A
+User Id is rejected at deploy. `$Record.Owner.ManagerId` can
+deploy and fail at run time. Prefer a queue.
+
+**Detection hint.** `005` in orchestration assignee XML, or
+`Owner.ManagerId` as the only assignee with no fallback.
+
+---
+
+## Anti-Pattern 12: Dotted `StepName.output` references
+
+**What the LLM generates.** Stage-entry condition
+`Evaluate_Deal_Risk.financeReviewRequired`.
+
+**Why it happens.** Subflow / Get-Records dotted paths work in
+ordinary Flow.
+
+**Correct pattern.** Capture the step output into an orchestration
+variable, then read the variable. A dotted step-output path is
+rejected (`element doesn't exist`).
+
+**Detection hint.** Any orchestration expression that dots into a
+step API name.
 
 ---
 
@@ -168,12 +222,22 @@ training data — and it's a licensing claim, so repeating it can
 cost the customer a design they're already entitled to.
 
 **Correct pattern.** Orchestration runs are included with no
-usage-based limitations in Enterprise, Performance, Unlimited, all
-Einstein 1, and Developer editions — orchestration is a standard
-Flow type with no add-on licence to buy, and ordinary edition-based
-Flow limits apply. Choose orchestration on fit (multi-stage /
-multi-human / multi-day), not on a run budget.
+usage-based limitations in the editions Salesforce lists on the
+**Flow Orchestration** entitlements page — confirm that page and
+the org's entitlement, do not paste the Flow Approval Processes
+edition list. Choose orchestration on fit (multi-stage /
+multi-human / multi-day), not on a run budget. Do not quote `$1
+per run` or `600 runs`; those trace to a pre-GA projection. If
+asked whether runs are metered **today**, say you could not
+confirm current metering and they should check their own
+entitlement.
 
 **Detection hint.** Any answer that prices orchestration, counts
 runs against an annual allowance, or carves out "except flow
-approvals" is quoting a retired entitlement.
+approvals" is quoting a retired entitlement. Any answer that copies
+the **Flow Approval Processes** edition list ("all Einstein 1
+editions") onto Orchestration is merging two adjacent Help
+sections — Spring '26 Flow Orchestration *Where* clauses list
+Enterprise, Performance, Unlimited, and Developer, not
+Professional. Confirm the org's own entitlement screenshot before
+printing an edition list.

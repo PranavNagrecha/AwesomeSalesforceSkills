@@ -1,6 +1,6 @@
 ---
 name: grant-management-setup
-description: "Use when configuring grant tracking in a Salesforce nonprofit org — covers both NPSP Outbound Funds Module (Opportunity-based, managed package path) and Nonprofit Cloud for Grantmaking (FundingAward, FundingDisbursement, FundingAwardRequirement objects, separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for standard Opportunity tracking or fundraising donor gifts."
+description: "Use when configuring grant tracking in a Salesforce nonprofit org — NPSP Outbound Funds Module (Opportunity-based, managed package) or Nonprofit Cloud for Grantmaking (separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for recording donor gifts and receipts — use admin/gift-entry-and-processing. NOT for reporting program outcomes to a funder — use admin/program-outcome-tracking-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

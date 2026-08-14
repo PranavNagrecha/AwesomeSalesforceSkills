@@ -4,10 +4,13 @@
 Scans a Salesforce metadata project directory and CI configuration files for
 common deployment monitoring anti-patterns:
   - Polling scripts that treat InProgress as success
+  - Polling loops with an incomplete terminal-status set (hang on
+    SucceededPartial / FinalizingDeployFailed)
   - Quick deploy scripts that reuse the validation ID for status checks
   - Missing --json flags that prevent programmatic result parsing
   - No timeout guard in polling loops
   - Missing deployment ID capture steps
+  - Cancellation used without regard for the Metadata API 65.0 finalizing gate
 
 Uses stdlib only — no pip dependencies.
 
@@ -33,6 +36,31 @@ _INPROGRESS_AS_SUCCESS = re.compile(
     r'(?:status|STATUS)\s*[!=]=\s*["\']InProgress["\']|'
     r'!=\s*["\']Failed["\']',
     re.IGNORECASE,
+)
+
+# The five terminal DeployStatus values. A poll loop that exits on only some of
+# them spins until its timeout. See references/gotchas.md Gotcha 6.
+_TERMINAL_STATUSES = (
+    "Succeeded",
+    "SucceededPartial",
+    "Failed",
+    "FinalizingDeployFailed",
+    "Canceled",
+)
+
+# Marks a file as enumerating deployment statuses at all. Deliberately quote-
+# agnostic: bash `case` patterns (Failed|Canceled) carry no quotes.
+_ENUMERATES_STATUSES = re.compile(r'\bCanceled\b')
+
+# Detects deployment-monitoring call sites, used to scope the status checks.
+_MONITORS_DEPLOYMENT = re.compile(
+    r'/metadata/deployRequest|checkDeployStatus|sf\s+project\s+deploy\s+report',
+    re.IGNORECASE,
+)
+
+# Detects cancellation call sites, which are gated on API version 65.0.
+_CANCEL_CALL = re.compile(
+    r'cancelDeploy|sf\s+project\s+deploy\s+cancel|\bCanceling\b',
 )
 
 # Detects quick deploy + report using the same job-id variable reference,
@@ -164,8 +192,32 @@ def scan_script_file(path: Path) -> list[str]:
     if _INPROGRESS_AS_SUCCESS.search(content):
         issues.append(
             f"{rel}: Possible 'InProgress-as-success' pattern detected. "
-            "Deployment status checks must poll until the explicit 'Succeeded' "
-            "terminal state, not until 'not Failed' or 'InProgress' is seen."
+            "'Succeeded' must be the explicit positive branch — never 'not Failed' "
+            "or 'InProgress'. Exit the loop on any of the five terminal statuses "
+            f"({', '.join(_TERMINAL_STATUSES)}) and treat the four non-Succeeded "
+            "ones as failures."
+        )
+
+    # Anti-pattern 1b: incomplete terminal-status set in a poll loop
+    if _MONITORS_DEPLOYMENT.search(content) and _ENUMERATES_STATUSES.search(content):
+        missing = [s for s in _TERMINAL_STATUSES if s not in content]
+        if missing:
+            issues.append(
+                f"{rel}: Deployment poll loop enumerates statuses but never checks "
+                f"{', '.join(missing)}. These are terminal DeployStatus values, so a "
+                "loop that does not exit on them keeps polling until its timeout "
+                "guard fires (or forever, if it has none)."
+            )
+
+    # Anti-pattern 1c: cancellation without the API 65.0 finalizing gate
+    if _CANCEL_CALL.search(content) and "FinalizingDeploy" not in content:
+        issues.append(
+            f"{rel}: Deployment cancellation found with no handling for the "
+            "'FinalizingDeploy' status. At Metadata API 65.0 and higher a "
+            "finalizing deployment can't be cancelled and the call returns "
+            "INVALID_ID_FIELD; below 65.0 a successful cancel can still have "
+            "committed data. Check status before cancelling, and never report "
+            "cancellation as a rollback."
         )
 
     # Anti-pattern 2: Quick deploy + report reusing the same ID variable

@@ -1,6 +1,6 @@
 ---
 name: flow-get-records-optimization
-description: "Optimize Get Records elements in Flow: filter sharpness, field selection, sort-and-limit placement, caching via formula resources, and avoiding repeated queries in loops. Trigger keywords: get records, flow soql, flow query limit, flow performance, record lookup. Does NOT cover Apex SOQL, Data Cloud queries, or external object lookups."
+description: "Optimize Get Records in Flow — filters, field selection, sort/limit, caching, avoiding queries in loops. Triggers: get records, flow SOQL, flow query limit. NOT for Apex SOQL tuning — use flow/flow-governor-limits-deep-dive. NOT for loop bulkification failures — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

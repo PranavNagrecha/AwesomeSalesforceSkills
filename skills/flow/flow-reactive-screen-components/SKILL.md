@@ -1,6 +1,6 @@
 ---
 name: flow-reactive-screen-components
-description: "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens."
+description: "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens — use flow/flow-screen-input-validation-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

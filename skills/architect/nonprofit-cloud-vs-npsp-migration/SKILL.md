@@ -1,6 +1,6 @@
 ---
 name: nonprofit-cloud-vs-npsp-migration
-description: "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for nonprofit accounting (use revenue-cloud-foundation). NOT for generic Sales Cloud setup (use sales-cloud-core-setup)."
+description: "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for the go/stay decision alone, with no migration to plan - use architect/npsp-vs-nonprofit-cloud-decision. NOT for designing the NPC module and platform architecture - use architect/nonprofit-platform-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

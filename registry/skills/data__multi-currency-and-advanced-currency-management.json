@@ -51,9 +51,9 @@
     "fc4fd29ac169c722c510",
     "fc7fd7c2e9ba4dc1441c"
   ],
-  "content_hash": "cbf5a262677c53f84d754f03383312f4094e332dbcb682eadd4095bdb63d5c65",
+  "content_hash": "af550217eefc735eff0a8867ef0e4a72594f10f795bb2734acda23e6e075282e",
   "dependencies": [],
-  "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern.",
+  "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for what convertCurrency() allows in WHERE/ORDER BY or querying CurrencyType and DatedConversionRate \u2014 use data/currency-management-patterns. NOT for wrong converted amounts in Sales Cloud reports and roll-ups \u2014 use architect/multi-currency-sales-architecture.",
   "file_location": "skills/data/multi-currency-and-advanced-currency-management",
   "id": "data/multi-currency-and-advanced-currency-management",
   "inputs": [

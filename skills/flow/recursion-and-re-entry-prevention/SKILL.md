@@ -209,4 +209,4 @@ Flow B (Contact, after-save):
 - `apex/order-of-execution-deep-dive` — for the platform's overall save-and-trigger cascade order, which determines which automation fires first
 - `flow/record-triggered-flow-patterns` — for the broader design vocabulary of record-triggered Flows; this skill plugs into that vocabulary at the entry-criteria step
 - `flow/flow-record-save-order-interaction` — for the more specific question of how before-save vs after-save interact with Apex triggers in the save sequence
-- `architect/automation-migration-router` — for the strategic question of "should this Flow be Apex instead?" when the recursion fight gets too costly
+- `admin/process-automation-selection` — for the strategic question of "should this Flow be Apex instead?" when the recursion fight gets too costly

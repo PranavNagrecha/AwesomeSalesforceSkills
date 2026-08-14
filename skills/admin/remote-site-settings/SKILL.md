@@ -1,6 +1,6 @@
 ---
 name: remote-site-settings
-description: "Use when configuring Remote Site Settings to allow Apex callouts to external URLs, or when distinguishing Remote Site Settings from CSP Trusted Sites for Lightning component resource loading. NOT for Named Credentials (use named-credential-configuration)."
+description: "Use when configuring Remote Site Settings to allow Apex callouts to external URLs, or distinguishing them from CSP Trusted Sites for Lightning component resource loading. NOT for storing an endpoint and its auth as a Named Credential — use integration/named-credentials-setup. NOT for allow-listing a URL the browser itself loads (script, iframe, fetch) — use security/csp-and-trusted-urls."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

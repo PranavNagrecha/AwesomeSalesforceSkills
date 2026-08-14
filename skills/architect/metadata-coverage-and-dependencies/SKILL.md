@@ -1,6 +1,6 @@
 ---
 name: metadata-coverage-and-dependencies
-description: "Assessing metadata type coverage across Salesforce deployment channels (Metadata API, SFDX, unlocked packages, managed packages) and mapping component dependency graphs using Tooling API MetadataComponentDependency. Use when planning packaging strategies, evaluating deployment risk, performing impact analysis before component deletion, or mapping tightly coupled metadata for modular architecture. Trigger keywords: metadata coverage report, dependency graph, MetadataComponentDependency, impact analysis, unsupported metadata types, packaging eligibility. NOT for deployment mechanics (use destructive-changes-deployment). NOT for CI/CD pipeline design (use continuous-integration-testing)."
+description: "Assessing metadata type coverage across Salesforce deployment channels (Metadata API, SFDX, unlocked packages, managed packages) and mapping component dependency graphs using Tooling API MetadataComponentDependency. Use when planning packaging strategies, evaluating deployment risk, or performing impact analysis before component deletion. Trigger keywords: metadata coverage report, dependency graph, MetadataComponentDependency, impact analysis, unsupported metadata types, packaging eligibility. NOT for a deployment that already failed on an unsupported type — use devops/metadata-api-coverage-gaps. NOT for writing package.xml or running retrieve and deploy — use apex/metadata-api-and-package-xml."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

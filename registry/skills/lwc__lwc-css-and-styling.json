@@ -49,9 +49,9 @@
     "f805d46a2a4bf5835364",
     "ff4a8c1943aa16313136"
   ],
-  "content_hash": "c2cf3f32410b9342caae909983133091a2d2625ab78116502f9b6138b6d760e4",
+  "content_hash": "05e7d829d1c5ba19c5a1ce111e341d2578525ce16cf9d25e57dcd8e268d64030",
   "dependencies": [],
-  "description": "Styling LWC components \u2014 SLDS design tokens, --slds-c-* component styling hooks, scoped CSS via shadow DOM, ::part() for restyling base components, light DOM (lwc:render-mode='light'), and the usual gotchas (CSS doesn't pierce shadow boundaries, !important fights specificity, SLDS upgrades break hand-rolled selectors). NOT for SLDS Blueprints/icon usage (use lwc/lwc-slds-icons) or Aura styling (Aura is deprecated).",
+  "description": "Styling LWC components \u2014 SLDS design tokens, --slds-c-* styling hooks, scoped CSS via shadow DOM, ::part() for restyling base components, light DOM (lwc:render-mode='light'), why CSS doesn't pierce the shadow boundary, !important vs specificity, and SLDS upgrades breaking hand-rolled selectors. NOT for app-scope theming or SLDS 2 hook migration \u2014 use lwc/lwc-styling-hooks. NOT for picking shadow vs light DOM \u2014 use lwc/lwc-shadow-vs-light-dom-decision.",
   "file_location": "skills/lwc/lwc-css-and-styling",
   "id": "lwc/lwc-css-and-styling",
   "inputs": [

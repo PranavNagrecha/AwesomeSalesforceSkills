@@ -54,9 +54,9 @@
     "fe5f53a1a55f202b7bd0",
     "ff80cb1a58c7a1170705"
   ],
-  "content_hash": "a7aaad701988d75a6080cf06dcae8172ca903092fcab8ecb868218855d57f623",
+  "content_hash": "94fbe02c602a7cf8aa7a5ffc36e4afce3b8db54d1b74fa5a92db8cc6c086fd64",
   "dependencies": [],
-  "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data.",
+  "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for caching user-specific sensitive data, and NOT for durable configuration storage \u2014 use apex/custom-metadata-in-apex. NOT for caching inside an OmniStudio Integration Procedure \u2014 use omnistudio/integration-procedure-cacheable-patterns.",
   "file_location": "skills/apex/platform-cache",
   "id": "apex/platform-cache",
   "inputs": [

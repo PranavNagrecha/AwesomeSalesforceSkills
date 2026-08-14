@@ -1,6 +1,6 @@
 ---
 name: ai-adoption-change-management
-description: "Use this skill when planning or executing the human side of an Agentforce or Einstein AI feature rollout — user trust-building, AI-specific training, structured feedback collection via the Feedback API, and adoption measurement via Agentforce Analytics. NOT for general Salesforce rollout change management with no AI component, generic user training design, or CRM adoption without an AI feature in scope."
+description: "Use this skill when planning or executing the human side of an Agentforce or Einstein AI feature rollout — user trust-building, AI-specific training, structured feedback collection via the Feedback API, and adoption measurement via Agentforce Analytics. NOT for turning the Einstein for Sales features on — use agentforce/agentforce-sales-ai-setup. NOT for rollout training with no AI in scope — use admin/change-management-and-training."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

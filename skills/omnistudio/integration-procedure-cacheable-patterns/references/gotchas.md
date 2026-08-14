@@ -34,3 +34,13 @@ thought.
 
 If the serialization format changes, cached entries become
 incompatible. Version the key prefix.
+
+---
+
+## 8. Org-Segment IP Cache Can Cross Users
+
+**What happens:** Top-level IP cache keyed by input signature at **Org** scope returns another user's results to anyone who presents the same inputs — including a guest.
+
+**When it occurs:** "Cacheable" ticked on a guest or PII IP because Preview was slow.
+
+**How to avoid:** No Org-segment cache on guest, portal, or PII Integration Procedures. Session or User partition, or no cache. Include a server-side subject in the key if you must cache. Designer Preview `ignoreCache` defaults true — it will not catch this. See `omnistudio-performance` Gotcha 6.

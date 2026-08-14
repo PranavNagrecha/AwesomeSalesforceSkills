@@ -1,7 +1,7 @@
 # LLM Anti-Patterns — Flow Data Tables
 
 Scope: configuring the Data Table screen component and consuming what it outputs. Screen
-flow structure generally belongs to `flow/screen-flow-patterns`; building a custom screen
+flow structure generally belongs to `flow/screen-flows`; building a custom screen
 component belongs to `flow/flow-screen-lwc-components`.
 
 ## Anti-Pattern 1: Reaching for a custom screen component by reflex

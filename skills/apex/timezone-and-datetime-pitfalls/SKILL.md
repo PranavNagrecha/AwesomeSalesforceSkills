@@ -1,6 +1,6 @@
 ---
 name: timezone-and-datetime-pitfalls
-description: "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping."
+description: "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping. NOT for grouping or filtering a query by calendar/fiscal period (CALENDAR_MONTH, FISCAL_QUARTER) — use apex/soql-date-functions. NOT for returning locale-formatted query output via FORMAT() — use apex/soql-format-function-localization."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

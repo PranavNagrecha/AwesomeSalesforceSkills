@@ -1,6 +1,6 @@
 ---
 name: lwc-custom-event-patterns
-description: "When and how to design CustomEvent traffic out of an LWC — bubbles / composed / cancelable flag choices, detail payload shape, naming rules, and propagation control. Trigger keywords: 'event not reaching parent', 'composed shadow DOM', 'CustomEvent detail mutation', 'stopPropagation vs stopImmediatePropagation'. NOT for parent-to-child communication (use `@api` — see `lwc/component-communication`), NOT for sibling fan-out (use Lightning Message Service — see `lwc/lightning-message-service`), NOT for wire-service data plumbing."
+description: "CustomEvent design — bubbles/composed/cancelable, detail payloads, naming, and why an event is not reaching the parent. Triggers: 'event not reaching parent', 'composed shadow DOM', 'child component cannot tell the parent something changed', 'how does a child lwc notify its parent'. NOT for parent-to-child @api — use lwc/component-communication. NOT for sibling fan-out via Lightning Message Service — use lwc/message-channel-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -23,6 +23,8 @@ triggers:
   - "stopPropagation versus stopImmediatePropagation in lwc"
   - "naming convention for lwc custom events"
   - "should I use customevent or lightning message service"
+  - "child component cannot tell the parent something changed"
+  - "how does a child lwc notify its parent"
 inputs:
   - "Component tree shape — parent, child, deeply nested grandchild, sibling, or Aura host"
   - "What payload (if any) the event must carry"

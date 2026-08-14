@@ -105,11 +105,11 @@
     "f83e0b7c8a513887e6c5",
     "fe42e3f98b41df7d0d2b"
   ],
-  "content_hash": "0d0e0a1a3b2e15b79cb9401a6dfba91c7786dde3c367addedc4b0f350ea73489",
+  "content_hash": "74fd209e1e36947b25434c59dc4d896d919d3cbe46c6539253a33f4abfa276ae",
   "dependencies": [
     "admin/commerce-checkout-configuration"
   ],
-  "description": "Use this skill when building or debugging a custom Salesforce Commerce payment gateway adapter using the CommercePayments Apex namespace \u2014 covering adapter implementation, RequestType handling, PCI tokenization patterns, and integration path selection. NOT for billing (Salesforce Billing / blng namespace), NOT for configuring the legacy sfdc_checkout.CartPaymentAuthorize interface (see admin/commerce-checkout-configuration), and NOT for storefront UI payment form design.",
+  "description": "Use this skill when building or debugging a custom Salesforce Commerce payment gateway adapter using the CommercePayments Apex namespace \u2014 covering adapter implementation, RequestType handling, PCI tokenization patterns, and integration path selection. NOT for Salesforce Billing invoices and the blng namespace \u2014 use apex/billing-integration-apex. NOT for the legacy sfdc_checkout.CartPaymentAuthorize interface \u2014 use admin/commerce-checkout-configuration.",
   "file_location": "skills/apex/commerce-payment-integration",
   "id": "apex/commerce-payment-integration",
   "inputs": [

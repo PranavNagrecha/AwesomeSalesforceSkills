@@ -95,9 +95,9 @@
     "fdd1a6b106c421546312",
     "ff32c12cd052f8f5f421"
   ],
-  "content_hash": "e9b670b87b9952fd12ee264fe9646c8889ff43c36fb813a8b50e9c260a039c62",
+  "content_hash": "111ebbb40a7b2481030f6409a526b89b066484189752e364638835d9faaad33e",
   "dependencies": [],
-  "description": "Use this skill when configuring pricebooks, tiered pricing, promotions, coupon codes, or cart discounts for B2B or D2C Commerce stores. Trigger keywords: WebStorePricebook, BuyerGroupPricebook, PriceAdjustmentSchedule, PromotionsCartCalculator, commerce coupon, cart-level discount, tiered price, Commerce promotion. NOT for CPQ pricing, standard Sales Cloud Opportunity pricebooks, or Quote pricing.",
+  "description": "Configure pricebooks, tiered pricing, promotions, coupon codes, and cart discounts for B2B or D2C Commerce stores. Trigger keywords: WebStorePricebook, BuyerGroupPricebook, PriceAdjustmentSchedule, PromotionsCartCalculator, commerce coupon, cart-level discount, tiered price, Commerce promotion. NOT for Sales Cloud pricebooks and PricebookEntry - use admin/products-and-pricebooks. NOT for CPQ quote pricing and discount schedules - use admin/cpq-pricing-rules.",
   "file_location": "skills/admin/commerce-pricing-and-promotions",
   "id": "admin/commerce-pricing-and-promotions",
   "inputs": [

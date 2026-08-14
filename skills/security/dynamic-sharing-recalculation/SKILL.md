@@ -1,6 +1,6 @@
 ---
 name: dynamic-sharing-recalculation
-description: "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules — use sharing-selection tree."
+description: "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules — use sharing-selection tree — use data/sharing-recalculation-performance."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

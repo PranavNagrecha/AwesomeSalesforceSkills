@@ -104,11 +104,11 @@
     "fc41508f9851426ea90b",
     "ff24d9d7675a5e6fb44a"
   ],
-  "content_hash": "c9b17e12a3ebba87b24fd2062f0612179ca88de149a29775a9f4db129bab555c",
+  "content_hash": "54040881e4b93195c802aa5a422f8534a91f58599884cfdb31acc36ef12ffc16",
   "dependencies": [
     "admin/household-model-configuration",
     "admin/financial-account-setup",
-    "admin/person-accounts"
+    "data/person-accounts"
   ],
   "description": "Use this skill when creating, configuring, or troubleshooting FSC Relationship Groups \u2014 including Household, Professional Group, and Trust group types; member role assignment via AccountContactRelation FSC fields; Primary Group designation; and group-level wealth aggregation rollups. NOT for standard account relationships, Contact-Account relationships outside FSC, NPSP household configuration, or Financial Account role setup (use admin/financial-account-setup).",
   "file_location": "skills/admin/fsc-relationship-groups",

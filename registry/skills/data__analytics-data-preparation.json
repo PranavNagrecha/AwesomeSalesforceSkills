@@ -47,9 +47,9 @@
     "dcfa4e887012e0e2e92f",
     "e58072a8a8e4d80e3a2b"
   ],
-  "content_hash": "b6cd7c0f10167d9e10004ddf471a54ca536505dec9f2f50e71406b6cc2b9e164",
+  "content_hash": "2b01c1b4862cb27ec3607bb56dcd303e7e577cad5df7a92009625dff1d58392b",
   "dependencies": [],
-  "description": "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API or augmenting CRM Analytics recipes with external non-Salesforce data: labeling fields, setting display formats, reclassifying measures vs dimensions, and applying org-level field annotations via main XMD PATCH. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic, dataflow SOQL extraction, dataset row count management, or standard CRM data quality \u2014 those are covered by analytics-recipe-design, analytics-dataflow-development, and analytics-dataset-management.",
+  "description": "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API, or augmenting recipes with external non-Salesforce data: field labels, display formats, measures vs dimensions, main XMD PATCH. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic \u2014 use admin/analytics-recipe-design. NOT for dataflow node types or SOQL extraction \u2014 use admin/analytics-dataflow-development.",
   "file_location": "skills/data/analytics-data-preparation",
   "id": "data/analytics-data-preparation",
   "inputs": [

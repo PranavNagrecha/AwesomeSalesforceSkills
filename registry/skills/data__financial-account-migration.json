@@ -89,12 +89,12 @@
     "fdb829213ac761a9b2f9",
     "fe1a2ce17c249ea5a74e"
   ],
-  "content_hash": "2e3a7c961142ff33b69f80cde7f9a48cc75c1c40332d79a7b5234f8ce0228d16",
+  "content_hash": "824813f9df200c002842524eead47e2dfbeebc11c5f31bb8b46908ba4c89131b",
   "dependencies": [
     "admin/financial-account-setup",
     "admin/fsc-data-model"
   ],
-  "description": "Use this skill when bulk-migrating financial account data into Salesforce FSC \u2014 including FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountTransaction, and balance history records. Trigger keywords: ETL load FSC, migrate holdings, bulk insert financial accounts, data migration rollup lock, FinancialAccountBalance import. NOT for financial account configuration or FSC data model reference.",
+  "description": "Use when bulk-migrating financial account data into Salesforce FSC \u2014 FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountTransaction, and balance history records. Trigger keywords: ETL load FSC, migrate holdings, bulk insert financial accounts, data migration rollup lock, FinancialAccountBalance import. NOT for configuring account types, roles and household rollup in Setup \u2014 use admin/financial-account-setup. NOT for the FinServ object graph and SOQL reference \u2014 use data/fsc-data-model.",
   "file_location": "skills/data/financial-account-migration",
   "id": "data/financial-account-migration",
   "inputs": [

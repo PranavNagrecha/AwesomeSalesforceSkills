@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When admins configure page access and profile permissions as separate steps and one step is missed — common during initial site setup or when adding a new page type to an existing site.
 
 **How to avoid:** After setting any page to Public, immediately verify the guest user profile has the required object Read access, relevant field permissions, and appropriate sharing visibility. Use a checklist (see the template in templates/) to ensure all three gates are checked together rather than in isolation.
+
+---
+
+## Gotcha 6: View All Fields Is Not a Guest FLS Shortcut
+
+**What happens:** An admin finds the Spring '25 **View All Fields** object permission (`PermissionsViewAllFields`, API 63.0+) and tries to grant it on the guest profile so every field on a public object stays readable as new fields are added.
+
+**Why:** View All Fields auto-grants read on all current and future fields for one object — useful on internal permission sets, but **View All Data, Modify All Data, and View All Fields for a given object can't be assigned to external users**, and guest profiles allow only read/create at the object level anyway.
+
+**How to avoid:** Enumerate guest field permissions explicitly. Treat each new field on a guest-readable object as a deliberate public-exposure decision.

@@ -1,6 +1,6 @@
 ---
 name: message-channel-patterns
-description: "Use when implementing Lightning Message Service (LMS) to enable cross-DOM communication between LWC, Aura, and Visualforce components on the same Lightning page, using message channels. Triggers: 'communicate between unrelated LWC components', 'send data between Visualforce and LWC', 'lightning message service not working', 'APPLICATION_SCOPE vs default scope', 'message channel metadata deployment'. NOT for parent-child component communication (use component-communication) or server-side events."
+description: "Lightning Message Service — MessageChannel metadata, publish/subscribe across DOM boundaries. Triggers: Lightning Message Service, MessageChannel, publish subscribe LWC. NOT for parent-child-only communication — use lwc/component-communication. NOT for legacy pubsub — use lwc/lwc-pubsub-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: lwc-data-table
-description: "Use when designing or reviewing `lightning-datatable` usage in Lightning Web Components, including column configuration, stable `key-field` values, inline editing, row actions, infinite loading, and custom cell types. Triggers: 'lightning datatable inline edit', 'row actions in lwc datatable', 'key field missing', 'infinite loading in datatable'. NOT for highly custom virtualized grids or broad page-performance work outside the datatable boundary."
+description: "First-time lightning-datatable setup — columns, key-field, basic sort, row actions. Triggers: lightning-datatable basics, datatable columns, key-field. NOT for inline edit, custom types, infinite scroll — use lwc/lwc-datatable-advanced. NOT for datasets too large for datatable — use lwc/lwc-virtualized-lists."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

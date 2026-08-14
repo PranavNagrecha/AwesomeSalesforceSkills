@@ -1,6 +1,6 @@
 ---
 name: data-loader-csv-column-mapping
-description: "Mapping CSV columns to Salesforce field API names for Data Loader, dataloader.io, Workbench, and custom Bulk API V2 loads. Covers header normalization, missing/extra-column behaviour per tool, required-field detection from describe metadata, polymorphic lookup prefixes, External ID upsert binding, picklist API names vs labels, datetime/timezone handling, and the case-sensitivity divergence between Data Loader (insensitive match) and Bulk API V2 (case-sensitive headers). NOT for picklist value validation pre-load — see data-loader-picklist-validation-pre-load. NOT for batch sizing — see data-loader-batch-window-sizing. NOT for general migration planning — see data-migration-planning."
+description: "Mapping CSV columns to Salesforce field API names for Data Loader, dataloader.io, Workbench, and custom Bulk API V2 loads. Covers header normalization, missing/extra-column behaviour per tool, required-field detection from describe metadata, polymorphic lookup prefixes, External ID upsert binding, picklist API names vs labels, datetime/timezone handling, and the Data Loader vs Bulk API V2 header case-sensitivity divergence. NOT for checking picklist values before the load runs — use data/data-loader-picklist-validation-pre-load. NOT for batch sizing — use data/data-loader-batch-window-sizing. NOT for sequencing a whole migration — use data/data-migration-planning."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

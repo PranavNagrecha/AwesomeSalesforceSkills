@@ -189,7 +189,7 @@ Step-by-step instructions for an architect working on this platform decision:
 4. **Evaluate the extensibility model against customization requirements.** List every non-standard behavior: custom pricing logic, custom inventory rules, custom tax calculation, custom checkout steps. Map each to the extensibility mechanism on each platform (Commerce Extensions vs. SFRA hooks and cartridges). Identify any requirements that cannot be met by either platform's standard extensibility model.
 5. **Design the integration architecture for each option.** For B2B Commerce on Core, document what external integrations are needed and how they connect to the org. For SFCC, document the CRM integration surface: what data must flow to/from Salesforce CRM, at what frequency, and through what mechanism (Salesforce Connector, middleware, batch import). The integration complexity delta between the two options is often the deciding factor.
 6. **Produce the recommendation with rationale.** Document the platform choice with each driving factor cited explicitly. Record capability gaps — what the selected platform does not provide natively — and confirm the team accepts the custom development required to fill those gaps.
-7. **Identify the follow-on skills.** Once the platform decision is locked, activate the appropriate implementation skill: `admin/b2b-commerce-store-setup` for B2B Commerce on Core, or `admin/b2c-commerce-store-setup` for SFCC. If Commerce Extensions are in scope, activate `apex/commerce-extensions-development`.
+7. **Identify the follow-on skills.** Once the platform decision is locked, activate the appropriate implementation skill: `admin/b2b-commerce-store-setup` for B2B Commerce on Core, or `admin/b2c-commerce-store-setup` for SFCC. If Commerce Extensions are in scope, activate `apex/commerce-extension-points`.
 
 ---
 
@@ -237,5 +237,5 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/b2b-vs-b2c-requirements` — use upstream of this skill for buyer-journey and requirements-level platform selection before architectural evaluation
 - `admin/b2b-commerce-store-setup` — use after selecting B2B Commerce on Core; covers WebStore creation, BuyerGroup and entitlement policy setup, and buyer contact configuration
 - `admin/b2c-commerce-store-setup` — use after selecting SFCC; covers Business Manager configuration, SFRA setup, and storefront activation
-- `apex/commerce-extensions-development` — use when B2B Commerce on Core is selected and custom pricing, inventory, shipping, or tax logic is required
+- `apex/commerce-extension-points` — use when B2B Commerce on Core is selected and custom pricing, inventory, shipping, or tax logic is required
 - `integration/salesforce-b2c-commerce-connector` — use when SFCC is selected and a Salesforce CRM integration is required

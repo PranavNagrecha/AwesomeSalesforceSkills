@@ -1,6 +1,6 @@
 ---
 name: commerce-inventory-data
-description: "Use when managing inventory data in Salesforce Omnichannel Inventory (OCI) — covers stock level APIs, warehouse location mapping, IMPEX bulk upload, inventory availability queries, reservation management, and reorder point design. NOT for Field Service Lightning inventory management, Salesforce standard Product object stock fields, or CPQ product configuration."
+description: "Use when managing inventory data in Salesforce Omnichannel Inventory (OCI) — covers stock level APIs, warehouse location mapping, IMPEX bulk upload, inventory availability queries, reservation management, and reorder point design. NOT for Field Service van stock, ProductItem and ProductTransfer — use admin/fsl-inventory-management. NOT for designing OCI integration and split-order fulfillment routing — use architect/order-management-architecture."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

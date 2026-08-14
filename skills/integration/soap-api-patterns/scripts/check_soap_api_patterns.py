@@ -3,7 +3,8 @@
 
 Scans Salesforce project source files for common SOAP API integration
 anti-patterns:
-  - Old or retired API versions in SOAP endpoint URLs
+  - Retired or old API versions in SOAP endpoint URLs
+  - SOAP login() usage (removed at API 65.0, retired everywhere Summer '27)
   - Hardcoded instance hostnames (e.g., na1.salesforce.com)
   - Login endpoint used as the permanent service URL (not replaced by serverUrl)
   - Credentials or security tokens embedded in source
@@ -29,6 +30,16 @@ from pathlib import Path
 
 # Minimum acceptable SOAP API version (roughly last 4+ major releases from Spring '25)
 MIN_SOAP_API_VERSION = 56
+
+# Highest SOAP API version that is fully RETIRED and will hard-fail at runtime.
+# Versions 7.0-20.0 retired as of Summer '22; 21.0-30.0 retired as of Summer '25.
+# Versions 31.0-67.0 are supported. This boundary moves — re-check the SOAP API
+# End-of-Life Policy rather than assuming the old "below v21.0" line still holds.
+RETIRED_SOAP_API_VERSION_MAX = 30
+
+# First API version in which the SOAP login() call was removed (Winter '26).
+# login() survives in versions 31.0-64.0 only until Summer '27 is released.
+LOGIN_REMOVED_API_VERSION = 65
 
 # File extensions to scan
 _SCAN_EXTENSIONS = {".cls", ".java", ".cs", ".py", ".js", ".ts", ".xml", ".json"}
@@ -61,6 +72,17 @@ _RE_LOGIN_AS_SERVICE = re.compile(
     r"https://(?:login|test)\.salesforce\.com/services/Soap/[ucm]/",
     re.IGNORECASE,
 )
+
+# Explicit SOAP login() invocations: binding.login(...), <urn:login>, <login>
+_RE_LOGIN_CALL = re.compile(
+    r"\.login\s*\(|<\s*(?:\w+:)?login\s*>",
+    re.IGNORECASE,
+)
+
+# WSC performs login() implicitly when a ConnectorConfig carries username+password
+# and Connector.newConnection() is called. Detect that pairing too.
+_RE_WSC_IMPLICIT_LOGIN = re.compile(r"setUsername\s*\(", re.IGNORECASE)
+_RE_WSC_PASSWORD = re.compile(r"setPassword\s*\(", re.IGNORECASE)
 
 # Patterns suggesting plain-text passwords in source
 _RE_EMBEDDED_PASSWORD = re.compile(
@@ -106,20 +128,71 @@ def _read_file(path: Path) -> str | None:
 
 
 def _check_api_version(path: Path, text: str) -> list[str]:
-    """Flag SOAP endpoint URLs with versions below the minimum."""
+    """Flag SOAP endpoint URLs with retired or below-minimum API versions.
+
+    Retired versions are a hard runtime failure (UNSUPPORTED_API_VERSION), not a
+    style nit, so they are reported separately from merely-dated versions.
+    """
     issues: list[str] = []
     for match in _RE_SOAP_VERSION.finditer(text):
         try:
             version = int(match.group(1))
         except ValueError:
             continue
-        if version < MIN_SOAP_API_VERSION:
-            line_num = text[: match.start()].count("\n") + 1
+        line_num = text[: match.start()].count("\n") + 1
+        if version <= RETIRED_SOAP_API_VERSION_MAX:
+            issues.append(
+                f"{path}:{line_num} — RETIRED: SOAP API version v{version}.0 is no "
+                f"longer available (v7.0-v20.0 retired Summer '22; v21.0-v30.0 retired "
+                f"Summer '25). Calls to this endpoint fail with UNSUPPORTED_API_VERSION. "
+                f"Update the endpoint URL to v{MIN_SOAP_API_VERSION}.0 or later."
+            )
+        elif version < MIN_SOAP_API_VERSION:
             issues.append(
                 f"{path}:{line_num} — SOAP API version v{version}.0 is below the "
                 f"recommended minimum (v{MIN_SOAP_API_VERSION}.0). Update the endpoint "
-                f"URL to v{MIN_SOAP_API_VERSION}.0 or later (Spring '25 = v63.0)."
+                f"URL to v{MIN_SOAP_API_VERSION}.0 or later (Summer '26 = v67.0)."
             )
+    return issues
+
+
+def _check_login_retirement(path: Path, text: str) -> list[str]:
+    """Flag SOAP login() usage against its removal at 65.0 and Summer '27 retirement."""
+    issues: list[str] = []
+
+    explicit = _RE_LOGIN_CALL.search(text)
+    implicit = _RE_WSC_IMPLICIT_LOGIN.search(text) and _RE_WSC_PASSWORD.search(text)
+    if not explicit and not implicit:
+        return issues
+
+    match = explicit or _RE_WSC_IMPLICIT_LOGIN.search(text)
+    line_num = text[: match.start()].count("\n") + 1
+
+    # If any SOAP endpoint in this file is already at/after the removal version,
+    # the call cannot succeed today — report that as the stronger finding.
+    versions = []
+    for vmatch in _RE_SOAP_VERSION.finditer(text):
+        try:
+            versions.append(int(vmatch.group(1)))
+        except ValueError:
+            continue
+
+    if versions and max(versions) >= LOGIN_REMOVED_API_VERSION:
+        issues.append(
+            f"{path}:{line_num} — BROKEN: SOAP login() is used with an endpoint at "
+            f"v{max(versions)}.0. login() was removed in API v{LOGIN_REMOVED_API_VERSION}.0 "
+            f"(Winter '26) and returns HTTP 500 with UNSUPPORTED_API_VERSION. Authenticate "
+            f"with OAuth (JWT bearer or client credentials) via an external client app and "
+            f"inject the access token as the sessionId header instead."
+        )
+    else:
+        issues.append(
+            f"{path}:{line_num} — SOAP login() detected. It is removed in API "
+            f"v{LOGIN_REMOVED_API_VERSION}.0+ and retires in versions 31.0-64.0 when "
+            f"Summer '27 ships; newly created orgs also require the 'Any API Auth' "
+            f"user permission. Migrate to OAuth via an external client app — only the "
+            f"auth step changes, query/create/upsert calls are unaffected."
+        )
     return issues
 
 
@@ -248,6 +321,7 @@ def check_soap_api_patterns(manifest_dir: Path) -> list[str]:
             continue
 
         issues.extend(_check_api_version(source_file, text))
+        issues.extend(_check_login_retirement(source_file, text))
         issues.extend(_check_hardcoded_instance(source_file, text))
         issues.extend(_check_login_as_service_url(source_file, text))
         issues.extend(_check_embedded_credentials(source_file, text))
@@ -261,9 +335,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Check Salesforce project source files for SOAP API integration "
-            "anti-patterns: old API versions, hardcoded instance URLs, login "
-            "endpoint misuse, embedded credentials, missing DML result inspection, "
-            "and incomplete query pagination."
+            "anti-patterns: retired API versions, SOAP login() usage (removed at "
+            "API 65.0, retired Summer '27), hardcoded instance URLs, login endpoint "
+            "misuse, embedded credentials, missing DML result inspection, and "
+            "incomplete query pagination."
         ),
     )
     parser.add_argument(

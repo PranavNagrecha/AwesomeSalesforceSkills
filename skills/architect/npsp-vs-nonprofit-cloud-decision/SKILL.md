@@ -1,6 +1,6 @@
 ---
 name: npsp-vs-nonprofit-cloud-decision
-description: "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation — does not cover post-decision NPC build, NPSP customization, or data migration execution."
+description: "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for migration execution: object mapping and phased data conversion - use architect/nonprofit-cloud-vs-npsp-migration. NOT for designing the NPC module architecture - use architect/nonprofit-platform-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: pipeline-secrets-management
-description: "Store and inject Salesforce auth URLs, JWT keys, and API credentials into CI without leaking them. NOT for runtime secrets in Apex."
+description: "Store and inject Salesforce auth URLs, JWT keys, and API credentials into CI without leaking them. NOT for authoring the GitHub Actions workflow itself — use devops/github-actions-for-salesforce. NOT for secrets Apex reads — use apex/apex-secrets-and-protected-cmdt."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

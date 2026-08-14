@@ -1,6 +1,6 @@
 ---
 name: org-hardening-and-baseline-config
-description: "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. Triggers: 'org hardening', 'baseline security config', 'Health Check', 'CSP trusted sites', 'clickjack protection'. NOT for feature-level app permissions or record-sharing design."
+description: "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. NOT for feature-level app permissions or record-sharing design — use security/security-health-check."
 category: security
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

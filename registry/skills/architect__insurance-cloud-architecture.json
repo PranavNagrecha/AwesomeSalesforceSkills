@@ -70,12 +70,12 @@
     "fde3a619a88c2880b2ce",
     "fe62710a205e102be986"
   ],
-  "content_hash": "3a59501112239365307716aaad0f7563749d67d5b20ed9de67e676fad39f1e77",
+  "content_hash": "d8ecf95f22f4407894fdf12cb75c803795a00443cc56a7fa91bc639c9cfca6b4",
   "dependencies": [
     "fsc-architecture-patterns",
     "industries-insurance-setup"
   ],
-  "description": "Architecture guidance for Salesforce Insurance Cloud on FSC: module licensing strategy, policy administration object model, claims processing workflow design, underwriting rule integration, and channel routing. NOT for Health Cloud payer architecture, FSC retail banking, or implementation-level OmniScript development.",
+  "description": "Architecture guidance for Salesforce Insurance Cloud on FSC: module licensing strategy, policy administration object model, claims processing workflow design, underwriting rule integration, and channel routing. NOT for enabling insurance objects, coverage types or claim config in Setup \u2014 use admin/industries-insurance-setup. NOT for FSC retail banking and lending architecture \u2014 use architect/banking-lending-architecture.",
   "file_location": "skills/architect/insurance-cloud-architecture",
   "id": "architect/insurance-cloud-architecture",
   "inputs": [

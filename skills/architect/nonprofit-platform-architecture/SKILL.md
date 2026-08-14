@@ -1,6 +1,6 @@
 ---
 name: nonprofit-platform-architecture
-description: "Use this skill when designing or evaluating the holistic platform architecture for a Nonprofit Cloud (Agentforce Nonprofit) implementation — spanning module selection, data model foundations, integration strategy, and phased adoption across the six independently licensable modules. Trigger keywords: Nonprofit Cloud architecture, NPC platform design, nonprofit Salesforce architecture, program and fundraising architecture, nonprofit data model strategy, Agentforce Nonprofit. NOT for individual feature design within a single module, NPSP configuration, the NPSP-vs-NPC migration decision, or day-to-day admin setup of a specific module."
+description: "Use this skill when designing or evaluating the holistic platform architecture for a Nonprofit Cloud (Agentforce Nonprofit) implementation — module selection, data model foundations, integration strategy, and phased adoption across the six independently licensable modules. Trigger keywords: Nonprofit Cloud architecture, NPC platform design, nonprofit Salesforce architecture, program and fundraising architecture, nonprofit data model strategy, Agentforce Nonprofit. NOT for deciding whether to stay on NPSP or move to NPC — use architect/npsp-vs-nonprofit-cloud-decision. NOT for planning the NPSP-to-NPC data migration — use architect/nonprofit-cloud-vs-npsp-migration."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

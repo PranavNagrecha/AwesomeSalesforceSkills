@@ -87,9 +87,9 @@
     "fd647acafa39554283b4",
     "fefac2a9a21dd6228d80"
   ],
-  "content_hash": "07329bc29edaa3546c74d39fb4f69cf707001ec80541048e822fcbf8542ca783",
+  "content_hash": "22af1442839dca8d517bbed07906e116b7ae5b999903fe13d3af32d2d24de624",
   "dependencies": [],
-  "description": "Configuring Salesforce lead management and conversion: lead settings, web-to-lead, conversion field mapping, lead queues, auto-response rules, lead processes. Use when setting up lead capture, routing, or conversion for Sales Cloud. Trigger keywords: web-to-lead, lead conversion, lead field mapping, lead settings, lead process, lead queue, lead auto-response. NOT for lead assignment rule logic (use assignment-rules). NOT for duplicate rule configuration (use data-quality-and-governance).",
+  "description": "Configuring Salesforce lead management and conversion in Setup: lead settings, web-to-lead, conversion field mapping, lead queues, auto-response rules, lead processes. Trigger keywords: web-to-lead, lead conversion, lead field mapping, lead settings, lead process, lead queue, lead auto-response. NOT for Apex that controls what conversion creates - use apex/lead-conversion-customization. NOT for lead assignment rule logic - use admin/assignment-rules. NOT for duplicate rule configuration - use admin/duplicate-management.",
   "file_location": "skills/admin/lead-management-and-conversion",
   "id": "admin/lead-management-and-conversion",
   "inputs": [

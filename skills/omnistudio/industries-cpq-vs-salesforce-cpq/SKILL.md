@@ -1,6 +1,6 @@
 ---
 name: industries-cpq-vs-salesforce-cpq
-description: "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) — covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity CPQ, Industries CPQ, Salesforce CPQ comparison, Revenue Cloud migration, CPQ selection, which CPQ to use. NOT for implementing, configuring, or debugging either CPQ product."
+description: "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) — covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity. NOT for implementing, configuring, or debugging either CPQ product — use architect/industries-cloud-selection."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

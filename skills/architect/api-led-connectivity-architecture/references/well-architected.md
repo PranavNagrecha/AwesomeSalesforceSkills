@@ -34,6 +34,6 @@
 
 ## Cross-Skill References
 
-- `integration/integration-pattern-selection` — upstream pattern selection before layer design
+- `admin/integration-pattern-selection` — upstream pattern selection before layer design
 - `integration/api-error-handling-design` — HTTP error response contracts within layers
 - `integration/error-handling-in-integrations` — orchestration-layer error handling after API layer design

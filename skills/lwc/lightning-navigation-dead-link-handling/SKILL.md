@@ -1,6 +1,6 @@
 ---
 name: lightning-navigation-dead-link-handling
-description: "Use when an LWC navigates via NavigationMixin to records or pages that may no longer exist, lack the user's access, or be permanently moved. Triggers: 'lightning navigation 404', 'navigate to deleted record', 'NavigationMixin error toast', 'graceful fallback when target page missing', 'permission denied on navigation'. NOT for general routing within an SPA or for Experience Cloud public-facing routing."
+description: "Use when an LWC navigates via NavigationMixin to records or pages that may no longer exist, lack the user's access, or be permanently moved. Triggers: 'lightning navigation 404', 'navigate to deleted record', 'NavigationMixin error toast', 'graceful fallback when target page missing', 'permission denied on navigation'. NOT for ordinary NavigationMixin calls that work — use lwc/lwc-navigation-mixin. NOT for designing URL/deep-link routing — use lwc/navigation-and-routing."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

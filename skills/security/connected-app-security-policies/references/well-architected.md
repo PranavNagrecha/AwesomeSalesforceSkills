@@ -34,3 +34,4 @@
 - Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
 - Salesforce Well-Architected: Security — https://architect.salesforce.com/well-architected/secure/overview
 - Salesforce Help — OAuth 2.0 JWT Bearer Flow for Server-to-Server Integration (required claims iss/sub/aud/exp; "Salesforce allows a 3-minute buffer for clock skew") — https://help.salesforce.com/apex/HTViewHelpDoc?id=remoteaccess_oauth_jwt_flow.htm
+- Salesforce Help — Default Salesforce CLI OAuth 2.0 Device Flow Removal (confirms the August 28, 2025 block on new *and existing* Device Flow authorizations, that the "Enable for Device Flow" option in API (Enable OAuth Settings) is permanently disabled so no custom Connected App can carry the flow, and that `sf org login web` / `sf org login jwt` are the supported replacements) — https://help.salesforce.com/s/articleView?id=005135030&language=en_US&type=1 (verified 2026-08-13)

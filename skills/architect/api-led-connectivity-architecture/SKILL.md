@@ -1,6 +1,6 @@
 ---
 name: api-led-connectivity-architecture
-description: "Use this skill when designing API-led connectivity architecture for Salesforce integrations — covering System/Process/Experience layer separation, governance policy (catalog, versioning, deprecation, rate limits), multi-consumer strategy, and Agentforce Agent Fabric integration. Trigger keywords: API-led connectivity, MuleSoft three-tier, System API, Process API, Experience API, integration layer governance, API versioning policy, Agent Fabric. NOT for individual Apex callout implementation (use integration-pattern-selection), HTTP error response contracts (use api-error-handling-design), or retry backoff mechanics (use retry-and-backoff-patterns)."
+description: "Use this skill when designing API-led connectivity architecture for Salesforce integrations — covering System/Process/Experience layer separation, governance policy (catalog, versioning, deprecation, rate limits), multi-consumer strategy, and Agentforce Agent Fabric integration. Trigger keywords: API-led connectivity, MuleSoft three-tier, System API, Process API, Experience API, integration layer governance, API versioning policy, Agent Fabric. NOT for Salesforce's own place in the layered model, or whether three layers are overkill - use integration/api-led-connectivity. NOT for HTTP error contracts - use integration/api-error-handling-design. NOT for retry backoff mechanics - use integration/retry-and-backoff-patterns."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -72,9 +72,9 @@
     "f92ad045ab9dafa42bad",
     "f9659053ec22ed104c64"
   ],
-  "content_hash": "f88390304682937c0ea90489555bcbbb3b2e181989772bb349f7975ecc6b3b57",
+  "content_hash": "50cf78544a2aa4bbd8c1b1c88f651fd02423aff60c0ab826b768fa45ef9d1bda",
   "dependencies": [],
-  "description": "Use when adding or configuring the Summer '26 Radio Button Group screen component in a Screen Flow \u2014 the compact choice input that lays options out as horizontal boxes on desktop and vertical boxes on mobile, single-select by default with a 'Let Users Select Multiple Options' setting that makes it behave as a Checkbox Group. Covers choosing it over traditional Radio Buttons / Picklist / Checkbox Group, wiring its options to a Choice resource or dynamic choice set, and the single-value-vs-collection output contract. NOT for general choice-source design (see flow/flow-dynamic-choices), NOT for cross-component choice-input selection strategy (see flow/screen-flow-choice-component-selection), NOT for LWC-based screen components (see flow/flow-screen-lwc-components), and NOT for Screen Flow accessibility auditing (see flow/screen-flow-accessibility).",
+  "description": "Use when adding or configuring the Summer '26 Radio Button Group screen component in a Screen Flow \u2014 the compact choice input that lays options out as horizontal boxes on desktop and vertical boxes on mobile, single-select by default with a 'Let Users Select Multiple Options' setting that makes it behave as a Checkbox Group. Covers choosing it over traditional Radio Buttons / Picklist / Checkbox Group, wiring its options to a Choice resource or dynamic choice set, and the single-value-vs-collection output contract. NOT for picking which choice component to use \u2014 use flow/screen-flow-choice-component-selection. NOT for building the Record / Picklist Choice Set behind it \u2014 use flow/flow-dynamic-choices.",
   "file_location": "skills/flow/screen-flow-radio-button-group",
   "id": "flow/screen-flow-radio-button-group",
   "inputs": [

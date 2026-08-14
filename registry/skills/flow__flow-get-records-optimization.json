@@ -43,12 +43,12 @@
     "f3f0231c9d09c30b732f",
     "f5b0ba6d8f9450581023"
   ],
-  "content_hash": "a388c0944e348daf2a82a7de82d8ff7fb12175ce004c876c4c71899750311170",
+  "content_hash": "08d29f00a170085b20c23ce1d844d982532638deaec97e562efa9a352958a86f",
   "dependencies": [
     "flow/flow-governor-limits-deep-dive",
     "flow/flow-performance-optimization"
   ],
-  "description": "Optimize Get Records elements in Flow: filter sharpness, field selection, sort-and-limit placement, caching via formula resources, and avoiding repeated queries in loops. Trigger keywords: get records, flow soql, flow query limit, flow performance, record lookup. Does NOT cover Apex SOQL, Data Cloud queries, or external object lookups.",
+  "description": "Optimize Get Records in Flow \u2014 filters, field selection, sort/limit, caching, avoiding queries in loops. Triggers: get records, flow SOQL, flow query limit. NOT for Apex SOQL tuning \u2014 use flow/flow-governor-limits-deep-dive. NOT for loop bulkification failures \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/flow-get-records-optimization",
   "id": "flow/flow-get-records-optimization",
   "inputs": [

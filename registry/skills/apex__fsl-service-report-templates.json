@@ -95,11 +95,11 @@
     "fbbd2d955531e4864aef",
     "fe64fcfbd2c119184d05"
   ],
-  "content_hash": "f64f9c30f83e92b8894084cdc2d7fb9b0e575c9e7bb08c8b485a83c0156d85b9",
+  "content_hash": "708f0074a3fcae42edc20647ac4bbd85d073a5ff5f73d6f4de6518f5692a47a7",
   "dependencies": [
     "fsl-work-order-management"
   ],
-  "description": "Use this skill when designing, generating, or troubleshooting Field Service service report templates \u2014 covers the createServiceReport REST action (API v40.0+), ServiceReportLayout configuration, DigitalSignature capture, Document Builder (Winter '25+) with conditional logic via Flow, and PDF storage as ContentDocument/ContentVersion. NOT for quote templates, custom Visualforce pages, or Experience Cloud document generation.",
+  "description": "Use this skill when designing, generating, or troubleshooting Field Service service report templates \u2014 covers the createServiceReport REST action (API v40.0+), ServiceReportLayout configuration, DigitalSignature capture, Document Builder (Winter '25+) with conditional logic via Flow, and PDF storage as ContentDocument/ContentVersion. NOT for Quote PDF templates \u2014 use apex/quote-pdf-customization. NOT for Visualforce PDF generation \u2014 use apex/pdf-generation-patterns.",
   "file_location": "skills/apex/fsl-service-report-templates",
   "id": "apex/fsl-service-report-templates",
   "inputs": [

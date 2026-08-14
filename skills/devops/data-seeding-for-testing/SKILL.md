@@ -1,6 +1,6 @@
 ---
 name: data-seeding-for-testing
-description: "Use when creating test data for scratch orgs, sandboxes, or CI pipelines: Apex @testSetup factories, sf data import tree plans, CumulusCI datasets, Snowfakery. NOT for production data migration or ETL pipelines."
+description: "Use when creating test data for scratch orgs, sandboxes, or CI pipelines: Apex @testSetup factories, sf data import tree plans, CumulusCI datasets, Snowfakery. NOT for production data migration or ETL pipelines — use data/data-migration-planning."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

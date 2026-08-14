@@ -12,6 +12,7 @@ triggers:
   - "pagination skips records with null fields"
   - "order by ascending puts nulls at the wrong end"
   - "deterministic ordering when sort field has nulls"
+  - "why do blank values now sort at the bottom of my list view"
 tags:
   - soql
   - apex
@@ -27,9 +28,9 @@ outputs:
   - "pagination key strategy for stable cursors"
   - "test data covering null-and-non-null mix"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-30
+updated: 2026-08-14
 ---
 
 # SOQL NULL Ordering Patterns
@@ -154,6 +155,7 @@ The `cursorDate` may be null on the first page; the WHERE clause must handle tha
 3. **Formula fields can be null even with non-null inputs** — A formula's null-handling (`BLANKVALUE`, `IF(ISBLANK(...))`) determines whether the formula emits null. Sorting on a formula needs the same NULLS clause discipline.
 4. **Indexes don't include nulls by default** — Sorting on a high-null-percentage field can full-scan even when the field is custom-indexed. Custom indexes can be configured with null-inclusion via Support.
 5. **`NULLS LAST` is a keyword pair, not a function** — `NULLS_LAST`, `NULLSLAST`, or `NULLS-LAST` are syntax errors.
+6. **The standard list view stopped agreeing with SOQL in Spring '26** — List-view sorting now treats blanks as the *highest* value, so an ascending list view ends with blanks. SOQL was not changed — an ascending SOQL sort still returns nulls first by default (gotcha 1). A custom component replacing a list view needs explicit `NULLS LAST` to match.
 
 ---
 

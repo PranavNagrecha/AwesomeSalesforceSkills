@@ -1,6 +1,6 @@
 ---
 name: flow-transactional-boundaries
-description: "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the exact semantics of each Flow entry point. NOT for choosing Flow vs Apex (use automation-selection.md). NOT for Flow-to-Flow invocation contracts (use subflows-and-reusability)."
+description: "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the. NOT for choosing Flow vs Apex (use automation-selection — use flow/record-triggered-flow-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

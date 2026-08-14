@@ -179,9 +179,9 @@
     "fefa1427ede663c84aaa",
     "ff9ce60481d9525a5f2f"
   ],
-  "content_hash": "03be72e37f110d44d0f2e8956b83fd3c83f318e4b69a5e76c74f76dfa22dbc4c",
+  "content_hash": "5cd589b4db43a81f4350fe9540b9e6c7bf584470c6084c1a547766811b0b4a1f",
   "dependencies": [],
-  "description": "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =, VALUE/TEXT/DATETIMEVALUE coercion, time-zone differences between TODAY/NOW, and the 5,000-character formula limit. NOT for record-level formula fields on objects \u2014 see admin/formula-fields. NOT for Validation Rule formulas (different runtime context) \u2014 see admin/validation-rules.",
+  "description": "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects \u2014 \u2014 use admin/formula-fields. NOT for Validation Rule formulas (different runtime context) \u2014 \u2014 use admin/validation-rules.",
   "file_location": "skills/flow/flow-formula-and-expression-patterns",
   "id": "flow/flow-formula-and-expression-patterns",
   "inputs": [

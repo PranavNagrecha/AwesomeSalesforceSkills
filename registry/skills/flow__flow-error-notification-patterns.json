@@ -12,6 +12,7 @@
     "2e98cc750e6122291af4",
     "2ff322742a1d1c7dc054",
     "3500fef699a718ae6fc3",
+    "37f1fa52d613167d671d",
     "3d8d69f416d68d08542a",
     "41d7d5a7df06d3f07331",
     "450a84f0ab7aa724b86e",
@@ -73,9 +74,9 @@
     "fe9b1dfcb4b173bf64f5",
     "fff9c73a3da1576a9a45"
   ],
-  "content_hash": "8d2bedd73285b7dbff13e719ab78aa27099bd0e83f1f579186af00c569e5a780",
+  "content_hash": "a9ede75e6e0f326ad3bcd393d1b1e4ba34fb273f5e6545ad76a80b8477d5eb57",
   "dependencies": [],
-  "description": "Fault-path design and error notification for Salesforce Flow \u2014 what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of relying on the org-default 'apex exception email recipient'. Covers the ordering rule (Fault path on every callout / DML / record-create-or-update), the difference between a screen-flow user-visible error and a record-triggered-flow silent failure, and how to suppress noisy expected-rejection paths. NOT for the basic 'how do I add a Fault connector' (use Salesforce help), NOT for Apex-trigger errors (different runtime, see apex/apex-exception-handling).",
+  "description": "Use when Flow fault emails are noisy, repeated, going to the wrong person, or need to go somewhere other than email. Fault-path design and error notification for Salesforce Flow \u2014 what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of the org-default 'apex exception email recipient'. Covers the screen-flow user-visible error vs record-triggered-flow silent failure difference and suppressing noisy expected-rejection paths. Triggers: 'flow keeps sending me error emails', 'too many flow error emails', 'stop flow fault emails', 'change who receives flow error emails', 'route flow errors to Slack or a custom log object', 'apex exception email recipient'. NOT for how to build the Fault connector itself \u2014 use flow/fault-handling. NOT for triaging one failure that already happened \u2014 use flow/flow-runtime-error-diagnosis.",
   "file_location": "skills/flow/flow-error-notification-patterns",
   "id": "flow/flow-error-notification-patterns",
   "inputs": [
@@ -120,7 +121,7 @@
   "templates": [
     "skills/flow/flow-error-notification-patterns/templates/flow-error-notification-patterns-template.md"
   ],
-  "updated": "2026-05-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

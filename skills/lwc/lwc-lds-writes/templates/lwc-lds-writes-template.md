@@ -28,7 +28,7 @@ Tick whichever applies; only one should:
 - [ ] `lightning-record-edit-form` — layout-driven, default choice for single-record edit
 - [ ] `lightning-record-form` — dynamic field list from layout, no save customization
 - [ ] imperative `updateRecord` / `createRecord` / `deleteRecord` — non-standard UX
-- [ ] **Apex DML** — bulk, transactional, or `without sharing` required (this skill is the wrong fit; switch to `apex/dml-patterns`)
+- [ ] **Apex DML** — bulk, transactional, or `without sharing` required (this skill is the wrong fit; switch to `apex/apex-dml-patterns`)
 
 ## `recordInput` Shape Check
 

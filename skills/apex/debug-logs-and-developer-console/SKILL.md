@@ -1,6 +1,6 @@
 ---
 name: debug-logs-and-developer-console
-description: "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks (use debug-and-logging), and NOT for writing test classes (use apex-test-class-standards)."
+description: "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks — use apex/debug-and-logging. NOT for writing test classes — use apex/test-class-standards."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

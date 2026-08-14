@@ -1,6 +1,6 @@
 ---
 name: apex-class-decomposition-pattern
-description: "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for full fflib migration — see fflib-enterprise-patterns. NOT for trigger framework choice — see trigger-framework."
+description: "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for a full fflib migration — use apex/fflib-enterprise-patterns. NOT for choosing a trigger handler framework — use apex/trigger-framework."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

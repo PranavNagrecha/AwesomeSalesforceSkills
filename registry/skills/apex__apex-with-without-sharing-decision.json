@@ -84,9 +84,9 @@
     "f4937fdfebd77e7799d4",
     "f846181a5caf0aaac060"
   ],
-  "content_hash": "b71e309112980ecfb0a6e451d183f2c602fd31afb58deb75604bbe61dfaa8980",
+  "content_hash": "6e5892c7369b5d9ad0e69c6166e9a1afa33dda411b541da8d7ee408538415ebb",
   "dependencies": [],
-  "description": "Choosing the correct sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how the choice flows through called methods, and when WITH USER_MODE overrides class-level behavior. NOT for org-level sharing design (use standards/decision-trees/sharing-selection.md). NOT for FLS / CRUD enforcement (use apex-fls-crud-enforcement). NOT for Apex Managed Sharing (use apex-managed-sharing).",
+  "description": "Choosing the sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how it flows through called methods, and when WITH USER_MODE overrides it. NOT for enforcing CRUD/FLS on the records themselves \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for granting row access via __Share records \u2014 use apex/apex-managed-sharing.",
   "file_location": "skills/apex/apex-with-without-sharing-decision",
   "id": "apex/apex-with-without-sharing-decision",
   "inputs": [

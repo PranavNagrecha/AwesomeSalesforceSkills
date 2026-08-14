@@ -1,6 +1,6 @@
 ---
 name: agentforce-tool-use-patterns
-description: "Pick the right tool shape for each agent action: Apex invocable vs Flow action vs External Service vs Prompt Template vs Data Cloud retrieval. Covers action selection by use case, argument design for LLM clarity, return-shape contracts, error-surfacing, cost implications, and when to chain tools vs keep a single action. NOT for authoring a specific action (use custom-agent-actions-apex). NOT for topic design (use agent-topic-design)."
+description: "Pick the right tool shape for each agent action: Apex invocable vs Flow action vs External Service vs Prompt Template vs Data Cloud retrieval. Covers action selection by use case, argument design for LLM clarity, return-shape contracts, error-surfacing, cost implications, and when to chain tools vs keep a single action. NOT for designing or reviewing an action whose shape is already settled — naming, confirmation, error behavior — use agentforce/agent-actions. NOT for writing the Apex class itself — use agentforce/custom-agent-actions-apex."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -86,12 +86,14 @@ Q5. Is the user asking the agent to TAKE an action (create, update, cancel)?
 
 1. **Classify each capability by data direction:** reading Salesforce, reading external, reading unstructured, generating content, writing Salesforce, writing external.
 2. **Route each capability through the decision tree** above.
-3. **For each tool, design the LLM-facing contract:** the action name, description, input variable descriptions, output variable descriptions. These are what the model sees and uses to decide WHICH tool + WHAT arguments.
-4. **Write the description as if for a new engineer on Monday morning.** The LLM behaves like that engineer — if the description is ambiguous, the model picks wrong.
-5. **Design return shapes that are short.** Every token the tool returns is a token the LLM has to process. Return only what the user needs; never dump the whole sObject.
-6. **Plan for tool failure.** Soft error (field on return) vs exception (fault path) — see `agentforce-multi-turn-patterns` error handling.
-7. **Decide on chaining.** One big action or several small ones? Prefer small + chained; LLMs compose them better than they understand monoliths.
-8. **Add eval cases** that exercise each tool in isolation + in natural combinations.
+3. **Design the LLM-facing contract for each tool.**
+   - The action name, description, input variable descriptions, output variable descriptions. These are what the model sees and uses to decide WHICH tool + WHAT arguments.
+   - Write the description as if for a new engineer on Monday morning. The LLM behaves like that engineer — if the description is ambiguous, the model picks wrong.
+   - Design return shapes that are short. Every token the tool returns is a token the LLM has to process. Return only what the user needs; never dump the whole sObject.
+4. **Decide granularity and failure behavior.**
+   - Chaining: one big action or several small ones? Prefer small + chained; LLMs compose them better than they understand monoliths.
+   - Tool failure: soft error (field on return) vs exception (fault path) — see `agentforce-multi-turn-patterns` error handling.
+5. **Add eval cases** that exercise each tool in isolation + in natural combinations.
 
 ## Key patterns
 

@@ -53,9 +53,9 @@
     "f9c388d9e085bc9729bb",
     "ff973a34942381c3a2b0"
   ],
-  "content_hash": "6cdbc41896d322c2d371a56b135775d3b959cdbf35ceb60bf49b3cc1102347c2",
+  "content_hash": "db6fe8f8d1fc4e737500070a21cad90fe7514b482751fc44f0af1ae016011ae7",
   "dependencies": [],
-  "description": "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for user license seat count planning (use capacity-planning), NOT for AppExchange package licensing (use appexchange-management).",
+  "description": "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for auditing and reclaiming unused seats to cut cost \u2014 use architect/license-optimization-strategy. NOT for ISV/AppExchange package license management and Trialforce \u2014 use devops/isv-license-management-and-trialforce.",
   "file_location": "skills/architect/org-edition-and-feature-licensing",
   "id": "architect/org-edition-and-feature-licensing",
   "inputs": [

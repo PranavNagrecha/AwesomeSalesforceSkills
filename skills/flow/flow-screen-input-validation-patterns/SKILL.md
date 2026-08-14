@@ -1,6 +1,6 @@
 ---
 name: flow-screen-input-validation-patterns
-description: "Design input validation inside Screen Flow screens using component-level <validationRule> (formula + errorMessage), isRequired, cross-field rules on the second field, reactive components, and screen-level Decision fallbacks for cross-screen checks. Trigger keywords: screen flow validation rule, EndDate after StartDate validation in flow screen, block Next button until input valid. NOT for record-level Validation Rules — see admin/validation-rules-and-formulas. NOT for Apex-side input checks — see apex/input-validation-patterns."
+description: "Design input validation inside Screen Flow screens using component-level <validationRule> (formula + errorMessage), isRequired, cross-field rules on the second field, reactive components, and screen-level Decision fallbacks for cross-screen checks. Trigger keywords: screen flow validation rule, EndDate after StartDate validation in flow screen, block Next button until input valid. NOT for record-level Validation Rules — use admin/validation-rules. NOT for choosing screen components or overall screen UX — use flow/screen-flows."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -254,8 +254,7 @@ This is the **only** legitimate use of Decision-as-validation. Component-level c
 4. **Place cross-field rules on the second (dependent) field.** Verify that the formula references both fields with `{!FirstField}` and `{!SecondField}`.
 5. **Place cross-screen checks in a Decision after the dependent screen, with a route-back path.** Do not try to cram them into a per-input rule.
 6. **Confirm reactivity if relevant.** If the org is on Winter '24+ and the form is long or interdependent, ensure standard reactive components are used; for custom LWCs, confirm they emit `FlowAttributeChangeEvent` and implement `@api validate()`.
-7. **Add object-level Validation Rules for defence-in-depth.** Any field the flow writes to should also have a Validation Rule on the object so an Apex / API inserter can't bypass the flow.
-8. **Verify accessibility.** Standard input components associate the error message with the field via `aria-describedby` automatically; for custom LWCs, confirm the implementation does the same so screen readers announce the error (see `flow-screen-flow-accessibility`).
+7. **Add defence-in-depth and verify accessibility.** Add object-level Validation Rules for any field the flow writes to (so Apex/API inserters can't bypass the flow). Confirm standard inputs associate errors via `aria-describedby` automatically and custom LWCs do the same (see `flow-screen-flow-accessibility`).
 
 ---
 

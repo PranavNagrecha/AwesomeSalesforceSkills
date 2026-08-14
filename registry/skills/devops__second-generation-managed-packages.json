@@ -108,9 +108,9 @@
     "f72c8163d57e08df2008",
     "f94f13768813348f7f10"
   ],
-  "content_hash": "f9fe43291c14fa569a47737d922f88ee1bc94c577bc405900b53694c59bf5d4e",
+  "content_hash": "792cfb27b86cb2c757e495ae914980315b0d5e3032a17523db43ea6532bae559",
   "dependencies": [],
-  "description": "2GP managed package development: creating managed packages with Dev Hub and Salesforce CLI, semantic versioning, patch versions, namespace linking, ISV AppExchange listing, and subscriber upgrade management. NOT for unlocked packages, unmanaged packages, or 1GP-only workflows.",
+  "description": "2GP managed package development: creating managed packages with Dev Hub and Salesforce CLI, semantic versioning, patch versions, namespace linking, ISV AppExchange listing, and subscriber upgrade management. NOT for unlocked packages \u2014 use devops/unlocked-package-development. NOT for 1GP packaging orgs and namespace registration \u2014 use devops/managed-package-development.",
   "file_location": "skills/devops/second-generation-managed-packages",
   "id": "devops/second-generation-managed-packages",
   "inputs": [

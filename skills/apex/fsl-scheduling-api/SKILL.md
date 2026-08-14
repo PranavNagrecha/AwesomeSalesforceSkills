@@ -1,6 +1,6 @@
 ---
 name: fsl-scheduling-api
-description: "Use this skill when implementing Apex code that calls the FSL scheduling Apex API: GetSlots, schedule(), GradeSlotsService, or OAAS optimization classes. Trigger keywords: AppointmentBookingService, ScheduleService.schedule, GetSlots, GradeSlotsService, OAAS, bulk scheduling, FSL optimization callout. NOT for admin-level scheduling policy configuration, scheduling rules UI setup, or the standard Book Appointment quick action without custom Apex."
+description: "Use this skill when implementing Apex code that calls the FSL scheduling Apex API: GetSlots, schedule(), GradeSlotsService, or OAAS optimization classes. Trigger keywords: AppointmentBookingService, ScheduleService.schedule, GetSlots, GradeSlotsService, OAAS, bulk scheduling, FSL optimization callout. NOT for scheduling policy config — use admin/fsl-scheduling-policies. NOT for optimization-mode and territory design — use architect/fsl-optimization-architecture."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

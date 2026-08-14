@@ -1,6 +1,6 @@
 ---
 name: file-upload-patterns
-description: "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns."
+description: "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns — use data/salesforce-files-architecture."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

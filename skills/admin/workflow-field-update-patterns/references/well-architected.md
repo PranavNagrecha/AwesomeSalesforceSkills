@@ -54,6 +54,6 @@
 - Migrate to Flow Tool — https://help.salesforce.com/s/articleView?id=sf.workflow_migration_tool.htm&type=5
 - Workflow Rule Field Update Deprecation — https://help.salesforce.com/s/articleView?id=000392547&type=1
 - Formula Field reference — https://help.salesforce.com/s/articleView?id=sf.fields_about_formula_fields.htm&type=5
-- Sibling skill — `skills/admin/order-of-execution/SKILL.md` (when one exists)
-- Sibling skill — `skills/flow/flow-best-practices/SKILL.md`
+- Sibling skill — `skills/apex/order-of-execution-deep-dive/SKILL.md`
+- Sibling skill — `skills/flow/record-triggered-flow-patterns/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

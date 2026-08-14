@@ -1,6 +1,6 @@
 ---
 name: apex-string-and-regex
-description: "Apex String class methods, Pattern/Matcher regex, text parsing, template rendering, and the null-safety landmines that bite every Apex programmer eventually. Covers `String.split` trailing-empty-drop semantics, `Pattern.compile` static-final caching, `Matcher.group` ordering rules, and the `String.format` MessageFormat-vs-printf trap. NOT for formula functions (FORMULA / TEXT in formula fields), NOT for SOQL string-bind escaping (see apex/dynamic-soql)."
+description: "Apex String class methods, Pattern/Matcher regex, text parsing, template rendering, and null-safety landmines. Covers `String.split` trailing-empty-drop semantics, `Pattern.compile` static-final caching, `Matcher.group` ordering rules, and the `String.format` MessageFormat-vs-printf trap. NOT for catastrophic backtracking or the 1M char regex cap — use apex/apex-regex-and-pattern-matching. NOT for SOQL literal escaping — use apex/soql-string-escaping-and-reserved-characters."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

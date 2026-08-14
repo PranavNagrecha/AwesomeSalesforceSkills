@@ -1,6 +1,6 @@
 ---
 name: lifecycle-hooks
-description: "Use when building or reviewing Lightning Web Components — specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components."
+description: "Use when building or reviewing Lightning Web Components — specifically lifecycle. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components — use lwc/navigation-and-routing."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

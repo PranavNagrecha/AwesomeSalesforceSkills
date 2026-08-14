@@ -1,6 +1,6 @@
 ---
 name: apex-salesforce-id-patterns
-description: "Use when working with Salesforce Ids in Apex — validating Id format, detecting the target sObject type from a string Id, or safely handling 15 vs 18-character Ids. Trigger keywords: Id prefix, Id.valueOf, Id.getSobjectType, 15-char, 18-char, case-insensitive Id. NOT for: record access / sharing decisions (see apex-user-and-permission-checks), or bulk Id collection patterns (see apex-bulk-patterns)."
+description: "Use when working with Salesforce Ids in Apex — validating Id format, detecting the target sObject type from a string Id, or safely handling 15 vs 18-character Ids. Trigger keywords: Id prefix, Id.valueOf, Id.getSobjectType, 15-char, 18-char, case-insensitive Id. NOT for hardcoded Profile or RecordType Ids — use apex/apex-hardcoded-id-elimination. NOT for bulk Id collection patterns — use apex/apex-collections-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: lwc-reactive-state-patterns
-description: "How LWC reactivity actually works after Spring '20 (API v48+) — every class field is reactive on reassignment, but @track is still required for in-place mutation of plain object/array contents, and Date / Set / Map mutations are NEVER observed. Covers the renderedCallback infinite-loop trap, reactive-getter caching rules, and when @track is genuinely needed today. NOT for @wire reactive parameters (see lwc/wire-adapters), NOT for Lightning Data Service caching (see lwc/ldws-and-uirecordapi), NOT for cross-component reactive state (see lwc/message-channel-patterns and lwc/state-management-with-modules)."
+description: "LWC reactivity after API v48 — @track vs class fields, deep object updates, rerender pitfalls. Triggers: LWC reactivity, @track, reactive object, rerender. NOT for wire adapter refresh — use lwc/lwc-wire-refresh-patterns. NOT for record form data — use lwc/lwc-lightning-record-forms."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

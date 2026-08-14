@@ -1,6 +1,6 @@
 ---
 name: vlocity-to-native-omnistudio-migration
-description: "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to omnistudio, OmniStudio Migration Tool, DataRaptor namespace update, OmniScript JSON export, managed package to native. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-native orgs, nor for Salesforce CPQ to Industries CPQ migration."
+description: "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-na — use omnistudio/omnistudio-deployment-datapacks."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,7 @@ triggers:
   - "use the OmniStudio Migration Tool in Setup to convert Vlocity components to native format"
   - "side-by-side testing strategy when transitioning from vlocity_cmt to native OmniStudio deployment"
   - "LWC custom element tags still use c-omni-script after enabling enableOaForCore org setting"
+  - "retire Vlocity, get off the Vlocity managed package, move to standard OmniStudio components, Standard OmniStudio Runtime, Standard Designers, unmanaged OmniStudio, decommission vlocity_cmt"
 tags:
   - omnistudio
   - vlocity
@@ -44,7 +45,7 @@ dependencies:
   - omnistudio/integration-procedures
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 runtime_orphan: true
 ---
 

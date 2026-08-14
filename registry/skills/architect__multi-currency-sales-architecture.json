@@ -68,9 +68,9 @@
     "f74244786cea52534474",
     "fb125d063e8d9a7b958c"
   ],
-  "content_hash": "2344307dbbf37a6e97684a9e20a030e2beea2dd352300e9a3fcdbadc2b01248a",
+  "content_hash": "940e9768596b1a909a21a4c9ef9f2254ed64345d5679b77323a77c7aaebbcc50",
   "dependencies": [],
-  "description": "Use when designing or reviewing multi-currency behavior in Sales Cloud: advanced currency management (ACM), dated exchange rates, converted amount field behavior, roll-up summary currency handling, and reporting currency implications. Triggers: 'multi-currency reporting wrong amounts', 'dated exchange rates architecture', 'ACM converted amount fields'. NOT for initial multi-currency enablement or basic currency admin setup.",
+  "description": "Use when designing or reviewing multi-currency behavior in Sales Cloud: advanced currency management (ACM), dated exchange rates, converted amount field behavior, roll-up summary currency handling, and reporting currency implications. Triggers: 'multi-currency reporting wrong amounts', 'dated exchange rates architecture', 'ACM converted amount fields'. NOT for enabling multi-currency itself - use data/multi-currency-and-advanced-currency-management.",
   "file_location": "skills/architect/multi-currency-sales-architecture",
   "id": "architect/multi-currency-sales-architecture",
   "inputs": [

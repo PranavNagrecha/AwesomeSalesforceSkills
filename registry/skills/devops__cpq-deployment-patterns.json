@@ -59,9 +59,9 @@
     "fd3c9dae6faaaa3c6d7c",
     "fdc1905e393fb78a62a3"
   ],
-  "content_hash": "4483720a2f2d95d8623585e37e9fcee02cf8dfac9571e25194d553b19bc1747d",
+  "content_hash": "d19a0271c2da0d1b1b35fd20f218e13541066d369777dbc1076aa85b5f8a4cc6",
   "dependencies": [],
-  "description": "Use when deploying Salesforce CPQ configuration between environments in a CI/CD pipeline \u2014 covers the required data record dependency order (Price Books > Products > Price Rules > Product Rules > Quote Templates), External ID-based cross-org matching, multi-pass deployment for self-referential lookups, and the distinction between CPQ metadata deployment and CPQ data deployment. NOT for generic SFDX metadata deployment, CPQ implementation configuration, or Salesforce Billing deployment.",
+  "description": "Deploying Salesforce CPQ configuration between environments in a CI/CD pipeline \u2014 required data record dependency order (Price Books > Products > Price Rules > Product Rules > Quote Templates), External ID cross-org matching, multi-pass deployment for self-referential lookups, CPQ metadata vs CPQ data deployment. NOT for bulk-loading the CPQ product catalog itself \u2014 use data/product-catalog-migration-cpq. NOT for record type or queue IDs that differ between orgs \u2014 use data/deployment-data-dependencies.",
   "file_location": "skills/devops/cpq-deployment-patterns",
   "id": "devops/cpq-deployment-patterns",
   "inputs": [

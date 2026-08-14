@@ -58,11 +58,11 @@
     "fcc14dd04ecc8c64b093",
     "ff76529704b5f7fe2a8a"
   ],
-  "content_hash": "a25312b9e643c368717b451d341a8e3e33797a93739efba428fad1507765d593",
+  "content_hash": "5a3d3033d984ae705905fa90be3e291e4bfb227ef7e4a148bae673ea55098e9e",
   "dependencies": [
     "apex-queueable-patterns"
   ],
-  "description": "Use this skill when you need guaranteed post-Queueable cleanup, retry, or failure-logging logic that must run even when the parent Queueable throws an unhandled exception. Trigger keywords: FinalizerContext, System.attachFinalizer, Queueable cleanup on failure, post-job compensation, guaranteed async cleanup. NOT for batch job completion callbacks \u2014 use apex-batch-chaining. NOT for platform event publishing on failure \u2014 use platform-events-apex.",
+  "description": "Use this skill when you need guaranteed post-Queueable cleanup, retry, or failure-logging logic that must run even when the parent Queueable throws an unhandled exception. Trigger keywords: FinalizerContext, System.attachFinalizer, Queueable cleanup on failure, post-job compensation, guaranteed async cleanup. NOT for Queueable design or chaining \u2014 use apex/apex-queueable-patterns. NOT for the same need in Flow \u2014 use flow/flow-transaction-finalizer-patterns.",
   "file_location": "skills/apex/apex-transaction-finalizers",
   "id": "apex/apex-transaction-finalizers",
   "inputs": [

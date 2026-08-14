@@ -1,6 +1,6 @@
 ---
 name: cloud-specific-deployment-architecture
-description: "Deployment architecture quirks per Salesforce cloud: Industries (OmniStudio), Marketing Cloud (MC packages), Commerce Cloud, Data Cloud, Agentforce. What ships via metadata API, what ships via cloud-specific tools, ordering, dependencies. NOT for generic DevOps (use devops skills). NOT for cross-cloud data flow (use cross-cloud-data-deployment)."
+description: "Deployment architecture quirks per Salesforce cloud: Industries (OmniStudio), Marketing Cloud (MC packages), Commerce Cloud, Data Cloud, Agentforce. What ships via metadata API, what ships via cloud-specific tools, ordering, dependencies. NOT for building the OmniStudio DataPack pipeline itself — use omnistudio/omnistudio-ci-cd-patterns. NOT for the generic CI/CD pipeline, branch strategy or Copado-vs-Gearset choice — use architect/deployment-automation-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

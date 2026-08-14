@@ -1,6 +1,6 @@
 ---
 name: idempotent-integration-patterns
-description: "Use when designing retry-safe integrations with Salesforce — including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for Salesforce duplicate management rules."
+description: "Use when designing retry-safe integrations with Salesforce — including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for stopping duplicate records users create, via matching and duplicate rules — use admin/duplicate-management. NOT for the retry schedule itself — exponential backoff, jitter, circuit breaker — use integration/retry-and-backoff-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

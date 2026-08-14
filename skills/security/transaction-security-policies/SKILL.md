@@ -1,6 +1,6 @@
 ---
 name: transaction-security-policies
-description: "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monitoring). NOT for Apex testing or debug-log analysis."
+description: "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monito — use security/event-monitoring."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

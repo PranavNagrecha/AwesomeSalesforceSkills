@@ -63,12 +63,12 @@
     "ee5bca9be275d366a5bf",
     "fe72b9f7f48a64842464"
   ],
-  "content_hash": "7956d4208921215bf307e3ff1e7cd6c4014c1f1261263f6dbaaae9f0c43f6a49",
+  "content_hash": "cff86f30da40c16c8eb8ef9f152777a81e4b78277b2dc0ae21beee9f255c908b",
   "dependencies": [
     "callouts-and-http-integrations",
     "apex-queueable-patterns"
   ],
-  "description": "Use when diagnosing, preventing, or refactoring the 'You have uncommitted work pending' CalloutException caused by mixing DML and callouts in the same Apex transaction. Triggers: 'uncommitted work pending', 'callout after DML', 'DML between callouts'. NOT for general HTTP callout construction, Named Credential setup, or async Apex design in isolation.",
+  "description": "Use when diagnosing, preventing, or refactoring the 'You have uncommitted work pending' CalloutException caused by mixing DML and callouts in the same Apex transaction. Triggers: 'uncommitted work pending', 'callout after DML', 'DML between callouts'. NOT for the callout itself \u2014 use apex/callouts-and-http-integrations. NOT for rollback semantics \u2014 use apex/apex-savepoint-and-rollback.",
   "file_location": "skills/apex/callout-and-dml-transaction-boundaries",
   "id": "apex/callout-and-dml-transaction-boundaries",
   "inputs": [

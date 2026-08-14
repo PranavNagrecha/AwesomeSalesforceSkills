@@ -92,9 +92,9 @@
     "f9287a9de4fb0ebda77f",
     "f95be09f9aa25dc12a65"
   ],
-  "content_hash": "663ff1bfa7774f2f5b1709acae4c9890f4d902615514fc65b79b53525deddb4c",
+  "content_hash": "4d9f6bb6bea5ce77bfbe26f9b3f080b7f6afa7350a1f794e091be534275c5c37",
   "dependencies": [],
-  "description": "Use this skill to configure Salesforce Industries Insurance (Financial Services Cloud Insurance) including permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting using the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for generic OmniStudio setup, standard CPQ/Pricebook quoting, Health Cloud enrollment, or general FSC configuration unrelated to insurance line-of-business.",
+  "description": "Configure Salesforce Industries Insurance (Financial Services Cloud Insurance): permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting via the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for which FSC Insurance modules to license or how to architect claims and underwriting \u2014 use architect/insurance-cloud-architecture. NOT for generic OmniStudio setup, CPQ/Pricebook quoting or Health Cloud.",
   "file_location": "skills/admin/industries-insurance-setup",
   "id": "admin/industries-insurance-setup",
   "inputs": [

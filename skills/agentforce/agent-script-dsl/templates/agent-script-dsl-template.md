@@ -14,8 +14,9 @@ Use this template when authoring, editing, or troubleshooting Agentforce agent m
 
 Answer these before proceeding:
 
-- **Target org API version:** (e.g., 64.0 for Spring '26 — determines GenAiPlannerBundle vs GenAiPlanner)
-- **DX project `apiVersion` in sfdx-project.json:** (must match or exceed target org release)
+- **DX project `sourceApiVersion` in sfdx-project.json:** (this is what selects the metadata types, not the org's release — GenAiPlanner at 60.0–63.0, GenAiPlannerBundle at 64.0+ / Summer '25, AiAuthoringBundle at 65.0+ / Winter '26)
+- **Target org release:** (record it, but note every supported org already clears both floors)
+- **Authored in the new Agentforce Builder (Agent Script)?** Yes / No — if Yes, `AiAuthoringBundle` is mandatory in the manifest
 - **VS Code + Agentforce extension installed:** Yes / No
 - **Agent already exists in source control:** Yes / No — if Yes, retrieve before editing
 - **Agent already exists in org:** Yes / No — if Yes, retrieve before editing
@@ -31,9 +32,10 @@ List all metadata types that must be deployed together for this agent:
 |---|---|---|
 | Bot | | |
 | BotVersion | | |
-| GenAiPlannerBundle (v64+) or GenAiPlanner (v60–v63) | | |
-| GenAiPlugin | | (one row per topic) |
+| GenAiPlannerBundle (v64.0+) or GenAiPlanner (v60.0–63.0) | | |
+| GenAiPlugin | | (one row per topic/subagent — the type name never renamed) |
 | GenAiFunction | | (one row per action, if editing action definitions) |
+| AiAuthoringBundle (v65.0+) | | `aiAuthoringBundles/<Name>/<Name>.agent` + `<Name>.bundle-meta.xml` — required for Builder-authored agents |
 
 ---
 
@@ -49,7 +51,8 @@ Which pattern from SKILL.md applies?
 
 ## Authoring Checklist
 
-- [ ] API version confirmed in `sfdx-project.json` (64.0+ for GenAiPlannerBundle)
+- [ ] API version confirmed in `sfdx-project.json` (64.0+ for GenAiPlannerBundle; 65.0+ if any AiAuthoringBundle is in scope)
+- [ ] `.agent` Agent Script source is in the repo, not just the compiled GenAiPlugin/GenAiPlannerBundle output
 - [ ] Latest agent state retrieved from target org before making changes
 - [ ] `.agent` file opened in VS Code with Agentforce extension — zero LSP diagnostics
 - [ ] Topic descriptions reviewed: specific, non-overlapping, at least 1 sentence per topic
@@ -102,5 +105,5 @@ sf agent test run \
 
 Record any deviations from the standard pattern and why:
 
-- (e.g., "Using GenAiPlanner instead of GenAiPlannerBundle because production org is on Winter '26 / API v63")
+- (e.g., "Using GenAiPlanner instead of GenAiPlannerBundle because the project is still pinned to sourceApiVersion 63.0 — upgrade to 64.0 is scheduled for release N")
 - (e.g., "Topic X and Topic Y have intentionally overlapping scope — documented in SKILL.md gotchas")

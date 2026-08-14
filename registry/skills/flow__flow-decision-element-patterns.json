@@ -15,6 +15,7 @@
     "44a57bf1b78b91bf92ed",
     "5395b11d2c667db3d27b",
     "56ad363c334daf61da54",
+    "5721faa2acfcad7a4d54",
     "60e1394993b300bae4b0",
     "6c111b9f4566651d1e8a",
     "6f4030bb1cb799bd6db3",
@@ -41,13 +42,14 @@
     "c0d6a1d684c484358222",
     "c28f710d962c445e67c7",
     "c34dad4e00c853055537",
-    "cb5670101770747b6e49"
+    "cb5670101770747b6e49",
+    "d9872c9f7fda13a2e5a5"
   ],
-  "content_hash": "c43a227d52a1ed24a4d470ac4894955527d70d6f38c41dfef211debe753a655e",
+  "content_hash": "78116c1db46887087cfbd0c24c12f75a4f65f45cd3feda184a0501ba0cc23030",
   "dependencies": [
     "flow/record-triggered-flow-patterns"
   ],
-  "description": "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching, default outcome, condition logic, formula in decision. Does NOT cover loop or fault path design, or Screen Flow navigation.",
+  "description": "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching. NOT for loop or fault path design, or Screen Flow navigation \u2014 use flow/flow-element-naming-conventions.",
   "file_location": "skills/flow/flow-decision-element-patterns",
   "id": "flow/flow-decision-element-patterns",
   "inputs": [
@@ -83,7 +85,7 @@
   "templates": [
     "skills/flow/flow-decision-element-patterns/templates/decision-review.md"
   ],
-  "updated": "2026-04-23",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

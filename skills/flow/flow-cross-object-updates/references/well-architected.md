@@ -42,19 +42,45 @@ The defining tradeoff is **Flow vs Apex for the cross-object write**:
 | Time-to-build | Hours | Day+ (including tests) |
 | Auto-bulkification | Yes, with caveats | Manual but explicit |
 | Recursion guard | Manual (transient flag) | Static-bool / TriggerControl |
-| Mode (sharing/FLS) | Per-flow property | Handler-class keyword + `Security.stripInaccessible` — version-gated, see note |
+| Mode (sharing/FLS) | Per-flow property | Trigger: fixed `without sharing`, per-operation access mode; handler: sharing keyword + `Security.stripInaccessible` — version-gated, see note |
 | Debug-ability | Flow Debug log; reasonable | Apex Debug Log; gold standard |
 | Cross-team change risk | Lower (visible in Flow Builder) | Higher (requires code review) |
 | Best for | Single owner, well-bounded scope | Complex logic, high volume, deep nesting |
 
-**Note on the Apex "Mode" row.** The `.trigger` file itself always runs in
-system mode at every API version and cannot declare a sharing or access mode
-— the decision only exists in the handler class it delegates to. What a
-handler with *no* sharing keyword does is gated by the `apiVersion` in its
-`.cls-meta.xml`, not by the org's release: at **67.0+** (Summer '26) it runs
-`with sharing` and its SOQL/DML default to user mode; at **66.0 and below**
-both default the other way, so a handler pinned to 58.0 in a Summer '26 org
-keeps the old behavior. Canonical table:
+**Note on the Apex "Mode" row.** Sharing and access mode are two
+independent axes, and collapsing them into one is the usual mistake.
+
+*The sharing declaration is fixed.* A `.trigger` file can't carry an explicit
+sharing declaration, and always runs implicitly in a `without sharing` context
+— bypassing the current user's sharing rules. The Apex Developer Guide states
+this with no version qualifier, and no keyword can be added to the trigger to
+change it. Note the scope of that sentence carefully: what is fixed is the
+*declaration*, not the record visibility of every operation inside the
+trigger. The access mode of each database operation can still override it —
+see below.
+
+*Access mode is not fixed.* Database operations in the trigger body — SOQL
+queries, SOSL queries, DML statements, and `Database` methods — run in **user
+mode unless system mode is explicitly specified**. A query with no access-mode
+clause therefore behaves as `WITH USER_MODE`: object- and field-level
+permissions are enforced, and user mode reapplies the running user's record
+sharing, effectively enforcing a `with sharing` context in the trigger body.
+That default is gated on the `apiVersion` in the trigger's
+`.trigger-meta.xml`, the same way the handler's is gated on its
+`.cls-meta.xml` — the guide's worked trigger example is labeled *API version
+67.0 and later*. To opt out per operation, use `WITH SYSTEM_MODE`, `as
+system`, or `AccessLevel.SYSTEM_MODE`. Worth stating to a reviewer, because it
+is the axis people expect to move and it doesn't: under `WITH SYSTEM_MODE` the
+object- and field-level checks are bypassed, but record sharing stays governed
+by the trigger's own `without sharing` context, so all records remain visible
+regardless of the running user.
+
+The handler class the trigger delegates to is gated the same way, on the
+`apiVersion` in its `.cls-meta.xml` rather than the org's release: at
+**67.0+** (Summer '26) a handler with *no* sharing keyword runs `with sharing`
+and its SOQL/DML default to user mode; at **66.0 and below** both default the
+other way, so a handler pinned to 58.0 in a Summer '26 org keeps the old
+behavior. Canonical table:
 [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md)
 § *Apex security idiom by API version*.
 
@@ -115,6 +141,9 @@ exclude the changes the *other* flow produces.
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger.htm
 - Apex Developer Guide — Order of Execution:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Apex Developer Guide — Using the with sharing, without sharing, and
+  inherited sharing Keywords (§ Implementation in Apex Triggers):
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm
 - Summer '26 Release Notes — Database Operations Run in User Mode by Default,
   Not System Mode (API 67.0):
   https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5

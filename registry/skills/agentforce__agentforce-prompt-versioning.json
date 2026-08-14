@@ -56,11 +56,11 @@
     "f54441522d809d40781c",
     "f9482a4b8baf2b2bf99a"
   ],
-  "content_hash": "636267c3fa31deca0b4dac941fb4f250d890a71d92638ac94ba1947fe2b7c725",
+  "content_hash": "e7966f03f3bc0471f358047e3c9822a08e105f1bf8eb77ada47d572310733cc6",
   "dependencies": [
     "agentforce/agentforce-testing-strategy"
   ],
-  "description": "Version Prompt Templates and agent topic prompts: source-control shape, change review, model-version pinning, A/B, and rollback. Trigger keywords: prompt template versioning, prompt changelog, prompt rollback, A/B prompt test, agentforce prompt release. Does NOT cover: prompt engineering tips, general LLM fine-tuning, or Classify / Einstein Generate studio UI walkthroughs.",
+  "description": "Version Prompt Templates and agent topic prompts: source-control shape, change review, model-version pinning, A/B, and rollback. Trigger keywords: prompt template versioning, prompt changelog, prompt rollback, A/B prompt test, agentforce prompt release. NOT for the CMDT-backed binding that swaps the live template version without a redeploy \u2014 use agentforce/prompt-template-versioning. NOT for authoring the template itself \u2014 use agentforce/prompt-builder-templates. NOT for prompt engineering tips, general LLM fine-tuning, or Classify / Einstein Generate studio UI walkthroughs.",
   "file_location": "skills/agentforce/agentforce-prompt-versioning",
   "id": "agentforce/agentforce-prompt-versioning",
   "inputs": [

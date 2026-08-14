@@ -1,6 +1,6 @@
 ---
 name: commerce-order-history-migration
-description: "Use when migrating historical order records into Salesforce Order Management — covers the required object creation sequence (Order > OrderDeliveryGroup > OrderItem > OrderSummary), LifeCycleType=Unmanaged for historical orders, and OrderSummary creation via ConnectAPI. NOT for standard Opportunity migration, CPQ legacy order migration using SBQQ objects, or active order processing."
+description: "Use when migrating historical order records into Salesforce Order Management — covers the required object creation sequence (Order > OrderDeliveryGroup > OrderItem > OrderSummary), LifeCycleType=Unmanaged for historical orders, and OrderSummary creation via ConnectAPI. NOT for CPQ legacy order, contract and asset upload using SBQQ objects — use data/historical-order-migration. NOT for live order processing, fulfilment, returns or cancellations — use admin/commerce-order-management."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

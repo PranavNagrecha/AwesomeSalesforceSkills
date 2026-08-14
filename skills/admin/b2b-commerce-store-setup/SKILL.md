@@ -1,6 +1,6 @@
 ---
 name: b2b-commerce-store-setup
-description: "Use this skill to configure a Salesforce B2B Commerce storefront: creating the WebStore, linking BuyerGroups, assigning CommerceEntitlementPolicies, and granting buyer contacts transactional access. Trigger keywords: B2B Commerce, WebStore, BuyerGroup, entitlement policy, buyer account, storefront access. NOT for B2C Commerce (LWR storefronts using Individual/Person Account models), CPQ quote configuration, or Order Management fulfillment flows."
+description: "Use this skill to configure a Salesforce B2B Commerce storefront: creating the WebStore, linking BuyerGroups, assigning CommerceEntitlementPolicies, and granting buyer contacts transactional access. Trigger keywords: B2B Commerce, WebStore, BuyerGroup, entitlement policy, buyer account, storefront access. NOT for building the product catalog, categories, or variants — use admin/commerce-product-catalog. NOT for a B2C Commerce (SFCC) storefront — use admin/b2c-commerce-store-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

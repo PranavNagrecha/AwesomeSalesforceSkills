@@ -27,9 +27,9 @@
     "c424fe3c35412bf3e08e",
     "ef0bd69df51755a4f05c"
   ],
-  "content_hash": "fd102887581231ba3c2e5c27fca656e0b265aad6958d26894ff9af3231488f6a",
+  "content_hash": "9351b751bbf5a07b31f9d7528de9083cf1c5f180d1a07bc966239a53fafdd4e6",
   "dependencies": [],
-  "description": "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design.",
+  "description": "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/security/apex-managed-sharing-patterns",
   "id": "security/apex-managed-sharing-patterns",
   "inputs": [

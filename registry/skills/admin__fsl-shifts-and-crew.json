@@ -99,12 +99,12 @@
     "fc9e41760ee066acb443",
     "fd752eaa3a622197c795"
   ],
-  "content_hash": "4f79949c1bf5f3f551235bb51dd92fa84d96b4abbca24f04ab0dab031456cbf1",
+  "content_hash": "68898a79fbf38d267cee97fc218876b33bfe6d4470b7c4d19126b5c0e81975be",
   "dependencies": [
     "fsl-resource-management",
     "fsl-service-territory-setup"
   ],
-  "description": "Use this skill to configure FSL Shifts, ShiftTemplates, ShiftPatterns, and Crew ServiceResources \u2014 covering availability windows layered on Operating Hours, bulk shift generation via ShiftPattern + ShiftPatternEntry, and the two Crew models (Static vs. Shell/Dynamic). NOT for individual resource scheduling, NOT for scheduling policy or work rule configuration, and NOT for FSL mobile app or time-sheet setup.",
+  "description": "Configure FSL Shifts, ShiftTemplates, ShiftPatterns, and Crew ServiceResources \u2014 availability windows layered on Operating Hours, bulk shift generation via ShiftPattern + ShiftPatternEntry, and the two Crew models (Static vs. Shell/Dynamic). NOT for setting up the resources themselves \u2014 types, skills, ResourcePreference \u2014 use admin/fsl-resource-management. NOT for capping how many hours or appointments a resource can take \u2014 use admin/fsl-capacity-planning.",
   "file_location": "skills/admin/fsl-shifts-and-crew",
   "id": "admin/fsl-shifts-and-crew",
   "inputs": [

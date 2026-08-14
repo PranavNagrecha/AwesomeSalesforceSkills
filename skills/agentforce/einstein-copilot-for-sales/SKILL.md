@@ -1,6 +1,6 @@
 ---
 name: einstein-copilot-for-sales
-description: "Sales-specific AI features in Sales Cloud: Einstein Opportunity Scoring setup and optimization, Einstein Activity Capture configuration, AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. NOT for core Agentforce setup, agent topic design, or Einstein Trust Layer configuration."
+description: "Sales-specific AI features in Sales Cloud: Einstein Opportunity Scoring setup and optimization, Einstein Activity Capture configuration, AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. NOT for the license check and enablement sequence before any of these are turned on — use agentforce/agentforce-sales-ai-setup. NOT for the Service Cloud equivalents such as Case Classification and Work Summaries — use agentforce/einstein-copilot-for-service."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

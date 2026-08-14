@@ -1,6 +1,6 @@
 ---
 name: apex-performance-profiling
-description: "Use when diagnosing where Apex transactions spend CPU, heap, SOQL, or DML time using the Salesforce diagnostic toolchain: Apex Log Analyzer flame graphs in VS Code, Developer Console execution timeline, SOQL Query Plan tool, and Limits-class checkpoint instrumentation. Triggers: 'why is my Apex slow', 'flame graph Apex', 'profile Apex transaction', 'Query Plan tool', 'Apex Log Analyzer'. NOT for fixing specific CPU or heap patterns after the hotspot is found (use apex-cpu-and-heap-optimization), NOT for debug log setup or trace flag mechanics (use debug-logs-and-developer-console), and NOT for SOQL query rewriting (use soql-query-optimization)."
+description: "Use when diagnosing where Apex transactions spend CPU, heap, SOQL, or DML time using the Salesforce diagnostic toolchain: Apex Log Analyzer flame graphs in VS Code, Developer Console execution timeline, SOQL Query Plan tool, and Limits-class checkpoint instrumentation. Triggers: 'why is my Apex slow', 'flame graph Apex', 'profile Apex transaction', 'Query Plan tool', 'Apex Log Analyzer'. NOT for fixing specific CPU or heap patterns after the hotspot is found — use apex/apex-cpu-and-heap-optimization. NOT for debug log setup or trace flag mechanics — use apex/debug-logs-and-developer-console. NOT for SOQL query rewriting — use data/soql-query-optimization. NOT for runtime Limits.get* guard clauses in production code — use apex/apex-limits-monitoring."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

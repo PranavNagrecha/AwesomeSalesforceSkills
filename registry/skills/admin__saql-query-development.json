@@ -83,9 +83,9 @@
     "f94f5c05878ac787a575",
     "ff68f4b3f591e7ae74ac"
   ],
-  "content_hash": "a8ed2ecc4607fb59cd81e83f21bad38df6128e62b4ad998ccb96829f170144a6",
+  "content_hash": "cabd1a6640c4ba582f79b8f5135b0e849f1ff7a9ad6756f5b885782ebe718e4b",
   "dependencies": [],
-  "description": "Use this skill when writing, debugging, or optimizing SAQL queries in CRM Analytics \u2014 covering pipeline syntax, aggregation, windowing functions (rank, dense_rank, moving_average), cogroup joins, rollup subtotals, piggyback queries, and REST API execution. NOT for SOQL, standard Salesforce reports, SQL databases, or any non-CRM Analytics query language.",
+  "description": "Use this skill when writing, debugging, or optimizing SAQL queries in CRM Analytics \u2014 covering pipeline syntax, aggregation, windowing functions (rank, dense_rank, moving_average), cogroup joins, rollup subtotals, piggyback queries, and REST API execution. NOT for SOQL GROUP BY aggregates in Apex \u2014 use apex/apex-aggregate-queries. NOT for dashboard JSON steps and bindings \u2014 use admin/analytics-dashboard-json.",
   "file_location": "skills/admin/saql-query-development",
   "id": "admin/saql-query-development",
   "inputs": [

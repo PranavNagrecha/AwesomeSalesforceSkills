@@ -100,9 +100,9 @@
     "f776b8f39f66dd741461",
     "f9bffa9947e8eb088e58"
   ],
-  "content_hash": "4bd97c0bb3fe48eaf871d77f1d73df7f5726e56a9a4d41e01e316cfbd0c963ce",
+  "content_hash": "eee694642a4a1f9ce9ab0a1547f466d58fc19743ad09305e3542587147ebfece",
   "dependencies": [],
-  "description": "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping.",
+  "description": "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping. NOT for grouping or filtering a query by calendar/fiscal period (CALENDAR_MONTH, FISCAL_QUARTER) \u2014 use apex/soql-date-functions. NOT for returning locale-formatted query output via FORMAT() \u2014 use apex/soql-format-function-localization.",
   "file_location": "skills/apex/timezone-and-datetime-pitfalls",
   "id": "apex/timezone-and-datetime-pitfalls",
   "inputs": [

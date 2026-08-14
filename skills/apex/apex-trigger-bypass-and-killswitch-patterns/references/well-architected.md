@@ -44,8 +44,8 @@
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_custommetadatatypes_using.htm
 - Apex Reference Guide — `System.FeatureManagement` Class —
   https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_FeatureManagement.htm
-- Salesforce Help — Custom Settings (Hierarchy Custom Settings) —
-  https://help.salesforce.com/s/articleView?id=sf.cs_about.htm
+- Apex Developer Guide — Custom Settings —
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_customsettings.htm
 - Salesforce Well-Architected — Reliability pillar —
   https://architect.salesforce.com/well-architected/trusted/reliable
 - Salesforce Well-Architected — Operational Excellence —

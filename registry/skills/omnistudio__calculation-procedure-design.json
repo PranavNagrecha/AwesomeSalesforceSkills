@@ -46,11 +46,11 @@
     "ed208bfab98126638bf8",
     "edd5146a0d9e0bdcf927"
   ],
-  "content_hash": "937c01e2a5b56588f6a7a15689a4cd94094f51cce72ae4a5994ba1dd9bfe1af6",
+  "content_hash": "28928804aad92feff6892ddb6e32f10a434020a9ceef6b28903b42efee163621",
   "dependencies": [
     "omnistudio/integration-procedure-cacheable-patterns"
   ],
-  "description": "Design OmniStudio Calculation Procedures and Calculation Matrices for pricing, rating, and rules-heavy scoring. Trigger keywords: calculation procedure, calculation matrix, rating engine, pricing matrix, expression set, decision matrix, OmniStudio rules. Does NOT cover: generic Apex-only pricing code, Salesforce CPQ price rules (different product), or Flow-based decision logic.",
+  "description": "Design Calculation Procedures and Matrices for pricing, rating, and rules-heavy scoring. Triggers: calculation procedure, calculation matrix, expression set, decision matrix. NOT for Salesforce CPQ price rules \u2014 use admin/cpq-pricing-rules. NOT for Flow decision logic \u2014 use flow/flow-decision-element-patterns.",
   "file_location": "skills/omnistudio/calculation-procedure-design",
   "id": "omnistudio/calculation-procedure-design",
   "inputs": [

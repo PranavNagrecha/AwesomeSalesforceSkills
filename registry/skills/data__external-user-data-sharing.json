@@ -75,9 +75,9 @@
     "fbd2240a14b08fc95afd",
     "fe8ecf78aec7abfabf77"
   ],
-  "content_hash": "5facab06acf12762dcf3c65ee965e6c7c08148c65987bbcfbfa49ef00349b1a4",
+  "content_hash": "41db488f720814f95d339642ef383c7be848bd033f01a0b7e5ce547c482a1fc6",
   "dependencies": [],
-  "description": "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for internal sharing model configuration. NOT for internal user roles and hierarchies. NOT for guest user profile hardening.",
+  "description": "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for the internal sharing model \u2014 OWD, role hierarchy, sharing rules \u2014 use admin/sharing-and-visibility. NOT for guest-user record access or site hardening \u2014 use security/experience-cloud-security.",
   "file_location": "skills/data/external-user-data-sharing",
   "id": "data/external-user-data-sharing",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: territory-design-requirements
-description: "Use this skill when gathering or evaluating requirements for a Salesforce Enterprise Territory Management (ETM) territory design: alignment criteria, coverage model selection, assignment rule logic, geographic considerations, hierarchy depth and breadth, and user-to-territory ratios. Trigger keywords: territory design, territory alignment, territory model requirements, sales coverage model, territory criteria, geographic territory, named account territory, overlay territory. NOT for ETM configuration or setup steps — use enterprise-territory-management for that. NOT for role hierarchy design — use sharing-and-visibility."
+description: "Requirements for a Salesforce Enterprise Territory Management (ETM) territory design: alignment criteria, coverage model selection, assignment rule logic, hierarchy depth and breadth, and user-to-territory ratios. Trigger keywords: territory design, territory alignment, territory model requirements, sales coverage model, territory criteria, geographic territory, named account territory, overlay territory. NOT for ETM setup steps — use admin/enterprise-territory-management. NOT for loading territory assignment data — use data/territory-data-alignment."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

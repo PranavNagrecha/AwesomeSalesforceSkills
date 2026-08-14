@@ -78,7 +78,9 @@ Agentforce deploys to Slack via a Salesforce-managed Slack application — not a
 
 ### Agent REST API Enables Programmatic And Custom-Surface Integrations
 
-The Agentforce Agent API is a REST endpoint (`https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions`) that allows any external application to open a session with an Agentforce agent, send messages, and receive responses. This is the correct channel for mobile apps, custom web surfaces, IVR integrations, or third-party tools that cannot use Embedded Service. Authentication uses either a Salesforce Session ID (for internal Salesforce clients) or a Connected App OAuth 2.0 flow (for external clients). The Agent API is not the same as a custom Apex REST endpoint — it is a Salesforce platform endpoint managed by the Einstein Platform Services runtime.
+The Agentforce Agent API is a REST endpoint (`https://api.salesforce.com/einstein/ai-agent/v1/agents/{agentId}/sessions`) that allows any external application to open a session with an Agentforce agent, send messages, and receive responses. This is the correct channel for mobile apps, custom web surfaces, IVR integrations, or third-party tools that cannot use Embedded Service.
+
+**Authentication requires an External Client App (ECA) with client credentials — not a Connected App.** Per the Agent API getting-started guide, create an ECA in Setup, enable OAuth with the **chatbot_api** and **sfap_api** scopes, turn on **Enable Client Credentials Flow**, set **Run As (Username)** to an API-capable user, and mint tokens with the consumer key/secret against your My Domain URL. Connected App JWT flows are a different integration path; do not conflate them when wiring a headless Agent API client.
 
 ### Multi-Channel Coordination Requires Per-Channel Testing
 
@@ -214,4 +216,4 @@ Non-obvious platform behaviors that cause real production problems:
 - `agentforce/agent-topic-design` — use when the problem is topic boundary design or classification logic, not channel surface configuration.
 - `agentforce/agent-actions` — use when the problem is action contract quality or action availability within topics.
 - `agentforce/einstein-trust-layer` — use alongside this skill to review ZDR, data masking, and grounding policies before opening a channel to external users.
-- `security/csp-trusted-sites` — use for detailed CSP Trusted Sites configuration if the Embedded Service deployment is on an external site with a strict Content Security Policy.
+- `security/csp-and-trusted-urls` — use for detailed CSP Trusted Sites configuration if the Embedded Service deployment is on an external site with a strict Content Security Policy.

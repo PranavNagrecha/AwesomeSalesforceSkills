@@ -1,6 +1,6 @@
 ---
 name: gdpr-data-privacy
-description: "Use this skill when implementing GDPR or CCPA data privacy controls in Salesforce: Individual sObject linkage, consent tracking, Right to Be Forgotten (RTBF) requests, data subject request handling, and Privacy Center configuration. Trigger keywords: GDPR, data privacy, consent management, right to erasure, Individual object, ContactPointConsent, ShouldForget, data subject request, Privacy Center, data portability. NOT for general data quality cleanup, duplicate management, field-level encryption (see platform-encryption skill), or sandbox data masking (see sandbox-data-masking skill)."
+description: "Use this skill when implementing GDPR or CCPA data privacy controls in Salesforce: Individual sObject linkage, consent tracking, Right to Be Forgotten (RTBF) requests, data subject request handling, and Privacy Center configuration. Trigger keywords: GDPR, consent management, Individual object, ContactPointConsent, ShouldForget, Privacy Center. NOT for field-level encryption — use security/platform-encryption. NOT for sandbox data masking — use security/sandbox-data-masking. NOT for the intake-to-fulfilment request workflow — use security/customer-data-request-workflow."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

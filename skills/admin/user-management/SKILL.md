@@ -1,6 +1,6 @@
 ---
 name: user-management
-description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility)."
+description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model — use admin/permission-set-architecture. NOT for who can see which records — use admin/sharing-and-visibility."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

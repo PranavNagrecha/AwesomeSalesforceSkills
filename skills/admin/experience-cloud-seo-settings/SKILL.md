@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-seo-settings
-description: "Configure SEO for Experience Cloud sites: per-page titles and meta descriptions, sitemap.xml generation, robots.txt, and URL structure. Triggers: 'configure SEO for community site', 'Experience Cloud page titles meta descriptions', 'sitemap generation community portal', 'robots.txt Experience Cloud', 'noindex Experience Builder page'. NOT for external SEO tools (Moz, Ahrefs, Google Search Console setup). NOT for Salesforce CMS headless SEO."
+description: "Configure SEO for Experience Cloud sites: per-page titles and meta descriptions, sitemap.xml generation, robots.txt, and URL structure. Triggers: 'configure SEO for community site', 'Experience Cloud page titles meta descriptions', 'sitemap generation community portal', 'robots.txt Experience Cloud', 'noindex Experience Builder page'. NOT for creating the site, LWR vs Aura, or custom domain setup — use admin/experience-cloud-site-setup. NOT for pages a crawler cannot reach because the guest user lacks access — use admin/experience-cloud-guest-access."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: sandbox-refresh-data-strategies
-description: "Use this skill when designing data management strategies for sandbox refreshes: deciding which reference data must be re-seeded after every refresh, using Salesforce's native Data Seeding feature, writing SandboxPostCopy implementations that hand off to Queueable jobs for large data loads, and cleaning up stale data between sprints. Trigger keywords: seed data after sandbox refresh, SandboxPostCopy data strategy, native data seeding Salesforce, reference data re-seed after refresh, post-refresh data cleanup. NOT for sandbox administration setup, sandbox type selection (use sandbox-strategy), sandbox refresh mechanics and PII masking (use sandbox-refresh-and-templates), or scratch org data seeding for CI (use data-seeding-for-testing)."
+description: "Use this skill when designing data strategies for sandbox refreshes: which reference data must be re-seeded after every refresh, the native Data Seeding feature, SandboxPostCopy implementations that hand off to Queueable jobs for large data loads, and clearing stale data between sprints. Trigger keywords: seed data after sandbox refresh, SandboxPostCopy data strategy, native data seeding Salesforce, reference data re-seed after refresh, post-refresh data cleanup. NOT for refresh mechanics, sandbox templates and PII masking — use devops/sandbox-refresh-and-templates. NOT for sandbox type selection — use admin/sandbox-strategy. NOT for scratch-org data seeding for CI — use devops/data-seeding-for-testing."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,7 @@ triggers:
   - "which objects does native Data Seeding not support in Salesforce"
   - "data seeding isn't working"
   - "we're having issues with data seeding"
+  - "the sandbox refresh wiped the data the testers needed"
 tags:
   - sandbox
   - data-seeding

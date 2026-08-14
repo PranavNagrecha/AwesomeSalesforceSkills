@@ -47,9 +47,9 @@
     "f7c7894025007b1449e2",
     "fb2719c9e94e1317baee"
   ],
-  "content_hash": "6472b9ded0940d95739cbfe8d40fe9a6e987781014078d01895b6fac1a22e6f1",
+  "content_hash": "8c8d15ea6b9108081cc57f578abd063668338294cdbf583d79acc32d66b5b842",
   "dependencies": [],
-  "description": "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy.",
+  "description": "Design the Agentforce test pyramid: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent regression suite, prompt golden set, action unit test agentforce. NOT for hallucination evals, fixture format, or scoring rubrics \u2014 use agentforce/agentforce-eval-harness. NOT for running tests in Testing Center, AiEvaluationDefinition or sf agent test \u2014 use agentforce/agent-testing-and-evaluation.",
   "file_location": "skills/agentforce/agentforce-testing-strategy",
   "id": "agentforce/agentforce-testing-strategy",
   "inputs": [
@@ -86,7 +86,7 @@
   "templates": [
     "skills/agentforce/agentforce-testing-strategy/templates/test-plan.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

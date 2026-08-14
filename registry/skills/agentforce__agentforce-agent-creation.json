@@ -94,9 +94,9 @@
     "fdb3e1fde54baa5e41fe",
     "fe32092f6248d306beb5"
   ],
-  "content_hash": "611502c3be2eafaba9e9ad8a755991a248fd5aca418bd21dc14f762490014aa7",
+  "content_hash": "834b54803e2a806bd4fc52c22cfecf2e4bc3e0c71cd63e6f421ed34cfe48c495",
   "dependencies": [],
-  "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for topic design or action contract design \u2014 use agentforce/agent-topic-design and agentforce/agent-actions respectively.",
+  "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for designing what the agent can DO \u2014 an agent that looks up an order, checks a case, or creates a record is action design, use agentforce/agent-actions. NOT for topic boundary design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-agent-creation",
   "id": "agentforce/agentforce-agent-creation",
   "inputs": [

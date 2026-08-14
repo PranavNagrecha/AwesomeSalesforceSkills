@@ -89,9 +89,9 @@
     "ff14df361cb31e68a9e6",
     "ff929aeca19160bf8202"
   ],
-  "content_hash": "4a4f063fa1861f130496ec3a5c1d0a6366dcb56a4fdb72f5e0330b49656bc156",
+  "content_hash": "4a500c2fd34f65f2a284de4f0b636df637a41f96072a0017da187672f757fd11",
   "dependencies": [],
-  "description": "Use when designing conversational AI architecture on Salesforce: Einstein Bot dialog design, Agentforce Agent topic planning, intent models, NLU training strategy, bot-to-agent handoff, escalation paths, knowledge article surfacing, and bot analytics. Triggers: 'einstein bot architecture', 'agentforce dialog design', 'bot handoff to agent', 'intent model training'. NOT for bot implementation code, Apex action authoring, Flow screen design, or Omni-Channel routing rule configuration.",
+  "description": "Use when designing conversational AI architecture on Salesforce: Einstein Bot dialog design, Agentforce Agent topic planning, intent models, NLU training strategy, bot-to-agent handoff, escalation paths, knowledge article surfacing, and bot analytics. Triggers: 'einstein bot architecture', 'agentforce dialog design', 'bot handoff to agent', 'intent model training'. NOT for multi-agent orchestration or Atlas Reasoning Engine behavior - use architect/conversational-ai-architecture. NOT for the fallback and escalation wording itself - use admin/agent-conversation-design.",
   "file_location": "skills/architect/einstein-bot-architecture",
   "id": "architect/einstein-bot-architecture",
   "inputs": [

@@ -42,9 +42,9 @@
     "fd9ad7e61b276a52ce5a",
     "ff4ca98b50cb45925d4b"
   ],
-  "content_hash": "7a92d11e031f923251c8d18e9c6deaf2a9eb9782cc0bc7c171957d522daa4117",
+  "content_hash": "a6be7b425100966e026122bd530d1e36349d7a06d0e54b989475a5981a123c93",
   "dependencies": [],
-  "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
+  "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design \u2014 use apex/exception-handling.",
   "file_location": "skills/lwc/lwc-error-boundaries",
   "id": "lwc/lwc-error-boundaries",
   "inputs": [

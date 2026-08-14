@@ -7,11 +7,13 @@
     "19f5d87e55b0b567e38e",
     "1c3888ece1f43f0d7e0a",
     "1d1db359c75030cd7564",
+    "203fcecef2950a2f06cf",
     "210b73ec7c5db3f39f6b",
     "25ce2735ccee0c157fb0",
     "2e3895a9d374ebd69efd",
     "336339ac123111290943",
     "34c92d7fb244ba960afb",
+    "37202b5d6efbba97ad06",
     "42b852c42efc53ce43ff",
     "42bf549594c851eca479",
     "49414ed6b4372ea11d10",
@@ -37,6 +39,7 @@
     "aaa8c126d12c3bba01a3",
     "ad4c8158ef8fa551ee07",
     "af5ac1a2f223aa8b3232",
+    "b171693fbb5ee969b39a",
     "b5188eb602e7ff7e692f",
     "b644da4d1d105cda7e32",
     "b9f11cdacd3f83a5a741",
@@ -54,9 +57,9 @@
     "f27eefec50e6efb5f2a8",
     "fd591329354e7172379f"
   ],
-  "content_hash": "a3fd50a5b0563c533c8ba514bb64df7d4d97f055e9117fb7e81ea9a326668020",
+  "content_hash": "e365082673dc21323f097ea9568a4e46045a3b4d3707013d64197d9e2e453f02",
   "dependencies": [],
-  "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
+  "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure design \u2014 use omnistudio/integration-procedures. NOT for DataRaptor design \u2014 use omnistudio/dataraptor-patterns.",
   "file_location": "skills/omnistudio/omniscript-design-patterns",
   "id": "omnistudio/omniscript-design-patterns",
   "inputs": [
@@ -95,7 +98,7 @@
   "templates": [
     "skills/omnistudio/omniscript-design-patterns/templates/omniscript-design-patterns-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

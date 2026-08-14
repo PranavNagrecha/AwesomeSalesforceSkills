@@ -104,9 +104,9 @@
     "fb3a7dfa378137b2eb92",
     "ffcec16d9e30a8ba60c8"
   ],
-  "content_hash": "acc3076a10f1f7123755ae6390d122c9846f836654ddcc26cf2d67e5dfc0a1a7",
+  "content_hash": "a8b6335e316bca89aa5bc323e17d612d3def068df796d8ffcf78aee75e372478",
   "dependencies": [],
-  "description": "Use this skill when designing the UX and content strategy for a Salesforce-powered self-service portal or help center \u2014 covering pre-deflection article surfacing, Help Center search UX, friction-calibrated case submission forms, community peer support layers, and deflection measurement. Trigger keywords: design self-service portal, case deflection strategy, help center UX design, reduce support volume with self-service, knowledge base search experience. NOT for Experience Cloud technical setup or component configuration. NOT for knowledge article authoring or article lifecycle management.",
+  "description": "Use this skill when designing the UX and content strategy for a Salesforce-powered self-service portal or help center \u2014 pre-deflection article surfacing, Help Center search UX, friction-calibrated case submission forms, community peer support layers, and deflection measurement. Trigger keywords: design self-service portal, case deflection strategy, help center UX design, reduce support volume with self-service, knowledge base search experience. NOT for picking which contact reasons to deflect and through which channel \u2014 use architect/case-deflection-strategy. NOT for building the Experience Cloud site itself \u2014 use admin/experience-cloud-site-setup.",
   "file_location": "skills/admin/self-service-design",
   "id": "admin/self-service-design",
   "inputs": [

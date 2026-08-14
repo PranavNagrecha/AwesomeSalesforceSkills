@@ -8,6 +8,7 @@
     "06aa0407a2af8cdce57f",
     "0a78ecbb22c0dac4e249",
     "0ee42a1d17540fc6106a",
+    "109de4d25f04c7d6c4b3",
     "1407d2377e2891f6ca75",
     "14d34effd10f203d63ec",
     "150259f699b9ecf86680",
@@ -110,11 +111,11 @@
     "fb54d4cdbc6cd7fea94e",
     "fe12bb2115f485018b5b"
   ],
-  "content_hash": "344424f08932e3941429510df8047d7b1d8318223ed1ef4759d8371ddae17099",
+  "content_hash": "781c72ecf8d0169004822cf7169daf2b736b584fbae14b7fc82ef1bab8cef398",
   "dependencies": [
     "omnistudio/omniscript-design-patterns"
   ],
-  "description": "Generating documents (PDF, DOCX, PPTX) from OmniStudio using Document Templates, OmniDataTransform token mapping, and OmniScript or Integration Procedure orchestration. Use when building client-side interactive or server-side batch document generation flows. NOT for Salesforce CPQ document generation. NOT for standard Salesforce mail merge or Lightning email templates. NOT for Contract Lifecycle Management (CLM) native document generation.",
+  "description": "Generating documents (PDF, DOCX, PPTX) from OmniStudio using Document Templates, OmniDataTransform token mapping, and OmniScript or Integration Procedure orchestration. Use when building client-side interactive or server-side batch document generation flows. NOT for Salesforce CPQ document generation \u2014 use apex/fsc-document-generation.",
   "file_location": "skills/omnistudio/document-generation-omnistudio",
   "id": "omnistudio/document-generation-omnistudio",
   "inputs": [
@@ -170,7 +171,7 @@
   "templates": [
     "skills/omnistudio/document-generation-omnistudio/templates/document-generation-omnistudio-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -1,6 +1,6 @@
 ---
 name: automotive-cloud-setup
-description: "Use this skill when setting up or extending Salesforce Automotive Cloud — including the Vehicle / VehicleDefinition data model, dealer-OEM relationship modeling via AccountAccountRelation, ActionableEvent orchestration for service campaigns and recalls, FinancialAccount lifecycle for retail-credit deals, and DriverQualification / WarrantyTerm extensions. Triggers on: Automotive Cloud setup, Salesforce Automotive Cloud data model, Vehicle vs VehicleDefinition, dealer hierarchy AccountAccountRelation, Automotive Cloud actionable events, recall campaign Salesforce. NOT for general Sales Cloud opportunity work on a vehicle product (use standard Opportunity), NOT for Manufacturing Cloud sales agreements (use manufacturing-cloud-setup), NOT for Field Service vehicle inventory (use FSL skills)."
+description: "Use this skill when setting up or extending Salesforce Automotive Cloud — including the Vehicle / VehicleDefinition data model, dealer-OEM relationship modeling via AccountAccountRelation, ActionableEvent orchestration. NOT for general Sales Cloud opportunity work on a vehicle product (use standard Opportun — use architect/industries-data-model."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

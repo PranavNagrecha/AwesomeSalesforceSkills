@@ -1,6 +1,6 @@
 ---
 name: commerce-lwc-components
-description: "Use this skill when building or customizing Lightning Web Components for B2B Commerce or D2C LWR storefronts — product display tiles, cart line-item components, checkout step components, wishlist buttons, and product comparison widgets that rely on Commerce Storefront wire adapters from the commerce namespace. NOT for standard LWC development outside a Commerce store context, not for Aura-based Community Builder components, and not for legacy B2B Commerce (CloudCraze) Aura widgets."
+description: "Use this skill when building or customizing Lightning Web Components for B2B Commerce or D2C LWR storefronts — product display tiles, cart line-item components, checkout step components, wishlist buttons, and. NOT for standard LWC development outside a Commerce store context, not for Aura-based Co — use lwc/experience-cloud-lwc-components."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

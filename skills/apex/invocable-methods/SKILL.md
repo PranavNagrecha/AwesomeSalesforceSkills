@@ -1,6 +1,6 @@
 ---
 name: invocable-methods
-description: "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output'. NOT for general Flow design without a custom Apex action boundary."
+description: "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output'. NOT for wiring the action into Flow Builder — use flow/flow-action-framework. NOT for an Agentforce agent action — use agentforce/custom-agent-actions-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: multi-bu-marketing-architecture
-description: "Use this skill when designing or evaluating a Marketing Cloud Engagement multi-Business-Unit hierarchy — covering Enterprise 2.0 parent/child BU structure, Shared Data Extensions, cross-BU user provisioning, and data segregation governance. NOT for single-BU setup, Marketing Cloud Account Engagement (Pardot) standalone configuration, or CRM-side campaign hierarchy design."
+description: "Use this skill when designing or evaluating a Marketing Cloud Engagement multi-Business-Unit hierarchy — covering Enterprise 2.0 parent/child BU structure, Shared Data Extensions, cross-BU user provisioning, and data segregation governance. NOT for configuring business units, user roles, sender and delivery profiles in one account — use admin/marketing-cloud-engagement-setup. NOT for choosing between Marketing Cloud Engagement and Account Engagement (Pardot) — use architect/marketing-cloud-vs-mcae-selection."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

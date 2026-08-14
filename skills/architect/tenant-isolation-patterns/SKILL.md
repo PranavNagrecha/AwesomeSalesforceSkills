@@ -1,6 +1,6 @@
 ---
 name: tenant-isolation-patterns
-description: "Multi-tenant isolation patterns on Salesforce: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV managed-package patterns. NOT for multi-org strategy (use multi-org-architecture). NOT for data sharing design (use sharing-selection decision tree)."
+description: "Multi-tenant isolation patterns on Salesforce: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV managed-package patterns. NOT for deciding whether each tenant should get its own org — use architect/multi-org-strategy. NOT for the managed vs unlocked package-type decision — use devops/package-development-strategy. NOT for data sharing design — use the sharing-selection decision tree."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

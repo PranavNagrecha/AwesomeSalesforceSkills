@@ -47,9 +47,9 @@
     "fa0b330480ed09b45a33",
     "fe318f8797e7b50cd8c0"
   ],
-  "content_hash": "2e93e6627f36a94af251814d6bf5c2a3f1217dcab44808495bdaec57fb4856b3",
+  "content_hash": "f447f9e839d8a10ec5405acb109d8d178cd9b145e9042e9025aa1d043e246ec8",
   "dependencies": [],
-  "description": "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets.",
+  "description": "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets \u2014 use admin/custom-metadata-types.",
   "file_location": "skills/devops/feature-flag-custom-metadata",
   "id": "devops/feature-flag-custom-metadata",
   "inputs": [

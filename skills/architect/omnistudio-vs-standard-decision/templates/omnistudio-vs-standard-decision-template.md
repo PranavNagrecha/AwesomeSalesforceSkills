@@ -64,9 +64,14 @@ _______________
 - [ ] Managed package — Salesforce-repackaged (`industries__` namespace)
 - [ ] Standard Designers (on-platform, native LWC, no managed package namespace)
 
+**Runtime state (a second gate — the licence alone does not grant the standard designers):**
+- [ ] Platform (standard) runtime — designers arrive by default once the package is on the latest version
+- [ ] Package runtime — standard designers are NOT automatic; migration to the Platform runtime is required to reach them
+- [ ] Omnistudio Hybrid — standard designers + standard runtime inside the managed package environment
+
 **If managed package:** Migration to Standard Designers planned?
 - [ ] Yes — timeline: _______________
-- [ ] No — note: new components should align to existing managed-package model until migration is planned
+- [ ] No — note: new components should align to existing managed-package model, or to Omnistudio Hybrid if the compatibility matrix covers the component types in scope
 
 ---
 
@@ -97,7 +102,13 @@ If the org is on managed-package OmniStudio and a migration to Standard Designer
 - DataRaptors to convert: _______________
 - FlexCards to convert: _______________
 
-**Migration tool:** Salesforce OmniStudio Conversion Tool
+**Migration tool:** Omnistudio Migration Assistant (OMA) — `sf plugins install @salesforce/plugin-omnistudio-migration-tool@<tool_version>`
+
+**Assess-mode findings (run before Migrate):** _______________
+
+**Known non-convertible items (Angular Omniscripts, Vlocity industry objects, OmniAnalytics):** _______________
+
+**Coexistence during migration — is Omnistudio Hybrid in scope?** ( ) Yes ( ) No — if yes, record which component types the Omnistudio Hybrid Compatibility Matrix confirms as eligible: _______________
 
 **Estimated effort:** _______________
 

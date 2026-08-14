@@ -60,9 +60,9 @@
     "faa974c676eb235b421a",
     "ffad1ab1c66bda247d7d"
   ],
-  "content_hash": "522b9efd77dcd412669d3ecfe14578a910f7780e9712ca068a82a59b7ce780e6",
+  "content_hash": "2a77d882f7a32823db5d98123031d17eb56ec5731677fbc6713df63928bd2dc7",
   "dependencies": [],
-  "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup).",
+  "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for turning on EAC or calendar sync \u2014 use admin/einstein-activity-capture-setup. NOT for Email-to-Case \u2014 use admin/case-management-setup.",
   "file_location": "skills/admin/activity-and-task-patterns",
   "id": "admin/activity-and-task-patterns",
   "inputs": [

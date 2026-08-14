@@ -1,6 +1,6 @@
 ---
 name: b2c-commerce-store-setup
-description: "Use when configuring or troubleshooting a Salesforce B2C Commerce (SFCC) storefront — including Business Manager site creation, SFRA cartridge path setup, customer groups, search index rebuilding, and key quota limits. Trigger keywords: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning platform (WebStore, BuyerGroup, CommerceEntitlementPolicy — see admin/b2b-commerce-store-setup for that)."
+description: "Use when configuring or troubleshooting a Salesforce B2C Commerce (SFCC) storefront — including Business Manager site creation, SFRA cartridge path setup, customer groups, search index rebuilding, and key quota limits. Trigger keywords: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning (WebStore, BuyerGroup) — use admin/b2b-commerce-store-setup. NOT for choosing SFCC vs B2B Commerce — use architect/b2b-vs-b2c-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

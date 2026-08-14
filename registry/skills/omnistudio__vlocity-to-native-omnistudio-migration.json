@@ -22,6 +22,7 @@
     "32b2b577a0eb4bdca0d8",
     "3306090cde868ea5456f",
     "36c304cc2676ffec686b",
+    "382a8868b02315ab32a2",
     "3ac71e7690d2f95c4734",
     "3cb5c3e7585d20eaeea9",
     "3d5c06e27283e4ebb19a",
@@ -108,14 +109,14 @@
     "fc213a26b3cbc3df09c4",
     "ff4146f99a21aa226086"
   ],
-  "content_hash": "686e525cf465cb194902910ea91cd2b35e3e3e589b2e8d5002358aa42e32f2ab",
+  "content_hash": "79a0e5808f4c422b4a882fb65fed727a15a2ae2eac1bd30afb5785df00f9ebfc",
   "dependencies": [
     "omnistudio/omniscript-design-patterns",
     "omnistudio/omnistudio-lwc-integration",
     "omnistudio/dataraptor-patterns",
     "omnistudio/integration-procedures"
   ],
-  "description": "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to omnistudio, OmniStudio Migration Tool, DataRaptor namespace update, OmniScript JSON export, managed package to native. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-native orgs, nor for Salesforce CPQ to Industries CPQ migration.",
+  "description": "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-na \u2014 use omnistudio/omnistudio-deployment-datapacks.",
   "file_location": "skills/omnistudio/vlocity-to-native-omnistudio-migration",
   "id": "omnistudio/vlocity-to-native-omnistudio-migration",
   "inputs": [
@@ -166,7 +167,7 @@
   "templates": [
     "skills/omnistudio/vlocity-to-native-omnistudio-migration/templates/vlocity-to-native-omnistudio-migration-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

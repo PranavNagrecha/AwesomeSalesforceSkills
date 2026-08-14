@@ -1,6 +1,6 @@
 ---
 name: lwc-server-sent-events
-description: "Use when building LWCs that must react to live server pushes — Platform Events, Change Data Capture, or streaming updates — via the lightning/empApi (CometD) subscription model. Covers lifecycle, replayId, error handling, reconnection, scale considerations, and multi-tab behavior. Does NOT cover publishing events (see platform-events or apex-platform-events)."
+description: "Use when building LWCs that must react to live server pushes — Platform Events, Change Data Capture, or streaming updates — via the lightning/empApi (CometD) subscription model. Covers lifecycle, replayId, error handling. NOT for publishing events (see platform-events or apex-platform-events) — use integration/platform-events-integration."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

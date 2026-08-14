@@ -1,6 +1,6 @@
 ---
 name: flow-invocable-from-apex
-description: "Author @InvocableMethod Apex classes that Flow can call as Actions. Design the input / output variable contract, bulk semantics (one list in, one list out), null handling, and error surfacing. Also covers the inverse direction: calling a flow from Apex via Flow.Interview. NOT for general Apex authoring (use apex-service-selector-domain). NOT for REST-exposed Apex (use apex-rest-resource-patterns)."
+description: "Author @InvocableMethod Apex classes that Flow can call as Actions. Design the input / output variable contract, bulk semantics (one list in, one list out), null handling, and error surfacing. Also covers the inverse direction: calling a flow from Apex via Flow.Interview. NOT for wiring the action into Flow Builder and mapping flow variables — use flow/flow-action-framework. NOT for exposing the same Apex over REST — use apex/apex-rest-services."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -87,8 +87,7 @@ Three more things Flow authors see:
 4. **Implement the method bulk-safe** — bulk query, loop over inputs to assemble work, bulk DML at the end.
 5. **Handle nulls explicitly** — Flow can pass null collections when the caller forgot to provide inputs; return an empty list, don't throw.
 6. **Wire error surfacing** — either throw `AuraHandledException` (if the calling Flow should fault) or populate an `error` output field (if the flow should branch on failure).
-7. **Write a test class** — single-record, bulk, null-collection, partial-failure, governor-stress (N=200).
-8. **Document the action in a short markdown block** — Flow authors won't read your code; they need the contract.
+7. **Test and document the contract.** Write a test class (single-record, bulk, null-collection, partial-failure, governor-stress at N=200) and publish a short markdown block for Flow authors — input/output names, types, and fault behavior.
 
 ## Key patterns
 
@@ -236,6 +235,12 @@ Every invocable must have tests covering:
 6. **Sharing context** — run the test as a non-admin to verify `with sharing` respects record-level access.
 
 See `skills/apex/apex-testing-patterns` for test factory patterns.
+
+## `@IntegrationTest` for live Agentforce / Data 360 callouts (Developer Preview)
+
+Standard `@IsTest` methods mock callouts and roll back all DML — they cannot assert on real Agentforce or Data 360 responses. Summer '26 adds **`@IntegrationTest`** (class or method) plus **`@TearDown`** cleanup methods. Integration tests may perform live callouts and commit mid-transaction via `IntegrationTest.commitTestOnly()`.
+
+Constraints as documented in the Summer '26 developer guide: **Developer Preview**, **scratch orgs only**, feature flag **`ApexIntegrationTests`** in the scratch org definition, tests run **asynchronously one at a time** via Tooling `runTestsAsynchronous`. Use for invocable actions that call Agentforce or Data 360 in ways `@IsTest` cannot simulate — not as a replacement for bulk-safe unit tests of the invocable contract itself.
 
 ## Gotchas
 

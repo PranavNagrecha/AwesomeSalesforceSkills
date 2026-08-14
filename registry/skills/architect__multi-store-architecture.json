@@ -100,9 +100,9 @@
     "f9c9f74f4177d27a5678",
     "fca07a7ff402650be403"
   ],
-  "content_hash": "f74d99310a5d5dece48b8cfb6b1ce11afb33c648dbcd7ba6e2e6b30b2f34f29a",
+  "content_hash": "4d711a91df73baefef373d531e0d67df9927a18cc0b6cdaba6bb77075347f5fe",
   "dependencies": [],
-  "description": "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for single-store setup, store creation basics, or non-Commerce use cases.",
+  "description": "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for creating one WebStore with buyer groups and entitlement policies \u2014 use admin/b2b-commerce-store-setup. NOT for choosing between B2B Commerce on Core and B2C Commerce (SFCC) \u2014 use architect/b2b-vs-b2c-architecture.",
   "file_location": "skills/architect/multi-store-architecture",
   "id": "architect/multi-store-architecture",
   "inputs": [

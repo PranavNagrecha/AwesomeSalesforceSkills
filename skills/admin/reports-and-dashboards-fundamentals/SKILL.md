@@ -28,6 +28,8 @@ triggers:
   - "custom report type for multi-object reporting"
   - "report subscription not sending to all users"
   - "how do I build a report in Salesforce and add it to a dashboard with filters"
+  - "stacked date filters undercounting funnel"
+  - "bucket field is undeclared business logic"
 inputs:
   - "Business question the report must answer"
   - "Primary and related Salesforce objects involved"
@@ -43,7 +45,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Reports and Dashboards Fundamentals

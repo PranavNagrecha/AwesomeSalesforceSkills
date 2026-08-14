@@ -1,6 +1,6 @@
 ---
 name: mfa-enforcement-patterns
-description: "Design MFA enforcement: auto-enablement, Salesforce Authenticator rollout, exceptions, service accounts, API-only users, SSO interop, and audit. Trigger keywords: MFA, multi-factor, two-factor, Salesforce Authenticator, MFA exception, MFA SSO, api-only MFA. Does NOT cover: end-user password policies, device-trust posture, or non-Salesforce IdP configuration."
+description: "Design MFA enforcement: auto-enablement, Authenticator rollout, exceptions, API-only users, SSO interop. Triggers: MFA enforcement, MFA exception, api-only MFA, MFA SSO. NOT for org-wide MFA policy sequencing — use security/mfa-enforcement-strategy."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

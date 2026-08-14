@@ -1,6 +1,6 @@
 ---
 name: apex-encoding-and-crypto
-description: "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads — including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for setting up Named Credentials or OAuth flows end-to-end — use apex-named-credentials-patterns; NOT for SOQL injection defense — use soql-security."
+description: "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads — including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for where the signing key or API secret is stored — use apex/apex-secrets-and-protected-cmdt. NOT for setting up Named Credentials or OAuth flows end-to-end — use apex/apex-named-credentials-patterns. NOT for SOQL injection defense — use apex/soql-security."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

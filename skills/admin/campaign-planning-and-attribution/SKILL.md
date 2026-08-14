@@ -1,6 +1,6 @@
 ---
 name: campaign-planning-and-attribution
-description: "Use this skill when designing Campaign Hierarchy structures for program-level ROI tracking, configuring Customizable Campaign Influence (CCI) attribution models, or interpreting multi-touch attribution data from MCAE B2B Marketing Analytics. Trigger keywords: campaign ROI, attribution model, campaign hierarchy, first-touch, last-touch, multi-touch, CCI, campaign influence, revenue attribution, campaign member status. NOT for campaign record creation, campaign member import, email send execution, or MCAE connector provisioning (use mcae-pardot-setup instead)."
+description: "Designing Campaign Hierarchy for program-level ROI tracking, configuring Customizable Campaign Influence (CCI) attribution models, and interpreting multi-touch attribution from MCAE B2B Marketing Analytics. Trigger keywords: campaign ROI, attribution model, campaign hierarchy, first-touch, last-touch, multi-touch, CCI, campaign influence, revenue attribution, campaign member status. NOT for deciding which attribution model and KPIs to adopt before any config - use admin/marketing-reporting-requirements. NOT for MCAE connector setup or the campaign sync that writes Campaign Member records - use admin/mcae-pardot-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

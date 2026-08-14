@@ -1,6 +1,6 @@
 ---
 name: connected-app-security-policies
-description: "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation. NOT for OAuth flow implementation (use oauth-flows-and-connected-apps)."
+description: "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation — use admin/connected-app-troubleshooting."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

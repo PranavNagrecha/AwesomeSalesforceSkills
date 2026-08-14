@@ -1,6 +1,6 @@
 ---
 name: sales-coach-agent-rollout
-description: "Use when an admin or RevOps team is rolling out the out-of-the-box Sales Coach agent (the Agentforce template that role-plays opportunity-stage conversations with reps for Discovery, Needs Analysis, Qualification, Proposal/Pricing, and Negotiation/Review). Covers prerequisites (Agentforce SKU, Einstein Generative AI activation, Opportunity stage hygiene, knowledge grounding), stage-by-stage prompt configuration, customizing role-play scenarios with org-specific objections and value props, privacy posture for what gets captured in LLM context vs persisted, console-vs-portal embedding choices, and a measurement plan tying coached opportunities to win-rate signal. Triggers: 'roll out sales coach agent', 'set up Agentforce sales coach for our reps', 'sales coach not engaging reps on early-stage opps', 'customize sales coach role-play scenarios for our industry', 'how do we measure sales coach effectiveness', 'sales coach feedback contradicts our methodology'. NOT for building bespoke Agentforce agents from scratch (use agentforce/agentforce-agent-design once authored), NOT for Service Coach / Service Replies (different template, use agentforce/service-coach-rollout once authored), NOT for prompt-template authoring or Prompt Builder mechanics (use agentforce/prompt-builder-template-design), NOT for Einstein Conversation Insights / call-recording analysis (separate product line)."
+description: "Use when an admin or RevOps team is rolling out the out-of-the-box Sales Coach agent (the Agentforce template that role-plays opportunity-stage conversations with reps for Discovery, Needs Analysis, Qualification, Proposal/Pricing, and Negotiation/Review). Covers prerequisites (Agentforce SKU, Einstein Generative AI activation, Opportunity stage hygiene, knowledge grounding), stage-by-stage prompt configuration, customizing role-play scenarios with org-specific objections and value props, privacy posture for what gets captured in LLM context vs persisted, console-vs-portal embedding choices, and a measurement plan tying coached opportunities to win-rate signal. Triggers: 'roll out sales coach agent', 'set up Agentforce sales coach for our reps', 'sales coach not engaging reps on early-stage opps', 'customize sales coach role-play scenarios for our industry', 'how do we measure sales coach effectiveness', 'sales coach feedback contradicts our methodology'. NOT for rolling out an HR or employee self-service agent instead — use agentforce/employee-hr-service-agent-rollout. NOT for building a bespoke agent from scratch rather than configuring a shipped template — use agentforce/agentforce-agent-creation."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -125,9 +125,9 @@ Common analytical mistake: comparing coached-opp win rate to global win rate. Re
 
 ## Related Skills
 
-- `agentforce/agentforce-action-design` — designing custom Agentforce actions if shipped Sales Coach actions need extension (see also templates/agentforce/AgentActionSkeleton.cls)
-- `agentforce/prompt-builder-template-design` — Prompt Builder mechanics for any custom prompt templates referenced by the agent
-- `agentforce/einstein-trust-layer-configuration` — Trust Layer masking, data-residency, and audit-log configuration that applies to all Agentforce agents
-- `admin/opportunity-stage-governance` — keeping standard stage names so packaged agents and reports work as designed
-- `data/knowledge-grounding-for-agentforce` — authoring and tagging Knowledge articles for retrieval grounding (methodology, battle cards, objection libraries)
-- `architect/agentforce-adoption-measurement` — broader measurement framework for any Agentforce agent rollout
+- `agentforce/agent-actions` — designing custom Agentforce actions if shipped Sales Coach actions need extension (see also templates/agentforce/AgentActionSkeleton.cls)
+- `agentforce/prompt-builder-templates` — Prompt Builder mechanics for any custom prompt templates referenced by the agent
+- `agentforce/einstein-trust-layer` — Trust Layer masking, data-residency, and audit-log configuration that applies to all Agentforce agents
+- `admin/opportunity-management` — keeping standard stage names so packaged agents and reports work as designed
+- `admin/knowledge-base-administration` — authoring, Data Categories, and publishing workflow for the Knowledge articles the agent grounds on (methodology, battle cards, objection libraries)
+- `admin/ai-adoption-change-management` — broader adoption and measurement framework for any Agentforce agent rollout

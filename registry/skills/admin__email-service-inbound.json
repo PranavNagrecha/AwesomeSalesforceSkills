@@ -66,9 +66,9 @@
     "ed8641105244739c2235",
     "ff18ed530adabe19640a"
   ],
-  "content_hash": "e4f8fb59ec7b5383ea03d5535475a3f4a6082cfdfc1c6026b7089a9c4dded0fd",
+  "content_hash": "58c492af2d0eaa337b77d93f5564cb1d66937f8c5addd82490393188788d8e9c",
   "dependencies": [],
-  "description": "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use service/email-to-case).",
+  "description": "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration).",
   "file_location": "skills/admin/email-service-inbound",
   "id": "admin/email-service-inbound",
   "inputs": [

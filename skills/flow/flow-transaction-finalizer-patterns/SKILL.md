@@ -1,6 +1,6 @@
 ---
 name: flow-transaction-finalizer-patterns
-description: "Use when a Flow needs to do work that must survive the triggering transaction — post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer escalation, and Apex Queueable finalizer bridging. Does NOT cover general Flow async decisions (see async-selection)."
+description: "Use when a Flow needs to do work that must survive the triggering transaction — post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer. NOT for general Flow async decisions (see async-selection) — use apex/apex-transaction-finalizers."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

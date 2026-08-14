@@ -112,12 +112,12 @@
     "fc0dfe1a6fe6ac15d0de",
     "fe8a56da69fe07b7e7c0"
   ],
-  "content_hash": "23eeacec04c906d3d11349eede74b0e14cf3c028f58a9ba17067316349fd7eaa",
+  "content_hash": "0f15b744fbf8f6fc5be89cc75ca7040d5b20ad018a250c7af18381fbc2960feb",
   "dependencies": [
     "devops/scratch-org-management",
     "apex/sf-cli-and-sfdx-essentials"
   ],
-  "description": "Use this skill to set up, review, or troubleshoot GitHub Actions CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Apex test gates, and branch-conditional deployments. Trigger keywords: github actions, CI pipeline, jwt auth, sfdx ci, workflow yaml, github secrets, apex coverage threshold. NOT for other CI tools such as Jenkins, Copado, Bitbucket Pipelines, or Azure DevOps.",
+  "description": "Use this skill to set up, review, or troubleshoot GitHub Actions CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Apex test gates, and branch-conditional deployments. Trigger keywords: github actions, CI pipeline, jwt auth, sfdx ci, workflow yaml, github secrets, apex coverage threshold. NOT for GitLab CI \u2014 use devops/gitlab-ci-for-salesforce. NOT for Bitbucket Pipelines \u2014 use devops/bitbucket-pipelines-for-salesforce.",
   "file_location": "skills/devops/github-actions-for-salesforce",
   "id": "devops/github-actions-for-salesforce",
   "inputs": [

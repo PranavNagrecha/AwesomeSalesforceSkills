@@ -1,6 +1,6 @@
 ---
 name: queues-and-public-groups
-description: "Use this skill when creating or managing queues, configuring queue membership, setting up case or lead queues, creating public groups, or using groups in sharing rules and manual sharing. Trigger keywords: queue, public group, queue membership, queue email, group sharing, case queue, lead queue. NOT for assignment rules that route records to queues automatically (use assignment-rules). NOT for Omni-Channel routing configuration (separate routing engine)."
+description: "Use this skill when creating or managing queues, configuring queue membership, setting up case or lead queues, creating public groups, or using groups in sharing rules and manual sharing. Trigger keywords: queue, public group, queue membership, queue email, group sharing, case queue, lead queue. NOT for the rule that decides which queue a record lands in — use admin/assignment-rules. NOT for Omni-Channel routing configuration — use admin/omni-channel-routing-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,9 +34,9 @@ outputs:
   - "Decision guidance on queue vs public group for a given use case"
   - "SOQL pattern for finding queue-owned records"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Queues and Public Groups
@@ -64,7 +64,7 @@ A queue is a special type of record owner that represents a pool of users, rathe
 
 **Supported objects for queues:** Case, Lead, Order, and custom objects where "Allow Queues" is checked on the object definition. Account, Contact, Opportunity, and most other standard objects do not support queue ownership.
 
-**Queue membership types:** A queue can include individual Users, Roles, Roles and Subordinates, and Public Groups. Adding a Role automatically includes all users in that role; Roles and Subordinates also includes users in roles below it in the hierarchy.
+**Queue membership types:** A queue can include individual Users, Roles, Roles and Internal Subordinates, and Public Groups. Adding a Role automatically includes all users in that role; Roles and Internal Subordinates also includes users in roles below it in the hierarchy, internal users only. This group was labelled "Roles and Subordinates" before the Secure Roles release update — see `references/gotchas.md` Gotcha 6 before writing metadata or SOQL against it.
 
 **Queue email:** Each queue can have a single email address (individual address or distribution list). When a record is assigned to the queue, Salesforce sends a notification to that address. Individual queue members do not receive individual email notifications — only the queue email is triggered. Configure this address to reach the whole team, not a single person.
 
@@ -76,7 +76,7 @@ A queue is a special type of record owner that represents a pool of users, rathe
 
 A public group is a named collection of members used to grant access and control visibility. Unlike a queue, a public group does not own records — it only aggregates membership for sharing purposes.
 
-**Member types a public group can include:** Users, Roles, Roles and Subordinates, other Public Groups, and Portal Users (Customer Portal or Partner Portal users when Communities/Experience Cloud is enabled). This composition flexibility allows a single group to span organizational boundaries.
+**Member types a public group can include:** Users, Roles, Roles and Internal Subordinates, other Public Groups, and Portal Users (Customer Portal or Partner Portal users when Communities/Experience Cloud is enabled). This composition flexibility allows a single group to span organizational boundaries.
 
 **Uses of public groups:**
 - **Sharing rules:** Both criteria-based and ownership-based sharing rules can target a public group as the "share with" recipient.
@@ -98,7 +98,7 @@ These two constructs serve different purposes and should not be substituted for 
 | Used for sharing rules | No (indirectly — as queue member) | Yes — primary use case |
 | Used for routing work | Yes — primary use case | No |
 | Sends queue email notification | Yes — single address per queue | No |
-| Member types | Users, Roles, Roles + Subordinates, Groups | Users, Roles, Roles + Subordinates, Groups, Portal Users |
+| Member types | Users, Roles, Roles + Internal Subordinates, Groups | Users, Roles, Roles + Internal Subordinates, Groups, Portal Users |
 
 ---
 
@@ -156,7 +156,7 @@ Step-by-step instructions for an AI agent or practitioner working in this domain
 3. **Configure downstream use** — for queues: set up an assignment rule or Flow to route records to the queue. For public groups: create a sharing rule that references the group, or assign list views to the group.
 4. **Validate membership** — confirm all intended users are reachable through the membership chain (direct, via role, or via nested group). Deactivated users should be removed from queue membership to avoid stale ownership pools.
 5. **Test the queue email** — assign a test record to the queue and confirm the queue email receives a notification.
-6. **Run the checker script** — `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <metadata-dir>` to surface any Group metadata references for review.
+6. **Run the checker script** — `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <metadata-dir>` to surface any Group metadata references for review, including sharing rules still using the pre-Secure-Roles `<roleAndSubordinates>` element.
 7. **Confirm SOQL uses Owner.Type** — any report or query on queue-owned records must use `Owner.Type = 'Queue'`; plain `OwnerId` checks will not distinguish queues from users.
 
 ---
@@ -168,7 +168,7 @@ Run through these before marking queue or public group configuration complete:
 - [ ] Queue is associated with the correct supported objects (Case, Lead, Order, or queue-enabled custom object)
 - [ ] Queue email is a team alias or distribution list — not an individual's inbox
 - [ ] All queue members are active users; deactivated users have been removed
-- [ ] Public group member composition is intentional — roles vs roles+subordinates distinction reviewed
+- [ ] Public group member composition is intentional — Roles vs Roles and Internal Subordinates distinction reviewed
 - [ ] Sharing rules referencing the public group have been tested by logging in as an intended member
 - [ ] Nested group depth is reviewed — prefer flat membership in orgs with more than 1M records per shared object
 - [ ] SOQL queries on queue-owned records use `Owner.Type = 'Queue'` filter
@@ -182,7 +182,8 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Queue-owned records show queue name as Owner in reports** — Owner Name, Owner Email, and Owner Role fields reflect the queue, not a user. Reports grouped by Owner or dashboards using Owner-based filters will show the queue name as a row, separate from any user's data. Rollup summaries and assignment-based reports may undercount or misattribute records until ownership is accepted by a user.
 2. **Deleting a queue does not reassign records** — If a queue is deleted while it still owns records, those records become unowned or orphaned in some report contexts. Reassign all queue-owned records to a user or another queue before deleting a queue. Use a SOQL query (`WHERE Owner.Name = 'Queue Name'`) to find affected records first.
-3. **Deactivated users remain in queue membership until removed** — Salesforce does not auto-remove deactivated users from queues. The queue still accepts assignments, still shows the deactivated user in its membership list, and still sends queue email to the configured address. This causes confusion when teams assume the membership is clean. Audit queue membership during every user deactivation.
+3. **"Roles and Subordinates" was renamed to "Roles and Internal Subordinates"** — the Secure Roles release update changed the default role-hierarchy sharing group so that enabling Digital Experiences no longer exposes those records to external site users. Enforced in sandboxes in Summer '25, and in production in Winter '26 — but production enforcement was scoped to orgs created after 8 February 2024 that had not enabled digital experiences, so an older org may still show the old label until it takes the release update. Check Setup → Release Updates in the target org first. Metadata `<sharedTo><roleAndSubordinates>` becomes `<roleAndSubordinatesInternal>`, and SOQL/API references to the `RoleAndSubordinates` group become `RoleAndSubordinatesInternal`. Salesforce translates old references dynamically for a transition period only; manual updates are still required. See `references/gotchas.md` Gotcha 6.
+4. **Deactivated users remain in queue membership until removed** — Salesforce does not auto-remove deactivated users from queues. The queue still accepts assignments, still shows the deactivated user in its membership list, and still sends queue email to the configured address. This causes confusion when teams assume the membership is clean. Audit queue membership during every user deactivation.
 
 ---
 

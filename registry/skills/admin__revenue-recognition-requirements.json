@@ -98,9 +98,9 @@
     "fbcb59835d1ad7a5e9c3",
     "fe1a28924d57db60016b"
   ],
-  "content_hash": "01f7955905bc51828be945bd2a4ef58264141db21ec08e490defcb4d461f51d3",
+  "content_hash": "d8b7da8be1977eefd4552c83e46faa34e98277704f97bd1368c5889a8cb8fd38",
   "dependencies": [],
-  "description": "Use this skill to configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation in compliance with ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c records missing', 'how to configure blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up before revenue schedule generation', 'revenue schedule did not update after contract amendment', 'performance obligation allocation for bundled products', 'distribution method for revenue spread', 'ASC 606 implementation in Salesforce Billing'. NOT for billing schedule setup (see billing-schedule-setup skill), NOT for standard Salesforce CPQ quoting, NOT for OpportunityLineItem native Revenue Schedules (standard platform feature unrelated to Salesforce Billing), NOT for Salesforce Revenue Cloud (Revenue Lifecycle Management).",
+  "description": "Configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation under ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c missing', 'blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up', 'performance obligation allocation for bundled products', 'distribution method', 'ASC 606 in Salesforce Billing'. NOT for billing schedules, invoice plans and invoice runs - use admin/billing-schedule-setup. NOT for invoice-to-payment mismatches at month-end close - use data/billing-data-reconciliation.",
   "file_location": "skills/admin/revenue-recognition-requirements",
   "id": "admin/revenue-recognition-requirements",
   "inputs": [

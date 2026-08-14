@@ -1,6 +1,6 @@
 ---
 name: lwc-custom-datatable-types
-description: "Use when you need to extend `lightning-datatable` with custom cell renderings: status pills, progress bars, image thumbnails, action cells, editable pickliststo, rich-text, or any column that `lightning-datatable` does not ship out of the box. Triggers: 'custom cell type lightning datatable', 'progress bar column', 'image column', 'inline edit picklist in datatable', 'rich text column'. NOT for basic datatable usage (see `lwc-data-table`) and NOT for tree-grid or large-dataset virtualization (see `virtualized-lists`)."
+description: "Use when you need to extend `lightning-datatable` with custom cell renderings: status pills, progress bars, image thumbnails, action cells, editable pickliststo, rich-text, or any column that `lightning-datatable` does not ship out of the box. Triggers: 'custom cell type lightning datatable', 'progress bar column', 'image column', 'inline edit picklist in datatable', 'rich text column'. NOT for stock column types, key-field, or basic row actions — use lwc/lwc-data-table. NOT for 1,000-row virtualization — use lwc/lwc-virtualized-lists."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

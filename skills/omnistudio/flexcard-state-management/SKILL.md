@@ -1,6 +1,6 @@
 ---
 name: flexcard-state-management
-description: "Use when designing FlexCard actions, conditional visibility, and state that must survive navigation, refresh, or parent/child card transitions. Triggers: 'flexcard state', 'flexcard conditional visibility', 'flexcard actions', 'flexcard refresh', 'child flexcard state'. NOT for raw LWC state or for OmniScript step state."
+description: "FlexCard actions, conditional visibility, and state across navigation, refresh, and parent/child transitions. Triggers: flexcard state, flexcard actions, flexcard refresh. NOT for FlexCard layout/design — use omnistudio/flexcard-design-patterns. NOT for admin requirements — use admin/flexcard-requirements."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -5,6 +5,7 @@
     "00e1c78493a92fd8ca09",
     "018f98dcb23e88ef3ff5",
     "09d12812108fc3e78a01",
+    "09f3864a210b0abf8e00",
     "0cc54501b6c66827c92e",
     "0dc2d86c29e290721682",
     "139f9b1a840cce716433",
@@ -36,6 +37,7 @@
     "4310a4fd9d662ac22f64",
     "4389e4fb067bc49f0734",
     "4424d424fdd7bcaebdc9",
+    "46280e802aea6294faab",
     "48513c1e29a8d74b20b6",
     "4a34b775b6bed7da0275",
     "4e19dbd4892fd6b94560",
@@ -118,6 +120,7 @@
     "eb11a685816eadc7b26c",
     "ec86a197becbb0ebb19f",
     "edb48d81a05b057bffca",
+    "eee92e356acadec52c7c",
     "f1e159cedc816b0742b1",
     "f4db971ce6bea5557a75",
     "f4e48d64761801833093",
@@ -130,9 +133,9 @@
     "fbea0e9ea47b04783f84",
     "fc64f790b030ef71a5eb"
   ],
-  "content_hash": "49c73ec411925f710e451c81744acdf15fa5e806b7b3b4fe61db6ab292e06ee8",
+  "content_hash": "20d5d310ddb44901759139be0478904c2c4492e6f18020cc4b1e548616b93ebb",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for object creation steps (use object-creation-and-design). NOT for bulk data loading operations.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for the Setup steps to create the object itself \u2014 use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits \u2014 use admin/lookup-and-relationship-design.",
   "file_location": "skills/data/data-model-design-patterns",
   "id": "data/data-model-design-patterns",
   "inputs": [
@@ -186,7 +189,7 @@
   "templates": [
     "skills/data/data-model-design-patterns/templates/data-model-design-patterns-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

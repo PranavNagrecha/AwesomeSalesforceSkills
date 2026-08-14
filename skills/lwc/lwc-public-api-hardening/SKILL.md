@@ -1,6 +1,6 @@
 ---
 name: lwc-public-api-hardening
-description: "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT enforce JS types — `recordId` is always a string even if you declared it Number), required-vs-optional `@api` validation in `connectedCallback`, getter/setter pairs for reactive normalisation, design-attribute typing in js-meta.xml (datasource picker, dataType, supported objects, default values, propertyType), kebab-case ↔ camelCase rules, and namespace prefix handling. NOT for component-to-component messaging design (see `component-communication`), NOT for App Builder exposure / surface targeting (see `lwc-app-builder-config`), NOT for Custom Property Editors for Flow (see `custom-property-editor-for-flow`)."
+description: "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT. NOT for component-to-component messaging design (see `component-communication`), NOT for — use lwc/lwc-reactive-state-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

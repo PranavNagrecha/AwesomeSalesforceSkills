@@ -1,6 +1,6 @@
 ---
 name: apex-email-services
-description: "Use this skill when implementing inbound email processing via Apex: parsing emails sent to a Salesforce-hosted address, creating or updating records from email content, handling attachments, or configuring Email Service routing. Trigger keywords: InboundEmailHandler, email service address, handleInboundEmail, Messaging.InboundEmail, Email-to-Case alternative, process email in Apex. NOT for outbound email templates, Messaging.SingleEmailMessage, workflow email alerts, or Email-to-Case declarative setup."
+description: "Use this skill when implementing inbound email processing via Apex: parsing emails sent to a Salesforce-hosted address, creating or updating records from email content, handling attachments, or configuring Email Service routing. Trigger keywords: InboundEmailHandler, email service address, handleInboundEmail, Messaging.InboundEmail, Email-to-Case alternative, process email in Apex. NOT for outbound email — use apex/apex-outbound-email-patterns. NOT for email templates or workflow email alerts — use admin/email-templates-and-alerts."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

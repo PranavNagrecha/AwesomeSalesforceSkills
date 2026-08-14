@@ -1,6 +1,6 @@
 ---
 name: streaming-api-and-pushtopic
-description: "Use when setting up real-time data streaming from Salesforce to external systems using the Streaming API (PushTopic, Generic Streaming), CometD client configuration, replay, and channel management. NOT for Platform Events (use platform-events-apex or platform-events-integration)."
+description: "Use when setting up real-time data streaming from Salesforce to external systems using the Streaming API (PushTopic, Generic Streaming), CometD client configuration, replay, and channel management. NOT for Platform Events — use apex/platform-events-apex or integration/platform-events-integration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

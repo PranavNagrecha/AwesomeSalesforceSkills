@@ -3,7 +3,7 @@
 - **Skill under test:** `skills/apex/apex-security-patterns/SKILL.md`
 - **Priority:** P0
 - **Cases:** 3
-- **Last verified:** 2026-04-16
+- **Last verified:** 2026-08-14
 - **Related templates:** `templates/apex/SecurityUtils.cls`, `templates/apex/BaseSelector.cls`
 - **Related decision trees:** `standards/decision-trees/sharing-selection.md`
 
@@ -13,6 +13,12 @@ The AI must apply `with sharing`, CRUD/FLS enforcement (preferring `WITH USER_MO
 or `Security.stripInaccessible`), and SOQL-injection-safe queries. Any
 response that grants access beyond the running user without documented
 justification, or uses string concatenation for SOQL binds, fails.
+
+The defaults are version-gated on the class's `.cls-meta.xml` `apiVersion`, not
+on the org's release — see [Apex security idiom by API version](../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+A response that asserts a default access mode flatly, in either direction,
+without naming the `apiVersion` it read or assumed, loses the Correctness point.
+Emitting `WITH SECURITY_ENFORCED` is an automatic fail: it is removed at API 67.0.
 
 ## Case 1 — `@AuraEnabled` method for an LWC — writing to Cases
 
@@ -39,7 +45,10 @@ public class CaseCloser {
 
 **Expected output MUST include:**
 
-- Class missing `with sharing`.
+- Class missing `with sharing`. At `apiVersion` 67.0+ an undeclared class already
+  defaults to `with sharing`, so the finding is that the intent is implicit and
+  will flip if the class is ever downgraded — not that sharing is off. Below 67.0
+  it is an open door. A response that does not distinguish the two scores lower.
 - Query needs `WITH USER_MODE` (preferred) or CRUD/FLS check.
 - `update` needs FLS enforcement (`Security.stripInaccessible` or
   `WITH USER_MODE` via `Database.update` overload).
@@ -55,6 +64,9 @@ public class CaseCloser {
 - `without sharing` as the fix.
 - `Security.stripInaccessible` with no check on the returned record.
 - Using `DescribeSObjectResult.isUpdateable()` in a loop without caching.
+- `WITH SECURITY_ENFORCED` — removed from SOQL `SELECT` in Apex at API 67.0.
+- "Apex runs in system mode by default so FLS is not enforced", stated flatly
+  with no `apiVersion` named.
 
 **Rubric (0–5):**
 
@@ -102,7 +114,7 @@ public with sharing class CaseCloser {
 }
 ```
 
-"`WITH USER_MODE` on both the SOQL and the `Database.update` enforces CRUD + FLS against the running user. `with sharing` enforces row-level sharing. `ALLOWED_REASONS` is a whitelist — never let the client dictate picklist values. `AuraHandledException` with a safe message prevents stack-trace leaks."
+"`WITH USER_MODE` on the SOQL and `AccessLevel.USER_MODE` on the `Database.update` enforce CRUD + FLS against the running user. `with sharing` enforces row-level sharing. Both are written explicitly on purpose: at `apiVersion` 67.0+ they restate the default, and at 66.0 and earlier they are the only thing making the class safe, so the code reads the same either way and survives a version change. `ALLOWED_REASONS` is a whitelist — never let the client dictate picklist values. `AuraHandledException` with a safe message prevents stack-trace leaks."
 
 ## Case 2 — Dynamic SOQL with user-supplied filter
 
@@ -196,6 +208,10 @@ Binds (not string concat) are the right primary defense. `escapeSingleQuotes` is
   `DataExport_WithoutSharing`).
 - Ensure the method surface is minimal — never combine `without sharing`
   with `@AuraEnabled` or `@RestResource`.
+- On an `apiVersion` 67.0+ class, note that `without sharing` alone no longer
+  does the job: it widens row visibility, but the query still defaults to user
+  mode, so FLS and object permissions stay enforced and the job can still come
+  up short. The elevation needs `WITH SYSTEM_MODE` on the query as well.
 - Require a reviewer sign-off on the PR for the elevation.
 - Tests must still run `System.runAs()` with a normal user to verify
   normal-user paths are untouched.
@@ -236,6 +252,11 @@ If it IS that case:
   business requirement it satisfies.
 - Expose the minimum-viable entry point. Never `@AuraEnabled` or
   `@RestResource` a `without sharing` class.
+- Check the `.cls-meta.xml`. At `apiVersion` 67.0 and later the class keyword is
+  only half the elevation — SOQL, SOSL, DML, and `Database` methods default to
+  user mode, so the query needs an explicit `WITH SYSTEM_MODE` (or
+  `AccessLevel.SYSTEM_MODE`) with a `// reason:` comment beside it. Below 67.0
+  the keyword alone was enough, which is exactly why old runbooks stop working.
 - Require a second reviewer on the PR.
 
 Tests: one scenario that proves the sharing bypass works (admin user), and

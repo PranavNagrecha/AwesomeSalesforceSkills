@@ -56,12 +56,12 @@
     "fdbe06d7efbd3a9ec84a",
     "ff9462f19ea33add411c"
   ],
-  "content_hash": "efae23c1fbc0af6144f8a96d964a9fce221715e0cadd6a759d4b5fe27cbae484",
+  "content_hash": "6c91db7c4095508781a148bf8fae9499305d482c8db3bc3261f1e2e9ee30390a",
   "dependencies": [
     "admin/clinical-data-requirements",
     "apex/health-cloud-apis"
   ],
-  "description": "Use this skill when implementing FHIR R4 integration patterns for Health Cloud: FHIR resource mapping to Salesforce objects, REST API patterns for inbound/outbound FHIR, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for generic REST API integration, standard Salesforce API patterns unrelated to FHIR, or Health Cloud admin setup.",
+  "description": "Use this skill when implementing FHIR R4 integration for Health Cloud in code: inbound and outbound FHIR REST API patterns, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for mapping a FHIR resource to Health Cloud objects field by field \u2014 use data/fhir-data-mapping. NOT for choosing the EHR sync topology or MuleSoft Accelerator design \u2014 use architect/fhir-integration-architecture.",
   "file_location": "skills/apex/fhir-integration-patterns",
   "id": "apex/fhir-integration-patterns",
   "inputs": [

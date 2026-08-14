@@ -1,6 +1,6 @@
 ---
 name: approval-process-apex-patterns
-description: "Programmatically driving Salesforce Approval Processes from Apex — `Approval.process(ProcessSubmitRequest)` to submit, `ProcessWorkitemRequest` to approve / reject / reassign, recall semantics, querying `ProcessInstance` and `ProcessInstanceWorkitem` to find pending approvals, and the bulk-submit / bulk-action error-row handling. Covers when to use Apex-driven approval (system-initiated submission, batch approvals, custom UIs) vs leaving the platform's standard buttons in place. NOT for the Approval Process metadata definition itself (that's admin / declarative — see admin/approval-process-design), NOT for Flow-based approvals (use flow/flow-orchestration-patterns)."
+description: "Programmatically driving Salesforce Approval Processes from Apex — `Approval.process(ProcessSubmitRequest)` to submit, `ProcessWorkitemRequest` to approve / reject / reassign, recall semantics, querying `ProcessInstance` and `ProcessInstanceWorkitem` to find pending approvals, and the bulk-submit / bulk-action error-row handling. Covers when to use Apex-driven approval (system-initiated submission, batch approvals, custom UIs) vs leaving the platform's standard buttons in place. NOT for the Approval Process metadata definition itself (that's admin / declarative — see admin/approval-processes), NOT for Flow-based approvals (use flow/flow-orchestration-patterns)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -56,7 +56,7 @@ This skill covers the Apex API for those cases.
 
 What this skill is NOT. Defining the Approval Process itself
 (entry criteria, approval steps, approver assignment) is
-declarative admin work — see `admin/approval-process-design`. The
+declarative admin work — see `admin/approval-processes`. The
 modern Flow-based equivalent (Flow Orchestration with interactive
 steps assigned to approvers) is a different runtime entirely — see
 `flow/flow-orchestration-patterns`.
@@ -401,7 +401,7 @@ metadata-driven escalation).
 
 ## Related Skills
 
-- `admin/approval-process-design` — declarative definition of the approval process this skill drives.
+- `admin/approval-processes` — declarative definition of the approval process this skill drives.
 - `flow/flow-orchestration-patterns` — modern multi-stage approval pattern in Flow; consider before reaching for Apex.
 - `apex/apex-event-bus-subscriber` — when system events drive approval actions (Pattern B).
 - `apex/apex-mocking-and-stubs` — for the test class that covers Approval.process() failure modes.

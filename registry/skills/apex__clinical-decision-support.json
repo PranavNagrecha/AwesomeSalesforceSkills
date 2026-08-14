@@ -58,12 +58,12 @@
     "fa01a2b57c4f8784c3c3",
     "fca10d1eecf34f374309"
   ],
-  "content_hash": "ab9296793af5756457b1e704854427ab0c7d61a462f3dbce7463f32f4875ac6a",
+  "content_hash": "9a5bc43db724658fdc0f1e60b0ea43dd43bb6830f30b7d95de2aca1bef71b1ad",
   "dependencies": [
     "admin/care-coordination-requirements",
     "apex/health-cloud-apis"
   ],
-  "description": "Use this skill when implementing clinical decision support in Health Cloud: creating ClinicalAlert records via Apex or Flow, ingesting CareGap records from external clinical rules engines, displaying CDS alerts in FlexCard UIs, and integrating the Business Rules Engine for custom protocol checks. NOT for standard Flow automation unrelated to clinical decision support, or for clinical rules engine design outside of Salesforce.",
+  "description": "Use this skill when implementing clinical decision support in Health Cloud: creating ClinicalAlert records via Apex or Flow, ingesting CareGap records from external clinical rules engines, displaying CDS alerts in FlexCard UIs, and integrating the Business Rules Engine for custom protocol checks. NOT for care plan lifecycle Apex hooks \u2014 use apex/health-cloud-apex-extensions. NOT for FHIR ingestion \u2014 use apex/fhir-integration-patterns.",
   "file_location": "skills/apex/clinical-decision-support",
   "id": "apex/clinical-decision-support",
   "inputs": [

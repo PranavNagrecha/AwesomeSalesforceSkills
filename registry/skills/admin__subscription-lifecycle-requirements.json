@@ -109,11 +109,11 @@
     "fdf9ebd2919e5410427f",
     "fe0684b4ccf9ff70529e"
   ],
-  "content_hash": "b0c533c7dc288826ce3c09d9694cb32f03ad50db09cca95310bf2f0571fb7267",
+  "content_hash": "24cd06eebfc89e66f879dabddfa1b399f6a870f8ce6791443225be9dd8eb4c9d",
   "dependencies": [
     "contract-and-renewal-management"
   ],
-  "description": "Use when documenting, reviewing, or gathering requirements for Salesforce CPQ subscription lifecycle behavior: how amendments, renewals, upgrades, downgrades, and cancellations must work for a specific business. Trigger keywords: subscription requirements, amendment requirements, renewal requirements, proration requirements, co-termination, subscription ledger, upgrade downgrade policy. NOT for CPQ setup or configuration, not for Apex amendment API implementation, and not for Revenue Cloud advanced order management.",
+  "description": "Use when documenting, reviewing, or gathering requirements for Salesforce CPQ subscription lifecycle behavior: how amendments, renewals, upgrades, downgrades, and cancellations must work for a specific business. Trigger keywords: subscription requirements, amendment requirements, renewal requirements, proration requirements, co-termination, subscription ledger, upgrade downgrade policy. NOT for configuring CPQ amendments and renewals \u2014 use admin/contract-and-renewal-management. NOT for amendment architecture \u2014 use architect/subscription-management-architecture.",
   "file_location": "skills/admin/subscription-lifecycle-requirements",
   "id": "admin/subscription-lifecycle-requirements",
   "inputs": [

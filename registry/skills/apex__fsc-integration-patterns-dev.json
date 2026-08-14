@@ -89,9 +89,9 @@
     "f90adc40744be5e13464",
     "fe9dd8ee087687dd2886"
   ],
-  "content_hash": "d112977aaf36240d986e5ce4c895191b48c6dc93b34909e6dfb15e2688373b13",
+  "content_hash": "9cf1f6c51f68c74aec9edf35ace36d296c6e362d2d1ca2764c20cdcd198d40dc",
   "dependencies": [],
-  "description": "Use this skill when designing or implementing FSC-specific integration: core banking data sync, custodian feeds (Schwab/Fidelity), market data pipelines, or payment processing wired to FSC Financial objects. Triggers: syncing FinancialAccount or FinancialHolding records from a core banking system, integrating a custodian data feed into FSC Wealth Management, market data prices updating CurrentValue on FinancialHolding, payment transactions flowing into FSC from an external ledger. NOT for generic Salesforce integration, non-FSC object sync, or MuleSoft platform configuration unrelated to FSC financial objects.",
+  "description": "Use this skill when designing or implementing FSC-specific integration: core banking data sync, custodian feeds (Schwab/Fidelity), market data pipelines, or payment processing wired to FSC Financial objects. Triggers: syncing FinancialAccount or FinancialHolding records from a core banking system, integrating a custodian data feed into FSC Wealth Management, market data prices updating CurrentValue on FinancialHolding, payment transactions flowing into FSC from an external ledger. NOT for a one-time bulk load of FSC records \u2014 use data/financial-account-migration. NOT for IRR, TWR or rollup recalculation \u2014 use apex/fsc-financial-calculations.",
   "file_location": "skills/apex/fsc-integration-patterns-dev",
   "id": "apex/fsc-integration-patterns-dev",
   "inputs": [

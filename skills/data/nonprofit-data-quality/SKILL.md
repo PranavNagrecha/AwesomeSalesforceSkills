@@ -1,6 +1,6 @@
 ---
 name: nonprofit-data-quality
-description: "Use this skill when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for generic Salesforce data quality, Nonprofit Cloud (NPC) data quality, or standard Account/Contact deduplication outside NPSP."
+description: "Use when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for org-wide data quality gates and governance outside NPSP — use data/data-quality-and-governance. NOT for the initial bulk import of constituents and households — use data/constituent-data-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -47,3 +47,13 @@
 **Why:** FlexCards share the single-active-version rule — "When you activate a version, Omnistudio deactivates all other versions of the Flexcard" — and add an explicit edit restriction: "You can't edit or delete an active Flexcard. To make changes, deactivate it first." Activation is also a compile step: "When you activate a Flexcard, Omnistudio generates a custom Lightning web component." Adding that LWC to a Lightning page or Experience Builder page is a separate step — activation alone does not place it.
 
 **How to avoid:** For a FlexCard change, use **New Version** — the name and author stay the same, only one version can be active at a time, and the previously active version stays active until you activate the replacement, so you never have to take the live card down to edit it. Use **Clone** only when you want a genuinely separate FlexCard: a clone needs the same setup information as a new FlexCard and carries its own version history.
+
+---
+
+## 6. Inactive Versions Remain Callable; Name-Based FlexCard Share Ignores `IsActive`
+
+**What happens:** A family keeps 13–17 IP versions in source; one is active. Inactive OmniProcess versions stay invocable by uniqueName/version. Guest FlexCard sharing is often **by Name**, so inactive versions of that Name remain readable. DataPack/source deploy of an older version can deactivate the live one.
+
+**When it occurs:** "We keep versions as history." Guest portals.
+
+**How to avoid:** Delete superseded versions in guest-reachable orgs. Smoke the **active** version Id after deploy. Share FlexCards by the active uniqueName, not Name. One Named Credential path only — old versions with hardcoded URLs must not exist.

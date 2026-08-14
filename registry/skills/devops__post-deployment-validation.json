@@ -93,9 +93,9 @@
     "f7dde95c36060085f52b",
     "fb7d8de50a81489c679e"
   ],
-  "content_hash": "5bb535385d926e010556561f5ca2b43a2febb3da57b1265410347747e27915c0",
+  "content_hash": "7cf9b3bbf2922697130b95fa8a8bfa19f1c23597f866411e42c8d6c796256514",
   "dependencies": [],
-  "description": "Verifying Salesforce deployments succeeded end-to-end after metadata lands in the target org. Covers validation deploys (checkOnly), quick deploy from validated IDs, Apex test result interpretation, Deployment Status page drill-down, and rollback strategies. NOT for writing Apex tests (use apex test patterns). NOT for CI/CD pipeline setup (use github-actions-for-salesforce or gitlab-ci-for-salesforce).",
+  "description": "Verifying a Salesforce deployment worked after the metadata landed: quick deploy from a validated ID, Apex test result interpretation, Deployment Status page drill-down, functional smoke testing, JUnit/coverage output for CI, and rollback strategies. NOT for polling a deploy that is still running or stuck Pending \u2014 use devops/deployment-monitoring. NOT for the gate-check before you click deploy \u2014 use devops/pre-deployment-checklist.",
   "file_location": "skills/devops/post-deployment-validation",
   "id": "devops/post-deployment-validation",
   "inputs": [

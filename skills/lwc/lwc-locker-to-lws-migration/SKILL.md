@@ -1,6 +1,6 @@
 ---
 name: lwc-locker-to-lws-migration
-description: "Migrating LWCs from Lightning Locker Service to Lightning Web Security (LWS) — flipping the org switch safely, identifying components likely to break, removing Locker workarounds that are now insecure, and validating third-party libraries that previously failed under SecureWindow/SecureElement proxies. NOT for Aura → LWC migration — see lwc/aura-to-lwc-migration. NOT for general LWC security review (XSS, public-API hardening) — see lwc/lwc-security and lwc/lwc-public-api-hardening."
+description: "Migrating LWCs from Lightning Locker Service to Lightning Web Security (LWS) — flipping the org switch safely, identifying components likely to break, removing Locker workarounds that are now. NOT for Aura → LWC migration — — use lwc/aura-to-lwc-migration. NOT for general LWC security review (XSS, public-API hardening) — — use lwc/lwc-security."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

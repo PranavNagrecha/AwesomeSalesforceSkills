@@ -1,6 +1,6 @@
 ---
 name: picklist-and-value-sets
-description: "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill)."
+description: "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for why the API or an integration ignores a dependency matrix - use admin/field-dependency-and-controlling. NOT for cleaning up degraded, unrestricted or orphaned picklist values - use admin/picklist-field-integrity-issues. NOT for record type picklist filtering - use admin/record-types-and-page-layouts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -18,6 +18,8 @@ triggers:
   - "how do I set up a dependent picklist where one field controls another"
   - "I need to replace an old picklist value with a new one across all existing records"
   - "what is the difference between a global value set and an object-local picklist"
+  - "picklist value none is not blank"
+  - "silent default none on picklist"
   - "how do I deactivate a picklist value without losing historical data"
   - "users can still see deactivated picklist values on old records"
   - "we have hundreds of picklist values and reps keep typing random ones"
@@ -39,7 +41,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-08-14
 ---
 
 # Picklist and Value Sets

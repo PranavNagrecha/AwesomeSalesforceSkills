@@ -1,6 +1,6 @@
 ---
 name: ai-ethics-and-governance-requirements
-description: "Use this skill when defining AI governance policies, designing human oversight workflows, documenting bias mitigation strategies, or meeting regulatory transparency requirements for Salesforce AI features. Trigger keywords: responsible AI, AI bias, AI audit trail, AI transparency, human-in-the-loop, AI risk inventory, AI disclosure. NOT for Trust Layer technical configuration — that is covered by agentforce/einstein-trust-layer."
+description: "Use this skill when defining AI governance policies, designing human oversight workflows, documenting bias mitigation strategies, or meeting regulatory transparency requirements for Salesforce AI features. Trigger keywords: responsible AI, AI bias, AI audit trail, AI transparency, human-in-the-loop, AI risk inventory, AI disclosure. NOT for the MLOps pipeline or Policy-as-Code engine architecture — use architect/ai-governance-architecture. NOT for Trust Layer technical configuration — use agentforce/einstein-trust-layer."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

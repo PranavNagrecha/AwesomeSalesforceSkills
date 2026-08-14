@@ -1,6 +1,6 @@
 ---
 name: login-forensics
-description: "Investigate Salesforce login activity using LoginHistory, IdentityVerificationHistory, and Login Forensics (Event Monitoring add-on): reconstruct per-user login timelines, identify failed logins, analyze source IPs, review identity verification events, and configure Login Flows for step-up authentication. NOT for MFA setup (use org-setup-and-configuration). NOT for downloading EventLogFile CSVs or configuring real-time threat detection (use event-monitoring)."
+description: "Investigate Salesforce login activity using LoginHistory, IdentityVerificationHistory, and Login Forensics (Event Monitoring add-on): reconstruct per-user login timelines, identify failed logins, analyze source IPs, review identity verification events, and configure Login Flows for step-up authentication. NOT for MFA setup — use security/mfa-enforcement-strategy. NOT for downloading EventLogFile CSVs or configuring real-time threat detection — use security/event-monitoring."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

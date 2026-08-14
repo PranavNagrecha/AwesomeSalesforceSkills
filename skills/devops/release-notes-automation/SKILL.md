@@ -1,6 +1,6 @@
 ---
 name: release-notes-automation
-description: "Use when generating customer- or stakeholder-facing release notes from git history, Jira/ADO ticket links, and Salesforce metadata diffs at deploy time. Triggers: 'auto-generate release notes', 'changelog from commits', 'release notes from PR titles', 'what changed in this deployment'. NOT for managed-package version creation, push upgrades, or org assessment."
+description: "Use when generating customer- or stakeholder-facing release notes from git history, Jira/ADO ticket links, and Salesforce metadata diffs at deploy time. Triggers: 'auto-generate release notes', 'changelog from commits', 'release. NOT for managed-package version creation, push upgrades, or org assessment — use admin/salesforce-release-preparation."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

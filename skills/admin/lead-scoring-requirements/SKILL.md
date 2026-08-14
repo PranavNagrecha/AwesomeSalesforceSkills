@@ -1,6 +1,6 @@
 ---
 name: lead-scoring-requirements
-description: "Use this skill when designing or documenting a lead scoring model in Salesforce Sales Cloud or Account Engagement: qualifying criteria, MQL/SQL threshold definitions, scoring dimensions (demographic, firmographic, behavioral), and sales handoff SLA. NOT for Einstein Lead Scoring (AI-based predictive scoring) or Account Engagement (Pardot) automation rule configuration."
+description: "Use this skill when designing or documenting a lead scoring model in Salesforce Sales Cloud or Account Engagement: qualifying criteria, MQL/SQL threshold definitions, scoring dimensions (demographic, firmographic, behavioral), and sales handoff SLA. NOT for configuring the scoring, grading, and automation rules in Account Engagement — use admin/mcae-lead-scoring-and-grading. NOT for the whole marketing program's lifecycle stages and platform scope — use admin/marketing-automation-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

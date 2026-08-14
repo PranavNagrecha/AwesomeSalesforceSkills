@@ -1,6 +1,6 @@
 ---
 name: fhir-data-mapping
-description: "Use this skill when mapping FHIR R4 clinical resources (Patient, Observation, Condition, CarePlan, CodeableConcept) to Salesforce Health Cloud objects. Triggers: 'how do I map FHIR patient to Salesforce', 'FHIR Condition to Health Cloud object', 'FHIR R4 Support Settings', 'CodeableConcept to CodeSetBundle', 'HL7 FHIR integration Health Cloud'. NOT for general EHR integration design, HL7 v2 message parsing, outbound FHIR API exposure, or non-clinical Salesforce data migration."
+description: "Use this skill when mapping FHIR R4 clinical resources (Patient, Observation, Condition, CarePlan, CodeableConcept) to Salesforce Health Cloud objects. Triggers: 'how do I map FHIR patient to Salesforce', 'FHIR Condition to Health Cloud object', 'FHIR R4 Support Settings', 'CodeableConcept to CodeSetBundle', 'HL7 FHIR integration Health Cloud'. NOT for building the FHIR REST integration, CDS Hooks, SMART on FHIR, or HL7 v2 conversion — use apex/fhir-integration-patterns. NOT for choosing legacy HC24__ EHR objects vs FHIR-aligned standard objects — use data/health-cloud-data-model."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

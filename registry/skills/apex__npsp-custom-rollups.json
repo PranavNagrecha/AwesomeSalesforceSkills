@@ -79,9 +79,9 @@
     "fcb80c94298f12c7dd1b",
     "fcd1bedfbeae2ba25e94"
   ],
-  "content_hash": "8ab02aa42503e66b178354f8834e37d1f2b0d2d6ec78c8b7e9bbe7dceee3d02e",
+  "content_hash": "fe086bacdbb919350d3935da94b91bfda453142ac18da9ad7ffcf6c5373c7443",
   "dependencies": [],
-  "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
+  "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for rolling up across a lookup outside NPSP \u2014 use data/roll-up-summary-alternatives. NOT for who gets soft credit on a gift \u2014 use admin/soft-credits-and-matching. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
   "file_location": "skills/apex/npsp-custom-rollups",
   "id": "apex/npsp-custom-rollups",
   "inputs": [

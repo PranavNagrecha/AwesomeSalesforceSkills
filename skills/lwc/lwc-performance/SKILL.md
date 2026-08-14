@@ -1,6 +1,6 @@
 ---
 name: lwc-performance
-description: "Use when designing or reviewing Lightning Web Components for slow initial load, heavy rerenders, large-list rendering, payload reduction, and lazy instantiation choices such as `lwc:if`, tabs, or dynamic components. Triggers: 'slow lwc', 'rerenders too much', 'key index', 'dynamic import', 'large list lag'. NOT for wire-service data-source selection when provisioning strategy is the only question or for mobile/offline-specific tuning."
+description: "Use when designing or reviewing Lightning Web Components for slow initial load, heavy rerenders, large-list rendering, payload reduction, and lazy instantiation choices such as `lwc:if`, tabs, or dynamic components. Triggers: 'slow lwc', 'rerenders too much', 'key index', 'dynamic import', 'large list lag'. NOT for 1,000+ row lists — use lwc/lwc-virtualized-lists. NOT for a slow record page overall — use admin/lightning-app-builder-advanced."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

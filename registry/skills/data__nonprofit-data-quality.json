@@ -92,9 +92,9 @@
     "f926c077a0fd91003e93",
     "fe4425f03d2c13611180"
   ],
-  "content_hash": "2fab4b0382a45a35144d6b7c56db036446efbc82e5b57e101998b9f17c217fe5",
+  "content_hash": "1d26092b48fc32b69f042f642b0f39ba0f75d83bf7df31422a58c11e49488f9f",
   "dependencies": [],
-  "description": "Use this skill when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for generic Salesforce data quality, Nonprofit Cloud (NPC) data quality, or standard Account/Contact deduplication outside NPSP.",
+  "description": "Use when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for org-wide data quality gates and governance outside NPSP \u2014 use data/data-quality-and-governance. NOT for the initial bulk import of constituents and households \u2014 use data/constituent-data-migration.",
   "file_location": "skills/data/nonprofit-data-quality",
   "id": "data/nonprofit-data-quality",
   "inputs": [

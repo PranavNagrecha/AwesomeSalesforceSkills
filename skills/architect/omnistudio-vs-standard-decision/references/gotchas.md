@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Managed Package and Standard Designers Are Not Interchangeable Without Migration
+## Gotcha 2: Managed Package and Standard Designers Are Not Interchangeable Without Migration — but Coexistence Now Has a Supported Name
 
-**What happens:** Orgs on the managed-package version of OmniStudio (`vlocity_ins__` namespace for legacy Vlocity orgs, `industries__` namespace for post-acquisition Salesforce-packaged orgs) cannot simply adopt Standard Designers components alongside existing managed-package components. The metadata types, field references, and runtime behaviors differ. Mixing them creates broken references, failed activations, and deployment errors.
+**What happens:** Orgs on the managed-package version of OmniStudio (`vlocity_ins__` namespace for legacy Vlocity orgs, `industries__` namespace for post-acquisition Salesforce-packaged orgs) cannot simply adopt Standard Designers components alongside existing managed-package components. The metadata types, field references, and runtime behaviors differ, and ad-hoc mixing creates broken references, failed activations, and deployment errors. What has changed is that "you can never have both in one org" is no longer true as an absolute: Salesforce documents Omnistudio Hybrid — "You can create Omnistudio components using standard designers and standard runtime in your managed package environment using Omnistudio Hybrid." Architects who plan a full build freeze because they believe a big-bang cutover is the only path are costing themselves a release cycle.
 
-**When it occurs:** When an org on managed-package OmniStudio attempts to build new components using the Standard Designers tooling, or when deployment pipelines move Standard Designers components into a managed-package org.
+**When it occurs:** When an org on managed-package OmniStudio attempts to build new components using the Standard Designers tooling outside the Hybrid configuration, or when deployment pipelines move Standard Designers components into a managed-package org.
 
-**How to avoid:** Treat the managed-package-to-Standard-Designers migration as a dedicated project. Salesforce provides an OmniStudio Conversion Tool to assist. Plan for a full conversion of existing OmniScript and Integration Procedure components — partial migration is supported in some configurations but must be explicitly scoped. Do not start new Standard Designers components in a managed-package org without a documented migration plan.
+**How to avoid:** Establish which configuration the org is actually in before scoping anything. If the target is full migration, treat it as a dedicated project run through the **Omnistudio Migration Assistant (OMA)**, an SF CLI plugin installed with `sf plugins install @salesforce/plugin-omnistudio-migration-tool@<tool_version>`. OMA runs Assess mode first to surface issues, then Migrate mode, across three phases: development sandbox, validation sandbox with full regression testing, then production. Scope the known gaps explicitly — "The OMA tool cannot convert Angular Omniscript to work with the standard runtime," and Vlocity industry-specific objects and OmniAnalytics data structures need manual work. If the target is coexistence rather than migration, read the Salesforce Help topic "Omnistudio Hybrid Compatibility Matrix" and confirm the component types you care about are eligible before committing a design — that matrix, not a general rule of thumb, governs what Hybrid supports.
 
 ---
 

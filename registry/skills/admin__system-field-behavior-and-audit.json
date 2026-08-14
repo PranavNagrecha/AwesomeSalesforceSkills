@@ -63,9 +63,9 @@
     "fda03c863d0c8058d384",
     "ffba8e93bc1c279976ae"
   ],
-  "content_hash": "13dfdf349d05edf289cc81fe6857b2a36160ff6b69af5ed439c7cd19ab247798",
+  "content_hash": "9bc1a588c5d892986b7f3ad80cea12221781e6f6c8af74f60ad608c70f3f9295",
   "dependencies": [],
-  "description": "Use when practitioners need to understand system-managed fields (CreatedDate, LastModifiedDate, SystemModstamp, CreatedById, LastModifiedById, IsDeleted) \u2014 their update behavior, indexing, and queryability. Triggers: 'difference between SystemModstamp and LastModifiedDate', 'how to query deleted records', 'set CreatedDate during data migration', 'why does LastModifiedDate not match SystemModstamp', 'Create Audit Fields permission'. NOT for field-level change tracking (use field-history-tracking skill), Shield Field Audit Trail for compliance retention (use field-audit-trail skill), or custom audit logging with Apex triggers.",
+  "description": "Use when practitioners need to understand system-managed fields (CreatedDate, LastModifiedDate, SystemModstamp, CreatedById, LastModifiedById, IsDeleted) \u2014 their update behavior, indexing, and queryability. Triggers: 'difference between SystemModstamp and LastModifiedDate', 'how to query deleted records', 'set CreatedDate during data migration', 'why does LastModifiedDate not match SystemModstamp', 'Create Audit Fields permission'. NOT for a field's value-change history \u2014 use data/field-history-tracking. NOT for Shield Field Audit Trail \u2014 use security/field-audit-trail.",
   "file_location": "skills/admin/system-field-behavior-and-audit",
   "id": "admin/system-field-behavior-and-audit",
   "inputs": [

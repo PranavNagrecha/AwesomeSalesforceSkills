@@ -1,6 +1,6 @@
 ---
 name: mobile-publisher
-description: "Use when planning, configuring, or maintaining a Salesforce Mobile Publisher branded app — a customer-facing or partner-facing mobile app distributed through Apple App Store or Google Play, built on either the Experience Cloud (LWR/Aura) Mobile Publisher template or the Field Service Mobile Publisher template. Triggers: 'salesforce mobile publisher branded app', 'experience cloud mobile app store distribution', 'mobile publisher push notifications certificate', 'app store review rejection salesforce', 'mobile publisher version policy update'. NOT for the standard Salesforce Mobile App customization (use lightning-app-builder-advanced), NOT for Field Service Lightning offline configuration (use fsl-mobile-app-setup), NOT for hybrid web apps embedded in WebView."
+description: "Use when planning, configuring, or maintaining a Salesforce Mobile Publisher branded app — a customer-facing or partner-facing mobile app distributed through Apple App Store or Google Play, built on either the Experience Cloud (LWR/Aura) Mobile Publisher template or the Field Service Mobile Publisher template. Triggers: 'salesforce mobile publisher branded app', 'experience cloud mobile app store distribution', 'mobile publisher push notifications certificate', 'app store review rejection salesforce', 'mobile publisher version policy update'. NOT for the standard mobile app — use admin/lightning-app-builder-advanced. NOT for Field Service mobile — use admin/fsl-mobile-app-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -171,6 +171,5 @@ The native shell carries a *minimum supported OS version* and a *target OS versi
 
 - `admin/lightning-app-builder-advanced` — for the standard Salesforce Mobile App's customization (no app-store path).
 - `admin/fsl-mobile-app-setup` — for Field Service Lightning's standard mobile app config (the underlying FSL surface that FSL-flavored Mobile Publisher re-skins).
-- `architect/mobile-architecture-patterns` (when present) — for the strategic "branded vs standard vs hybrid" decision at architecture level.
 - `lwc/experience-cloud-authentication` — login-flow patterns for Experience Cloud, the source surface most Mobile Publisher Experience Cloud apps wrap.
 - `admin/experience-cloud-seo-settings` — Experience Cloud configurations that surface when the same site is the source for a Mobile Publisher app and a public website.

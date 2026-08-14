@@ -48,9 +48,9 @@
     "f9d50a5a1b960a878be6",
     "fc3b898b0851ef32e9c8"
   ],
-  "content_hash": "b694e6b73eecfb55e07f38dd3a2bf72f4a6446fc0fde7e4021b4bbc8fd67b49e",
+  "content_hash": "5b475c4038b6e54382d860346c077b1ef72994595c6eef0042b0bfe16e13a541",
   "dependencies": [],
-  "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages.",
+  "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages \u2014 use devops/multi-package-development.",
   "file_location": "skills/devops/packaging-dependency-graph",
   "id": "devops/packaging-dependency-graph",
   "inputs": [

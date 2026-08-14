@@ -1,6 +1,6 @@
 ---
 name: analytics-recipe-design
-description: "Use this skill when designing or building CRM Analytics Data Prep recipes — including node selection, join patterns, bucket field configuration, formula expressions, and scheduling. Triggers: 'build a recipe', 'join datasets in analytics', 'bucket a measure field', 'schedule a recipe', 'data prep transformation'. NOT for SAQL queries, dashboard design, or dataflow JSON authoring."
+description: "Use this skill when designing or building CRM Analytics Data Prep recipes — including node selection, join patterns, bucket field configuration, formula expressions, and scheduling. Triggers: 'build a recipe', 'join datasets in analytics', 'bucket a measure field', 'schedule a recipe', 'data prep transformation'. NOT for dataflow JSON and its node types — use admin/analytics-dataflow-development. NOT for tuning a slow or oversized dataset — use data/analytics-dataset-optimization."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

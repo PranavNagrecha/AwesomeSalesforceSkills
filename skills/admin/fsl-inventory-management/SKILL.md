@@ -1,6 +1,6 @@
 ---
 name: fsl-inventory-management
-description: "Configure and manage Field Service Lightning inventory: ProductItem (stock at locations), ProductTransfer (stock movement), ProductConsumed (parts used on work orders), ProductRequest/ProductRequestLineItem (replenishment ordering), and ProductItemTransaction (audit trail). NOT for CPQ product catalog management, OCI (Omnichannel Inventory), or B2B Commerce warehouse integration."
+description: "Configure and manage Field Service Lightning inventory: ProductItem (stock at locations), ProductTransfer (stock movement), ProductConsumed (parts used on work orders), ProductRequest/ProductRequestLineItem (replenishment ordering), ProductItemTransaction (audit trail). NOT for work orders, work types, or service appointments — use admin/fsl-work-order-management. NOT for ERP parts and inventory sync — use architect/fsl-integration-patterns. NOT for Omnichannel Inventory (OCI) — use architect/order-management-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

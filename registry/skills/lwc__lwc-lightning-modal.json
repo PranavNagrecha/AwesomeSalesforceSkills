@@ -77,9 +77,9 @@
     "f7b4d8609b7e88411b9c",
     "fe684d2fcef3186991cc"
   ],
-  "content_hash": "099f424c664f056c01d59ee3de0b49c62fe70d67a733d15112651bdd3953a5f6",
+  "content_hash": "a8a5850b02bb644e194f286e2555fa07580308ff6eb8b6371d3640f5eb5f32b8",
   "dependencies": [],
-  "description": "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated). NOT for in-page overlays (use SLDS popover).",
+  "description": "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated) \u2014 use lwc/lwc-modal-and-overlay.",
   "file_location": "skills/lwc/lwc-lightning-modal",
   "id": "lwc/lwc-lightning-modal",
   "inputs": [

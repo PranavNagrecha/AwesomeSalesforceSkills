@@ -1,6 +1,6 @@
 ---
 name: cpq-performance-optimization
-description: "Use when diagnosing or resolving slow CPQ quote calculation, QLEx timeouts, or governor limit errors on large quotes. Trigger keywords: Large Quote Mode, QCP field declaration, quote calculation performance, SBQQ calculation timeout, async pricing. NOT for generic Apex performance tuning, CPQ pricing rule logic design, or billing engine performance."
+description: "Use when diagnosing or resolving slow CPQ quote calculation, QLEx timeouts, or governor limit errors on large quotes. Trigger keywords: Large Quote Mode, QCP field declaration, quote calculation performance, SBQQ calculation timeout, async pricing. NOT for designing bundles and a pricing model that scales before the problem exists — use architect/cpq-architecture-patterns. NOT for writing the QCP or other SBQQ plugin interfaces themselves — use apex/cpq-apex-plugins."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

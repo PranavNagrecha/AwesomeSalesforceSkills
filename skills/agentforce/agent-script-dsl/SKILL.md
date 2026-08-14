@@ -1,8 +1,8 @@
 ---
 name: agent-script-dsl
-description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions (use custom-agent-actions-apex). NOT for UI-based agent creation (use agentforce-agent-creation)."
+description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions — use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI — use agentforce/agentforce-agent-creation."
 category: agentforce
-salesforce-version: "Spring '26+"
+salesforce-version: "Summer '26+"
 well-architected-pillars:
   - Operational Excellence
   - Reliability
@@ -30,16 +30,16 @@ outputs:
   - "sf agent test run commands for CI pipeline integration"
   - "Source control layout and metadata deployment guidance for agents"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 # Agent Script DSL
 
-Use this skill when the work involves authoring, editing, validating, or deploying Agentforce agent definitions through source-controlled metadata rather than through the Agentforce Builder UI. This skill covers the YAML-based `.agent` file format, the three composite metadata types that make up an agent (GenAiPlugin, GenAiPlanner/GenAiPlannerBundle, BotVersion), LSP validation tooling, the `sf agent test run` CLI command, and the metadata deployment lifecycle end-to-end. It does not cover Apex implementation of invocable agent actions (use `agentforce/custom-agent-actions-apex`) and does not cover UI-driven agent creation workflow (use `agentforce/agentforce-agent-creation`).
+Use this skill when the work involves authoring, editing, validating, or deploying Agentforce agent definitions through source-controlled metadata rather than through the Agentforce Builder UI. This skill covers the YAML-based `.agent` file format, the runtime metadata types that make up an agent (GenAiPlugin, GenAiPlanner/GenAiPlannerBundle, BotVersion) plus the design-time `AiAuthoringBundle`, LSP validation tooling, the `sf agent test run` CLI command, and the metadata deployment lifecycle end-to-end. It does not cover Apex implementation of invocable agent actions (use `agentforce/custom-agent-actions-apex`) and does not cover UI-driven agent creation workflow (use `agentforce/agentforce-agent-creation`).
 
-Agentforce agent definitions are stored as YAML-based declarative metadata in `.agent` files within a Salesforce DX project. These files are the machine-readable representations of the same configuration surfaced in Agentforce Builder. Understanding the relationship between the three composite metadata types — GenAiPlugin, GenAiPlanner (or GenAiPlannerBundle from API v64+), and BotVersion — is essential for correct deployment and source control management.
+Agentforce agent definitions are stored as YAML-based declarative metadata in `.agent` files within a Salesforce DX project. These files are the machine-readable representations of the same configuration surfaced in Agentforce Builder. Understanding the relationship between the three runtime metadata types — GenAiPlugin, GenAiPlanner (or GenAiPlannerBundle from API v64.0+), and BotVersion — plus the design-time `AiAuthoringBundle` that carries the Agent Script source from API v65.0+, is essential for correct deployment and source control management.
 
 ---
 
@@ -47,7 +47,7 @@ Agentforce agent definitions are stored as YAML-based declarative metadata in `.
 
 Gather this context before working on anything in this domain:
 
-- What is the target Salesforce CLI and API version? GenAiPlannerBundle was introduced at API v64 (Spring '26). Projects targeting API v60–v63 use GenAiPlanner instead. Mixing versions in the same project causes deploy failures.
+- What is the target Salesforce CLI and API version? Per the Metadata API guide, "GenAiPlanner components are available in API version 60.0 to 63.0. GenAiPlannerBundle replaces GenAiPlanner in API version 64.0 and later." API v64.0 is **Summer '25**, not Spring '26 — the cutover is three releases older than most agent tutorials imply. What decides which type you use is the project's `sourceApiVersion` pin in `sfdx-project.json`, not the org's release: a Summer '26 org will happily accept a project pinned to 63.0 and that project still uses GenAiPlanner. Agent Script authoring adds a fourth type, `AiAuthoringBundle`, at API v65.0 (Winter '26).
 - Is the Salesforce Extensions for VS Code installed along with the Agentforce extension? LSP-based DSL validation requires both. Without them, YAML errors in `.agent` files produce silent or cryptic deploy failures.
 - Is the project structured as a Salesforce DX project with `sfdx-project.json`? The `sf agent` CLI commands operate on DX-structured projects only.
 - What is the current state of the agent in the org? Retrieving before editing is critical — manually authored `.agent` files that diverge from the deployed BotVersion state produce merge conflicts on the next retrieve.
@@ -57,17 +57,33 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-### The Three Composite Metadata Types
+### The Three Runtime Metadata Types
 
-An Agentforce agent in source control is not a single file. It is composed of three linked metadata types that must be deployed together as a bundle:
+An Agentforce agent in source control is not a single file. Three linked runtime metadata types must be deployed together as a bundle — and for an agent authored in the new Agentforce Builder they are not the whole story, because a fourth design-time type carries the Agent Script source (see "The Fourth Type" below):
 
 **GenAiPlugin** — the action definition layer. Each GenAiPlugin corresponds to a topic in Agentforce Builder. It declares the topic label, description (used by the LLM for topic classification), and references to the `GenAiFunction` records (actions) that belong to the topic. A plugin that has a vague or overlapping description will cause the LLM planner to route incorrectly, even if the metadata deploys cleanly.
 
-**GenAiPlanner / GenAiPlannerBundle** — the orchestration configuration layer. GenAiPlanner (API v60–v63) or GenAiPlannerBundle (API v64+) configures the LLM reasoning engine: model selection, planner instructions (the system prompt), and the set of GenAiPlugins the agent can invoke. The bundle variant introduces the ability to link the planner to a BotVersion within a single metadata record, replacing the manual cross-reference approach of the earlier type.
+**GenAiPlanner / GenAiPlannerBundle** — the orchestration configuration layer. GenAiPlanner (API v60.0–v63.0, i.e. Spring '24 through Spring '25) or GenAiPlannerBundle (API v64.0+, Summer '25 onward) configures the LLM reasoning engine: model selection, planner instructions (the system prompt), and the set of GenAiPlugins the agent can invoke. The bundle variant introduces the ability to link the planner to a BotVersion within a single metadata record, replacing the manual cross-reference approach of the earlier type.
 
 **BotVersion** — the conversation container and channel routing shell. BotVersion wraps the Bot record and manages conversation session parameters, language settings, and fallback behavior. It also carries the reference that links a deployed agent to the GenAiPlannerBundle. BotVersion without a linked planner produces a legacy Einstein Bot, not an Agentforce agent. The presence of the `genAiPlannerBundle` element in BotVersion XML is the authoritative indicator that a BotVersion is an Agentforce agent and not a legacy scripted bot.
 
-All three types must be retrieved and deployed as a coherent unit. Partial deploys — for example, deploying only GenAiPlugin changes without an updated BotVersion — will either fail validation or produce a deployed state that diverges from the source of truth in version control.
+All three runtime types must be retrieved and deployed as a coherent unit. Partial deploys — for example, deploying only GenAiPlugin changes without an updated BotVersion — will either fail validation or produce a deployed state that diverges from the source of truth in version control.
+
+### The Fourth Type: AiAuthoringBundle (API v65.0+)
+
+Agents authored in the new Agentforce Builder are **not** fully described by the three runtime types above. The Agent Script source lives in a fourth, design-time type introduced at API v65.0 (Winter '26): `AiAuthoringBundle`, which the Metadata API guide describes as "a container for AI-related authoring content. For example, an AI authoring bundle for an Agentforce agent contains an Agent Script file and the associated metadata content."
+
+Shape on disk — a directory per bundle under `aiAuthoringBundles/`, holding two files:
+
+```text
+force-app/main/default/aiAuthoringBundles/New_Agent/
+├── New_Agent.agent              # the Agent Script source
+└── New_Agent.bundle-meta.xml    # bundleType, target, versionTag, versionDescription
+```
+
+Two fields drive deployment behavior. `bundleType` is currently `AGENT` for Agent Script agents. `target` names the `{Bot}.{BotVersion}` to commit the version to — **omit `target` and the agent deploys in draft state; include it and the deploy commits the agent version**, the equivalent of Agentforce Builder's version commit. Committing a version is still not activation (see the activation gotcha).
+
+The consequence for CI/CD: a manifest built from the 2024-era five-type list (Bot, BotVersion, GenAiPlanner, GenAiPlugin, GenAiFunction) versions an *incomplete* agent — the `.agent` blueprint never reaches the repo or the target org. Add `AiAuthoringBundle` to the manifest and set `sourceApiVersion` to 65.0 or higher.
 
 ### YAML-Based .agent File Format
 
@@ -105,7 +121,17 @@ Deciding which behavior belongs in a `->` logic instruction (deterministic: comp
 
 **Control flow and action invocation.** Conditional branching uses `if` / `else` (for example, `if @variables.is_member == True:`), with comparison operators including `==`, `!=`, `<`, `>`, and `is None` / `is not None`. Actions are invoked with `run` (execute an action deterministically), `set` (store a value in a variable), and `with` (bind an input parameter).
 
-**Terminology — topics are now subagents.** Per the reference, "Beginning in April 2026, agent topics are now called subagents. There are no changes to functionality." When reconciling older `.agent` metadata (which uses topic terminology and GenAiPlugin-per-topic) against newer Agent Script authored in the Builder, treat "topic" and "subagent" as the same concept; the routing-quality concern is unchanged by the rename.
+**Terminology — topics are now subagents, but the API surface did not rename.** Per the reference, "Beginning in April 2026, agent topics are now called subagents. There are no changes to functionality." Treat "topic" and "subagent" as the same concept; the routing-quality concern is unchanged by the rename.
+
+The rename landed in the docs and the Builder UI only. **The metadata and testing APIs still say "topic," and renaming them breaks the deploy:**
+
+| Surface | Vocabulary as of Summer '26 |
+|---|---|
+| Agentforce dev guide, new Builder UI | subagent |
+| `GenAiPlugin` metadata type | still "Represents an agent topic, which is a category of actions related to a particular job to be done by AI agents." The word *subagent* does not appear on that page. |
+| `AiEvaluationDefinition` expectation names | still `topic_sequence_match` (alongside `action_sequence_match`, `bot_response_rating`, `output_latency_milliseconds`, `string_comparison`, `numeric_comparison`, and the coherence/completeness/conciseness metrics) |
+
+So the mixed vocabulary a user sees is expected, not drift. There is no `GenAiSubagent` type and no `subagent_sequence_match` expectation.
 
 **Three authoring surfaces in the new Builder.** The new Agentforce Builder exposes Agent Script through three views, and choosing the right one is part of the workflow:
 
@@ -113,7 +139,7 @@ Deciding which behavior belongs in a `->` logic instruction (deterministic: comp
 - **Canvas** — Agent Script is "summarized into easily understandable blocks, which you can expand to view the underlying script." Best for review and for non-authors reasoning about behavior.
 - **Script view** — "Advanced users can switch to Script view to write and edit script directly, with developer-friendly aids like syntax highlighting, autocompletion, and validation." This is the surface that corresponds most directly to source-controlled authoring.
 
-**Maturity.** Agent Script and the new Agentforce Builder are pre-GA. Salesforce's launch blog states the capability entered pilot in October 2025 and became public beta in November 2025 ("Agent Script is currently in pilot and will be available in November 2025 as public beta for all customers"), and help-article guidance continues to frame it as open beta ("Cross-over options will be considered closer to GA"). No GA date is stated in the official documentation reviewed. Because assertion schemas and syntax can shift pre-GA, pin your CLI plugin versions and revalidate after each release. The new Builder itself carries no additional cost: "No additional cost if you have purchased Agentforce. The new builder is available at no charge in Agentforce Studio."
+**Maturity — GA as of Summer '26, and the legacy builder is closed to new agents.** Agent Script is no longer pre-GA. The Summer '26 developer release guide states: "Agent Script — a scripting language for AI agents that gives builders precise control by blending deterministic rules with agentic reasoning — and the new Agentforce Builder are now generally available (GA)." It also sets a hard cutover: "Starting the week of July 13, 2026, the New Agent button no longer opens the legacy builder in Setup. New agents are created only in the new Agentforce Builder." Existing legacy agents are not force-migrated; there is an explicit upgrade path — "Upgrading a legacy agent converts all subagents, actions, system messages, data, and connections to Agent Script, then optionally optimizes it for reliability." Plan any 2025-era "we'll stay on the legacy builder" position as end-of-life, not as a supported option for new work. The new Builder itself carries no additional cost: "No additional cost if you have purchased Agentforce. The new builder is available at no charge in Agentforce Studio."
 
 **Open-sourced toolchain.** Salesforce open-sourced the Agent Script specification and its developer tooling — the parser (both a TypeScript parser and a Tree-sitter parser), an 18+-pass linter, the compiler (parsed AST → Salesforce runtime specification, with source-map support), and a Language Server Protocol implementation offering diagnostics, hover, completions, definition/references, rename, symbols, code actions, and semantic tokens — under Apache 2.0 at `github.com/salesforce/agentscript`. Because this repo is Apache 2.0, it is a viable dependency for local editor integration, CI linting, or custom validation. The **execution runtime is not open source**: "Agent Script compiles to a Salesforce-internal specification format that executes on Salesforce infrastructure," so "you can parse, lint, compile, and build tooling around Agent Script, but running agents requires Salesforce's runtime environment."
 
@@ -215,7 +241,8 @@ Key behaviors:
 |---|---|---|
 | New agent with no source control history | Generate with `sf agent generate agent`, build in VS Code with LSP | Establishes source-of-truth in version control from the start |
 | Agent exists only in org, needs to move to source control | Retrieve all metadata layers, commit, then manage via pipeline | Retrieve-first prevents state divergence from the first deploy |
-| API v60–v63 project (older sandbox) | Use GenAiPlanner, not GenAiPlannerBundle | GenAiPlannerBundle requires API v64+ (Spring '26) |
+| Project `sourceApiVersion` is 60.0–63.0 | Use GenAiPlanner, not GenAiPlannerBundle | GenAiPlannerBundle replaces GenAiPlanner only at API v64.0+ (Summer '25); the project pin decides, not the org release |
+| Agent authored in the new Agentforce Builder needs to reach source control | Add `AiAuthoringBundle` to the manifest and raise `sourceApiVersion` to 65.0+ | The `.agent` Agent Script source lives only in that type; a Bot/BotVersion/GenAiPlugin manifest versions an incomplete agent |
 | CI pipeline needs automated agent testing | Use `sf agent test run` with `.aiTest` metadata | Only scriptable agent test mechanism; exit codes integrate with CI |
 | Topic routing is inconsistent | Edit topic descriptions in `.agent` file, not action definitions | The LLM planner uses topic descriptions for routing; actions are invoked after routing |
 | Agent changes made in Builder UI | Retrieve before next deploy | Prevents overwriting org state with stale source |
@@ -230,7 +257,7 @@ Key behaviors:
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Confirm environment** — verify the Salesforce CLI version, `@salesforce/plugin-agent` plugin version, and target org API version. Confirm whether the project targets GenAiPlanner (v60–v63) or GenAiPlannerBundle (v64+).
+1. **Confirm environment** — verify the Salesforce CLI version and `@salesforce/plugin-agent` plugin version, then read the project's `sourceApiVersion` pin in `sfdx-project.json` (not the org's release banner). It selects GenAiPlanner (60.0–63.0) or GenAiPlannerBundle (64.0+), and it must be 65.0+ if the agent was authored in the new Agentforce Builder and therefore carries an `AiAuthoringBundle`.
 2. **Retrieve current state** — before making any changes, retrieve the Bot, BotVersion, GenAiPlannerBundle/GenAiPlanner, and all GenAiPlugin records from the target org. Diff against the local working copy and resolve conflicts.
 3. **Author or edit the `.agent` file** — use VS Code with the Salesforce Agentforce extension. Address any LSP diagnostic warnings before proceeding. Pay particular attention to topic description quality and the `plannerInstructions` block.
 4. **Deploy the full metadata bundle** — deploy Bot, BotVersion, GenAiPlannerBundle, and all GenAiPlugin records together. Never deploy a subset of the bundle.
@@ -244,7 +271,9 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] API version confirmed; GenAiPlanner vs GenAiPlannerBundle selected correctly.
+- [ ] Project `sourceApiVersion` confirmed; GenAiPlanner (60.0–63.0) vs GenAiPlannerBundle (64.0+) selected from the project pin, not the org release.
+- [ ] If the agent is authored in the new Agentforce Builder: `AiAuthoringBundle` is in the manifest and `sourceApiVersion` is 65.0+.
+- [ ] No API identifier was "modernized" to the subagent vocabulary — `GenAiPlugin` and `topic_sequence_match` are still correct.
 - [ ] All metadata layers retrieved from the target org before editing.
 - [ ] `.agent` file has no LSP diagnostic errors or warnings in VS Code with Agentforce extension.
 - [ ] Topic descriptions are distinct and non-overlapping to avoid LLM routing ambiguity.
@@ -262,16 +291,17 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **GenAiPlannerBundle requires API v64+** — projects with `apiVersion` set to v63 or lower in `sfdx-project.json` cannot use GenAiPlannerBundle. Attempting to deploy it produces a confusing "Unknown type" error. Set `apiVersion: 64.0` or higher before building Spring '26 agents.
+1. **GenAiPlannerBundle requires API v64.0+ — which is Summer '25, not Spring '26** — projects with `sourceApiVersion` set to 63.0 or lower in `sfdx-project.json` cannot use GenAiPlannerBundle, and the deploy fails with an unknown-type error naming it. The common misattribution (v64 = Spring '26) puts the cutover three releases too late and leads teams to believe a Winter '26 or Spring '26 sandbox is "too old" for the bundle type when the real blocker is their own project pin. Set `"sourceApiVersion": "64.0"` or higher — that is the documented sfdx-project.json key; a hand-written `apiVersion` property is ignored by the CLI.
 2. **Activation is not deployable** — the Active/Inactive/Draft state of an agent is not part of any deployable metadata record. Every org promotion requires a manual activation step in Setup. Pipelines that skip post-deploy activation steps will leave agents in Inactive state silently.
 3. **Partial bundle deploys cause state divergence** — deploying GenAiPlugin records without the BotVersion, or vice versa, can leave the org in a state where the deployed agent references metadata that does not match the deployed plugin set. Always deploy the full bundle atomically.
 4. **Topic description content drives routing, not metadata structure** — structural validity (correct YAML schema, correct XML element nesting) does not guarantee correct agent behavior. LLM routing is based on the natural-language quality of topic descriptions. A valid deploy of a well-structured `.agent` file with vague topic descriptions produces a broken agent with no metadata errors.
 5. **`sf agent test run` requires an Active agent** — running agent tests against a Draft or Inactive agent returns an error that is easy to misread as a CLI or credential problem. Always confirm the agent is Active in the target org before running CI test jobs.
 6. **Agent Script is whitespace-sensitive** — like Python or YAML, indentation carries structure. A misindented `->` logic block or `|` prompt block silently changes which subagent or reasoning block an instruction belongs to. Configure the editor to show whitespace and never mix tabs and spaces in a `.agent`/script file.
 7. **Deterministic vs. LLM behavior is a choice you make, not a default** — putting a business rule in a `|` prompt instruction instead of a `->` logic instruction hands a guarantee-required check (entitlement, compliance gate, variable math) to the LLM, which may not honor it every time. Behavior that must be reliable belongs in `->` logic instructions; only conversational nuance belongs in `|` prompt instructions.
-8. **"Topic" and "subagent" are the same thing after April 2026** — the rename is terminology only, with no functional change. Older `.agent`/GenAiPlugin metadata still uses topic-per-GenAiPlugin structure, while newer Agent Script authored in the Builder uses `subagent` blocks. Do not treat a diff that only swaps this vocabulary as a behavioral change.
+8. **"Topic" and "subagent" are the same thing after April 2026 — but only in the docs and the UI** — the rename is terminology only, with no functional change, and it never reached the API. `GenAiPlugin` is still documented as "an agent topic," and `AiEvaluationDefinition` still expects `topic_sequence_match`. Renaming either to match the new vocabulary produces an unknown metadata type or an invalid expectation name. Do not treat a diff that only swaps this vocabulary as a behavioral change, and do not "modernize" API identifiers.
 9. **Do not hand-edit compiled agent metadata** — Agent Script compiles to lower-level runtime metadata on save. The script is the source of truth; the compiled metadata is a build artifact. Editing the compiled output rather than the script produces the same divergence problem as partial bundle deploys.
-10. **Pre-GA syntax and assertion schemas can change** — Agent Script and the new Agentforce Builder are in open beta with no stated GA date. Pin CLI plugin versions, keep the open-sourced `salesforce/agentscript` tooling version aligned with your target release, and revalidate scripts after each Salesforce release.
+10. **Agent Script went GA in Summer '26 and the legacy builder no longer creates agents** — beta-era caveats ("pilot," "open beta," "no GA date") are stale. From the week of July 13, 2026 the New Agent button no longer opens the legacy builder in Setup; new agents are created only in the new Agentforce Builder. Existing legacy agents keep running and have an explicit upgrade path, so this is an end-of-life clock on legacy authoring, not an outage. Still pin CLI plugin versions and keep the open-sourced `salesforce/agentscript` tooling aligned with your target release.
+11. **A five-type agent manifest is an incomplete agent** — Bot + BotVersion + GenAiPlannerBundle + GenAiPlugin + GenAiFunction captures the runtime metadata but not the Agent Script source, which lives in `AiAuthoringBundle` (API v65.0+). A pipeline built on the older list deploys a working-looking agent whose blueprint was never versioned, so the next Builder edit has nothing to diff against. Add `AiAuthoringBundle` and set `sourceApiVersion` to 65.0 or higher.
 
 ---
 
@@ -281,6 +311,7 @@ Non-obvious platform behaviors that cause real production problems:
 |---|---|
 | `.agent` YAML file | Declarative agent definition for VS Code authoring and version control |
 | Agent Script source | Hybrid-reasoning script (`->` logic and `|` prompt instructions, `subagent`/`reasoning` blocks, `@`-references) authored in the new Agentforce Builder Script view; compiles to runtime metadata on save |
+| AiAuthoringBundle directory | `aiAuthoringBundles/<Name>/<Name>.agent` + `<Name>.bundle-meta.xml` (API v65.0+) — the design-time source of truth for a Builder-authored agent |
 | GenAiPlugin XML records | Metadata files for each topic, containing topic description and action references |
 | GenAiPlannerBundle XML | Metadata linking the planner instructions and plugins to the BotVersion |
 | BotVersion XML | Agent container with channel settings and GenAiPlannerBundle reference |

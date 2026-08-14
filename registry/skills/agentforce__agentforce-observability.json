@@ -71,9 +71,9 @@
     "fe7aefc80291d12ea0ea",
     "ff142928aedd10d0e466"
   ],
-  "content_hash": "bc03dbd92987fb99414374dd0fece030c8f892b6846bf096b9f5120b8dcf5f21",
+  "content_hash": "904cb7ec63047c628a4e5ca3c6e2127a11e8f312e038e667ddc175b8f14b62bc",
   "dependencies": [],
-  "description": "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Einstein Trust Layer audit logging (use einstein-trust-layer), NOT for agent topic design or guardrails (use agent-topic-design or agentforce-guardrails), NOT for LLM prompt debugging (this skill covers session metrics and conversation trace, not prompt engineering).",
+  "description": "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Trust Layer audit logging \u2014 use agentforce/einstein-trust-layer. NOT for designing the topic boundaries and guardrails that cause the misrouting you are seeing in the data \u2014 use agentforce/agentforce-guardrails.",
   "file_location": "skills/agentforce/agentforce-observability",
   "id": "agentforce/agentforce-observability",
   "inputs": [

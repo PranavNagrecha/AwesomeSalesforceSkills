@@ -1,6 +1,6 @@
 ---
 name: architecture-decision-records
-description: "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. Does NOT cover project roadmap planning, release notes, or RFC workflow for features."
+description: "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. NOT for making the design decision itself, e.g. Flow vs Apex — use architect/solution-design-patterns. NOT for a formal architecture review that produces findings — use architect/well-architected-review."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

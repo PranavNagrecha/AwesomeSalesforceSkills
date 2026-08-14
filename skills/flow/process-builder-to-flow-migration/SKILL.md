@@ -1,6 +1,6 @@
 ---
 name: process-builder-to-flow-migration
-description: "Migrate Process Builder processes to record-triggered Flows using the native Migrate to Flow tool or manual rebuild. Covers conversion tool usage, pattern mapping, order-of-execution changes, testing migrated flows, and bulk behavior improvements. NOT for building new flows from scratch, NOT for Workflow Rule migration (use workflow-rule-to-flow-migration), NOT for net-new automation design."
+description: "Migrate Process Builder processes to record-triggered Flows using the native Migrate to Flow tool or manual rebuild. Covers conversion tool usage, pattern mapping, order-of-execution changes, testing migrated flows, and bulk behavior improvements. NOT for Workflow Rule migration — use flow/workflow-rule-to-flow-migration. NOT for designing net-new automation — use admin/process-automation-selection."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,7 @@ triggers:
   - "process builder and flow running on same object execution order"
   - "ISCHANGED ISNEW criteria not supported in flow migration"
   - "process builder EOL December 2025 what to do"
+  - "stage date stamps in after save process builder"
 tags:
   - process-builder
   - migration
@@ -37,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-08-14
 ---
 
 # Process Builder to Flow Migration

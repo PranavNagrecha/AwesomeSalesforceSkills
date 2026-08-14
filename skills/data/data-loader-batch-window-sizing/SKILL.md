@@ -172,8 +172,7 @@ When in doubt, start at **batch=200, serial mode**, run a 5,000-record pilot, me
 4. **Pick batch size and mode from the table**, then sanity-check against API call budget (`record_count / batch_size = batch_count`; each batch is ~1–2 API calls).
 5. **Plan the freeze and the enrich** — if this is a one-time historical load, design the CMDT trigger-bypass flag and the post-load enrich Batch Apex job before kicking off ingestion.
 6. **Run a 5,000-record pilot** at the chosen settings; measure runtime, error rate, governor-limit warnings in the debug log. Adjust batch size down if `CPU_TIME_LIMIT_EXCEEDED` or `UNABLE_TO_LOCK_ROW` appears.
-7. **Run the full load in a maintenance window** with **Defer Sharing Calculations** enabled (Private OWD only); monitor the async sharing recalc tail before declaring done.
-8. **Run `scripts/check_data_loader_batch_window_sizing.py`** with the object profile to confirm the chosen batch size and mode match the recommendation.
+7. **Run the full load in a maintenance window** with **Defer Sharing Calculations** enabled (Private OWD only); monitor the async sharing recalc tail before declaring done. Run `scripts/check_data_loader_batch_window_sizing.py` with the object profile to confirm the chosen batch size and mode match the recommendation.
 
 ---
 

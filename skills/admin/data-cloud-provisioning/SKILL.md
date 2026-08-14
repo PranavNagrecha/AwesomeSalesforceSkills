@@ -1,6 +1,6 @@
 ---
 name: data-cloud-provisioning
-description: "Use when enabling Data Cloud (Data 360) in an org, creating data spaces, assigning permission sets, registering ingestion API sources, or configuring activation targets. Triggers: 'enable data cloud', 'data spaces setup', 'data cloud permission sets', 'ingestion API connected app', 'activation target setup', 'data cloud licensing', 'dedicated home org vs existing org'. NOT for CRM Analytics configuration, SAQL/recipe authoring, or Data Cloud data model design after provisioning is complete."
+description: "Use when enabling Data Cloud (Data 360) in an org, creating data spaces, assigning permission sets, registering ingestion API sources, or configuring activation targets. Triggers: 'enable data cloud', 'data spaces setup', 'data cloud permission sets', 'ingestion API connected app', 'activation target setup', 'data cloud licensing', 'dedicated home org vs existing org'. NOT for data streams or DLO-to-DMO mapping — use data/data-cloud-data-streams. NOT for identity resolution rulesets — use admin/data-cloud-identity-resolution."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -197,5 +197,5 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/connected-apps-and-auth` — Use before registering an Ingestion API source; covers Connected App design, OAuth scope selection, and credential governance
 - `admin/data-cloud-identity-resolution` — Use after provisioning is complete; covers identity resolution rule design and unified profile configuration
 - `data/data-cloud-data-model-objects` — Use after provisioning; covers mapping ingested data to the Data Cloud data model
-- `data/data-cloud-ingestion-api` — Use for detailed Ingestion API payload design and batch/streaming ingestion patterns
-- `data/data-cloud-activation-development` — Use when building custom activation targets or extending standard activation
+- `integration/data-cloud-ingestion-api` — Use for detailed Ingestion API payload design and batch/streaming ingestion patterns
+- `integration/data-cloud-activation-development` — Use when building custom activation targets or extending standard activation

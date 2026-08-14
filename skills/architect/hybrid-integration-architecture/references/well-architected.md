@@ -24,7 +24,7 @@ Hybrid architectures introduce multiple runtime environments (Salesforce, middle
 
 - `integration/middleware-integration-patterns` — Middleware platform selection (MuleSoft, Boomi, Dell Boomi)
 - `integration/change-data-capture-integration` — CDC for event-driven on-premises sync as alternative to polling relay
-- `security/salesforce-shield-platform-encryption` — Field-level encryption at rest in Salesforce (distinct from in-transit gateway encryption)
+- `security/platform-encryption` — Field-level encryption at rest in Salesforce (distinct from in-transit gateway encryption)
 
 ## Official Sources Used
 

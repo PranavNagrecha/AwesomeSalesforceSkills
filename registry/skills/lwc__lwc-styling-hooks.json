@@ -73,9 +73,9 @@
     "fa12fb43b59654620c64",
     "fef8b250345bda307ba2"
   ],
-  "content_hash": "598e3b091799b2a39e9809081e9a9105716a74c7d789e6bf8dbe42d8d0591343",
+  "content_hash": "2adeb0ac723abc4fd571b6aa116c535629b1b80c6766effc69ebe6afad740727",
   "dependencies": [],
-  "description": "Use when theming Lightning base components or custom LWCs with SLDS Styling Hooks \u2014 CSS custom properties such as `--slds-c-button-color-background`, `--slds-g-color-brand-base-50`, and `--sds-c-*` \u2014 across app, page, component, or Experience Cloud scopes, including SLDS 2 (2e) migration via SLDS Validator / Linter and dark-mode surface work. Triggers: 'how to theme lightning-button', 'custom color without overriding slds classes', 'slds 2 migration for lwc', '--slds-c-button-color-background doesn't work', 'experience cloud brand color in lwc', 'dark mode lwc base components'. NOT for raw CSS overrides that target SLDS internal class names \u2014 those break on upgrade \u2014 and NOT for Experience Cloud theme designer work broader than styling hooks (palette pickers, custom CSS files, branding sets, theme layouts).",
+  "description": "Use when theming Lightning base components or custom LWCs with SLDS Styling Hooks \u2014 CSS custom properties such as `--slds-c-button-color-background`, `--slds-g-color-brand-base-50`, and `--sds-c-*` \u2014 across app, page, component, or Experience Cloud scopes, including SLDS 2 (2e) migration via SLDS Validator / Linter and dark-mode surface work. Triggers: 'how to theme lightning-button', 'custom color without overriding slds classes', 'slds 2 migration for lwc', '--slds-c-button-color-background doesn't work', 'experience cloud brand color in lwc', 'dark mode lwc base components'. NOT for your own component's scoped CSS and shadow-boundary problems \u2014 use lwc/lwc-css-and-styling. NOT for Experience Cloud branding sets and palette pickers \u2014 use admin/experience-cloud-site-setup.",
   "file_location": "skills/lwc/lwc-styling-hooks",
   "id": "lwc/lwc-styling-hooks",
   "inputs": [

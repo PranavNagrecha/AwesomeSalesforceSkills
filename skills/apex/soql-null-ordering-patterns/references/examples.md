@@ -2,9 +2,9 @@
 
 ## Example 1: ASC sort with explicit NULLS LAST
 
-**Context:** Account list view sorted by `LastActivityDate ASC`. About 30% of accounts have never had activity (null).
+**Context:** A custom LWC datatable of accounts sorted by `LastActivityDate ASC`, shown alongside the standard Account list view. About 30% of accounts have never had activity (null).
 
-**Problem:** Default `ORDER BY LastActivityDate ASC` places null records at the *top* of the list — precisely the accounts the sales team is *least* interested in.
+**Problem:** Default `ORDER BY LastActivityDate ASC` places null records at the *top* of the component — precisely the accounts the sales team is *least* interested in, and the opposite end from where the standard list view beside it now puts them. Spring '26 made blanks the highest value in list-view sorting; SOQL's default was not changed, so the two surfaces disagree and the custom component is the one that gets reported as broken.
 
 **Solution:**
 

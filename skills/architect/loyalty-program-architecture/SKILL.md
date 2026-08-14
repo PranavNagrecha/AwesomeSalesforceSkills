@@ -201,15 +201,18 @@ Without an architectural answer, each of these gets implemented ad-hoc and produ
 
 Step-by-step instructions for an architect or AI agent working on this task:
 
-1. Confirm business targets. Get marketing/finance to commit to lifetime-value uplift, retention rate, and target tier distribution. Without these, tier thresholds are guesses.
-2. Pull customer transaction-volume data for the last 12 months. Compute percentile distribution of qualifying-equivalent transactions per member.
-3. Propose tier thresholds derived from the distribution and target distribution. Stress-test under "all members double behavior" and "all members halve behavior" scenarios.
-4. Design the currency split. Pick a visibly distinct ratio between qualifying and non-qualifying (1:5 to 1:100). Document the redemption-to-qualifying logic so the marketing team can build redemption rules without bleeding into tier logic.
-5. Define fraud controls. Per-account daily/weekly accrual caps, redemption holds, tier-credit reversal pipeline. Document the DPE jobs that enforce each.
-6. Decide partner topology (if applicable). Hub-and-spoke is the default. Document accrual factor per partner and the partner-DPE schedule.
-7. Decide multi-region pattern (if applicable). Federation is the GDPR-safe default.
-8. Design tier descalation. Reset cadence, grace period, lookback window, lifetime-status policy. Document the member-experience text that explains the rule.
-9. Hand off to `integration/loyalty-management-setup` for configuration. Provide the architecture document as the input; the setup skill consumes it.
+1. **Confirm business targets.** Get marketing/finance to commit to lifetime-value uplift, retention rate, and target tier distribution. Without these, tier thresholds are guesses.
+2. **Model the member base.** Pull customer transaction-volume data for the last 12 months. Compute percentile distribution of qualifying-equivalent transactions per member.
+3. **Design the tier structure.**
+   - Propose tier thresholds derived from the distribution and target distribution. Stress-test under "all members double behavior" and "all members halve behavior" scenarios.
+   - Design tier descalation: reset cadence, grace period, lookback window, lifetime-status policy. Document the member-experience text that explains the rule.
+4. **Design the currency and accrual controls.**
+   - Currency split: pick a visibly distinct ratio between qualifying and non-qualifying (1:5 to 1:100). Document the redemption-to-qualifying logic so the marketing team can build redemption rules without bleeding into tier logic.
+   - Fraud controls: per-account daily/weekly accrual caps, redemption holds, tier-credit reversal pipeline. Document the DPE jobs that enforce each.
+5. **Decide the topology extensions (if applicable).**
+   - Partner topology: hub-and-spoke is the default. Document accrual factor per partner and the partner-DPE schedule.
+   - Multi-region pattern: federation is the GDPR-safe default.
+6. **Hand off to `integration/loyalty-management-setup`** for configuration. Provide the architecture document as the input; the setup skill consumes it.
 
 ---
 
@@ -259,7 +262,7 @@ Run through these before marking architectural work in this area complete:
 ## Related Skills
 
 - `integration/loyalty-management-setup` — the implementation skill that consumes this architecture
-- `integration/channel-revenue-management-setup` — for B2B channel partner incentive programs (often confused with B2B partner loyalty)
-- `architect/data-residency-and-compliance` — for the multi-region federation decision-making
-- `integration/data-cloud-integration` — if loyalty data feeds Data Cloud for customer 360 / segmentation
+- `admin/rebate-management-setup` — for B2B channel partner incentive programs (often confused with B2B partner loyalty)
+- `architect/multi-org-strategy` — for the multi-region federation decision-making
+- `integration/data-cloud-integration-strategy` — if loyalty data feeds Data Cloud for customer 360 / segmentation
 - `architect/event-driven-architecture` — for the cross-region federation Platform Event pattern in multi-region designs

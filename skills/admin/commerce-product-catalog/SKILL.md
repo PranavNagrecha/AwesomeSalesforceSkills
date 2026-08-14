@@ -1,6 +1,6 @@
 ---
 name: commerce-product-catalog
-description: "Use when configuring or troubleshooting the B2B/B2C Commerce product catalog — ProductCatalog, ProductCategory, ProductCategoryProduct, WebStoreCatalog, CommerceEntitlementPolicy, product attributes, and product variants. Trigger keywords: product catalog, product category, commerce catalog, entitlement policy, product variants, product attributes, catalog visibility. NOT for CPQ product catalog (bundles, options, price rules) or for loading standard Product2/Pricebook2 data outside Commerce."
+description: "Use when configuring or troubleshooting the B2B/B2C Commerce product catalog — ProductCatalog, ProductCategory, ProductCategoryProduct, WebStoreCatalog, CommerceEntitlementPolicy, product attributes, and product variants. Trigger keywords: product catalog, product category, commerce catalog, entitlement policy, product variants, product attributes, catalog visibility. NOT for taxonomy, attribute strategy or category navigation design — use admin/commerce-catalog-strategy. NOT for search ranking, facets or index rebuilds — use apex/commerce-search-customization. NOT for CPQ catalogs."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

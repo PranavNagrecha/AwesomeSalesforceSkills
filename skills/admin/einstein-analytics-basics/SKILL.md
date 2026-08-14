@@ -1,6 +1,6 @@
 ---
 name: einstein-analytics-basics
-description: "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau should be used for analytics, or when reviewing and troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for standard report builder questions unless the decision is whether reports are still enough."
+description: "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau is the right level of analytics tooling, and when reviewing or troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for a detailed CRM Analytics vs Tableau licensing and platform comparison — use architect/crm-analytics-vs-tableau-decision. NOT for building the app, lenses and datasets — use admin/crm-analytics-app-creation."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

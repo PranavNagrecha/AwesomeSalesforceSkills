@@ -49,9 +49,9 @@
     "f733ebcd317e6cd5b5cd",
     "fae3d77c79044d360f53"
   ],
-  "content_hash": "31ce2d95e44ed9fc4708c5aee2712f6f7e2f33133670c10a6b8f0ca54bf02cf4",
+  "content_hash": "c893f70fdd44a2b7090f77d3afaf991bf5cda1e99e74d3da00b3f2f1da8001f4",
   "dependencies": [],
-  "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration, including the `configurationEditor` metadata hook, builder-side APIs, validation, and value-change events. Triggers: 'custom property editor', 'Flow configuration editor', 'builderContext', 'inputVariables', 'configurationEditor'. NOT for ordinary runtime screen-component behavior when no Flow Builder design-time customization is involved.",
+  "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or. Triggers: custom property editor, Flow configuration editor, builderContext. NOT for a Flow screen component with no design-time editor \u2014 use lwc/lwc-in-flow-screens. NOT for deciding whether a property editor is warranted \u2014 use flow/flow-custom-property-editors.",
   "file_location": "skills/lwc/custom-property-editor-for-flow",
   "id": "lwc/custom-property-editor-for-flow",
   "inputs": [

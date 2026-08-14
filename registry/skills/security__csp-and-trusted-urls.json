@@ -27,9 +27,9 @@
     "e77d77b50adde077ec4f",
     "e8a3885deb047e093cd9"
   ],
-  "content_hash": "62b9259976d14602bc4ff3ed073b2257d86edee8d1a983edcc8e83cb92d73ea5",
+  "content_hash": "f34b9aa62faeb6315b7b2929f89aad0432d775119963ce6a4655b2d893fe8fa1",
   "dependencies": [],
-  "description": "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration.",
+  "description": "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration \u2014 use lwc/static-resources-in-lwc.",
   "file_location": "skills/security/csp-and-trusted-urls",
   "id": "security/csp-and-trusted-urls",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: commerce-pricing-and-promotions
-description: "Use this skill when configuring pricebooks, tiered pricing, promotions, coupon codes, or cart discounts for B2B or D2C Commerce stores. Trigger keywords: WebStorePricebook, BuyerGroupPricebook, PriceAdjustmentSchedule, PromotionsCartCalculator, commerce coupon, cart-level discount, tiered price, Commerce promotion. NOT for CPQ pricing, standard Sales Cloud Opportunity pricebooks, or Quote pricing."
+description: "Configure pricebooks, tiered pricing, promotions, coupon codes, and cart discounts for B2B or D2C Commerce stores. Trigger keywords: WebStorePricebook, BuyerGroupPricebook, PriceAdjustmentSchedule, PromotionsCartCalculator, commerce coupon, cart-level discount, tiered price, Commerce promotion. NOT for Sales Cloud pricebooks and PricebookEntry - use admin/products-and-pricebooks. NOT for CPQ quote pricing and discount schedules - use admin/cpq-pricing-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

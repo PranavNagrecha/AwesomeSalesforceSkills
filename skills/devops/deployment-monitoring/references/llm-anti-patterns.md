@@ -30,12 +30,13 @@ fi
 # Only treat the explicit terminal Succeeded state as success
 case "$STATUS" in
   Succeeded) echo "Success"; exit 0 ;;
-  Failed|Canceled) echo "Failed"; exit 1 ;;
-  Pending|InProgress) sleep 30; continue ;;  # keep polling
+  Failed|SucceededPartial|FinalizingDeployFailed|Canceled) echo "Failed"; exit 1 ;;
+  Pending|InProgress|FinalizingDeploy|Canceling) sleep 30; continue ;;  # keep polling
+  *) echo "Unknown status: $STATUS"; exit 1 ;;                          # fail closed
 esac
 ```
 
-**Detection hint:** Look for `!= "Failed"` or `== "InProgress"` as the sole condition for treating a deployment as complete. Any check that does not wait for `Succeeded` as the explicit positive terminal state is wrong.
+**Detection hint:** Look for `!= "Failed"` or `== "InProgress"` as the sole condition for treating a deployment as complete. Any check that does not wait for `Succeeded` as the explicit positive terminal state is wrong. Also check the failure branch covers all five terminal values — a loop that names only `Succeeded|Failed|Canceled` spins forever on `SucceededPartial` and `FinalizingDeployFailed`.
 
 ---
 
@@ -196,3 +197,34 @@ while (true) {
 ```
 
 **Detection hint:** Any SOAP or REST polling loop that calls `checkDeployStatus` or polls the REST endpoint without a maximum elapsed time guard is missing a critical safety bound.
+
+---
+
+## Anti-Pattern 7: Promising That a Running Deployment Can Be Canceled, and Calling It a Rollback
+
+**What the LLM generates:**
+
+```
+"The deployment is still running, so just cancel it — run
+`sf project deploy cancel --job-id <id>` (or call cancelDeploy()) any time
+before it completes and nothing will be committed to the org."
+```
+
+**Why it happens:** LLMs generalise from CI systems where an in-flight job can be aborted at any point and aborting means nothing shipped. Salesforce metadata deployments have a finalizing phase that is past the point of no return, and the cancel semantics changed at Metadata API 65.0 (Winter '26) — training data mostly predates that. The model also collapses "cancel" and "rollback" into one concept, which Salesforce never offered.
+
+**Correct pattern:**
+
+```
+"Check the status first. If it reads FinalizingDeploy, the deploy can no longer
+be canceled at Metadata API 65.0+ — the call returns INVALID_ID_FIELD with
+`You cannot cancel the deployment while finalizing is in progress`. Your options
+are to let it finish and deploy a corrective change, or restore from a prior
+known-good package.
+
+If the cancel call is made below API 65.0, a `Canceled` result does NOT prove the
+org is unchanged — a cancel can succeed while the deployment's data is also
+committed. Verify the org's actual metadata state before reporting a clean abort.
+The gate is the API version of the CANCEL CALL, not the org's release."
+```
+
+**Detection hint:** Any cancellation advice that omits the API-version gate, or that describes cancel as undoing what already deployed, is wrong. Also flag output that reports the first cancel response as final — the request is asynchronous and can return `Canceling` before it reaches `Canceled`.

@@ -1,6 +1,6 @@
 ---
 name: cpq-pricing-rules
-description: "Use this skill when configuring or troubleshooting Salesforce CPQ pricing: Price Rules, Price Conditions, Price Actions, Lookup Queries, Discount Schedules, Block Pricing, Percent of Total, and Contracted Prices. Trigger keywords: CPQ price rule, price action, discount schedule, block pricing, percent of total, contracted price, SBQQ__PriceRule__c, CPQ quote calculation engine, price waterfall. NOT for standard Salesforce pricebook pricing (use the products-and-pricebooks skill), CPQ product bundle configuration (use cpq-product-catalog-setup), or quote template/document setup."
+description: "Use when configuring or troubleshooting Salesforce CPQ pricing: Price Rules, Price Conditions, Price Actions, Lookup Queries, Discount Schedules, Block Pricing, Percent of Total, and Contracted Prices. Trigger keywords: CPQ price rule, price action, discount schedule, block pricing, percent of total, contracted price, SBQQ__PriceRule__c, CPQ quote calculation engine, price waterfall. NOT for picking the pricing method — use admin/pricing-model-design. NOT for pricebook pricing without CPQ — use admin/products-and-pricebooks."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

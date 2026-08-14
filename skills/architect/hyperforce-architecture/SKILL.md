@@ -160,14 +160,16 @@ For "should we adopt Private Connect once on Hyperforce?" — read `integration/
 
 ## Recommended Workflow
 
-1. Confirm current infrastructure (First-Gen vs Hyperforce) and surface the migration trigger (Salesforce-initiated, customer-elected, feature-blocked).
-2. Map data-residency obligations to candidate regions; pick one and document the rationale and the pairing implications.
-3. Inventory every IP allowlist (customer firewalls, middleware, Setup-side, partner orgs, identity providers); produce the update plan landing before the migration window.
-4. Build the validation test plan with owners and pass/fail criteria. Cover APIs, SSO, integrations, scheduled jobs, partner orgs, IP-pinned profiles, Bulk API, and Marketing Cloud / MCAE sync.
-5. Coordinate the maintenance window with downstream consumers and business stakeholders. Communicate the read-only cutover window 14–30 days ahead.
-6. Execute the migration; immediately after cutover run the validation test plan; escalate failures via Migration Assistance.
-7. Document the new region, IP ranges, and infrastructure baseline in an architecture decision record. Update related architecture artifacts (HA/DR, integration catalog, network diagrams).
-8. Post-migration: revisit the backlog for newly-unblocked Hyperforce-only features (Private Connect, Data Cloud capabilities, regional Einstein). Sequence those next.
+1. **Confirm current infrastructure** (First-Gen vs Hyperforce) and surface the migration trigger (Salesforce-initiated, customer-elected, feature-blocked).
+2. **Map data-residency obligations to candidate regions;** pick one and document the rationale and the pairing implications.
+3. **Prepare the change inventory and the test plan.**
+   - Inventory every IP allowlist (customer firewalls, middleware, Setup-side, partner orgs, identity providers); produce the update plan landing before the migration window.
+   - Build the validation test plan with owners and pass/fail criteria. Cover APIs, SSO, integrations, scheduled jobs, partner orgs, IP-pinned profiles, Bulk API, and Marketing Cloud / MCAE sync.
+4. **Coordinate the maintenance window** with downstream consumers and business stakeholders. Communicate the read-only cutover window 14–30 days ahead.
+5. **Execute the migration;** immediately after cutover run the validation test plan; escalate failures via Migration Assistance.
+6. **Close out.**
+   - Document the new region, IP ranges, and infrastructure baseline in an architecture decision record. Update related architecture artifacts (HA/DR, integration catalog, network diagrams).
+   - Revisit the backlog for newly-unblocked Hyperforce-only features (Private Connect, Data Cloud capabilities, regional Einstein). Sequence those next.
 
 ---
 

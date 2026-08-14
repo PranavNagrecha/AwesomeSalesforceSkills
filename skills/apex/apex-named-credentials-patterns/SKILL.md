@@ -1,6 +1,6 @@
 ---
 name: apex-named-credentials-patterns
-description: "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex'. NOT for Named Credential setup in the Salesforce Setup UI — use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) — use integration/callouts-and-http-integrations."
+description: "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex'. NOT for Named Credential setup in the Salesforce Setup UI — use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) — use apex/callouts-and-http-integrations."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -256,6 +256,6 @@ public class AuthStatusChecker {
 ## Related Skills
 
 - `integration/named-credentials-setup` — use for creating or configuring Named Credentials and External Credentials in the Setup UI. This skill covers only the Apex consumption patterns.
-- `integration/callouts-and-http-integrations` — use for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns, error handling) that apply regardless of Named Credentials.
+- `apex/callouts-and-http-integrations` — use for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns, error handling) that apply regardless of Named Credentials.
 - `apex/apex-queueable-patterns` — use when Named Credential callouts need to run asynchronously outside a synchronous transaction.
 - `apex/callout-limits-and-async-patterns` — use when hitting the 100 callout per transaction limit or designing retry/backoff for callout failures.

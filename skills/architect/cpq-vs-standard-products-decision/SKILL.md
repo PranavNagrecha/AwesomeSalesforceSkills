@@ -1,6 +1,6 @@
 ---
 name: cpq-vs-standard-products-decision
-description: "Use when deciding whether to implement Salesforce CPQ or stay with standard Products and Pricebooks for quoting and pricing. Triggers: 'should we buy CPQ or use standard pricebooks', 'is CPQ worth the cost for our quoting process', 'product bundling without CPQ', 'guided selling vs manual product selection', 'complex pricing rules or multi-dimensional discounting'. NOT for CPQ implementation details, NOT for CPQ package installation or configuration, NOT for Revenue Cloud Advanced."
+description: "Use when deciding whether to implement Salesforce CPQ or stay with standard Products and Pricebooks for quoting and pricing. Triggers: 'should we buy CPQ or use standard pricebooks', 'is CPQ worth the cost for our quoting process', 'product bundling without CPQ', 'guided selling vs manual product selection', 'complex pricing rules or multi-dimensional discounting'. NOT for designing bundles, the pricing waterfall or QCP once CPQ is chosen — use architect/cpq-architecture-patterns. NOT for picking a CPQ pricing method for a product — use admin/pricing-model-design. NOT for Revenue Cloud / RLM as the alternative to CPQ — use architect/revenue-cloud-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

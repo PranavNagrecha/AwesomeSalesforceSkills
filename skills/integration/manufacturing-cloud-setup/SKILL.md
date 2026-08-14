@@ -1,6 +1,6 @@
 ---
 name: manufacturing-cloud-setup
-description: "Use this skill when configuring Salesforce Manufacturing Cloud — including Sales Agreement setup, Account-Based Forecasting (ABF) recalc jobs, run-rate management, Rebate Management programs, channel inventory tracking via Channel Revenue Management, and Group Membership / OrderItem-to-SalesAgreement reconciliation. Triggers on: Manufacturing Cloud setup, Sales Agreement Salesforce, account-based forecast recalculation, run rate manufacturing, rebate program setup, channel revenue management. NOT for general Sales Cloud opportunity-to-order flow (use standard Opportunity / Order), NOT for Field Service install-base management (use FSL skills), NOT for Automotive Cloud dealer modeling (use automotive-cloud-setup)."
+description: "Use this skill when configuring Salesforce Manufacturing Cloud — including Sales Agreement setup, Account-Based Forecasting (ABF) recalc jobs, run-rate management, Rebate Management programs, channel inventory tracking. NOT for general Sales Cloud opportunity-to-order flow (use standard Opportunity / Order) — use admin/rebate-management-setup."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

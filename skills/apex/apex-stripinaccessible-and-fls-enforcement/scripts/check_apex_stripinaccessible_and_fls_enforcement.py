@@ -125,9 +125,16 @@ def scan_security_enforced(
     """WITH SECURITY_ENFORCED findings for a whole file.
 
     File-scoped on purpose: a `.trigger` body has no method headers, so a
-    method-scoped rule would report every trigger clean — the one place the
-    reader most needs the finding, since a trigger body runs in system mode at
-    every API version and enforces nothing on its own.
+    method-scoped rule would report every trigger clean while its SOQL goes
+    unread. Trigger bodies need the finding as much as classes do: database
+    operations inside a trigger run in user mode unless system mode is stated
+    explicitly, so the clause is doing the same legacy job there, and at
+    apiVersion 67.0+ it no longer compiles in a `.trigger` either. The sibling
+    read is `<name>.trigger-meta.xml` for triggers and `<name>.cls-meta.xml`
+    for classes; `api_version_of()` covers both.
+
+    Never flag `WITH USER_MODE` (or its absence) inside a trigger as a defect
+    — it is the documented default there, not an error.
     """
     issues: list[str] = []
     for em in SECURITY_ENFORCED_SOQL.finditer(text):

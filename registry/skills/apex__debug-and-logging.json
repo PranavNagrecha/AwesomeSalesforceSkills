@@ -54,9 +54,9 @@
     "fb5e1d4613abce19f371",
     "ff220b4b270f0404948c"
   ],
-  "content_hash": "179b49d550dd78b43c0dc9f9f443c01326f84bf965a60f6354aefd85f6d642cf",
+  "content_hash": "0699599d92f7673b9554db51e9839594292fc186f9f1dd514379576f8f5d1ff5",
   "dependencies": [],
-  "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for exception taxonomy design alone or for non-Apex observability platforms by themselves.",
+  "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for trace flag setup, reading a log, or the Developer Console \u2014 use apex/debug-logs-and-developer-console. NOT for building a custom Log__c framework \u2014 use apex/custom-logging-and-monitoring.",
   "file_location": "skills/apex/debug-and-logging",
   "id": "apex/debug-and-logging",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: automated-regression-testing
-description: "Use when building or maintaining automated end-to-end regression tests for Salesforce UI (Lightning, LWC, Aura, Flows), selecting a testing framework (UTAM, Provar, Selenium), handling Shadow DOM challenges, or scheduling regression suites against pre-release orgs. Triggers: 'UTAM page objects', 'Shadow DOM testing', 'Salesforce E2E regression', 'Provar test automation', 'pre-release regression window'. NOT for Apex unit testing, LWC Jest component testing, manual UAT planning, or Agentforce conversational testing."
+description: "Use when building or maintaining automated end-to-end regression tests for Salesforce UI (Lightning, LWC, Aura, Flows), selecting a testing framework (UTAM, Provar, Selenium), handling Shadow DOM challenges, or scheduling regression suites. Triggers: 'UTAM page objects', 'Shadow DOM testing', 'Salesforce E2E regression', 'Provar test automation'. NOT for Apex unit testing — use apex/test-class-standards. NOT for LWC Jest — use lwc/lwc-testing. NOT for manual UAT planning — use admin/uat-and-acceptance-criteria."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

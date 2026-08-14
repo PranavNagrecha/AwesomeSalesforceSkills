@@ -114,9 +114,9 @@
     "fde37158a6c51a76c89c",
     "fe22aaccb78062a5d934"
   ],
-  "content_hash": "e310d9b51da3d9c1de427b40ec0c75b7aa9ff9952e589156fc724ebbb1b6cf07",
+  "content_hash": "1689c0e8ae261afcf7039f0c4725a39bbae6313defd3264bafaddfa64fad733d",
   "dependencies": [],
-  "description": "Use when designing or reviewing the integration layer between Salesforce Industries clouds (Insurance, Communications, Energy & Utilities) and vertical backend systems such as policy administration systems, BSS/OSS platforms, or Customer Information Systems (CIS). NOT for generic Salesforce integration patterns unrelated to industry verticals, NOT for OmniStudio component design decisions (see omnistudio-vs-standard-architecture), NOT for FSC data model or module licensing (see insurance-cloud-architecture).",
+  "description": "Use when designing or reviewing the integration layer between Salesforce Industries clouds (Insurance, Communications, Energy & Utilities) and vertical backend systems such as policy administration systems, BSS/OSS platforms, or Customer Information Systems (CIS). NOT for calling a named Industries API (TMF679, InsurancePolicy Connect) \u2014 use omnistudio/industries-api-extensions. NOT for FSC data model or module licensing \u2014 use architect/insurance-cloud-architecture.",
   "file_location": "skills/architect/industries-integration-architecture",
   "id": "architect/industries-integration-architecture",
   "inputs": [

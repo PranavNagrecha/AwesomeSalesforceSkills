@@ -1,6 +1,6 @@
 ---
 name: portal-requirements-gathering
-description: "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for Experience Cloud implementation or configuration. NOT for post-launch portal optimization or redesign."
+description: "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for building the site in Experience Builder — use admin/experience-cloud-site-setup. NOT for designing the deal-registration and MDF processes themselves — use admin/partner-community-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

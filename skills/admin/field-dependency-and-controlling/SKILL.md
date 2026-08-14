@@ -1,6 +1,6 @@
 ---
 name: field-dependency-and-controlling
-description: "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for record types (use admin/record-types). NOT for validation rules."
+description: "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for creating picklist fields or Global Value Sets and replacing retired values - use admin/picklist-and-value-sets. NOT for filtering picklist values per record type or layout - use admin/record-types-and-page-layouts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -180,6 +180,6 @@ picklistValues({ data }) {
 
 ## Related Skills
 
-- `admin/record-types` — RT-level picklist filtering layers on top
-- `admin/validation-rules-patterns` — enforcing matrix via VR
+- `admin/record-types-and-page-layouts` — RT-level picklist filtering layers on top
+- `admin/validation-rules` — enforcing matrix via VR
 - `lwc/lwc-wire-refresh-patterns` — `getPicklistValues` wire behavior

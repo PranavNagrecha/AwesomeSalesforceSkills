@@ -52,9 +52,9 @@
     "fa7ebc88fe8d029baa58",
     "fc1699fd93755b496642"
   ],
-  "content_hash": "ed706a6037c040a4cf38d000e3b2b1fed9ff65f39c5a557e01e9dcba11a5c5bf",
+  "content_hash": "bb41bf81c9610e5341479737c126a36e2d622aa8bfe9f71e023c00388824aa54",
   "dependencies": [],
-  "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation.",
+  "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter. NOT for Classic Encryption (deprecated), field-level security policy, or tenant secret k \u2014 use security/platform-encryption.",
   "file_location": "skills/security/encrypted-field-query-patterns",
   "id": "security/encrypted-field-query-patterns",
   "inputs": [

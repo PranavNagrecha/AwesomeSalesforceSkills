@@ -37,9 +37,9 @@
     "fa36f11ec1cec78a66bc",
     "fc8946230d087d540e37"
   ],
-  "content_hash": "b2af99711e2ff9bb7efef262cbda152c68fb76dcf5588ddf0361b03aa2a27496",
+  "content_hash": "630bbe4a788303179974951c746ecf12436368d98dc23ab21e18226bdacb8b96",
   "dependencies": [],
-  "description": "Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup.",
+  "description": "Omni-Channel analytics data: agent work records, queue metrics, capacity, wait times. Triggers: Omni-Channel reporting, agent work metrics, queue wait time. NOT for routing/capacity admin setup \u2014 use admin/omni-channel-routing-setup. NOT for capacity modeling architecture \u2014 use architect/omni-channel-capacity-model.",
   "file_location": "skills/data/omni-channel-reporting-data",
   "id": "data/omni-channel-reporting-data",
   "inputs": [

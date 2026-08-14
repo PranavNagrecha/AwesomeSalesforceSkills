@@ -1,6 +1,6 @@
 ---
 name: journey-builder-administration
-description: "Use when setting up, configuring, or troubleshooting Marketing Cloud Journey Builder — including entry sources, activities, decision splits, wait activities, goals, exit criteria, journey versions, test mode, or journey analytics. Triggers: 'journey builder setup', 'entry source configuration', 'decision split not routing', 'exit criteria not removing contacts', 'goal not tracking conversion', 'journey version publishing', 'journey re-entry settings', 'wait activity date field'. NOT for Flow-based automation, Marketing Cloud Account Engagement (Pardot) engagement programs, or Salesforce core automation rules."
+description: "Use when setting up, configuring, or troubleshooting Marketing Cloud Journey Builder — including entry sources, activities, decision splits, wait activities, goals, exit criteria, journey versions, test mode, or journey analytics. Triggers: 'journey builder setup', 'entry source configuration', 'decision split not routing', 'exit criteria not removing contacts', 'goal not tracking conversion', 'journey version publishing', 'journey re-entry settings', 'wait activity date field'. NOT for coding a custom activity or entry source — use apex/marketing-cloud-custom-activities. NOT for business units and sender profiles — use admin/marketing-cloud-engagement-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

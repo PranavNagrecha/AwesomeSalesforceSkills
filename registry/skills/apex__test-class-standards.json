@@ -66,9 +66,9 @@
     "f85f34eee852bb61399b",
     "fe01022e8bbb215b9d36"
   ],
-  "content_hash": "b462849569d077cbafc9ded4f11c02531311e0134974314b066fd3517f1e1b73",
+  "content_hash": "6b8904b1997d429cf4ad4d4c08a8dda4944c9c6a1126f94ba6f28670fcafdab0",
   "dependencies": [],
-  "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design.",
+  "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself \u2014 use apex/test-data-factory-patterns. NOT for the mock class itself \u2014 use apex/apex-http-callout-mocking.",
   "file_location": "skills/apex/test-class-standards",
   "id": "apex/test-class-standards",
   "inputs": [

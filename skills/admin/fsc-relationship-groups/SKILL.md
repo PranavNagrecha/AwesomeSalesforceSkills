@@ -40,7 +40,7 @@ outputs:
 dependencies:
   - admin/household-model-configuration
   - admin/financial-account-setup
-  - admin/person-accounts
+  - data/person-accounts
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-10
@@ -232,5 +232,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `admin/household-model-configuration` — deeper coverage of the FSC household data model, Rollups__c picklist configuration, and batch rollup scheduling; this skill focuses on group types and member roles
 - `admin/financial-account-setup` — configure Financial Account records and roles that roll up to groups; this skill handles the group container, that skill handles what goes inside it
-- `admin/person-accounts` — enable and configure Person Accounts, which are required as group members in FSC
+- `data/person-accounts` — enable and configure Person Accounts, which are required as group members in FSC
 - `admin/fsc-data-model` — broader FSC data model overview including the full object graph and FSC component architecture

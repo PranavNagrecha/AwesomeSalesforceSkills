@@ -1,0 +1,98 @@
+[
+  {
+    "i": 1,
+    "query": "set up email templates",
+    "expected_skill": "admin/email-templates-and-alerts",
+    "domain": "admin"
+  },
+  {
+    "i": 11,
+    "query": "review apex code for security",
+    "expected_skill": "security/secure-coding-review-checklist",
+    "domain": "security"
+  },
+  {
+    "i": 21,
+    "query": "stop sales reps from editing closed opportunities",
+    "expected_skill": "admin/validation-rules",
+    "domain": "admin"
+  },
+  {
+    "i": 31,
+    "query": "how do I stop my flow from hitting SOQL limits",
+    "expected_skill": "flow/flow-bulkification",
+    "domain": "flow"
+  },
+  {
+    "i": 41,
+    "query": "delete personal data for GDPR",
+    "expected_skill": "security/gdpr-data-privacy",
+    "domain": "security"
+  },
+  {
+    "i": 51,
+    "query": "restrict access by IP address",
+    "expected_skill": "security/ip-relaxation-and-restriction",
+    "domain": "security"
+  },
+  {
+    "i": 61,
+    "query": "schedule something to run every night",
+    "expected_skill": "flow/scheduled-flows",
+    "domain": "flow"
+  },
+  {
+    "i": 71,
+    "query": "make Salesforce faster",
+    "expected_skill": "architect/limits-and-scalability-planning",
+    "domain": "architect"
+  },
+  {
+    "i": 81,
+    "query": "we want to retire vlocity and move to standard components",
+    "expected_skill": "omnistudio/vlocity-to-native-omnistudio-migration",
+    "domain": "omnistudio"
+  },
+  {
+    "i": 91,
+    "query": "screen reader can't use my custom component",
+    "expected_skill": "lwc/lwc-accessibility",
+    "domain": "lwc"
+  },
+  {
+    "i": 101,
+    "query": "keep secrets out of the pipeline logs",
+    "expected_skill": "devops/pipeline-secrets-management",
+    "domain": "devops"
+  },
+  {
+    "i": 111,
+    "query": "strip customer phone numbers before they reach the model",
+    "expected_skill": "agentforce/agentforce-pii-redaction",
+    "domain": "agentforce"
+  },
+  {
+    "i": 121,
+    "query": "break a giant flow into reusable pieces",
+    "expected_skill": "flow/subflows-and-reusability",
+    "domain": "flow"
+  },
+  {
+    "i": 131,
+    "query": "match records coming from the ERP to what's already here",
+    "expected_skill": "data/external-id-strategy",
+    "domain": "data"
+  },
+  {
+    "i": 141,
+    "query": "run some code every night at 2am",
+    "expected_skill": "apex/apex-scheduled-jobs",
+    "domain": "apex"
+  },
+  {
+    "i": 151,
+    "query": "the child lookup should only show records under the parent",
+    "expected_skill": "admin/lookup-filter-cross-object-patterns",
+    "domain": "admin"
+  }
+]

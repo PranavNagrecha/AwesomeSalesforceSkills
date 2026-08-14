@@ -56,9 +56,9 @@
     "f75e97461d57a1eaf9b0",
     "f8dd97790ee28ae14464"
   ],
-  "content_hash": "f94a15c9e29d994105503a54b9709966337c839007b828b6aca7cd8a140ab80d",
+  "content_hash": "3a4c59205a09b8b1d4d43cfccbf302ba26373cb4dfa460f2a35e29de09d1c167",
   "dependencies": [],
-  "description": "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability', 'how to encode output in Apex', 'JSENCODE Visualforce', 'open redirect prevention'. NOT for Apex CRUD/FLS enforcement (use soql-security or apex-crud-and-fls), NOT for Shield encryption (use shield-encryption-key-management), NOT for AppExchange security review process (use secure-coding-review-checklist).",
+  "description": "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability'. NOT for Apex CRUD/FLS enforcement (use soql-security or apex-crud-and-fls), NOT for Shie \u2014 use apex/soql-security.",
   "file_location": "skills/security/xss-and-injection-prevention",
   "id": "security/xss-and-injection-prevention",
   "inputs": [

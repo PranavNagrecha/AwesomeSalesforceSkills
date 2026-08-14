@@ -146,9 +146,9 @@
     "fe150935b83cb77ce61d",
     "ff3ccc3043f8de5ec797"
   ],
-  "content_hash": "33f31432144e67a85880254f16fbd84b82c14670525454584fb0a29dba56d48f",
+  "content_hash": "218ae0d0c7b2d29bfca7fa6a83334b7003371abd57f59e4fbea6254343b9da33",
   "dependencies": [],
-  "description": "Mapping CSV columns to Salesforce field API names for Data Loader, dataloader.io, Workbench, and custom Bulk API V2 loads. Covers header normalization, missing/extra-column behaviour per tool, required-field detection from describe metadata, polymorphic lookup prefixes, External ID upsert binding, picklist API names vs labels, datetime/timezone handling, and the case-sensitivity divergence between Data Loader (insensitive match) and Bulk API V2 (case-sensitive headers). NOT for picklist value validation pre-load \u2014 see data-loader-picklist-validation-pre-load. NOT for batch sizing \u2014 see data-loader-batch-window-sizing. NOT for general migration planning \u2014 see data-migration-planning.",
+  "description": "Mapping CSV columns to Salesforce field API names for Data Loader, dataloader.io, Workbench, and custom Bulk API V2 loads. Covers header normalization, missing/extra-column behaviour per tool, required-field detection from describe metadata, polymorphic lookup prefixes, External ID upsert binding, picklist API names vs labels, datetime/timezone handling, and the Data Loader vs Bulk API V2 header case-sensitivity divergence. NOT for checking picklist values before the load runs \u2014 use data/data-loader-picklist-validation-pre-load. NOT for batch sizing \u2014 use data/data-loader-batch-window-sizing. NOT for sequencing a whole migration \u2014 use data/data-migration-planning.",
   "file_location": "skills/data/data-loader-csv-column-mapping",
   "id": "data/data-loader-csv-column-mapping",
   "inputs": [

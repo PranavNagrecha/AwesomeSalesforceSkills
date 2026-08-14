@@ -1,6 +1,6 @@
 ---
 name: lwc-error-boundaries
-description: "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design."
+description: "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design — use apex/exception-handling."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

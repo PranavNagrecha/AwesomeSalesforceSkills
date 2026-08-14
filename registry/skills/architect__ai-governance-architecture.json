@@ -90,11 +90,11 @@
     "fe1f54625b8a3637a266",
     "feb109122f9eded4465d"
   ],
-  "content_hash": "34b69a31d0dca37c80ed099bf7e7bdacd6cb9e615410c765aee68146b502a7f3",
+  "content_hash": "9449ab09e125e66b56244edb906a2dade5b85d543d6a064c67051eb758f4c9ee",
   "dependencies": [
     "ai-platform-architecture"
   ],
-  "description": "System architecture for Salesforce AI governance: MLOps pipeline design, AI Audit Trail architecture, Einstein Trust Layer security design, Policy-as-Code engine, and regulatory compliance design for EU AI Act and similar frameworks. NOT for general Salesforce security architecture, AI ethics policy documentation, or individual Agentforce agent configuration.",
+  "description": "System architecture for Salesforce AI governance: MLOps pipeline design, AI Audit Trail architecture, Einstein Trust Layer security design, Policy-as-Code engine, and regulatory compliance design for EU AI Act and similar frameworks. NOT for authoring AI ethics policy and human-oversight requirements - use admin/ai-ethics-and-governance-requirements. NOT for model tier selection or Supervisor/Specialist topology - use architect/ai-platform-architecture.",
   "file_location": "skills/architect/ai-governance-architecture",
   "id": "architect/ai-governance-architecture",
   "inputs": [

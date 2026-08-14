@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,027 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 66 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,027 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 67 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -17,7 +17,7 @@ load. This file tells you how to reach the one page you need.
   `well-architected.md` and `llm-anti-patterns.md`.
 - **48 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
   exposed as subagents (see the roster at the bottom of this file).
-- **66 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
+- **67 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
 - **Decision trees** under `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/`,
   which route between technologies *before* a skill is opened.
 - **Canonical templates** under `${CLAUDE_PLUGIN_ROOT}/templates/`.
@@ -83,11 +83,11 @@ carries that domain's featured skills, decision trees and templates.
 
 - **`salesforce-admin`** (253 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 - **`salesforce-agentforce`** (53 skills) — Agentforce and Einstein: agents, topics, actions, prompt templates, grounding, guardrails, evaluation and production readiness.
-- **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction.
+- **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
 - **`salesforce-architect`** (104 skills) — Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
-- **`salesforce-data`** (101 skills) — Data model, data movement and data quality: migrations, bulk data loads and extracts, query optimisation, cleaning up duplicates that already exist, archival and storage. For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead.
+- **`salesforce-data`** (101 skills) — Data model, data movement and data quality: migrations, bulk loads, query optimisation, deduplicating at volume, archival. Ordinary-volume duplicate cleanup and prevention use salesforce-admin; come here for hundreds-of-thousands+ dedup or third-party tools. LDV architecture uses salesforce-architect.
 - **`salesforce-devops`** (70 skills) — Salesforce delivery: source tracking, packaging, branching, CI/CD pipelines, environment strategy and deployment troubleshooting.
-- **`salesforce-flow`** (63 skills) — Flow Builder: record-triggered, screen, scheduled and orchestration flows, plus bulkification, fault handling, Flow-side limits, testing and versioning. Anything phrased as "my flow" belongs here even when the symptom is a limit that salesforce-apex also names.
+- **`salesforce-flow`** (63 skills) — Flow Builder: record-triggered, screen, scheduled and orchestration flows, bulkification, fault handling, limits, testing. "My flow" belongs here even when salesforce-apex also names the limit. Nightly scheduling without naming code defaults here; apex takes it when code/class/Apex is named. Flow-vs-Apex choice before anything is built: admin/process-automation-selection.
 - **`salesforce-integration`** (61 skills) — INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead.
 - **`salesforce-lwc`** (82 skills) — Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
 - **`salesforce-omnistudio`** (34 skills) — OmniStudio: OmniScripts, FlexCards, DataRaptors, Integration Procedures, Business Rules Engine and DataPack deployment.

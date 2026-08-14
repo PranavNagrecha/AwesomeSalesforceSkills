@@ -1,6 +1,6 @@
 ---
 name: customer-data-request-workflow
-description: "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy."
+description: "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for the underlying erasure mechanics (Individual sObject, ShouldForget, ContactPointConsent) — use security/gdpr-data-privacy. NOT for general backup or org-level data retention policy."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

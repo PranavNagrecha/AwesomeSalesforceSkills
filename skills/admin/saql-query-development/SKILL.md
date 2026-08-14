@@ -1,6 +1,6 @@
 ---
 name: saql-query-development
-description: "Use this skill when writing, debugging, or optimizing SAQL queries in CRM Analytics — covering pipeline syntax, aggregation, windowing functions (rank, dense_rank, moving_average), cogroup joins, rollup subtotals, piggyback queries, and REST API execution. NOT for SOQL, standard Salesforce reports, SQL databases, or any non-CRM Analytics query language."
+description: "Use this skill when writing, debugging, or optimizing SAQL queries in CRM Analytics — covering pipeline syntax, aggregation, windowing functions (rank, dense_rank, moving_average), cogroup joins, rollup subtotals, piggyback queries, and REST API execution. NOT for SOQL GROUP BY aggregates in Apex — use apex/apex-aggregate-queries. NOT for dashboard JSON steps and bindings — use admin/analytics-dashboard-json."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

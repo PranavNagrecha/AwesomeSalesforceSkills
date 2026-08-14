@@ -1,6 +1,6 @@
 ---
 name: conversational-ai-architecture
-description: "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. Does NOT cover Einstein Bot standalone implementation (see einstein-bot-architecture), Omni-Channel routing for human agents, or Flow-only automation without a conversational surface."
+description: "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. NOT for Einstein Bot dialog and NLU design — use architect/einstein-bot-architecture. NOT for cutting an existing bot over to Agentforce — use agentforce/einstein-bots-to-agentforce-migration. NOT for Omni-Channel routing for human agents — use architect/multi-channel-service-architecture. NOT for Flow-only automation without a conversational surface — use admin/process-automation-selection."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

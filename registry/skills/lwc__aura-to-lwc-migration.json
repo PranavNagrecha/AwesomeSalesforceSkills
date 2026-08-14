@@ -99,9 +99,9 @@
     "fe185da421c1dbfb64a5",
     "ff4a19fbe1d2ebea97b6"
   ],
-  "content_hash": "6e21afba4b4616d48ba91ff2774c3a259442bc07548d40bc93021f7e6e8deeec",
+  "content_hash": "9c5b1afc3598ffbfc97d1ba5438eedfd7d8c47c2fe59c4380246714e33d4191f",
   "dependencies": [],
-  "description": "Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, and Aura-LWC coexistence strategies. NOT for new LWC development from scratch or Aura feature development.",
+  "description": "Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, and Aura-LWC coexistence strategies. NOT for new LWC development from scratch or Aura feature development \u2014 use lwc/experience-cloud-lwc-components.",
   "file_location": "skills/lwc/aura-to-lwc-migration",
   "id": "lwc/aura-to-lwc-migration",
   "inputs": [

@@ -27,9 +27,9 @@
     "e61a8b0b4b2fe8d3a312",
     "e62e082e499accefb8ce"
   ],
-  "content_hash": "8ff9cfe02fbc0c50b0e576244b4911ef0e46d391df8928e208c356ced05fc07a",
+  "content_hash": "8d206e43f800cc1d94ded9c4f5cf8d598d025dfa880f267883224745ae46793e",
   "dependencies": [],
-  "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree.",
+  "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree \u2014 use data/sharing-recalculation-performance.",
   "file_location": "skills/security/dynamic-sharing-recalculation",
   "id": "security/dynamic-sharing-recalculation",
   "inputs": [

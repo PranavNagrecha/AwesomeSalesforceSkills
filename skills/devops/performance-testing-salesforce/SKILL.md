@@ -1,6 +1,6 @@
 ---
 name: performance-testing-salesforce
-description: "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time (EPT) measurement, and sandbox sizing for performance work. Triggers: 'load test Salesforce org', 'Scale Test Full Copy sandbox', 'EPT optimization', 'API concurrency limits', 'JMeter Salesforce performance'. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization (see data/soql-query-optimization), or NFR definition (see architect/nfr-definition-for-salesforce)."
+description: "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization ( — use data/soql-query-optimization."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

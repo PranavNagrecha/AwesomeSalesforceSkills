@@ -91,9 +91,9 @@
     "fd0b1914a8523833f09d",
     "ffd0f3672179f362cb06"
   ],
-  "content_hash": "8660166e489c1048ec9db7000726565be67d2ecd36f5079ee11f68b4c40372d2",
+  "content_hash": "3f4eff6c04655015302f62b6e122cc9ac9a02a4e142945490c1c7ec36efe22f1",
   "dependencies": [],
-  "description": "Use this skill when integrating Einstein Discovery predictions into Salesforce apps, automating bulk scoring jobs, deploying stories as prediction definitions, managing models via API, or querying prediction history. Trigger keywords: Einstein Discovery, smartdatadiscovery, predict endpoint, bulk scoring job, model refresh job, prediction definition, story deployment, regression prediction, multiclass prediction, CRM Analytics ML. NOT for CRM Analytics dashboard design, TCRM dataset management, Einstein Prediction Builder binary classification (which requires no CRM Analytics license), or Einstein Next Best Action recommendation strategies.",
+  "description": "Integrating Einstein Discovery predictions into Salesforce apps, automating bulk scoring jobs, deploying stories as prediction definitions, managing models via API, or querying prediction history. Trigger keywords: Einstein Discovery, smartdatadiscovery, predict endpoint, bulk scoring job, model refresh job, prediction definition, story deployment, regression prediction, multiclass prediction, CRM Analytics ML. NOT for authoring the story in CRM Analytics Studio \u2014 use admin/einstein-discovery-setup. NOT for the click-path rollout of a trained model through Model Manager and page layouts \u2014 use admin/einstein-discovery-deployment.",
   "file_location": "skills/agentforce/einstein-discovery-development",
   "id": "agentforce/einstein-discovery-development",
   "inputs": [

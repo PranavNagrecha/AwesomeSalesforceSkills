@@ -1,6 +1,6 @@
 ---
 name: flow-runtime-error-diagnosis
-description: "Use when a Salesforce Flow throws a runtime error, sends an unhandled fault email, or produces unexpected results in production or sandbox. Triggers: 'Flow error email', 'Flow failed at element', 'null reference in Flow', 'Flow SOQL limit error', 'Flow DML in loop error'. NOT for Flow design or building new flows (use record-triggered-flow-patterns or other flow/* skills), NOT for Flow debug log setup (use flow-debugging)."
+description: "Use when a Salesforce Flow throws a runtime error, sends an unhandled fault email, or produces unexpected results in production or sandbox. Triggers: 'Flow error email', 'Flow failed at element', 'null reference in Flow', 'Flow SOQL limit error', 'Flow DML in loop error'. NOT for changing who receives fault emails or suppressing noisy ones — use flow/flow-error-notification-patterns. NOT for designing fault paths before anything fails — use flow/fault-handling. NOT for org-wide error alerting and trends — use flow/flow-error-monitoring."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -193,16 +193,12 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 
 ## Recommended Workflow
 
-1. **Get the fault notification email.** Navigate to Setup → Process Automation Settings to confirm fault emails are enabled and routed correctly.
-2. **Identify the flow, version, and failing element** from the email. Note the element API name.
-3. **Open the flow in Flow Builder** and navigate to the failing element (use Ctrl+F to search by element API name).
-4. **Read the error type.** Use the error type table above to narrow the root cause.
-5. **Run Debug mode** with a representative record ID. Step through the execution to see variable values at the failing element.
-6. **Fix the root cause:** fix the null reference, move elements out of loops, correct field references, or fix the underlying validation/trigger.
-7. **Add a fault path** to the previously-failing element so future errors produce a user-friendly message rather than a raw error, even if the root cause is not fully eliminated.
-8. **Test the fix** in a sandbox with the same record scenario that triggered the original failure.
-9. **Verify the currently-active version** is the fixed version; activate it intentionally rather than relying on deployment order.
-10. **Post-mortem**: if this was a production incident, document the root cause + fix in the team's incident log so future similar failures diagnose faster.
+1. **Locate the failure.** Get the fault notification email (confirm Setup → Process Automation Settings routes faults correctly); identify the flow, version, and failing element API name; open the flow in Flow Builder and navigate to that element (Ctrl+F by API name).
+2. **Diagnose the root cause.** Read the error type against the table above; run Debug mode with a representative record ID and step through variable values at the failing element.
+3. **Fix the root cause.** Correct null references, move elements out of loops, fix field references, or resolve the underlying validation/trigger issue.
+4. **Harden for the next failure.** Add a fault path to the previously-failing element so future errors surface a user-friendly message rather than a raw platform error.
+5. **Ship and verify the fix.** Test in sandbox with the same record scenario; confirm the currently-active version is the fixed version (activate intentionally, don't rely on deploy order alone).
+6. **Post-mortem if production.** Document root cause + fix in the team's incident log so similar failures diagnose faster next time.
 
 ---
 

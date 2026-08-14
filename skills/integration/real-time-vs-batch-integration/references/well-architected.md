@@ -30,7 +30,7 @@ Run `python3 scripts/skill_graph.py integration/real-time-vs-batch-integration` 
 
 - `integration/error-handling-in-integrations` — retry, dead-letter, and circuit-breaker patterns applicable to any chosen mechanism
 - `integration/middleware-integration-patterns` — when a MuleSoft or iPaaS layer mediates between Salesforce and external systems
-- `integration/api-led-connectivity-architecture` — broader API topology design that this pattern selection feeds into
+- `architect/api-led-connectivity-architecture` — broader API topology design that this pattern selection feeds into
 
 ## Official Sources Used
 

@@ -22,13 +22,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: v4 Legacy Commands in CI Silently Produce Wrong Results
+## Gotcha 3: The Whole `scanner` CLI Topic Is Gone, Not Just One Command
 
-**What happens:** After migrating to Salesforce Code Analyzer v5, legacy `sfdx scanner:run` commands left in CI scripts either fail with `command not found` or — worse — if any v4 compatibility shim is present, run with mismatched argument parsing. The CI step may pass while producing an empty or malformed output file.
+**What happens:** A migration audit greps CI scripts for `sfdx scanner:run`, finds none, and declares the pipeline v5-clean — while `sf scanner rule list` in a reporting step and `sf scanner run dfa` in a nightly security job still fail. Any `rule add` / `rule remove` step is lost outright — no v5 command replaces those two.
 
-**When it occurs:** Projects that upgraded the plugin from v4 to v5 without auditing all pipeline scripts and Makefiles. The retired v4 plugin (`@salesforce/sfdx-scanner`) was retired in August 2025. Any reference to `sfdx scanner:run` or the old argument structure (`--category` instead of `--rule-selector`) is v4 syntax.
+**When it occurs:** Any project that upgraded the plugin without walking the whole v4 command surface. Per the migration guide, "As of August 2025, Code Analyzer v4 is retired and we no longer support it" — the CLI topic moved from `scanner` to `code-analyzer`, so *every* `scanner` invocation is dead, in either the `sf scanner run` or the older `sfdx scanner:run` spelling.
 
-**How to avoid:** Audit all pipeline YAML, Makefiles, and shell scripts for `sfdx scanner` references. Replace with `sf code-analyzer run`. Verify the installed plugin: `sf plugins --core | grep code-analyzer`. Pin the plugin version in CI to avoid uncontrolled upgrades.
+**How to avoid:** Grep for the topic, not one command — `grep -rE '\b(sf|sfdx) +scanner\b'` across pipeline YAML, Makefiles, Jenkinsfiles and shell scripts — then map each hit:
+
+| v4 | v5 |
+|---|---|
+| `scanner run` | `code-analyzer run` |
+| `scanner run dfa` | `code-analyzer run --rule-selector sfge` |
+| `scanner rule list` | `code-analyzer rules` |
+| `scanner rule describe` | `code-analyzer rules --view detail` |
+| `scanner rule add` / `scanner rule remove` | No equivalent — add or remove custom rules in `code-analyzer.yml` |
+
+Flags moved too: `--category` and `--engine` both became `--rule-selector`, `--projectdir` became `--workspace`, and `--pmdconfig` / `--eslintconfig` have no flag replacement — those configs are declared in `code-analyzer.yml`, which any command can be pointed at with `--config-file`. Verify the installed plugin with `sf plugins --core | grep code-analyzer` and pin its version in CI.
 
 ---
 
@@ -62,9 +72,9 @@ For findings that cannot be excluded, document the false positive in the AppExch
 
 ## Gotcha 6: Custom Regex Rules Without a Global Modifier Fail at Run Time
 
-**What happens:** A custom rule under `engines.regex.custom_rules` is defined with a pattern like `/Todo/i`. Configuration parsing appears fine, but when the rule runs, the regex engine returns an error instead of scan results.
+**What happens:** A custom rule under `engines.regex.custom_rules` is defined with a pattern like `/System\.debug/i`. Configuration parsing appears fine, but when the rule runs, the regex engine returns an error instead of scan results.
 
-**When it occurs:** Any custom regex rule whose pattern omits the global modifier. Per the official docs, `/Todo/gi` is valid; `/Todo/i` is not — a pattern without the global modifier causes the regex engine to error when the rule is run.
+**When it occurs:** Any custom regex rule whose pattern omits the global modifier. Per the official docs: "The regular expression that you specify for the `regex` property must include a global modifier." `/System\.debug/gi` is valid; `/System\.debug/i` is not — "If you configure a regular expression that doesn't have the global modifier, and then try to run the rule, the regex engine returns an error."
 
 **How to avoid:** Always include `g` in the modifier set of every `regex` (and `regex_ignore`) value. Add a smoke run of `sf code-analyzer rules --rule-selector Custom` plus a scan of a known-matching fixture file to CI whenever custom rules change, so an invalid pattern fails fast rather than in a release-gate scan.
 
@@ -77,3 +87,20 @@ For findings that cannot be excluded, document the false positive in the AppExch
 **When it occurs:** `custom_rulesets` only tells Code Analyzer where the ruleset XML definitions live (on disk relative to `config_root`, or as a classpath resource). The JAR containing the compiled rule classes must be separately registered in the `engines.pmd.java_classpath_entries` array so it is added to the Java classpath when PMD runs. XPath-based rules defined entirely in the ruleset XML don't have this problem — they need no compilation and no classpath entry.
 
 **How to avoid:** For Java-based rules, always pair the two keys: the ruleset XML (or its classpath resource path) in `custom_rulesets`, and the JAR path (absolute or relative to `config_root`) in `java_classpath_entries`. Verify loading with `sf code-analyzer rules --rule-selector Custom` — Code Analyzer auto-tags every custom PMD rule with `Custom`, and the ruleset's `name` attribute (spaces removed) becomes a second tag you can filter on.
+
+---
+
+## Gotcha 8: A Migrated PMD Ruleset Is Additive in v5, Not Restrictive
+
+**What happens:** A team carries its v4 `--pmdconfig` ruleset over to `engines.pmd.custom_rulesets` and expects the same tightly-scoped scan of about a dozen house rules. Instead the run reports hundreds of findings from built-in PMD rules the ruleset never mentioned, and the CI gate — sized for the old violation count — fails on day one of the migration.
+
+**When it occurs:** Any migration that treats the ruleset file as the definition of "which PMD rules run". The semantics inverted between versions. In v4, per the migration guide, "if you specify a PMD ruleset file with the `--pmdconfig` flag of `scanner run`, only the rules in the ruleset actually run." In v5, "when you specify your ruleset file in your `code-analyzer.yml` file, the rules in the ruleset are added to the full list of PMD rules that you can select and run."
+
+**How to avoid:** Restore the restriction with selection, since the config file no longer provides it. Code Analyzer auto-tags every custom PMD rule `Custom` and adds the ruleset's `name` attribute (spaces removed) as a second tag, so scope the run to those tags:
+
+```bash
+# Only the house ruleset's rules, not the built-in PMD catalog
+sf code-analyzer run --rule-selector TeamNamingRules --workspace force-app
+```
+
+Confirm the delta before wiring the gate: run `sf code-analyzer rules --rule-selector pmd` and compare the count against the ruleset's rule count. If the built-in rules are genuinely unwanted org-wide rather than per-run, disable them individually in the top-level `rules:` block (`disabled: true`) instead of assuming the ruleset excluded them.

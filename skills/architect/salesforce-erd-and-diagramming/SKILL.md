@@ -1,6 +1,6 @@
 ---
 name: salesforce-erd-and-diagramming
-description: "Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce, Revenue Cloud; OAuth flow diagrams; integration architecture diagrams; object-relationship visualization. NOT for data model design decisions (use data-model-design-patterns). NOT for UI wireframing (use lightning-experience-design)."
+description: "Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce, Revenue Cloud; OAuth flow diagrams; integration architecture diagrams; object-relationship visualization. NOT for writing the field inventory or data dictionary — use admin/data-model-documentation. NOT for deciding lookup vs master-detail or the model itself — use data/data-model-design-patterns."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

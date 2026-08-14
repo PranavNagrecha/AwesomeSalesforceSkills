@@ -1,6 +1,6 @@
 ---
 name: omnistudio-vs-standard-decision
-description: "Decision framework for choosing OmniStudio (OmniScript, FlexCards, Integration Procedures) vs standard Salesforce tooling (Screen Flow, LWC, Apex) for guided UI and data transformation use cases: capability matrix, license availability gate, team skills assessment, and migration path from managed package to Standard Designers. NOT for OmniStudio implementation or configuration."
+description: "Decision framework for choosing OmniStudio (OmniScript, FlexCards, Integration Procedures) vs standard Salesforce tooling (Screen Flow, LWC, Apex) for guided UI and data transformation use cases: capability matrix, license availability gate, team skills assessment, and migration path from managed package to Standard Designers. NOT for the runtime-path ADR, Standard Runtime vs the vlocity_ins__ package - use architect/omnistudio-vs-standard-architecture. NOT for platform-wide capability choices like Custom Metadata vs Custom Settings - use architect/platform-selection-guidance. NOT for executing a Vlocity managed-package to native OmniStudio namespace migration — use omnistudio/vlocity-to-native-omnistudio-migration; this skill only decides whether to use OmniStudio at all."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

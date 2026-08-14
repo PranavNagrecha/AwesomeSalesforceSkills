@@ -48,9 +48,9 @@
     "f4510bc23b1d830c4353",
     "fe59dfbd416f4793daf3"
   ],
-  "content_hash": "ab463b6e7112ab5d6dd9ab796e89c1e828c47e2e815f904d23bc46875aceafce",
+  "content_hash": "30ee9e7e73125851f5130d205bf8d1a448bb931d645506a0a30da61ac37feb58",
   "dependencies": [],
-  "description": "Use when designing or reviewing Lightning Web Components for keyboard access, semantic labeling, focus management, screen-reader behavior, and WCAG-aligned UX in Salesforce. Triggers: 'lwc accessibility', 'keyboard navigation in lwc', 'screen reader labels', 'focus trap in modal'. NOT for Apex or sharing security reviews, or for purely visual SLDS styling that does not affect accessibility behavior.",
+  "description": "Use when designing or reviewing LWCs for keyboard access, semantic labeling, focus. Triggers: LWC accessibility, keyboard nav, aria-label, focus order, screen reader. NOT for specific ARIA/datatable implementation patterns \u2014 use lwc/lwc-accessibility-patterns. NOT for SLDS styling with no assistive-tech impact \u2014 use lwc/lwc-css-and-styling.",
   "file_location": "skills/lwc/lwc-accessibility",
   "id": "lwc/lwc-accessibility",
   "inputs": [

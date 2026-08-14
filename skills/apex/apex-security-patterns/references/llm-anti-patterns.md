@@ -62,7 +62,7 @@ SObjectAccessDecision decision = Security.stripInaccessible(
 update decision.getRecords();
 ```
 
-**Detection hint:** `WITH USER_MODE` or `WITH SECURITY_ENFORCED` on SOQL but `update` or `insert` statements without `Security.stripInaccessible` or `DML WITH USER_MODE` in the same method.
+**Detection hint:** `WITH USER_MODE` on SOQL but `update` or `insert` statements without `Security.stripInaccessible`, `as user`, or `AccessLevel.USER_MODE` in the same method. Do not count `WITH SECURITY_ENFORCED` as evidence the read is secured — it is the weaker clause below 67.0 and does not compile at all from 67.0 on.
 
 ---
 
@@ -196,3 +196,38 @@ public static void deleteAccounts(List<Id> accountIds) {
 ```
 
 **Detection hint:** `Profile\.Name` comparison or hardcoded profile strings like `'System Administrator'` in access-control logic.
+
+---
+
+## Anti-Pattern 7: Asserting a default access mode without reading the class's apiVersion
+
+**What the LLM generates:**
+
+```apex
+// Advice given for a class whose .cls-meta.xml was never opened:
+// "Apex runs in system mode by default, so FLS is NOT enforced unless you
+//  add WITH USER_MODE." -- or, just as wrong, the flat inverse:
+// "Apex now runs in user mode, so this query is already secure."
+public class NightlySyncBatch implements Database.Batchable<SObject> {
+    public Database.QueryLocator start(Database.BatchableContext ctx) {
+        return Database.getQueryLocator('SELECT Id, Territory__c FROM Account');
+    }
+}
+```
+
+**Why it happens:** The model has one default memorised and applies it everywhere. Both defaults are real, but each is true only for part of the corpus: at API 67.0 and later SOQL, SOSL, DML, and `Database` methods run in user mode; at 66.0 and earlier they run in system mode. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release, so a Summer '26 org runs both kinds side by side. The pre-67.0 answer over-warns and tells the user to add enforcement that is already there. The blanket 67.0 answer is worse: it certifies a 58.0 class as secure when nothing is enforced, and it omits the opt-in that integration, batch, and platform-utility code now needs — recompiled at 67.0, the query above silently returns only the rows the running user can see.
+
+**Correct pattern:**
+
+```apex
+// State the version you read, then apply the matching row.
+// NightlySyncBatch.cls-meta.xml: <apiVersion>67.0</apiVersion>
+// reason: nightly territory sync must span all accounts, not the job owner's.
+return Database.getQueryLocator(
+    'SELECT Id, Territory__c FROM Account WITH SYSTEM_MODE'
+);
+```
+
+If the `.cls-meta.xml` is not in scope, say which row you assumed rather than picking a default. The matrix is [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+
+**Detection hint:** Any answer containing "Apex runs in system mode by default" or "Apex runs in user mode by default" with no `apiVersion` cited in the same answer. Also flag advice that adds `WITH USER_MODE` "for security" to a class already at 67.0+ (a no-op), and elevated-access classes bumped to 67.0 with no `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` added.

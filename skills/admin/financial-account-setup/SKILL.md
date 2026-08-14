@@ -1,6 +1,6 @@
 ---
 name: financial-account-setup
-description: "Use when configuring Financial Services Cloud (FSC) financial accounts — including account types, FinancialHolding positions, FinancialGoal records, FinancialAccountRole assignments (Primary Owner, Joint Owner, Beneficiary), and household balance rollup behavior. Triggers: configure financial accounts in FSC, set up financial account roles Financial Services Cloud, FSC household balance rollup not working, add holdings to financial account, FinancialAccountType picklist setup, FSC brokerage or retirement account configuration. NOT for standard Account objects, NOT for Salesforce standard financial-services industry templates unrelated to FinancialAccount, NOT for Accounting Subledger or Revenue Cloud."
+description: "Use when configuring Financial Services Cloud (FSC) financial accounts — including account types, FinancialHolding positions, FinancialGoal records, FinancialAccountRole assignments (Primary Owner, Joint Owner, Beneficiary), and household balance rollup behavior. Triggers: configure financial accounts in FSC, set up financial account roles Financial Services Cloud, FSC household balance rollup not working, add holdings to financial account, FinancialAccountType picklist setup, FSC brokerage or retirement account configuration. NOT for household group setup and rollup scheduling — use admin/household-model-configuration. NOT for the FinServ object graph and SOQL — use data/fsc-data-model."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

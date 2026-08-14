@@ -110,9 +110,9 @@
     "fe1b22b652838a5aff95",
     "feda97dfdc8697403100"
   ],
-  "content_hash": "b9b32bccc33e9a20f8a2a302a14bdd19a280d4f27e56e378526c37725ac2aed9",
+  "content_hash": "2b54418bb29c7797282fc047e86bd58896c885161327a3f701b7763bd2b7e8b8",
   "dependencies": [],
-  "description": "Use this skill when architecting how Health Cloud connects to external EHR/EMR systems via FHIR R4 \u2014 covering integration pattern selection, transformation layer design, MuleSoft Accelerator usage, and EMR bidirectional sync topology. NOT for individual FHIR REST API call implementation, NOT for FHIR object-level data mapping or Apex code that reads/writes specific Health Cloud objects, and NOT for HL7 v2 message parsing internals.",
+  "description": "Use this skill when architecting how Health Cloud connects to external EHR/EMR systems via FHIR R4 \u2014 integration pattern selection, transformation layer design, MuleSoft Accelerator usage, and EMR bidirectional sync topology. NOT for writing the FHIR calls or HL7 v2 conversion in Apex \u2014 use apex/fhir-integration-patterns. NOT for mapping a FHIR resource to an object \u2014 use data/fhir-data-mapping.",
   "file_location": "skills/architect/fhir-integration-architecture",
   "id": "architect/fhir-integration-architecture",
   "inputs": [

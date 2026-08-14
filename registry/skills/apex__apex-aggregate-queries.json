@@ -92,9 +92,9 @@
     "fac9ad58a5d7810c9853",
     "fed5554651b6ef6df43d"
   ],
-  "content_hash": "36903894407a419e74ed9d12d8db48c19761dd950131530fb975894cf79a6e2c",
+  "content_hash": "033d7105691b76f438f7d0f990e6904ae80deeaf18a6042c7cfa42f769be6d21",
   "dependencies": [],
-  "description": "Use this skill when writing SOQL aggregate queries in Apex \u2014 GROUP BY, GROUP BY ROLLUP/CUBE, HAVING, COUNT/SUM/AVG/MIN/MAX, AggregateResult, the GROUPING() subtotal function, and date grouping functions. Trigger keywords: soql aggregate groupby apex, count sum group by salesforce, aggregateresult get alias, having clause soql, rollup cube subtotals, grouping function subtotal detection soql. NOT for relationship subqueries or inner queries (use apex-soql-relationship-queries), NOT for the Reporting API or Analytics Wave API.",
+  "description": "Use this skill when writing SOQL aggregate queries in Apex \u2014 GROUP BY, GROUP BY ROLLUP/CUBE, HAVING, COUNT/SUM/AVG/MIN/MAX, AggregateResult, the GROUPING() subtotal function, and date grouping functions. Trigger keywords: soql aggregate groupby apex, count sum group by salesforce, aggregateresult get alias, having clause soql, rollup cube subtotals, grouping function subtotal detection soql. NOT for which field types support SUM/AVG \u2014 use apex/soql-aggregate-field-type-support. NOT for relationship subqueries \u2014 use apex/apex-soql-relationship-queries.",
   "file_location": "skills/apex/apex-aggregate-queries",
   "id": "apex/apex-aggregate-queries",
   "inputs": [

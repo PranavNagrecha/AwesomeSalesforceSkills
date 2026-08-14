@@ -1,6 +1,6 @@
 ---
 name: multi-currency-sales-architecture
-description: "Use when designing or reviewing multi-currency behavior in Sales Cloud: advanced currency management (ACM), dated exchange rates, converted amount field behavior, roll-up summary currency handling, and reporting currency implications. Triggers: 'multi-currency reporting wrong amounts', 'dated exchange rates architecture', 'ACM converted amount fields'. NOT for initial multi-currency enablement or basic currency admin setup."
+description: "Use when designing or reviewing multi-currency behavior in Sales Cloud: advanced currency management (ACM), dated exchange rates, converted amount field behavior, roll-up summary currency handling, and reporting currency implications. Triggers: 'multi-currency reporting wrong amounts', 'dated exchange rates architecture', 'ACM converted amount fields'. NOT for enabling multi-currency itself - use data/multi-currency-and-advanced-currency-management."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

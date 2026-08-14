@@ -1,6 +1,6 @@
 ---
 name: lwc-lightning-modal
-description: "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated). NOT for in-page overlays (use SLDS popover)."
+description: "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated) — use lwc/lwc-modal-and-overlay."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

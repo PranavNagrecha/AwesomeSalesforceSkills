@@ -137,9 +137,9 @@
     "fd1d2ba8c3dc3437ab12",
     "fe7157c7b70f683befef"
   ],
-  "content_hash": "ce35ec518a4abcd3ed77e4bec3d3b383f2506caed2a8e4f858ae6d9158e05278",
+  "content_hash": "7a187c4e036126ab749849932cd7e0b156e653a5301d2927ef4e2fa7ff60e89f",
   "dependencies": [],
-  "description": "Use when diagnosing and resolving SFDX source-tracking conflicts between a local project and a Salesforce org \u2014 covering sf project pull/push/retrieve/deploy conflict errors, force overwrite decisions, tracking file corruption, and sandbox source-tracking enablement. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments.",
+  "description": "Use when diagnosing and resolving SFDX source-tracking conflicts between a. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments \u2014 use devops/metadata-api-retrieve-deploy.",
   "file_location": "skills/devops/source-tracking-and-conflict-resolution",
   "id": "devops/source-tracking-and-conflict-resolution",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: knowledge-taxonomy-design
-description: "Use when designing or restructuring a Salesforce Knowledge taxonomy: Data Category Group structure, hierarchy depth, article type selection, article lifecycle governance (Draft/Published/Archived), Validation Status gating, and content gap analysis via KCS methodology and Search Activity Gaps. Triggers: knowledge taxonomy design, data category hierarchy, knowledge article lifecycle, knowledge governance model, KCS content gap analysis, search activity gaps, knowledge category structure. NOT for Knowledge admin feature setup (use admin/knowledge-setup), NOT for Experience Cloud search configuration, NOT for Einstein Article Recommendations tuning."
+description: "Use when designing or restructuring a Salesforce Knowledge taxonomy: Data Category Group structure, hierarchy depth, article type selection, article lifecycle governance (Draft/Published/Archived), Validation Status gating, and content gap analysis via KCS methodology and Search Activity Gaps. Triggers: knowledge taxonomy design, data category hierarchy, knowledge article lifecycle, knowledge governance model, KCS content gap analysis, search activity gaps, knowledge category structure. NOT for enabling Lightning Knowledge, Knowledge__kav record types or Data Category visibility setup — use admin/knowledge-base-administration. NOT for choosing Salesforce Knowledge vs an external CMS — use architect/knowledge-vs-external-cms."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

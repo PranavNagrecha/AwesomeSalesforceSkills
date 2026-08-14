@@ -169,12 +169,12 @@
     "fdf460b2285e59238459",
     "fe34b12dbca2034c1cfa"
   ],
-  "content_hash": "d3d4fcbfac3854b657824e999c60edde50683630dd6849b05123973c3d5600fe",
+  "content_hash": "2d137b083fe9390bc01277f016007c1d3b35c352e46b325947b78190e3df8dbf",
   "dependencies": [
     "einstein-trust-layer",
     "rag-patterns-in-salesforce"
   ],
-  "description": "Use this skill when extracting Salesforce data for consumption by external LLMs or vector stores outside the Salesforce ecosystem \u2014 covering Bulk API v2 extraction patterns, PII scrubbing before transmission, chunking and embedding pipelines that run in external infrastructure, and non-Data-Cloud vector store ingestion (Pinecone, pgvector, Weaviate, OpenSearch). Trigger keywords: export Salesforce data to external LLM, Bulk API extract for embeddings, send Salesforce records to OpenAI, pipe Salesforce data to Pinecone, PII scrubbing before LLM, external vector store ingestion. NOT for Data Cloud vector search or grounding within Salesforce (use rag-patterns-in-salesforce), NOT for Data Cloud data model or harmonized schema design (use ai-ready-data-architecture), NOT for Agentforce agent creation or topic design (use agentforce-agent-creation), NOT for BYO LLM registration inside Salesforce (use model-builder-and-byollm).",
+  "description": "Use this skill when extracting Salesforce data for consumption by external LLMs or vector stores outside the Salesforce ecosystem \u2014 covering Bulk API v2 extraction patterns, PII scrubbing before transmission, chunking and embedding pipelines that run in external infrastructure, and non-Data-Cloud vector store ingestion (Pinecone, pgvector, Weaviate, OpenSearch). Trigger keywords: export Salesforce data to external LLM, Bulk API extract for embeddings, send Salesforce records to OpenAI, pipe Salesforce data to Pinecone, PII scrubbing before LLM, external vector store ingestion. NOT for vector search and grounding inside Salesforce Data Cloud \u2014 use agentforce/rag-patterns-in-salesforce. NOT for registering an external LLM inside Salesforce \u2014 use agentforce/model-builder-and-byollm.",
   "file_location": "skills/agentforce/sf-to-llm-data-pipelines",
   "id": "agentforce/sf-to-llm-data-pipelines",
   "inputs": [

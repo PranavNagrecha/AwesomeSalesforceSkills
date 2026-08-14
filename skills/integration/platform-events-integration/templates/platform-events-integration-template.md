@@ -75,6 +75,8 @@ Content-Type: application/json
 
 **Protocol:** [ ] Pub/Sub API (gRPC) — preferred for new integrations [ ] CometD (Streaming API) — for existing middleware
 
+**If CometD, endpoint version:** `/cometd/____` — on v64.0 and later the server can itself send a disconnect (auto-scaling, more frequent on Hyperforce), so record the reconnect handling: [ ] `/meta/disconnect` listener registered [ ] reconnect resumes from stored `replayId`, not `-1`
+
 **Replay ID strategy:**
 
 | Scenario | Replay ID Value | Rationale |
@@ -91,8 +93,9 @@ Content-Type: application/json
 
 ## Event Tier (legacy check, not a design choice)
 
-Every event defined after Spring '19 is high-volume. Standard-volume is a legacy
-population that Salesforce retires in Winter '27.
+New platform events are high volume by default; standard-volume custom platform
+events can no longer be defined and are retired in Summer '27. Existing ones keep
+working until that release.
 
 | Property | Standard-Volume (legacy) | High-Volume (all new events) |
 |---|---|---|
@@ -103,7 +106,7 @@ population that Salesforce retires in Winter '27.
 | Apex trigger subscriber | Yes | Yes |
 | External subscriber | Yes | Yes |
 
-**Existing events in scope:** [ ] All high-volume [ ] Some standard-volume (list them + migration date, Winter '27 deadline)
+**Existing events in scope:** [ ] All high-volume [ ] Some standard-volume (list them + migration date, Summer '27 deadline)
 
 **Peak publish rate:** ______ /hour against the 250,000/hour org allocation. Add-on capacity needed? [ ] No [ ] Yes (+25,000/hour increments)
 
@@ -128,6 +131,7 @@ If subscriber falls offline longer than the retention window, events cannot be r
 - [ ] `CorrelationId__c` or equivalent idempotency key field is present on the event schema
 - [ ] Dead-letter / gap recovery strategy is defined for outages beyond retention window
 - [ ] No field on the event schema purports to set retention — no such field exists
+- [ ] CometD subscriber on `/cometd/64.0` or later listens on `/meta/disconnect` and reconnects
 - [ ] Monitoring covers publisher failures (HTTP errors) and subscriber lag
 
 ---

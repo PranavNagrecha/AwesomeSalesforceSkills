@@ -1,6 +1,6 @@
 ---
 name: data-cloud-data-model-objects
-description: "Use when designing or managing Data Model Objects (DMOs) in Salesforce Data Cloud — covers DMO schema design, subject area governance, data relationships between DMOs, XMD (extended metadata) layer management, data transforms (streaming vs. batch), and mandatory DMO requirements for identity resolution. NOT for standard Salesforce CRM object design, Data Cloud data stream configuration, or SOQL queries against Data Cloud objects."
+description: "Use when designing or managing Data Model Objects (DMOs) in Salesforce Data Cloud — covers DMO schema design, subject area governance, data relationships between DMOs, XMD (extended metadata) layer management, data transforms (streaming vs. batch), and mandatory DMO requirements for identity resolution. NOT for configuring source connectors or the DLO-to-DMO ingestion mapping — use data/data-cloud-data-streams. NOT for overall Data Cloud architecture, activation targets or segmentation strategy — use architect/data-cloud-architecture."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -54,6 +54,7 @@ Gather this context before working on anything in this domain:
 - Only one data relationship is permitted per field pair between two mapped DMOs. Multiple relationships between the same two fields are not supported.
 - XMD (extended metadata) has three tiers: System XMD (platform-generated, immutable), Main XMD (org-customizable via REST API), and User XMD (per-user preferences). You can only modify Main XMD, not System XMD.
 - Streaming transforms are restricted to a single DLO (no cross-DLO joins); batch transforms support joins and aggregations across multiple DLOs.
+- **SOQL against DLOs (Summer '26, API 67.0+):** Queries against Data Lake Objects use the `__dlm` suffix and require a terminal **`SET OPTIONS`** clause. For DLO reads, **`dataspace = 'yourDataspace'` is mandatory** — omitting it returns **zero rows with no error**. Example: `SELECT Email__c FROM CustomerProfile__dlm SET OPTIONS (dataspace = 'default')`. The `dataspace` option applies to **DLO queries only**, not DMO queries. Optional **`honorEmptyStrings`** (default false) changes NULL vs empty-string filtering; it also supports simple DMO queries.
 
 ---
 

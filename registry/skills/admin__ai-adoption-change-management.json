@@ -98,11 +98,11 @@
     "fc530bb702b7aaee1373",
     "fe3817d7486e836ece16"
   ],
-  "content_hash": "219a2d697a28cb18a54a5b38f0a154c746fccccc77b096a4997da4311708a789",
+  "content_hash": "f3e3f2c4a497f6c4dea7a7dcd188f8b954af7453ca0f7d264f56fd0cc9d77a35",
   "dependencies": [
     "admin/change-management-and-training"
   ],
-  "description": "Use this skill when planning or executing the human side of an Agentforce or Einstein AI feature rollout \u2014 user trust-building, AI-specific training, structured feedback collection via the Feedback API, and adoption measurement via Agentforce Analytics. NOT for general Salesforce rollout change management with no AI component, generic user training design, or CRM adoption without an AI feature in scope.",
+  "description": "Use this skill when planning or executing the human side of an Agentforce or Einstein AI feature rollout \u2014 user trust-building, AI-specific training, structured feedback collection via the Feedback API, and adoption measurement via Agentforce Analytics. NOT for turning the Einstein for Sales features on \u2014 use agentforce/agentforce-sales-ai-setup. NOT for rollout training with no AI in scope \u2014 use admin/change-management-and-training.",
   "file_location": "skills/admin/ai-adoption-change-management",
   "id": "admin/ai-adoption-change-management",
   "inputs": [

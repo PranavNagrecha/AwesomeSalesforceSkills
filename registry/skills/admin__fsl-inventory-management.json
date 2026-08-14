@@ -98,9 +98,9 @@
     "fbf07fcb8adea7309fd2",
     "fcd3eb6867d8aef0d124"
   ],
-  "content_hash": "6d054c231867a61c15b595295c66b33935bcdada1f5acd43774c15bd12cd6323",
+  "content_hash": "85cd3d77cf5f93e3a958ee91e1a15376e165a29126e574a914a2ee7c2ac0116f",
   "dependencies": [],
-  "description": "Configure and manage Field Service Lightning inventory: ProductItem (stock at locations), ProductTransfer (stock movement), ProductConsumed (parts used on work orders), ProductRequest/ProductRequestLineItem (replenishment ordering), and ProductItemTransaction (audit trail). NOT for CPQ product catalog management, OCI (Omnichannel Inventory), or B2B Commerce warehouse integration.",
+  "description": "Configure and manage Field Service Lightning inventory: ProductItem (stock at locations), ProductTransfer (stock movement), ProductConsumed (parts used on work orders), ProductRequest/ProductRequestLineItem (replenishment ordering), ProductItemTransaction (audit trail). NOT for work orders, work types, or service appointments \u2014 use admin/fsl-work-order-management. NOT for ERP parts and inventory sync \u2014 use architect/fsl-integration-patterns. NOT for Omnichannel Inventory (OCI) \u2014 use architect/order-management-architecture.",
   "file_location": "skills/admin/fsl-inventory-management",
   "id": "admin/fsl-inventory-management",
   "inputs": [

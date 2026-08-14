@@ -1,6 +1,6 @@
 ---
 name: data-cloud-architecture
-description: "Use when designing or evaluating a Data Cloud implementation architecture — covering data lake strategy (DSO/DLO/DMO layers), identity resolution rule design, activation target configuration, and segmentation strategy. Trigger phrases: Data Cloud architecture design, identity resolution strategy, activation target setup, data lakehouse layers, unified profile design, Data Cloud segment activation, DMO mapping strategy, golden profile design. NOT for individual data stream ingestion setup, not for Data Cloud licensing questions, not for Marketing Cloud journey builder, not for individual calculated insight formulas."
+description: "Use when designing or evaluating a Data Cloud implementation architecture — covering data lake strategy (DSO/DLO/DMO layers), identity resolution rule design, activation target configuration, and segmentation strategy. Trigger phrases: Data Cloud architecture design, identity resolution strategy, activation target setup, data lakehouse layers, unified profile design, Data Cloud segment activation, DMO mapping strategy, golden profile design. NOT for configuring a data stream, DLO-to-DMO mapping or Calculated Insights — use data/data-cloud-data-streams. NOT for choosing between Data Cloud and CRM Analytics — use architect/data-cloud-vs-analytics-decision."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

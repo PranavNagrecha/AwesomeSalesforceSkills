@@ -1,6 +1,6 @@
 ---
 name: fsc-compliant-sharing-api
-description: "Programmatic record access management in Financial Services Cloud using Compliant Data Sharing (CDS): inserting AccountParticipant/OpportunityParticipant records, working with ParticipantRole and ParticipantGroup objects, verifying sharing coverage, and understanding CDS recalculation behavior. NOT for admin setup of CDS via IndustriesSettings metadata, declarative sharing rules, or standard Apex managed sharing on non-FSC objects."
+description: "Programmatic record access in Financial Services Cloud using Compliant Data Sharing (CDS): inserting AccountParticipant/OpportunityParticipant records, working with ParticipantRole and ParticipantGroup objects, verifying sharing coverage, and CDS recalculation behavior. NOT for enabling CDS in Setup, OWDs, or Participant Role setup — use admin/compliant-data-sharing-setup. NOT for standard Apex managed sharing on non-FSC objects — use apex/apex-managed-sharing."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

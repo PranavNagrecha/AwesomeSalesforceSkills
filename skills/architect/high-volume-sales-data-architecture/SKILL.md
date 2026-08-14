@@ -1,6 +1,6 @@
 ---
 name: high-volume-sales-data-architecture
-description: "Use when designing or reviewing Salesforce orgs with large Opportunity and Account volumes, including archival strategy, report performance, data skew prevention, SOQL tuning for sales queries, and index planning. Triggers: 'opportunity table is slow', 'account ownership skew', 'sales report timing out', 'archive old opportunities'. NOT for generic large data volume planning across arbitrary custom objects, non-sales data models, or Marketing Cloud data extensions."
+description: "Use when designing or reviewing Salesforce orgs with large Opportunity and Account volumes, including archival strategy, report performance, data skew prevention, SOQL tuning for sales queries, and index planning. Triggers: 'opportunity table is slow', 'account ownership skew', 'sales report timing out', 'archive old opportunities'. NOT for org-wide LDV design on non-sales objects - use architect/large-data-volume-architecture. NOT for tuning one query or reading a Query Plan - use data/soql-query-optimization."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

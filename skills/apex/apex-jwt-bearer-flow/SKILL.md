@@ -1,6 +1,6 @@
 ---
 name: apex-jwt-bearer-flow
-description: "OAuth 2.0 JWT Bearer Token Flow for server-to-server authentication from Apex — Connected App with certificate, Auth.JWT/Auth.JWS to mint signed assertions, token endpoint exchange, and the failure modes (clock skew, certificate not found, user not pre-authorized). NOT for user-context OAuth (use named-credentials-oauth-user-flow) or external client → Salesforce JWT (that is the inbound flow, configured in Connected App not Apex)."
+description: "OAuth 2.0 JWT Bearer Token Flow for server-to-server authentication from Apex — Connected App with certificate, Auth.JWT/Auth.JWS to mint signed assertions, token endpoint exchange, and the failure modes (clock skew, certificate not found, user not pre-authorized). NOT for choosing which OAuth flow to use — use integration/oauth-flows-and-connected-apps. NOT for Connected App setup — use admin/connected-apps-and-auth."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

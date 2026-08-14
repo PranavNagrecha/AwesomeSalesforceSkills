@@ -30,7 +30,7 @@ As of Spring '25, the platform does not provide automated OmniStudio dependency 
 ## Cross-Skill References
 
 - `data/omnistudio-datapack-migration` — DataPack execution mechanics for Package Runtime orgs; distinct from metadata type management for Standard Runtime orgs
-- `devops/metadata-coverage-and-dependencies` — standard Tooling API dependency patterns for non-OmniStudio metadata types where MetadataComponentDependency is reliable
+- `architect/metadata-coverage-and-dependencies` — standard Tooling API dependency patterns for non-OmniStudio metadata types where MetadataComponentDependency is reliable
 
 ## Official Sources Used
 

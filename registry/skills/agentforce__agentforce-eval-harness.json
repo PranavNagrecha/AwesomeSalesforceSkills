@@ -71,9 +71,9 @@
     "fa65038cb37676e9bfac",
     "fcd3c231c7a404363909"
   ],
-  "content_hash": "6f5d27169d67bca9e6652550209275aaeff40dd158f0e843db686c9327011210",
+  "content_hash": "93387af419ee1fdb61de8793e0c4e77a8a439e4ce7524c79082391f93de7c685",
   "dependencies": [],
-  "description": "Author and run offline evals for Agentforce agents: fixture format, scoring rubrics, regression baselines, CI integration, prompt-change safety. Use BEFORE every prompt or tool change. Covers multi-turn transcripts, refusal checks, tool-call correctness, grounding accuracy. NOT for online A/B testing (use observability). NOT for general Salesforce test-class patterns (use apex-testing-patterns).",
+  "description": "Author and run offline evals for Agentforce agents: fixture format, scoring rubrics, hallucination checks, regression baselines, CI integration, prompt-change safety. Trigger keywords: agent eval, hallucination, doesn't hallucinate, agentforce offline evals, rubric for agent response. NOT for deciding which layers of testing the agent needs \u2014 use agentforce/agentforce-testing-strategy. NOT for Testing Center, AiEvaluationDefinition or sf agent test runs \u2014 use agentforce/agent-testing-and-evaluation.",
   "file_location": "skills/agentforce/agentforce-eval-harness",
   "id": "agentforce/agentforce-eval-harness",
   "inputs": [
@@ -116,7 +116,7 @@
   "templates": [
     "skills/agentforce/agentforce-eval-harness/templates/agentforce-eval-harness-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

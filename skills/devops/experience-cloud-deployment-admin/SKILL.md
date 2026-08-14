@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-deployment-admin
-description: "Use this skill when deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes — including metadata ordering, ExperienceBundle enablement, post-deployment publishing, and change-set or SFDX-based migration. NOT for: LWC component development within Experience Builder, CMS content migration via Managed Content REST API, or Aura/LWC code authoring."
+description: "Deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes: metadata ordering, ExperienceBundle enablement, post-deployment publishing, change-set or SFDX-based migration. NOT for automating the deploy in a CI/CD pipeline, or LWR DigitalExperienceBundle — use devops/experience-cloud-deployment-dev. NOT for building the site in Experience Builder — use admin/experience-cloud-site-setup."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

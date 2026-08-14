@@ -1,6 +1,6 @@
 ---
 name: currency-management-patterns
-description: "Working with multi-currency Salesforce orgs at the data layer — `CurrencyIsoCode` field semantics on every object, the `CurrencyType` and `DatedConversionRate` standard objects, the `convertCurrency()` SOQL function, Advanced Currency Management vs basic multi-currency, formula fields with currency conversion, roll-up summaries across currencies, and the irreversibility of enabling multi-currency on an org. NOT for currency UI formatting in LWC (that's Lightning's `lightning-formatted-number`), NOT for tax / financial-doc rounding rules (those are app-layer concerns)."
+description: "Working with multi-currency Salesforce orgs at the data layer — `CurrencyIsoCode` field semantics, the `CurrencyType` and `DatedConversionRate` standard objects, the `convertCurrency()` SOQL function, Advanced Currency Management vs basic multi-currency, formula fields and roll-up summaries across currencies, and the irreversibility of enabling multi-currency. NOT for wrong converted amounts in Sales Cloud reports or the dated-rate maintenance pipeline — use architect/multi-currency-sales-architecture. NOT for locale-formatted currency output from a SOQL SELECT via FORMAT() — use apex/soql-format-function-localization."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

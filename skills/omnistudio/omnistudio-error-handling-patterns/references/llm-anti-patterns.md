@@ -39,3 +39,15 @@
 **Why it happens:** The happy path shipped; the failure path was never designed.
 
 **Correct pattern:** Every multi-system write has a compensating DataRaptor or async cleanup plan. Partial success should be the designed norm, not a surprise.
+
+---
+
+## Anti-Pattern 6: Try-Catch That Logs and Returns 200
+
+**What the LLM generates:** IP Try Catch Block, Catch calls a logger, `failOnBlockError: false`, FlexCard has no Error state.
+
+**Why it happens:** "Never throw to the guest."
+
+**Correct pattern:** Log, then fail. Set Errors or `failOnBlockError: true`. `rollbackOnError: true`. Monitor OmniComponentErrorLog as well as the app log object.
+
+**Detection hint:** `failOnBlockError: false` with a Catch that only logs.

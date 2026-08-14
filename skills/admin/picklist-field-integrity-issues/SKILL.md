@@ -1,6 +1,6 @@
 ---
 name: picklist-field-integrity-issues
-description: "Use when picklist data quality has degraded: unrestricted picklists accepting garbage API values, dependent picklist relationships bypassed by integrations, record type picklist value mappings drifting out of sync, or orphaned values appearing in reports. NOT for initial picklist creation or Global Value Set design (use picklist-and-value-sets), NOT for record type configuration itself (use record-types-and-page-layouts)."
+description: "Use when picklist data quality has degraded: unrestricted picklists accepting garbage API values, dependent picklist relationships bypassed by integrations, record type picklist value mappings drifting out of sync, or orphaned values appearing in reports. NOT for the value-deactivation runbook or the API-name-vs-label trap — use admin/picklist-data-integrity. NOT for initial picklist creation or Global Value Set design — use admin/picklist-and-value-sets. NOT for record type configuration itself — use admin/record-types-and-page-layouts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

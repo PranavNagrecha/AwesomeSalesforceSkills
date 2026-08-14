@@ -27,9 +27,9 @@
     "c782e94c93ffd0a77846",
     "f0c7727abe05fa4b5717"
   ],
-  "content_hash": "1140f6592890c5eba4fc1bfa131d257c090a99f2e266622f8c980230e1d55c84",
+  "content_hash": "1b76cfc63f2f8f0d0cf07e099ed5390229e54c91a555f8a8f3b5ee01b4cc087b",
   "dependencies": [],
-  "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup.",
+  "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup \u2014 use admin/devops-process-documentation.",
   "file_location": "skills/devops/devops-center-advanced",
   "id": "devops/devops-center-advanced",
   "inputs": [

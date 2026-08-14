@@ -87,9 +87,9 @@
     "f2fbb0f10db6cae93877",
     "ff6f95a1323eb0333394"
   ],
-  "content_hash": "3de4ad654cbc24b20d998215eded43342fb8d4878b5b68c01dac24a3c5125b4b",
+  "content_hash": "a3f4366c949baa348e4ba58afc47bba7fd6d4cbc67683836b33ca9951071242b",
   "dependencies": [],
-  "description": "Use this skill when connecting a Salesforce Nonprofit Cloud or NPSP org to fundraising-adjacent systems: payment gateways via Salesforce.org Elevate, wealth screening tools (iWave, DonorSearch), email marketing platforms (Marketing Cloud, Pardot), and event management platforms. Trigger keywords: payment gateway nonprofit, Elevate payment services, GiftTransaction API, wealth screening integration, iWave Salesforce, DonorSearch scores, donor email marketing sync, event registration fundraising. NOT for generic integration patterns, Salesforce Billing payment gateways (blng.PaymentGateway), or non-fundraising CRM integrations.",
+  "description": "Use this skill when connecting a Salesforce Nonprofit Cloud or NPSP org to fundraising-adjacent systems: payment gateways via Salesforce.org Elevate, wealth screening tools (iWave, DonorSearch), email marketing platforms (Marketing Cloud, Pardot), and event management platforms. Trigger keywords: payment gateway nonprofit, Elevate payment services, GiftTransaction API, wealth screening integration, iWave Salesforce, DonorSearch scores, donor email marketing sync, event registration fundraising. NOT for writing NPSP BDI gift-ingestion or Enhanced Recurring Donation API code \u2014 use apex/npsp-api-and-integration. NOT for a one-off historical gift migration \u2014 use data/gift-history-import.",
   "file_location": "skills/architect/fundraising-integration-patterns",
   "id": "architect/fundraising-integration-patterns",
   "inputs": [

@@ -1,11 +1,11 @@
 ---
 name: salesforce-apex
-description: "Router for the 158 SfSkills `apex` skill packages. Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction. Use when the request mentions Apex, trigger, SOQL, SOSL, Apex governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible, callout, HTTP callout, HttpRequest, call an external API, consume a REST API from Apex, Named Credential in Apex, HttpCalloutMock, Apex REST service. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 158 SfSkills `apex` skill packages. Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data. Use when the request mentions Apex, trigger, SOQL, Apex governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible, callout, HTTP callout, HttpRequest, call an external API, consume a REST API from Apex, Named Credential in Apex, HttpCalloutMock, Apex REST service. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce apex — SfSkills domain router
 
-Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and the test patterns that keep them deployable. Owns calling an external API FROM Salesforce; salesforce-integration owns the inbound direction.
+Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
 
 **158 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/apex/<slug>/SKILL.md`. They are not

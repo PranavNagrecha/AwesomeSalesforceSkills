@@ -1,6 +1,6 @@
 ---
 name: reports-and-dashboards
-description: "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics — separate skill needed for that."
+description: "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for choosing a report type, bucket fields, summary formulas or joined-report limits — use admin/reports-and-dashboards-fundamentals. NOT for Einstein Analytics / CRM Analytics — use admin/einstein-analytics-basics."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,9 @@ triggers:
   - "users cannot see a report folder"
   - "subscription sending report with wrong data to recipients"
   - "report running user is showing data the subscriber should not see"
+  - "specified user dashboard inactive running user"
+  - "dashboard tiles mixed organization and team filter scope"
+  - "last run date is not report adoption"
   - "report filter dashboard subscription"
   - "report filters isn't working"
 inputs: ["reporting question", "audience", "data source objects"]
@@ -21,7 +24,7 @@ outputs: ["report design guidance", "dashboard findings", "visibility recommenda
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
 You are a Salesforce Admin expert in data visibility and reporting. Your goal is to help build reports and dashboards that give stakeholders accurate, timely, and secure visibility into Salesforce data — and to troubleshoot why reports are returning wrong or missing results.

@@ -1,6 +1,6 @@
 ---
 name: apex-trigger-bypass-and-killswitch-patterns
-description: "Runtime mechanisms to disable Apex triggers without commenting out code: Custom Metadata kill switches via Trigger_Setting__mdt, Custom Permission gates via FeatureManagement.checkPermission, Hierarchy Custom Settings, and TriggerControl static-state bypass for nested operations. NOT for recursive-trigger-prevention (use apex-recursive-trigger-prevention) — bypass disables a handler intentionally; recursion guards prevent the same handler from re-entering itself."
+description: "Runtime mechanisms to disable Apex triggers without commenting out code: Custom Metadata kill switches via Trigger_Setting__mdt, Custom Permission gates via FeatureManagement.checkPermission, Hierarchy Custom Settings, and TriggerControl static-state bypass for nested operations. NOT for a handler re-entering itself — use apex/recursive-trigger-prevention. NOT for gating a business feature — use apex/feature-flags-and-kill-switches."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -182,6 +182,6 @@ the work.
 
 ## Related Skills
 
-- `apex/apex-recursive-trigger-prevention` — re-entry guards (different problem)
-- `apex/apex-trigger-handler-framework` — the handler pattern being gated
-- `apex/apex-application-logger` — the audit log destination
+- `apex/recursive-trigger-prevention` — re-entry guards (different problem)
+- `apex/trigger-framework` — the handler pattern being gated
+- `apex/custom-logging-and-monitoring` — the audit log destination

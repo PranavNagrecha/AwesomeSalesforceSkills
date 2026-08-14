@@ -124,9 +124,9 @@
     "ff25613a99e9e376d4c0",
     "ffe6e69b748a3404b3f8"
   ],
-  "content_hash": "898b25bad9aff58e9e311f8ff1fd6713be05fa7d015aacb7f35f83f6f6561211",
+  "content_hash": "fdf1cf4cca3e565e4037349834f51b5e37a2692d2ba20b788813dc4eb3b89040",
   "dependencies": [],
-  "description": "When and how to design CustomEvent traffic out of an LWC \u2014 bubbles / composed / cancelable flag choices, detail payload shape, naming rules, and propagation control. Trigger keywords: 'event not reaching parent', 'composed shadow DOM', 'CustomEvent detail mutation', 'stopPropagation vs stopImmediatePropagation'. NOT for parent-to-child communication (use `@api` \u2014 see `lwc/component-communication`), NOT for sibling fan-out (use Lightning Message Service \u2014 see `lwc/lightning-message-service`), NOT for wire-service data plumbing.",
+  "description": "CustomEvent design \u2014 bubbles/composed/cancelable, detail payloads, naming, and why an event is not reaching the parent. Triggers: 'event not reaching parent', 'composed shadow DOM', 'child component cannot tell the parent something changed', 'how does a child lwc notify its parent'. NOT for parent-to-child @api \u2014 use lwc/component-communication. NOT for sibling fan-out via Lightning Message Service \u2014 use lwc/message-channel-patterns.",
   "file_location": "skills/lwc/lwc-custom-event-patterns",
   "id": "lwc/lwc-custom-event-patterns",
   "inputs": [

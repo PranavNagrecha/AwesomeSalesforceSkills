@@ -1,6 +1,6 @@
 ---
 name: flow-and-platform-events
-description: "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows."
+description: "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for publish-after-commit semantics, subscriber idempotency, or fan-out failure design — use flow/flow-platform-events-integration. NOT for a flow that just fires on record save — use flow/record-triggered-flow-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

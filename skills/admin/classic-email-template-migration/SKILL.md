@@ -270,5 +270,5 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/email-templates-and-alerts` — Use when designing new Lightning templates and Email Alerts (post-migration)
 - `apex/apex-outbound-email-patterns` — Use when Apex code sends transactional email; affected by template ID changes
 - `flow/flow-email-and-notifications` — Use when Flow's Send Email actions need to be updated to new template IDs
-- `admin/email-deliverability-monitoring` — Use to verify post-migration deliverability and bounce-rate baselines remain stable
+- `admin/email-deliverability-strategy` — Use to verify post-migration deliverability and bounce-rate baselines remain stable
 - `lwc/visualforce-to-lwc-migration` — Use when retained Visualforce email templates also have associated VF UI pages being migrated

@@ -55,3 +55,29 @@ So the surviving exposure is narrower than "guests can be given anything through
 **Why:** View All Fields covers "Viewing all fields and field data for a specific object," and "users are automatically granted access to any new fields created for the object." On an internal permission set that is the right answer to "read every field on this object, including future ones" — better than View All Data and better than a hand-maintained `FieldPermissions` list that goes stale the moment someone adds a field. For guests it is neither available nor desirable. Salesforce states that "View All Data, Modify All Data, and View All Records, Modify All Records, or View All Fields for a given object can't be assigned to external users," and the guest profile rule is narrower still: "The only object permissions allowed for guest users are read and create." The auto-grant is exactly why — every field a future admin adds to that object would become world-readable with no change to any guest configuration and no review.
 
 **How to avoid:** Enumerate guest field permissions one field at a time and treat that explicit list as the audit surface. Its staleness is the feature: a newly added field stays invisible to the internet until someone justifies it. Add "does the guest profile need this?" to the checklist for creating any field on a guest-readable object. Do not let "it's only read" carry the argument — View All Fields is a read grant, and on a public site read is the entire exposure.
+
+---
+
+## 6. Guest Apex Runs in System Mode — Sharing Is Not the Boundary
+
+**What happens:** The design says OWD Private plus a guest profile with no object access. Guest `@AuraEnabled` / OmniStudio remote Apex still reads and writes whatever the class queries, because guest Apex commonly runs in **system mode**. Record Id in the request is partially guessable. The only real access control is whatever the Apex method checks **before** the query.
+
+**When it occurs:** Unauthenticated Experience Cloud intake (applications, cases, surveys) that stores a draft record and round-trips its Id from the browser.
+
+**How to avoid:**
+- Mint a high-entropy session token **in Apex** (`Crypto.generateAesKey` or equivalent). Store only an HMAC (`Crypto.generateMac('HmacSHA256', …)`). Return the raw token once.
+- Keep the raw token in `sessionStorage` or a cookie — never in the URL, never in `localStorage`, never in a log.
+- **Resolve the record from the token**, never from a client-supplied Id. Load children by parent traversal, not by Ids the client sent.
+- Rotate the token on each section commit. Separate idle timeout (clear token) from absolute TTL (also null PII fields if the row is a draft).
+- Per-section **write allowlists** — system mode has no FLS.
+- Apex REST cannot set `Set-Cookie` / HttpOnly via `addHeader()`. If you need HttpOnly, use a Visualforce endpoint; otherwise the LWC sets a JS cookie (`Secure; SameSite=Strict`) and that is a platform limitation, not a security win.
+
+---
+
+## 7. `UserInfo.getUserId()` Is One Id for Every Guest
+
+**What happens:** A Platform Cache or Custom Object throttle keys on `UserInfo.getUserId()`. Every anonymous visitor shares that Id. Fail-secure then 429s the **entire site**. Fail-open at least keeps applicants moving when cache is down — but a per-user design never existed.
+
+**When it occurs:** Copying an authenticated rate-limit pattern onto the guest path (file uploads, OTP, IDV, form submit).
+
+**How to avoid:** Key guest throttles on sanitized client IP plus a server nonce, not the guest user Id. Platform Cache keys must be alphanumeric and start with a letter. Decide fail-open vs fail-closed explicitly: cache exceptions on a public intake form should not take the form down. Write a test that two concurrent guest sessions do **not** share a counter.

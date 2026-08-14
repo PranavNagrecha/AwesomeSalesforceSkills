@@ -48,7 +48,7 @@ the specific gap — if a native feature can do it, stop here)
 <project>/
 ├── Dockerfile              # DON'T MODIFY
 ├── requirements.txt        # deployment pip deps only
-├── requirements-dev.txt    # local dev/test deps only
+├── requirements-dev.txt    # scaffold-owned — DON'T MODIFY
 └── payload/
     ├── config.json         # deployment configuration
     └── entrypoint.py       # transform / chunking logic

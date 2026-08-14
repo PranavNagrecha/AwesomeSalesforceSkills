@@ -94,7 +94,7 @@ The actor is the persona, not "the system." The behavior is what the persona obs
   "story_id": "US-...",
   "complexity": "M",
   "recommended_agents": ["flow-builder", "permission-set-architect"],
-  "recommended_skills": ["flow/record-triggered-flows"],
+  "recommended_skills": ["flow/record-triggered-flow-patterns"],
   "dependencies": [],
   "notes": "..."
 }

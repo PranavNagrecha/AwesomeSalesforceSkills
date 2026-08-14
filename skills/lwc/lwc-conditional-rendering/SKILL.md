@@ -1,6 +1,6 @@
 ---
 name: lwc-conditional-rendering
-description: "Use when writing, reviewing, or migrating Lightning Web Component templates that branch between UI states with `lwc:if`, `lwc:elseif`, and `lwc:else`, including getter-backed booleans, loading/error/ready state machines, keep-state vs reset-state toggles, and legacy `if:true` / `if:false` cleanup. Triggers: 'lwc:if vs if:true', 'lwc:elseif not working', 'conditional rendering in lwc', 'complex boolean in template'. NOT for choosing between component types at runtime — that is `lwc-dynamic-components` — and NOT for list rendering, which uses `for:each` or `iterator:it`."
+description: "Use when writing, reviewing, or migrating Lightning Web Component templates that branch between UI states with `lwc:if`, `lwc:elseif`, and `lwc:else`, including getter-backed booleans, loading/error/ready state machines, keep-state vs reset-state toggles, and legacy `if:true` / `if:false` cleanup. Triggers: 'lwc:if vs if:true', 'lwc:elseif not working', 'conditional rendering in lwc', 'complex boolean in template'. NOT for choosing between component types at runtime — use lwc/lwc-dynamic-components. NOT for list rendering — use `for:each` or `iterator:it`."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -65,7 +65,11 @@ Modern conditional rendering in LWC uses three cooperating directives, getters f
 
 ### Getters Are The Idiom For Computed Booleans
 
-Template expressions in LWC are intentionally limited. You cannot write `lwc:if={a && b}`, `lwc:if={status !== 'error'}`, or `lwc:if={items.length > 0}`. Put computed logic in a JavaScript getter and reference the getter: `get isReady() { return this.status === 'done' && !this.error; }`, then `lwc:if={isReady}`. Getters compose cleanly, are unit-testable, and keep the template readable. Inverting a condition should use `lwc:else` rather than a negated getter when the negation exists only to flip a single branch.
+Template expressions in LWC are intentionally limited. You cannot write `lwc:if={a && b}`, `lwc:if={status !== 'error'}`, or `lwc:if={items.length > 0}` **unless the component's `apiVersion` is 66.0 or later and you accept Beta risk** (see below). Default practice: put computed logic in a JavaScript getter and reference the getter: `get isReady() { return this.status === 'done' && !this.error; }`, then `lwc:if={isReady}`. Getters compose cleanly, are unit-testable, and keep the template readable. Inverting a condition should use `lwc:else` rather than a negated getter when the negation exists only to flip a single branch.
+
+### Complex Template Expressions (Spring '26 Beta, apiVersion 66.0+)
+
+Beginning in Spring '26, components at **`apiVersion` 66.0+** may use **complex JavaScript expressions directly in HTML templates** — e.g. `lwc:if={a && b}` without a getter. Salesforce documents this as **Beta** with an explicit **"Do not use complex template expressions in production."** warning. Prefer getters for production components; use inline expressions only for pilots where the Beta tradeoff is accepted and documented.
 
 ### Branches Mount And Unmount — They Do Not Hide
 
@@ -105,6 +109,7 @@ When `lwc:if` flips from true to false, the DOM subtree is removed — not hidde
 | Two mutually exclusive branches | `lwc:if` + `lwc:else` | Encodes the exclusivity in the template |
 | Three or more mutually exclusive branches | `lwc:if` + `lwc:elseif` + `lwc:else` | Short-circuits and avoids parallel `lwc:if` bugs |
 | Boolean depends on multiple properties | Getter that returns a boolean | Template expressions are intentionally limited |
+| Pilot-only inline boolean (`a && b`) in template | Complex template expression at apiVersion 66.0+ | **Beta** — Salesforce warns against production use; getters remain the safe default |
 | Panel must preserve in-progress state across toggles | CSS `display:none` via class getter | `lwc:if` re-mounts and loses child state |
 | Existing template uses chained `if:true` / `if:false` | Migrate to `lwc:if` / `lwc:elseif` / `lwc:else` | Legacy path is slower and officially discouraged |
 

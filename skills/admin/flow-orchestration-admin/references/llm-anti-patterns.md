@@ -89,3 +89,33 @@ old metadata after the monitoring view confirms zero active instances.
 ```
 
 **Detection hint:** A retirement plan that deletes Orchestration metadata on the same change window as go-live.
+
+---
+
+## Anti-Pattern 6: Sending ops to Setup → Orchestration Runs
+
+**What the LLM generates:** "Open Setup, search Orchestration Runs."
+
+**Why it happens:** Paused Flow Interviews live in Setup, so the analogue is guessed.
+
+**Correct pattern:**
+
+```
+/lightning/o/FlowOrchestrationInstance/list
+```
+
+That is the object list view. `/lightning/setup/OrchestrationRuns/home` is not a Setup node.
+
+**Detection hint:** Any URL containing `setup/OrchestrationRuns`.
+
+---
+
+## Anti-Pattern 7: A "just click Resume" runbook that never names the run's status
+
+**What the LLM generates:** "If the run is stuck, click Resume."
+
+**Why it happens:** One control name covers more than one run state, so a single instruction looks complete.
+
+**Correct pattern:** Name the state first — a run stalled on an unclaimed work item, a run that errored in a step, and a run paused waiting on something outside Salesforce are three different situations with three different operator actions, and only the last is resumed by publishing a `FlowOrchestrationEvent`. Read the exact resume semantics for each state off the Orchestration Runs detail view in the target org and write them down; do not state them from memory in a runbook someone will follow at 2am.
+
+**Detection hint:** A single "resume" procedure that does not name the run's current status.

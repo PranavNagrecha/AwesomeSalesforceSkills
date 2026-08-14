@@ -1,6 +1,6 @@
 ---
 name: client-onboarding-design
-description: "Use this skill when designing the FSC client onboarding process — mapping document collection touchpoints, approval steps, compliance checkpoint sequencing, and welcome journey handoffs. Trigger keywords: client onboarding design, onboarding workflow requirements, document collection flow, compliance checkpoint, welcome journey, intake process design. NOT for Action Plan template configuration mechanics, OmniStudio component implementation, or Flow builder steps — use fsc-action-plans for template setup details."
+description: "Use this skill when designing the FSC client onboarding process — mapping document collection touchpoints, approval steps, compliance checkpoint sequencing, and welcome journey handoffs. Trigger keywords: client onboarding design, onboarding workflow requirements, document collection flow, compliance checkpoint, welcome journey, intake process design. NOT for configuring the Action Plan template itself — use admin/fsc-action-plans. NOT for OmniScript screen and branching requirements — use admin/omniscript-flow-design-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

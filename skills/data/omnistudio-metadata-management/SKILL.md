@@ -218,5 +218,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `data/omnistudio-datapack-migration` — use for DataPack export/import mechanics in Package Runtime orgs; this skill covers metadata structure, not DataPack execution
-- `devops/metadata-coverage-and-dependencies` — use for standard Tooling API MetadataComponentDependency patterns on non-OmniStudio metadata types
+- `architect/metadata-coverage-and-dependencies` — use for standard Tooling API MetadataComponentDependency patterns on non-OmniStudio metadata types
 - `omnistudio/omnistudio-deployment-datapacks` — use for DataPack CLI configuration and deployment setup

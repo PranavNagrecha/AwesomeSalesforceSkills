@@ -1,6 +1,6 @@
 ---
 name: messaging-and-chat-setup
-description: "Use this skill to configure Messaging for In-App and Web (MIAW) channels in Salesforce Service Cloud, including Messaging Channel setup, Embedded Service Deployments, CORS/CSP Trusted Sites, Omni-Channel routing via Queue or Flow, pre-chat fields, and Status-Based capacity models. NOT for Agentforce bot configuration, SMS/WhatsApp third-party channel setup, or legacy Live Agent (Snap-ins) implementations."
+description: "Configure Messaging for In-App and Web (MIAW) channels in Service Cloud: Messaging Channel, Embedded Service Deployment, CORS/CSP Trusted Sites, pre-chat fields, session routing by Queue or Omni-Channel Flow, Status-Based capacity, Live Agent migration. NOT for an Agentforce agent in the chat window - use agentforce/agent-channel-deployment. NOT for Omni-Channel enablement, Service Channels or skills-based routing - use admin/omni-channel-routing-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -62,9 +62,9 @@
     "f968d4848399a9a0c5de",
     "f9c83c92ceb47815d4fe"
   ],
-  "content_hash": "341022aeae3ea57b6aca261acd7c68f408bf660f30043e9adf2c8b4b132a707c",
+  "content_hash": "a0bb5832c48389b5c59379e230309ff2743e092fc3606fa0f3cf320fbc881751",
   "dependencies": [],
-  "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements.",
+  "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for building the OmniScript or moving logic into an Integration Procedure \u2014 use omnistudio/omniscript-design-patterns. NOT for FlexCard requirements \u2014 use admin/flexcard-requirements.",
   "file_location": "skills/admin/omniscript-flow-design-requirements",
   "id": "admin/omniscript-flow-design-requirements",
   "inputs": [

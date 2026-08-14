@@ -110,9 +110,9 @@
     "fc147183b91194eec557",
     "ff755def8d586935667b"
   ],
-  "content_hash": "e41ffade25f39ea16f5259a0e0f529aae161049aa49961c3d4d9033153c3594a",
+  "content_hash": "1f6534b12e422dfa61534ee37a35e74f28ed1ef734907f64e92c7580b901f0c0",
   "dependencies": [],
-  "description": "Use this skill when configuring patient or member records in Salesforce Health Cloud \u2014 including Person Account enablement, Health Cloud patient record type creation, care team role configuration, patient card customization, and clinical data display. Trigger keywords: patient setup, Health Cloud person account, patient card component, care team roles, clinical data display. NOT for standard account setup, general CRM contact configuration, or non-Health-Cloud person account questions.",
+  "description": "Configure patient or member records in Salesforce Health Cloud: Person Account enablement, patient record types, care team role configuration, patient card customization, clinical data display. Trigger keywords: patient setup, Health Cloud person account, patient card component, care team roles, clinical data display. NOT for Person Accounts outside Health Cloud - use data/person-accounts. NOT for enrolling a patient into a care program - use admin/care-program-management.",
   "file_location": "skills/admin/health-cloud-patient-setup",
   "id": "admin/health-cloud-patient-setup",
   "inputs": [

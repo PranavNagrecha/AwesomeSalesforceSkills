@@ -1,6 +1,6 @@
 ---
 name: fsl-work-order-management
-description: "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration."
+description: "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for choosing which technician gets the appointment (work rules, scheduling policies) — use admin/fsl-scheduling-policies. NOT for setting up the technicians, their skills or capacity — use admin/fsl-resource-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

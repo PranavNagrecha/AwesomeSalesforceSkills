@@ -107,13 +107,13 @@
     "f88df05ba3bc4e828235",
     "fb991db5242ee6112c78"
   ],
-  "content_hash": "d73d284b4d1347d5729af635516e2474e27bee5fbf1d47994d54f872560c109f",
+  "content_hash": "37cca41bae3ab43142021ab61616577c4688d2e8460f8ead0b20fe4a1348fb34",
   "dependencies": [
     "callout-and-dml-transaction-boundaries",
     "apex-queueable-patterns",
     "callouts-and-http-integrations"
   ],
-  "description": "Use when programmatically generating invoices, integrating payment gateways, automating credit notes, or calling Salesforce Billing Apex APIs (blng.InvoiceAPI, blng.TransactionAPI) from custom Apex code. Trigger keywords: billing apex, blng.InvoiceAPI, blng.TransactionAPI, payment gateway adapter, invoice generation apex, credit note apex, programmatic invoice. NOT for admin billing setup, billing rule configuration, billing policy UI, or Invoice Run scheduling.",
+  "description": "Programmatically generating invoices, automating credit notes, and calling Salesforce Billing Apex APIs from custom Apex. Trigger keywords: billing apex, blng.InvoiceAPI, blng.TransactionAPI, invoice generation apex, credit note apex, programmatic invoice, payment gateway adapter. NOT for a CommercePayments checkout gateway adapter \u2014 use apex/commerce-payment-integration. NOT for configuring billing schedules, billing rules or Invoice Runs in Setup \u2014 use admin/billing-schedule-setup.",
   "file_location": "skills/apex/billing-integration-apex",
   "id": "apex/billing-integration-apex",
   "inputs": [

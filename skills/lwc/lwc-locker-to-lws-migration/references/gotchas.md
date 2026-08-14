@@ -115,3 +115,22 @@ The library now misbehaves in subtle ways (missing tooltips, broken date formatt
 **Reproduction:** ship a component that calls `eval('1+1')` — fails under both Locker and LWS due to CSP.
 
 **How to avoid:** treat `eval` and `new Function` as off-limits unconditionally. The LWS migration is not a license to relax this. See `references/llm-anti-patterns.md` for the full anti-pattern.
+
+---
+
+## 9. Summer '26: LWS blocks `data:` URIs on `HTMLAnchorElement.prototype.href`
+
+**What happens:** Summer '26 added a batch of new LWS distortions. Per the Summer '26 developer release guide: "`HTMLAnchorElement.prototype.href` now **blocks the `data:` URI scheme**. If you trigger client-side downloads by setting an anchor's `href` to a `data:` URL, that stops working." The classic LWC export recipe — build `'data:text/csv;charset=utf-8,' + encodeURIComponent(csv)`, assign it to an anchor, set `download`, `click()` — stops downloading. It usually fails **quietly**: no exception, just no file.
+
+This is a distortion, not a Locker-vs-LWS difference: the idiom worked under Locker *and* under LWS until Summer '26. Do not diagnose it as an incomplete migration.
+
+**When it occurs:** any org on Summer '26 with a client-side CSV / JSON / PDF / vCard export built on the anchor + `data:` URL pattern. Very common — it was the widely-published LWC recipe for years. Whether a bundle pinned to an older `apiVersion` in its `.js-meta.xml` is exempt is **not** documented on the release-guide page — do not assume either way, and confirm against the Distortion Viewer in a sandbox on the target release. (Note the LWS distortion set is not the same mechanism as the Locker API-version selector, which is a Locker-only org setting.)
+
+**Reproduction:**
+1. In a Summer '26 org, render an anchor and set `a.href = 'data:text/csv,' + encodeURIComponent('a,b')`, `a.download = 'x.csv'`, then `a.click()`.
+2. No download starts; the console is clean.
+3. Inspect `a.href` in DevTools to confirm the `data:` value was rejected. (The release guide documents that the download stops working, not the exact read-back value — check the Distortion Viewer for the API's precise distorted behaviour rather than assuming it.)
+
+**How to avoid:** use the blob pattern, which the release guide calls "the supported pattern anyway — build a blob in JavaScript and use a `blob:` object URL (origin-bound, and revoked after use)." Code is in `references/llm-anti-patterns.md` Anti-Pattern 9.
+
+The same release distorted more APIs the migration test plan should cover: "Other new distortions include `Element.getAttribute`, `innerHTML/outerHTML` getters, `MutationObserver.observe`, the `IndexedDB` factory, `Promise.then/catch/finally`, and more — with matching ESLint rules." Run `@locker/eslint-config-locker` (`npm update` it — the rules ship per release) and check the [LWS Distortion Viewer](https://developer.salesforce.com/tools/lws-distortion-viewer) for the current behaviour of a specific API. The Viewer is the live source of truth; a distortion list pinned in any document, including this one, decays every release.

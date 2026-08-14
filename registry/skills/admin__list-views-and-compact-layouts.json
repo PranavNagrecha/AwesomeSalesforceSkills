@@ -60,9 +60,9 @@
     "fae8cfe185ba2c522991",
     "fcb072375bc93783dbfd"
   ],
-  "content_hash": "e1aa8ce7321ff3dbc17f840838d0b585271f3a779886c7fa9e3e060624570782",
+  "content_hash": "d9609f8a0a93a27ca685349cdaf3b3c6d1bcb546a6654085cb5878983712e2b1",
   "dependencies": [],
-  "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
+  "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layouts or record types \u2014 use admin/record-types-and-page-layouts. NOT for Dynamic Forms \u2014 use admin/dynamic-forms-and-actions.",
   "file_location": "skills/admin/list-views-and-compact-layouts",
   "id": "admin/list-views-and-compact-layouts",
   "inputs": [

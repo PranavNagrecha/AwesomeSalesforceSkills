@@ -12,6 +12,8 @@ triggers:
   - "what permissions should the guest user profile have on my Experience Cloud site"
   - "guest sharing rules stopped working after a Salesforce upgrade"
   - "we're having issues with guest user"
+  - "guest session token HMAC Experience Cloud intake"
+  - "rate limit guest UserInfo.getUserId Platform Cache"
 tags:
   - guest-user
   - experience-cloud
@@ -30,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Guest User Security

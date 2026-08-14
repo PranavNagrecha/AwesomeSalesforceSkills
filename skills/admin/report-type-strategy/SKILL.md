@@ -1,6 +1,6 @@
 ---
 name: report-type-strategy
-description: "Custom Report Type design — when to create a CRT vs use the standard, A-with-B-without and A-without-B joins, primary/secondary/related-via-lookup objects, the 60-field display limit, and field-set vs cross-join layouts. NOT for individual report definitions (use admin/report-design) or dashboards (use admin/dashboard-design)."
+description: "Custom Report Type design — when to create a CRT vs use the standard, A-with-B-without and A-without-B joins, primary/secondary/related-via-lookup objects, the 60-field display limit, and field-set vs cross-join layouts. NOT for building the report or dashboard itself once the report type exists — use admin/reports-and-dashboards-fundamentals."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,8 @@ triggers:
   - "report type which fields are reportable"
   - "joined report custom report type"
   - "report builder cannot find object combination"
+  - "custom report type in development not deployed"
+  - "accounts without contacts child field filter contradiction"
 tags:
   - reports
   - custom-report-type
@@ -31,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-08-14
 ---
 
 # Report Type Strategy
@@ -110,7 +112,9 @@ multi-shape data.
 ## What This Skill Does Not Cover
 
 - **Designing individual reports** (filters, summaries, charts)
-  — see `admin/report-design`.
-- **Dashboard composition** — see `admin/dashboard-design`.
-- **Reports API / Reporting Snapshot** — see `admin/reporting-api`.
-- **Big Object reports** — see `architect/big-object-reporting`.
+  — see `admin/reports-and-dashboards-fundamentals`.
+- **Dashboard composition** — see `admin/reports-and-dashboards`.
+- **Reports API / Reporting Snapshot** — not covered here; the
+  closest guidance is async report execution via the Analytics API
+  in `admin/report-performance-tuning`.
+- **Big Object reporting** — see `data/external-data-and-big-objects`.

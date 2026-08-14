@@ -80,13 +80,14 @@
     "e491cccfb2e92d14dfb1",
     "e7d23c1fe387242d51d6",
     "e9204fa81a6a51e432ae",
+    "ef82275147a3f250a9b3",
     "f1e6ca4dbc25199faeff",
     "f3210c3479cac76f13c2",
     "f3307551b61b67a641d5"
   ],
-  "content_hash": "42860da32d3ea1c6b7356ef9edd792adbb2c4e8520984037a75e7cbfbf8cb6d4",
+  "content_hash": "41ed0f538fdf1c3f1662804c7e7948eac9dc299ae61c66db46f71a774f39e153",
   "dependencies": [],
-  "description": "Strategy layer for resilient Apex HTTP callouts: bounded retry with backoff, queueable async retry chains, circuit-breaker via Platform Cache, idempotency keys, dead-letter pattern. NOT for callout authentication \u2014 see apex-named-credentials-patterns. NOT for transaction-boundary rules \u2014 see callout-and-dml-transaction-boundaries. NOT a re-write of the HttpClient template \u2014 this is the policy and orchestration layer that calls it.",
+  "description": "Strategy layer for resilient Apex HTTP callouts: bounded retry with backoff, queueable async retry chains, circuit-breaker via Platform Cache, idempotency keys, dead-letter pattern. NOT for callout authentication \u2014 use apex/apex-named-credentials-patterns. NOT for callout/DML transaction-boundary rules \u2014 use apex/callout-and-dml-transaction-boundaries.",
   "file_location": "skills/apex/apex-callout-retry-and-resilience",
   "id": "apex/apex-callout-retry-and-resilience",
   "inputs": [
@@ -133,7 +134,7 @@
   "templates": [
     "skills/apex/apex-callout-retry-and-resilience/templates/apex-callout-retry-and-resilience-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

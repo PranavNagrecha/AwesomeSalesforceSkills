@@ -1,6 +1,6 @@
 ---
 name: scheduled-apex-failure-detection-and-monitoring
-description: "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing — covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/apex-exception-handling-and-logging), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-design), NOT for Setup → Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for retry logic itself (use apex/scheduled-apex-retry-patterns once authored)."
+description: "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing — covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/exception-handling), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-patterns), NOT for Setup → Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for writing the Schedulable class itself (use apex/apex-scheduled-jobs)."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -149,8 +149,8 @@ The watcher is itself scheduled Apex, so the same considerations apply: it must 
 
 ## Related Skills
 
-- `apex/apex-exception-handling-and-logging` — general Apex exception patterns; the structured logger you call from `execute()` lives there
-- `apex/batch-apex-design` — chunking, scope size, and stateful design for Batch Apex
+- `apex/error-handling-framework` — cross-cutting Apex exception patterns; the structured logger you call from `execute()` lives there
+- `apex/batch-apex-patterns` — chunking, scope size, and stateful design for Batch Apex
 - `admin/batch-job-scheduling-and-monitoring` — admin-facing monitoring via Setup → Apex Jobs and Scheduled Jobs UI
 - `architect/org-limits-monitoring` — broader org-level limits monitoring (Flex Queue saturation, async limits) which also surfaces in this domain
 - `apex/apex-custom-notifications-from-apex` — how to publish a Custom Notification from an Apex trigger or class, for the bell-icon alert path

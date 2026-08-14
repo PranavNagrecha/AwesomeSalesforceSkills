@@ -1,6 +1,6 @@
 ---
 name: cpq-data-model
-description: "Use when querying, mapping, or building against Salesforce CPQ managed-package objects (SBQQ__ namespace): Quote, QuoteLine, QuoteLineGroup, DiscountSchedule, PriceRule, Subscription. Trigger keywords: SBQQ__Quote__c, QuoteLineModel, CPQ object graph, CPQ subscription, CPQ price rule. NOT for standard Quote/QuoteLineItem, Industries CPQ (Vlocity), or standard Product/Pricebook data model."
+description: "Use when querying, mapping, or building against Salesforce CPQ managed-package objects (SBQQ__ namespace): Quote, QuoteLine, QuoteLineGroup, DiscountSchedule, PriceRule, Subscription. Trigger keywords: SBQQ__Quote__c, QuoteLineModel, CPQ object graph, CPQ subscription, CPQ price rule. NOT for driving quote calculation, amend or renew from code — use apex/cpq-api-and-automation. NOT for bulk-loading the CPQ product catalog — use data/product-catalog-migration-cpq."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

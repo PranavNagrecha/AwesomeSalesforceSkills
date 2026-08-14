@@ -39,3 +39,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When the `LoggerService.instance` static variable is not reset between test methods.
 
 **How to avoid:** Add a `reset()` static method on LoggerService that clears the buffer and nulls the instance: `public static void reset() { instance = null; }`. Call `LoggerService.reset()` in test `@TestSetup` or at the start of each test method.
+
+---
+
+## Gotcha 5: Allowlist Masking on Logs Is a Silent PII Leak
+
+**What happens:** A before-insert trigger masks SSN/DOB only on two Long Text fields, only when `InterfaceName__c` is in a hardcoded set. A new integration writes unmasked payloads. `Stack_Trace__c` / `Message__c` are never masked. The catch block logs the masking failure **through the same logger** (fail-open). Custom log objects outlive session TTL and intake purge — they become the searchable archive.
+
+**When it occurs:** Integration factories that `JSON.serialize` the entire OmniScript map into a log field; adding a sixth interface without updating the mask list.
+
+**How to avoid:** Deny-by-default: mask **all** free-text log fields unless the interface is explicitly classified non-sensitive. Mask on insert **and** update. Fail **closed** (drop the payload, keep the metadata) if masking throws. Never serialize the raw request map into `Stack_Trace`. Truncate to the Long Text Area max (131,072) on purpose, not by surprise.

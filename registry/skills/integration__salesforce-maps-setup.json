@@ -83,7 +83,7 @@
     "fe05e399177698dfd33f",
     "ffdc28d62be4502dadec"
   ],
-  "content_hash": "f537529ea56a564a0a37fca2d700b65d79644a24f70ae8165859cc387a2ea3a4",
+  "content_hash": "d0cc850b0a4c33cf1ccd1f0507aa0aa6100c9f1efbcda3e1e7c3ca94f59e297b",
   "dependencies": [],
   "description": "Use when configuring Salesforce Maps (formerly MapAnything) \u2014 territory planning, route optimization, live tracking, geo-grid visualizations, and check-in/check-out workflows for Sales or Service field reps not on Field Service. Covers package installation order (Maps + Maps Advanced + Maps Routing/Live Tracking add-ons), the MapsTerritoryPlan / MapsAdvancedRoute / MapsLayer object family, base-data syncs (Geocoding and Routing services), and integration with Sales and Service Cloud records. Triggers: 'Salesforce Maps setup', 'MapAnything migration', 'territory planning by polygon', 'route optimization for sales reps', 'live tracking field reps', 'plot accounts on a map', 'check-in to the closest account'. NOT for Field Service Lightning territory and scheduling (use admin/fsl-scheduling-optimization-design and data/fsl-territory-data-setup) \u2014 Maps and FSL are different products. NOT for Consumer Goods Cloud retail visit planning (use admin/consumer-goods-cloud-setup) \u2014 RoutePlan/Visit objects are CG-specific. NOT for Tableau / CRM Analytics geo charts.",
   "file_location": "skills/integration/salesforce-maps-setup",

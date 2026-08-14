@@ -1,6 +1,6 @@
 ---
 name: einstein-discovery-deployment
-description: "Use this skill when deploying a trained Einstein Discovery model to production records declaratively — activating a prediction definition, mapping output fields to page layouts, adding the Einstein Discovery Action to a Flow, running bulk predict jobs, and monitoring model health via Model Manager UI. Trigger keywords: prediction definition activation, bulk predict job, Einstein Discovery Flow action, Model Manager, prediction field mapping, model refresh activation, scoring job, Einstein Discovery recommendations on record. NOT for Einstein Discovery setup or story authoring. NOT for developer API integration (see agentforce/einstein-discovery-development)."
+description: "Use this skill when deploying a trained Einstein Discovery model to production records declaratively — activating a prediction definition, mapping output fields to page layouts, adding the Einstein Discovery Action to a Flow, running bulk predict jobs, and monitoring model health via Model Manager UI. Trigger keywords: prediction definition activation, bulk predict job, Einstein Discovery Flow action, Model Manager, prediction field mapping, model refresh activation, scoring job, Einstein Discovery recommendations on record. NOT for authoring the story in CRM Analytics Studio — use admin/einstein-discovery-setup. NOT for programmatic scoring through the API — use agentforce/einstein-discovery-development."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

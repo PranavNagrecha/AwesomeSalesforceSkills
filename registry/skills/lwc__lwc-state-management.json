@@ -42,9 +42,9 @@
     "ee138321efa00b806ab1",
     "f44023d774177d553ef2"
   ],
-  "content_hash": "c848367122f4be69a56c4306f19aa839636ebb9dedcde283df28b4e62c6c8aac",
+  "content_hash": "44efe6911222ce795e21d65b18ddfdf3ab95f82382f3479c8198713eee20be02",
   "dependencies": [],
-  "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
+  "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity \u2014 use lwc/lwc-reactive-state-patterns.",
   "file_location": "skills/lwc/lwc-state-management",
   "id": "lwc/lwc-state-management",
   "inputs": [

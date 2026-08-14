@@ -1,6 +1,6 @@
 ---
 name: salesforce-dx-project-structure
-description: "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the force-app directory tree for source-driven development. NOT for scratch org definition files (use scratch-org-management), CLI command usage (use sf-cli-and-sfdx-essentials), or CI/CD pipeline configuration (use github-actions-for-salesforce or bitbucket-pipelines-for-salesforce)."
+description: "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the. NOT for scratch org definition files (use scratch-org-management), CLI command usage (us — use apex/sf-cli-and-sfdx-essentials."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

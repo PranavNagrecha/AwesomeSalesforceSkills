@@ -1,6 +1,6 @@
 ---
 name: webhook-inbound-patterns
-description: "Use when implementing an inbound webhook receiver in Salesforce: routing via Apex REST and Salesforce Sites, authenticating webhook payloads via HMAC, ensuring idempotent processing, and handling the 5-second response window. NOT for outbound callouts from Salesforce to external systems (use callouts-and-http-integrations), NOT for general Apex REST service design (use apex-rest-services), NOT for platform events as inbound triggers."
+description: "Use when implementing an inbound webhook receiver in Salesforce: routing via Apex REST and Salesforce Sites, authenticating webhook payloads via HMAC, ensuring idempotent processing, and handling the 5-second response window. NOT for Salesforce POSTing a webhook out to a third-party endpoint — use integration/outbound-webhook-from-salesforce. NOT for designing a general-purpose Apex REST API rather than a webhook sink — use apex/apex-rest-services."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

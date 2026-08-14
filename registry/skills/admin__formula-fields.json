@@ -56,9 +56,9 @@
     "f4c1621fd996bc0c3282",
     "fa3d02d377f6afefae1b"
   ],
-  "content_hash": "3df40e07b75855998c4929acd240004730e836d121124f6b9c181ffe4cb493cf",
+  "content_hash": "4778019424f12d3580fe23d674f41228d8206ab19a097fb3f243da21534b5d4f",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for a formula field slowing a SOQL query or blocking an index \u2014 use apex/formula-field-performance-and-limits. NOT for Formula resources inside a Flow \u2014 use flow/flow-formula-and-expression-patterns.",
   "file_location": "skills/admin/formula-fields",
   "id": "admin/formula-fields",
   "inputs": [

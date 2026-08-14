@@ -1,6 +1,6 @@
 ---
 name: financial-planning-process
-description: "Use this skill when configuring FSC financial planning objects, designing periodic review cycles, modeling risk assessment workflows, or tracking goal progress in Financial Services Cloud. Trigger keywords: FinancialGoal, FinancialPlan, goal tracking, risk tolerance, review cycle, financial planning workflow, Discovery Framework, Revenue Insights. NOT for financial advice, investment recommendations, or high-level process mapping (see wealth-management-requirements for that)."
+description: "Use this skill when configuring FSC financial planning objects, designing periodic review cycles, modeling risk assessment workflows, or tracking goal progress in Financial Services Cloud. Trigger keywords: FinancialGoal, FinancialPlan, goal tracking, risk tolerance, review cycle, financial planning workflow, Discovery Framework, Revenue Insights. NOT for wealth management process discovery — use admin/wealth-management-requirements. NOT for Action Plan template mechanics — use admin/fsc-action-plans."
 category: admin
 salesforce-version: "Summer '25+"
 well-architected-pillars:

@@ -20,6 +20,7 @@
     "3d12c688aceb409011cb",
     "40dfe853ea93f84d51fd",
     "46ef2c08e30608544090",
+    "484c4a4692333ebe4393",
     "512f8615b18b65fe8123",
     "5222d80c88287576854a",
     "57e063376e7a92443b76",
@@ -70,11 +71,11 @@
     "fd494b360286be5f34eb",
     "ff4da42314e823cc357b"
   ],
-  "content_hash": "2e99d83299afab43bd2d21b2816218e441eff0832f8292dea3f2a09ff9ef345e",
+  "content_hash": "7eee21e5935d86aad2deab9c30d73c3833a765baafe8c499d778537c0d147f97",
   "dependencies": [
     "integration-procedures"
   ],
-  "description": "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element', 'VlocityOpenInterface2', 'Send/Response JSON Path'. NOT for Integration Procedure internal design (use integration-procedures) or generic Apex callout patterns (use apex integration skills).",
+  "description": "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element'. NOT for Integration Procedure internal design (use integration-procedures) or generic Ap \u2014 use omnistudio/omnistudio-error-handling-patterns.",
   "file_location": "skills/omnistudio/omnistudio-remote-actions",
   "id": "omnistudio/omnistudio-remote-actions",
   "inputs": [
@@ -117,7 +118,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-remote-actions/templates/omnistudio-remote-actions-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

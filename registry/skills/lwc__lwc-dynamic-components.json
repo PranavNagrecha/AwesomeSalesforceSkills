@@ -96,9 +96,9 @@
     "fd3a8fa4d7ca01205d64",
     "fe184d8ec12002861385"
   ],
-  "content_hash": "2a711f82e3766e8c4c210590e020a9415cbe79da8b8be3923aa52ba8794e9ad1",
+  "content_hash": "07e4da0f143127239a0d7e2082f3993d09b4b0271ea63ca0f4eca29f1168fb3d",
   "dependencies": [],
-  "description": "Dynamic LWC component creation using the `lwc:component` directive, lazy-loaded dynamic imports (`import()`), and runtime component resolution for conditional rendering at scale. Triggers: 'render different components based on record type', 'dynamically load lwc at runtime', 'lwc:component lwc:is constructor', 'lazy load component only when needed', 'dynamic import lwc'. NOT for static component composition or `lwc:if` conditional rendering when the component set is fixed at build time (use lwc-conditional-rendering).",
+  "description": "Dynamic LWC component creation using the `lwc:component` directive, lazy-loaded dynamic imports (`import()`), and runtime component resolution for conditional rendering at scale. Triggers: 'render different components based on record type', 'dynamically load lwc at runtime', 'lwc:component lwc:is constructor', 'lazy load component only when needed', 'dynamic import lwc'. NOT for lwc:if over a fixed component set \u2014 use lwc/lwc-conditional-rendering. NOT for page performance tuning \u2014 use lwc/lwc-performance.",
   "file_location": "skills/lwc/lwc-dynamic-components",
   "id": "lwc/lwc-dynamic-components",
   "inputs": [

@@ -102,12 +102,12 @@
     "fd75611759191621a5cd",
     "ffe6e2c8659c0a396260"
   ],
-  "content_hash": "e65d3fa0796def281b6efed783d716bf861fc77c3ef795137084af04b28b7cb5",
+  "content_hash": "b04bacd700aac16e51af3e9a4ea47cb0376514055f0a53e21d113bab4ad355e2",
   "dependencies": [
     "ai-ready-data-architecture",
     "agentforce-service-ai-setup"
   ],
-  "description": "Use this skill to identify, score, and prioritize Salesforce AI use cases before any implementation begins \u2014 covering opportunity identification, Impact-Effort matrix scoring, feasibility evaluation across Technical/Operational/Data/Risk dimensions, and ROI framing. NOT for implementation, enablement, feature configuration, or data architecture design.",
+  "description": "Identify, score, and prioritize Salesforce AI use cases before any implementation begins \u2014 opportunity identification, Impact-Effort matrix scoring, feasibility evaluation across Technical/Operational/Data/Risk dimensions, and ROI framing. NOT for the license checks and enablement steps once a use case is approved \u2014 use agentforce/agentforce-service-ai-setup or agentforce/agentforce-sales-ai-setup. NOT for making the data model AI-ready \u2014 use architect/ai-ready-data-architecture.",
   "file_location": "skills/admin/ai-use-case-assessment",
   "id": "admin/ai-use-case-assessment",
   "inputs": [

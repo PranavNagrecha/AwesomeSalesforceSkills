@@ -1,6 +1,6 @@
 ---
 name: lwc-record-picker
-description: "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for multi-select custom pickers (use lwc-multi-select-lookup). NOT for external-object lookup (use lwc-external-lookup)."
+description: "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for a fully custom typeahead lookup — use lwc/lwc-custom-lookup."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

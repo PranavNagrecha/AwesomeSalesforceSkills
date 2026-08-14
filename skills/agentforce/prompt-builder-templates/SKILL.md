@@ -1,6 +1,6 @@
 ---
 name: prompt-builder-templates
-description: "Use when creating, reviewing, or troubleshooting Prompt Builder templates (Field Generation, Record Summary, Sales Email, or Flex types), including grounding with merge fields, Flow, or Apex. Trigger keywords: prompt template, Prompt Builder, field generation, record summary, sales email template, flex template, grounding, merge fields, LLM template, Einstein generative AI. NOT for agent topic instructions, Copilot action configuration, or Data Cloud segment activation."
+description: "Use when creating, reviewing, or troubleshooting Prompt Builder templates (Field Generation, Record Summary, Sales Email, or Flex types), including grounding with merge fields, Flow, or Apex. Trigger keywords: prompt template, Prompt Builder, field generation, record summary, sales email template, flex template, grounding, merge fields, LLM template, Einstein generative AI. NOT for versioning, promoting or rolling back a template — use agentforce/prompt-template-versioning. NOT for Data Cloud vector-search RAG pipelines that ground an agent (chunking, embeddings, retrievers) — use agentforce/rag-patterns-in-salesforce."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -67,6 +67,8 @@ Salesforce Prompt Builder (part of Einstein 1 Studio) provides four standard pro
 **Sales Email** — Drafts personalized outbound emails for sales reps using record data such as Opportunity, Contact, and Account fields. Renders in the activity composer.
 
 **Flex** — A general-purpose template type for any use case not covered by the three types above. Flex templates accept up to five custom inputs defined at authoring time. They can be surfaced via agent actions, quick actions, screen flows, or custom UI. Flex templates are the correct type to use when integrating with Agentforce agent actions.
+
+**Structured Outputs (Spring '26).** Prompt Builder can bind a Flex (or other supported) template to a **Lightning type** so the model response is validated as JSON matching that type — platform-enforced structure instead of prompt-only "return JSON" instructions. Use this when an agent action or Flow must consume typed fields, not free-form prose. Preview still matters: schema validation catches shape errors, not business correctness.
 
 ### Grounding Strategies
 

@@ -130,9 +130,9 @@
     "fc3c356145a9adcad4a2",
     "fe52537d59e5ec3298b3"
   ],
-  "content_hash": "5f3cdb789ba1e38addf5ca4b9014fffab5db5efff5fa837ca69df1da1ef8c380",
+  "content_hash": "912a847ba936b1703f37461bdded991e3b487a6f70711df0adc8a2308024bfd9",
   "dependencies": [],
-  "description": "Use when planning, reviewing, or troubleshooting a Salesforce data migration \u2014 covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics (use data-import-and-management). NOT for schema or data model design (use data-model-design-patterns). NOT for ongoing ETL pipeline architecture.",
+  "description": "Use when planning, reviewing, or troubleshooting a Salesforce data migration \u2014 covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics \u2014 use admin/data-import-and-management. NOT for schema or data model design \u2014 use data/data-model-design-patterns.",
   "file_location": "skills/data/data-migration-planning",
   "id": "data/data-migration-planning",
   "inputs": [

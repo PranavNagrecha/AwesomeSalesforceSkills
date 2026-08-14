@@ -36,6 +36,7 @@
     "4f2e3fb863a9698d3f49",
     "51c9908a60a6ec88f2c2",
     "5206842a3a8751123ee4",
+    "52ae2dbf97df30ab0872",
     "532996554eea9c14304a",
     "5819660c2e6d6fe1304c",
     "598fec911eeb5d6b31cf",
@@ -100,9 +101,9 @@
     "f43d2d16408ffa060dbb",
     "f4d651ab89e53746e85b"
   ],
-  "content_hash": "56c4ef2949a5a66103129cc0f27c874f741187dc29e53a3ea3ffc65bf1aee5dc",
+  "content_hash": "def05483f855336db98e001fd5a267511924dbc33b2b307d320f28342217caf7",
   "dependencies": [],
-  "description": "Auditing, right-sizing, and reclaiming Salesforce licenses to reduce cost and ensure compliant allocation. Trigger keywords: license audit, license cost reduction, unused licenses, permission set license, login-based license, inactive users, license reclamation, right-size licenses. NOT for provisioning net-new licenses (contact AE). NOT for Experience Cloud community license troubleshooting. NOT for permission set assignment logic outside of license gating.",
+  "description": "Auditing, right-sizing, and reclaiming Salesforce licenses to reduce cost and ensure compliant allocation. Trigger keywords: license audit, license cost reduction, unused licenses, permission set license, login-based license, inactive users, license reclamation, right-size licenses. NOT for whether a feature needs an edition upgrade or add-on license \u2014 use architect/org-edition-and-feature-licensing. NOT for choosing an Experience Cloud external user license type \u2014 use architect/experience-cloud-licensing-model.",
   "file_location": "skills/architect/license-optimization-strategy",
   "id": "architect/license-optimization-strategy",
   "inputs": [

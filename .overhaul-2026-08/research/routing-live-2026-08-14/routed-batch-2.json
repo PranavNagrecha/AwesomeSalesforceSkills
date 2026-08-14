@@ -1,0 +1,178 @@
+[
+  {
+    "query": "configure approval process",
+    "expected": "admin/approval-processes",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/approval-processes",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Router description names approval process; gloss triggers include submit for approval / approval step (vs Apex-driving sibling).",
+    "miss_reason": null
+  },
+  {
+    "query": "why is my LWC slow",
+    "expected": "lwc/lwc-performance",
+    "router_picked": "lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/lwc-performance",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "LWC router owns performance; gloss triggers 'slow lwc' / rerenders (budgets redirects here for runtime tuning).",
+    "miss_reason": null
+  },
+  {
+    "query": "make a field required only for one record type",
+    "expected": "admin/validation-rules",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/validation-rules",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin owns validation rules; gloss trigger 'required field formula' beats layout-per-RT wording for conditional required.",
+    "miss_reason": null
+  },
+  {
+    "query": "write a test that actually catches bulk problems",
+    "expected": "apex/test-class-standards",
+    "router_picked": "apex",
+    "router_correct": true,
+    "skill_picked": "apex/test-class-standards",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex owns test classes; gloss is the writing/reviewing Apex tests package (startTest / assertions) vs factory-only siblings.",
+    "miss_reason": null
+  },
+  {
+    "query": "keep an external system and Salesforce in sync both ways",
+    "expected": "integration/real-time-vs-batch-integration",
+    "router_picked": "integration",
+    "router_correct": true,
+    "skill_picked": "integration/real-time-vs-batch-integration",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Integration owns external sync; gloss triggers how to sync / real-time vs batch (Heroku bidirectional is product-specific).",
+    "miss_reason": null
+  },
+  {
+    "query": "build an agent that can look up an order status",
+    "expected": "agentforce/agent-actions",
+    "router_picked": "agentforce",
+    "router_correct": true,
+    "skill_picked": "agentforce/agent-actions",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Agentforce router; gloss trigger nearly verbatim: 'build an agent that can look up an order' / check order status.",
+    "miss_reason": null
+  },
+  {
+    "query": "flow keeps sending me error emails",
+    "expected": "flow/flow-error-notification-patterns",
+    "router_picked": "flow",
+    "router_correct": true,
+    "skill_picked": "flow/flow-error-notification-patterns",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Flow router; gloss trigger exact phrase 'flow keeps sending me error emails' (fault-handling redirects diagnosis elsewhere).",
+    "miss_reason": null
+  },
+  {
+    "query": "we're going live next month what should I check",
+    "expected": "devops/go-live-cutover-planning",
+    "router_picked": "devops",
+    "router_correct": true,
+    "skill_picked": "devops/go-live-cutover-planning",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Devops owns go-live/release; gloss is final cutover / major-release planning (pre-deploy checklist is deploy-scoped).",
+    "miss_reason": null
+  },
+  {
+    "query": "we have 40 million rows on one object and queries crawl",
+    "expected": "architect/large-data-volume-architecture",
+    "router_picked": "architect",
+    "router_correct": true,
+    "skill_picked": "architect/large-data-volume-architecture",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Architect description names large data volume; data router defers LDV architecture here; gloss 'millions of records on custom object'.",
+    "miss_reason": null
+  },
+  {
+    "query": "jest tests fail because the wire adapter is undefined",
+    "expected": "lwc/lwc-testing",
+    "router_picked": "lwc",
+    "router_correct": true,
+    "skill_picked": "lwc/lwc-testing",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "LWC Jest ownership; sibling glosses say NOT for Jest failures — use lwc-testing (runtime 'wire undefined' is not Jest).",
+    "miss_reason": null
+  },
+  {
+    "query": "delete a field as part of a deployment",
+    "expected": "devops/destructive-changes-deployment",
+    "router_picked": "devops",
+    "router_correct": true,
+    "skill_picked": "devops/destructive-changes-deployment",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Devops deploy + delete metadata; gloss is destructiveChanges.xml for safe metadata deletion.",
+    "miss_reason": null
+  },
+  {
+    "query": "our agent bill is climbing every month",
+    "expected": "agentforce/agentforce-cost-optimization",
+    "router_picked": "agentforce",
+    "router_correct": true,
+    "skill_picked": "agentforce/agentforce-cost-optimization",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Agentforce cost/spend gloss ('agentforce cost', reduce spend); rate-limit skill redirects token reduction here.",
+    "miss_reason": null
+  },
+  {
+    "query": "who logged in from a country we don't operate in",
+    "expected": "security/login-forensics",
+    "router_picked": "security",
+    "router_correct": true,
+    "skill_picked": "security/login-forensics",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Security monitoring; gloss investigates login activity via LoginHistory / Login Forensics (vs MFA or IP policy setup).",
+    "miss_reason": null
+  },
+  {
+    "query": "roll up child amounts when the relationship isn't master detail",
+    "expected": "data/roll-up-summary-alternatives",
+    "router_picked": "data",
+    "router_correct": true,
+    "skill_picked": "data/roll-up-summary-alternatives",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Data model roll-up when native MD roll-up isn't enough; gloss NOT for ordinary master-detail native roll-ups.",
+    "miss_reason": null
+  },
+  {
+    "query": "unable to lock row errors under load",
+    "expected": "apex/record-locking-and-contention",
+    "router_picked": "apex",
+    "router_correct": true,
+    "skill_picked": "apex/record-locking-and-contention",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Apex contention; gloss trigger 'UNABLE_TO_LOCK_ROW' / record lock contention (Flow locks redirect elsewhere).",
+    "miss_reason": null
+  },
+  {
+    "query": "ask the customer for feedback after a case closes",
+    "expected": "admin/salesforce-surveys",
+    "router_picked": "admin",
+    "router_correct": true,
+    "skill_picked": "admin/salesforce-surveys",
+    "correct": true,
+    "expected_in_top3": true,
+    "why_picked": "Admin surveys; gloss triggers customer feedback form / survey invitation (CSAT choice redirects to architect).",
+    "miss_reason": null
+  }
+]

@@ -5,28 +5,28 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Using GenAiPlannerBundle Syntax Against API v63 or Lower
 
-**What the LLM generates:** A complete `.agent` file or Metadata API manifest referencing `GenAiPlannerBundle` for a project with `apiVersion: 63.0` or lower:
+**What the LLM generates:** A complete `.agent` file or Metadata API manifest referencing `GenAiPlannerBundle` for a project with `sourceApiVersion` 63.0 or lower:
 
 ```yaml
 spec:
   plannerBundle: MyAgent_PlannerBundle  # Wrong for API v63
 ```
 
-**Why it happens:** LLMs trained on Spring '26+ documentation default to GenAiPlannerBundle syntax without checking the target API version. The distinction between GenAiPlanner (v60–v63) and GenAiPlannerBundle (v64+) is a version-gated API change that is easy to miss.
+**Why it happens:** LLMs default to GenAiPlannerBundle syntax without checking the project's API version. They also routinely misdate the cutover — the docs say "GenAiPlanner components are available in API version 60.0 to 63.0. GenAiPlannerBundle replaces GenAiPlanner in API version 64.0 and later," and v64.0 is **Summer '25**, not Spring '26 (v66.0). An assistant that repeats the Spring '26 figure will tell a team on a Winter '26 org that they need to wait for an upgrade they already have.
 
 **Correct pattern:**
 
 ```yaml
-# For API v64+ (Spring '26+) — use GenAiPlannerBundle
+# Project sourceApiVersion 64.0+ (Summer '25 onward) — use GenAiPlannerBundle
 spec:
   plannerBundle: MyAgent_PlannerBundle
 
-# For API v60–v63 — use GenAiPlanner
+# Project sourceApiVersion 60.0–63.0 — use GenAiPlanner
 spec:
   planner: MyAgent_Planner
 ```
 
-**Detection hint:** Check the `apiVersion` in `sfdx-project.json`. If it is 63.0 or lower, any reference to `GenAiPlannerBundle` is wrong and will fail at deploy time.
+**Detection hint:** Check `sourceApiVersion` in `sfdx-project.json` — the *project* pin decides, not the org's release banner. If it is 63.0 or lower, any reference to `GenAiPlannerBundle` is wrong and will fail at deploy time. Any statement that GenAiPlannerBundle "requires Spring '26" is also wrong.
 
 ---
 
@@ -176,3 +176,41 @@ reasoning:
 Treat "topic" (older `.agent`/GenAiPlugin metadata) and "subagent" (newer Agent Script) as the same concept. The routing-quality principle is unchanged: the LLM classifies utterances against natural-language descriptions, so description quality — not the label of the block — is what drives correct routing.
 
 **Detection hint:** Any claim that converting a topic to a subagent alters routing, testing, or deployment behavior is incorrect; the rename is terminology only.
+
+---
+
+## Anti-Pattern 9: "Modernizing" API Identifiers to the Subagent Vocabulary
+
+**What the LLM generates:** Having learned that topics are now subagents, the assistant helpfully renames the API surface to match — in a manifest, a retrieve command, or an `.aiTest` file:
+
+```xml
+<!-- Wrong: there is no GenAiSubagent type and no subagent_sequence_match expectation -->
+<types>
+    <members>MyAgent_Reservations</members>
+    <name>GenAiSubagent</name>
+</types>
+...
+<expectation>
+    <name>subagent_sequence_match</name>
+</expectation>
+```
+
+**Why it happens:** The April 2026 rename reached the developer guide and the Builder UI but not the API. An assistant reconciling the two vocabularies assumes the metadata layer simply lags in the docs and "corrects" it. It does not lag — it never renamed. `GenAiPlugin` is still documented as "Represents an agent topic, which is a category of actions related to a particular job to be done by AI agents," and the word *subagent* does not appear on that page at all. `AiEvaluationDefinition` still uses `topic_sequence_match`.
+
+**Correct pattern:**
+
+Keep the API vocabulary exactly as the API defines it, and let the prose use whichever term the audience knows:
+
+```xml
+<types>
+    <members>MyAgent_Reservations</members>
+    <name>GenAiPlugin</name>
+</types>
+...
+<expectation>
+    <name>topic_sequence_match</name>
+    <expectedValue>Reservations</expectedValue>
+</expectation>
+```
+
+**Detection hint:** Any identifier containing "subagent" in a `package.xml`, an `sf project retrieve/deploy` `--metadata` flag, or an `AiEvaluationDefinition` expectation name is fabricated. Valid expectation names include `topic_sequence_match`, `action_sequence_match`, `bot_response_rating`, `output_latency_milliseconds`, `string_comparison`, and `numeric_comparison`.

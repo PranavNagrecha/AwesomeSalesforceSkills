@@ -1,6 +1,6 @@
 ---
 name: flow-apex-defined-types
-description: "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable, @AuraEnabled class, flow http callout response. Does NOT cover building HTTP Callout Actions themselves, External Services schema, or raw Apex invocable methods."
+description: "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable. NOT for building HTTP Callout Actions themselves, External Services schema, or raw Apex  — use flow/flow-external-services."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

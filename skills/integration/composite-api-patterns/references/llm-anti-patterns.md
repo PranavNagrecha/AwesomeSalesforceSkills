@@ -42,7 +42,7 @@ POST /services/data/v63.0/composite
 }
 ```
 
-**Detection hint:** Any batch request body containing placeholder strings (REPLACE_WITH, TODO, UNKNOWN_ID) in field values is a sign the LLM needed `/composite/` instead.
+**Detection hint:** Any batch request body containing stand-in strings (`REPLACE_WITH`, `UNKNOWN_ID`, `PENDING_PARENT_ID`) where a parent record Id belongs is a sign the LLM needed `/composite/` and its `@{referenceId.id}` notation instead.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: activity-and-task-patterns
-description: "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup)."
+description: "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for turning on EAC or calendar sync — use admin/einstein-activity-capture-setup. NOT for Email-to-Case — use admin/case-management-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -142,4 +142,4 @@ Activity count / last-activity-date rollups: use formula-friendly patterns (e.g.
 
 - `apex/apex-polymorphic-soql` — polymorphic query patterns in depth
 - `admin/case-management-setup` — case-related activity handling
-- `integration/einstein-activity-capture-integration` — EAC data flow
+- `admin/einstein-activity-capture-setup` — EAC sync scope and data flow

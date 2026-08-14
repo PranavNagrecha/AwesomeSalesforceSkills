@@ -50,9 +50,10 @@
 
 - Lightning Out 2.0 Is Now Generally Available in Winter '26 (Salesforce Developer Blog) — https://developer.salesforce.com/blogs/2025/10/lightning-out-2-0-is-now-generally-available-in-winter-26
 - Embed Lightning Web Components in External Apps with Lightning Out 2.0 (intro) — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-intro.html
-- Lightning Out 2.0 Architecture — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-architecture.html
-- Lightning Out 2.0 Limitations — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-limitations.html
-- Lightning Out 2.0 Requirements — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-requirements.html
+- Lightning Out 2.0 Architecture — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-architecture.html — confirms the `app-id` gate is the app's creation date ("If you created a Lightning Out 2.0 app before Spring '26, this attribute isn't required"), the mixed-case-namespace `components` format, and the four `lo.*` lifecycle events (verified 2026-08-14)
+- Lightning Out 2.0 Limitations — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-limitations.html — confirms the cookie requirement has an org half as well as a browser half ("Additionally, make sure that cross-domain Salesforce session cookies are enabled in your org") (verified 2026-08-14)
+- Lightning Out **(Beta)** Requirements — https://developer.salesforce.com/docs/platform/lwc/guide/lightning-out-requirements.html — this page documents the *beta*, not 2.0; confirms "Lightning Out (beta) isn't supported when Lightning Web Security is enabled" and the beta's CORS-allowlist step (verified 2026-08-14)
+- The Salesforce Developer's Guide to the Spring '26 Release — https://developer.salesforce.com/blogs/2026/01/developers-guide-to-the-spring-26-release — confirms the Spring '26 Lightning Out 2.0 changes: host domains configured in the App Manager plus the Trusted Domains allowlist in Session Settings, generated code blocks including `app-id`, and complex/mixed-case namespace support (verified 2026-08-14)
 - Set Up Authentication for Lightning Out 2.0 (Salesforce Help) — https://help.salesforce.com/s/articleView?id=platform.lightning_out_auth.htm&language=en_US&type=5
 - Build a Lightning Out 2.0 App (Salesforce Help) — https://help.salesforce.com/s/articleView?id=platform.lightning_out_build.htm&language=en_US&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -1,6 +1,6 @@
 ---
 name: apex-managed-sharing-patterns
-description: "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design."
+description: "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design — use admin/sharing-and-visibility."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

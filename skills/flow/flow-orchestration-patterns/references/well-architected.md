@@ -59,6 +59,9 @@
 - Work Items in Flow Orchestration — https://help.salesforce.com/s/articleView?id=sf.flow_orchestrator_workitems.htm&type=5
 - Flow Orchestration Entitlements (runs included, no usage-based limitations) — https://help.salesforce.com/s/articleView?id=platform.orchestrator_considerations_entitlements.htm&type=5
 - Evaluation Flow reference — https://help.salesforce.com/s/articleView?id=sf.flow_concepts_evaluation_flow.htm&type=5
+- Considerations for Evaluation Flows (`isOrchestrationConditionMet` reserved output name) — https://help.salesforce.com/s/articleView?id=platform.orchestrator_considerations_evaluation_flows.htm&type=5
+- Orchestration Run (recoverable errors, resume) — https://help.salesforce.com/s/articleView?id=platform.orchestrator_orchestration_run.htm&type=5
+- Object Reference — `FlowOrchestrationWorkItem` / `FlowOrchestrationStepInstance` / `FlowOrchestrationInstance`
 - Sibling skill — `skills/flow/flow-error-notification-patterns/SKILL.md`
 - Sibling skill — `skills/flow/flow-time-based-patterns/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

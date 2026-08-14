@@ -28,9 +28,9 @@
     "f09dadb7d10dd4b180ab",
     "f832b67235af6c0c3f1d"
   ],
-  "content_hash": "ea0fa00cf2066b6175d61f5cf56a00e0a63254660f2dc4d4861383dc1394c122",
+  "content_hash": "7398268bc4b1933156ea7318f5693a4459df514784e23e81c65fdbe39810abfb",
   "dependencies": [],
-  "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
+  "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. Triggers: virtual scroll, long list LWC. NOT for hand-built windowed rendering past datatable limits \u2014 use lwc/lwc-virtualized-lists.",
   "file_location": "skills/lwc/virtualized-lists",
   "id": "lwc/virtualized-lists",
   "inputs": [

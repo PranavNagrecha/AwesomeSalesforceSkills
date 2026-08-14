@@ -1,6 +1,6 @@
 ---
 name: integration-admin-connected-apps
-description: "Use when managing Connected Apps for integration purposes — configuring OAuth policies, IP restrictions, refresh token expiry, and monitoring connected app usage. NOT for OAuth flows implementation (use oauth-flows-and-connected-apps)."
+description: "Use when managing Connected Apps for integration purposes — configuring OAuth policies, IP restrictions, refresh token expiry, pre-authorization assignment via profile or permission set, and monitoring connected app usage via EventLogFile. NOT for choosing which OAuth grant flow to implement — use integration/oauth-flows-and-connected-apps. NOT for decoding a specific OAuth error such as invalid_grant — use admin/connected-app-troubleshooting."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

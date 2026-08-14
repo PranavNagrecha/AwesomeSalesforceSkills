@@ -1,6 +1,6 @@
 ---
 name: marketing-cloud-data-views
-description: "Use this skill when identifying, querying, or troubleshooting the built-in system data views in Salesforce Marketing Cloud (e.g., _Sent, _Open, _Click, _Bounce, _Subscribers, _Job). Trigger keywords: SFMC system data views, underscore data views, _Subscribers status, _Job metadata, data retention marketing cloud, data view schema, MC engagement reporting SQL. NOT for custom Data Extensions, NOT for Data Cloud (CDP) data streams, NOT for SOQL against Salesforce CRM sObjects, NOT for Query Activity SQL syntax in general (use marketing-cloud-sql-queries instead)."
+description: "Use this skill when identifying, querying, or troubleshooting the built-in system data views in Salesforce Marketing Cloud (_Sent, _Open, _Click, _Bounce, _Subscribers, _Job). Trigger keywords: SFMC system data views, underscore data views, _Subscribers status, _Job metadata, data retention marketing cloud, data view schema, MC engagement reporting SQL. NOT for writing or debugging the Query Activity SQL itself — use data/marketing-cloud-sql-queries. NOT for designing the target Data Extension the query writes into — use data/data-extension-design."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

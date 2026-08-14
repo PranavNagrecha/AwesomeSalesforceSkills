@@ -68,9 +68,9 @@
     "fa58e0d2d420b6db5265",
     "fd794c4eafa8e6e6601b"
   ],
-  "content_hash": "6e3cb9609b2efc8bd51c70c5199a3652e6d84a659183a239291b991cff399511",
+  "content_hash": "d47073cedc84ef45b8a3199eda844d667c121adb71b098a6c1ed37741d012394",
   "dependencies": [],
-  "description": "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture'. NOT for CMS platform implementation, WordPress theme development, or AEM component authoring.",
+  "description": "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture'. NOT for setting up CMS workspaces, content types or publishing \u2014 use admin/experience-cloud-cms-content. NOT for building a React or mobile frontend on the CMS delivery API \u2014 use lwc/headless-experience-cloud.",
   "file_location": "skills/architect/knowledge-vs-external-cms",
   "id": "architect/knowledge-vs-external-cms",
   "inputs": [

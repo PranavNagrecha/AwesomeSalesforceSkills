@@ -45,6 +45,7 @@
     "98863c01879c5bb37342",
     "a830afce7da1408db926",
     "a956945a9b7568830bb6",
+    "acf9d08e49f546a79dd8",
     "ae02420b17625b5e6622",
     "b00224f662dd9a49bc5b",
     "b1c53e90e796e28b58cd",
@@ -63,9 +64,9 @@
     "f02b52c5ef73611f81a4",
     "f9cd16442cebbd6ea80b"
   ],
-  "content_hash": "e1ebf2385a942d3ac0dedcdf5bd66a9a3b2cb01829e1204a86c2d58645429d16",
+  "content_hash": "7347234ad78ab944c22a200d1bc289df993b1390157a052f0cd45145ee1451e9",
   "dependencies": [],
-  "description": "Migrate Process Builder processes to record-triggered Flows using the native Migrate to Flow tool or manual rebuild. Covers conversion tool usage, pattern mapping, order-of-execution changes, testing migrated flows, and bulk behavior improvements. NOT for building new flows from scratch, NOT for Workflow Rule migration (use workflow-rule-to-flow-migration), NOT for net-new automation design.",
+  "description": "Migrate Process Builder processes to record-triggered Flows using the native Migrate to Flow tool or manual rebuild. Covers conversion tool usage, pattern mapping, order-of-execution changes, testing migrated flows, and bulk behavior improvements. NOT for Workflow Rule migration \u2014 use flow/workflow-rule-to-flow-migration. NOT for designing net-new automation \u2014 use admin/process-automation-selection.",
   "file_location": "skills/flow/process-builder-to-flow-migration",
   "id": "flow/process-builder-to-flow-migration",
   "inputs": [
@@ -112,7 +113,7 @@
   "templates": [
     "skills/flow/process-builder-to-flow-migration/templates/process-builder-to-flow-migration-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

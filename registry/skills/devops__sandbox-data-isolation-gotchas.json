@@ -104,11 +104,11 @@
     "f5774c233b94689e9c97",
     "f5abb20f286b993c02a4"
   ],
-  "content_hash": "62104fb0dfb32107f7f900bc6be9ba65227ed0e02d7ce2bfe2736f9139a93045",
+  "content_hash": "2f8ec20aed4f12bd7245a8ed96a43ea43e7b83c388e240a15da211d43d638647",
   "dependencies": [
     "devops/sandbox-refresh-and-templates"
   ],
-  "description": "Use this skill when a sandbox has reached out to production systems, sent emails to real users, run live scheduled jobs, or leaked sensitive data after a refresh. Triggers: 'sandbox sent email to real customers', 'scheduled job fired against production API', 'integration hit live system from sandbox', 'Contact email not changed to .invalid', 'SandboxPostCopy did not run'. NOT for planning sandbox refresh cycles (use sandbox-refresh-and-templates), NOT for selecting sandbox types or counts (use environment-strategy), and NOT for scrubbing PII after copy (use sandbox-data-masking if that skill exists \u2014 otherwise document the masking logic in SandboxPostCopy).",
+  "description": "Use this skill when a sandbox has reached out to production systems, sent emails to real users, run live scheduled jobs, or leaked sensitive data after a refresh. Triggers: 'sandbox sent email to real customers', 'scheduled job fired against production API', 'integration hit live system from sandbox', 'Contact email not changed to .invalid', 'SandboxPostCopy did not run'. NOT for masking or scrubbing PII in the copied records \u2014 use security/sandbox-data-masking. NOT for refresh cadence or sandbox templates \u2014 use devops/sandbox-refresh-and-templates. NOT for picking a sandbox type \u2014 use admin/sandbox-strategy.",
   "file_location": "skills/devops/sandbox-data-isolation-gotchas",
   "id": "devops/sandbox-data-isolation-gotchas",
   "inputs": [

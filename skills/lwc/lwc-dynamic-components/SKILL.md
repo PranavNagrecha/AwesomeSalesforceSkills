@@ -1,6 +1,6 @@
 ---
 name: lwc-dynamic-components
-description: "Dynamic LWC component creation using the `lwc:component` directive, lazy-loaded dynamic imports (`import()`), and runtime component resolution for conditional rendering at scale. Triggers: 'render different components based on record type', 'dynamically load lwc at runtime', 'lwc:component lwc:is constructor', 'lazy load component only when needed', 'dynamic import lwc'. NOT for static component composition or `lwc:if` conditional rendering when the component set is fixed at build time (use lwc-conditional-rendering)."
+description: "Dynamic LWC component creation using the `lwc:component` directive, lazy-loaded dynamic imports (`import()`), and runtime component resolution for conditional rendering at scale. Triggers: 'render different components based on record type', 'dynamically load lwc at runtime', 'lwc:component lwc:is constructor', 'lazy load component only when needed', 'dynamic import lwc'. NOT for lwc:if over a fixed component set — use lwc/lwc-conditional-rendering. NOT for page performance tuning — use lwc/lwc-performance."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

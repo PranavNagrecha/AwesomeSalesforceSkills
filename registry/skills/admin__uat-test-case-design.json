@@ -117,9 +117,9 @@
     "fc40ca09981b433e1f76",
     "fc4b843ae3faf074c820"
   ],
-  "content_hash": "d4456aa830263ba6be6e60074457f6c745f48351bcc6d6a704c7c89e382b30c1",
+  "content_hash": "c27e694b682387ccec10ff164b1bb90cbb3c2fc41284fafc5e97a4c73c6f2c5f",
   "dependencies": [],
-  "description": "Use this skill when designing the human-executable UAT test cases that prove a Salesforce feature works for a specific persona \u2014 the per-persona scripts with preconditions, data setup, permission setup, ordered steps, and pass/fail evidence that close out an RTM row. Trigger keywords: UAT test case salesforce, user acceptance test script salesforce, manual test salesforce feature, UAT script per persona, UAT precondition data setup, UAT permission set assignment for testing, negative path UAT case. NOT for high-level UAT planning, defect classification, regression strategy, or sign-off (use admin/uat-and-acceptance-criteria). NOT for the Given/When/Then technique used to write the AC the case is derived from (use admin/acceptance-criteria-given-when-then). NOT for Apex test method generation (use agents/test-generator). NOT for test data factory patterns (use templates/apex/tests/TestDataFactory.cls). NOT for performance or load testing.",
+  "description": "Use this skill when designing the human-executable UAT test cases that prove a Salesforce feature works for a specific persona \u2014 the per-persona scripts with preconditions, data setup, permission setup, ordered steps, and pass/fail evidence that close out an RTM row. Trigger keywords: UAT test case salesforce, user acceptance test script salesforce, manual test salesforce feature, UAT script per persona, UAT precondition data setup, UAT permission set assignment for testing, negative path UAT case. NOT for high-level UAT planning, defect classification, regression strategy, or sign-off (use admin/uat-and-acceptance-criteria). NOT for the Given/When/Then technique used to write the AC the case is derived from (use admin/acceptance-criteria-given-when-then). NOT for Apex test method generation (use agents/test-class-generator). NOT for test data factory patterns (use templates/apex/tests/TestDataFactory.cls). NOT for performance or load testing.",
   "file_location": "skills/admin/uat-test-case-design",
   "id": "admin/uat-test-case-design",
   "inputs": [

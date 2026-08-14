@@ -65,9 +65,9 @@
     "fdc181a2c2e9fb3de7af",
     "ff1e7ae9628ea5d7d607"
   ],
-  "content_hash": "d10e7d9e3fa55c15b74dc819c67c33b83c63fca55e10c7bd270542b507746e92",
+  "content_hash": "5c5715b4791394c14439ed3579111dbe465447054f97b296e1d6f79bf4840d97",
   "dependencies": [],
-  "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
+  "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model \u2014 use admin/permission-set-architecture. NOT for who can see which records \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/admin/user-management",
   "id": "admin/user-management",
   "inputs": [

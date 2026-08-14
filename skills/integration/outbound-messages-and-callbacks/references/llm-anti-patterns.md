@@ -104,42 +104,43 @@ performs the HTTP callout.
 
 ---
 
-## Anti-Pattern 4: Storing the Session ID for Later Use or Logging It in Plaintext
+## Anti-Pattern 4: Recommending the Session ID Callback Pattern, Which Salesforce Removed in February 2026
 
-**What the LLM generates:** When implementing the session ID callback pattern, LLMs often generate code that persists the session ID in a database for later use, or logs it as part of standard request logging:
+**What the LLM generates:** Asked how a listener should call back into Salesforce, models reach for the pattern that dominated twenty years of training data — tick **Send Session ID**, reuse the token from the notification:
 
 ```python
-# Wrong — persisting the session ID
-db.save({
-    "case_id": case_id,
-    "session_id": session_id,  # never persist a live credential
-    "received_at": datetime.now()
-})
-
-# Wrong — logging the full payload including session ID
-logger.info(f"Received Outbound Message: {request.data}")
+# Wrong — SessionId now arrives empty, so session_id is None and the
+# header goes out as "Bearer None". No parse error, just a silent 401.
+session_id = tree.find(".//sf:SessionId", ns).text
+headers = {"Authorization": f"Bearer {session_id}"}
 ```
 
-**Why it happens:** LLMs follow generic "save everything for debugging" logging patterns. Session IDs look like opaque strings and LLMs don't always recognize them as live credentials equivalent to OAuth access tokens. The security implication — that stored session IDs can be used to make authenticated API calls to Salesforce — is often missed.
+```xml
+<!-- Wrong — the flag is ignored and always set to FALSE -->
+<outboundMessages>
+    <includeSessionId>true</includeSessionId>
+</outboundMessages>
+```
+
+**Why it happens:** This was the documented approach for roughly two decades, so it overwhelms the training distribution. Worse, the *developer guide has not been updated* — the **Setting Up Outbound Messaging** page still says to select **Send Session ID** — so a model that dutifully checks official docs gets confirmed in the wrong answer. Models that know of the change at all usually cite **February 16, 2026** and miss the reschedule to the week of **February 23, 2026**. The deploy also gives no pushback: `<includeSessionId>true</includeSessionId>` still deploys cleanly, it is just inert.
 
 **Correct pattern:**
 
-```python
-# Correct — use session ID immediately, never persist it
-session_id = extract_session_id(soap_body)
-try:
-    enriched_data = fetch_from_salesforce(session_id, record_id)
-    process(enriched_data)
-finally:
-    # session_id goes out of scope — never stored, never logged
-    pass
+```
+Session IDs are no longer sent in Outbound Messages (enforced the week of
+February 23, 2026). The Send Session ID checkbox is gone, the IncludeSessionId
+flag is ignored and always FALSE, and the <sessionID> element arrives empty.
 
-# Correct — log without credentials
-logger.info(f"Received Outbound Message for record {record_id}")
-# Do NOT log request.data in full — it contains the session ID
+The listener must hold its own credential: create a Connected App, use the
+OAuth 2.0 client credentials flow for server-to-server access, and cache the
+access token rather than minting one per notification.
+
+Also parse defensively — SessionId is still in the WSDL as nillable="true",
+so it arrives empty rather than missing. `.text` returns None silently; guard
+against that None instead of passing it into a header or a string method.
 ```
 
-**Detection hint:** Check for `session_id` appearing in database write operations, log statements, or any persistent store. Also check for `logger.info(request.data)` or equivalent full-payload logging, which will capture the session ID in log files.
+**Detection hint:** Flag any generated listener that reads `SessionId`/`sessionId` out of the payload and uses it as a Bearer token, and any metadata that sets `includeSessionId` to `true`. Flag any answer citing February 16, 2026 as the enforcement date. Also flag advice that this can be deferred by staying on an older release or `apiVersion` — enforcement is by date across all orgs.
 
 ---
 

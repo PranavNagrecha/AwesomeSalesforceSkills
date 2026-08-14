@@ -1,6 +1,6 @@
 ---
 name: oauth-redirect-and-domain-strategy
-description: "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced domains, sandbox url change, oauth login host. Does NOT cover: end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuration."
+description: "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced. NOT for end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuratio — use admin/connected-app-troubleshooting."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

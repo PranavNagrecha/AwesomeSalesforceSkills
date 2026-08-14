@@ -159,18 +159,19 @@ verbatim overlap with `vector_index/query-fixtures.json`. Current headroom: 154
 queries against the floor of 120, and omnistudio at 8 entries is the category
 nearest the per-category floor of 6.
 
-## The three harnesses
+## The four harnesses
 
 | Harness | Question it answers | Shape |
 |---|---|---|
 | `vector_index/query-fixtures.json`, run by `scripts/validate_repo.py` step 5 | Does each skill still retrieve for its own indexed vocabulary? | 1,356 generated queries, per-fixture pass/fail, domain hint supplied |
 | `evals/measurement/run_heldout.py` | Does the right skill retrieve for a phrasing nobody indexed? | 154 hand-written queries, aggregate metrics, no domain hint |
+| `evals/measurement/run_model_routing.py` | Does Claude pick the right skill from router + roster glosses (the shipped path)? | 154 held-out queries, agent-simulated routing, see `README-model-routing.md` |
 | `evals/golden/` | Once the skill is activated, is the output correct? | 30 P0 cases across 10 flagship skills, graded against a rubric |
 
 They are complementary, not redundant: the fixture sweep is a regression
 tripwire (one skill stopped retrieving), this benchmark is a quality measurement
-(retrieval is worse than the tripwire suggests), and the golden evals start
-where both stop. Note that `evals/framework.md` says "Evals are NOT retrieval
+(retrieval is worse than the tripwire suggests), model routing measures what
+actually ships on a fresh install, and the golden evals start where all three stop. Note that `evals/framework.md` says "Evals are NOT retrieval
 tests. `query-fixtures.json` owns that." — written 2026-04-16, before this
 benchmark existed. This file is the retrieval-quality harness that sentence
 points away from; the disclaimer is still right about `evals/golden/`.

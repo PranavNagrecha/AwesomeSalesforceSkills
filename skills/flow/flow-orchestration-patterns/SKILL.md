@@ -1,6 +1,6 @@
 ---
 name: flow-orchestration-patterns
-description: "Flow Orchestration design patterns — multi-stage, multi-step flows where each step is itself an autolaunched flow or a screen flow assigned to a user / queue, with Work Items appearing in users' inboxes for interactive steps. Covers the stage / step model, interactive vs background steps, evaluation flows that gate stage transitions, work-item assignment (running user / queue / formula-derived user), and the persistence model (orchestrations survive across days / weeks). NOT for the basic record-triggered or screen flow runtime (use flow/flow-best-practices), NOT for Approval Processes (different runtime, see admin/approval-process-design)."
+description: "Flow Orchestration design patterns — multi-stage, multi-step flows where each step is itself an autolaunched flow or a screen flow assigned to a user / queue, with Work Items appearing in users' inboxes for interactive steps. Covers the stage / step model, interactive vs background steps, evaluation flows that gate stage transitions, work-item assignment (running user / queue / formula-derived user), and the persistence model (orchestrations survive across days / weeks). NOT for a standard Approval Process — use admin/approval-processes. NOT for finding where instances are stuck — use flow/orchestration-flows."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,10 @@ triggers:
   - "interactive step screen flow vs background autolaunched"
   - "orchestration long running multi-day persistence"
   - "orchestration stage exit criteria record condition"
+  - "isOrchestrationConditionMet evaluation flow"
+  - "resume errored orchestration run"
+  - "ActionInput__RecordId interactive step"
+  - "orchestration runs list view"
 tags:
   - flow
   - orchestration
@@ -34,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-08-14
 ---
 
 # Flow Orchestration Patterns
@@ -52,6 +56,8 @@ multiple business days / multiple decision points — the kind of
 process that used to be a Workflow Rule chain, an Approval Process,
 or a confused mix of triggers and Process Builder. Orchestrations
 make the multi-stage shape explicit.
+
+**Summer '26:** Flow Orchestration is a **standard platform feature** (no longer requiring a separate orchestration add-on in newly provisioned orgs). Existing orgs may still need the Flow Orchestration permission set license for assignees — confirm entitlements before go-live, but architects can treat orchestration as the default multi-stage automation surface rather than a niche add-on.
 
 What this skill is NOT. The basic Flow runtime (single-flow
 execution semantics, governor limits per interview, fault paths)

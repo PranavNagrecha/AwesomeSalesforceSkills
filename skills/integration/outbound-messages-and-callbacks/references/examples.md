@@ -32,7 +32,7 @@ Additionally, the endpoint added idempotency by storing a hash of `{opportunityI
 
 ---
 
-## Example 2: Session ID Callback to Fetch Related Data Not Available in the Outbound Message Payload
+## Example 2: OAuth 2.0 Callback to Fetch Related Data Not Available in the Outbound Message Payload
 
 **Context:** A manufacturing company uses a Workflow Rule on the `Case` object to notify a field service dispatch system when a case reaches `Escalated` status. The dispatch system needs the customer's shipping address, the account's assigned territory, and the list of open cases for the same account to determine dispatcher priority. None of these fields are on the Case object directly — they come from the related Account and from a SOQL query.
 
@@ -40,7 +40,9 @@ Additionally, the endpoint added idempotency by storing a hash of `{opportunityI
 
 **Solution:**
 
-The Outbound Message was configured to send `CaseNumber`, `Subject`, `Status`, `AccountId`, and the `SessionId` (always included automatically). The dispatch system used a two-step callback:
+The Outbound Message was configured to send `CaseNumber`, `Subject`, `Status`, and `AccountId`. The dispatch system used a two-step callback.
+
+**Note on the 2026 change:** this integration originally read the `SessionId` from the payload and used it as the Bearer token. Salesforce removed session IDs from Outbound Messages the week of February 23, 2026, so the listener below authenticates with its own OAuth 2.0 client credential instead. The `SessionId` element still exists in the WSDL but arrives empty — the parser below never touches it.
 
 Step 1 — Receive and parse the Outbound Message:
 
@@ -49,24 +51,52 @@ Step 1 — Receive and parse the Outbound Message:
 from flask import Flask, request, Response
 import xml.etree.ElementTree as ET
 import requests
+import os
+import time
 
 app = Flask(__name__)
 SF_NAMESPACE = "http://soap.sforce.com/2005/09/outbound"
 SF_API_VERSION = "v63.0"
+SF_INSTANCE = "https://myorg.my.salesforce.com"
+
+_token_cache = {"value": None, "expires_at": 0}
+
+def get_access_token():
+    """OAuth 2.0 client credentials — the listener's own credential.
+
+    Replaces the removed payload SessionId. Cached, because bulk record
+    changes fan out to one notification per record and a token request
+    per notification would burn API limits.
+    """
+    if _token_cache["value"] and time.time() < _token_cache["expires_at"] - 60:
+        return _token_cache["value"]
+    resp = requests.post(
+        f"{SF_INSTANCE}/services/oauth2/token",
+        data={
+            "grant_type": "client_credentials",
+            "client_id": os.environ["SF_CLIENT_ID"],
+            "client_secret": os.environ["SF_CLIENT_SECRET"],
+        },
+    ).json()
+    _token_cache["value"] = resp["access_token"]
+    _token_cache["expires_at"] = time.time() + 3600
+    return _token_cache["value"]
 
 @app.route("/case-escalation", methods=["POST"])
 def handle_outbound_message():
     tree = ET.fromstring(request.data)
     ns = {"sf": SF_NAMESPACE}
 
-    # Extract session ID and record ID from SOAP body
-    session_id = tree.find(".//sf:SessionId", ns).text
+    # Extract record IDs from the SOAP body.
+    # Do NOT read SessionId — the element is nillable and now always empty,
+    # so `.find(...).text` yields None and any Bearer header built from it
+    # 401s. Treat it as absent rather than string-handling a None.
     case_id = tree.find(".//sf:Id", ns).text
     account_id = tree.find(".//sf:AccountId", ns).text
 
     # Step 2 — Callback to Salesforce REST API for enriched data
-    sf_instance = "https://myorg.my.salesforce.com"
-    headers = {"Authorization": f"Bearer {session_id}"}
+    sf_instance = SF_INSTANCE
+    headers = {"Authorization": f"Bearer {get_access_token()}"}
 
     account_data = requests.get(
         f"{sf_instance}/services/data/{SF_API_VERSION}/sobjects/Account/{account_id}"
@@ -95,7 +125,9 @@ def handle_outbound_message():
     return Response(ack, content_type="text/xml; charset=utf-8", status=200)
 ```
 
-**Why it works:** The session ID in every Outbound Message payload is a fully valid Salesforce API session token. Using it as a Bearer token in standard REST API calls gives the external system on-demand access to any data the triggering user can see — related objects, child records, and aggregate queries — without requiring a separate Connected App, OAuth flow, or named credential. The callback completes in milliseconds, well within the session validity window.
+**Why it works:** The Outbound Message carries only the identifiers; the listener resolves everything else through the REST API, which reaches related objects, child records, and aggregate queries that the fixed field list cannot express.
+
+The credential now belongs to the listener rather than being borrowed from the notification. That costs a Connected App and a secret to manage, but it buys three things the session ID never gave: a token whose lifetime the listener controls (so deferred and queued processing is safe), a fixed and auditable permission scope, and independence from the delivery leg — the callback no longer breaks when Salesforce changes what it puts in the payload, which is precisely what happened in February 2026.
 
 ---
 

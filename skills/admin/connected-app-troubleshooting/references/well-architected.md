@@ -45,5 +45,5 @@
 - OAuth Authorization Flows — https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_flows.htm&type=5
 - LoginHistory Object — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_loginhistory.htm
 - JWT Bearer Flow — https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5
-- Sibling skill — `skills/security/oauth-flows-and-connected-apps/SKILL.md` (when one exists)
+- Sibling skill — `skills/integration/oauth-flows-and-connected-apps/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

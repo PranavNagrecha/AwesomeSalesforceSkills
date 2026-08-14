@@ -68,9 +68,9 @@
     "f8435f180d62951245fd",
     "fabc3dc3247e556b11c1"
   ],
-  "content_hash": "ecdcd41914fc2e00447455103d4a825c540d9ed79d2e5f4f211a61f21b547bf5",
+  "content_hash": "efb54f2342ff9e0509cabdbe1bb0ebbc1c194ec7cdb86264f022aeb67daf9cad",
   "dependencies": [],
-  "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling. NOT for limit values themselves \u2014 see apex-cpu-and-heap-optimization. NOT for async job design choices \u2014 use the async-selection decision tree. NOT for org-level aggregate limit consumption \u2014 see architect/org-limits-monitoring.",
+  "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling. NOT for diagnosing a limit you already hit \u2014 use apex/governor-limits. NOT for CPU and heap tuning \u2014 use apex/apex-cpu-and-heap-optimization. NOT for org-wide limit consumption \u2014 use architect/org-limits-monitoring.",
   "file_location": "skills/apex/apex-limits-monitoring",
   "id": "apex/apex-limits-monitoring",
   "inputs": [

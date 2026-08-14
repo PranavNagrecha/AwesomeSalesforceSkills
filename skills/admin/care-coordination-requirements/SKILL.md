@@ -1,6 +1,6 @@
 ---
 name: care-coordination-requirements
-description: "Use this skill when mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care handoffs, social determinants of health (SDOH) barrier tracking, and care gap identification. NOT for implementation of technical components — this skill covers requirements gathering and process design, not Apex/Flow build."
+description: "Use this skill when mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care handoffs, social determinants of health (SDOH) barrier tracking, and care gap identification. NOT for building care plan templates, problems, and goals — use admin/care-plan-configuration. NOT for referral routing and provider networks — use admin/referral-management-health."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

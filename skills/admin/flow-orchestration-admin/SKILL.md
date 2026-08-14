@@ -1,6 +1,6 @@
 ---
 name: flow-orchestration-admin
-description: "Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items, pause/resume. NOT for Flow Orchestration development APIs (use flow-orchestration-development). NOT for Approval Processes (use approval-processes)."
+description: "Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items, pause/resume. NOT for approval routing a standard approval process would handle — use admin/approval-processes."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-21
+updated: 2026-08-14
 status: stub
 ---
 

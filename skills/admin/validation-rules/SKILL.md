@@ -13,13 +13,15 @@ triggers:
   - "how do I bypass a validation rule for admins"
   - "validation rule not triggering on insert"
   - "validation rule is too strict for data migration"
+  - "user checkbox bypass instead of custom permission"
+  - "hardcoded user id in validation rule"
   - "how do I write a validation rule with multiple conditions"
 inputs: ["business rule", "exception path", "integration constraints"]
 outputs: ["validation design guidance", "rule review findings", "bypass recommendations"]
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.

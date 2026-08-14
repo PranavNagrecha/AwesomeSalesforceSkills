@@ -1,6 +1,6 @@
 ---
 name: salesforce-surveys
-description: "Use when designing, configuring, distributing, or troubleshooting Salesforce Surveys and Feedback Management. Triggers: 'create a survey', 'NPS score', 'survey invitation', 'survey response report', 'customer feedback form', 'guest user survey access'. NOT for custom-built LWC form components or third-party survey tools like SurveyMonkey or Qualtrics."
+description: "Use when designing, configuring, distributing, or troubleshooting Salesforce Surveys and Feedback Management. Triggers: 'create a survey', 'NPS score', 'survey invitation', 'survey response report', 'customer feedback form', 'guest user survey access'. NOT for choosing between CSAT, NPS, and CES as your CX metric — use architect/customer-effort-scoring. NOT for third-party survey tools like SurveyMonkey or Qualtrics."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

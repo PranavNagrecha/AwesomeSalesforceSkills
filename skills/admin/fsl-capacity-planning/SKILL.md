@@ -1,6 +1,6 @@
 ---
 name: fsl-capacity-planning
-description: "Use this skill to configure and manage Field Service Lightning workforce capacity — covering ServiceResourceCapacity for individual resource caps, WorkCapacityLimit for territory-level demand throttling, and reporting strategies for capacity vs. utilization analysis. NOT for Omni-Channel capacity, NOT for FSL scheduling policy rule configuration, and NOT for FSL resource skill or preference setup (see fsl-resource-management)."
+description: "Use this skill to configure and manage Field Service Lightning workforce capacity — covering ServiceResourceCapacity for individual resource caps, WorkCapacityLimit for territory-level demand throttling, and reporting strategies for capacity vs. utilization analysis. NOT for resource skills, certifications, or preference setup — use admin/fsl-resource-management. NOT for work rules and service objectives — use admin/fsl-scheduling-policies. NOT for Omni-Channel agent capacity — use architect/omni-channel-capacity-model."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

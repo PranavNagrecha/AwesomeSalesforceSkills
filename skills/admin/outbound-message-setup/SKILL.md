@@ -1,6 +1,6 @@
 ---
 name: outbound-message-setup
-description: "Use when configuring Workflow-based Outbound Messages to push SOAP payloads to external endpoints — including endpoint setup, field selection, retry behavior, and delivery monitoring. NOT for Platform Events or Flow-based integrations."
+description: "Use when configuring Workflow-based Outbound Messages to push SOAP payloads to external endpoints — endpoint setup, field selection, retry behavior, and delivery monitoring. NOT for the listener's session ID callback into Salesforce — use integration/outbound-messages-and-callbacks. NOT for JSON webhooks or Flow-triggered pushes — use integration/outbound-webhook-from-salesforce."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

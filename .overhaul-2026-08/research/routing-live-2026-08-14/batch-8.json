@@ -1,0 +1,92 @@
+[
+  {
+    "i": 8,
+    "query": "track field history",
+    "expected_skill": "data/field-history-tracking",
+    "domain": "data"
+  },
+  {
+    "i": 18,
+    "query": "set up single sign on",
+    "expected_skill": "security/sso-saml-troubleshooting",
+    "domain": "security"
+  },
+  {
+    "i": 28,
+    "query": "build a report showing opportunities with no activity in 30 days",
+    "expected_skill": "admin/reports-and-dashboards",
+    "domain": "admin"
+  },
+  {
+    "i": 38,
+    "query": "clean up duplicate accounts",
+    "expected_skill": "admin/duplicate-management",
+    "domain": "admin"
+  },
+  {
+    "i": 48,
+    "query": "our security review flagged CRUD FLS issues",
+    "expected_skill": "apex/apex-stripinaccessible-and-fls-enforcement",
+    "domain": "apex"
+  },
+  {
+    "i": 58,
+    "query": "what's the deal with unlocked packages",
+    "expected_skill": "devops/unlocked-package-development",
+    "domain": "devops"
+  },
+  {
+    "i": 68,
+    "query": "expose Salesforce data to an external app securely",
+    "expected_skill": "integration/rest-api-patterns",
+    "domain": "integration"
+  },
+  {
+    "i": 78,
+    "query": "integration procedure takes 30 seconds to come back",
+    "expected_skill": "omnistudio/omnistudio-performance",
+    "domain": "omnistudio"
+  },
+  {
+    "i": 88,
+    "query": "pick between mulesoft and point to point callouts",
+    "expected_skill": "integration/middleware-integration-patterns",
+    "domain": "integration"
+  },
+  {
+    "i": 98,
+    "query": "how do we roll back a bad release fast",
+    "expected_skill": "devops/rollback-and-hotfix-strategy",
+    "domain": "devops"
+  },
+  {
+    "i": 108,
+    "query": "one callout per record is blowing the 100 limit",
+    "expected_skill": "integration/callout-limits-and-async-patterns",
+    "domain": "integration"
+  },
+  {
+    "i": 118,
+    "query": "wait three days then send a reminder",
+    "expected_skill": "flow/pause-elements-and-wait-events",
+    "domain": "flow"
+  },
+  {
+    "i": 128,
+    "query": "soql on a 20 million row object times out",
+    "expected_skill": "data/soql-query-optimization",
+    "domain": "data"
+  },
+  {
+    "i": 138,
+    "query": "mixed dml operation error when creating a user",
+    "expected_skill": "apex/mixed-dml-and-setup-objects",
+    "domain": "apex"
+  },
+  {
+    "i": 148,
+    "query": "we need a queue for the tier two team",
+    "expected_skill": "admin/queues-and-public-groups",
+    "domain": "admin"
+  }
+]

@@ -1,6 +1,6 @@
 ---
 name: usage-based-pricing-setup
-description: "Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for CPQ flat-rate discounts (use revenue-cloud-cpq-setup). NOT for legacy Salesforce Billing-only implementations (use revenue-cloud-legacy-billing)."
+description: "Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for choosing a CPQ pricing method (List, Block, Cost Plus Markup, Percent of Total) - use admin/pricing-model-design. NOT for legacy Salesforce Billing (blng__) schedules and invoice runs - use admin/billing-schedule-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -128,6 +128,6 @@ Customer portal LWC shows current month usage, remaining pool, and projected ove
 
 ## Related Skills
 
-- `admin/revenue-cloud-cpq-setup` — upstream deal structure
-- `integration/integration-pattern-selection` — usage ingestion
-- `data/big-objects-and-archival` — long-term usage archive
+- `architect/revenue-cloud-architecture` — upstream deal structure
+- `admin/integration-pattern-selection` — usage ingestion
+- `data/data-archival-strategies` — long-term usage archive

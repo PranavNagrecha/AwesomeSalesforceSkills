@@ -138,7 +138,7 @@ Every story emits a handoff JSON. Downstream agents (`object-designer`, `flow-bu
   ],
   "complexity": "M",
   "recommended_agents": ["flow-builder", "permission-set-architect"],
-  "recommended_skills": ["flow/record-triggered-flows", "admin/queue-design"],
+  "recommended_skills": ["flow/record-triggered-flow-patterns", "admin/queue-design"],
   "dependencies": ["US-LEAD-040 (Lead Score field exists)"],
   "notes": "Confirm queue membership before flow build. No Apex required at this size."
 }
@@ -146,7 +146,7 @@ Every story emits a handoff JSON. Downstream agents (`object-designer`, `flow-bu
 
 Field rules:
 - `recommended_agents[]` — **required, non-empty**. Names the next agent(s) in the chain. If unsure, default to `["object-designer"]` and flag in `notes`.
-- `recommended_skills[]` — pointers into the SfSkills repo (e.g. `flow/record-triggered-flows`). Optional but strongly preferred.
+- `recommended_skills[]` — pointers into the SfSkills repo (e.g. `flow/record-triggered-flow-patterns`). Optional but strongly preferred.
 - `dependencies[]` — story IDs or named prerequisites (field exists, queue exists, integration live).
 - `complexity` — exactly one of `S | M | L | XL`. XL means *not committable* — split first.
 

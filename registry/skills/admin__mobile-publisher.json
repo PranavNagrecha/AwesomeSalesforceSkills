@@ -67,9 +67,9 @@
     "f7a88148ccc8f00360e3",
     "fe09d1cbd8f6fee42b34"
   ],
-  "content_hash": "1f26c0a76fe39e597e6762fe5128e20ebffa676dfe43853d8fa2d92fc1869c1b",
+  "content_hash": "b4ea2999be41a192925e2748c83546af2a6701cc161c108510093c301c5aebbe",
   "dependencies": [],
-  "description": "Use when planning, configuring, or maintaining a Salesforce Mobile Publisher branded app \u2014 a customer-facing or partner-facing mobile app distributed through Apple App Store or Google Play, built on either the Experience Cloud (LWR/Aura) Mobile Publisher template or the Field Service Mobile Publisher template. Triggers: 'salesforce mobile publisher branded app', 'experience cloud mobile app store distribution', 'mobile publisher push notifications certificate', 'app store review rejection salesforce', 'mobile publisher version policy update'. NOT for the standard Salesforce Mobile App customization (use lightning-app-builder-advanced), NOT for Field Service Lightning offline configuration (use fsl-mobile-app-setup), NOT for hybrid web apps embedded in WebView.",
+  "description": "Use when planning, configuring, or maintaining a Salesforce Mobile Publisher branded app \u2014 a customer-facing or partner-facing mobile app distributed through Apple App Store or Google Play, built on either the Experience Cloud (LWR/Aura) Mobile Publisher template or the Field Service Mobile Publisher template. Triggers: 'salesforce mobile publisher branded app', 'experience cloud mobile app store distribution', 'mobile publisher push notifications certificate', 'app store review rejection salesforce', 'mobile publisher version policy update'. NOT for the standard mobile app \u2014 use admin/lightning-app-builder-advanced. NOT for Field Service mobile \u2014 use admin/fsl-mobile-app-setup.",
   "file_location": "skills/admin/mobile-publisher",
   "id": "admin/mobile-publisher",
   "inputs": [

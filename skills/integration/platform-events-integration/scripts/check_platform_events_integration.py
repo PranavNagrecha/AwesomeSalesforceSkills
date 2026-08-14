@@ -4,7 +4,7 @@
 Inspects Salesforce metadata files for common Platform Events integration
 issues: missing correlation ID fields, fields that attempt to set per-event
 retention (which is fixed and not configurable), legacy standard-volume events
-retiring in Winter '27, and subscription configurations lacking replay ID
+retiring in Summer '27, and subscription configurations lacking replay ID
 guidance.
 
 Uses stdlib only — no pip dependencies.
@@ -78,8 +78,9 @@ def _has_correlation_id_field(field_files: list[Path]) -> bool:
 def _declares_standard_volume(xml_path: Path) -> bool:
     """Return True if the event object metadata explicitly declares standard-volume.
 
-    Standard-volume platform events are legacy (undefinable since Spring '19) and
-    Salesforce retires publish/subscribe for them in Winter '27.
+    New platform events are high volume by default; standard-volume custom
+    platform events can no longer be defined and are retired in Summer '27.
+    https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
     """
     try:
         tree = ET.parse(xml_path)
@@ -135,13 +136,18 @@ def _check_event_file(xml_path: Path, manifest_dir: Path) -> list[str]:
                 "See references/gotchas.md Gotcha 1."
             )
 
-    # Check 3: legacy standard-volume events are retiring in Winter '27.
+    # Check 3: legacy standard-volume events are retiring in Summer '27.
+    # The retirement target moved: the Summer '25 (API 64.0) edition of the
+    # allocations page projected Summer '25; the current edition says Summer '27.
+    # Existing standard-volume events keep working until then.
     if _declares_standard_volume(xml_path):
         issues.append(
             f"{event_name}: declared as a standard-volume platform event. "
-            "Standard-volume events could not be newly defined after Spring '19 and "
-            "Salesforce retires publish and subscribe for them in Winter '27. Plan a "
-            "migration to a high-volume event; note the allocation and retention change "
+            "New standard-volume custom platform events can no longer be defined "
+            "(new platform events are high volume by default), and Salesforce retires "
+            "standard-volume custom platform events in Summer '27 -- this event still "
+            "publishes and delivers until then. Plan a migration to a high-volume event; "
+            "note the allocation and retention change "
             "(100,000 -> 250,000 publishes/hour on EE/Perf/Unlimited; 24h -> 72h retention)."
         )
 

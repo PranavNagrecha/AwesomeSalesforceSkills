@@ -74,9 +74,9 @@
     "f50c56ef818802e91cc0",
     "fb51f90258df70eba892"
   ],
-  "content_hash": "e724921e232c7b9d93e258fd27617d54f547d4b06fbccff78cb1cbe6e5b7bf09",
+  "content_hash": "619b896f04dee8f094b6c4ae4a8750c0a1cc6baf2b7164df79b319a92f007610",
   "dependencies": [],
-  "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages).",
+  "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for what package.xml can hold or deploy-order concepts \u2014 use apex/metadata-api-and-package-xml. NOT for a delete that fails on a still-referenced component \u2014 use devops/destructive-changes-deployment.",
   "file_location": "skills/devops/metadata-api-retrieve-deploy",
   "id": "devops/metadata-api-retrieve-deploy",
   "inputs": [

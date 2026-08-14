@@ -1,6 +1,6 @@
 ---
 name: patient-data-migration
-description: "Use this skill when migrating patient records into Salesforce Health Cloud, including Person Account (Patient record type) setup, clinical history objects, and care plan data. Trigger keywords: patient migration, EMR import, EHR to Health Cloud, clinical data load, care plan history migration, HIPAA-compliant data import. NOT for generic data migration, non-patient CRM data, or marketing cloud contact imports."
+description: "Use this skill when migrating patient records into Salesforce Health Cloud, including Person Account (Patient record type) setup, clinical history objects, and care plan data. Trigger keywords: patient migration, EMR import, EHR to Health Cloud, clinical data load, care plan history migration, HIPAA-compliant data import. NOT for generic multi-object migration sequencing and rollback planning — use data/data-migration-planning. NOT for Insurance, Energy or Communications industry-cloud objects — use data/industries-data-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: workflow-field-update-patterns
-description: "Cross-tool decision matrix for field-update automation in Salesforce — Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update-specific actions. NOT for the basic Salesforce order-of-execution sequence (use admin/order-of-execution), NOT for designing the Flow / Trigger itself (use the corresponding skill for the chosen tool)."
+description: "Cross-tool decision matrix for field-update automation in Salesforce — Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update actions. NOT for the full record-save order of execution — use apex/order-of-execution-deep-dive. NOT for building the record-triggered Flow once the tool is chosen — use flow/record-triggered-flow-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

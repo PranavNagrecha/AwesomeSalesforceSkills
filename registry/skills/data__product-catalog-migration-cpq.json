@@ -108,12 +108,12 @@
     "fa7a20970376e7d39702",
     "fbbd9d00c3c8b20160ab"
   ],
-  "content_hash": "08a121762a0969d9866bdd5b0da25118555d9d0e056f2643385af7dccf924cc0",
+  "content_hash": "c435861ed94a9325b3bcefd134a8cf8d3989469083b9f5b8a8737818a785e257",
   "dependencies": [
     "product-catalog-data-model",
     "cpq-data-model"
   ],
-  "description": "Use when bulk-loading or migrating Salesforce CPQ product catalog configuration data \u2014 SBQQ-namespaced objects including Product2, ProductOption, PriceRule, PriceAction, DiscountSchedule, DiscountCategory, ConfigurationAttribute, and OptionConstraint \u2014 across orgs or from an external source system. Trigger keywords: CPQ bulk load, SBQQ product migration, ProductOption insert order, CPQ trigger disable, price rule migration, CPQ sandbox refresh catalog, bundle migration. NOT for standard product import or CRM product migration (use product-catalog-data-model). NOT for CPQ quote or subscription data migration. NOT for Industries CPQ (Vlocity) catalog migration.",
+  "description": "Use when bulk-loading or migrating Salesforce CPQ product catalog configuration data \u2014 SBQQ-namespaced objects including Product2, ProductOption, PriceRule, PriceAction, DiscountSchedule, ConfigurationAttribute, and OptionConstraint \u2014 across orgs or from an external source system. Trigger keywords: CPQ bulk load, SBQQ product migration, ProductOption insert order, CPQ trigger disable, price rule migration, CPQ sandbox refresh catalog, bundle migration. NOT for standard product import or CRM product migration \u2014 use data/product-catalog-data-model. NOT for loading historical CPQ quotes, contracts, subscriptions, and assets so renewals work \u2014 use data/historical-order-migration.",
   "file_location": "skills/data/product-catalog-migration-cpq",
   "id": "data/product-catalog-migration-cpq",
   "inputs": [

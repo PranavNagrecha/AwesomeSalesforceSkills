@@ -1,6 +1,6 @@
 ---
 name: case-deflection-strategy
-description: "Use this skill when designing or assessing a Salesforce case deflection program — identifying high-frequency contact reasons, selecting deflection channels, and defining KPIs such as deflection rate and goal completion rate. Trigger keywords: case deflection, self-service, Einstein Conversation Mining, chatbot containment, knowledge-led deflection, contact reason analysis. NOT for Experience Cloud site setup, Einstein Bot dialog authoring, or Omni-Channel routing configuration."
+description: "Use this skill when designing or assessing a Salesforce case deflection program — identifying high-frequency contact reasons, selecting deflection channels, and defining KPIs such as deflection rate and goal completion rate. Trigger keywords: case deflection, self-service, Einstein Conversation Mining, chatbot containment, knowledge-led deflection, contact reason analysis. NOT for the self-service portal UX, search experience and case-form design — use admin/self-service-design. NOT for end-to-end Service Cloud channel and routing architecture — use architect/service-cloud-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

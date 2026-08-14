@@ -1,6 +1,6 @@
 ---
 name: omnistudio-ci-cd-patterns
-description: "Use when designing or implementing CI/CD pipelines for OmniStudio components — DataPack export/import, versioning, environment promotion, and automated deployment. NOT for standard Salesforce metadata CI/CD or Apex-only pipelines."
+description: "CI/CD pipelines for OmniStudio — DataPack export/import, versioning, env promotion. Triggers: OmniStudio CI/CD, DataPack pipeline, OmniStudio deployment. NOT for manual DataPack operations — use omnistudio/omnistudio-deployment-datapacks."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

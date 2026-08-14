@@ -1,6 +1,6 @@
 ---
 name: financial-account-migration
-description: "Use this skill when bulk-migrating financial account data into Salesforce FSC — including FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountTransaction, and balance history records. Trigger keywords: ETL load FSC, migrate holdings, bulk insert financial accounts, data migration rollup lock, FinancialAccountBalance import. NOT for financial account configuration or FSC data model reference."
+description: "Use when bulk-migrating financial account data into Salesforce FSC — FinancialAccount, FinancialHolding, FinancialAccountRole, FinancialAccountTransaction, and balance history records. Trigger keywords: ETL load FSC, migrate holdings, bulk insert financial accounts, data migration rollup lock, FinancialAccountBalance import. NOT for configuring account types, roles and household rollup in Setup — use admin/financial-account-setup. NOT for the FinServ object graph and SOQL reference — use data/fsc-data-model."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

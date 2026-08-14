@@ -1,6 +1,6 @@
 ---
 name: entitlements-and-milestones
-description: "Use this skill to design, configure, and troubleshoot Salesforce Entitlement Management: entitlement processes, milestone definitions, recurrence types, milestone actions (success/warning/violation), business hours assignment, and entitlement templates. NOT for case escalation rules, assignment rules, or omni-channel routing configuration."
+description: "Use this skill to design, configure, and troubleshoot Salesforce Entitlement Management on Cases: entitlement processes, milestone definitions, recurrence types, milestone actions (success/warning/violation), business hours assignment, and entitlement templates. NOT for SLA milestones on Field Service work orders — use admin/fsl-sla-configuration-requirements. NOT for time-based case escalation rules — use admin/escalation-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

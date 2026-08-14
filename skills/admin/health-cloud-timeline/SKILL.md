@@ -1,6 +1,6 @@
 ---
 name: health-cloud-timeline
-description: "Configure the Industries Enhanced Timeline in Health Cloud to display clinical events, custom object records, and activity history on a patient or member record. Trigger keywords: Enhanced Timeline, TimelineObjectDefinition, Industries Timeline, timeline categories, clinical event display, timeline configuration. NOT for standard Activity Timeline (task/event list), NOT for Experience Cloud timelines, NOT for legacy Health Cloud managed-package Timeline component unless migrating away from it."
+description: "Configure the Industries Enhanced Timeline in Health Cloud to display clinical events, custom object records, and activity history on a patient or member record. Trigger keywords: Enhanced Timeline, TimelineObjectDefinition, Industries Timeline, timeline categories, clinical event display, timeline configuration. NOT for building a custom timeline or patient-card LWC — use apex/health-cloud-lwc-components. NOT for the standard Task and Event activity timeline — use admin/activity-and-task-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

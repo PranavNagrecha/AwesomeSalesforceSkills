@@ -109,9 +109,9 @@
     "ed933246c62288ab79b2",
     "f15b9950ae4e5f5bcb3b"
   ],
-  "content_hash": "dd3844ce4d936f27023a49078bf399f71b70202c559e05304bee3a9ee0becff0",
+  "content_hash": "f637d1a457111db035796da47eda6337cb0f2e9cac1227193aa6f7ca7662f4ad",
   "dependencies": [],
-  "description": "Use this skill when designing CRM Analytics dataset architecture, planning dataflow or Recipe ELT strategies, implementing incremental extraction patterns, or integrating external data lakes (Snowflake, BigQuery, Redshift). Trigger keywords: CRM Analytics dataset design, dataflow performance, Recipe incremental, remote connection data lake, analytics ELT strategy, dataset row limits. NOT for standard Salesforce object data modeling, Salesforce Data Cloud architecture, or MuleSoft integration design.",
+  "description": "Use this skill when designing CRM Analytics dataset architecture, planning dataflow or Recipe ELT strategies, implementing incremental extraction patterns, or integrating external data lakes (Snowflake, BigQuery, Redshift). Trigger keywords: CRM Analytics dataset design, dataflow performance, Recipe incremental, remote connection data lake, analytics ELT strategy, dataset row limits. NOT for the External Data API or live-dataset setup itself \u2014 use data/analytics-external-data. NOT for authoring dataflow node JSON \u2014 use admin/analytics-dataflow-development. NOT for building a recipe's join, bucket and formula nodes \u2014 use admin/analytics-recipe-design.",
   "file_location": "skills/architect/analytics-data-architecture",
   "id": "architect/analytics-data-architecture",
   "inputs": [

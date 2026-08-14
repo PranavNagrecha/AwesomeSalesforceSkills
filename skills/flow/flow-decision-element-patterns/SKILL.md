@@ -1,6 +1,6 @@
 ---
 name: flow-decision-element-patterns
-description: "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching, default outcome, condition logic, formula in decision. Does NOT cover loop or fault path design, or Screen Flow navigation."
+description: "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching. NOT for loop or fault path design, or Screen Flow navigation — use flow/flow-element-naming-conventions."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -11,6 +11,7 @@ triggers:
   - flow branching
   - default outcome
   - compound conditions
+  - hardcoded user id in flow decision
 tags:
   - flow
   - decision
@@ -27,7 +28,7 @@ dependencies:
   - flow/record-triggered-flow-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-08-14
 ---
 
 # Flow Decision Element Patterns

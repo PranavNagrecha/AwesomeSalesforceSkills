@@ -1,6 +1,6 @@
 ---
 name: health-cloud-consent-management
-description: "Use this skill when configuring Health Cloud patient consent management: setting up HIPAA authorization forms, consent templates, consent tracking per patient, and withdrawal handling. NOT for marketing consent (ContactPointTypeConsent/ContactPointConsent), GDPR opt-out workflows, or Experience Cloud consent forms unrelated to clinical authorization."
+description: "Use this skill when configuring Health Cloud patient consent management: setting up HIPAA authorization forms, consent templates, consent tracking per patient, and withdrawal handling. NOT for querying the AuthorizationFormConsent object hierarchy or its required field values — use data/consent-data-model-health. NOT for GDPR/CCPA marketing opt-out on ContactPointTypeConsent — use security/gdpr-data-privacy."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

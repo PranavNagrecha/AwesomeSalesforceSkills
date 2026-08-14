@@ -69,9 +69,9 @@
     "edbdb7c1ce0abe6ef588",
     "fc75b1fc08ccf5d5235f"
   ],
-  "content_hash": "cf228f7c4ae47a551a2aa0ac76f665b8f6b95883f4c0f15d51240bab5ad44c41",
+  "content_hash": "3a5a0e37da3b818829ba21a5e9156e7d919c6bdd74ccbbbe6f5976fa6acdc5f4",
   "dependencies": [],
-  "description": "Use when a Lightning Web Component needs to escape shadow DOM isolation so Experience Cloud / LWR sites can be SEO-indexed, a third-party library can walk the DOM, global styling has to reach inside the component, or accessibility tooling must see the rendered tree. NOT for the default shadow DOM behavior most LWCs should use \u2014 reach for light DOM only when SEO, third-party DOM access, or global styling requires it, and never for components distributed through managed packages.",
+  "description": "Use Light DOM in LWC when third-party libraries or global CSS require document-level access. Triggers: light DOM LWC, renderMode light, shadow DOM escape. NOT for choosing Shadow vs Light DOM \u2014 use lwc/lwc-shadow-vs-light-dom-decision. NOT for managed-package distribution constraints \u2014 use architect/omnistudio-vs-standard-decision.",
   "file_location": "skills/lwc/lwc-light-dom",
   "id": "lwc/lwc-light-dom",
   "inputs": [

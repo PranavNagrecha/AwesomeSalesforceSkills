@@ -96,9 +96,9 @@
     "fe11582fc93dc690d013",
     "ff1bbba99e7841f0447c"
   ],
-  "content_hash": "a40ae17df797eaa92efe79247737bda532d1c3f17b57acc6cc611ba6d9d5a063",
+  "content_hash": "54d80572b91b91029b5088fe1f185f038491477c1534aaffd9466fd4b7698ba2",
   "dependencies": [],
-  "description": "Use when programmatically driving Salesforce CPQ operations from Apex or REST \u2014 creating quotes, adding products, calculating pricing, saving quotes, amending contracts, or renewing contracts through the SBQQ.ServiceRouter API. Trigger keywords: CPQ API, SBQQ.ServiceRouter, QuoteCalculator, QuoteReader, QuoteSaver, QuoteProductAdder, ProductLoader, ContractAmender, ContractRenewer, programmatic quote, calculate callback, CPQ REST API. NOT for standard REST API or Salesforce Connect. NOT for declarative CPQ configuration such as price rules, discount schedules, or product rules. NOT for CPQ plugin interfaces (QuoteCalculatorPlugin, OrderPlugin).",
+  "description": "Use when programmatically driving Salesforce CPQ operations from Apex or REST \u2014 creating quotes, adding products, calculating pricing, saving quotes, amending contracts, or renewing contracts through the SBQQ.ServiceRouter API. Trigger keywords: CPQ API, SBQQ.ServiceRouter, QuoteCalculator, QuoteReader, QuoteSaver, QuoteProductAdder, ProductLoader, ContractAmender, ContractRenewer, programmatic quote, calculate callback, CPQ REST API. NOT for CPQ plugin interfaces \u2014 use apex/cpq-apex-plugins. NOT for testing CPQ from Apex \u2014 use apex/cpq-test-automation.",
   "file_location": "skills/apex/cpq-api-and-automation",
   "id": "apex/cpq-api-and-automation",
   "inputs": [

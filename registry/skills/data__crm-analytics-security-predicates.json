@@ -78,9 +78,9 @@
     "efe0202d9a6c824d3487",
     "fadbef7810ffb48aa277"
   ],
-  "content_hash": "7506bb0555c4ec00370fc4af3cfcd3c46b5425c17f1c74e262f0df6cc2ab8f9d",
+  "content_hash": "e214f2f90c39d71a7223e4417f4b4ac764031f06926a6dcbf8c83ef468a32e31",
   "dependencies": [],
-  "description": "Row-level security in CRM Analytics datasets via security predicates \u2014 SAQL filter expressions stored on the dataset that apply at query time per running user. Covers the syntax (`'DatasetColumn' operator value`), the `$User.*` context variables, multi-level predicates (role hierarchy + team + region), the performance cost of complex predicates, and the testing discipline (admins bypass predicates by default). NOT for Salesforce Core sharing rules (different runtime), NOT for App / Dashboard / Lens-level access (that's CRM Analytics App sharing, not predicates), NOT for field-level masking inside a dataset (use Encryption + dataset transformations).",
+  "description": "Row-level security in CRM Analytics datasets via security predicates \u2014 SAQL filter expressions stored on the dataset that apply at query time per running user. Covers the syntax (`'DatasetColumn' operator value`), the `$User.*` context variables, multi-level predicates (role hierarchy + team + region), predicate performance cost, and testing discipline (admins bypass predicates). NOT for app-level sharing roles, dataset visibility, or sharing inheritance vs custom predicate design \u2014 use architect/analytics-security-architecture. NOT for the Setup steps and Analytics license assignment \u2014 use admin/analytics-permission-and-sharing.",
   "file_location": "skills/data/crm-analytics-security-predicates",
   "id": "data/crm-analytics-security-predicates",
   "inputs": [

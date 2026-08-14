@@ -1,6 +1,6 @@
 ---
 name: mutual-tls-callouts
-description: "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth."
+description: "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth — use architect/integration-security-architecture."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

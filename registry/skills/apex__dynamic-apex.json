@@ -108,9 +108,9 @@
     "fb12c22e3e6c74603533",
     "fef7438835dbb6db00eb"
   ],
-  "content_hash": "cba985a4ec6544741c2fed733a9855556fde1598e6dc05ab704d2049da64e53b",
+  "content_hash": "aad291dd539c72b40a6fe6477bbc06373bba93807724f895b8405e91d1213934",
   "dependencies": [],
-  "description": "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries or query performance tuning \u2014 use soql-fundamentals or soql-query-optimization.",
+  "description": "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries \u2014 use apex/soql-fundamentals. NOT for query performance tuning \u2014 use data/soql-query-optimization.",
   "file_location": "skills/apex/dynamic-apex",
   "id": "apex/dynamic-apex",
   "inputs": [

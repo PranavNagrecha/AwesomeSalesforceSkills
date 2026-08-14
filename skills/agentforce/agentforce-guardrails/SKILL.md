@@ -1,6 +1,6 @@
 ---
 name: agentforce-guardrails
-description: "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents — including topic Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-template-design)."
+description: "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents — including topic Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates)."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -227,5 +227,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `agentforce/agent-topic-design` — use when the main problem is topic boundary design and routing logic rather than behavioral guardrails and abuse prevention
-- `agentforce/prompt-template-design` — use when the issue is prompt template construction inside a topic action, not the guardrail architecture around the agent
-- `agentforce/agentforce-testing` — use when writing test scenarios to validate agent behavior, including guardrail coverage tests
+- `agentforce/prompt-builder-templates` — use when the issue is prompt template construction inside a topic action, not the guardrail architecture around the agent
+- `agentforce/agentforce-testing-strategy` — use when writing test scenarios to validate agent behavior, including guardrail coverage tests

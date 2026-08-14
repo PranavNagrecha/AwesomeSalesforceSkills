@@ -1,6 +1,6 @@
 ---
 name: custom-label-management
-description: "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for custom settings or custom metadata types (use custom-metadata-types). NOT for platform cache (use caching-strategies)."
+description: "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for translating picklist values, field labels or layouts — use admin/multi-language-and-translation. NOT for config values in custom metadata or custom settings — use admin/custom-metadata-types."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

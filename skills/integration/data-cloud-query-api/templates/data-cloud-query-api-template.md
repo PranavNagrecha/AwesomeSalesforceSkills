@@ -34,12 +34,21 @@ WHERE <condition>
 LIMIT 1000
 ```
 
-## Pagination Strategy
+## Surface + Pagination Strategy
 
-- **Using Query V2 (result < 1-hour fetch window)?** [ ] Yes
+Pick exactly one. The pagination models are not interchangeable.
+
+- **Query API V3 (`/api/v3/query`) — default for new integrations?** [ ] Yes
+  - Choose ADAPTIVE (fast queries) or ASYNC (long-running); there is no synchronous mode
+  - Poll `GET /api/v3/query/{queryId}`, then read `.../chunks/{chunkId}` (preferred) or `.../rows`
+  - Alias every expression — unaliased columns are named `1`, `2`, not `_col0`, `_col1`
+- **Query V2 (existing integration, < 1-hour fetch window)?** [ ] Yes
   - Implement `nextBatchId` loop with < 3-minute inter-batch gap
 - **Using Query Connect (large export, > 1-hour window)?** [ ] Yes
-  - Implement async poll until status = complete
+  - Implement async poll until status = complete, page by `rowLimit`/`offset`
+- **Calling from Apex?** [ ] Yes
+  - Class `.cls-meta.xml` `apiVersion` ≥ 67.0 → `sfsqlquery` (`SqlStatement`/`SqlRowIterator`, or extend `SqlQueueable`); mock with `sfsqlquery.SqlTester`
+  - Below 67.0 → `ConnectApi.CdpQuery` is the only option; raise `apiVersion` first if you can
 
 ## Checklist
 

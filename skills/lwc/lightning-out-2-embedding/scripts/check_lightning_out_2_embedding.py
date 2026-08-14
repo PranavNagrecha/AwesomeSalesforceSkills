@@ -11,6 +11,7 @@ Usage:
 
 Checks performed:
   - <lightning-out-application> present and carries `components` + `app-id`
+    (`app-id` is advisory: apps created before Spring '26 don't require it)
   - `frontdoor-url` is not a hard-coded session (sid= / raw token) in static markup
   - the lightning.out <script> is included on the host page
   - legacy Aura Lightning Out (beta) usage ($Lightning.use / lightning:out)
@@ -102,7 +103,9 @@ def _check_html(path: Path, issues: list[str]) -> None:
         if "app-id" not in app or not (app.get("app-id") or "").strip():
             issues.append(
                 f"{path}: <lightning-out-application> is missing an `app-id` "
-                f"(the 18-digit id from the Lightning Out 2.0 App Manager)"
+                f"(the 18-digit id from the Lightning Out 2.0 App Manager). Apps created "
+                f"before Spring '26 don't require it — on any org release — so treat this as "
+                f"an advisory unless the app was created in Spring '26 or later"
             )
         fd = app.get("frontdoor-url")
         if fd and SECRET_IN_FRONTDOOR.search(fd) and not _looks_like_placeholder(fd):

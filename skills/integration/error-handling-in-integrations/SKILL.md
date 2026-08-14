@@ -1,6 +1,6 @@
 ---
 name: error-handling-in-integrations
-description: "Use this skill to design orchestration-layer error handling for Salesforce integrations — covering Platform Event replay recovery, dead-letter queue routing, cross-channel error notification patterns, circuit breaker design, and trigger suspension recovery. Trigger keywords: integration error handling, Platform Event retry, integration dead letter queue, EventBus RetryableException, integration circuit breaker, event bus trigger suspended. NOT for Apex exception handling (use apex-exception-handling skill), HTTP error response contracts (use api-error-handling-design), or retry backoff patterns (use retry-and-backoff-patterns)."
+description: "Use this skill to design orchestration-layer error handling for Salesforce integrations — covering Platform Event replay recovery, dead-letter queue routing, cross-channel error notification patterns, circuit breaker design, and trigger suspension recovery. Triggers: integration error handling, Platform Event retry, integration dead letter queue, circuit breaker. NOT for Apex exception handling — use apex/exception-handling. NOT for HTTP error response contracts — use integration/api-error-handling-design. NOT for retry backoff patterns — use integration/retry-and-backoff-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -162,5 +162,5 @@ Swapping the constant in one place updates all references.
 ## Related Skills
 
 - `flow/flow-cross-object-updates` — uses collections to bulkify DML
-- `flow/flow-best-practices` — naming conventions, documentation
+- `flow/flow-element-naming-conventions` — naming conventions for elements and resources
 - `admin/custom-metadata-types` — externalize flow configuration

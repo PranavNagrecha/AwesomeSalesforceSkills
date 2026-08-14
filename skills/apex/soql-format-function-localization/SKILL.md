@@ -1,6 +1,6 @@
 ---
 name: soql-format-function-localization
-description: "Use when a SOQL SELECT clause or SOSL FIND/RETURNING clause must return number, date, time, or currency fields already localized to the running user's locale (e.g. $44,000.00 or 4/10/2025, 3:31 PM instead of a raw decimal or ISO 8601 string). Covers the FORMAT() function: its four supported field categories, the aliasing rule when the same field is queried twice, and nesting FORMAT() inside aggregate functions or convertCurrency(). NOT for date-literal WHERE filters (TODAY, LAST_N_DAYS), NOT for Apex-side String.format()/Datetime.format() rendering, and NOT for building the currency conversion itself (see convertCurrency in optimize-soql / data skills)."
+description: "Use when a SOQL SELECT clause or SOSL FIND/RETURNING clause must return number, date, time, or currency fields already localized to the running user's locale (e.g. $44,000.00 or 4/10/2025, 3:31 PM instead of a raw decimal or ISO 8601 string). Covers the FORMAT() function: its four supported field categories, the aliasing rule when the same field is queried twice, and nesting FORMAT() inside aggregate functions or convertCurrency(). NOT for grouping or filtering by date period — use apex/soql-date-functions. NOT for multi-currency setup and conversion rates — use data/currency-management-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

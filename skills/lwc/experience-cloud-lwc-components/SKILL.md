@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-lwc-components
-description: "Use when building custom LWC components for Experience Cloud (Experience Builder sites, LWR portals, Aura-based communities). Covers community context imports, guest user Apex access patterns, navigation API differences between LWR and Aura, and JS-meta.xml target configuration for Experience Builder exposure. NOT for internal LWC components deployed to Lightning App Builder or standard record pages (see lwc/lwc-development). NOT for Aura community components. Trigger keywords: build LWC for Experience Cloud, custom component community portal LWC, guest user LWC component, community context import salesforce, lightningCommunity target, @salesforce/community, guest Apex."
+description: "Use when building custom LWC components for Experience Cloud (Experience Builder sites, LWR portals, Aura-based communities). Covers community context imports, guest user Apex access patterns, navigation API differences between LWR and Aura, and JS-meta.xml target configuration for Experience Builder exposure. Trigger keywords: build LWC for Experience Cloud, custom component community portal LWC, guest user LWC component, community context import salesforce, lightningCommunity target, @salesforce/community, guest Apex. NOT for exposing an internal LWC to a record page — use lwc/lwc-app-builder-config. NOT for the LWR site's theme and publish lifecycle — use lwc/lwr-site-development."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

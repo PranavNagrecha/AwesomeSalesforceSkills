@@ -1,6 +1,6 @@
 ---
 name: sales-reporting-data-model
-description: "Use when designing or troubleshooting Salesforce sales reporting — covers Historical Trend Reporting, Reporting Snapshots, and Custom Report Types for pipeline and opportunity analysis. Trigger keywords: historical trending, opportunity snapshot, reporting snapshot, pipeline history, custom report type join, point-in-time reporting. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) or Marketing Cloud reports. NOT for general SOQL optimization."
+description: "Use when designing or troubleshooting Salesforce sales reporting — covers Historical Trend Reporting, Reporting Snapshots, and Custom Report Types for pipeline and opportunity analysis. Trigger keywords: historical trending, opportunity snapshot, reporting snapshot, pipeline history, custom report type join. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) or Marketing Cloud reports — use admin/einstein-analytics-basics."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,7 @@ triggers:
   - "how do I create a report of accounts with no opportunities"
   - "historical trend reporting not showing data before activation date"
   - "custom report type without join for exception analysis"
+  - "historical trending report type with no reporting snapshots"
 tags:
   - sales-reporting
   - historical-trending
@@ -40,7 +41,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # Sales Reporting Data Model

@@ -1,6 +1,6 @@
 ---
 name: pricing-model-design
-description: "Use this skill when selecting or designing the correct Salesforce CPQ pricing model for a product or product line — choosing among the four native Pricing Methods (List, Cost Plus Markup, Block, Percent of Total), deciding between Range and Slab Discount Schedule types, and mapping business pricing requirements to the correct CPQ mechanism before any configuration begins. Trigger keywords: CPQ pricing method, SBQQ__PricingMethod__c, Cost Plus Markup, Block Pricing design, Percent of Total design, discount schedule type, Range vs Slab discount, pricing model strategy, which CPQ pricing mechanism to use. NOT for CPQ implementation of Price Rule objects (use cpq-pricing-rules), NOT for standard Salesforce pricing without CPQ (use products-and-pricebooks), NOT for CPQ product catalog or bundle setup."
+description: "Use when selecting the right Salesforce CPQ pricing model for a product line — the four native Pricing Methods (List, Cost Plus Markup, Block, Percent of Total) and Range vs Slab Discount Schedule types — before any configuration begins. Trigger keywords: CPQ pricing method, SBQQ__PricingMethod__c, Cost Plus Markup, Block Pricing design, Percent of Total design, discount schedule type, Range vs Slab discount, pricing model strategy, which CPQ pricing mechanism to use. NOT for configuring Price Rule objects — use admin/cpq-pricing-rules. NOT for pricing without CPQ — use admin/products-and-pricebooks."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

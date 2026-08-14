@@ -73,9 +73,9 @@
     "fa4bc2347490fa5465b4",
     "fbfb3d50ac01c7bff07c"
   ],
-  "content_hash": "b4503f1252bcca13813a1aaf55938a867556664f28e33bc18ded580f1338950a",
+  "content_hash": "652a05c7bf8454869a9d09c7d1dc827e080e0ff7c6c306e2d965e4131bb065a8",
   "dependencies": [],
-  "description": "Apex Platform Event subscriber runtime semantics \u2014 checkpoint-and-resume via `EventBus.TriggerContext.setResumeCheckpoint`, `EventBus.RetryableException` semantics, the 2,000-event-per-trigger default batch (10\u00d7 standard DML trigger size), and `PlatformEventSubscriberConfig` for batch-size + running-user tuning. Covers the checkpoint-vs-RetryableException decision (the most common subscriber bug). NOT for declaring Platform Events themselves (use platform_events_definition skill), NOT for publishing them (apex/platform-event-publish), NOT for the basic `trigger Foo on MyEvent__e (after insert)` syntax.",
+  "description": "Apex Platform Event subscriber runtime semantics \u2014 checkpoint-and-resume via `EventBus.TriggerContext.setResumeCheckpoint`, `EventBus.RetryableException` semantics, the 2,000-event-per-trigger default batch, and `PlatformEventSubscriberConfig` for batch-size and running-user tuning. Covers the checkpoint-vs-RetryableException decision, the most common subscriber bug. NOT for publishing from Apex \u2014 use apex/platform-events-apex. NOT for external subscribers \u2014 use integration/platform-events-integration.",
   "file_location": "skills/apex/apex-event-bus-subscriber",
   "id": "apex/apex-event-bus-subscriber",
   "inputs": [

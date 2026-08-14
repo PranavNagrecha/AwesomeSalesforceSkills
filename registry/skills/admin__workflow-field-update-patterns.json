@@ -72,9 +72,9 @@
     "f836b9236c2753c0fb98",
     "fce7a80f1f9f426cf167"
   ],
-  "content_hash": "37a99adabeb39c6799f27d97f7903b52fbca6340baa92e2c3c850b76de8e7241",
+  "content_hash": "5c72d3ef296145556e35610c20a638768d9a06a4b67c51d85da0447efd5345af",
   "dependencies": [],
-  "description": "Cross-tool decision matrix for field-update automation in Salesforce \u2014 Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update-specific actions. NOT for the basic Salesforce order-of-execution sequence (use admin/order-of-execution), NOT for designing the Flow / Trigger itself (use the corresponding skill for the chosen tool).",
+  "description": "Cross-tool decision matrix for field-update automation in Salesforce \u2014 Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update actions. NOT for the full record-save order of execution \u2014 use apex/order-of-execution-deep-dive. NOT for building the record-triggered Flow once the tool is chosen \u2014 use flow/record-triggered-flow-patterns.",
   "file_location": "skills/admin/workflow-field-update-patterns",
   "id": "admin/workflow-field-update-patterns",
   "inputs": [
@@ -90,8 +90,8 @@
     "Migrate to Flow Tool \u2014 https://help.salesforce.com/s/articleView?id=sf.workflow_migration_tool.htm&type=5",
     "Workflow Rule Field Update Deprecation \u2014 https://help.salesforce.com/s/articleView?id=000392547&type=1",
     "Formula Field reference \u2014 https://help.salesforce.com/s/articleView?id=sf.fields_about_formula_fields.htm&type=5",
-    "Sibling skill \u2014 `skills/admin/order-of-execution/SKILL.md` (when one exists)",
-    "Sibling skill \u2014 `skills/flow/flow-best-practices/SKILL.md`",
+    "Sibling skill \u2014 `skills/apex/order-of-execution-deep-dive/SKILL.md`",
+    "Sibling skill \u2014 `skills/flow/record-triggered-flow-patterns/SKILL.md`",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

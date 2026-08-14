@@ -45,9 +45,9 @@
     "e8a3e984e0bb72804234",
     "f2127ad24b8205401a01"
   ],
-  "content_hash": "d3093653ce447bc659012481328590d7b236270b23ea3231d2f9e00f62b59133",
+  "content_hash": "310d2a5912f85f7c1d2350a48c05736bf1d59f2286268ba2edb7267a571e0f8f",
   "dependencies": [],
-  "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
+  "description": "Build LWCs with translation, locale-aware formatting, and RTL layouts. Triggers: LWC i18n, custom labels LWC, RTL layout. NOT for Translation Workbench admin setup \u2014 use admin/custom-label-management. NOT for org-wide multi-language config \u2014 use admin/multi-language-and-translation.",
   "file_location": "skills/lwc/lwc-internationalization",
   "id": "lwc/lwc-internationalization",
   "inputs": [

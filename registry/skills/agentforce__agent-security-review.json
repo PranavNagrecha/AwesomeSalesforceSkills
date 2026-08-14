@@ -40,9 +40,9 @@
     "f4cddb9bff8000403595",
     "facac88269e22271aa18"
   ],
-  "content_hash": "3910e12319e53fab011a2130c0d16eaed8c86f14b26e4961698197244b2b6734",
+  "content_hash": "ce51f1101231b4a47d39859b3cfb7236d411abffe9137cb89de5c58a2b823931",
   "dependencies": [],
-  "description": "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check).",
+  "description": "Pre-production security checklist for Agentforce deployments: agent run-as permission scope, grounding-source data classification, action write-scope, audit trail. NOT for the full go-live readiness gate covering cost telemetry, rate limits, rollout and rollback \u2014 use agentforce/agentforce-production-readiness-checklist. NOT for a general org security review \u2014 use security/security-health-check.",
   "file_location": "skills/agentforce/agent-security-review",
   "id": "agentforce/agent-security-review",
   "inputs": [

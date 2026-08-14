@@ -1,6 +1,6 @@
 ---
 name: commerce-order-management
-description: "Use this skill for Salesforce Order Management (OMS) tasks: order lifecycle, OrderSummary creation and status, FulfillmentOrder creation and routing, returns, exchanges, cancellations, and platform event subscriptions. Trigger keywords: order management, OrderSummary, FulfillmentOrder, ReturnOrder, ensure-funds, ensure-refunds, submit-cancel, submit-return, adjust-item-submit. NOT for CPQ quote-to-order workflows, standard Salesforce Orders without OMS, or B2B/B2C storefront setup."
+description: "Use this skill for Salesforce Order Management (OMS) tasks: order lifecycle, OrderSummary creation and status, FulfillmentOrder creation and routing, returns, exchanges, cancellations, and platform event subscriptions. Trigger keywords: order management, OrderSummary, FulfillmentOrder, ReturnOrder, ensure-funds, ensure-refunds, submit-cancel, submit-return, adjust-item-submit. NOT for split-order routing or Omnichannel Inventory design — use architect/order-management-architecture. NOT for loading historical orders — use data/commerce-order-history-migration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

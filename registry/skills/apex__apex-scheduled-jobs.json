@@ -123,9 +123,9 @@
     "f7e03d03328e12e468cb",
     "fd05623fbadd5c33a1e8"
   ],
-  "content_hash": "8b70f423a63661df27be2b13d986d7366d16da34eab967e815a91a9198cf6b79",
+  "content_hash": "1d895da9cb5668a90f0ffc0ffc4634170373eb643a4113d5d5e39cd4a9fd6be7",
   "dependencies": [],
-  "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. NOT for Batch Apex scheduling (use batch-apex-patterns) or Flow scheduled paths.",
+  "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes \u2014 use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup \u2014 use admin/batch-job-scheduling-and-monitoring.",
   "file_location": "skills/apex/apex-scheduled-jobs",
   "id": "apex/apex-scheduled-jobs",
   "inputs": [

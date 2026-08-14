@@ -1,6 +1,6 @@
 ---
 name: einstein-trust-layer
-description: "Use this skill when configuring, auditing, or troubleshooting Salesforce Einstein Trust Layer security controls for generative AI features including Agentforce, Einstein Copilot, and Prompt Builder. Trigger keywords: trust layer, data masking, zero data retention, ZDR, toxicity detection, AI audit trail, grounding controls, PII masking LLM, Einstein generative AI security. NOT for agent action development, LWC component authoring, or non-AI data governance (see data-quality-and-governance skill for that)."
+description: "Configure, audit, or troubleshoot Einstein Trust Layer security controls for generative AI features including Agentforce, Einstein Copilot, and Prompt Builder. Trigger keywords: trust layer, data masking, zero data retention, ZDR, toxicity detection, AI audit trail, grounding controls, PII masking LLM, Einstein generative AI security. NOT for redaction you build yourself in prompt-assembly code — use agentforce/agentforce-pii-redaction. NOT for org-wide AI governance and policy-as-code architecture — use architect/ai-governance-architecture."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

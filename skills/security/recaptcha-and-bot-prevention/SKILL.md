@@ -1,6 +1,6 @@
 ---
 name: recaptcha-and-bot-prevention
-description: "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable reCAPTCHA on Web-to-Case', 'bot spam submissions on my Experience Site', 'Headless Identity reCAPTCHA v3 setup'. NOT for AppExchange security review (use secure-coding-review-checklist), NOT for session-level login security policies (use session-management-and-timeout), NOT for IP-range-based access controls (use network-security-and-trusted-ips)."
+description: "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable. NOT for AppExchange security review (use secure-coding-review-checklist), NOT for sessio — use security/experience-cloud-security."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

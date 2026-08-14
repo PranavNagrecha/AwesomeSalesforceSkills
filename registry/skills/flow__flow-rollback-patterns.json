@@ -56,9 +56,9 @@
     "f91d298483d7b60be83e",
     "fe2fdc4fd7155d5d28c0"
   ],
-  "content_hash": "a0842f10c5ce94d3b1acbf0273fe092326b77740af7a36d753de3c79ee8332ef",
+  "content_hash": "ac8eca665f2e312f49066b6826cce76328b014b06c5eb4119b99fd5ac6b0906b",
   "dependencies": [],
-  "description": "Use the Flow Rollback Records element to undo DML inside the current transaction. Covers when rollback is appropriate vs catastrophic, how to combine with fault paths, partial-commit pitfalls, and the interaction with publish-after-commit Platform Events. NOT for external-system rollback (use compensation patterns). NOT for Database.SavePoint in Apex (use apex-transaction-control).",
+  "description": "Use the Flow Rollback Records element to undo DML inside the current transaction. Covers when rollback is appropriate vs catastrophic, how to combine with fault paths, partial-commit pitfalls, and the interaction with publish-after-commit. NOT for external-system rollback (use compensation patterns) \u2014 use apex/apex-savepoint-and-rollback.",
   "file_location": "skills/flow/flow-rollback-patterns",
   "id": "flow/flow-rollback-patterns",
   "inputs": [

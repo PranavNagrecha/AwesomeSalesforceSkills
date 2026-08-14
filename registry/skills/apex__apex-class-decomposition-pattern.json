@@ -71,9 +71,9 @@
     "f7dc92ad641f7ef383e4",
     "f7e13527cfc7a56acdc6"
   ],
-  "content_hash": "7ce798273ef385411dc5d45908ecca3dbf0a526bea7f49133a4a3327f65ebef9",
+  "content_hash": "fef4834d17b1d7173646030e8f275b40f8f8392a780667524e1fd7ad8cc5b15f",
   "dependencies": [],
-  "description": "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for full fflib migration \u2014 see fflib-enterprise-patterns. NOT for trigger framework choice \u2014 see trigger-framework.",
+  "description": "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for a full fflib migration \u2014 use apex/fflib-enterprise-patterns. NOT for choosing a trigger handler framework \u2014 use apex/trigger-framework.",
   "file_location": "skills/apex/apex-class-decomposition-pattern",
   "id": "apex/apex-class-decomposition-pattern",
   "inputs": [

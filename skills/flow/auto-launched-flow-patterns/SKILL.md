@@ -1,6 +1,6 @@
 ---
 name: auto-launched-flow-patterns
-description: "Use when invoking auto-launched Flows from Apex (Flow.Interview), from external systems via REST API, from Platform Events, or from other Flows (subflow element). Covers input/output variable mapping, bulkification patterns, and error/fault handling. NOT for record-triggered flows (use record-triggered-flow-patterns) or scheduled flows (use scheduled-flows)."
+description: "Use when invoking auto-launched Flows from Apex (Flow.Interview), from external systems via REST API, from Platform Events, or from other Flows (subflow element). Covers input/output variable mapping, bulkification patterns, and error/fault handling. NOT for record-triggered flows — use flow/record-triggered-flow-patterns. NOT for schedule-triggered flows — use flow/scheduled-flows."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

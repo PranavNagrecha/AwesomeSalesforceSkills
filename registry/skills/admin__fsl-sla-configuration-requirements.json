@@ -86,9 +86,9 @@
     "fdee28da2d27dc8935f4",
     "ffa8f27b581670519165"
   ],
-  "content_hash": "6d70eb027e02fc0d0d3ddaf82404c048bfac2cdeb8f076389cb11fd235383f41",
+  "content_hash": "658bcd51cc1bf543976c3be9fe6c978795e34be0d7daa0bae9e06a066739ea0e",
   "dependencies": [],
-  "description": "Use this skill to configure SLA enforcement for Salesforce Field Service (FSL) using Work Order entitlement processes: designing entitlement processes of type Work Order, defining FSL milestones (response time, on-site arrival, resolution), wiring milestone actions, and aligning Business Hours with service territory Operating Hours. NOT for Service Cloud Case SLAs, case escalation rules, or omni-channel routing \u2014 Case entitlement processes are a separate skill.",
+  "description": "Use this skill to configure SLA enforcement for Salesforce Field Service (FSL) using Work Order entitlement processes: designing entitlement processes of type Work Order, defining FSL milestones (response time, on-site arrival, resolution), wiring milestone actions, and aligning Business Hours with service territory Operating Hours. NOT for Case SLAs and Case entitlement processes \u2014 use admin/entitlements-and-milestones. NOT for defining the SLA tier table and escalation matrix \u2014 use architect/sla-design-and-escalation-matrix.",
   "file_location": "skills/admin/fsl-sla-configuration-requirements",
   "id": "admin/fsl-sla-configuration-requirements",
   "inputs": [

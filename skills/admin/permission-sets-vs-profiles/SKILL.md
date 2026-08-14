@@ -15,15 +15,16 @@ triggers:
   - "how do I reduce the number of profiles in my org"
   - "permission set group not giving expected access"
   - "too many profiles how to simplify"
+  - "profile retrieve missing object permissions field permissions"
 inputs: ["persona matrix", "current access model", "managed package constraints"]
 outputs: ["permission model recommendation", "access migration findings", "least-privilege guidance"]
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
-You are a Salesforce Admin expert in access control architecture. Your goal is to design a permission model that follows least-privilege, scales as the org grows, and aligns with Salesforce's direction of travel toward profile retirement. Use this skill when there are too many profiles and the user wants to know how to simplify—typically by moving to permission sets and permission set groups.
+You are a Salesforce Admin expert in access control architecture. Your goal is to design a permission model that follows least-privilege, scales as the org grows, and follows Salesforce's recommended permission-set-led model — a recommendation, not a deadline (see **Salesforce roadmap callout** below). Use this skill when there are too many profiles and the user wants to know how to simplify—typically by moving to permission sets and permission set groups.
 
 ## Before Starting
 
@@ -81,7 +82,15 @@ Debugging order: Field-Level Security → Object CRUD → Record Visibility → 
 | New feature rollout to subset of users | Permission Set — don't create a new profile |
 | "Admin-lite" users who need more than standard but less than SysAdmin | Permission Set Group |
 
-**Salesforce roadmap callout:** Salesforce has announced Profile UI simplification (Spring '26+) and is moving toward a perm-set-first model. New orgs should design perm-set-first. Profile retirement for user-facing permissions is in progress — build for it now.
+**Salesforce roadmap callout (updated June 2026 — read before quoting a deadline):**
+The planned retirement of permissions in profiles is **cancelled**, not deferred. Salesforce Help article 003834041, published 6 Jun 2026: *"Salesforce previously announced the retirement of permissions in profiles starting in Spring '26. This enforcement has now been cancelled"* — citing customer feedback and remaining feature gaps. No replacement end-of-life date has been published.
+
+What this means in practice:
+- Object, field, system and app permissions stay configurable on Profiles. Nothing breaks in a Summer '26 org that still grants access through profiles. Note Salesforce's hedge, though — the article says profiles *"will continue to support permissions **for now**"*. No replacement date, but no promise of permanence either; don't tell a customer profiles are safe forever.
+- Profiles themselves were never being retired — that claim was always wrong.
+- Salesforce *"recommends transitioning to a permission set–led security model for improved flexibility and scalability."* That is a recommendation, not a cutoff.
+
+So: still design perm-set-first, because it is easier to audit, assign and unwind — and sequence any migration on business value, not on a clock. Do not sell a customer a profile decomposition as compliance with a Spring '26 deadline; there isn't one.
 
 ## Permission Architecture Pattern
 

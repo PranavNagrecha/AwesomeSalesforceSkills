@@ -1,6 +1,6 @@
 ---
 name: lwc-graphql-wire
-description: "Use when an LWC needs to read related records across multiple sObjects in one request, paginate a related list with cursors, or replace several overlapping `@wire(getRecord)` calls with a single shared-cache query. Covers both `lightning/graphql` (v2 — the module Salesforce now recommends, with optional fields, dynamic queries, and create/update/delete via `executeMutation`) and legacy `lightning/uiGraphQLApi` (v1, kept for Mobile Offline). Triggers: 'read account and related contacts in one request', 'migrate uiGraphQLApi to lightning/graphql', 'graphql mutation from lwc without apex', 'paginate a graphql wire', 'graphql wire not refreshing after mutation', 'mark a graphql field optional so it survives FLS', 'too many @wire calls for related records', 'what fields does ui api graphql support'. NOT for single-record reads where `getRecord` from `lightning/uiRecordApi` already fits."
+description: "Use when an LWC needs to read related records across multiple sObjects in one request, paginate a related list with cursors, or replace several overlapping `@wire(getRecord)` calls with a single shared-cache query. Covers both. NOT for single-record reads where `getRecord` from `lightning/uiRecordApi` already fits — use lwc/wire-service-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

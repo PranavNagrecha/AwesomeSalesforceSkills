@@ -63,9 +63,9 @@
     "f45bbe51464b793b0e13",
     "f7c86fe799edfd823c6e"
   ],
-  "content_hash": "a9d9abf5b643c2bc98204ac3359c330e7a74c19250a70f4d5993a5178a1bddd5",
+  "content_hash": "e3dd5de50f89ed0a6ad6e2525b3740d428721b071edc725caab5c737aaae1bd3",
   "dependencies": [],
-  "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer.",
+  "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound callouts \u2014 use apex/callouts-and-http-integrations. NOT for a deprecation and sunset policy across many endpoints \u2014 use integration/api-versioning-strategy.",
   "file_location": "skills/apex/apex-rest-services",
   "id": "apex/apex-rest-services",
   "inputs": [

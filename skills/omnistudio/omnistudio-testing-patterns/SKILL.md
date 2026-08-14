@@ -1,6 +1,6 @@
 ---
 name: omnistudio-testing-patterns
-description: "Use when testing or validating OmniStudio components — OmniScript preview, Integration Procedure step debugging, DataRaptor field-mapping validation, and end-to-end UTAM-based automation. NOT for Apex unit testing or standard Flow debugging."
+description: "Test OmniStudio components — OmniScript preview, IP step debugging, DataRaptor validation, UTAM. Triggers: OmniStudio testing, UTAM automation, OmniScript test. NOT for live runtime debugging — use omnistudio/omnistudio-debugging. NOT for metadata/DataPack CI — use data/omnistudio-metadata-management."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,8 @@ triggers:
   - "DataRaptor is not mapping fields correctly, how do I test it without deploying?"
   - "OmniScript Preview passes but users get errors in production"
   - "How do I set up automated testing for OmniStudio components in a CI/CD pipeline?"
+  - "apex tests green omnistudio portal still broken"
+  - "isTestProcedure must not be active in production"
 tags:
   - omnistudio
   - testing
@@ -34,7 +36,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-08-14
 ---
 
 # OmniStudio Testing Patterns

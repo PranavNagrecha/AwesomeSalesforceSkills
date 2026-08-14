@@ -1,6 +1,6 @@
 ---
 name: analytics-kpi-definition
-description: "Use this skill to define, document, and validate KPI metrics for CRM Analytics — covering metric formula design, dimension selection, target-dataset modeling, benchmark setting, and the KPI register that must exist before any dashboard or lens is built. Trigger keywords: KPI definition CRM Analytics, analytics metric design, analytics target attainment, CRM Analytics measures vs dimensions, analytics benchmark. NOT for building CRM Analytics dashboards or lenses (use analytics/dashboard-design), SOQL report KPI design, or Marketing Cloud analytics KPI work."
+description: "Use this skill to define, document, and validate KPI metrics for CRM Analytics — covering metric formula design, dimension selection, target-dataset modeling, benchmark setting, and the KPI register that must exist before any dashboard or lens is built. Trigger keywords: KPI definition CRM Analytics, analytics metric design, analytics target attainment, CRM Analytics measures vs dimensions, analytics benchmark. NOT for laying out the dashboard or lens itself — use admin/analytics-dashboard-design. NOT for scoping data sources, audiences, and drill-down paths — use admin/analytics-requirements-gathering."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -166,5 +166,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `admin/analytics-requirements-gathering` — upstream skill: gather analytics requirements before defining KPIs
-- `data/saql-query-development` — use to implement SAQL formulas from the KPI register
+- `admin/saql-query-development` — use to implement SAQL formulas from the KPI register
 - `admin/marketing-reporting-requirements` — companion skill for marketing-specific KPI definition

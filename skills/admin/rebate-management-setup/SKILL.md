@@ -1,6 +1,6 @@
 ---
 name: rebate-management-setup
-description: "Rebate Management setup: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts on quotes (use revenue-cloud-cpq-setup). NOT for channel loyalty programs (use partner-loyalty-programs)."
+description: "Rebate Management setup: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for Sales Agreements or channel revenue management — use integration/manufacturing-cloud-setup. NOT for CPQ discounts on quotes — use admin/cpq-pricing-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -45,15 +45,17 @@ Activate when configuring Salesforce Rebate Management for channel incentive pro
 
 ## Before Starting
 
-- **Confirm Rebate Management license.** It is a paid add-on; the object model (`Rebate_Program__c`, `Benefit__c`, `Rebate_Payout__c`, `Transaction__c`) only appears when provisioned.
-- **Identify the source of transactions.** Rebates calculate against transactions — could be Orders, Invoices, a POS feed, or a data warehouse extract. This source drives the ingestion pipeline.
+- **Confirm Rebate Management license and edition.** It is a paid add-on: "Rebate Management is available in Lightning Experience. Available in: Enterprise, Unlimited, and Developer Editions." The object model ships as **standard** objects (`RebateProgram`, `ProgramRebateType`, `TransactionJournal`, …) that appear only when the feature is provisioned — none of them are custom objects and none carry a `__c` suffix.
+- **Identify the source of transactions.** Rebates calculate against `TransactionJournal` records — sourced from Orders, Invoices, a POS feed, or a data warehouse extract. This source drives the ingestion pipeline.
 - **Know the finance control requirements.** Most rebate programs require accounting sign-off before payout. Approval routing and GL integration must be designed before program go-live.
 
 ## Core Concepts
 
-### Program → Measure → Benefit → Payout
+### Program → Rebate Type → Benefit → Payout
 
-`Rebate_Program__c` is the top-level container (e.g., "2026 Channel Volume Rebate"). `Rebate_Measure__c` defines what is measured (units, revenue, growth %). `Benefit__c` defines what the participant earns at each threshold. `Rebate_Payout__c` is an actual payout instance after the period closes.
+`RebateProgram` (API 51.0+) is the top-level container — "The rebate program your organization runs with a single account, all accounts, or specific list of accounts." `ProgramRebateType` is what is measured: "Provide the rebate types that are part of this program. For example, volume rebate, revenue rebate, or rebate on every transaction." `ProgramRebateTypeBenefit` "Defines the benefit matrix for the rebate type. For example, 5% or $200." `RebateProgramMemberPayout` is "The payout calculated for a member for the period," and `RebateProgramPayoutPeriod` is "The period of the payout calculation."
+
+Eligibility and scope hang off the rebate type: `ProgramRebateTypEligibility` (note the truncated API name) holds "the rules and criteria to determine rebate type eligibility and terms for calculating payouts," `ProgramRebateTypeFilter` is "The definition that filters the transaction journals eligible for a rebate type," and `ProgramRebateTypeProduct` is "a junction between a program rebate type and a product."
 
 ### Accrual accounting
 
@@ -61,13 +63,13 @@ Between the period start and close, Rebate Management posts **accruals** — est
 
 ### Transaction ingestion
 
-`Transaction__c` records are the fuel. They come from: CG Cloud orders, Revenue Cloud invoices, Data Cloud feeds, CSV loads, or custom integrations. Schema matters — amount, participant, product family, and date are mandatory for rebate calculation.
+`TransactionJournal` records are the fuel — "The transactions that need to be processed for a rebate program." They come from CG Cloud orders, Revenue Cloud invoices, Data Cloud feeds, CSV loads (`ReceivedDocument` "Allows partners to upload .CSV document"), or custom integrations. Schema matters — amount, participant, product, and date are what the calculation aggregates. Results land in `RebateMemberProductAggregate`, which "Stores the post calculation summary of journal transactions by member, period, and rebate type," with `RebateMemberAggregateItem` as the junction back to each contributing `TransactionJournal`.
 
 ## Common Patterns
 
 ### Pattern: Volume-tier rebate with quarterly payout
 
-`Rebate_Program__c` with `Benefit__c` records defining tier thresholds (1-1000 units → 2%, 1001-5000 → 3%, 5000+ → 5%). Transactions accumulate through the quarter. At period close, Rebate Calculation runs, Payouts are generated, Approval routes to finance, then GL posts.
+`RebateProgram` with a volume `ProgramRebateType`, and `ProgramRebateTypeBenefit` rows defining tier thresholds (1–1000 units → 2%, 1001–5000 → 3%, 5000+ → 5%). `TransactionJournal` records accumulate through the quarter. At period close, calculation runs against the `RebateProgramPayoutPeriod`, `RebateProgramMemberPayout` rows are generated, approval routes to finance, then GL posts via `RebatePayment`, which "Tracks if the payment has been generated for this member for back end processing."
 
 ### Pattern: Growth rebate vs prior period
 
@@ -75,7 +77,7 @@ Benefit tied to % growth vs the same participant's prior quarter. Requires refer
 
 ### Pattern: MDF with manual claim approval
 
-Participant submits an MDF claim (via portal LWC). Claim is a `Rebate_Payout__c` with a manual route rather than auto-calculation. Approval + receipt review before payout.
+Participant submits an MDF claim (via portal LWC). The manual, off-calculation amount is a `RebatePayoutAdjustment` — "Rebate amount adjustment that needs to be given manually" — rather than a calculated `RebateProgramMemberPayout`. Approval + receipt review before payout. (`RebateClaim` and `RebateClaimAdjustment` are the ship-and-debit claim objects, a different program shape.)
 
 ## Decision Guidance
 
@@ -90,9 +92,9 @@ Participant submits an MDF claim (via portal LWC). Claim is a `Rebate_Payout__c`
 ## Recommended Workflow
 
 1. Provision the license; confirm Rebate Management objects are visible in Object Manager.
-2. Map transaction source systems; build the `Transaction__c` ingestion job (daily recommended).
-3. Design programs: volume, growth, MDF — one `Rebate_Program__c` per program for auditability.
-4. Configure `Benefit__c` thresholds; validate with sample transactions through a scratch-org dry run.
+2. Map transaction source systems; build the `TransactionJournal` ingestion job (daily recommended).
+3. Design programs: volume, growth, MDF — one `RebateProgram` per program for auditability, with a `ProgramRebateType` per measure.
+4. Configure `ProgramRebateTypeBenefit` thresholds and `ProgramRebateTypEligibility` criteria; validate with sample journals through a scratch-org dry run.
 5. Set accrual cadence and validate with finance; set up GL posting integration.
 6. Build partner visibility: Experience Cloud page showing year-to-date accrued rebate, tier progress.
 7. Run a full period-close dry run: accruals → calculation → approval → payout → GL post.
@@ -101,7 +103,7 @@ Participant submits an MDF claim (via portal LWC). Claim is a `Rebate_Payout__c`
 
 - [ ] Rebate Management license provisioned and objects visible
 - [ ] Transaction ingestion validated end-to-end
-- [ ] Program + Measure + Benefit structure matches contract
+- [ ] `RebateProgram` → `ProgramRebateType` → `ProgramRebateTypeBenefit` structure matches contract
 - [ ] Accrual cadence signed off by finance
 - [ ] Approval routing in place before first payout
 - [ ] Partner portal shows accurate year-to-date figures
@@ -124,6 +126,6 @@ Participant submits an MDF claim (via portal LWC). Claim is a `Rebate_Payout__c`
 
 ## Related Skills
 
-- `admin/revenue-cloud-cpq-setup` — quote-time discount sibling
+- `admin/cpq-pricing-rules` — quote-time discount sibling
 - `admin/experience-cloud-site-setup` — partner portal host
-- `integration/integration-pattern-selection` — transaction ingestion
+- `admin/integration-pattern-selection` — transaction ingestion

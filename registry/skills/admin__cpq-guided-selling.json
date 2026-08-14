@@ -106,12 +106,12 @@
     "f63b3489483ba849ac30",
     "fc74fe23428b54d47ce7"
   ],
-  "content_hash": "89680ee9016288aec987399139c93a63db11afaf8a10fc8730757290bb050426",
+  "content_hash": "0ca4678cf75ee06dfc2daef2640f24d4d4ca96902a42e1103fbea475a458529a",
   "dependencies": [
     "cpq-product-catalog-setup",
     "products-and-pricebooks"
   ],
-  "description": "Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard: building Quote Process records, defining ProcessInput questions that filter products by field value, mapping user responses to Product2 classification fields, and choosing the right search type (Standard, Enhanced, or Custom). Trigger keywords: CPQ guided selling, quote process wizard, product selection wizard, SBQQ__QuoteProcess__c, SBQQ__ProcessInput__c, guided product selection, auto select product, product search plugin. NOT for OmniStudio product selection flows, standard Salesforce pricebook product browsing, CPQ product bundle configuration, or CPQ pricing rules.",
+  "description": "Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard: Quote Process records, ProcessInput questions that filter products by field value, mapping answers to Product2 classification fields, and search type choice (Standard, Enhanced, Custom). Trigger keywords: CPQ guided selling, quote process wizard, product selection wizard, SBQQ__QuoteProcess__c, SBQQ__ProcessInput__c, guided product selection, auto select product, product search plugin. NOT for bundles, product options, or product rules \u2014 use admin/cpq-product-catalog-setup. NOT for writing a custom ProductSearchPlugin in Apex \u2014 use apex/cpq-apex-plugins.",
   "file_location": "skills/admin/cpq-guided-selling",
   "id": "admin/cpq-guided-selling",
   "inputs": [

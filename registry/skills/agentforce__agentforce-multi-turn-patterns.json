@@ -61,9 +61,9 @@
     "fd135566375d87c498af",
     "fec9ce0ec2f9bdeb308b"
   ],
-  "content_hash": "4e3aa36b329dc28cca23c8b7a53e3fc6d6133756fab97028a7071d17650fe682",
+  "content_hash": "f09eedff0d1d463b7cb414957d2512bc8864e0a3b1f278fe45b202aab24b9294",
   "dependencies": [],
-  "description": "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic handoff, and the right abstractions for accumulating state across turns. NOT for single-turn agent actions (use agent-actions). NOT for channel-specific conversation UX (use agent-channel-deployment).",
+  "description": "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic handoff, and the right abstractions for accumulating state across turns. NOT for deciding the topic boundaries themselves or out-of-scope behavior \u2014 use agentforce/agent-topic-design. NOT for single-turn agent actions and their input/output contracts \u2014 use agentforce/agent-actions.",
   "file_location": "skills/agentforce/agentforce-multi-turn-patterns",
   "id": "agentforce/agentforce-multi-turn-patterns",
   "inputs": [

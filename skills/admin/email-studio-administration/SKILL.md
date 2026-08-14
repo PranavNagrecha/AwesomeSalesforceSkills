@@ -1,6 +1,6 @@
 ---
 name: email-studio-administration
-description: "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) email, SMS/push channel setup, or Journey Builder orchestration design."
+description: "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) — use admin/mcae-pardot-setup. NOT for Journey Builder orchestration — use admin/journey-builder-administration."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

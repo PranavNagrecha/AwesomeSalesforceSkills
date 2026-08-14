@@ -1,6 +1,6 @@
 ---
 name: service-cloud-architecture
-description: "Use when designing a Service Cloud solution end-to-end: channel strategy (phone, email, chat, messaging, social), routing model (queue-based vs skills-based Omni-Channel), knowledge strategy, entitlement and SLA enforcement, Einstein Bot / Agentforce deflection, and integration points. Triggers: service cloud architecture, case routing design, omni-channel strategy, contact center design, channel strategy, knowledge deflection, service console architecture. NOT for individual feature configuration (use admin/case-management), NOT for Einstein Bot conversation design (use agentforce/einstein-bot-architecture), NOT for telephony CTI implementation details."
+description: "Use when designing a Service Cloud solution end-to-end: channel strategy (phone, email, chat, messaging, social), routing model (queue-based vs skills-based Omni-Channel), knowledge strategy, entitlement and SLA enforcement, Einstein Bot / Agentforce deflection, and integration points. Triggers: service cloud architecture, case routing design, omni-channel strategy, contact center design, channel strategy, knowledge deflection, service console architecture. NOT for case setup click-paths - use admin/case-management-setup. NOT for Einstein Bot dialog and intent design - use architect/einstein-bot-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

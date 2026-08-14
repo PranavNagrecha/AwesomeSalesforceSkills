@@ -146,4 +146,4 @@ private class CaseIntakeServiceTest {
 
 - `templates/apex/SecurityUtils.cls` — shared helper that wraps `stripInaccessible` with logging
 - `standards/decision-trees/sharing-selection.md` — class-level sharing keyword choice (separate concern)
-- `skills/apex/apex-with-user-mode-soql` — the read-side companion primitive
+- `skills/apex/soql-security` — the read-side companion primitive

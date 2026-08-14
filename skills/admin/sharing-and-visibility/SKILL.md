@@ -1,6 +1,6 @@
 ---
 name: sharing-and-visibility
-description: "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that."
+description: "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for tracing one named user's access to one specific record — use security/record-access-troubleshooting. NOT for object or field permissions — use admin/permission-sets-vs-profiles."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "users are seeing records they should not have access to"
   - "record access is not working as expected"
   - "sharing rule not applying to the right users"
+  - "view all data used as the sharing model"
+  - "private tasks owned by inactive users"
   - "why can this user see this record"
   - "user lost access to records after role change"
   - "why can user see too much"
@@ -21,7 +23,7 @@ outputs: ["sharing model recommendation", "record access findings", "visibility 
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 You are a Salesforce Admin expert in record-level access design. Your goal is to build a sharing model that is intentionally restrictive by default, explainable to the business, and scalable enough that admins are not solving access with one-off manual sharing forever.

@@ -120,21 +120,27 @@ admin review).
 
 ---
 
-## Gotcha 8: Orchestration metadata changes don't migrate in-flight orchestrations
+## Gotcha 8: Do not print "in-flight runs stay on the starting version" as platform law
 
-**What happens.** Admin updates the orchestration definition (adds
-a stage, removes a step, changes assignee logic). In-flight
-orchestrations continue running against their original version.
-The new behavior only applies to orchestrations started after the
-deploy.
+**What happens.** Help, release notes, Trailhead, and the Object
+Reference do not state that a running orchestration continues on
+the version it started on. `FlowOrchestrationInstance.FlowDefinitionVersionName`
+exists and can be **null for every run in an org**, so it cannot
+prove which version a run is executing.
 
-**When it occurs.** Iterating on orchestration design while
-orchestrations are running.
+**When it occurs.** Someone wants a slide-ready sentence after a
+deploy that changed Decision rules while a run was sitting in an
+earlier stage.
 
-**How to avoid.** Plan metadata changes during a quiet period when
-no orchestrations are mid-flight. Or accept that mid-flight
-orchestrations will continue with old behavior; document the
-mismatch for support.
+**How to avoid.** Treat version pinning as **unobserved until you
+test it in the target org**. One org has shown a four-day-old run
+finish on the **old** Decision rules after a newer version was
+activated — that is a method ("start a run, activate a version that
+changes a Decision, complete the waiting work item, see which
+rules fired"), not a platform guarantee. Do not tell a customer
+their in-flight deals "survive deployments" unless you have run
+that test on their org. If you must change an orchestration that
+has open runs, document the mismatch for support either way.
 
 ---
 
@@ -151,3 +157,153 @@ Items, ensure it's added to the mobile experience. Test on the
 target user's actual device. Or push interactive-step notifications
 to a separate channel (email with deep link, Slack DM, push
 notification via custom Apex action).
+
+---
+
+## Gotcha 10: Evaluation-flow output must be named exactly `isOrchestrationConditionMet`
+
+**What happens.** The evaluation flow returns a Boolean under any
+other variable name. The orchestration **discards it silently**.
+The stage never exits, or always exits, and nothing in the debug
+log says "wrong output name".
+
+**When it occurs.** Authoring an autolaunched flow that "returns a
+boolean" without reading the evaluation-flow contract.
+
+**How to avoid.** The output variable name is a reserved contract,
+not a style choice. Name it `isOrchestrationConditionMet`. Help:
+[Considerations for Evaluation Flows](https://help.salesforce.com/s/articleView?id=platform.orchestrator_considerations_evaluation_flows.htm&type=5).
+
+---
+
+## Gotcha 11: Dotted step-output references are rejected
+
+**What happens.** A later step or condition writes
+`Evaluate_Deal_Risk.financeReviewRequired`. Deploy (or the
+expression builder) fails with `"Evaluate_Deal_Risk.financeReviewRequired"
+element doesn't exist`.
+
+**When it occurs.** Treating a background step like a Flow element
+whose outputs are in scope for later elements.
+
+**How to avoid.** Capture the step output into an **orchestration
+variable** with `<assignToReference>` first, then read the
+variable. A dotted `StepName.output` path is not a legal
+orchestration reference.
+
+---
+
+## Gotcha 12: ERROR-resume and SUSPEND-resume are different operations
+
+**What happens.** An admin treats "Resume" as one button. Salesforce's
+own *"Resume errored orchestration run?"* dialog says: the errored
+step **restarts**, not-started steps run, and steps **completed
+before the error are not run again**. Suspend-resume is a different
+path: suspended steps are **discontinued**; a background step
+restarts and an interactive step gets a **replacement** work item.
+
+**When it occurs.** Mixing an error screenshot with suspend-resume
+speaker notes, or telling ops "just hit Resume" without saying
+which pause state the run is in.
+
+**How to avoid.** Teach two runbooks. Error-resume: fix the called
+flow or the frozen assignee, then Resume — completed work stands.
+Suspend-resume: expect discontinued steps and new work items, not
+a continuation of the paused ones. Do not print suspend-resume
+rules on an error-resume slide.
+
+---
+
+## Gotcha 13: Recoverable errors have a 14-day window and a short list
+
+**What happens.** A run sits in Error. Ops assumes they can Resume
+whenever. Recoverable errors can be resumed **within 14 days**, and
+only for two cases: the flow a step called errored, **or** the step
+has a frozen or inactive assignee. Everything else is
+non-recoverable: an error outside the called flows, an error in a
+MuleSoft step's action, or an **assignee reference that does not
+resolve**. The last one is the trap — `$Record.OwnerId` can deploy
+clean and then kill the run with **Debug and no Resume**. Observed
+failure signature: the *preceding* stage is marked Discontinued,
+the target stage instance is **never created**.
+
+**When it occurs.** Formula or `elementReference` assignees;
+deactivated users; MuleSoft steps; anything that fails outside the
+called autolaunched/screen flow.
+
+**How to avoid.** Prefer queue or literal-username assignees that
+exist and are active at deploy time. Treat unresolved
+`elementReference` assignees as **non-recoverable** until proven
+otherwise in that org. Help: [Orchestration Run](https://help.salesforce.com/s/articleView?id=platform.orchestrator_orchestration_run.htm&type=5).
+Summer '24 release notes (recoverable within 14 days).
+
+---
+
+## Gotcha 14: Interactive steps need `ActionInput__RecordId`, not just `$Record`
+
+**What happens.** Deploy fails with `field integrity exception:
+unknown (A context record is required for interactive steps.)`
+even though the orchestration is record-triggered and `$Record` is
+in scope.
+
+**When it occurs.** Every interactive step that does not pass the
+reserved input. Being record-triggered is **not** sufficient —
+`$Record` is trigger context, not work-item context.
+
+**How to avoid.** On every `InteractiveStep`, set:
+
+```xml
+<inputParameters>
+    <name>ActionInput__RecordId</name>
+    <value>
+        <elementReference>$Record.Id</elementReference>
+    </value>
+</inputParameters>
+```
+
+That reserved name populates `FlowOrchestrationWorkItem.RelatedRecordId`
+(UI label: Context Record ID) so the Work Guide can pin the item to
+the record. Other names (`ContextRecordId`, `relatedRecordId`) are
+rejected. Do **not** add it to background steps. Observed on API
+67.0; not a documented Metadata field — test the deploy in the
+target org.
+
+---
+
+## Gotcha 15: Interactive assignees are usernames, not User Ids
+
+**What happens.** `<stringValue>005…</stringValue>` fails deploy:
+*"The assigned user 005… doesn't exist or is inactive."* A
+username string deploys. Salesforce resolves the username **at
+deploy time** and checks `IsActive`. A 15- or 18-character User Id
+is rejected. `$Record.Owner.ManagerId` can deploy clean and throw
+`Invalid Resource reference` at **run time**.
+
+**When it occurs.** Copying Ids from a query into the XML; using
+two-level owner.manager traversal; porting an orchestration
+between orgs (usernames are org-specific).
+
+**How to avoid.** Assign a queue, or a literal username that is
+active in **this** org. Do not generalise "two-level traversal is
+unsupported" — Salesforce publishes no such limit; say what the
+org did and test yours. A deactivated demo/service user breaks the
+next deploy, not just the next run.
+
+---
+
+## Gotcha 16: A stage that exits early discontinues its own open steps
+
+**What happens.** Stage-exit logic fires while an interactive step
+in that stage is still open. The work item is **discontinued** and
+**vanishes with no notification** to the assignee.
+
+**When it occurs.** Evaluation-flow or record-condition exits that
+do not wait for every in-stage step; "or" exits on a wait stage;
+anyone still holding a Work Item when the stage is allowed to
+finish.
+
+**How to avoid.** If humans must be told the work is gone, notify
+them yourself — the platform will not. Design stage-exit so it
+cannot fire while a required interactive step is still In Progress,
+or accept silent discontinue as the product behaviour. Object
+Reference: `FlowOrchestrationStepInstance` status values.

@@ -1,6 +1,6 @@
 ---
 name: analytics-dataset-management
-description: "Use when creating or managing CRM Analytics datasets: configuring dataflows, scheduling refreshes, selecting fields, handling date types, managing row-count growth, or troubleshooting stale or broken datasets. Triggers: 'dataset creation', 'dataflow schedule', 'dataflow quota', 'date field not filterable', 'dataset row limit', 'CRM Analytics data refresh', 'field type mismatch in dataset'. NOT for standard Salesforce report types or choosing between analytics tools."
+description: "Use when creating or managing CRM Analytics datasets: configuring dataflows, scheduling refreshes, selecting fields, handling date types, managing row-count growth, or troubleshooting stale or broken datasets. Triggers: 'dataset creation', 'dataflow schedule', 'dataflow quota', 'date field not filterable', 'dataset row limit', 'CRM Analytics data refresh', 'field type mismatch in dataset'. NOT for making an existing dataset smaller or faster — use data/analytics-dataset-optimization. NOT for choosing between Reports, CRM Analytics and Tableau in the first place — use admin/einstein-analytics-basics."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -66,6 +66,7 @@
     "b6cfd1bf1d3e2ea270ec",
     "b6f16502ad0b55f1c917",
     "b752813d6b35678467fc",
+    "bdab458d5f19bffcf935",
     "be026e5162ce5d19db0f",
     "c7615b2533f558af9e85",
     "ce6e8385be69aca7cf4c",
@@ -89,9 +90,9 @@
     "f8e49a9031663dd1e6f9",
     "f9f88f50bbb79209d904"
   ],
-  "content_hash": "839459a0ccf06a65c4fc0414e4ebf1c851e90e34af222d746aec4be55a2eaf67",
+  "content_hash": "e32bf3892fa330c52e0ce9fcf3f4e518625b5e5b7b9cda309e7188a69195caa6",
   "dependencies": [],
-  "description": "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for data archival to external storage (use data-archival-strategies).",
+  "description": "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for archiving records to Big Objects or external storage instead of deleting them \u2014 use data/data-archival-strategies. NOT for deleting unused fields, flows and other metadata \u2014 use admin/org-cleanup-and-technical-debt.",
   "file_location": "skills/data/batch-data-cleanup-patterns",
   "id": "data/batch-data-cleanup-patterns",
   "inputs": [
@@ -138,7 +139,7 @@
   "templates": [
     "skills/data/batch-data-cleanup-patterns/templates/batch-data-cleanup-patterns-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

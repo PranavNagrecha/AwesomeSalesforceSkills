@@ -134,3 +134,13 @@ captured the original Id.
 For cross-system references, store a stable external reference
 (custom external Id field on a related record) rather than the
 Salesforce Id.
+
+---
+
+## Gotcha 10: Shared-Set Fan-Out on `ContentDocumentLink` Swallows Duplicates
+
+**What happens:** Apex builds `Map<Id, Set<Id>>` of document → linked entities, then inserts links in a loop. The **same Set instance** is reused across keys, so every document gets every entity. Duplicate-link exceptions are caught and ignored. Files appear on the wrong records; the job "succeeds."
+
+**When it occurs:** "Share this file to the deal team / related accounts" after-insert handlers in otherwise Apex-light orgs.
+
+**How to avoid:** New `Set<Id>` per document. Do not swallow `DmlException` on link insert. Prefer `FirstPublishLocationId` plus explicit links with `ShareType` / `Visibility` set. Test with two documents and two parents in one transaction.

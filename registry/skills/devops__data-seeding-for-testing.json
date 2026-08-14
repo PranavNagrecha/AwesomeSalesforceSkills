@@ -54,9 +54,9 @@
     "fbac30a443e68e41ecea",
     "fcc9854f6fa2f0a8b444"
   ],
-  "content_hash": "6975a68417cd0c1aeb8d3331e225b265cae17cdfc5c17dafc020fa1db398de17",
+  "content_hash": "5cf091a742139bbf2f99e9b22803d86a2d09e98d36c5f05951c649c54bfefe38",
   "dependencies": [],
-  "description": "Use when creating test data for scratch orgs, sandboxes, or CI pipelines: Apex @testSetup factories, sf data import tree plans, CumulusCI datasets, Snowfakery. NOT for production data migration or ETL pipelines.",
+  "description": "Use when creating test data for scratch orgs, sandboxes, or CI pipelines: Apex @testSetup factories, sf data import tree plans, CumulusCI datasets, Snowfakery. NOT for production data migration or ETL pipelines \u2014 use data/data-migration-planning.",
   "file_location": "skills/devops/data-seeding-for-testing",
   "id": "devops/data-seeding-for-testing",
   "inputs": [

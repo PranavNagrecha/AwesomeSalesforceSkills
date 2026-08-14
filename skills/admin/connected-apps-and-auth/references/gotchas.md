@@ -59,3 +59,13 @@
 **When it bites you:** Immediately. Blocking ends all current user sessions for the app and prevents future sessions. Switching Permitted Users to admin-approved revokes access for current users unless their profile or permission set already grants access to the app.
 
 **How to avoid it:** Establish usage and ownership from the Connected Apps OAuth Usage page first, assign the profile or permission set before switching Permitted Users, and reserve Block for apps you have already decided to kill.
+
+---
+
+## Assuming an External Client App Can Be Created Anywhere a Connected App Could
+
+**What happens:** After hearing that connected apps are frozen in Spring '26, a team swaps every app to an External Client App and hits three walls that connected apps never had. Salesforce DX still splits org auth by command — an ECA is required for `org login jwt`, but "If you're authorizing a Dev Hub org and plan to create scratch orgs or sandboxes with the `org create scratch|sandbox` commands, then you create a connected app instead." You also can't build an ECA in a scratch org from Setup: "You can't create External Client Apps directly in scratch orgs using the Setup UI." And the metadata type has a floor — `ExternalClientApplication` components are available in API version 59.0 and later.
+
+**When it bites you:** In the CI/CD pipeline, not the design review. The JWT auth step passes, then `org create scratch` fails because the Dev Hub was re-pointed at an ECA. Or a scratch-org-based test fails with no app to authorize against. Or the ECA deploys fine from one repo and is rejected from an older one whose `sourceApiVersion` (in `sfdx-project.json`) or `package.xml` `<version>` still sits below 59.0 — this floor is the project's deploy API version, not the org's release, so a Spring '26 org will still reject an ECA pushed at 58.0.
+
+**How to avoid it:** Enumerate the sf commands the pipeline runs before choosing a container. Where a Dev Hub both authenticates by JWT and provisions scratch orgs, the two rules collide — the doc says to create a connected app *instead* of an ECA for that org, not alongside it — so decide which command the pipeline actually depends on rather than assuming you can satisfy both. For scratch-org testing, follow the documented path: "create the External Client App in a developer hub org, add it to a package, and install the package in the target scratch org." Raise `sourceApiVersion` to 59.0+ in any project that will deploy ECA metadata.

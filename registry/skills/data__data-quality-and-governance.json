@@ -132,9 +132,9 @@
     "fe601fcd8ced64b98f4d",
     "ffefebd95aa82e0835be"
   ],
-  "content_hash": "0e19755ace2fb05835d9e6f27582caaa173f883d1a4f63da30f41be9134e8701",
+  "content_hash": "8c561e4c859bd3f2646d1d2a6f6b0272159f78c5b278427f2a82b5589d65cd78",
   "dependencies": [],
-  "description": "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy) across a Salesforce org. Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for Duplicate Rules configuration step-by-step UI setup (use duplicate-management skill). NOT for bulk data migration execution (use data-migration skill).",
+  "description": "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy). Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for configuring matching and duplicate rules in Setup \u2014 use admin/duplicate-management. NOT for executing a bulk data migration \u2014 use data/data-migration-planning.",
   "file_location": "skills/data/data-quality-and-governance",
   "id": "data/data-quality-and-governance",
   "inputs": [

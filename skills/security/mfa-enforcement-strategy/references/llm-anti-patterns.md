@@ -80,3 +80,35 @@ Org-wide MFA enforcement and per-event step-up (Transaction Security Policies) s
 ```
 
 **Detection hint:** Single solution referencing only `TransactionSecurityPolicy` XML when the user asked about org-wide MFA for all UI logins.
+
+---
+
+## Anti-Pattern 6: Recommending Salesforce Authenticator to Admins and Calling the Org Compliant
+
+**What the LLM generates:** “Have your admins register Salesforce Authenticator (or Google/Microsoft Authenticator) and your org meets the MFA requirement.”
+
+**Why it happens:** A decade of Salesforce guidance made Salesforce Authenticator *the* recommended verifier, so it dominates the training data. The 2026 phishing-resistant requirement for privileged users inverts that advice, and the model has no signal that the recommendation now fails for the population most likely to be asking.
+
+**Correct pattern:**
+
+```
+Salesforce Authenticator and TOTP apps remain valid standard MFA, but they do not satisfy the phishing-resistant MFA requirement that applies to users with the System Administrator profile or the Modify All Data, View All Data, Customize Application, or Author Apex permission. That population needs a security key, a built-in authenticator (Touch ID, Windows Hello), a passkey, or certificate-based authentication. Enumerate it from effective permission assignments, not from the profile name.
+```
+
+**Detection hint:** Any answer that names Salesforce Authenticator or a TOTP app as sufficient for admins, or that scopes the privileged population by profile alone and never mentions the four permissions travelling on permission sets.
+
+---
+
+## Anti-Pattern 7: Stating a Specific 2026 MFA Enforcement Date as Settled Fact
+
+**What the LLM generates:** A confident single date — “MFA is enforced in sandboxes on June 22, 2026” — often with a fabricated verbatim quotation attributed to a `help.salesforce.com` article.
+
+**Why it happens:** `help.salesforce.com/s/articleView` serves a JavaScript shell with no article text, and returns the same contentless page for every article ID including invented ones. A fetching tool that cannot hold a session gets nothing back and reconstructs plausible dates instead of reporting the failure — which is why repeated passes over the same URL have produced mutually incompatible dates.
+
+**Correct pattern:**
+
+```
+Two date sets have been published for the 2026 MFA and PRMFA waves and the schedule was revised at least once, so no specific date should be asserted from an unauthenticated source. Production enforcement is staggered by Release Group, so the announced start is not the org's date in any case. Direct the user to open the Salesforce Help articles signed in and read the schedule for their own Release Group.
+```
+
+**Detection hint:** A precise enforcement date paired with a quoted sentence attributed to a `help.salesforce.com` article ID, with no acknowledgement of the Release Group stagger or of the revised schedule.

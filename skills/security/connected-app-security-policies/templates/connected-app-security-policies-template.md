@@ -10,7 +10,7 @@ Use this template when working on a Connected App security hardening task.
 
 **Connected App name:** ___________________________________________
 
-**OAuth flow type in use:** [ ] Web Server (Auth Code)  [ ] JWT Bearer  [ ] User-Agent  [ ] Device  [ ] Client Credentials
+**OAuth flow type in use:** [ ] Web Server (Auth Code)  [ ] JWT Bearer  [ ] User-Agent  [ ] Client Credentials  [ ] Device — BLOCKED since 2025-08-28 and not re-enablable; plan migration to JWT Bearer (see `references/gotchas.md`, Gotcha 6)
 
 ## Context Gathered
 
@@ -63,6 +63,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 - [ ] Client secret rotation procedure documented with zero-grace-period warning
 - [ ] JWT Bearer signing host NTP sync verified if flow is in use
 - [ ] OAuth scopes restricted to minimum required
+- [ ] No runbook, CI job, or integration still depends on the OAuth 2.0 Device Flow
 
 ## Notes
 

@@ -1,6 +1,6 @@
 ---
 name: flow-performance-optimization
-description: "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the 80/20 wins. NOT for governor-limit math (use flow-governor-limits-deep-dive). NOT for LDV strategy (use flow-large-data-volume-patterns)."
+description: "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the. NOT for governor-limit math (use flow-governor-limits-deep-dive) — use flow/flow-large-data-volume-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

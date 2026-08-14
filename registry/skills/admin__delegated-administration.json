@@ -82,9 +82,9 @@
     "fb5f08cabf6a25bbf2cf",
     "fde821be69b772c91849"
   ],
-  "content_hash": "ef5a1853fdc80db6c69b778c8a72c3fabfe6bfc3633c47519dfe784633bbb9c2",
+  "content_hash": "37c83718f383ef81ae2342814ea9a4f84cc59055dc1204f20021ff1df6fa30e3",
   "dependencies": [],
-  "description": "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for user management (use user-management) or full system admin setup.",
+  "description": "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for creating, deactivating or licensing users yourself \u2014 use admin/user-management. NOT for auto-assigning permission sets from user attributes \u2014 use admin/user-access-policies.",
   "file_location": "skills/admin/delegated-administration",
   "id": "admin/delegated-administration",
   "inputs": [

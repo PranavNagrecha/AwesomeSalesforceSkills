@@ -1,6 +1,6 @@
 ---
 name: lwc-custom-lookup
-description: "Custom lookup component in LWC — typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for in-form lookups inside lightning-record-edit-form (use lightning-input-field) or lookup filters (use admin lookup filter config)."
+description: "Custom lookup component in LWC — typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for the base lightning-record-picker — use lwc/lwc-record-picker. NOT for in-form lookups inside lightning-record-edit-form."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

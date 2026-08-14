@@ -86,9 +86,9 @@
     "fa5bb3ebb4c42a3f0541",
     "fd7bb5df3998bb251577"
   ],
-  "content_hash": "4c2023aa27fb64e7b76c8e4e9852322bc2f831b15242b5e78c9b985a4c645daa",
+  "content_hash": "81d76fc8ec8fb7cd1d04b1eea3a3003b2f382ff7c8d1ffd16a1a8c4564c77453",
   "dependencies": [],
-  "description": "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. Does NOT cover Einstein Bot standalone implementation (see einstein-bot-architecture), Omni-Channel routing for human agents, or Flow-only automation without a conversational surface.",
+  "description": "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. NOT for Einstein Bot dialog and NLU design \u2014 use architect/einstein-bot-architecture. NOT for cutting an existing bot over to Agentforce \u2014 use agentforce/einstein-bots-to-agentforce-migration. NOT for Omni-Channel routing for human agents \u2014 use architect/multi-channel-service-architecture. NOT for Flow-only automation without a conversational surface \u2014 use admin/process-automation-selection.",
   "file_location": "skills/architect/conversational-ai-architecture",
   "id": "architect/conversational-ai-architecture",
   "inputs": [

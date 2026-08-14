@@ -1,6 +1,6 @@
 ---
 name: quotes-and-quote-templates
-description: "Use when configuring standard Salesforce Quotes, building or customizing quote templates for PDF generation, emailing quotes to customers, syncing quotes to opportunity products, or setting up discount approval processes on quotes. Triggers: 'create quote', 'quote template', 'quote PDF', 'email quote', 'quote sync', 'synced quote', 'discount approval', 'quote line items'. NOT for CPQ (Salesforce Revenue Cloud / SBQQ) quote configuration, quote line scheduling, or order management."
+description: "Use when configuring standard Salesforce Quotes, building quote templates for PDF generation, emailing quotes, syncing quotes to opportunity products, or setting up discount approvals on quotes. Triggers: 'create quote', 'quote template', 'quote PDF', 'email quote', 'quote sync', 'synced quote', 'discount approval', 'quote line items'. NOT for CPQ (SBQQ) quote templates — use admin/cpq-quote-templates. NOT for the end-to-end quote-to-cash process — use admin/quote-to-cash-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

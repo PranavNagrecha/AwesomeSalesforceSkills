@@ -1,6 +1,6 @@
 ---
 name: lwc-cross-tab-state-sync
-description: "Use when an LWC needs to react to events that happen in another browser tab — record updates, login state, draft autosave, console-tab navigation. Triggers: 'sync data across tabs', 'BroadcastChannel LWC', 'storage event LWC', 'one tab updates the other', 'console workspace tab close detection'. NOT for state sync within the same Lightning page (use Lightning Message Service) or for server-pushed updates (use CometD or refreshApex)."
+description: "Use when an LWC needs to react to events that happen in another browser tab — record updates, login state, draft autosave, console-tab navigation. Triggers: 'sync data across tabs', 'BroadcastChannel LWC', 'storage event. NOT for state sync within the same Lightning page (use Lightning Message Service) or for — use lwc/lwc-console-workspace-api."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

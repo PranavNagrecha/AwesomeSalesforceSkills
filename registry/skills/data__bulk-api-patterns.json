@@ -102,9 +102,9 @@
     "f9ac4253cb51b865ec7a",
     "fece47edd128cf0c3ae9"
   ],
-  "content_hash": "bf83f4a0d859a01dfe4eec3295f9aebba763d7175c160d6f3bf59e741d16d40a",
+  "content_hash": "20f4edbade1e6ff2790093d554714a98b52e3499c8b2ea2184abd567c86c5d0a",
   "dependencies": [],
-  "description": "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps (use data-import-and-management), NOT for strategic load-size decisions or concurrency mode selection (use bulk-api-and-large-data-loads).",
+  "description": "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps \u2014 use admin/data-import-and-management. NOT for strategic load-size decisions or serial vs parallel concurrency mode \u2014 use data/bulk-api-and-large-data-loads.",
   "file_location": "skills/data/bulk-api-patterns",
   "id": "data/bulk-api-patterns",
   "inputs": [

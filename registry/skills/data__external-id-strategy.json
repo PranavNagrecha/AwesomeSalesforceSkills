@@ -91,13 +91,13 @@
     "fe65872a800a7c31ec13",
     "ff37fc54d7ef0b1a5d3b"
   ],
-  "content_hash": "3e83065f5ac1c2b7d8ccb147df4bf5ac1ac503080565f28250553a4e7dc8c26e",
+  "content_hash": "4b7c66afce0051bdcee65ee7e7bf97eaf8c1776575aad78bcc325d29c7d0bb94",
   "dependencies": [
     "data-migration-planning",
     "rest-api-patterns",
     "data-model-design-patterns"
   ],
-  "description": "Use this skill when designing, selecting, or troubleshooting external ID fields on Salesforce objects for upsert operations, cross-system record correlation, or idempotent data loads. Trigger keywords: external ID field design, upsert key strategy, cross-system record matching, source system ID mapping, composite key for uniqueness, duplicate insert on upsert, relationship resolution by external ID. NOT for data migration steps (use data-migration-planning), NOT for REST API upsert endpoint wiring (use rest-api-patterns), NOT for general data model field decisions (use data-model-design-patterns).",
+  "description": "Use this skill when designing, selecting, or troubleshooting external ID fields on Salesforce objects for upsert operations, cross-system record correlation, or idempotent data loads. Trigger keywords: external ID field design, upsert key strategy, cross-system record matching, source system ID mapping, composite key for uniqueness, duplicate insert on upsert, relationship resolution by external ID. NOT for sequencing and running the migration itself \u2014 use data/data-migration-planning. NOT for making an inbound API retry-safe end to end \u2014 use integration/idempotent-integration-patterns.",
   "file_location": "skills/data/external-id-strategy",
   "id": "data/external-id-strategy",
   "inputs": [

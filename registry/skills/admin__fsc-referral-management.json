@@ -82,9 +82,9 @@
     "f55185df29475c07d97c",
     "ff5648d6dd9ba03e24a6"
   ],
-  "content_hash": "f7c1ff0f5ac9093a1fce1c0dd35525eb6139d905e2af93339f73dd1e2fe1f0d4",
+  "content_hash": "99441bdbe324231c49a4dc1261b9c259d78f5241148eeb5b62cf17e855e4e2cf",
   "dependencies": [],
-  "description": "Use this skill when configuring or troubleshooting FSC Referral Management: setting up referral types via ReferralRecordTypeMapping custom metadata, routing referrals through Lead Assignment Rules keyed on the Expressed Interest picklist, tracking Referrer Score, or enabling partner referral visibility in Experience Cloud. Trigger keywords: referral routing, FSC referral types, ReferralRecordTypeMapping, Expressed Interest picklist, partner referral Contact, Referrer Score Experience Cloud. NOT for standard Salesforce Lead management outside FSC, Einstein Referral Scoring (retiring feature), or Marketing Cloud referral campaigns.",
+  "description": "Use this skill when configuring or troubleshooting FSC Referral Management: setting up referral types via ReferralRecordTypeMapping custom metadata, routing referrals through Lead Assignment Rules keyed on the Expressed Interest picklist, tracking Referrer Score, and partner referral visibility in Experience Cloud. Trigger keywords: referral routing, FSC referral types, ReferralRecordTypeMapping, Expressed Interest picklist, partner referral Contact, Referrer Score Experience Cloud. NOT for clinical referrals in Health Cloud \u2014 use admin/referral-management-health. NOT for standard Lead capture and conversion outside FSC \u2014 use admin/lead-management-and-conversion.",
   "file_location": "skills/admin/fsc-referral-management",
   "id": "admin/fsc-referral-management",
   "inputs": [

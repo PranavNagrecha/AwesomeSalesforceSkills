@@ -29,5 +29,7 @@
 - Salesforce Help: Create and Edit Groups — https://help.salesforce.com/s/articleView?id=sf.group_creating.htm&type=5
 - Salesforce Help: Sharing Rules — https://help.salesforce.com/s/articleView?id=sf.security_sharing_rules_managing.htm&type=5
 - Salesforce Help: Queue Fields (Group sObject) — https://help.salesforce.com/s/articleView?id=sf.queues_fields.htm&type=5
+- Metadata API Developer Guide: SharedTo — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_sharedto.htm — confirms `roleAndSubordinatesInternal` is the current sharing-rule field and that `roleAndSubordinates` is "only available when digital experiences is enabled for your org and Experience Cloud site users are created with external account roles other than a shared person account role" (verified 2026-08-13)
+- Salesforce Help: Prepare for Changes to "Role and Subordinates" Group (roleAndSubordinates) — https://help.salesforce.com/s/articleView?id=002628970&language=en_US&type=1 — confirms the "Roles and Internal Subordinates" label, the Summer '25 sandbox / Winter '26 production release updates, and that dynamic translation of old references is transitional (verified 2026-08-13)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Record Access Under the Hood (Salesforce Architects) — local knowledge: knowledge/imports/salesforce-record-access-under-the-hood.md

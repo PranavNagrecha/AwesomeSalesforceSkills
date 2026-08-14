@@ -53,4 +53,4 @@
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Architects: Center of Excellence playbook (workbook-driven implementation handoff) — https://architect.salesforce.com/decision-guides/center-of-excellence
-- Salesforce Help: Track changes to your org with Setup Audit Trail (rationale for source-grounded change records) — https://help.salesforce.com/s/articleView?id=sf.setup_audit_trail.htm
+- Object Reference — SetupAuditTrail (rationale for source-grounded change records) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_setupaudittrail.htm

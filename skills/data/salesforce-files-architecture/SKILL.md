@@ -1,6 +1,6 @@
 ---
 name: salesforce-files-architecture
-description: "Working with Salesforce Files at the data layer — `ContentVersion` (the binary content + version metadata), `ContentDocument` (the parent / shareable handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file size limit and the 10 MB feed-attached limit, the deprecated `Attachment` object, the `Document` object (Classic-only), and Files Connect for external file sources. Covers SOQL patterns to enumerate files attached to a record, Apex insert / link patterns, sharing implications of `ShareType` and `Visibility`, and the migration path from the legacy Attachment object. NOT for LWC file upload UI components (see lwc/lwc-file-upload-patterns), NOT for static-resource bundling (see lwc/static-resources)."
+description: "Working with Salesforce Files at the data layer — `ContentVersion` (binary content + version metadata), `ContentDocument` (the shareable parent handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file and 10 MB feed-attached limits, the deprecated `Attachment` object, the Classic-only `Document` object, and Files Connect for external sources. Covers SOQL to enumerate files on a record, Apex insert / link patterns, and `ShareType` / `Visibility` sharing implications. NOT for bulk-migrating Classic Attachments and Notes over to Files — use data/attachment-to-files-migration. NOT for the file upload UI in a component — use lwc/file-upload-patterns."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,7 @@ triggers:
   - "soql files attached to record contentdocumentlink"
   - "share type visibility contentdocumentlink"
   - "files vs attachments vs documents salesforce object"
+  - "contentdocumentlink fan out shared set duplicates"
 tags:
   - files
   - content-version
@@ -32,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-08-14
 ---
 
 # Salesforce Files Architecture

@@ -1,6 +1,6 @@
 ---
 name: fsl-scheduling-optimization-design
-description: "Use this skill to design, configure, and troubleshoot the Field Service Lightning (FSL) Optimizer — including selecting optimization type (Global, In-Day, Resource Schedule), understanding the priority-score model, configuring travel mode (Aerial vs Street-Level Routing), and tuning optimizer behavior for specific scheduling objectives. NOT for configuring scheduling policies, work rules, service objectives weights, or the Dispatcher Console dispatch settings."
+description: "Use this skill to design, configure, and troubleshoot the Field Service Lightning (FSL) Optimizer — including selecting optimization type (Global, In-Day, Resource Schedule), understanding the priority-score model, configuring travel mode (Aerial vs Street-Level Routing), and tuning optimizer behavior for specific scheduling objectives. NOT for work rules and service-objective weights on a scheduling policy — use admin/fsl-scheduling-policies. NOT for ESO adoption and territory sizing — use architect/fsl-optimization-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -152,4 +152,4 @@ Prefixes like `Project-`, `Team-`, `Topic-`, `Announce-`, `Customer-` make bulk 
 
 - `admin/chatter-notification-tuning` — feed noise, digest frequency, and notification volume tuning *inside* groups (this skill governs the group population; that skill governs what's noisy inside a group)
 - `apex/apex-connect-api-chatter` — programmatic group creation / membership / posting via Connect API
-- `admin/user-offboarding` — broader user-deactivation workflow that this skill plugs into for the ownership-transfer step
+- `admin/user-management` — broader user-deactivation workflow that this skill plugs into for the ownership-transfer step

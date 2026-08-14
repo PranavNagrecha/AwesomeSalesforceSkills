@@ -1,6 +1,6 @@
 ---
 name: referral-management-health
-description: "Use this skill when configuring Health Cloud referral management: setting up ClinicalServiceRequest-based referrals, provider search, referral status workflows, and network management. NOT for Sales Cloud referrals, FSC Einstein Referral Scoring, or Public Sector Solutions referral objects."
+description: "Use this skill when configuring Health Cloud referral management: setting up ClinicalServiceRequest-based referrals, provider search, referral status workflows, and network management. NOT for referrals in Financial Services Cloud — use admin/fsc-referral-management. NOT for care team workflow and transition-of-care design — use admin/care-coordination-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

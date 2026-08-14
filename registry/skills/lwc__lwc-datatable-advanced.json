@@ -50,9 +50,9 @@
     "fa14006c74624eab951e",
     "fba93b2f2eb22c76e240"
   ],
-  "content_hash": "7d6bcaa7e60ac917951cdd61c5531806bbaa5ff6c93fbec0dbb4d89fdba73de3",
+  "content_hash": "05906c7a4ee83018e3bc11dee9e6238639bd217f635fbee0871396224e1bb5d8",
   "dependencies": [],
-  "description": "Advanced lightning-datatable patterns \u2014 inline edit + draftValues, custom cell types via extending LightningDatatable, sortable columns, infinite scroll with onloadmore, row-level errors, and the cost of large data sets. NOT for read-only display of small lists (plain lightning-datatable suffices) or fully custom grids (use a third-party library).",
+  "description": "Advanced lightning-datatable \u2014 inline edit, custom cell types, infinite scroll, row errors. Triggers: datatable inline edit, custom cell type, onloadmore. NOT for first-time datatable setup \u2014 use lwc/lwc-data-table. NOT for fully custom virtual grids \u2014 use lwc/lwc-virtualized-lists.",
   "file_location": "skills/lwc/lwc-datatable-advanced",
   "id": "lwc/lwc-datatable-advanced",
   "inputs": [

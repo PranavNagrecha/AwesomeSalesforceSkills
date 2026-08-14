@@ -1,6 +1,6 @@
 ---
 name: flow-screen-lwc-components
-description: "Design custom Lightning Web Components that render inside Screen Flow steps — covers the lightning__FlowScreen target, @api properties as Flow inputs/outputs, FlowAttributeChangeEvent propagation, FlowNavigationNext/Back/Finish/Pause events, the @api validate() hook, and design-time targetConfig wiring. NOT for custom property editors that configure flow elements at design time — see flow-custom-property-editors. NOT for the LWC implementation deep-dive — see lwc/lwc-in-flow-screens."
+description: "Design custom Lightning Web Components that render inside Screen Flow steps — covers the lightning__FlowScreen target, @api properties as Flow inputs/outputs, FlowAttributeChangeEvent propagation, FlowNavigationNext/Back/Finish/Pause events, the @api validate() hook, and design-time targetConfig wiring. NOT for the Flow Builder design-time editor that configures it — use flow/flow-custom-property-editors. NOT for the LWC-side implementation deep-dive — use lwc/lwc-in-flow-screens."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

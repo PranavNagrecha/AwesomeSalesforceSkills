@@ -242,6 +242,6 @@ If a managed package upgrade appears in a subscriber org without anyone clicking
 
 - `devops/managed-package-development` — Publisher-side counterpart: building the package, authoring `InstallHandler`, push upgrades.
 - `devops/package-development-strategy` — Selecting between 1GP, 2GP, unlocked, and unmanaged packaging models (publisher choice).
-- `admin/permission-set-groups` — The modern subscriber-side access-grant mechanism for package features.
-- `security/external-credentials-and-named-credentials` — Pre-staging credentials for packages that need them.
+- `admin/permission-set-group-composition` — The modern subscriber-side access-grant mechanism for package features.
+- `integration/named-credentials-setup` — Pre-staging credentials for packages that need them.
 - `admin/sandbox-strategy` — Selecting the right sandbox type for the sandbox-first install runbook.

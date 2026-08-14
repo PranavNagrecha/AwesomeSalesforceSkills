@@ -36,6 +36,8 @@ A permission model that requires creating a new Profile every time a new team is
 
 **Risk of not following this:** Profile sprawl (50+ profiles in orgs older than 5 years). Access changes require testing entire profiles. No clear audit trail.
 
+**Trade-off after the June 2026 retirement cancellation:** the platform no longer supplies a forcing function. With the Spring '26 retirement of permissions in profiles cancelled and no replacement date, a profile decomposition has to be justified on these Well-Architected grounds alone — auditability, single-operation role changes, least privilege — and it now competes with every other backlog item on business value rather than jumping the queue as compliance work. Budget it as maintainability investment, and prioritise the profiles where sprawl is actually costing something (frequent role changes, failed access audits) over a uniform org-wide sweep.
+
 ---
 
 ## Pillars Not Addressed
@@ -56,9 +58,10 @@ Key principle applied: *"Grant the least amount of access necessary to accomplis
 **Relevant Salesforce guidance:**
 - Salesforce Help: User Permissions and Access
 - Trailhead: Manage User Profiles and Permission Sets
-- Salesforce Architects: Profile Retirement FAQ (check current Salesforce release notes)
+- Salesforce Help 003834041: Permissions in Profiles Retirement Cancelled (supersedes any Profile Retirement FAQ you may have bookmarked)
 
 ## Official Sources Used
 
 - Salesforce Well-Architected Overview — least-privilege and governance framing
 - Metadata API Developer Guide — profile and permission metadata movement constraints
+- [Salesforce Help 003834041 — "Permissions in Profiles Retirement Cancelled" (published 6 Jun 2026)](https://help.salesforce.com/s/articleView?id=003834041&language=en_US&type=1) — confirms the Spring '26 retirement of permissions in profiles was cancelled with no replacement end-of-life date, that profile-based permissions are still supported ("for now", in the article's words), that Salesforce now only *recommends* a permission set–led model, and enumerates the six settings it assigns to profiles (default assigned apps, default record types and page layouts, login hours, login IP ranges, password policies, session settings) (verified 2026-08-13)

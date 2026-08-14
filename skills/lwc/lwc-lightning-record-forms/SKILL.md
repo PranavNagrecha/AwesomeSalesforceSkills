@@ -1,6 +1,6 @@
 ---
 name: lwc-lightning-record-forms
-description: "Lightning Data Service form components for LWC — when to use lightning-record-form vs lightning-record-edit-form vs lightning-record-view-form, output-field vs input-field, density modes, layout types (Compact/Full), and the platform-managed validation/save/error UI. NOT for fully custom form layouts (use lwc/lwc-custom-form-with-uiRecordApi) or aura:recordEditForm (Aura is deprecated for new work)."
+description: "lightning-record-form vs record-edit-form vs uiRecordApi for record create/edit in LWC. Triggers: lightning-record-form, record-edit-form, uiRecordApi form. NOT for fully custom forms — use lwc/lwc-forms-and-validation."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -108,9 +108,9 @@
     "fd7aa3f391be2aed9df2",
     "fe0a7464edb56ed98a7f"
   ],
-  "content_hash": "e8bd98f7336c70c24b216e1020df619132452a41848aa779a7310a857ce54908",
+  "content_hash": "f278967c513e19fdb6160b95ffff90a3e6cea836e8ce8e65d6f9fa106afd9cb0",
   "dependencies": [],
-  "description": "When and how to author Duplicate Rules and Matching Rules in B2C / Person Account orgs without breaking lead conversion, cross-object matching, or PII hygiene. Covers PA's dual-record (001/003) shape, PersonEmail vs Contact.Email, multi-phone normalization, IsPersonAccount filtering, RecordType filtering for PA, and Lead-to-PA convert. NOT for B2B duplicate management \u2014 see data/duplicate-management. NOT for Data.com / Lightning Data \u2014 see integration/data-com.",
+  "description": "Duplicate Rules and Matching Rules for Person Accounts \u2014 PA shape, lead convert, PII. Triggers: person account duplicate rule, PA matching, IsPersonAccount filter. NOT for general B2B duplicate management \u2014 use admin/duplicate-management. NOT for Person Account enablement \u2014 use data/person-accounts.",
   "file_location": "skills/data/duplicate-rule-person-account-edge-cases",
   "id": "data/duplicate-rule-person-account-edge-cases",
   "inputs": [

@@ -90,9 +90,9 @@
     "f8003a17b063ac766e58",
     "fdb4367e43eba12397c6"
   ],
-  "content_hash": "9476e4d0210afe7e6c7672dc773efe6cce13d3e4a9968bec9d9aaf0d5bb25b18",
+  "content_hash": "c108e556ce19d28f44b0fd8fe327d771e57ab5e082183b904d02ab85baac2fda",
   "dependencies": [],
-  "description": "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) \u2014 covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity CPQ, Industries CPQ, Salesforce CPQ comparison, Revenue Cloud migration, CPQ selection, which CPQ to use. NOT for implementing, configuring, or debugging either CPQ product.",
+  "description": "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) \u2014 covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity. NOT for implementing, configuring, or debugging either CPQ product \u2014 use architect/industries-cloud-selection.",
   "file_location": "skills/omnistudio/industries-cpq-vs-salesforce-cpq",
   "id": "omnistudio/industries-cpq-vs-salesforce-cpq",
   "inputs": [

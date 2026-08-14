@@ -57,9 +57,9 @@
     "fdb341f99febf85a1642",
     "ff33e5535d6d902c4897"
   ],
-  "content_hash": "82db96b67bf00936ab338ea7b28bf23154505d9eaaa5b9ae9516fccbb82c2eec",
+  "content_hash": "902c9b1351dfab39c8a7744b075bea457af6cfdab6c231e95190ca7e147985d1",
   "dependencies": [],
-  "description": "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two sandboxes', 'org diff tool', 'metadata drift between UAT and prod', 'find missing metadata in target org'. NOT for code-level diffs in version control or for deploying packages.",
+  "description": "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two. NOT for code-level diffs in version control or for deploying packages \u2014 use devops/metadata-api-coverage-gaps.",
   "file_location": "skills/devops/metadata-diff-between-sandboxes",
   "id": "devops/metadata-diff-between-sandboxes",
   "inputs": [

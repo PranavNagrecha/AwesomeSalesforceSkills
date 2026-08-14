@@ -80,12 +80,12 @@
     "fa892f080df78c955120",
     "ff5f73b97fd208cf0eb0"
   ],
-  "content_hash": "314b629916d7e6aeb2fe28d46508789218f65112818efb4276141584e2ff34b6",
+  "content_hash": "76972329c822285a025fd01974d58581c32041a26bfc36fba85fe57c67bef8ac",
   "dependencies": [
     "data/data-migration-planning",
     "security/experience-cloud-security"
   ],
-  "description": "Use this skill to migrate external community/portal user accounts at scale: bulk creating Experience Cloud users via Data Loader, migrating users between license types (Customer Community to Customer Community Plus, or to Partner Community), importing Customer Portal users into Experience Cloud, and resolving Contact/Account hierarchy prerequisites. Trigger keywords: migrate community users, import external users Experience Cloud, bulk create portal users, move users between license types, migrate Customer Community to Partner Community. NOT for internal user data migration. NOT for general data migration (see data/bulk-data-migration). NOT for configuring Experience Cloud sites or profiles from scratch.",
+  "description": "Use to migrate external community/portal user accounts at scale \u2014 bulk user creation via Data Loader, license-type moves (Customer Community to Customer Community Plus, or to Partner Community), Customer Portal imports, and Contact/Account hierarchy prerequisites. Trigger keywords: migrate community users, import external users Experience Cloud, bulk create portal users, move users between license types, migrate Customer Community to Partner Community. NOT for adding members, self-registration and login page setup \u2014 use admin/experience-cloud-member-management. NOT for a general multi-object data migration \u2014 use data/data-migration-planning.",
   "file_location": "skills/data/community-user-data-migration",
   "id": "data/community-user-data-migration",
   "inputs": [

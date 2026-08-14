@@ -127,9 +127,9 @@
     "fcf6879104b83e529f34",
     "fee9abb380dad6b6b39b"
   ],
-  "content_hash": "f6ba4adcd3598e7936096cd0b0343d550477bd288c0d2401f71b035caa00664a",
+  "content_hash": "12c22a0177a2e935655244a91fd3a2bd1870d3b5918c4246ba7793b65b0a414e",
   "dependencies": [],
-  "description": "Use this skill when building or debugging headless B2C Commerce storefront order submission using the Salesforce Commerce API (SCAPI) ShopAPI Orders endpoint or the legacy OCAPI /orders resource. Covers SCAPI order creation, SLAS authentication for shopper order access, OCAPI order placement and amendment, order status retrieval from the storefront layer, and notification/webhook configuration for order events. NOT for standard REST API (no generic CRUD against Order SObject). NOT for OMS Connect API (no OrderSummary, FulfillmentOrder, submit-cancel, or ensure-funds-async \u2014 those are covered by admin/commerce-order-management). NOT for CPQ order workflows.",
+  "description": "Use this skill when building or debugging headless B2C Commerce storefront order submission using the Salesforce Commerce API (SCAPI) ShopAPI Orders endpoint or the legacy OCAPI /orders resource \u2014 order creation, SLAS authentication for shopper order access, order amendment, order status retrieval, and order-event notifications and webhooks. NOT for OrderSummary, FulfillmentOrder, or other OMS Connect API work \u2014 use admin/commerce-order-management. NOT for shopper login, basket, or checkout calls \u2014 use apex/headless-commerce-api.",
   "file_location": "skills/apex/commerce-order-api",
   "id": "apex/commerce-order-api",
   "inputs": [

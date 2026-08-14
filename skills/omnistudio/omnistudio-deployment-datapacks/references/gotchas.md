@@ -49,3 +49,21 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** The default export query filters for active components (`IsActive = true`). Any component version that has been created but not yet activated is invisible to the export.
 
 **How to avoid:** When exporting in-progress work intentionally (e.g., for backup or cross-developer handoff), modify the export query to remove the `IsActive = true` filter. Be explicit about which version number you are exporting. Establish a team convention that in-progress versions are either exported with a clear naming convention or kept exclusively in source control as a JSON patch rather than re-imported as a DataPack until activation-ready.
+
+---
+
+## Gotcha 6: Retrieved DataRaptors Often Land `active=false` — Deploy Without Activate Leaves Them Dark
+
+**What happens:** Source retrieve writes every DataRaptor `active=false`. IP/OS/FlexCard version explosion sits beside them. Deploying that retrieve without an activate step ships dark DRs. Activating version N deactivates N-1. Nested IP keys must exist and be **active** before the parent.
+
+**When it occurs:** MDAPI Omni types in git (no vlocity DataPack tree); CI that deploys metadata but never activates.
+
+**How to avoid:** Dependency order: Named Credential + External Credential → DataRaptors (activate) → IPs (activate) → OmniScripts/FlexCards (activate = LWC compile) → deploy generated `cf*` if they are not produced in org. Version-control `OmniInteractionConfig` and `OmniStudio.settings`. Do not commit designer preview JSON in `customJavaScript`. Mixed `isManagedUsingStdDesigner` in one Type/SubType family is a runtime mismatch.
+
+---
+
+## Gotcha 7: Standard Runtime Plus Residual Managed Package = Dual Upgrade Calendars
+
+**What happens:** `enableStandardOmniStudioRuntime=true` while the `omnistudio` package remains installed. Runtime moves with core releases; package moves on the Industries cadence. Apex that `implements omnistudio.VlocityOpenInterface, Callable` still fails to compile when the **package** interface drifts.
+
+**How to avoid:** Treat standard runtime as unpinned — regression Omni on every core upgrade. Inventory remaining VOI bonds. See `vlocity-to-native-omnistudio-migration`. Do not assume "we pin the package so Omni is stable."

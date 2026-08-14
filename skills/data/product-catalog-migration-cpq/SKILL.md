@@ -1,6 +1,6 @@
 ---
 name: product-catalog-migration-cpq
-description: "Use when bulk-loading or migrating Salesforce CPQ product catalog configuration data — SBQQ-namespaced objects including Product2, ProductOption, PriceRule, PriceAction, DiscountSchedule, DiscountCategory, ConfigurationAttribute, and OptionConstraint — across orgs or from an external source system. Trigger keywords: CPQ bulk load, SBQQ product migration, ProductOption insert order, CPQ trigger disable, price rule migration, CPQ sandbox refresh catalog, bundle migration. NOT for standard product import or CRM product migration (use product-catalog-data-model). NOT for CPQ quote or subscription data migration. NOT for Industries CPQ (Vlocity) catalog migration."
+description: "Use when bulk-loading or migrating Salesforce CPQ product catalog configuration data — SBQQ-namespaced objects including Product2, ProductOption, PriceRule, PriceAction, DiscountSchedule, ConfigurationAttribute, and OptionConstraint — across orgs or from an external source system. Trigger keywords: CPQ bulk load, SBQQ product migration, ProductOption insert order, CPQ trigger disable, price rule migration, CPQ sandbox refresh catalog, bundle migration. NOT for standard product import or CRM product migration — use data/product-catalog-data-model. NOT for loading historical CPQ quotes, contracts, subscriptions, and assets so renewals work — use data/historical-order-migration."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

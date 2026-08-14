@@ -309,6 +309,7 @@ Check for these items in order:
 | Pull request / merge request validation only | `sf project deploy validate` — no source deploy | Validates metadata and runs tests without committing; idempotent; safe on MR events |
 | Deploy on merge to develop (sandbox) | `sf project deploy start` with `--test-level NoTestRun` after a separate passing test job | Avoids double-running all tests; rely on the dedicated test job for coverage gate |
 | Deploy on merge to main (production) | `sf project deploy start` with `--test-level RunLocalTests` and `when: manual` gate | Enforces 75% threshold; manual gate prevents accidental production deploy |
+| Faster CI on large orgs (Spring '26 Beta) | `sf project deploy start --test-level RunRelevantTests` plus `@IsTest(critical=true)` / `@IsTest(testFor='ClassName')` on must-run tests | Runs only tests tied to the deployment payload instead of all local tests |
 | Feature branch with ephemeral scratch org | Create scratch org in job, run tests, delete in `after_script:` | Org-per-branch isolation; watch daily limits (6/day for Developer Edition Dev Hub) |
 | Base64-encoded private key | `echo "$SF_JWT_KEY_B64" | base64 -d > /tmp/server.key` | Avoids GitLab masking rejection for multi-line values with special characters |
 | Rollback after failed production deploy | Revert branch and re-run the pipeline | Salesforce does not support automated rollback via CLI; rollback is a new deployment |

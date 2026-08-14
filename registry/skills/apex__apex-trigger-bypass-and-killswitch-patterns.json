@@ -62,9 +62,9 @@
     "f08397243bc0128743d4",
     "f3b3473ea73ff0e5ca08"
   ],
-  "content_hash": "2a3795f25020450e77340e673c1e844dd425cc7f5862eed2bae919d0e5ed1a32",
+  "content_hash": "f1d33478b481bc79a2468030f11080226feb7d3cb359d31204028ec9296ae6a9",
   "dependencies": [],
-  "description": "Runtime mechanisms to disable Apex triggers without commenting out code: Custom Metadata kill switches via Trigger_Setting__mdt, Custom Permission gates via FeatureManagement.checkPermission, Hierarchy Custom Settings, and TriggerControl static-state bypass for nested operations. NOT for recursive-trigger-prevention (use apex-recursive-trigger-prevention) \u2014 bypass disables a handler intentionally; recursion guards prevent the same handler from re-entering itself.",
+  "description": "Runtime mechanisms to disable Apex triggers without commenting out code: Custom Metadata kill switches via Trigger_Setting__mdt, Custom Permission gates via FeatureManagement.checkPermission, Hierarchy Custom Settings, and TriggerControl static-state bypass for nested operations. NOT for a handler re-entering itself \u2014 use apex/recursive-trigger-prevention. NOT for gating a business feature \u2014 use apex/feature-flags-and-kill-switches.",
   "file_location": "skills/apex/apex-trigger-bypass-and-killswitch-patterns",
   "id": "apex/apex-trigger-bypass-and-killswitch-patterns",
   "inputs": [
@@ -77,7 +77,7 @@
   "official_sources": [
     "Apex Developer Guide \u2014 Custom Metadata Types in Apex \u2014",
     "Apex Reference Guide \u2014 `System.FeatureManagement` Class \u2014",
-    "Salesforce Help \u2014 Custom Settings (Hierarchy Custom Settings) \u2014",
+    "Apex Developer Guide \u2014 Custom Settings \u2014",
     "Salesforce Well-Architected \u2014 Reliability pillar \u2014",
     "Salesforce Well-Architected \u2014 Operational Excellence \u2014"
   ],

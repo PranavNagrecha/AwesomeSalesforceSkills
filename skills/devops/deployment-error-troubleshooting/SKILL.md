@@ -1,6 +1,6 @@
 ---
 name: deployment-error-troubleshooting
-description: "Use when a Salesforce metadata deployment fails and you need to diagnose and fix the error. Trigger keywords: 'deployment failed', 'component failure', 'dependent class is invalid', 'code coverage failed', 'UNSUPPORTED_API_VERSION', 'deploy error', 'test failure blocking deploy', 'rollbackOnError', 'missing dependency deploy'. NOT for authoring destructive changes manifests (use destructive-changes-deployment). NOT for CI/CD pipeline setup (use github-actions-for-salesforce or gitlab-ci-for-salesforce). NOT for change set mechanics (use change-set-deployment)."
+description: "Use when a Salesforce metadata deployment fails and you need to diagnose the error from the DeployResult componentFailures. Trigger keywords: 'deployment failed', 'component failure', 'dependent class is invalid', 'code coverage failed', 'UNSUPPORTED_API_VERSION', 'deploy error', 'test failure blocking deploy', 'rollbackOnError', 'missing dependency deploy'. NOT for `Cannot change type`, profile FLS delta, or `entity is in use` errors — use devops/deployment-error-diagnosis. NOT for a deploy that fails because the metadata type itself is unsupported — use devops/metadata-api-coverage-gaps."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

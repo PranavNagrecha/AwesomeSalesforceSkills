@@ -1,6 +1,6 @@
 ---
 name: prompt-injection-defense
-description: "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary."
+description: "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify adversarial test cases and guardrails, scoped to the agent boundary rather than general application-security review. NOT for the overall agent test plan (topic coverage, golden sets, regression harness) — use agentforce/agentforce-testing-strategy. NOT for keeping PII out of prompts, model calls and logs — use agentforce/agentforce-pii-redaction."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

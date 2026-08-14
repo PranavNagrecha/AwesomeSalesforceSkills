@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-api-access
-description: "Use this skill when configuring or troubleshooting API access for Experience Cloud external users and guest users: guest user Apex data access, Customer Community Plus or Partner Community REST/SOAP API access, external user OAuth scopes, and sharing enforcement on API responses. Trigger keywords: Experience Cloud API access external user, community user REST API, guest user API limits, Customer Community API permissions, external user OAuth. NOT for internal Salesforce API authentication, non-community OAuth flows, or internal user API security."
+description: "Use this skill when configuring or troubleshooting API access for Experience Cloud external users and guest users: guest user Apex data access, Customer Community Plus or Partner Community REST/SOAP API access. NOT for internal Salesforce API authentication, non-community OAuth flows, or internal u — use security/experience-cloud-security."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

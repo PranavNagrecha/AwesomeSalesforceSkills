@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "07b490ed6b2282b2c416",
     "0d8632984df18763f6a8",
     "0dba23cb3c37860d827c",
     "0e62e2bc07c6e7309cfc",
@@ -8,6 +9,8 @@
     "15d18fc4a55c6067554d",
     "22a2041ed6af3bf2946e",
     "29f9f1565bee2d8d9091",
+    "30c153410e0835a65de8",
+    "31a418839794c3cb71e2",
     "346683389aa5d3d2c4f4",
     "3b3cf149d8758d780c71",
     "407679e8da58074d8180",
@@ -33,10 +36,12 @@
     "7ca7414fb6bfead4cb44",
     "7e56f9afdbbbefbf1bd2",
     "7e92f20648d53137ccca",
+    "80a2559a637b1f59de31",
     "82ffa0b8f1a7d1e23b5d",
     "86c10c4bf194089f950a",
     "89cb041a4d5539818a30",
     "8dc566de449683fdcc56",
+    "8ed968af9ea4513c5583",
     "91e8838f344320185791",
     "91f5464dfa73596b1118",
     "926cec5a98634a9379bc",
@@ -67,9 +72,9 @@
     "fc9ce4eef1860ca68c00",
     "fdab38f020fb03a1ccc2"
   ],
-  "content_hash": "e98efffebdcc3077da9d3ef0da83e69c4ac38ccf0d33256c184068d60cab10a6",
+  "content_hash": "cf8adcb92d87abbd27a1904ad324719687accdbf649ce237477e10cdf2e541d7",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, External Client Apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for OAuth error codes you are already seeing \u2014 use admin/connected-app-troubleshooting. NOT for External Credential principal-type setup steps \u2014 use integration/named-credentials-setup.",
   "file_location": "skills/admin/connected-apps-and-auth",
   "id": "admin/connected-apps-and-auth",
   "inputs": [
@@ -91,7 +96,11 @@
     "Manage OAuth Access Policies for a Connected App (https://help.salesforce.com/s/articleView?id=xcloud.connected_app_manage_oauth.htm&language=en_US&type=5) \u2014 Permitted Users options and the access loss when switching to admin-approved",
     "OAuth 2.0 Username-Password Flow for Special Scenarios (https://help.salesforce.com/s/articleView?id=xcloud.remoteaccess_oauth_username_password_flow.htm&language=en_US&type=5) \u2014 \"if your org is created in Summer '23 or later, the username-password flow is blocked by default\"; web server flow with PKCE and client credentials as alternatives",
     "Salesforce Platform: Migrate from OAuth Username-Password to Client Credentials Flow (https://help.salesforce.com/s/articleView?id=000886201&language=en_US&type=1) \u2014 that Salesforce \"is deprecating this flow,\" the Run As user configuration, the grant_type swap, that \"the client credentials flow doesn't support calls to login.salesforce.com or test.salesforce.com,\" and JWT bearer when the client uses multiple usernames in a single org",
-    "Platform SOAP API login() Retirement (https://help.salesforce.com/s/articleView?id=005132110&language=en_US&type=1) \u2014 \"retiring SOAP API login() in API versions 31.0 through 64.0 with the Summer '27 release\""
+    "Platform SOAP API login() Retirement (https://help.salesforce.com/s/articleView?id=005132110&language=en_US&type=1) \u2014 \"retiring SOAP API login() in API versions 31.0 through 64.0 with the Summer '27 release\"",
+    "Create a Connected App, Mobile SDK Development Guide (https://developer.salesforce.com/docs/platform/mobile-sdk/guide/connected-apps-howto.html) \u2014 confirms the creation freeze on a renderable developer.salesforce.com page: \"Connected apps creation is restricted as of Spring '26,\" \"You can continue to use existing connected apps during and after Spring '26,\" \"we recommend using external client apps instead,\" and \"If you must continue creating connected apps, contact Salesforce Support\" (verified 2026-08-13)",
+    "Create an External Client App in Your Org, Salesforce DX Developer Guide (https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_eca.htm) \u2014 the DX split that qualifies \"always use an ECA\": \"You're required to create an external client app when authorizing the org with the org login jwt command\" versus \"If you're authorizing a Dev Hub org and plan to create scratch orgs or sandboxes with the org create scratch|sandbox commands, then you create a connected app instead,\" plus the Flow Enablement \u2192 Enable JWT Bearer Flow step (verified 2026-08-13)",
+    "ExternalClientApplication, Metadata API Developer Guide (https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalclientapplication.htm) \u2014 \"ExternalClientApplication components are available in API version 59.0 and later,\" the deploy-time floor for ECA metadata (verified 2026-08-13)",
+    "Create an External Client App, Hosted MCP Servers (https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/create-external-client-app.html) \u2014 \"You can't create External Client Apps directly in scratch orgs using the Setup UI\" and the documented workaround: \"create the External Client App in a developer hub org, add it to a package, and install the package in the target scratch org\" (verified 2026-08-13)"
   ],
   "outputs": [
     "auth pattern recommendation",

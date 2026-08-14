@@ -70,9 +70,9 @@
     "fcd2e9a438a40f53bb9e",
     "fea792aead6428345476"
   ],
-  "content_hash": "27abc9b525e7ac8eead62ca4368f4442f73b9b21088acacf293c30cd0aeb7496",
+  "content_hash": "5e0ca66443e170d189e75d7bff1716c819603efb401d2697954dc4696dfadf7b",
   "dependencies": [],
-  "description": "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for wire basics (use lwc-wire-service). NOT for Lightning Data Service writes (use lwc-lds-writes).",
+  "description": "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for @wire basics and reactive params \u2014 use lwc/wire-service-patterns. NOT for LDS create/update/delete \u2014 use lwc/lwc-lds-writes.",
   "file_location": "skills/lwc/lwc-wire-refresh-patterns",
   "id": "lwc/lwc-wire-refresh-patterns",
   "inputs": [

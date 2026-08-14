@@ -88,11 +88,11 @@
     "ffa98c545eeb0e4d5af1",
     "fff3aae19d6e76d8d8f7"
   ],
-  "content_hash": "3f79f0af99badf4310c6f6bb3ca8fa7e086f70c4d0b3c174b034bb002e753fef",
+  "content_hash": "6d02dad806ca5d267adb5f099e7b14cb3e1a8d26ed90dc75c97490cc9e2f15bf",
   "dependencies": [
     "admin/mcae-pardot-setup"
   ],
-  "description": "Use this skill when integrating with the Account Engagement (Pardot) REST API v5 to create, read, update, or query Prospects, Visitors, Visitor Activities, or Form Handlers programmatically. Trigger keywords: Pardot API, Account Engagement API, prospect sync, visitor tracking API, form handler integration, MCAE REST API. NOT for Marketing Cloud API (Email Studio, Journey Builder REST), NOT for standard Salesforce CRM REST API, NOT for MCAE setup or business unit provisioning.",
+  "description": "Account Engagement (Pardot) REST API v5 from code \u2014 creating, reading and querying Prospects, Visitors, Visitor Activities and Form Handlers. Trigger keywords: Pardot API, Account Engagement API, prospect sync, visitor tracking API, form handler integration, MCAE REST API. NOT for connector setup, business unit provisioning or User Sync \u2014 use admin/mcae-pardot-setup. NOT for Marketing Cloud Engagement (Email Studio, Journey Builder) APIs \u2014 use apex/marketing-cloud-api.",
   "file_location": "skills/apex/mcae-pardot-api",
   "id": "apex/mcae-pardot-api",
   "inputs": [

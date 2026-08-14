@@ -193,5 +193,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `omnistudio/flexcard-design-patterns` — use after requirements are complete to implement in Card Designer
 - `admin/omniscript-flow-design-requirements` — companion BA requirements skill for OmniScripts that the FlexCard may launch
-- `admin/omnistudio-vs-standard-decision` — use to confirm FlexCard is the right tool over standard Lightning components
+- `architect/omnistudio-vs-standard-decision` — use to confirm FlexCard is the right tool over standard Lightning components
 - `omnistudio/integration-procedures` — use when requirements identify multi-source or external API data needs

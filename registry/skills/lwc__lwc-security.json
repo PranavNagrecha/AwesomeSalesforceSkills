@@ -61,9 +61,9 @@
     "fe4d2180cb0ba0413786",
     "fefd8892f7936cd17eb4"
   ],
-  "content_hash": "508319379b30f823b062cdd31151d60780692b1a947aa1296bb0ff27d24df085",
+  "content_hash": "0a335e571c7e1c2627d8490efcdb1292d320d7d392cb45ee75a641cd914db46b",
   "dependencies": [],
-  "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security boundaries, third-party library handling, and secure server-side data access from LWC. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface is involved.",
+  "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface  \u2014 use lwc/lwc-light-dom.",
   "file_location": "skills/lwc/lwc-security",
   "id": "lwc/lwc-security",
   "inputs": [

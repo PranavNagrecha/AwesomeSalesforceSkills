@@ -92,9 +92,9 @@
     "fb91b58c983b1406923a",
     "fd2066f85dfc94f9f128"
   ],
-  "content_hash": "b328fa9e7e1f46f217328355eb61f78780b085cf2680407964f75ae0436ec737",
+  "content_hash": "7df2f36382eb7f843c0b7c60a8019babfb4434bf86656b7da4400573c8a2cb07",
   "dependencies": [],
-  "description": "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for catalog configuration \u2014 object creation, WebStoreCatalog wiring, entitlement policies, or product assignment steps are covered by admin/commerce-product-catalog.",
+  "description": "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for wiring the catalog itself \u2014 WebStoreCatalog, entitlement policies, product assignment \u2014 use admin/commerce-product-catalog. NOT for configuring searchable or facetable attributes, sort rules and index rebuilds \u2014 use apex/commerce-search-customization.",
   "file_location": "skills/admin/commerce-catalog-strategy",
   "id": "admin/commerce-catalog-strategy",
   "inputs": [

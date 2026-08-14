@@ -53,9 +53,9 @@
     "f87f2ed928d0d41f0ca5",
     "fdb8e02a6789398f07bb"
   ],
-  "content_hash": "a61000b821abc01ea84c16d74d03d82df9da0a916e1bafd8ffe01025606ea7e0",
+  "content_hash": "d10889d3975932d5ac40011f71a14330a418c233b1f016be34b95028e53dc751",
   "dependencies": [],
-  "description": "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem.",
+  "description": "Choose and implement LWC communication \u2014 @api, events, LMS, @wire between parent, child, sibling, or workspace components. Triggers: 'LWC communication pattern', 'should I use LMS or @api', 'three components need to coordinate'. NOT for the mechanics of a single child-to-parent CustomEvent \u2014 bubbles / composed / cancelable, detail payload, event naming, or an event that is not reaching the parent \u2014 use lwc/lwc-custom-event-patterns. NOT for @wire data provisioning \u2014 use lwc/wire-service-patterns.",
   "file_location": "skills/lwc/component-communication",
   "id": "lwc/component-communication",
   "inputs": [

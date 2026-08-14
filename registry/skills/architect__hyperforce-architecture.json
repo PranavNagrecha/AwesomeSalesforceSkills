@@ -92,7 +92,7 @@
     "fa0da16d7a61cc8adbc2",
     "fe5f6be7a67962ad2006"
   ],
-  "content_hash": "0b7250a1a51437a14665b8e6d0ea25066fc543e9c99446991cfa3f45094abcd7",
+  "content_hash": "64736e70909d723c28018bbeccfdd5d95eb4a850f0fb68e1db65f3b390f99db7",
   "dependencies": [],
   "description": "Use when an architect must plan a Hyperforce migration, choose a Hyperforce region, validate Hyperforce-only feature dependencies, or assess data-residency and IP-allowlisting impact. Triggers: 'hyperforce migration', 'hyperforce region selection', 'first-generation infrastructure to hyperforce', 'hyperforce ip allowlisting', 'data residency on hyperforce', 'hyperforce features not on first gen'. NOT for general HA/DR strategy (use architect/ha-dr-architecture), NOT for Salesforce Functions decommission (use integration/salesforce-functions-replacement), NOT for vertical-specific data residency (use architect/health-cloud-data-residency or architect/government-cloud-compliance).",
   "file_location": "skills/architect/hyperforce-architecture",

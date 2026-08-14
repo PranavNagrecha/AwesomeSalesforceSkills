@@ -1,6 +1,6 @@
 ---
 name: event-relay-configuration
-description: "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling, retry/back-off, IAM, and monitoring. Does NOT cover consuming external events in Salesforce (see pub-sub-api or salesforce-connect)."
+description: "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling. NOT for consuming external events in Salesforce (see pub-sub-api or salesforce-connect) — use integration/aws-salesforce-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

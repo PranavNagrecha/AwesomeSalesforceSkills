@@ -1,6 +1,6 @@
 ---
 name: change-management-and-training
-description: "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment)."
+description: "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion — use admin/change-management-and-deployment. NOT for adoption of an Agentforce or Einstein AI feature — use admin/ai-adoption-change-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

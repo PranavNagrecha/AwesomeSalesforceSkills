@@ -48,9 +48,9 @@
     "fca54fd0b5edeb5abf27",
     "feee6574d21c8b287556"
   ],
-  "content_hash": "1fb4e52976c049df8646f62a17daee5570eafb001e9fbd0d479327d08011d2c1",
+  "content_hash": "8340da6892256853a8675ff58f52ea3271774676aae014f623366eb90f28bf9d",
   "dependencies": [],
-  "description": "Use this skill when designing data stories and narrative-driven analytics experiences in Salesforce: structuring CRM Analytics dashboards for executive communication, using text widgets and conditional highlights for contextual annotation, building sequential narrative in Tableau Story sheets, or using Einstein Discovery narrative REST API endpoints for machine-generated insight text. Trigger keywords: data storytelling dashboard, executive analytics narrative, CRM Analytics text widget annotation, Tableau story sheet, smart data discovery narrative API. NOT for technical chart-type selection, SAQL query construction, recipe node configuration, or CRM Analytics field binding mechanics.",
+  "description": "Designing data stories and narrative-driven analytics in Salesforce: structuring CRM Analytics dashboards for executive communication, text widgets and conditional highlights for annotation, sequential narrative in Tableau Story sheets, and Einstein Discovery narrative REST endpoints. Trigger keywords: data storytelling dashboard, executive analytics narrative, CRM Analytics text widget annotation, Tableau story sheet, smart data discovery narrative API. NOT for building the Einstein Discovery story or prediction definition - use admin/einstein-discovery-setup. NOT for choosing between Reports, CRM Analytics and Tableau - use admin/einstein-analytics-basics.",
   "file_location": "skills/admin/data-storytelling-design",
   "id": "admin/data-storytelling-design",
   "inputs": [

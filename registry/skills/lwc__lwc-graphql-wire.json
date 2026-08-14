@@ -96,9 +96,9 @@
     "fb20ccb4d12b860448c8",
     "fe33ae7ebbf6cfb8068a"
   ],
-  "content_hash": "f7476af0d2aefac4b50f2513f5622d15ccadd994e1f8ccf0e4d822203a6599e7",
+  "content_hash": "143b079abcece31362f2d83bc32c35b93a1d3810d8c557d1efb2a7060ba0b7dc",
   "dependencies": [],
-  "description": "Use when an LWC needs to read related records across multiple sObjects in one request, paginate a related list with cursors, or replace several overlapping `@wire(getRecord)` calls with a single shared-cache query. Covers both `lightning/graphql` (v2 \u2014 the module Salesforce now recommends, with optional fields, dynamic queries, and create/update/delete via `executeMutation`) and legacy `lightning/uiGraphQLApi` (v1, kept for Mobile Offline). Triggers: 'read account and related contacts in one request', 'migrate uiGraphQLApi to lightning/graphql', 'graphql mutation from lwc without apex', 'paginate a graphql wire', 'graphql wire not refreshing after mutation', 'mark a graphql field optional so it survives FLS', 'too many @wire calls for related records', 'what fields does ui api graphql support'. NOT for single-record reads where `getRecord` from `lightning/uiRecordApi` already fits.",
+  "description": "Use when an LWC needs to read related records across multiple sObjects in one request, paginate a related list with cursors, or replace several overlapping `@wire(getRecord)` calls with a single shared-cache query. Covers both. NOT for single-record reads where `getRecord` from `lightning/uiRecordApi` already fits \u2014 use lwc/wire-service-patterns.",
   "file_location": "skills/lwc/lwc-graphql-wire",
   "id": "lwc/lwc-graphql-wire",
   "inputs": [

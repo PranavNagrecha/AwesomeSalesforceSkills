@@ -89,9 +89,9 @@
     "fec95320c84ae11cbbc2",
     "ff833f80bba450e3f912"
   ],
-  "content_hash": "7936f4baa64f6b8bd74efb3ad9141ff93ee37e1af04ebf1a160290574c33e4a3",
+  "content_hash": "575144d11d1b4ae6d1d9f563a0d7a939dbdfa6dbaf8cbb19cc1612019dd7dbb8",
   "dependencies": [],
-  "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP.",
+  "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for NPSP object and field reference \u2014 use data/npsp-data-model. NOT for payment gateways \u2014 use architect/fundraising-integration-patterns.",
   "file_location": "skills/admin/recurring-donations-setup",
   "id": "admin/recurring-donations-setup",
   "inputs": [

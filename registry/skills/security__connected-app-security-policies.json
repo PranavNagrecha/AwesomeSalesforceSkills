@@ -1,6 +1,7 @@
 {
   "category": "security",
   "chunk_ids": [
+    "02053c255d0749b273ac",
     "0a43570e376699609da0",
     "0edea41fa9578bf186e2",
     "13e09c4d00b6a62730e2",
@@ -9,7 +10,9 @@
     "1d1ba0d61e248f0fc60f",
     "213a6e1fb1f83cebd821",
     "33860e947df654978c15",
+    "33f9faab907143b0fabc",
     "358574ce1d8af89b42d3",
+    "39e483eb9d733623c48b",
     "3b884e012fa9d0a3cd59",
     "3c548cc2af71a9643649",
     "3e87aeb6c5ab859cc690",
@@ -17,7 +20,9 @@
     "415a47effd1b54519e48",
     "43fba5c4726195a95aa1",
     "4a072ad0f830f90200a9",
+    "4db32ddf45122f3b71f6",
     "4faea8b336853718a17a",
+    "51047eae9b9d340aa549",
     "54c3646e414275fffae9",
     "5d36652ae6537c83c558",
     "5eab9076d4daceed76e2",
@@ -28,7 +33,7 @@
     "6f709f3cd901b7ced8c6",
     "7040f6131860370bbfb6",
     "797def7861039d64b059",
-    "7ea11e59ec244fdc69b0",
+    "802023fda073f0cd6f5e",
     "83340c833b69befeca0b",
     "843103f7b8b6c9b11732",
     "867098d17106a9afbb7f",
@@ -36,7 +41,6 @@
     "913435f9b255f4de0e7f",
     "9174db3cad8d160c1527",
     "91ae4cc89166b1b4e7a6",
-    "957dd4b021d8b6c7a9df",
     "9911bab73ba8a24877d8",
     "9df68912208cc5eb22da",
     "9e285a56da1197f679b8",
@@ -74,9 +78,9 @@
     "fa68fdfc1f1a9f39a795",
     "fb6da3883dc478bc23ca"
   ],
-  "content_hash": "09579247fd2901e39da361c01a687607876c002a534f70b881b1ef8c867a7182",
+  "content_hash": "fbe5171bcf1b6a4b57e32c6c1e6af715597515f7e2f72acff302d271985f2de6",
   "dependencies": [],
-  "description": "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation. NOT for OAuth flow implementation (use oauth-flows-and-connected-apps).",
+  "description": "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation \u2014 use admin/connected-app-troubleshooting.",
   "file_location": "skills/security/connected-app-security-policies",
   "id": "security/connected-app-security-policies",
   "inputs": [
@@ -95,7 +99,8 @@
     "Salesforce Metadata API Developer Guide: ConnectedApp \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_connectedapp.htm",
     "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5",
     "Salesforce Well-Architected: Security \u2014 https://architect.salesforce.com/well-architected/secure/overview",
-    "Salesforce Help \u2014 OAuth 2.0 JWT Bearer Flow for Server-to-Server Integration (required claims iss/sub/aud/exp; \"Salesforce allows a 3-minute buffer for clock skew\") \u2014 https://help.salesforce.com/apex/HTViewHelpDoc?id=remoteaccess_oauth_jwt_flow.htm"
+    "Salesforce Help \u2014 OAuth 2.0 JWT Bearer Flow for Server-to-Server Integration (required claims iss/sub/aud/exp; \"Salesforce allows a 3-minute buffer for clock skew\") \u2014 https://help.salesforce.com/apex/HTViewHelpDoc?id=remoteaccess_oauth_jwt_flow.htm",
+    "Salesforce Help \u2014 Default Salesforce CLI OAuth 2.0 Device Flow Removal (confirms the August 28, 2025 block on new *and existing* Device Flow authorizations, that the \"Enable for Device Flow\" option in API (Enable OAuth Settings) is permanently disabled so no custom Connected App can carry the flow, and that `sf org login web` / `sf org login jwt` are the supported replacements) \u2014 https://help.salesforce.com/s/articleView?id=005135030&language=en_US&type=1 (verified 2026-08-13)"
   ],
   "outputs": [
     "Configured OAuth access policies",

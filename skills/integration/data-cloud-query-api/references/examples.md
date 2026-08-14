@@ -45,6 +45,8 @@ def query_all_individuals(dc_token, dc_base):
 
 **Why it works:** Token exchange at `/services/a360/token` returns a Data Cloud-scoped token and `dcInstanceUrl`. The pagination loop follows `nextBatchId` until no further pages remain, capturing the complete result set.
 
+**If this were built today:** target `POST /api/v3/query` instead. The token exchange is identical, but the retrieval loop is not — V3 returns a `queryId` rather than rows, so you poll `GET /api/v3/query/{queryId}` for status and then read `GET /api/v3/query/{queryId}/chunks/{chunkId}`. The `nextBatchId` loop above has no V3 equivalent and the 3-minute inter-batch deadline it guards against does not apply. The V2 code shown here still runs — no V1/V2 retirement date is published — so migrate this pipeline when it needs V3's cancel/metadata endpoints or its SQLSTATE error model, not on principle.
+
 ---
 
 ## Example 2: Query a Published Calculated Insight

@@ -63,9 +63,9 @@
     "e81e5623895a6c8dfc06",
     "ee9b92601188ba3f0f4e"
   ],
-  "content_hash": "ba6cd45c2612edbc8ce2b274390c20aa8baea060bdff105f750ed96994c173d1",
+  "content_hash": "f177594a8452aa4cc4213c897ff1ee6d3c35270f7f065c15f79e8619815a21a8",
   "dependencies": [],
-  "description": "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration.",
+  "description": "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration \u2014 use security/csp-and-trusted-urls.",
   "file_location": "skills/security/clickjack-and-frame-protection",
   "id": "security/clickjack-and-frame-protection",
   "inputs": [

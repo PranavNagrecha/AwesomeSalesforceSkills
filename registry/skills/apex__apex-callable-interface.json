@@ -70,9 +70,9 @@
     "f8b647bc3a0df428f23d",
     "fcfc91efcb529672280c"
   ],
-  "content_hash": "2053595cdabe6813274508363b1d9f1d848694c868f37bbe03f3cedb2b952166",
+  "content_hash": "a6261fbf253fc19b79794bb70cc3afe7ce134eec15e59c54e71a93941ab64ec6",
   "dependencies": [],
-  "description": "Use when building Apex classes meant to be invoked dynamically \u2014 from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for: Invocable methods exposed to Flow (see apex-invocable-methods) or REST endpoints (see apex-rest-services).",
+  "description": "Use when building Apex classes meant to be invoked dynamically \u2014 from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for an @InvocableMethod action exposed to Flow \u2014 use apex/invocable-methods. NOT for exposing the class as a REST endpoint \u2014 use apex/apex-rest-services.",
   "file_location": "skills/apex/apex-callable-interface",
   "id": "apex/apex-callable-interface",
   "inputs": [

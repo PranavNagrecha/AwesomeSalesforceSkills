@@ -34,7 +34,7 @@ outputs:
   - Validation checklist confirming rollup behavior in sandbox
 dependencies:
   - admin/financial-account-setup
-  - admin/person-accounts
+  - data/person-accounts
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-07
@@ -195,5 +195,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `admin/financial-account-setup` — configure Financial Account records and roles that roll up to households; this skill handles the household container, that skill handles what goes inside it
 - `admin/npsp-household-accounts` — NPSP-specific household model; architecturally incompatible with FSC; use only when FSC is not installed
-- `admin/person-accounts` — enable and configure Person Accounts, which are required for FSC household membership
+- `data/person-accounts` — enable and configure Person Accounts, which are required for FSC household membership
 - `admin/fsc-data-model` — broader FSC data model overview including Groups, Relationships, and the full object graph

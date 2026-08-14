@@ -1,0 +1,109 @@
+[
+ {
+  "label": "stub-1",
+  "kind": "placeholders",
+  "skills": [
+   "admin/configuration-workbook-authoring",
+   "admin/consumer-goods-cloud-setup",
+   "admin/education-cloud-eda-setup",
+   "admin/field-dependency-and-controlling",
+   "admin/flow-orchestration-admin",
+   "admin/industries-public-sector-setup",
+   "admin/lookup-and-relationship-design",
+   "admin/media-cloud-setup",
+   "admin/rebate-management-setup"
+  ]
+ },
+ {
+  "label": "stub-2",
+  "kind": "placeholders",
+  "skills": [
+   "admin/record-type-id-management",
+   "admin/revenue-intelligence-setup",
+   "admin/scheduled-path-patterns",
+   "admin/usage-based-pricing-setup",
+   "apex/apex-class-decomposition-pattern",
+   "apex/apex-custom-permissions-check",
+   "apex/apex-http-callout-mocking",
+   "apex/apex-polymorphic-soql",
+   "apex/apex-secrets-and-protected-cmdt"
+  ]
+ },
+ {
+  "label": "stub-3",
+  "kind": "placeholders",
+  "skills": [
+   "apex/apex-system-runas",
+   "apex/apex-trigger-bypass-and-killswitch-patterns",
+   "architect/cloud-specific-deployment-architecture",
+   "architect/composable-commerce-architecture",
+   "architect/cross-cloud-data-deployment",
+   "architect/deployment-automation-architecture",
+   "architect/nonprofit-cloud-vs-npsp-migration",
+   "architect/salesforce-erd-and-diagramming",
+   "architect/tenant-isolation-patterns"
+  ]
+ },
+ {
+  "label": "stub-4",
+  "kind": "placeholders",
+  "skills": [
+   "data/eda-data-model-and-patterns",
+   "devops/salesforce-code-analyzer",
+   "integration/composite-api-patterns",
+   "integration/salesforce-functions-replacement",
+   "integration/tableau-salesforce-connector",
+   "lwc/lwc-chart-and-visualization",
+   "lwc/lwc-drag-and-drop",
+   "lwc/lwc-web-components-interop",
+   "omnistudio/integration-procedures"
+  ]
+ },
+ {
+  "label": "wf-1",
+  "kind": "workflow",
+  "skills": [
+   "admin/analytics-requirements-gathering",
+   "admin/email-service-inbound",
+   "admin/integration-user-management",
+   "admin/mass-transfer-ownership",
+   "agentforce/agentforce-tool-use-patterns",
+   "apex/apex-wsdl2apex-patterns",
+   "apex/tooling-api-patterns",
+   "architect/hyperforce-architecture",
+   "architect/loyalty-program-architecture",
+   "data/data-loader-batch-window-sizing"
+  ]
+ },
+ {
+  "label": "wf-2",
+  "kind": "workflow",
+  "skills": [
+   "data/omnistudio-datapack-migration",
+   "data/product-catalog-migration-commerce",
+   "devops/flow-deployment-activation-ordering",
+   "devops/postman-for-salesforce",
+   "devops/sf-cli-plugin-authoring",
+   "flow/flow-action-framework",
+   "flow/flow-error-monitoring",
+   "flow/flow-invocable-from-apex",
+   "flow/flow-runtime-context-and-sharing",
+   "flow/flow-runtime-error-diagnosis"
+  ]
+ },
+ {
+  "label": "wf-3",
+  "kind": "workflow",
+  "skills": [
+   "flow/flow-screen-input-validation-patterns",
+   "flow/workflow-rule-to-flow-migration",
+   "integration/automotive-cloud-setup",
+   "integration/data-cloud-zero-copy-federation",
+   "integration/loyalty-management-setup",
+   "integration/manufacturing-cloud-setup",
+   "integration/net-zero-cloud-setup",
+   "integration/revenue-lifecycle-management",
+   "integration/salesforce-maps-setup"
+  ]
+ }
+]

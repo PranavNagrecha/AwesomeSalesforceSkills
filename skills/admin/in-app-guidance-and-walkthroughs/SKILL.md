@@ -1,6 +1,6 @@
 ---
 name: in-app-guidance-and-walkthroughs
-description: "Configuring Salesforce In-App Guidance: floating, docked, and targeted prompts, multi-step walkthroughs, audience targeting, scheduling, and adoption analytics. Use when designing user onboarding or feature adoption programs in Lightning Experience. NOT for change management planning (use change-management-and-training). NOT for Experience Cloud (requires separate PRM licensing and does not share the Lightning Experience guidance engine)."
+description: "Configuring Salesforce In-App Guidance: floating, docked, and targeted prompts, multi-step walkthroughs, audience targeting, scheduling, and adoption analytics. Use when designing user onboarding or feature adoption programs in Lightning Experience. NOT for guidance on a record's Path — use admin/path-and-guidance. NOT for adoption and training — use admin/change-management-and-training."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

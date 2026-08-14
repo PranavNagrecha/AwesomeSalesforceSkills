@@ -1,6 +1,6 @@
 ---
 name: lwc-wire-refresh-patterns
-description: "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for wire basics (use lwc-wire-service). NOT for Lightning Data Service writes (use lwc-lds-writes)."
+description: "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for @wire basics and reactive params — use lwc/wire-service-patterns. NOT for LDS create/update/delete — use lwc/lwc-lds-writes."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

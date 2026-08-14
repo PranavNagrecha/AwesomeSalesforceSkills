@@ -48,9 +48,9 @@
     "f04891c2c4ab431d400b",
     "ff4e2d3da278d1892af8"
   ],
-  "content_hash": "c8ebe4e3409f3be44d4e473ac77f0e1f05b2114904030d828dbaa05b222dfe60",
+  "content_hash": "1dfbc239b444512780c92a86fe8ebdbeba698855da474e9ddd1983b2942e6917",
   "dependencies": [],
-  "description": "Use when grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. Does NOT cover Data Cloud ingestion pipelines or Data Cloud identity resolution tuning.",
+  "description": "Grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. NOT for building or tuning the vector index itself \u2014 chunk size, embedding model, Query API \u2014 use agentforce/data-cloud-vector-search-dev. NOT for the end-to-end Knowledge-article RAG build \u2014 use agentforce/rag-patterns-in-salesforce. NOT for Data Cloud ingestion pipelines \u2014 use data/data-cloud-data-streams. NOT for identity resolution ruleset tuning \u2014 use admin/data-cloud-identity-resolution.",
   "file_location": "skills/agentforce/data-cloud-grounding-for-agentforce",
   "id": "agentforce/data-cloud-grounding-for-agentforce",
   "inputs": [

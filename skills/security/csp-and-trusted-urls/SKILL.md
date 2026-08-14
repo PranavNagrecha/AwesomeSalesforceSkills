@@ -1,6 +1,6 @@
 ---
 name: csp-and-trusted-urls
-description: "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration."
+description: "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration — use lwc/static-resources-in-lwc."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

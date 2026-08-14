@@ -1,6 +1,6 @@
 ---
 name: industries-process-design
-description: "Use when designing or customizing industry-specific guided processes in Salesforce Industries clouds: insurance claims lifecycle (FNOL through closure), telecom order management decomposition, and utility service request workflows. Trigger keywords: FNOL process design, claims OmniScript customization, Industries order decomposition workflow, utility service order design, insurance claim lifecycle stages, telecom commercial-to-technical order flow. NOT for generic Screen Flow process design, standard Service Cloud Case workflows, OmniStudio runtime setup, EPC service catalog configuration, or initial cloud org activation."
+description: "Use when designing or customizing industry-specific guided processes in Salesforce Industries clouds: insurance claims lifecycle (FNOL through closure), telecom order management decomposition, and utility service request workflows. Trigger keywords: FNOL process design, claims OmniScript customization, Industries order decomposition workflow, utility service order design, insurance claim lifecycle stages, telecom commercial-to-technical order flow. NOT for the Industries object model — use architect/industries-data-model. NOT for Insurance Cloud licensing and policy architecture — use architect/insurance-cloud-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -235,4 +235,4 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/industries-communications-setup` — configure Communications Cloud, EPC service catalog, and decomposition rule infrastructure before designing order processes
 - `admin/industries-energy-utilities-setup` — configure E&U Cloud license, service points, and CIS integration before designing service order workflows
 - `admin/omniscript-flow-design-requirements` — use to produce structured requirements artifacts for any OmniScript-based industry process stage before development begins
-- `admin/omnistudio-vs-standard-decision` — use to confirm whether OmniScript is the correct runtime tool for a given industry process before committing to design
+- `architect/omnistudio-vs-standard-decision` — use to confirm whether OmniScript is the correct runtime tool for a given industry process before committing to design

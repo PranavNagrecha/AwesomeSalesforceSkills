@@ -1,6 +1,6 @@
 ---
 name: file-upload-virus-scanning
-description: "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) — external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan content version', 'quarantine uploaded file', 'clamav salesforce', 'file upload security'. NOT for field-level data validation."
+description: "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) — external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan. NOT for field-level data validation — use integration/file-and-document-integration."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

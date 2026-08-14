@@ -1,6 +1,6 @@
 ---
 name: ssjs-server-side-javascript
-description: "Use this skill when writing, debugging, or reviewing Server-Side JavaScript (SSJS) in Salesforce Marketing Cloud — Script Activities, Cloud Pages, and Landing Pages. Covers WSProxy for SOAP API access, Script.Util.HttpRequest for outbound REST calls, error handling patterns, execution limits, and SSJS/AMPscript interoperability. NOT for AMPscript-only personalization logic inside Email Studio sends, not for standard Apex (Salesforce Platform), and not for client-side JavaScript in Experience Cloud or LWC."
+description: "Use this skill when writing, debugging, or reviewing Server-Side JavaScript (SSJS) in Salesforce Marketing Cloud — Script Activities, Cloud Pages, and Landing Pages. Covers WSProxy for SOAP API access, Script.Util.HttpRequest for outbound REST calls, error handling patterns, execution limits, and SSJS/AMPscript interoperability. NOT for standard Apex on the Salesforce Platform, and not for client-side JavaScript in Experience Cloud or LWC. NOT for AMPscript-only personalization logic inside Email Studio sends — use apex/ampscript-development. NOT for calling the Marketing Cloud REST/SOAP API from Salesforce — use apex/marketing-cloud-api."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

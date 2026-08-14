@@ -16,13 +16,10 @@ clutters the org.
 **Solution:**
 
 ```bash
-# One-time: install the plugin
-sf plugins install @salesforce/plugin-lightning-dev
+# Plugin is auto-installed with Salesforce CLI (`sf update` if missing)
 
 # Preview a single component in isolation against a sandbox
 sf lightning dev component --target-org mySandbox --name accountTile
-# or pick the component in the browser:
-sf lightning dev component -o mySandbox -c
 ```
 
 First run prompts you to enable the feature — press Enter or type `y`. Then edit the bundle:

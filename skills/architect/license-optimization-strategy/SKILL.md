@@ -1,6 +1,6 @@
 ---
 name: license-optimization-strategy
-description: "Auditing, right-sizing, and reclaiming Salesforce licenses to reduce cost and ensure compliant allocation. Trigger keywords: license audit, license cost reduction, unused licenses, permission set license, login-based license, inactive users, license reclamation, right-size licenses. NOT for provisioning net-new licenses (contact AE). NOT for Experience Cloud community license troubleshooting. NOT for permission set assignment logic outside of license gating."
+description: "Auditing, right-sizing, and reclaiming Salesforce licenses to reduce cost and ensure compliant allocation. Trigger keywords: license audit, license cost reduction, unused licenses, permission set license, login-based license, inactive users, license reclamation, right-size licenses. NOT for whether a feature needs an edition upgrade or add-on license — use architect/org-edition-and-feature-licensing. NOT for choosing an Experience Cloud external user license type — use architect/experience-cloud-licensing-model."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -76,6 +76,7 @@ PSLs are add-on license entitlements that gate specific Salesforce features rega
 - A PSL assignment does not grant a base license. Both the base user license and the PSL must be assigned for the feature to be accessible.
 - PSL seats are purchased and consumed independently. The number of PSL seats assigned cannot exceed the number purchased; attempting to assign beyond the limit throws an error.
 - Unused PSL assignments do not automatically expire. PSLs should be reviewed at the same frequency as base licenses because they represent real additional cost at renewal.
+- **Winter '26 auto-unassign:** Unassigning a permission set or permission set group now **automatically removes related PSL assignments** that were tied to that assignment — manual PSL cleanup is no longer required in the default path. **Exceptions** (PSL stays): changes via user access policies, the user still holds the PSL through another permission set, or other documented edge cases in the Winter '26 Permissions and Sharing release note.
 - Some PSLs are bundled with certain editions (e.g., certain Einstein PSLs with Unlimited Edition) — confirm bundling before purchasing additional PSL seats.
 
 ### Login-Based Licensing

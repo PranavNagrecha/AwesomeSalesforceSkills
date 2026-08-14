@@ -78,3 +78,13 @@ One or more required fields on the target object are not mapped.
 **When it occurs:** During org cleanup ("nobody uses this trending object"), when freeing headroom against the 5,000,000-row-per-object trending limit, or when swapping one tracked field for another to stay inside the 8-field cap. It also bites teams who toggle trending in a sandbox refresh rehearsal and assume production behaves reversibly.
 
 **How to avoid:** Treat the Historical Trending checkbox as an irreversible change with change-control approval, not a Setup toggle. Before disabling, export what is needed from the trending reports and inventory every report built on the object's historical trending report type — those reports are deleted with it, not orphaned. Because re-enabling only starts fresh collection, "we can just turn it back on" is never a valid rollback plan.
+
+---
+
+## Gotcha 8: Historical-Trending Report Types With Zero Reporting Snapshots Hold No History
+
+**What happens:** Custom report types exist for Historical Trending on Opportunity (or a custom object). There are **zero** Reporting Snapshot jobs (`CronTrigger` JobType 4) and HTR was never enabled, or was enabled yesterday. Reports run and return empty or "current only." Stakeholders conclude Salesforce cannot trend.
+
+**When it occurs:** Reporting-heavy orgs that copied CRT XML from another org, or turned on the report type without the capture mechanism.
+
+**How to avoid:** Inventory capability vs capture. A trending report type is a **schema**, not a history store. Confirm HTR is enabled on the object **and** has been on long enough for the window you need, **or** that Reporting Snapshots are scheduled and succeeding. Do not promise history from a CRT name.

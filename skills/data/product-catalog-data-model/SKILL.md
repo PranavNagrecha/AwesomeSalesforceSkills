@@ -1,6 +1,6 @@
 ---
 name: product-catalog-data-model
-description: "Use when modeling, loading, or troubleshooting Salesforce product and pricebook data — covering the Product2 → Pricebook2 → PricebookEntry three-object chain, standard pricebook constraints, bulk load sequencing (Product2 → Standard PBE → custom Pricebook2 → custom PBE), UseStandardPrice inheritance, and product hierarchy strategies. NOT for Salesforce CPQ product and pricing model (use cpq-vs-standard-products-decision). NOT for Industries CPQ catalog-item model (use industries-cpq-vs-salesforce-cpq). NOT for Opportunity Line Item mechanics."
+description: "Use when modeling, loading, or troubleshooting Salesforce product and pricebook data — covering the Product2 → Pricebook2 → PricebookEntry three-object chain, standard pricebook constraints, bulk load sequencing (Product2 → Standard PBE → custom Pricebook2 → custom PBE), UseStandardPrice inheritance, and product hierarchy strategies. NOT for adding products in Setup — use admin/products-and-pricebooks. NOT for SBQQ CPQ catalogs — use data/product-catalog-migration-cpq."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

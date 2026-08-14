@@ -1,6 +1,6 @@
 ---
 name: mulesoft-salesforce-connector
-description: "Designing and configuring MuleSoft Anypoint Salesforce Connector flows: API selection (SOAP/REST/Bulk/Streaming), OAuth 2.0 JWT Bearer auth, watermark-based incremental sync with Object Store, batch processing with record-level error isolation, and replay topic subscriptions. Use when building Mule 4 flows that read from or write to Salesforce, migrating from Mule 3 watermark to Mule 4 Object Store, or troubleshooting connector authentication and API limits. NOT for native Salesforce-to-Salesforce integration without MuleSoft (use platform-events-integration or change-data-capture-integration). NOT for generic REST callout patterns from Apex (use rest-api-patterns)."
+description: "Designing and configuring MuleSoft Anypoint Salesforce Connector flows: API selection (SOAP/REST/Bulk/Streaming), OAuth 2.0 JWT Bearer auth, watermark-based incremental sync with Object Store, batch processing with record-level error isolation. NOT for native Salesforce-to-Salesforce integration without MuleSoft — use integration/platform-events-integration or integration/change-data-capture-integration. NOT for generic REST callouts from Apex — use integration/rest-api-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -69,3 +69,43 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** DataPack export or migration of any IP containing a Decision Matrix Action — the action configured with "Input Parameters: Data Source" (the IP data JSON node holding the value), "Input Parameters: Filter Value" (the matching Decision Matrix input parameter), and "Decision Matrix Name" (shown as "Matrix Name" in the managed package designer).
 
 **How to avoid:** Do not spend a deployment cycle re-importing or reactivating the matrix in response to this message. Treat the export as successful and verify resolution at runtime instead: set a Default Matrix Result on the action so a null return surfaces as a known value, and use the `executionDateTime` Remote Option to pin the matrix Effective Date when testing dated rate tables. If the action returns the default at runtime, the matrix genuinely is not resolving — that, not the export message, is the real signal.
+
+---
+
+## Gotcha 8: Nested IPs Do Not Inherit the Parent's Timeout or CPU Budget
+
+**What happens:** A parent IP with `chainOnStep: true` calls 3–4 child IPs that each HTTP-call. Depth may be one, fan-out is wide. `chainableActualTimeLimit` is often null. The continuation dies at ~120s **after** a downstream already accepted. The client retries; the side effect duplicates.
+
+**When it occurs:** Dashboard "load everything" parents; notice/document/user-detail fan-out.
+
+**How to avoid:** One orchestrating IP with DataRaptor/HTTP steps, or fire independent children without nesting. Cap chainable time. Make the HTTP step the last mutating step or persist an idempotency key **before** the callout. Nested IPs also skip child Required Permission — see `omnistudio-security` §6.
+
+---
+
+## Gotcha 9: Nine IP Actions on One OmniScript Step Are Nine Round Trips
+
+**What happens:** An OmniScript mixes Remote Actions and 6–9 Integration Procedure Actions on one step. Each is a separate Aura invoke. Nested IPs behind those actions add another hop. p99 is package runtime (`IPService.ProcedureQ`, `GenericInvoke2NoCont`, `logUsageEvents`), not custom Apex.
+
+**When it occurs:** Staff-connect / search scripts grown one action at a time.
+
+**How to avoid:** One IP per user intent. The OmniScript is UI. Profile Omni entry points; SLA averages can pass while the tail spikes.
+
+---
+
+## Gotcha 10: Fetch-Once / Store / Read-Many Creates Stale Session JSON
+
+**What happens:** One callout IP Loads JSON into a temporary transaction object; FlexCards and child IPs Transform/Extract from it. Callout storms stop. Mid-session freshness and purge-vs-retention of that JSON become the new bugs.
+
+**When it occurs:** Portal dashboards with many tiles; nightly API sync into Omni.
+
+**How to avoid:** Document the freshness contract. Purge/mask PII in the temp store on the same schedule as intake. Do not re-call per tile without intent — and do not skip purge because "it's just cache."
+
+---
+
+## Gotcha 11: Client / Staff Twin IPs Drift
+
+**What happens:** Nearly every guest IP has an internal-user twin. A fix lands on one. Versions and `restPath` diverge.
+
+**When it occurs:** "We can't share an IP across guest and staff."
+
+**How to avoid:** Parameterize persona in **one** IP when the security boundary allows (different Required Permission / sharing). If twins are mandatory, a promote checklist must diff both uniqueNames.

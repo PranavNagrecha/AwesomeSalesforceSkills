@@ -13,8 +13,10 @@ pick the command for your surface, and keep the reload cheat sheet in view.
 ## 0. One-time setup
 
 ```bash
-# Install / update the Live Preview plugin
-sf plugins install @salesforce/plugin-lightning-dev
+# Live Preview plugin is auto-installed with Salesforce CLI. Update if commands are missing:
+sf update
+# Do not treat this as a required first step:
+# sf plugins install @salesforce/plugin-lightning-dev
 
 # Confirm you have a project and an authenticated org
 sf project deploy start --dry-run -o <org>   # sanity check the project + auth
@@ -29,8 +31,7 @@ the CLI prompts to enable the feature — press Enter or type `y`.
 ```bash
 # Single component in isolation (fastest inner loop; gets LDS/Apex data)
 sf lightning dev component -o <org> -n <componentName>
-# ...or choose the component in the browser:
-sf lightning dev component -o <org> -c
+# Switch components from the Project Components sidebar on the preview page.
 
 # Full Lightning app (app-level navigation + cross-component context)
 sf lightning dev app -o <org> -n <AppName>
@@ -64,8 +65,7 @@ sf lightning dev site -o <org> -n <SiteName>
 - [ ] Org is a **sandbox or scratch** org, not production.
 - [ ] Not trying to preview an **Aura** component (LWC-only).
 - [ ] Mobile SDK (Xcode / Android Studio) installed if using `--device-type`.
-- [ ] Maturity noted where relevant: single-component preview was Beta in Winter '26, GA
-      ("Single Component Live Preview") the week of April 13, 2026; VS Code React preview is Beta.
+- [ ] Not inventing a GA/Beta label for single-component preview the current LWC Developer Guide does not give.
 
 ## 4. Exit the inner loop
 

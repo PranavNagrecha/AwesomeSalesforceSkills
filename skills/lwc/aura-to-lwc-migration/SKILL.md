@@ -1,6 +1,6 @@
 ---
 name: aura-to-lwc-migration
-description: "Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, and Aura-LWC coexistence strategies. NOT for new LWC development from scratch or Aura feature development."
+description: "Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, and Aura-LWC coexistence strategies. NOT for new LWC development from scratch or Aura feature development — use lwc/experience-cloud-lwc-components."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

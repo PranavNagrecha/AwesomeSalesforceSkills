@@ -1,6 +1,6 @@
 ---
 name: escalation-rules
-description: "Configure and troubleshoot Salesforce Case Escalation Rules: setting up time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for case assignment on creation (use assignment-rules), approval routing (use approval-processes), or SLA milestones in Service Cloud (use entitlement-management)."
+description: "Configure and troubleshoot Salesforce Case Escalation Rules: time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for SLA milestone timers — use admin/entitlements-and-milestones. NOT for case routing on creation — use admin/assignment-rules."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

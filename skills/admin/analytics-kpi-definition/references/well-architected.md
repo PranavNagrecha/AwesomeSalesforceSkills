@@ -31,4 +31,4 @@
 ## Cross-Skill References
 
 - `admin/analytics-requirements-gathering` — upstream requirements skill that should complete before KPI definition
-- `data/saql-query-development` — downstream implementation skill using formulas from KPI register
+- `admin/saql-query-development` — downstream implementation skill using formulas from KPI register

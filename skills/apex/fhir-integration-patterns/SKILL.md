@@ -1,6 +1,6 @@
 ---
 name: fhir-integration-patterns
-description: "Use this skill when implementing FHIR R4 integration patterns for Health Cloud: FHIR resource mapping to Salesforce objects, REST API patterns for inbound/outbound FHIR, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for generic REST API integration, standard Salesforce API patterns unrelated to FHIR, or Health Cloud admin setup."
+description: "Use this skill when implementing FHIR R4 integration for Health Cloud in code: inbound and outbound FHIR REST API patterns, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for mapping a FHIR resource to Health Cloud objects field by field — use data/fhir-data-mapping. NOT for choosing the EHR sync topology or MuleSoft Accelerator design — use architect/fhir-integration-architecture."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

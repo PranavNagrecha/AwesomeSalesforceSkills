@@ -1,6 +1,6 @@
 ---
 name: omnistudio-error-handling-patterns
-description: "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards — error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault', 'dataraptor error handling', 'omniscript retry', 'flexcard action failure'. NOT for general Apex exception design or Flow fault paths."
+description: "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards — error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault'. NOT for general Apex exception design or Flow fault paths — use data/omnistudio-metadata-management."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "dataraptor returns empty when source has errors"
   - "flexcard action failed but UI stayed happy"
   - "retry semantics across omnistudio callouts"
+  - "integration procedure try catch failOnBlockError"
+  - "omnicomponenterrorlog vs custom log"
 tags:
   - omnistudio
   - error-handling
@@ -31,7 +33,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # OmniStudio Error Handling Patterns

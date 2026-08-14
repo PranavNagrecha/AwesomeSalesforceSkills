@@ -1,6 +1,6 @@
 ---
 name: metadata-api-and-package-xml
-description: "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for SFDX source-format details or sf CLI command syntax (use sf-cli-and-sfdx-essentials), and NOT for CI/CD pipeline automation (use devops skills)."
+description: "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for scripting retrieve/deploy in a CI pipeline — use devops/metadata-api-retrieve-deploy. NOT for sf CLI command syntax or DX source format — use apex/sf-cli-and-sfdx-essentials."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

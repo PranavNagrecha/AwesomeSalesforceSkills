@@ -1,6 +1,6 @@
 ---
 name: analytics-data-manager
-description: "Use this skill when configuring Data Manager in CRM Analytics: enabling objects for sync, scheduling data sync runs, setting up remote connections to external databases, monitoring sync status and error logs, or troubleshooting connected object issues. Trigger keywords: data sync, connected objects, Data Manager, sync schedule, remote connection, Snowflake connector, sync error, incremental sync, CRM Analytics data pipeline. NOT for dataflow or recipe authoring, dataset row-level security, or dashboard/lens design — those belong to the analytics-dataset-management or analytics-dashboard-design skills."
+description: "Use this skill when configuring Data Manager in CRM Analytics: enabling objects for sync, scheduling data sync runs, setting up remote connections to external databases, monitoring sync status and error logs, or troubleshooting connected object issues. Trigger keywords: data sync, connected objects, Data Manager, sync schedule, remote connection, Snowflake connector, sync error, incremental sync, CRM Analytics data pipeline. NOT for pushing external data in programmatically via the External Data API — use data/analytics-external-data. NOT for authoring dataflow nodes — use admin/analytics-dataflow-development."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

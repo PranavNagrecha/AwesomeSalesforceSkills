@@ -1,6 +1,6 @@
 ---
 name: feature-flags-and-kill-switches
-description: "Use when implementing runtime feature toggles, emergency kill switches, or gradual rollout controls in Apex using Custom Metadata Types, Custom Permissions, or Hierarchical Custom Settings. NOT for Custom Metadata Type fundamentals — see custom-metadata-types skill for CMDT basics."
+description: "Use when implementing runtime feature toggles, emergency kill switches, or gradual rollout controls in Apex using Custom Metadata Types, Custom Permissions, or Hierarchical Custom Settings. NOT for disabling a trigger during a data load — use apex/apex-trigger-bypass-and-killswitch-patterns. NOT for CMDT basics — use admin/custom-metadata-types."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

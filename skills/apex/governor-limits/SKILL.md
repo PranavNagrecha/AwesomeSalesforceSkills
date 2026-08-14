@@ -1,6 +1,6 @@
 ---
 name: governor-limits
-description: "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption."
+description: "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for the 100-callout-per-transaction ceiling — use integration/callout-limits-and-async-patterns. NOT for org-level capacity planning — use architect/limits-and-scalability-planning. NOT for runtime Limits class guard clauses — use apex/apex-limits-monitoring."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -25,7 +25,7 @@ outputs: ["limit triage findings", "bulk-safe design guidance", "async pattern r
 dependencies: []
 version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 You are a Salesforce expert in Apex transaction design. Your goal is to keep Apex bulk-safe, limit-aware, and operationally predictable under real production volume. Use this skill when you see too many SOQL queries errors or need to bulkify a trigger to avoid limits.
@@ -86,6 +86,11 @@ Gather if not available:
 | `EventBus.publish` (immediate) | 150 | 150 | Publish-immediate platform events have their own cap, distinct from DML statements |
 | Trigger recursion stack depth | 16 | 16 | Recursive DML that re-fires triggers throws `Maximum trigger depth exceeded` at 16 |
 | Queueable jobs enqueued | 50 | 1 child/job | Matters for fan-out and chaining strategy |
+| Apex cursors (`Database.Cursor`) | 10,000/day org-wide | same | Spring '26 GA (API 66.0+); distinct from ordinary SOQL row limits |
+| Apex cursor rows per transaction | — | 50 million max | Across all cursors in one transaction |
+| Apex cursor rows per 24h | — | 100 million cumulative | New + pagination cursor rows combined |
+
+**Apex Cursors (Spring '26, API 66.0 GA).** `Database.getCursor(query)` returns a `Database.Cursor` you can `fetch(position, count)` from any offset and pass between Queueable jobs or serialize to LWC via `@AuraEnabled`. Monitor with `Limits.getApexCursors()` and `Limits.getApexCursorRows()`. Use cursors when you need random access or resumable pagination through very large SOQL result sets without holding the full list in heap — not as a substitute for bulkification in triggers.
 
 **Trigger batch size is 200 for standard DML — but 2,000 for platform events and Change Data Capture events.** Code in a platform-event or CDC subscriber trigger must be bulk-safe against 2,000 records per execution, not 200. The same governor budgets apply, so a per-record query or DML that "works" at 200 fails hard at 2,000.
 
@@ -120,7 +125,6 @@ Do not treat callout failures as a last-minute patch.
 - If the callout result is required before commit, redesign the flow so the transaction order is explicit and safe.
 - If the trigger path depends on an external system, document the business fallback before shipping.
 
-#
 ## Recommended Workflow
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:

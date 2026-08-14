@@ -1,6 +1,6 @@
 ---
 name: test-class-standards
-description: "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design."
+description: "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself — use apex/test-data-factory-patterns. NOT for the mock class itself — use apex/apex-http-callout-mocking."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

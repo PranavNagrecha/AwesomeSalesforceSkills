@@ -123,3 +123,37 @@ If an integration is failing with OAuth errors after an app was uninstalled:
 ```
 
 **Detection hint:** Any claim that uninstalled connected app tokens remain valid without qualifying with the current Salesforce policy.
+
+---
+
+## Anti-Pattern 6: Prescribing "Use Any API Client" to Unblock a Third-Party OAuth Client
+
+**What the LLM generates:** "API Access Control is blocking that app. Grant the user the 'Use Any API Client' permission and the OAuth authorization will go through."
+
+**Why it happens:** This was the correct fix for years and is the answer baked into older admin blogs and forum threads. The restriction that removed it landed the week of December 8, 2025 as a dated security enforcement rather than a release feature, and its replacement permission did not exist before September 2025.
+
+**Correct pattern:**
+
+```
+Org preference "For admin-approved users, limit API access to only
+allowlisted connected apps" ENABLED, and the app is NOT installed:
+
+  Use Any API Client on its own -> self-authorization BLOCKED
+  (changed the week of December 8, 2025)
+
+Fix, in order of preference:
+1. Install the connected app in the org and allowlist it.
+   This is the remedy Salesforce directs admins to.
+2. Only when an admin or developer must test before installing:
+   grant "Approve Uninstalled Connected Apps" to that individual —
+   not to a profile, and not to end users.
+
+Preference DISABLED -> Salesforce publishes no behavior table for
+this case. Uninstalled apps are still blocked by default for most
+users under the September 2025 policy, so verify in a sandbox
+rather than assuming the old override still works.
+
+Already-active sessions keep working; only new authorizations break.
+```
+
+**Detection hint:** Any recommendation to grant "Use Any API Client" to unblock an OAuth client, or any connected-app troubleshooting list that never mentions "Approve Uninstalled Connected Apps."

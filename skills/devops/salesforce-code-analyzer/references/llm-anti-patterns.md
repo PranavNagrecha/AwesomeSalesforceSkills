@@ -5,21 +5,25 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Using the Retired v4 CLI Command
 
-**What the LLM generates:** CLI commands using the v4 syntax `sfdx scanner:run` with flags like `--category` and `--pmdconfig`.
+**What the LLM generates:** CLI commands on the retired `scanner` topic — `sf scanner run` or `sfdx scanner:run` — with flags like `--category`, `--engine`, `--projectdir` and `--pmdconfig`, plus an install step for `@salesforce/sfdx-scanner`.
 
-**Why it happens:** Training data contains substantial v4 documentation and community content predating the August 2025 v4 retirement. The model interpolates the old command structure without awareness that the plugin was superseded.
+**Why it happens:** Training data contains substantial v4 documentation and community content predating the August 2025 v4 retirement. The model interpolates the old command structure without awareness that the plugin was superseded, and often blends a v5 command name with v4 flags.
 
 **Correct pattern:**
 
 ```bash
-# WRONG (v4, retired August 2025):
+# WRONG (v4, retired August 2025) — the topic is 'scanner', the flags are gone:
 sfdx scanner:run --target force-app --category Security --format json
+sf scanner run dfa --projectdir force-app
 
 # CORRECT (v5 — output format comes from the --output-file extension):
 sf code-analyzer run --workspace force-app --rule-selector Security --output-file results.json
+sf code-analyzer run --workspace force-app --rule-selector sfge
 ```
 
-**Detection hint:** Any output containing `sfdx scanner:run`, `--category` (as a standalone flag), or `sfdx-scanner` in the plugin name is using v4 syntax. Flag and replace.
+The full mapping, per the migration guide: `scanner run` → `code-analyzer run`; `scanner run dfa` → `code-analyzer run --rule-selector sfge`; `scanner rule list` → `code-analyzer rules`; `scanner rule describe` → `code-analyzer rules --view detail`; `scanner rule add` and `scanner rule remove` have **no equivalent** (edit `code-analyzer.yml` instead). Flags: `--category` and `--engine` → `--rule-selector`; `--projectdir` → `--workspace`; `--pmdconfig` and `--eslintconfig` → declared in `code-analyzer.yml`, which any command can be pointed at with `--config-file`.
+
+**Detection hint:** Any output matching `(sf|sfdx) +scanner` — not just `scanner:run` — or containing `--category`, `--engine`, `--projectdir`, `--pmdconfig`, `--eslintconfig`, `--format`, or `sfdx-scanner` in the plugin name is v4 syntax. Flag and replace.
 
 ---
 
@@ -169,12 +173,14 @@ engines:
       - libs/custom-pmd-rules.jar     # additionally required for Java-based rule classes
   regex:
     custom_rules:
-      NoTodoComments:
-        regex: /TODO/gi               # global modifier is mandatory
+      NoDebugStatements:
+        regex: /System\.debug\s*\(/gi   # global modifier is mandatory
         file_extensions: [".cls", ".trigger"]
-        description: "Flags TODO comments in Apex."
+        description: "Flags leftover System.debug statements in Apex."
   eslint:
     eslint_config_file: eslint.config.js  # custom ESLint rules live in a normal ESLint config
 ```
 
-**Detection hint:** Any instruction that passes a file path to `--rule-selector`, uses `--pmdconfig`, or defines ESLint rules in a non-ESLint format is wrong for v5. Custom-rule wiring lives in `code-analyzer.yml` under `engines.pmd.custom_rulesets`, `engines.regex.custom_rules`, and `engines.eslint.eslint_config_file`.
+A second, subtler failure in the same area: models carry v4's ruleset *semantics* across with the syntax, asserting that registering a custom PMD ruleset restricts the scan to the rules it contains. That was v4 `--pmdconfig` behaviour and v5 inverted it — the ruleset's rules are added to the full PMD catalogue. Narrowing the run is now the selector's job (`--rule-selector Custom`, or the ruleset-name tag), not the config file's.
+
+**Detection hint:** Any instruction that passes a file path to `--rule-selector`, uses `--pmdconfig`, defines ESLint rules in a non-ESLint format, or claims a `custom_rulesets` entry limits which PMD rules run, is wrong for v5. Custom-rule wiring lives in `code-analyzer.yml` under `engines.pmd.custom_rulesets`, `engines.regex.custom_rules`, and `engines.eslint.eslint_config_file`.

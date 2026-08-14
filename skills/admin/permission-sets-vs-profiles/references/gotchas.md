@@ -29,6 +29,19 @@
   - Login IP Ranges: `Setup → Profiles → [Profile] → Login IP Ranges`
 - Transfer these settings to the replacement base profile before migrating users
 
+**The rest of the list.** Login hours and IP ranges are the two people remember. Salesforce Help 003834041 (6 Jun 2026) names six settings it says belong in the profile, and each survives a migration only if you carry it across deliberately:
+
+1. Default assigned apps
+2. Default record types and page layouts
+3. Login hours
+4. Login IP ranges
+5. Password policies
+6. Session settings
+
+Items 1 and 2 are the quiet ones, and read them precisely: the word is **default**. App visibility and record type *access* are both grantable from a permission set — the same article lists "assigned apps" and "record types" under what permission sets should manage. Only the default landing app and the default record type are profile-bound. So a user migrated to a bare Minimum Access profile keeps their record access but lands on the wrong app and the wrong layout, which reads to them as "the migration broke my screen." Check them in the same pass as the security settings.
+
+Treat this as Salesforce's list, not an exhaustive one — the profile also fixes the user's license, which constrains everything above.
+
 ---
 
 ## Cloned Profiles Are Not Clean Slates
@@ -69,3 +82,13 @@
 - Allow up to 10 minutes for PSG changes to propagate
 - If urgency requires faster access, assign the Permission Set directly to the user (not via PSG) as a temporary measure
 - Add this to your change management runbook: "PSG changes take up to 10 minutes"
+
+---
+
+## Profile-Only Retrieve Strips Object CRUD and Field Permissions From Source
+
+**What happens:** `sf project retrieve start --metadata Profile:Admin` (or a package.xml with only `Profile`) writes a `.profile-meta.xml` that is **missing** `objectPermissions` / `fieldPermissions` the org actually has. Diffs look like "Admin has no CRUD." Deploying that file can **clear** org CRUD/FLS. Permission Set retrieves are the honest source for object/field grants.
+
+**When it occurs:** DX workspaces that retrieve Profiles to "see access"; CI that deploys slim profile XML.
+
+**How to avoid:** Do not treat a Profile retrieve as the access inventory. Retrieve Permission Sets (and the profile only for login hours, IP, default record type, tab vis). Never deploy a retrieved Profile without confirming object/field blocks are present if you intended to preserve them.

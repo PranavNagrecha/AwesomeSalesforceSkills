@@ -28,7 +28,7 @@ If more than 5 profiles match the filter, STOP and ask for a narrower scope — 
 
 ## Step 2 — Load the agent
 
-Read `agents/profile-to-permset-migrator/AGENT.md` + mandatory reads (security/profile-to-permset-strategy, admin/permission-set-groups, security/least-privilege-principles).
+Read `agents/profile-to-permset-migrator/AGENT.md` + mandatory reads (security/profile-to-permset-strategy, admin/permission-set-group-composition, security/least-privilege-principles).
 
 ---
 

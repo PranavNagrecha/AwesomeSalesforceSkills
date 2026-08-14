@@ -97,9 +97,9 @@
     "fe69d9a03af9df7132ae",
     "fea1d2469c18e448c61d"
   ],
-  "content_hash": "2c3016d406e55dd81c68315a27323a2d631666c440772669460af3955abf5dec",
+  "content_hash": "75cb382f493ee2c2e55f2a4533bc0c76437e3e607c7fea1b0427feae16ef8369",
   "dependencies": [],
-  "description": "Use when modeling, loading, or troubleshooting Salesforce product and pricebook data \u2014 covering the Product2 \u2192 Pricebook2 \u2192 PricebookEntry three-object chain, standard pricebook constraints, bulk load sequencing (Product2 \u2192 Standard PBE \u2192 custom Pricebook2 \u2192 custom PBE), UseStandardPrice inheritance, and product hierarchy strategies. NOT for Salesforce CPQ product and pricing model (use cpq-vs-standard-products-decision). NOT for Industries CPQ catalog-item model (use industries-cpq-vs-salesforce-cpq). NOT for Opportunity Line Item mechanics.",
+  "description": "Use when modeling, loading, or troubleshooting Salesforce product and pricebook data \u2014 covering the Product2 \u2192 Pricebook2 \u2192 PricebookEntry three-object chain, standard pricebook constraints, bulk load sequencing (Product2 \u2192 Standard PBE \u2192 custom Pricebook2 \u2192 custom PBE), UseStandardPrice inheritance, and product hierarchy strategies. NOT for adding products in Setup \u2014 use admin/products-and-pricebooks. NOT for SBQQ CPQ catalogs \u2014 use data/product-catalog-migration-cpq.",
   "file_location": "skills/data/product-catalog-data-model",
   "id": "data/product-catalog-data-model",
   "inputs": [

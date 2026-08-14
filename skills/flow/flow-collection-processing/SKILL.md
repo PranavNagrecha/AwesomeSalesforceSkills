@@ -1,6 +1,6 @@
 ---
 name: flow-collection-processing
-description: "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow'. NOT for individual single-record retrieval (use Get Records alone), NOT for Apex-based collection manipulation, NOT for flow bulkification performance analysis (see flow-bulkification)."
+description: "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow'. NOT for pulling DML or SOQL out of a Loop element — use flow/flow-loop-element-patterns. NOT for transaction-budget and bulkification analysis — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

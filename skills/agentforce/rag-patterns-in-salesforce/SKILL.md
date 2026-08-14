@@ -1,6 +1,6 @@
 ---
 name: rag-patterns-in-salesforce
-description: "Use this skill when grounding Agentforce agents with retrieved knowledge using Data Cloud vector search, configuring vector search indexes, selecting chunking and embedding strategies, or controlling how retrieved context flows through the Einstein Trust Layer into prompts. NOT for Data Cloud data model setup (use a Data Cloud skill), NOT for Agentforce agent creation or topic design (use agentforce-agent-creation or agent-topic-design), and NOT for BYO LLM configuration (use model-builder-and-byollm)."
+description: "Grounding Agentforce agents with retrieved knowledge using Data Cloud vector search: RAG pipeline design, vector search index configuration, chunking and embedding strategy, and how retrieved context flows through the Einstein Trust Layer into prompts. NOT for the Query API, Data Cloud access tokens, or Easy vs Advanced index mechanics — use agentforce/data-cloud-vector-search-dev. NOT for structured DMO retrievers, sharing enforcement at retrieval time and citations — use agentforce/data-cloud-grounding-for-agentforce."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -14,7 +14,7 @@ Use this template when configuring, running, or interpreting Salesforce Code Ana
 
 Answer these before starting work:
 
-- **Code Analyzer version confirmed:** [ ] v5 (`sf code-analyzer run`) — NOT v4 (`sfdx scanner:run`)
+- **Code Analyzer version confirmed:** [ ] v5 (`sf code-analyzer …`) — the entire v4 `scanner` topic is retired (`sf scanner …` / `sfdx scanner:…`)
 - **Salesforce DX project root:** _______________
 - **Target source path(s):** _______________
 - **Engines required:** [ ] PMD  [ ] CPD  [ ] ESLint  [ ] RetireJS  [ ] Regex  [ ] Flow  [ ] Graph Engine (`sfge`)
@@ -118,7 +118,7 @@ Document every `@SuppressWarnings` annotation added:
 
 ## Checklist
 
-- [ ] Plugin version confirmed: v5 (`sf plugins --core | grep code-analyzer`)
+- [ ] Plugin version confirmed: v5 (`sf plugins --core | grep code-analyzer`); `grep -rE '\b(sf|sfdx) +scanner\b'` over pipeline files returns nothing
 - [ ] `code-analyzer.yml` committed at project root with `node_modules` excluded
 - [ ] CI pipeline uses `--severity-threshold` and exits non-zero on violations
 - [ ] All `@SuppressWarnings` use specific rule names with justification comments

@@ -47,11 +47,11 @@
     "f7ad69334d651c9f7d52",
     "fb3d7a15682f47302deb"
   ],
-  "content_hash": "1ddb91380041fbf2d16f20aaad0d1c8878d54fce07d9469058f0dc3943d6fd03",
+  "content_hash": "6f556b246ef57ed8d0336ef2c6b44bdb67862f442b75e6c6b1962c56e549d5d7",
   "dependencies": [
     "agentforce/agentforce-testing-strategy"
   ],
-  "description": "Redact PII before it reaches Agentforce prompts, models, and logs. Trigger keywords: agentforce pii, pii redaction, data masking llm, einstein trust layer, prompt pii filter, audit pii leakage. Does NOT cover: Shield Platform Encryption at-rest (separate skill), GDPR data subject requests, or classic field-level security policy.",
+  "description": "Redact PII in your own code before it reaches Agentforce prompts, models, and logs. Trigger keywords: agentforce pii, pii redaction, data masking llm, prompt pii filter, audit pii leakage. NOT for turning on the platform's own masking, zero-retention and audit-trail controls \u2014 use agentforce/einstein-trust-layer. NOT for masking PII in a refreshed sandbox \u2014 use security/sandbox-data-masking.",
   "file_location": "skills/agentforce/agentforce-pii-redaction",
   "id": "agentforce/agentforce-pii-redaction",
   "inputs": [

@@ -107,9 +107,9 @@
     "fc595c41e0d7b00823cf",
     "fcdb7bea74ad3e2c678c"
   ],
-  "content_hash": "a331884c00077c1f80ce6f254a656ddbc27cacbe2b2e9f1395d3dbc0391b1be6",
+  "content_hash": "b2d9f37e28c7582de92016200a8d29b05bfad4464a1b7dc5e653a2f7c1eb4955",
   "dependencies": [],
-  "description": "Use this skill when setting up, configuring, or troubleshooting Salesforce Collaborative Forecasts: forecast types, forecast categories, rollup methods, quota management, forecast hierarchy, manager adjustments, and pipeline inspection integration. Trigger keywords: forecast type, forecast category, cumulative rollup, individual rollup, quota, forecast adjustment, forecast hierarchy, opportunity splits forecasting, pipeline forecast. NOT for custom report-based forecasting. NOT for Classic Forecasts (Customizable Forecasting). NOT for Territory Management setup (use enterprise-territory-management skill).",
+  "description": "Set up, configure or troubleshoot Salesforce Collaborative Forecasts: forecast types, forecast categories, rollup methods, quota management, forecast hierarchy, manager adjustments, pipeline inspection integration. Trigger keywords: forecast type, forecast category, cumulative rollup, individual rollup, quota, forecast adjustment, forecast hierarchy, opportunity splits forecasting, pipeline forecast. NOT for configuring the opportunity stages, sales processes or split types themselves \u2014 use admin/opportunity-management. NOT for territory-based forecasting setup \u2014 use admin/enterprise-territory-management. NOT for Classic/Customizable Forecasting.",
   "file_location": "skills/admin/collaborative-forecasts",
   "id": "admin/collaborative-forecasts",
   "inputs": [

@@ -67,11 +67,11 @@
     "fcca3cbae91fc59d3109",
     "fe1de896d1498eaa029b"
   ],
-  "content_hash": "3eecf7bf6ed74ee6ca6e1334fd73f604372034ccc0904c59494a92637e71ead7",
+  "content_hash": "0b14157c0dcb28d4bab2eb361639178a604ce97c77cfa3d7750e84b7f9540846",
   "dependencies": [
     "fsc-architecture-patterns"
   ],
-  "description": "Architecture guidance for Salesforce FSC banking and Digital Lending: loan origination platform design, ResidentialLoanApplication data model, payment processing integration patterns, and account servicing workflow architecture. NOT for implementation-level OmniScript development, FSC Insurance Cloud, or generic CRM data modeling.",
+  "description": "Architecture guidance for Salesforce FSC banking and Digital Lending: loan origination platform design, ResidentialLoanApplication data model, payment processing integration patterns, and account servicing workflow architecture. NOT for FSC Insurance policy, claims or underwriting architecture \u2014 use architect/insurance-cloud-architecture. NOT for the FSC data-model choice and Compliant Data Sharing design \u2014 use architect/fsc-architecture-patterns.",
   "file_location": "skills/architect/banking-lending-architecture",
   "id": "architect/banking-lending-architecture",
   "inputs": [

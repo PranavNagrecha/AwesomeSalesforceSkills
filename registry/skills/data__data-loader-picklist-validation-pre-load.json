@@ -142,9 +142,9 @@
     "fd6228762d1d22264538",
     "ff804f8471775c5826dc"
   ],
-  "content_hash": "12a3da7fb56416f71b566e6881f4e8c707c0b18d9e0f804a6cbfe6cf1582c5d1",
+  "content_hash": "339ffe937ee6c88234a548a456ad5781b8409b9cc10b674af473a5216abe55d6",
   "dependencies": [],
-  "description": "When and how to pre-validate a CSV against Salesforce picklist rules and record-type assignments BEFORE running a Data Loader / Bulk API insert or upsert \u2014 restricted picklists, record-type-scoped values, inactive values, Global Value Sets, dependent picklists, multi-select delimiters, API name vs label, and the 255-char per-value limit. NOT for post-load reconciliation, NOT for general Data Loader column mapping (see data-loader-csv-column-mapping), NOT for choosing between Data Loader and Bulk API (see bulk-api-and-large-data-loads).",
+  "description": "When and how to pre-validate a CSV against Salesforce picklist rules and record-type assignments BEFORE running a Data Loader / Bulk API insert or upsert \u2014 restricted picklists, record-type-scoped values, inactive values, Global Value Sets, dependent picklists, multi-select delimiters, API name vs label, and the 255-char per-value limit. NOT for mapping CSV headers to field API names \u2014 use data/data-loader-csv-column-mapping. NOT for cleaning up bad picklist values already in the org \u2014 use admin/picklist-field-integrity-issues.",
   "file_location": "skills/data/data-loader-picklist-validation-pre-load",
   "id": "data/data-loader-picklist-validation-pre-load",
   "inputs": [

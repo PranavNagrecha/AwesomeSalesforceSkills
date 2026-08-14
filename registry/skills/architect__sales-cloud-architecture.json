@@ -86,13 +86,13 @@
     "fe69e9d351cdadf1c69b",
     "ff86712414fdc0c9fc70"
   ],
-  "content_hash": "786926cf7a2ccdb16efc682e62ff98afd76e4a26dbc920279803d752a76c1094",
+  "content_hash": "3a57f529652e9f08926cdb9df347c45cee56cd97ea93aa2f8b5c79a4ae018824",
   "dependencies": [
     "architect/sales-cloud-integration-patterns",
     "architect/limits-and-scalability-planning",
     "architect/well-architected-review"
   ],
-  "description": "Use when designing or reviewing a Sales Cloud solution architecture covering process automation strategy, integration points, data model decisions, and scalability planning. Triggers: 'design a Sales Cloud architecture for enterprise org', 'Sales Cloud data model and automation strategy', 'how to architect Sales Cloud for high-volume pipeline management'. NOT for individual feature configuration (use admin/opportunity-management or admin/lead-management), NOT for CPQ-specific decisions (use architect/cpq-vs-standard-products-decision), NOT for integration implementation details (use architect/sales-cloud-integration-patterns).",
+  "description": "Use when designing or reviewing a Sales Cloud solution architecture covering process automation strategy, integration points, data model decisions, and scalability planning. Triggers: 'design a Sales Cloud architecture for enterprise org', 'Sales Cloud data model and automation strategy', 'how to architect Sales Cloud for high-volume pipeline management'. NOT for individual feature configuration (use admin/opportunity-management or admin/lead-management-and-conversion), NOT for CPQ-specific decisions (use architect/cpq-vs-standard-products-decision), NOT for integration implementation details (use architect/sales-cloud-integration-patterns).",
   "file_location": "skills/architect/sales-cloud-architecture",
   "id": "architect/sales-cloud-architecture",
   "inputs": [

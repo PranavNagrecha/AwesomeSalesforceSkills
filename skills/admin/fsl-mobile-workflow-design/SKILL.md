@@ -1,6 +1,6 @@
 ---
 name: fsl-mobile-workflow-design
-description: "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows — including job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for mobile app installation/configuration, FSL scheduling optimization, Dispatcher Console setup, or Work Capacity management."
+description: "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows — job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for installing, branding, or extending the mobile app itself — use admin/fsl-mobile-app-setup. NOT for offline priming limits and sync conflict resolution — use architect/fsl-offline-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

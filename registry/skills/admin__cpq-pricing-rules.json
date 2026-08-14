@@ -95,12 +95,12 @@
     "fe1470ee12ef44dd0e4c",
     "fe5aa3b637b4cb621e32"
   ],
-  "content_hash": "e7ed3248c6b8c6c1a424913ee134a698265097305b5342d55cb496816e450e53",
+  "content_hash": "23d00a082c81c426b3427cdf26bee1b63259c16363b2f254404b7eb90a8cc78b",
   "dependencies": [
     "cpq-product-catalog-setup",
     "products-and-pricebooks"
   ],
-  "description": "Use this skill when configuring or troubleshooting Salesforce CPQ pricing: Price Rules, Price Conditions, Price Actions, Lookup Queries, Discount Schedules, Block Pricing, Percent of Total, and Contracted Prices. Trigger keywords: CPQ price rule, price action, discount schedule, block pricing, percent of total, contracted price, SBQQ__PriceRule__c, CPQ quote calculation engine, price waterfall. NOT for standard Salesforce pricebook pricing (use the products-and-pricebooks skill), CPQ product bundle configuration (use cpq-product-catalog-setup), or quote template/document setup.",
+  "description": "Use when configuring or troubleshooting Salesforce CPQ pricing: Price Rules, Price Conditions, Price Actions, Lookup Queries, Discount Schedules, Block Pricing, Percent of Total, and Contracted Prices. Trigger keywords: CPQ price rule, price action, discount schedule, block pricing, percent of total, contracted price, SBQQ__PriceRule__c, CPQ quote calculation engine, price waterfall. NOT for picking the pricing method \u2014 use admin/pricing-model-design. NOT for pricebook pricing without CPQ \u2014 use admin/products-and-pricebooks.",
   "file_location": "skills/admin/cpq-pricing-rules",
   "id": "admin/cpq-pricing-rules",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: headless-vs-standard-experience
-description: "Use when choosing between Headless, LWR (Lightning Web Runtime), or Aura as the Experience Cloud frontend architecture: performance tradeoffs, developer cost, migration readiness, and flexibility. Trigger keywords: headless vs LWR, LWR vs Aura, Experience Cloud architecture decision, site performance architecture, community site technology choice. NOT for implementing a chosen architecture, NOT for Experience Builder component development, NOT for CMS headless content delivery via Connect REST API."
+description: "Use when choosing between Headless, LWR (Lightning Web Runtime), or Aura as the Experience Cloud frontend architecture: performance tradeoffs, developer cost, migration readiness, and flexibility. Trigger keywords: headless vs LWR, LWR vs Aura, Experience Cloud architecture decision, site performance architecture, community site technology choice. NOT for building the chosen site — branding, domain, Experience Builder pages — use admin/experience-cloud-site-setup. NOT for LWR themes and custom components — use lwc/lwr-site-development. NOT for headless CMS delivery via Connect REST API — use lwc/headless-experience-cloud."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

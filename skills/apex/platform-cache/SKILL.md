@@ -1,6 +1,6 @@
 ---
 name: platform-cache
-description: "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data."
+description: "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for caching user-specific sensitive data, and NOT for durable configuration storage — use apex/custom-metadata-in-apex. NOT for caching inside an OmniStudio Integration Procedure — use omnistudio/integration-procedure-cacheable-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

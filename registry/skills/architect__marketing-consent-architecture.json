@@ -86,12 +86,12 @@
     "fc20db34f093c6fb6e22",
     "ff27a26c46c9c325f686"
   ],
-  "content_hash": "876f1700391c38773a99792450d3beef569a54ac667509515e86d0a3dd7a6291",
+  "content_hash": "94cf1d5bbb118ce2a7fd77b0b9677222678e01adb7a02651d6b484346e537444",
   "dependencies": [
     "consent-management-marketing",
     "gdpr-data-privacy"
   ],
-  "description": "Consent management architecture across Marketing Cloud and CRM: data model design, cross-system sync patterns, and compliance design for GDPR/CCPA. Trigger keywords: consent data model, ContactPointConsent, ContactPointTypeConsent, Individual object, CRM system of record, MC consent sync, opt-in opt-out architecture, data use purpose, lawful basis. NOT for individual consent setup steps or configuring a single publication list.",
+  "description": "Consent management architecture across Marketing Cloud and CRM: data model design, cross-system sync patterns, and compliance design for GDPR/CCPA. Trigger keywords: consent data model, ContactPointConsent, ContactPointTypeConsent, Individual object, CRM system of record, MC consent sync, opt-in opt-out architecture, data use purpose, lawful basis. NOT for Subscription or Preference Center setup, publication lists and unsubscribe handling \u2014 use admin/consent-management-marketing. NOT for right-to-be-forgotten and data subject requests in CRM \u2014 use security/gdpr-data-privacy.",
   "file_location": "skills/architect/marketing-consent-architecture",
   "id": "architect/marketing-consent-architecture",
   "inputs": [

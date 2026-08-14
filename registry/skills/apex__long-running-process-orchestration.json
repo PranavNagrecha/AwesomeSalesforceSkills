@@ -112,12 +112,12 @@
     "fd3667764c78e2c60ffa",
     "fd558fed2d5e3316e3a7"
   ],
-  "content_hash": "dcca40bb393f120591e571c93f0082fb551a51609848571a491c721ebe6426c6",
+  "content_hash": "ce951518d076b746e70754e48df803ef2553b22ba7bfafc6824952e6e6ef1d3d",
   "dependencies": [
     "apex/apex-queueable-patterns",
     "apex/platform-events-apex"
   ],
-  "description": "Use when designing or reviewing multi-step Apex orchestration that spans multiple transactions, checkpoints state across async boundaries, or recovers from partial failure in a long-running workflow. Trigger keywords: 'multi-step Queueable chain', 'cross-transaction state', 'platform event state machine', 'Finalizer retry', 'orchestrate across transactions', 'workflow progress tracking'. NOT for single-job Queueable design (use apex-queueable-patterns), NOT for Flow Orchestration (use flow/orchestration-flows), NOT for bulk record processing where Batch Apex is the primary tool (use batch-apex-patterns).",
+  "description": "Use when designing or reviewing multi-step Apex orchestration that spans multiple transactions, checkpoints state across async boundaries, or recovers from partial failure in a long-running workflow. Trigger keywords: 'multi-step Queueable chain', 'cross-transaction state', 'platform event state machine', 'Finalizer retry', 'orchestrate across transactions', 'workflow progress tracking'. NOT for single-job Queueable design (use apex/apex-queueable-patterns), NOT for Flow Orchestration (use flow/orchestration-flows), NOT for bulk record processing where Batch Apex is the primary tool (use batch-apex-patterns).",
   "file_location": "skills/apex/long-running-process-orchestration",
   "id": "apex/long-running-process-orchestration",
   "inputs": [

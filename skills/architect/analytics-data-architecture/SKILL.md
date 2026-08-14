@@ -1,6 +1,6 @@
 ---
 name: analytics-data-architecture
-description: "Use this skill when designing CRM Analytics dataset architecture, planning dataflow or Recipe ELT strategies, implementing incremental extraction patterns, or integrating external data lakes (Snowflake, BigQuery, Redshift). Trigger keywords: CRM Analytics dataset design, dataflow performance, Recipe incremental, remote connection data lake, analytics ELT strategy, dataset row limits. NOT for standard Salesforce object data modeling, Salesforce Data Cloud architecture, or MuleSoft integration design."
+description: "Use this skill when designing CRM Analytics dataset architecture, planning dataflow or Recipe ELT strategies, implementing incremental extraction patterns, or integrating external data lakes (Snowflake, BigQuery, Redshift). Trigger keywords: CRM Analytics dataset design, dataflow performance, Recipe incremental, remote connection data lake, analytics ELT strategy, dataset row limits. NOT for the External Data API or live-dataset setup itself — use data/analytics-external-data. NOT for authoring dataflow node JSON — use admin/analytics-dataflow-development. NOT for building a recipe's join, bucket and formula nodes — use admin/analytics-recipe-design."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: agent-conversation-design
-description: "Use when writing or auditing the conversational copy layer of a Salesforce bot or Agentforce agent: utterance authoring strategy, fallback message copy, escalation-criteria phrasing, and persona-consistent dialog scripting across channels. NOT for platform configuration (bot builder setup, topic metadata wiring, action mapping, or Agentforce deployment) — see architect/einstein-bot-architecture and agentforce/agentforce-persona-design for those concerns."
+description: "Use when writing or auditing the conversational copy layer of a Salesforce bot or Agentforce agent: utterance authoring strategy, fallback message copy, escalation-criteria phrasing, and persona-consistent dialog scripting across channels. NOT for designing the bot dialog structure, intent model, or handoff architecture — use architect/einstein-bot-architecture. NOT for encoding agent tone in Agentforce system instructions — use agentforce/agentforce-persona-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -25,7 +25,7 @@
 
 **Sharing model summary:**
 
-Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, decides what a *blank* sharing declaration means (`without sharing` at 66.0 and below, `with sharing` at 67.0+). Triggers have no declaration to record: mark them `n/a — system mode` and audit the handler class.
+Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, decides what a *blank* sharing declaration means (`without sharing` at 66.0 and below, `with sharing` at 67.0+). Triggers have no declaration to record: mark them `n/a — implicit without sharing (baseline)` and audit the handler class. Record the trigger's `<apiVersion>` from its `.trigger-meta.xml` all the same — the *declaration* is fixed, but the access mode of the trigger body's queries and DML is not, and that value gates it. At 67.0+ a bare trigger-body operation runs in user mode, which overrides that baseline and enforces the running user's sharing, FLS, and object permissions; only an explicit `WITH SYSTEM_MODE` / `as system` falls back to it. Record the effective mode per operation, not per trigger.
 
 | Class / Trigger | `apiVersion` | Sharing Declaration | Effective Sharing | Justification (if `without sharing`) |
 |---|---|---|---|---|

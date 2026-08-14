@@ -94,9 +94,9 @@
     "fc591b75eb67b193335b",
     "fff45c556b5f4d3f7932"
   ],
-  "content_hash": "370cce4727c07157cbfb64c2498d08e74c21b30205cc4550cefcf7146f952e2c",
+  "content_hash": "0df2f35f7ba485e90a0b62508c7c6a4fa81036d8b51c697ddbf2c89a9ab6db37",
   "dependencies": [],
-  "description": "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud \u2014 including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities (Build Your Own Aura template). NOT for standard Experience Builder drag-and-drop configuration without code.",
+  "description": "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud \u2014 including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities or no-code Experience Builder setup \u2014 use admin/experience-cloud-site-setup. NOT for one component's guest access \u2014 use lwc/experience-cloud-lwc-components.",
   "file_location": "skills/lwc/lwr-site-development",
   "id": "lwc/lwr-site-development",
   "inputs": [

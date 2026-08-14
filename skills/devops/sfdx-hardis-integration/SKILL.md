@@ -1,6 +1,6 @@
 ---
 name: sfdx-hardis-integration
-description: "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself."
+description: "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself — use apex/sf-cli-and-sfdx-essentials."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -71,9 +71,9 @@
     "fb10d868cb1f27f9c6aa",
     "ffcce5f977b6ce1113d1"
   ],
-  "content_hash": "59dc5c97565c2ab69c62c78a35f278c25ad4161c68d3576199539ddd9c5d8ff2",
+  "content_hash": "813438fd7dc3f4c6566426f29ecfa4919f0d6cace08e53084095e192ccb9cde2",
   "dependencies": [],
-  "description": "AWS integration patterns for Salesforce \u2014 pick between Amazon AppFlow, Event Relay \u2192 EventBridge, Amazon S3 ingestion paths, and direct Apex \u2192 Lambda callouts. Decision matrix + AppFlow deep dive (Salesforce as source / destination, OAuth Authorization-Code vs JWT, REST vs Bulk 2.0 API, 15 GB / run cap). NOT for the Event Relay setup details themselves (see integration/event-relay-configuration), NOT for MuleSoft, NOT for in-AWS architecture (Lambda code style, EventBridge bus topology).",
+  "description": "AWS integration patterns for Salesforce \u2014 pick between Amazon AppFlow, Event Relay \u2192 EventBridge, Amazon S3 ingestion paths, and direct Apex \u2192 Lambda callouts. Decision matrix + AppFlow deep dive (Salesforce as source / destination, OAuth Authorization-Code vs JWT, REST vs Bulk 2.0 API, 15 GB / run cap). NOT for Azure \u2014 use integration/azure-salesforce-patterns. NOT for Event Relay setup steps \u2014 use integration/event-relay-configuration.",
   "file_location": "skills/integration/aws-salesforce-patterns",
   "id": "integration/aws-salesforce-patterns",
   "inputs": [

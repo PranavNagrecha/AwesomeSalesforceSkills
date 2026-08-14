@@ -1,6 +1,6 @@
 ---
 name: data-cloud-calculated-insights
-description: "Guides creation, design, and maintenance of Calculated Insights in Data Cloud: SQL authoring, dimension/measure definition, scheduling, streaming insights, and insight configuration tradeoffs. Trigger keywords: calculated insight, CI SQL, insight measure, insight dimension, streaming insight, insight schedule, Data Cloud metric, insight refresh. NOT for standard formula fields on sObjects, CRM Analytics SAQL metrics, or Data Cloud segment filter conditions that do not persist as insights."
+description: "Create, design, and maintain Calculated Insights in Data Cloud: SQL authoring, dimension and measure definition, scheduling, streaming insights. Trigger keywords: calculated insight, CI SQL, insight measure, insight dimension, streaming insight, insight schedule, Data Cloud metric, insight refresh. NOT for segment filters, audiences and activation - use admin/data-cloud-segmentation. NOT for ingestion, DLO to DMO mapping and identity resolution - use data/data-cloud-data-streams."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -215,4 +215,4 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/data-cloud-segmentation` — Covers audience segment creation; Calculated Insight measures appear as segment filter fields once the insight has run. Use after this skill when building segments that depend on CI metrics.
 - `data/data-cloud-data-streams` — Covers DLO-to-DMO mapping; DMOs must be fully mapped before Calculated Insights can reference them. Use before this skill when DMO configuration is incomplete.
 - `admin/data-cloud-identity-resolution` — Identity resolution produces the Unified Individual records that Calculated Insights aggregate. Use before this skill when unified profiles have not been resolved.
-- `admin/data-cloud-architecture-patterns` — Covers org-level Data Cloud design decisions including insight governance and the 300-insight limit. Use for multi-BU or high-volume deployments.
+- `architect/data-cloud-architecture` — Covers org-level Data Cloud design decisions: DSO/DLO/DMO layering, identity resolution rule design, and activation strategy. Use for multi-BU or high-volume deployments.

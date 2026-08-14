@@ -1,6 +1,6 @@
 ---
 name: devops-process-documentation
-description: "Use when authoring, reviewing, or maintaining Salesforce DevOps operational documents — runbooks, environment matrices, deployment guides, and post-deploy validation checklists. Triggers: 'runbook', 'environment matrix', 'deployment guide', 'pre-deploy checklist', 'post-deploy validation', 'how do I document a deployment', 'rollback procedure template'. NOT for release planning, project scheduling, CI/CD pipeline code, or change advisory board process governance."
+description: "Use when authoring, reviewing, or maintaining Salesforce DevOps operational documents — runbooks, environment matrices, deployment guides, and post-deploy validation checklists. Triggers: 'runbook', 'environment matrix', 'deployment guide', 'pre-deploy checklist', 'post-deploy validation', 'how do I document a deployment', 'rollback procedure template'. NOT for what actually belongs on the pre-deploy gate — use devops/pre-deployment-checklist. NOT for release calendar, versioning, or go/no-go governance — use devops/release-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

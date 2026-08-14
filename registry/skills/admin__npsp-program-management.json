@@ -89,9 +89,9 @@
     "fdebeff99cf5d62a97fc",
     "ffceca0a15a269e05e3d"
   ],
-  "content_hash": "cdadf039d9fb6a4d0356d95ff577d849be568520c6830428fd0499a600c944d4",
+  "content_hash": "d5ac7913bcaaf0ca02a6b7408a40edf9b75420beb7b3d61d36090c4d9a2f53b4",
   "dependencies": [],
-  "description": "Use this skill when configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) \u2014 a separate managed package for program delivery, cohort setup, service scheduling, service delivery recording, and outcome/attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for NPSP core donor management, gift entry, recurring donations, soft credits, or Health Cloud care programs.",
+  "description": "Configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) - program delivery, cohort setup, service scheduling, service delivery recording, and attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for designing which outcomes and indicators to measure - use admin/program-outcome-tracking-design. NOT for NPSP donor, household and giving-rollup data - use data/nonprofit-data-architecture.",
   "file_location": "skills/admin/npsp-program-management",
   "id": "admin/npsp-program-management",
   "inputs": [

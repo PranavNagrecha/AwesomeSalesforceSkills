@@ -81,9 +81,9 @@
     "fa858e31827b8a69624c",
     "fb3c1b74406e92d7f438"
   ],
-  "content_hash": "7b803cac4daa469e9c69bb88ae98c6fae0e1b7ee246ee839d2fd29ef4c5b1f79",
+  "content_hash": "b434d44764fe982f99738faf3995375883ac12230241aeac457c63921907ae22",
   "dependencies": [],
-  "description": "Use this skill when configuring Marketing Cloud Engagement (formerly ExactTarget): business units, user roles, sender profiles, delivery profiles, send classifications, and account-level settings. NOT for MCAE/Pardot or Marketing Cloud Account Engagement configuration.",
+  "description": "Use this skill when configuring Marketing Cloud Engagement (formerly ExactTarget): business units, user roles, sender profiles, delivery profiles, send classifications, and account-level settings. NOT for MCAE / Account Engagement (Pardot) setup \u2014 use admin/mcae-pardot-setup. NOT for designing a multi-brand parent/child BU hierarchy \u2014 use architect/multi-bu-marketing-architecture.",
   "file_location": "skills/admin/marketing-cloud-engagement-setup",
   "id": "admin/marketing-cloud-engagement-setup",
   "inputs": [

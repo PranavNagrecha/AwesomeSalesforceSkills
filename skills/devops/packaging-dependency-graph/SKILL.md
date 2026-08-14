@@ -1,6 +1,6 @@
 ---
 name: packaging-dependency-graph
-description: "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages."
+description: "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages — use devops/multi-package-development."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

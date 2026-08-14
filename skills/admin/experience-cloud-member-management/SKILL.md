@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-member-management
-description: "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for internal (Employee) user management, internal profile or permission-set assignments, or Experience Cloud page-layout / component design."
+description: "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for choosing which external user license to buy — use architect/experience-cloud-licensing-model. NOT for what records external users can see — use security/experience-cloud-security."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

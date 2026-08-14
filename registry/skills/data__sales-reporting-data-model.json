@@ -8,6 +8,7 @@
     "104418dd506a831b8057",
     "1452e8bcb89282e24471",
     "14f2c322d82bc11db329",
+    "165f65fcd66f54747b83",
     "16efa4bf4118f474750f",
     "18e397810d335d84c366",
     "18e70cea12867abc753d",
@@ -125,9 +126,9 @@
     "ff7f5d7f024bedb7d82a",
     "ffc9da0efe8af4630f42"
   ],
-  "content_hash": "aa3be7cfc4aca07c27aca1789c20967486775efcfa5cb5b8478647816a0063b1",
+  "content_hash": "a04f329c725d8048c64b06bfc5bd17c965e8b5911aed09898b1faa21e89f6efc",
   "dependencies": [],
-  "description": "Use when designing or troubleshooting Salesforce sales reporting \u2014 covers Historical Trend Reporting, Reporting Snapshots, and Custom Report Types for pipeline and opportunity analysis. Trigger keywords: historical trending, opportunity snapshot, reporting snapshot, pipeline history, custom report type join, point-in-time reporting. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) or Marketing Cloud reports. NOT for general SOQL optimization.",
+  "description": "Use when designing or troubleshooting Salesforce sales reporting \u2014 covers Historical Trend Reporting, Reporting Snapshots, and Custom Report Types for pipeline and opportunity analysis. Trigger keywords: historical trending, opportunity snapshot, reporting snapshot, pipeline history, custom report type join. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) or Marketing Cloud reports \u2014 use admin/einstein-analytics-basics.",
   "file_location": "skills/data/sales-reporting-data-model",
   "id": "data/sales-reporting-data-model",
   "inputs": [
@@ -182,7 +183,7 @@
   "templates": [
     "skills/data/sales-reporting-data-model/templates/sales-reporting-data-model-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

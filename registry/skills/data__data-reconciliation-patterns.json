@@ -91,9 +91,9 @@
     "f665f451a1ee066c5aea",
     "f9776819bd215652625c"
   ],
-  "content_hash": "a84a5361f93466509327fb3e986b7b9c659197b3b14000b32e3ef993b2ceb71f",
+  "content_hash": "2211b5f9c4cbe5726e25d3c0966900842ed6fdc3d0dc3e68761f39ed9c33d6a7",
   "dependencies": [],
-  "description": "Patterns for reconciling Salesforce data with external systems: count-level, field-level, and record-level reconciliation, external ID upsert patterns, Change Data Capture for delta detection, and soft-delete tombstone strategies. Use when validating ongoing data sync or diagnosing discrepancies between Salesforce and external data sources. NOT for one-time data migration planning (use data-migration-planning). NOT for initial CDC topic configuration (use change-data-capture skill). NOT for deduplication within Salesforce (use large-scale-deduplication).",
+  "description": "Patterns for reconciling Salesforce data with external systems: count-level, field-level, and record-level reconciliation, external ID upsert patterns, Change Data Capture for delta detection, and soft-delete tombstone strategies. Use when validating ongoing data sync or diagnosing discrepancies between Salesforce and external data sources. NOT for building the CDC replication pipeline itself \u2014 use data/cdc-data-sync-patterns. NOT for planning a one-time migration and its cutover \u2014 use data/data-migration-planning. NOT for merging duplicates already in Salesforce \u2014 use data/large-scale-deduplication. NOT for choosing or designing the external ID field / upsert key itself, including composite keys and relationship resolution by external ID \u2014 use data/external-id-strategy; this skill assumes the key already exists and covers detecting and repairing drift against it.",
   "file_location": "skills/data/data-reconciliation-patterns",
   "id": "data/data-reconciliation-patterns",
   "inputs": [

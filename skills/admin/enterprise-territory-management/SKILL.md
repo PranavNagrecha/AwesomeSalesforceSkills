@@ -1,6 +1,6 @@
 ---
 name: enterprise-territory-management
-description: "Use this skill when configuring or troubleshooting Salesforce Enterprise Territory Management (ETM): territory models, territory types, territory hierarchies, account assignment rules, opportunity territory assignment, and forecast by territory. Trigger keywords: territory model, territory hierarchy, ETM, assign accounts to territories, territory forecast, territory activation. NOT for role hierarchy (use sharing-and-visibility). NOT for Legacy/Original Territory Management (pre-ETM)."
+description: "Use when configuring or troubleshooting Salesforce Enterprise Territory Management (ETM): territory models, territory types, territory hierarchies, account assignment rules, opportunity territory assignment, and forecast by territory. Trigger keywords: territory model, territory hierarchy, ETM, assign accounts to territories, territory forecast, territory activation. NOT for choosing the coverage model first — use admin/territory-design-requirements. NOT for role hierarchy — use admin/sharing-and-visibility."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

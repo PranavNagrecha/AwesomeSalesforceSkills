@@ -104,9 +104,9 @@
     "f3e51630fde2360bdbea",
     "f408ab8dc1b939655e48"
   ],
-  "content_hash": "8375cf0a250aaec85d763d816977ac466f3d306ddc60eb578661257d1a6f1415",
+  "content_hash": "ee387cd5384ba08512dabbe1ecf7192e86fd0a7df467da7ae00f7acc97a43cd0",
   "dependencies": [],
-  "description": "Use when building, reviewing, or troubleshooting OmniStudio Calculation Procedures (also called Expression Sets) and Calculation Matrices (also called Decision Matrices). Triggers: 'calculation procedure', 'expression set', 'calculation matrix', 'decision matrix', 'pricing calculation', 'lookup step', 'matrix versioning'. NOT for DataRaptor transforms or DataRaptor-based field mapping.",
+  "description": "Build and troubleshoot Calculation Procedures (Expression Sets) and Calculation Matrices. Triggers: calculation procedure, expression set, calculation matrix, decision matrix, pricing calculation, lookup step, matrix versioning. NOT for pricing/rating design decisions \u2014 use omnistudio/calculation-procedure-design.",
   "file_location": "skills/omnistudio/calculation-procedures",
   "id": "omnistudio/calculation-procedures",
   "inputs": [

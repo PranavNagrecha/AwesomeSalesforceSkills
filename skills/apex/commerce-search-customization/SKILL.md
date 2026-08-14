@@ -1,6 +1,6 @@
 ---
 name: commerce-search-customization
-description: "Use this skill to configure and tune search in B2B Commerce or D2C Commerce storefronts: searchable attributes, facetable attributes, sort rules, search index rebuilds, Einstein product recommendations, and BuyerGroup entitlement visibility. Trigger keywords: commerce search ranking, faceted navigation commerce, search index rebuild, Einstein recommendations storefront, product not appearing in search. NOT for SOSL query development, Experience Cloud federated search, Salesforce Search for non-commerce objects, or Einstein Search for Service Cloud."
+description: "Use this skill to configure and tune search in B2B Commerce or D2C Commerce storefronts: searchable attributes, facetable attributes, sort rules, search index rebuilds, Einstein product recommendations, and BuyerGroup entitlement visibility. Trigger keywords: commerce search ranking, faceted navigation commerce, search index rebuild, Einstein recommendations storefront, product not appearing in search. NOT for catalog taxonomy and attribute strategy — use admin/commerce-catalog-strategy. NOT for Einstein Search in Lightning Experience — use agentforce/einstein-search-personalization."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

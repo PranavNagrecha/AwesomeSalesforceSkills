@@ -43,9 +43,9 @@
     "fba142e9b0d018536827",
     "ff733cff7fb461451c04"
   ],
-  "content_hash": "6042c80e112eabecc3df21727fa3a5787c87ed76a3044cfd113135a3b66265d2",
+  "content_hash": "e4cdb02b9a33e3d2cd04bcb3db33c10d327a8451ec27677ca09e912073939d53",
   "dependencies": [],
-  "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
+  "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows \u2014 use flow/screen-flow-choice-component-selection.",
   "file_location": "skills/flow/flow-data-tables",
   "id": "flow/flow-data-tables",
   "inputs": [

@@ -86,9 +86,9 @@
     "f56500db396365f29e5c",
     "f98fdd3331ade67d89d5"
   ],
-  "content_hash": "2a2116e092eeaef5611c30f7ee6d52294af87b11d2f77d1ce31d8abda98d1dc8",
+  "content_hash": "da43f624fbff6bcf6aed1c3e42ba91448bc2a797c5a0b37d153a408d391744bc",
   "dependencies": [],
-  "description": "Use when analyzing Experience Cloud site analytics including login metrics, member engagement, page view tracking, and content performance. Triggers: Experience Cloud site analytics, community member engagement data, portal login tracking, page view reports community, GA4 Experience Cloud integration. NOT for CRM Analytics or Tableau CRM. NOT for internal Salesforce reporting on standard CRM objects.",
+  "description": "Use when analyzing Experience Cloud site analytics including login metrics, member engagement, page view tracking, and content performance. Triggers: Experience Cloud site analytics, community member engagement data, portal login tracking, page view reports community, GA4 Experience Cloud integration. NOT for CRM Analytics / Tableau CRM \u2014 use admin/einstein-analytics-basics. NOT for designing reputation levels and the engagement program itself \u2014 use admin/community-engagement-strategy.",
   "file_location": "skills/data/community-analytics-data",
   "id": "data/community-analytics-data",
   "inputs": [

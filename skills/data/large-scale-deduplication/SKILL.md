@@ -1,6 +1,6 @@
 ---
 name: large-scale-deduplication
-description: "Strategies and tooling for large-scale data deduplication in Salesforce: tuning matching rules for high-volume orgs, batch merge jobs, third-party dedup tools (DemandTools, Cloudingo), surviving record selection logic, and post-merge validation. Use when cleaning millions of duplicate records, automating merges beyond UI limits, or designing enterprise dedup workflows. NOT for duplicate rule configuration (use admin/duplicate-management). NOT for standard Duplicate Management UI setup. NOT for single-record field-resolution questions (use data/record-merge-implications)."
+description: "Strategies and tooling for large-scale data deduplication in Salesforce: tuning matching rules for high-volume orgs, batch merge jobs, third-party dedup tools (DemandTools, Cloudingo), surviving record selection logic, and post-merge validation. Use when cleaning millions of duplicate records, automating merges beyond UI limits, or designing enterprise dedup workflows. NOT for an unqualified \"clean up our duplicates\" request with no stated record volume (use admin/duplicate-management). NOT for duplicate rule configuration (use admin/duplicate-management). NOT for standard Duplicate Management UI setup. NOT for single-record field-resolution questions (use data/record-merge-implications)."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

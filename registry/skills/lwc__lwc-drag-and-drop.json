@@ -2,7 +2,6 @@
   "category": "lwc",
   "chunk_ids": [
     "026bed496d89623a66b7",
-    "0ad0972e55a29fa3356d",
     "0e6a2a8dd868d1815bb4",
     "1bdc549b20b8f8d23d8f",
     "2169809d11849a062e99",
@@ -44,6 +43,7 @@
     "a4aee8982ed38b970d80",
     "b0a4f50fafe273c2ce56",
     "bb3e6518b7d62c307214",
+    "c596de621c9db625c78a",
     "c891f994560595ef5185",
     "d9332df987565acd60df",
     "d9993d9e10b60a2497e7",
@@ -54,9 +54,9 @@
     "f569469a6191a1800288",
     "f9d2b5413774522d5527"
   ],
-  "content_hash": "8e24109930418c93f12927e3df1affffc0afd0d1db6a5c6d9ee1d2e611c5eeaa",
+  "content_hash": "7d45cdaa0530e2f89674d90cc59abbb2cb526a9a48158ad04f2e8d762ad58bab",
   "dependencies": [],
-  "description": "HTML5 drag-and-drop API in LWC \u2014 draggable=\"true\", dataTransfer.setData / getData, ondragover preventDefault, drop zones, visual hover state, accessibility (keyboard alternatives, aria-grabbed deprecation), and shadow DOM event leakage. NOT for sortable lists where a UI library (Sortable.js) is already in use, or for file-upload drops (use lwc/lwc-file-upload-drop).",
+  "description": "HTML5 drag-and-drop API in LWC \u2014 draggable=\"true\", dataTransfer.setData / getData, ondragover preventDefault, drop zones, visual hover state, accessibility (keyboard alternatives, aria-grabbed deprecation), and shadow DOM event leakage. NOT for uploading a file the user dropped on the component \u2014 use lwc/file-upload-patterns.",
   "file_location": "skills/lwc/lwc-drag-and-drop",
   "id": "lwc/lwc-drag-and-drop",
   "inputs": [

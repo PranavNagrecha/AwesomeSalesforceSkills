@@ -1,6 +1,6 @@
 ---
 name: revenue-lifecycle-management
-description: "Use this skill when implementing or troubleshooting Salesforce Revenue Lifecycle Management (RLM) — the native Revenue Cloud product covering order-to-cash lifecycle, Dynamic Revenue Orchestrator (DRO) fulfillment plan design, asset amendments, billing schedule creation via Connect API, and invoice management. Triggers on: Dynamic Revenue Orchestrator, RLM order decomposition, DRO fulfillment swimlanes, native Revenue Cloud billing schedule, asset lifecycle management Salesforce. NOT for CPQ quoting or pricing rules (use cpq-* skills), not for the legacy Salesforce Billing managed package with blng__* objects (different product entirely), not for standard Order objects without Revenue Cloud features."
+description: "Use this skill when implementing or troubleshooting Salesforce Revenue Lifecycle Management (RLM) — the native Revenue Cloud product covering order-to-cash lifecycle, Dynamic Revenue Orchestrator (DRO) fulfillment plan design, asset amendments, billing schedule creation via Connect API, and invoice management. Triggers on: Dynamic Revenue Orchestrator, RLM order decomposition, DRO fulfillment swimlanes, native Revenue Cloud billing schedule, asset lifecycle management Salesforce. NOT for the overall Revenue Cloud domain architecture or the RLM vs CPQ-classic vs legacy blng__ Billing product choice — use architect/revenue-cloud-architecture. NOT for querying the BillingSchedule / Invoice / FinanceTransaction objects and their relationships — use data/revenue-cloud-data-model."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -175,8 +175,7 @@ billing_schedule = resp.json()
 4. Assign the Fulfillment Plan to relevant product catalog entries.
 5. After order activation, create billing schedules via Connect API POST for each OrderItem that requires billing.
 6. For asset amendments: activate the amendment order, then create net-new BillingSchedule records for amended assets via Connect API. Do not expect auto-update of existing schedules.
-7. Configure Invoice generation from BillingSchedule milestone triggers.
-8. Monitor DRO fulfillment plan execution via the Revenue Cloud Fulfillment Dashboard.
+7. **Configure invoicing and monitor fulfillment.** Configure Invoice generation from BillingSchedule milestone triggers; monitor DRO fulfillment plan execution via the Revenue Cloud Fulfillment Dashboard.
 
 ---
 

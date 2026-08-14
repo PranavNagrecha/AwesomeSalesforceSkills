@@ -119,9 +119,9 @@
     "f9b56849eea28be88422",
     "fe7aa2245eb511af783f"
   ],
-  "content_hash": "5c5b738ca4c89ebd90454d572e72c3fdb30431009f023ac71efa61c5f78b397e",
+  "content_hash": "1c141f7161674c131a580070652bf51f712b963efe5f980c30482441a4ef16a2",
   "dependencies": [],
-  "description": "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT enforce JS types \u2014 `recordId` is always a string even if you declared it Number), required-vs-optional `@api` validation in `connectedCallback`, getter/setter pairs for reactive normalisation, design-attribute typing in js-meta.xml (datasource picker, dataType, supported objects, default values, propertyType), kebab-case \u2194 camelCase rules, and namespace prefix handling. NOT for component-to-component messaging design (see `component-communication`), NOT for App Builder exposure / surface targeting (see `lwc-app-builder-config`), NOT for Custom Property Editors for Flow (see `custom-property-editor-for-flow`).",
+  "description": "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT. NOT for component-to-component messaging design (see `component-communication`), NOT for \u2014 use lwc/lwc-reactive-state-patterns.",
   "file_location": "skills/lwc/lwc-public-api-hardening",
   "id": "lwc/lwc-public-api-hardening",
   "inputs": [

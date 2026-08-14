@@ -1,6 +1,6 @@
 ---
 name: npsp-program-management
-description: "Use this skill when configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) — a separate managed package for program delivery, cohort setup, service scheduling, service delivery recording, and outcome/attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for NPSP core donor management, gift entry, recurring donations, soft credits, or Health Cloud care programs."
+description: "Configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) - program delivery, cohort setup, service scheduling, service delivery recording, and attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for designing which outcomes and indicators to measure - use admin/program-outcome-tracking-design. NOT for NPSP donor, household and giving-rollup data - use data/nonprofit-data-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

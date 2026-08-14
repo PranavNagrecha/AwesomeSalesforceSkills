@@ -1,6 +1,6 @@
 ---
 name: data-model-design-patterns
-description: "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices — lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for object creation steps (use object-creation-and-design). NOT for bulk data loading operations."
+description: "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices — lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for the Setup steps to create the object itself — use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits — use admin/lookup-and-relationship-design."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,9 @@ triggers:
   - "rollup summary field is not available on this relationship"
   - "cascade delete wiped related records I did not expect to lose"
   - "what field type should I use to store phone numbers or email addresses"
+  - "section status JSON in a long text area is not reportable"
+  - "pipeline lives on account instead of opportunity"
+  - "lookup driven junction create duplicates"
 tags:
   - data-model
   - relationships
@@ -39,7 +42,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Data Model Design Patterns

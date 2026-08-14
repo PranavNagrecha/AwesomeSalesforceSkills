@@ -191,11 +191,12 @@ The response is returned by populating `response.put('response_x', element)` —
 1. **Inspect the WSDL** for the parser stoppers (size, SOAP version, `xsd:choice`, `xsd:any`, external imports, mixed content). Fix them on the WSDL file itself before uploading.
 2. **Generate the stub** via Setup > Apex Classes > Generate from WSDL. Save the cleaned WSDL alongside the project as source-of-truth for future regens.
 3. **Create the Named Credential** for the production endpoint and auth. Do not bake the URL into `endpoint_x` defaults.
-4. **Write the wrapper service class** that sets `endpoint_x = 'callout:<NC>'`, sets `timeout_x` (default 10s is too low for most SOAP services), and dispatches through a typed method per operation.
-5. **Implement the two-catch ladder**: `WebServiceCalloutException` first (SOAP faults), then `CalloutException` (network). Log both via `ApplicationLogger`.
-6. **Decide the async surface**: synchronous controller (rare — only for sub-2-second services), Queueable (default), or Batch (high-volume).
-7. **Write the WebServiceMock**. Cover happy path, SOAP fault, and timeout. Verify with `Test.startTest()` / `Test.stopTest()`.
-8. **Document the regen procedure** in the wrapper class header: which WSDL file, where it lives, and which WSDL edits were applied.
+4. **Write the wrapper service class.**
+   - Set `endpoint_x = 'callout:<NC>'` and `timeout_x` (default 10s is too low for most SOAP services); dispatch through a typed method per operation.
+   - Implement the two-catch ladder: `WebServiceCalloutException` first (SOAP faults), then `CalloutException` (network). Log both via `ApplicationLogger`.
+   - Decide the async surface: synchronous controller (rare — only for sub-2-second services), Queueable (default), or Batch (high-volume).
+5. **Write the WebServiceMock**. Cover happy path, SOAP fault, and timeout. Verify with `Test.startTest()` / `Test.stopTest()`.
+6. **Document the regen procedure** in the wrapper class header: which WSDL file, where it lives, and which WSDL edits were applied.
 
 ---
 

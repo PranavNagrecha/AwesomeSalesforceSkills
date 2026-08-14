@@ -1,6 +1,6 @@
 ---
 name: async-apex
-description: "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Platform Events or a deep-only Batch Apex implementation guide."
+description: "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Batchable structure or scope sizing — use apex/batch-apex-patterns. NOT for Queueable chaining — use apex/apex-queueable-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -445,7 +445,7 @@
       "top_k": 3
     },
     {
-      "query": "custom event not reaching parent use lms or api",
+      "query": "three components need to coordinate and I do not know whether to use @api, events, or LMS",
       "domain": "lwc",
       "expected_skill": "lwc/component-communication",
       "top_k": 3

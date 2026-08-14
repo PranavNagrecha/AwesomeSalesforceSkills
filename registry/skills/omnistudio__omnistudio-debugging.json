@@ -93,9 +93,9 @@
     "f879d5b834693a2d92b6",
     "ffdca14213a530f6811b"
   ],
-  "content_hash": "04debf3934778da06cc93a0957b0b7ca64b8cfe3214bb048c3d715884ac27dd3",
+  "content_hash": "dd2d18e85c41a1c83f19641dbc4056a7695c493721ebc85a3d34bf555b0c17e5",
   "dependencies": [],
-  "description": "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure failing', 'debug mode', 'action debugger', 'preview not running'. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path debugging.",
+  "description": "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path d \u2014 use omnistudio/omnistudio-performance.",
   "file_location": "skills/omnistudio/omnistudio-debugging",
   "id": "omnistudio/omnistudio-debugging",
   "inputs": [

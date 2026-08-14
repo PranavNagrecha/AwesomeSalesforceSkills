@@ -80,9 +80,9 @@
     "f425136bf192c3dd43b8",
     "f6cd87f8f41a437886a8"
   ],
-  "content_hash": "70ce671ab238c099324938013fda36c07a6d3985b44d815c93a00193ee1a75bc",
+  "content_hash": "61acfc917d99541674fd451ca86114abd9ff13c15d8a6ccccfc92e82a8df945b",
   "dependencies": [],
-  "description": "Use this skill when writing Apex triggers or classes that interact with CaseMilestone records \u2014 completing milestones, detecting violations, or reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement process admin setup, milestone configuration in Setup UI, or Flow-based milestone actions.",
+  "description": "Apex triggers and classes that read or write CaseMilestone records: completing milestones, detecting violations, reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement auto-association or assignment rules in a Case trigger \u2014 use apex/case-trigger-patterns. NOT for entitlement process and milestone setup in Setup \u2014 use admin/entitlements-and-milestones.",
   "file_location": "skills/apex/entitlement-apex-hooks",
   "id": "apex/entitlement-apex-hooks",
   "inputs": [

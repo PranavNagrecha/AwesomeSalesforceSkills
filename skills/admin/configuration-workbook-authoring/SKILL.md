@@ -90,7 +90,7 @@ The row schema is:
 | `source_story_id` | yes | User-story id (e.g. `US-2031`). |
 | `recommended_agent` | yes | Single downstream runtime agent (one of `object-designer`, `permission-set-architect`, `flow-builder`, `path-designer`, `lightning-record-page-auditor`, etc.). |
 | `recommended_skills[]` | yes (≥1) | Skill ids the executing agent should consult. |
-| `status` | yes | `proposed` \| `committed` \| `in-progress` \| `executed` \| `verified` \| `change-requested`. **Never** `TBD`/`TODO`/`?`. |
+| `status` | yes | `proposed` \| `committed` \| `in-progress` \| `executed` \| `verified` \| `change-requested`. **Never** a placeholder — `check_workbook.py` rejects `TBD`, `WIP`, `DOING`, `NEXT`, `?`, a bare to-do marker, and empty (see `PLACEHOLDER_STATUS_TOKENS`). |
 | `notes` | optional | Risks, decisions, links to ADRs. |
 
 ### Concept 2: Ten canonical sections
@@ -261,7 +261,7 @@ Before declaring the workbook ready for sprint commit:
 - [ ] Every row has both `source_req_id` and `source_story_id`
 - [ ] Every row has exactly one `recommended_agent` from the runtime roster
 - [ ] Every row has at least one entry in `recommended_skills[]`
-- [ ] No row has `status` of `TBD`, `TODO`, `?`, or empty
+- [ ] No row has a placeholder `status` — `TBD`, `WIP`, `DOING`, `NEXT`, `?`, a bare to-do marker, or empty
 - [ ] All 10 canonical sections exist (empty sections carry a
       `not-in-scope-this-release` note)
 - [ ] No row carries an inline credential, password, or token

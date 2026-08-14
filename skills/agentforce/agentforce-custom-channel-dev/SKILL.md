@@ -1,6 +1,6 @@
 ---
 name: agentforce-custom-channel-dev
-description: "Use this skill when building custom channel integrations with the Agentforce Agent API or BYOC (Bring Your Own Channel) for CCaaS — covering session lifecycle management, webhook handling, externalSessionKey design, sequenceId sequencing, BYOC Interaction API integration, and conversation state management. NOT for standard channels (Embedded Service, Slack, SMS/MMS via standard Messaging). NOT for agent-channel-deployment (which handles standard channel setup and activation). NOT for custom agent actions or Apex topics."
+description: "Use this skill when building custom channel integrations with the Agentforce Agent API or BYOC (Bring Your Own Channel) for CCaaS — covering session lifecycle management, webhook handling, externalSessionKey design, sequenceId sequencing, BYOC Interaction API integration, and conversation state management. NOT for standing up a standard channel (Embedded Service, Slack, Experience Cloud, Messaging) — use agentforce/agent-channel-deployment. NOT for writing the Apex actions the agent invokes — use agentforce/custom-agent-actions-apex."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

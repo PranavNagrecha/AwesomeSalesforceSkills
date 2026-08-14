@@ -1,6 +1,6 @@
 ---
 name: list-views-and-compact-layouts
-description: "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture."
+description: "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layouts or record types — use admin/record-types-and-page-layouts. NOT for Dynamic Forms — use admin/dynamic-forms-and-actions."
 category: admin
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

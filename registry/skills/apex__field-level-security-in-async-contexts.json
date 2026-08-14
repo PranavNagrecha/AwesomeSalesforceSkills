@@ -70,9 +70,9 @@
     "fbe7c85145229c614b40",
     "fd2c28089de54f78b143"
   ],
-  "content_hash": "fd5be09b85337fc0070f4b03bb8d64524d322fad17bf1d79ce2a51b4b67e8be0",
+  "content_hash": "7674cd2c6cadfa3370adce8a214b350070b2c906f94fb55b8b25700c57aab800",
   "dependencies": [],
-  "description": "Use when async Apex (Queueable, Batch, Schedulable, @future) needs to honor the originating user's field-level security but the framework runs the job in a different security context than the user who initiated it. Triggers: 'fls bypassed in batch apex', 'queueable runs as wrong user', 'stripInaccessible in async returns full record', 'WITH USER_MODE evaluating against system user', 'scheduled apex sees fields the original user could not'. NOT for synchronous FLS enforcement (use apex-stripinaccessible-and-fls-enforcement) or for the with/without sharing decision (use apex-with-without-sharing-decision).",
+  "description": "Use when async Apex (Queueable, Batch, Schedulable, @future) needs to honor the originating user's field-level security but the job runs in a different security context than the user who initiated it. Triggers: 'fls bypassed in batch apex', 'queueable runs as wrong user', 'stripInaccessible in async returns full record', 'WITH USER_MODE evaluating against system user', 'scheduled apex sees fields the original user could not'. NOT for synchronous FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for the with/without sharing keyword decision \u2014 use apex/apex-with-without-sharing-decision.",
   "file_location": "skills/apex/field-level-security-in-async-contexts",
   "id": "apex/field-level-security-in-async-contexts",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: shield-event-log-retention-strategy
-description: "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy — which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention', 'route event monitoring to splunk', 'how long to keep login history', 'siem salesforce integration', 'event monitoring storage tier'. NOT for enabling Shield (see salesforce-shield-deployment)."
+description: "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy — which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention'. NOT for enabling Shield (see salesforce-shield-deployment) — use security/event-monitoring."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

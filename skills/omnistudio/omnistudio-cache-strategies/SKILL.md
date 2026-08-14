@@ -1,6 +1,6 @@
 ---
 name: omnistudio-cache-strategies
-description: "Configure caching on DataRaptors and Integration Procedures to cut response times, with cache-bust and freshness guarantees. NOT for platform-level org cache."
+description: "Configure caching on DataRaptors and Integration Procedures for response-time gains. Triggers: OmniStudio cache, DataRaptor cache, IP cache TTL. NOT for IP-specific cacheable design — use omnistudio/integration-procedure-cacheable-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -24,7 +24,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # OmniStudio Cache Strategies

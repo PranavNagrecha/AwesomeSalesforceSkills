@@ -76,12 +76,12 @@
     "f33f48210e30c3d1d335",
     "f3f7103b4c6f0f7d5041"
   ],
-  "content_hash": "f489c5c282a997e9b778f3732bf8c3a8d497696ed3088677e1fd8577fbef137a",
+  "content_hash": "94fdb800e9113ee11b2b81a416291da438bab535d29d387d209a939aa1fdb365",
   "dependencies": [
     "products-and-pricebooks",
     "approval-processes"
   ],
-  "description": "Use when gathering, designing, or validating the end-to-end quote-to-cash process on standard Salesforce: Opportunity to Quote (with line items) to Synced Quote to Approval Process to Quote PDF to Order creation. Trigger keywords: quote approval, discount policy, quote PDF limits, order from quote, quote sync, quote template. NOT for CPQ/Revenue Cloud pricing rules, discount schedules, or guided selling \u2014 use CPQ skills for those.",
+  "description": "Use when designing or validating the end-to-end quote-to-cash process on standard Salesforce: Opportunity to Quote to Synced Quote to Approval Process to Quote PDF to Order creation. Trigger keywords: quote approval, discount policy, quote PDF limits, order from quote, quote sync, quote template. NOT for CPQ pricing rules or discount schedules \u2014 use admin/cpq-pricing-rules. NOT for building the quote template itself \u2014 use admin/quotes-and-quote-templates.",
   "file_location": "skills/admin/quote-to-cash-requirements",
   "id": "admin/quote-to-cash-requirements",
   "inputs": [

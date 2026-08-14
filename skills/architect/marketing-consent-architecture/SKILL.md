@@ -1,6 +1,6 @@
 ---
 name: marketing-consent-architecture
-description: "Consent management architecture across Marketing Cloud and CRM: data model design, cross-system sync patterns, and compliance design for GDPR/CCPA. Trigger keywords: consent data model, ContactPointConsent, ContactPointTypeConsent, Individual object, CRM system of record, MC consent sync, opt-in opt-out architecture, data use purpose, lawful basis. NOT for individual consent setup steps or configuring a single publication list."
+description: "Consent management architecture across Marketing Cloud and CRM: data model design, cross-system sync patterns, and compliance design for GDPR/CCPA. Trigger keywords: consent data model, ContactPointConsent, ContactPointTypeConsent, Individual object, CRM system of record, MC consent sync, opt-in opt-out architecture, data use purpose, lawful basis. NOT for Subscription or Preference Center setup, publication lists and unsubscribe handling — use admin/consent-management-marketing. NOT for right-to-be-forgotten and data subject requests in CRM — use security/gdpr-data-privacy."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: named-credentials-setup
-description: "Named Credentials and External Credentials configuration for secure outbound callouts: per-user vs per-org authentication, legacy vs enhanced Named Credentials, external credential principal types (Named Principal, Per User, Anonymous), OAuth 2.0 and JWT flows, and credential deployment. NOT for callout code patterns, Apex HTTP implementation, or OAuth server-side flow debugging."
+description: "Named Credentials and External Credentials configuration for secure outbound callouts: per-user vs per-org authentication, legacy vs enhanced Named Credentials, external credential principal types (Named Principal, Per User, Anonymous), OAuth 2.0 and JWT flows, and credential deployment. NOT for the Apex callout code — use apex/apex-named-credentials-patterns. NOT for connected app setup — use admin/connected-apps-and-auth."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

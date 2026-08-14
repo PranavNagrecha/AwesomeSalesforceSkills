@@ -27,9 +27,9 @@
     "ea3a60416b61c8982cda",
     "ebf2241e4395d1be1e3e"
   ],
-  "content_hash": "3071a5111106ae5ab7faaaa490fa473eb8a6cd6c68484979b843610392053ba8",
+  "content_hash": "ff81acac29e3ff2e88818bced6290a39b63b43a0e156ae90f1913d5a12f59327",
   "dependencies": [],
-  "description": "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking.",
+  "description": "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking \u2014 use security/platform-encryption.",
   "file_location": "skills/security/shield-kms-byok-setup",
   "id": "security/shield-kms-byok-setup",
   "inputs": [

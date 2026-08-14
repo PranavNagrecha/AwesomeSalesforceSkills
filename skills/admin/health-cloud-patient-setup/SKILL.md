@@ -1,6 +1,6 @@
 ---
 name: health-cloud-patient-setup
-description: "Use this skill when configuring patient or member records in Salesforce Health Cloud — including Person Account enablement, Health Cloud patient record type creation, care team role configuration, patient card customization, and clinical data display. Trigger keywords: patient setup, Health Cloud person account, patient card component, care team roles, clinical data display. NOT for standard account setup, general CRM contact configuration, or non-Health-Cloud person account questions."
+description: "Configure patient or member records in Salesforce Health Cloud: Person Account enablement, patient record types, care team role configuration, patient card customization, clinical data display. Trigger keywords: patient setup, Health Cloud person account, patient card component, care team roles, clinical data display. NOT for Person Accounts outside Health Cloud - use data/person-accounts. NOT for enrolling a patient into a care program - use admin/care-program-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -185,4 +185,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `data/person-accounts` — Core person account enablement details, SOQL impacts, and data model changes that apply across all clouds using person accounts
 - `admin/care-program-management` — Care plans, care programs, and care gap management built on top of the patient setup established here
-- `admin/health-cloud-data-model` — Deep reference for Health Cloud-specific objects including clinical data objects referenced in this skill
+- `data/health-cloud-data-model` — Deep reference for Health Cloud-specific objects including clinical data objects referenced in this skill

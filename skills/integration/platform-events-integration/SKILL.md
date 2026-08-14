@@ -1,6 +1,6 @@
 ---
 name: platform-events-integration
-description: "Use when publishing Platform Events from external systems via REST API, subscribing to Platform Events from outside Salesforce via CometD or Pub/Sub API, designing replay ID strategy for durable external consumers, or handling high-volume event delivery guarantees. Trigger keywords: 'external publish platform event', 'CometD subscribe', 'Pub/Sub API', 'replay ID external', 'durable subscription', 'RetainUntilDate'. NOT for Apex-only event publishing or triggering (use platform-events-apex). NOT for Change Data Capture external subscription (use change-data-capture-integration)."
+description: "Use when publishing Platform Events from external systems via REST API, subscribing to Platform Events from outside Salesforce via CometD or Pub/Sub API, designing replay ID strategy for durable external consumers, or handling high-volume event delivery guarantees. Trigger keywords: 'external publish platform event', 'CometD subscribe', 'Pub/Sub API', 'replay ID external', 'durable subscription', 'RetainUntilDate'. NOT for publishing or subscribing inside the org from Apex — use apex/platform-events-apex. NOT for streaming record changes rather than custom events — use integration/change-data-capture-integration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

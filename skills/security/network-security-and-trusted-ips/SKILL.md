@@ -1,6 +1,6 @@
 ---
 name: network-security-and-trusted-ips
-description: "Configure and audit Salesforce network security controls — trusted IP ranges (org-wide Network Access), login IP ranges on profiles, CSP Trusted Sites for Lightning components, CORS allowlists for external JavaScript, and TLS requirements — and troubleshoot login-blocked-by-IP or CSP violation errors. NOT for org-wide session settings, MFA configuration, or real-time Transaction Security Policies."
+description: "Configure and audit Salesforce network security controls — trusted IP ranges (org-wide Network Access), login IP ranges on profiles, CSP Trusted Sites for Lightning components, CORS allowlists for external JavaScript, and TLS requirements — and troubleshoot login-blocked-by-IP or CSP violation errors. NOT for per-profile login IP range policy, IP relaxation decisions, or their interaction with MFA and SSO — use security/ip-relaxation-and-restriction."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

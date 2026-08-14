@@ -81,9 +81,9 @@
     "f9401a3ba9bbf7bd8e97",
     "fe0bda6f40e9113339c8"
   ],
-  "content_hash": "f5c52536938b89fcc515888d709b508b9f25d79a9cec628a86700adafce13c31",
+  "content_hash": "5b91fd9ebe22a0a3dbf9ff63e1e4bccf88814e11c60982d9307987e416741fd7",
   "dependencies": [],
-  "description": "Configuring Salesforce opportunity management: sales stages, sales processes, opportunity record types, Path configuration, opportunity teams, opportunity splits, and forecasting categories. Use when setting up or restructuring the opportunity lifecycle for Sales Cloud. NOT for Collaborative Forecasts setup (use collaborative-forecasts skill). NOT for CPQ pricing or product configuration (use Revenue Cloud skills). NOT for territory-based forecasting alignment (use enterprise-territory-management skill).",
+  "description": "Configuring Salesforce opportunity management: sales stages, sales processes, opportunity record types, Path configuration, opportunity teams, opportunity splits, and forecasting categories. Use when setting up or restructuring the opportunity lifecycle for Sales Cloud. NOT for forecast types, rollup methods, quotas or manager adjustments \u2014 use admin/collaborative-forecasts. NOT for agreeing what the stages and exit criteria should be before any build \u2014 use admin/sales-process-mapping. NOT for CPQ pricing or product configuration.",
   "file_location": "skills/admin/opportunity-management",
   "id": "admin/opportunity-management",
   "inputs": [

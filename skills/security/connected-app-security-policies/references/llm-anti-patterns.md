@@ -124,6 +124,30 @@ Use the current Metadata API ConnectedApp reference (v63+) to confirm field name
 
 ---
 
+## Anti-Pattern 7: Prescribing Device Flow for Headless Authentication
+
+**What the LLM generates:** "To authorize the CLI on a server with no browser, run `sf org login device` and enter the code" — or, when told that fails, the confident follow-up "create your own Connected App and enable Device Flow instead of using the default CLI app."
+
+**Why it happens:** Device Flow was the correct answer for years, so it dominates the training data for the query "authenticate Salesforce CLI without a browser." The custom-app suggestion is worse than a stale fact: it is the model reasoning correctly from a general OAuth principle (a default client's restrictions do not bind your own client) that Salesforce specifically closed off.
+
+**Correct pattern:**
+
+```
+Device Flow is blocked, and there is no custom-app workaround:
+- Since August 28, 2025, new AND existing Device Flow authorizations
+  against the default Salesforce CLI connected app are blocked.
+- The "Enable for Device Flow" option in API (Enable OAuth Settings)
+  has been permanently disabled, so a custom Connected App cannot
+  carry the flow either.
+Use instead:
+  sf org login web   browser available
+  sf org login jwt   headless / CI — the supported path
+```
+
+**Detection hint:** any occurrence of `login device`, `auth:device:login`, or the phrase "enter this code at" in Salesforce authorization guidance. Also flag any answer that offers a custom Connected App as the escape hatch — that is the specific reasoning step Salesforce blocked, and it reads as more authoritative than the plain stale recommendation.
+
+---
+
 ## Anti-Pattern: Inventing a 60-Second `iat` Window for the JWT Bearer Flow
 
 **What the LLM generates:** "The assertion's `iat` and `exp` claims must satisfy `exp - iat <= 3 minutes`, and the JWT must reach Salesforce within 60 seconds of `iat`. Any clock skew beyond 60 seconds produces `invalid_grant`."

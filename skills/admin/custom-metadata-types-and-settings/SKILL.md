@@ -1,6 +1,6 @@
 ---
 name: custom-metadata-types-and-settings
-description: "Use when choosing between Custom Metadata Types and Custom Settings, understanding hierarchical vs list settings, deployment behavior, governor limit implications, or accessing either from Apex and Flow. Trigger keywords: 'custom metadata vs custom settings', 'hierarchical settings per user profile', 'deployable config vs runtime settings', 'getValues getInstance in apex', 'flow get records custom settings'. NOT for custom objects (use object-creation-and-design), NOT for Named Credentials (use named-credentials-setup), NOT for general CMT field design in isolation (use custom-metadata-types)."
+description: "Use when choosing between Custom Metadata Types and Custom Settings, understanding hierarchical vs list settings, deployment behavior, governor limit implications, or accessing either from Apex and Flow. Trigger keywords: 'custom metadata vs custom settings', 'hierarchical settings per user profile', 'deployable config vs runtime settings', 'getValues getInstance in apex', 'flow get records custom settings'. NOT for modelling the CMT itself or protecting packaged defaults — use admin/custom-metadata-types. NOT for records users edit as business data — use admin/object-creation-and-design. NOT for secrets — use integration/named-credentials-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: apex-managed-sharing
-description: "Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility)."
+description: "Sharing records programmatically via Apex: Share objects, row cause, Apex sharing reason, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules — use admin/sharing-and-visibility. NOT for recalc job runtime — use data/sharing-recalculation-performance."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

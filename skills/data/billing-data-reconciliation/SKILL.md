@@ -1,6 +1,6 @@
 ---
 name: billing-data-reconciliation
-description: "Use this skill to investigate, diagnose, and resolve data mismatches across the Salesforce Billing reconciliation chain — from Quote Line through Order, Billing Schedule, Invoice, Invoice Line, and Payment to Payment Allocation. Triggers: 'invoice balance does not match payment received', 'blng__Invoice__c status stuck at Posted despite full payment', 'payment allocated but invoice still shows balance due', 'billing schedule amount differs from order product', 'revenue transaction error log records appearing', 'blng__PaymentAllocation__c not closing invoice', 'reconciling billing data for month-end close', 'invoice to payment mismatch in Salesforce Billing'. NOT for configuring revenue recognition rules or Finance Periods (see admin/revenue-recognition-requirements skill), NOT for setting up billing schedules or invoice runs (see admin/billing-schedule-setup skill), NOT for standard Salesforce Opportunity revenue schedules (unrelated to Salesforce Billing), NOT for CRM reporting or Opportunity close date reconciliation."
+description: "Investigate billing data mismatches across Quote, Order, Invoice, Payment, and Allocation. Triggers: invoice balance mismatch, payment allocation, billing reconciliation. NOT for revenue recognition setup — use admin/revenue-recognition-requirements. NOT for billing schedule configuration — use admin/billing-schedule-setup."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -253,3 +253,25 @@ package.xml members for Report and Dashboard:
 `Report` or `Dashboard` type, and for any report/dashboard member containing a
 space — a space almost always means a label was pasted where a developer name
 belongs. Both are wrong by construction, before the org is ever contacted.
+
+---
+
+## Anti-Pattern: Treating LastRunDate as Adoption
+
+**What the LLM generates:** "Delete every report with LastRunDate older than 12 months" or "this dashboard is used weekly because LastRunDate is recent."
+
+**Why it happens:** LastRunDate updates on dashboard refresh, subscriptions, and API runs — not only a human opening the report.
+
+**Correct pattern:** Use `LastViewedDate` (per user) for adoption. Inventory dashboard `runningUser` / `SpecifiedUser` before offboarding. Do not equate a scheduled refresh with a reader.
+
+**Detection hint:** Cleanup plans keyed only on `LastRunDate`; no mention of dashboard references or running-user hygiene.
+
+---
+
+## Anti-Pattern: Mixing `organization` and `team` Tiles Without Saying So
+
+**What the LLM generates:** A six-component "pipeline health" dashboard cloned from mixed personal and org reports.
+
+**Correct pattern:** Every component's `filterScope` matches the dashboard's audience. Titles that compare counts must share a scope. Sharing, report scope, and dashboard running user are three layers.
+
+**Detection hint:** Dashboard XML with both `<filterScope>organization</filterScope>` and `<filterScope>team</filterScope>` (or `mine`) in neighbouring components.

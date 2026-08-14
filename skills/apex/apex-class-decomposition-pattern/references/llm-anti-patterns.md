@@ -89,7 +89,7 @@ public with sharing class AccountSyncService extends BaseService {
 
 ## Anti-Pattern 4: Over-decomposing a 50-line utility
 
-**What the LLM generates:** for a 50-line `CsvParser` utility, four files: `CsvParserDomain`, `CsvParserService`, `CsvParserSelector`, `CsvParserHandler` — three of them with one method, all of them holding `// TODO`.
+**What the LLM generates:** for a 50-line `CsvParser` utility, four files: `CsvParserDomain`, `CsvParserService`, `CsvParserSelector`, `CsvParserHandler` — three of them with one method, all of them holding a `// fill this in later` stub comment.
 
 **Why it happens:** the LLM applies the brief literally to every Apex class in sight without reading "When NOT to split."
 

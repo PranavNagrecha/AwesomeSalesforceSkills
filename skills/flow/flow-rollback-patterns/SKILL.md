@@ -1,6 +1,6 @@
 ---
 name: flow-rollback-patterns
-description: "Use the Flow Rollback Records element to undo DML inside the current transaction. Covers when rollback is appropriate vs catastrophic, how to combine with fault paths, partial-commit pitfalls, and the interaction with publish-after-commit Platform Events. NOT for external-system rollback (use compensation patterns). NOT for Database.SavePoint in Apex (use apex-transaction-control)."
+description: "Use the Flow Rollback Records element to undo DML inside the current transaction. Covers when rollback is appropriate vs catastrophic, how to combine with fault paths, partial-commit pitfalls, and the interaction with publish-after-commit. NOT for external-system rollback (use compensation patterns) — use apex/apex-savepoint-and-rollback."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

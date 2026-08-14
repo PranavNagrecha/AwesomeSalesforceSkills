@@ -1,6 +1,6 @@
 ---
 name: care-plan-configuration
-description: "Use this skill when configuring care plan templates, care plan problems, goals, and tasks in Salesforce Health Cloud — covering both the Integrated Care Management (ICM) model (Spring '23+, FHIR R4-aligned, recommended) and the legacy managed-package model (CarePlanTemplate__c + Case Tasks). Trigger keywords: care plan template, ICM care plan, PGI library, action plan template, problem definition, goal definition, care plan setup. NOT for general case management configuration, non-Health-Cloud task management, or clinical program enrollment (see admin/care-program-management)."
+description: "Configure care plan templates, problems, goals, and tasks in Salesforce Health Cloud - the Integrated Care Management (ICM) model (Spring '23+, FHIR R4-aligned) and the legacy CarePlanTemplate__c + Case Tasks model. Trigger keywords: care plan template, ICM care plan, PGI library, action plan template, problem definition, goal definition. NOT for enrolling a patient into a clinical program - use admin/care-program-management. NOT for care team workflow, transition of care and SDOH barriers - use admin/care-coordination-requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

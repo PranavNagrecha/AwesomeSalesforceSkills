@@ -1,6 +1,6 @@
 ---
 name: npsp-trigger-framework-extension
-description: "Use when extending the NPSP Trigger-Driven Trigger Management (TDTM) framework with custom Apex handler classes — covering class authorship, DmlWrapper return patterns, Trigger_Handler__c registration, load order, recursion guards, and test isolation. NOT for standard Apex triggers outside of NPSP, general trigger-handler framework design, or Nonprofit Cloud (NPC) which replaced NPSP in new orgs."
+description: "Use when extending the NPSP Trigger-Driven Trigger Management (TDTM) framework with custom Apex handler classes — covering class authorship, DmlWrapper return patterns, Trigger_Handler__c registration, load order, recursion guards, and test isolation. NOT for trigger-handler framework design outside NPSP — use apex/trigger-framework. NOT for NPSP vs Nonprofit Cloud (NPC) — use architect/npsp-vs-nonprofit-cloud-decision."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

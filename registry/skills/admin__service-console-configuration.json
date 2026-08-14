@@ -78,9 +78,9 @@
     "fcfc3e9caa33458ebae5",
     "ffa0e719a06b3b82d463"
   ],
-  "content_hash": "b5be43f5ef4a7645db43b612140580ba4d6e43baa9df490bdfec0a5dc2e05230",
+  "content_hash": "77f66280d9a355622965b830ac4c37dbe6210b0986967d9b3c45316bb7211df3",
   "dependencies": [],
-  "description": "Use this skill to configure a Lightning Service Console app in Salesforce \u2014 setting Console Navigation (split view), defining workspace tabs and subtabs, configuring the utility bar with Omni-Channel, Macros, and History, creating Quick Text entries, setting up keyboard shortcuts, and defining navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for generic Lightning app creation (use app-and-tab-configuration), NOT for Omni-Channel routing configuration (use omni-channel-routing), NOT for CTI adapter installation (use open-cti-setup), NOT for Einstein Bot or Messaging setup.",
+  "description": "Use this skill to configure a Lightning Service Console app in Salesforce \u2014 Console Navigation (split view), workspace tabs and subtabs, the utility bar with Omni-Channel, Macros and History, Quick Text, keyboard shortcuts, and navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for opening or refreshing console tabs from code \u2014 use lwc/lwc-console-workspace-api. NOT for Omni-Channel routing setup \u2014 use admin/omni-channel-routing-setup.",
   "file_location": "skills/admin/service-console-configuration",
   "id": "admin/service-console-configuration",
   "inputs": [

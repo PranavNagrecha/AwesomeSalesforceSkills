@@ -1,6 +1,6 @@
 ---
 name: email-templates-and-alerts
-description: "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services."
+description: "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for migrating Classic templates to Lightning — use admin/classic-email-template-migration. NOT for sending email from Apex — use apex/apex-outbound-email-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

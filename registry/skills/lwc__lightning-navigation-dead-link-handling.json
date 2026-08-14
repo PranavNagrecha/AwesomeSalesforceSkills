@@ -51,9 +51,9 @@
     "f1ee68ea1b355bae61b5",
     "facce9be9f2494f5c8bc"
   ],
-  "content_hash": "9531ebede9b9ab12f24acd8ce55dcc65a9f63cafe62461fdc3f4471c2f12778b",
+  "content_hash": "d21529f9c4640c1deb4fb68c7daa59851c6beae5b68fbb2c0bdab21d91ef1dc5",
   "dependencies": [],
-  "description": "Use when an LWC navigates via NavigationMixin to records or pages that may no longer exist, lack the user's access, or be permanently moved. Triggers: 'lightning navigation 404', 'navigate to deleted record', 'NavigationMixin error toast', 'graceful fallback when target page missing', 'permission denied on navigation'. NOT for general routing within an SPA or for Experience Cloud public-facing routing.",
+  "description": "Use when an LWC navigates via NavigationMixin to records or pages that may no longer exist, lack the user's access, or be permanently moved. Triggers: 'lightning navigation 404', 'navigate to deleted record', 'NavigationMixin error toast', 'graceful fallback when target page missing', 'permission denied on navigation'. NOT for ordinary NavigationMixin calls that work \u2014 use lwc/lwc-navigation-mixin. NOT for designing URL/deep-link routing \u2014 use lwc/navigation-and-routing.",
   "file_location": "skills/lwc/lightning-navigation-dead-link-handling",
   "id": "lwc/lightning-navigation-dead-link-handling",
   "inputs": [

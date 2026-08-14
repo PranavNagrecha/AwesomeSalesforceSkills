@@ -1,6 +1,6 @@
 ---
 name: component-communication
-description: "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem."
+description: "Choose and implement LWC communication — @api, events, LMS, @wire between parent, child, sibling, or workspace components. Triggers: 'LWC communication pattern', 'should I use LMS or @api', 'three components need to coordinate'. NOT for the mechanics of a single child-to-parent CustomEvent — bubbles / composed / cancelable, detail payload, event naming, or an event that is not reaching the parent — use lwc/lwc-custom-event-patterns. NOT for @wire data provisioning — use lwc/wire-service-patterns."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -15,11 +15,10 @@ tags:
   - shadow-dom
 triggers:
   - "how should lwc components talk to each other"
-  - "custom event is not reaching the parent component"
   - "should i use lightning message service or @api"
   - "child component api feels too coupled"
   - "event detail is not crossing component boundaries"
-  - "custom event not reaching parent use lms or api"
+  - "three components need to coordinate and I do not know whether to use @api, events, or LMS"
 inputs:
   - "component relationship such as parent-child, sibling, utility, or app-wide"
   - "whether the communication is state down, intent up, or cross-hierarchy broadcast"

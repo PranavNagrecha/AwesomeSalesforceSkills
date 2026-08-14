@@ -1,6 +1,6 @@
 ---
 name: fsl-resource-management
-description: "Use this skill to configure Field Service Lightning service resources — including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for service territory setup (see fsl-service-territory-setup), NOT for scheduling policy configuration, and NOT for FSL mobile app setup."
+description: "Use this skill to configure Field Service Lightning service resources — including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for territory-level WorkCapacityLimit throttling or capacity-vs-utilization reporting — use admin/fsl-capacity-planning. NOT for service territory setup — use admin/fsl-service-territory-setup. NOT for work rules and service objectives — use admin/fsl-scheduling-policies."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

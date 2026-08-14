@@ -1,6 +1,6 @@
 ---
 name: rest-api-patterns
-description: "Use when designing, implementing, or reviewing Salesforce REST API integration — covering CRUD operations on sObjects, SOQL-based queries, paginated result sets, Composite requests, Composite Batch, and sObject Tree. Triggers: 'Salesforce REST API', 'composite API', 'nextRecordsUrl', 'sObject Tree', 'REST CRUD', 'REST pagination', 'API limits', 'OAuth Bearer token'. NOT for GraphQL API queries, Bulk API 2.0 large-data-load jobs, Metadata API deployments, or custom Apex REST endpoints."
+description: "Use when designing, implementing, or reviewing Salesforce REST API integration — covering CRUD operations on sObjects, SOQL-based queries, paginated result sets, Composite requests, Composite Batch, and sObject Tree. Triggers: 'Salesforce REST API', 'composite API', 'nextRecordsUrl', 'sObject Tree', 'REST CRUD', 'REST pagination', 'API limits', 'OAuth Bearer token'. NOT for loading or extracting large record volumes as a job — use integration/bulk-api-2-patterns. NOT for GraphQL queries or the GraphQL-vs-REST choice — use integration/graphql-api-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

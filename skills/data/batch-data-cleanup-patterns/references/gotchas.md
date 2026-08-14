@@ -59,3 +59,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any destructive deployment containing a `CustomField` member that happens to be a roll-up summary — including the routine "delete it and re-create it with a corrected filter" refactor, which reads as reversible but is not.
 
 **How to avoid:** Treat roll-up summary deletion as a one-way door in the cleanup runbook, separate from the reversible destructive changes. Export the current values (`SELECT Id, Rollup__c FROM Object__c`) first if any report, formula, or integration reads them, and remember that a re-created roll-up recalculates only from surviving detail records — child rows the purge already removed are never reflected again. Where only the filter criteria need to change, edit the roll-up in place instead of dropping and re-adding it.
+
+---
+
+## Gotcha 7: Intake Purge Must Hard-Delete, and Metrics Must Not Live on the Purged Row
+
+**What happens:** Salesforce is a pass-through: after TTL the application is deleted, but `delete` leaves 15 days in the Recycle Bin. Compliance still has recoverable PII. Funnel counts lived on the Application (or in an LTA JSON on it) — they die with the row. Back-office cannot look up "what did this person file?" in Salesforce; the document store is the record.
+
+**When it occurs:** Experience Cloud guest or logged-in intake where Salesforce is not the system of record.
+
+**How to avoid:** Call `Database.emptyRecycleBin` in batch `execute()` (per chunk), not only in `finish()` after a huge scope has sat in the bin. Emit **non-PII** section-lifecycle events (id, section, timestamp) so measurement survives. Do not purge until the evidence artifact (PDF object id in the document store, not the blob in Salesforce) is confirmed. Null PII fields on absolute session TTL even before the delete job runs.

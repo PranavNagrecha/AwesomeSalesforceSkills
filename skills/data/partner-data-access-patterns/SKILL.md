@@ -1,6 +1,6 @@
 ---
 name: partner-data-access-patterns
-description: "Use this skill when designing or troubleshooting data visibility for partner (channel) users in a Salesforce Experience Cloud Partner Community. Triggers: partner user data visibility, PRM data access model, partner role hierarchy sharing, deal registration data access partner, channel partner analytics. NOT for internal data access patterns. NOT for customer community data sharing (see admin/sharing-and-visibility or external-user-data-sharing for customer portal scenarios)."
+description: "Use this skill when designing or troubleshooting data visibility for partner (channel) users in a Salesforce Experience Cloud Partner Community. Triggers: partner user data visibility, PRM data access model, partner role hierarchy sharing, deal registration data access partner, channel partner analytics. NOT for Customer Community sharing sets, share groups and external OWDs — use data/external-user-data-sharing. NOT for the internal sharing model (OWD, role hierarchy, sharing rules) — use admin/sharing-and-visibility."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

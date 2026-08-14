@@ -1,6 +1,6 @@
 ---
 name: navigation-and-routing
-description: "Use when implementing or reviewing Lightning Web Component navigation with `NavigationMixin`, PageReference objects, URL state, and `CurrentPageReference` across Lightning Experience, mobile, and Experience Cloud. Triggers: 'navigate to record page from LWC', 'PageReference state not working', 'should I use window.location', 'Experience Cloud navigation issue'. NOT for component-to-component messaging or data-loading strategy when navigation is only a side effect."
+description: "URL routing, deep links, and page-reference patterns beyond basic NavigationMixin calls. Triggers: deep link LWC, page reference, URL state. NOT for simple in-app navigation — use lwc/lwc-navigation-mixin."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

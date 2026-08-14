@@ -1,6 +1,6 @@
 ---
 name: apex-custom-permissions-check
-description: "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for CRUD/FLS enforcement (use security-apex-crud-fls). NOT for standard Salesforce permissions (use permission-set-architecture)."
+description: "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for creating or assigning the permission in Setup — use admin/custom-permissions. NOT for CRUD/FLS enforcement — use apex/apex-stripinaccessible-and-fls-enforcement."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

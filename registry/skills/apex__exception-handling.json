@@ -60,9 +60,9 @@
     "fb52d6b571c76fafc515",
     "feab8c178e1c24ca7d84"
   ],
-  "content_hash": "ff083c90edb83f2907e2bf262c6fc6f7668031099914937bf76dbc4da3e3b1bc",
+  "content_hash": "43e7dabdffff1d39676d36a894f3460e5780e9f905220086a73e51e7b479bef9",
   "dependencies": [],
-  "description": "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for choosing async execution models or general governor-limit tuning.",
+  "description": "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for a specific runtime error \u2014 use apex/common-apex-runtime-errors. NOT for a cross-cutting error framework \u2014 use apex/error-handling-framework.",
   "file_location": "skills/apex/exception-handling",
   "id": "apex/exception-handling",
   "inputs": [

@@ -78,11 +78,11 @@
     "f436cac44d78fc7cc1a9",
     "fa4f49fe409c4e4e3163"
   ],
-  "content_hash": "9752740fbfba5583f17bea3159f89aafa54b8791391f27f17db4d4d51e57e894",
+  "content_hash": "227d65e588079a5614e7ff9d4701609388171df93e02ac8a22c160705e346d7a",
   "dependencies": [
     "fsl-service-territory-setup"
   ],
-  "description": "Use this skill to create, configure, or tune Field Service Lightning scheduling policies \u2014 including work rules (pass/fail filters) and service objectives (weighted ranking criteria). Covers the four default policies, custom policy design, work rule type selection, and objective weighting strategy. NOT for configuring service territories, resource availability calendars, or the Salesforce Scheduler (Appointment Scheduling) product.",
+  "description": "Use this skill to create, configure, or tune Field Service Lightning scheduling policies \u2014 including work rules (pass/fail filters) and service objectives (weighted ranking criteria). Covers the four default policies, custom policy design, work rule type selection, and objective weighting strategy. NOT for running or tuning the Optimizer itself \u2014 use admin/fsl-scheduling-optimization-design. NOT for resource skills and preferences \u2014 use admin/fsl-resource-management. NOT for resource capacity records \u2014 use admin/fsl-capacity-planning.",
   "file_location": "skills/admin/fsl-scheduling-policies",
   "id": "admin/fsl-scheduling-policies",
   "inputs": [

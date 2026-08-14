@@ -1,6 +1,6 @@
 ---
 name: platform-events-apex
-description: "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event'. NOT for Flow-only publish/subscribe automation."
+description: "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event'. NOT for external publishers or subscribers — use integration/platform-events-integration. NOT for subscriber batch size and retries — use apex/apex-event-bus-subscriber."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

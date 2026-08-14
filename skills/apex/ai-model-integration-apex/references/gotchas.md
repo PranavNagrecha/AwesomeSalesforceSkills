@@ -39,3 +39,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Every `aiplatform.ModelsAPI` callout that does not null-check the status-specific response field before accessing nested properties.
 
 **How to avoid:** Always null-check `response.Code200` immediately after the call. Log the full response object when `Code200` is null to capture the actual status code and error detail. Wrap the callout in a try-catch for `aiplatform.ModelsAPI.createChatGenerationsException` (or the equivalent for `createGenerations` and `createEmbeddings`) to handle typed API errors separately from generic exceptions. Treat any non-null Code200 path as the success path only.
+
+---
+
+## Gotcha 5: Trust Layer Data Masking Caps Every Model at 65,536 Tokens, Regardless of the Model's Own Context Window
+
+**What happens:** The Supported Models documentation states that "All models are currently limited to a context size of 65,536 tokens when data masking is turned on in the Einstein Trust Layer." The ceiling is imposed by the Trust Layer, not by the model — a model whose published context window is far larger still gets 65,536 tokens in an org with masking on. Note what the number is attached to: the page words it as a *context size* and draws no input/output split, so treat it as the whole context — prompt plus completion together — standing in for the model's native window while masking is on. Do not budget 65,536 tokens of prompt and expect the response on top of it. It is also an org-level Trust Layer setting, not something the class's `.cls-meta.xml` `apiVersion` controls, so identical Apex succeeds in a sandbox with masking off and fails in production with masking on — which reads as an environment bug rather than a prompt-size bug.
+
+**When it occurs:** Apex that builds a prompt from record data at unbounded size — packing many records into a single `createChatGenerations` call, embedding a full Knowledge article or a long `Description` field, or accumulating chat history across turns without trimming. The exposure grows precisely as a developer optimises callout count by fitting more records per call.
+
+**How to avoid:** Treat 65,536 tokens as the planning ceiling whenever masking may be enabled, and bound prompt input in Apex rather than trusting the model's advertised window. Cap source text before it reaches the request body and keep records-per-call fixed, applying the same slice discipline the Queueable chain uses for callout limits. Confirm the org's Trust Layer masking setting while gathering Before Starting context. The page notes the full context window returns if masking is turned off, but that is a Trust Layer security decision owned outside this class, not a tuning knob for an oversized prompt — the masking setting itself belongs to `agentforce/einstein-trust-layer`. Re-check the figure against the Supported Models page before sizing prompts — the documentation words it as "currently".
+
+---
+
+## Gotcha 6: Retired Model API Names Are Rerouted, Not Rejected — a Stale Name Degrades Silently
+
+**What happens:** The `sfdc_ai__Default*` roster turns over on dated schedules. The Supported Models page annotates retired entries with a date — Vertex AI Gemini 3 Pro (`sfdc_ai__DefaultVertexAIGeminiPro30`) is marked "Retired on Apr 23, 2026" — and states that "After the shutdown date, you won't be able to use that model in your application and requests to that model will be rerouted to a replacement model." The failure mode is therefore silent. A hardcoded model API name does not begin throwing; it begins answering from a different model. Prompts tuned against the old model, and any parsing that leans on its output shape or formatting habits, degrade with no exception, no non-200 status, and no null `Code200` to catch.
+
+**When it occurs:** Any Apex class pinning a model API name as a `static final String` — which is every quick-start pattern, including the ones in this skill's examples. Exposure is proportional to how long the class has run in production without review.
+
+**How to avoid:** Resolve the model API name from Custom Metadata (see LLM Anti-Pattern 4) so a retirement is a config change rather than a deployment. Put the model name on the org's release-readiness review and re-check it against the Supported Models page each release: a name that compiles is not evidence of a name that still routes where you think. Because the reroute is silent, monitoring has to watch output quality — an alert wired to error rates or non-200 responses will never fire for this.

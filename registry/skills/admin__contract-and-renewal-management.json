@@ -78,12 +78,12 @@
     "fde3c7281b8c36a104ce",
     "fdfac1a4ee1225553e54"
   ],
-  "content_hash": "c16bcc36d7b1a5589ff32a16f84dbee74778060d09ed5539c60997a61b38004e",
+  "content_hash": "3dc42fda75d928f0922010b95633d3ab80dd3a8a7b3423ab4ff9307d30e325aa",
   "dependencies": [
     "cpq-pricing-rules",
     "cpq-product-catalog-setup"
   ],
-  "description": "Use when configuring or troubleshooting Salesforce CPQ contract creation, subscription management, amendment quotes, or renewal quotes. Trigger keywords: contract, amendment, renewal, subscription, co-termination, SBQQ__Subscription__c. NOT for standard Salesforce contracts without CPQ, nor for Revenue Cloud advanced order management.",
+  "description": "Use when configuring or troubleshooting Salesforce CPQ contract creation, subscription management, amendment quotes, or renewal quotes. Trigger keywords: contract, amendment, renewal, subscription, co-termination, SBQQ__Subscription__c. NOT for designing the amendment/renewal architecture or swap pattern \u2014 use architect/subscription-management-architecture. NOT for amending or renewing contracts from Apex \u2014 use apex/cpq-api-and-automation.",
   "file_location": "skills/admin/contract-and-renewal-management",
   "id": "admin/contract-and-renewal-management",
   "inputs": [

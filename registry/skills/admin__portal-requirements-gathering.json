@@ -90,9 +90,9 @@
     "fa898ace743f89b13032",
     "ffb0e6b406af034030fb"
   ],
-  "content_hash": "d1bd9b613076f0eec1b0ffcb883926fb65cd0c0c375fb2887dc6e788ef6ace0d",
+  "content_hash": "3ded24460efc6562169487d4d81d4a60ce9bc4651d8e0ef28ffdb993513a1d46",
   "dependencies": [],
-  "description": "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for Experience Cloud implementation or configuration. NOT for post-launch portal optimization or redesign.",
+  "description": "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for building the site in Experience Builder \u2014 use admin/experience-cloud-site-setup. NOT for designing the deal-registration and MDF processes themselves \u2014 use admin/partner-community-requirements.",
   "file_location": "skills/admin/portal-requirements-gathering",
   "id": "admin/portal-requirements-gathering",
   "inputs": [

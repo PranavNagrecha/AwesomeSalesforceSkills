@@ -1,6 +1,6 @@
 ---
 name: recurring-donations-setup
-description: "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP."
+description: "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for NPSP object and field reference — use data/npsp-data-model. NOT for payment gateways — use architect/fundraising-integration-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

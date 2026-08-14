@@ -1,6 +1,6 @@
 ---
 name: lwc-accessibility
-description: "Use when designing or reviewing Lightning Web Components for keyboard access, semantic labeling, focus management, screen-reader behavior, and WCAG-aligned UX in Salesforce. Triggers: 'lwc accessibility', 'keyboard navigation in lwc', 'screen reader labels', 'focus trap in modal'. NOT for Apex or sharing security reviews, or for purely visual SLDS styling that does not affect accessibility behavior."
+description: "Use when designing or reviewing LWCs for keyboard access, semantic labeling, focus. Triggers: LWC accessibility, keyboard nav, aria-label, focus order, screen reader. NOT for specific ARIA/datatable implementation patterns — use lwc/lwc-accessibility-patterns. NOT for SLDS styling with no assistive-tech impact — use lwc/lwc-css-and-styling."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

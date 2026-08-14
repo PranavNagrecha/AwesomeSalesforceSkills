@@ -1,6 +1,6 @@
 ---
 name: lwc-testing
-description: "Use when setting up or reviewing Lightning Web Component unit tests with Jest, including `@salesforce/sfdx-lwc-jest`, wire adapter mocks, imperative Apex mocks, async rerender handling, and accessibility smoke checks. Triggers: 'how do I test @wire in LWC', 'Jest test is flaky', 'mock Apex in LWC test', 'flushPromises pattern'. NOT for Apex unit tests, browser end-to-end automation, or performance testing."
+description: "Jest unit tests for LWC — @salesforce/sfdx-lwc-jest, wire adapter mocks, DOM assertions. Triggers: LWC Jest, sfdx-lwc-jest, component test. NOT for Apex tests — use apex/test-class-standards. NOT for browser E2E — use devops/automated-regression-testing."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

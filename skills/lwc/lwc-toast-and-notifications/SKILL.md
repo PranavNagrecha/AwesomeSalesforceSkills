@@ -1,6 +1,6 @@
 ---
 name: lwc-toast-and-notifications
-description: "Use when implementing or reviewing user feedback patterns in Lightning Web Components — specifically toast messages, lightning-alert, lightning-confirm, lightning-prompt, and platform notifications. Trigger keywords: 'ShowToastEvent', 'toast in lwc', 'lightning-alert lwc', 'lightning-confirm promise', 'Experience Cloud notification'. NOT for modal overlays (use lwc-modal-and-overlay)."
+description: "Show toast, platform, and in-app notifications from LWC — ShowToastEvent, lightning/platformShowToastEvent, Custom Notification types. Triggers: ShowToastEvent, toast LWC, custom notification LWC. NOT for modal overlays — use lwc/lwc-modal-and-overlay."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

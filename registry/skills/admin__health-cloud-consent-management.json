@@ -57,12 +57,12 @@
     "f7b927201ad1d544468c",
     "fd8edbec327f82b1450d"
   ],
-  "content_hash": "842d80049bec374ec0d47a0626d82f5247f57340da88206f002334b7d2921b6d",
+  "content_hash": "6d0d515cd80a9aa4d5348904e318a34b22bdd8a6a46d4d537e63caf739589111",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
   ],
-  "description": "Use this skill when configuring Health Cloud patient consent management: setting up HIPAA authorization forms, consent templates, consent tracking per patient, and withdrawal handling. NOT for marketing consent (ContactPointTypeConsent/ContactPointConsent), GDPR opt-out workflows, or Experience Cloud consent forms unrelated to clinical authorization.",
+  "description": "Use this skill when configuring Health Cloud patient consent management: setting up HIPAA authorization forms, consent templates, consent tracking per patient, and withdrawal handling. NOT for querying the AuthorizationFormConsent object hierarchy or its required field values \u2014 use data/consent-data-model-health. NOT for GDPR/CCPA marketing opt-out on ContactPointTypeConsent \u2014 use security/gdpr-data-privacy.",
   "file_location": "skills/admin/health-cloud-consent-management",
   "id": "admin/health-cloud-consent-management",
   "inputs": [

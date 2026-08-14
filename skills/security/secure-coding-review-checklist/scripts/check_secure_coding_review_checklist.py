@@ -47,6 +47,13 @@ def class_api_version(filepath: Path) -> float | None:
     This value — not the org's release — decides the Apex default access mode
     and the default sharing behaviour of a class with no keyword. See
     agents/_shared/AGENT_CONTRACT.md, "Apex security idiom by API version".
+
+    Applies to triggers too, via ``*.trigger-meta.xml``: a trigger's sharing
+    *declaration* is fixed (it cannot carry one, so the body's baseline context
+    is an implicit ``without sharing``), but the access mode of the database
+    operations in its body is version-gated exactly as a class's is — and user
+    mode overrides that baseline, enforcing the running user's sharing rules on
+    the operation.
     """
     try:
         text = Path(str(filepath) + "-meta.xml").read_text(
@@ -111,13 +118,40 @@ def check_crud_fls(apex_files: list[Path]) -> list[str]:
                             f"— {seen}; the weaker construct (SELECT list only, one violation "
                             f"reported) and removed at 67.0. Migrate to WITH USER_MODE"
                         )
-                # Triggers always run in system mode, at every API version, so
-                # a bare query in a .trigger is never covered by a default.
-                elif filepath.suffix == ".cls" and api is not None and api >= 67.0:
+                # A trigger has TWO independent axes and only one of them is
+                # fixed. Its sharing context is always an implicit
+                # `without sharing` and cannot be declared — but its ACCESS
+                # MODE is not fixed: per the Apex Developer Guide, database
+                # operations in a trigger body "run in user mode unless system
+                # mode is explicitly specified". So a bare query in a .trigger
+                # IS covered by the same version-gated default as one in a
+                # .cls, gated on the sibling .trigger-meta.xml <apiVersion>.
+                # Do not restrict this branch to .cls again.
+                #
+                # Nor invert the sharing note: user mode is not merely a
+                # CRUD/FLS setting. Per the guide, "User mode overrides the
+                # trigger's without sharing context and effectively enforces a
+                # with sharing context in the trigger body", and
+                # AccessLevel.USER_MODE enforces "the object permissions,
+                # field-level security, AND sharing rules of the current user".
+                # So a bare query here enforces record sharing too. It is the
+                # SYSTEM_MODE opt-out that falls back to the trigger's implicit
+                # `without sharing` and returns all records.
+                elif api is not None and api >= 67.0:
+                    sharing_note = (
+                        ". In a trigger, user mode also overrides the implicit "
+                        "'without sharing' context, so the running user's record "
+                        "sharing is enforced on this query; an explicit "
+                        "WITH SYSTEM_MODE would fall back to that context and "
+                        "return all records"
+                        if filepath.suffix == ".trigger"
+                        else ""
+                    )
                     issues.append(
                         f"CRUD/FLS (advisory): SOQL query without WITH USER_MODE "
                         f"at {filepath.name}:{line_num} — apiVersion {api:.1f} runs it "
                         f"in user mode by default; add the keyword to state intent"
+                        f"{sharing_note}"
                     )
                 else:
                     assumed = "" if api is not None else " (assuming 66.0 or below)"

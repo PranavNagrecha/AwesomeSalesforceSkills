@@ -78,9 +78,9 @@
     "f4cbce69035aee8bd74e",
     "fb685f0ee98252a5145d"
   ],
-  "content_hash": "960abd8df2d8c043f4b7146f4bca366a5920a6c8e729f9aa737e00fcf95b230d",
+  "content_hash": "28fe0bb7a2b6cf756dbd4b5670bf14f8a7fce6904e724be4665f4fdaa9b5df3d",
   "dependencies": [],
-  "description": "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for record-sharing design unless the main issue is Apex query security.",
+  "description": "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for enforcing FLS on records before DML \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for the with sharing / without sharing choice \u2014 use apex/apex-with-without-sharing-decision.",
   "file_location": "skills/apex/soql-security",
   "id": "apex/soql-security",
   "inputs": [

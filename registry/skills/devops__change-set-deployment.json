@@ -90,9 +90,9 @@
     "f3fac79bfd02c71c0d47",
     "fdfc0325e1fd5909c9b7"
   ],
-  "content_hash": "a750f86c9970c3ab8f3035e8930a457748e0bf55624c85ba7b9543cfbce72e38",
+  "content_hash": "f6c2ef57374ae47b7b7996f32cc98304040ca5bfcd246995efa1d1a19935afa2",
   "dependencies": [],
-  "description": "Use when uploading, validating, or deploying a change set between Salesforce orgs through Setup UI. Trigger keywords: 'change set upload', 'validate change set', 'deploy inbound change set', 'change set stuck', 'missing dependency change set', 'change set component error'. NOT for SFDX-based deployments, DevOps Center pipelines, or CI/CD automation \u2014 use the sf-cli-and-sfdx-essentials or devops-center-pipeline skills for those.",
+  "description": "Use when uploading, validating, or deploying a change set between Salesforce orgs through Setup UI. Trigger keywords: 'change set upload', 'validate change set', 'deploy inbound change set', 'change set stuck', 'missing dependency change set', 'change set component error'. NOT for release planning or rollback strategy \u2014 use admin/change-management-and-deployment. NOT for DevOps Center pipelines \u2014 use devops/devops-center-pipeline. NOT for scripted or CI/CD deploys \u2014 use devops/salesforce-cli-automation.",
   "file_location": "skills/devops/change-set-deployment",
   "id": "devops/change-set-deployment",
   "inputs": [

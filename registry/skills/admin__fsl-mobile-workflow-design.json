@@ -91,9 +91,9 @@
     "f781e10114d89f603450",
     "fadb1dc02424bf827a0d"
   ],
-  "content_hash": "9ebc13efa479d269826216312117c91d04985c91585198ff26cebc275cf1c8c2",
+  "content_hash": "c7d7afbb95c4e807bb08b95dd929ffbf5b568ac38855a7d2949fc245d2094dc0",
   "dependencies": [],
-  "description": "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows \u2014 including job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for mobile app installation/configuration, FSL scheduling optimization, Dispatcher Console setup, or Work Capacity management.",
+  "description": "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows \u2014 job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for installing, branding, or extending the mobile app itself \u2014 use admin/fsl-mobile-app-setup. NOT for offline priming limits and sync conflict resolution \u2014 use architect/fsl-offline-architecture.",
   "file_location": "skills/admin/fsl-mobile-workflow-design",
   "id": "admin/fsl-mobile-workflow-design",
   "inputs": [

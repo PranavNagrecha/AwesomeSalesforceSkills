@@ -1,6 +1,6 @@
 ---
 name: loyalty-management-setup
-description: "Use this skill when setting up or extending Salesforce Loyalty Management — including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job activation, partner loyalty configuration, and member portal setup on Experience Cloud. Triggers on: Loyalty Management setup, loyalty tier setup Salesforce, qualifying points vs redemption points, DPE batch job for loyalty, partner loyalty program Salesforce, loyalty member portal. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalty via Sales Cloud (standard opportunity, not loyalty program), not for general Experience Cloud site setup (use experience-cloud-setup skill)."
+description: "Use this skill when setting up or extending Salesforce Loyalty Management — including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalt — use architect/loyalty-program-architecture."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

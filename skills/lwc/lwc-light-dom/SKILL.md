@@ -1,6 +1,6 @@
 ---
 name: lwc-light-dom
-description: "Use when a Lightning Web Component needs to escape shadow DOM isolation so Experience Cloud / LWR sites can be SEO-indexed, a third-party library can walk the DOM, global styling has to reach inside the component, or accessibility tooling must see the rendered tree. NOT for the default shadow DOM behavior most LWCs should use — reach for light DOM only when SEO, third-party DOM access, or global styling requires it, and never for components distributed through managed packages."
+description: "Use Light DOM in LWC when third-party libraries or global CSS require document-level access. Triggers: light DOM LWC, renderMode light, shadow DOM escape. NOT for choosing Shadow vs Light DOM — use lwc/lwc-shadow-vs-light-dom-decision. NOT for managed-package distribution constraints — use architect/omnistudio-vs-standard-decision."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

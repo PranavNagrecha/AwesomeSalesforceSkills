@@ -18,11 +18,21 @@ DEFAULT: DataRaptors run in SYSTEM MODE
 - All fields are accessible regardless of user FLS
 - All objects are queryable regardless of user CRUD
 - This is DANGEROUS for guest user and portal user contexts
+- CURRENCY: Salesforce began enabling EnforceDMFLSAndDataEncryption
+  by default in the week of 2 February 2026. Where it is on, Data
+  Mappers run in user context instead. Read the org's current value;
+  do not assume either state.
 
 Enforcement options:
-1. OmniStudio Security settings:
-   - Enable "Respect User CRUD/FLS" in OmniStudio settings
-   - This applies globally to all DataRaptors in the org
+1. OmniStudio security settings (use the real names):
+   - Per Data Mapper: select "Check Field Level Security" on the
+     Data Mapper's Options tab
+   - Org-wide: an Omni Interaction Configuration entry named
+     EnforceDMFLSAndDataEncryption with value "true" - Salesforce
+     enables this by default from the week of 2 February 2026, so
+     read the current value before creating a new entry
+   - There is no setting called "Respect User CRUD/FLS"; that name
+     sends admins hunting for a checkbox that does not exist
 
 2. Per-DataRaptor configuration:
    - Check "Run with Sharing" if available in your version
@@ -38,7 +48,7 @@ ALWAYS verify that CRUD/FLS enforcement is active.
 
 **What Summer '26 did not change:** the DataRaptor default above is OmniStudio runtime behaviour and is unaffected by the API 67.0 Apex change, where SOQL/SOSL/DML default to user mode and a class with no sharing keyword runs `with sharing`. That change is gated on the `apiVersion` in a class's `.cls-meta.xml`, and a DataRaptor has none — raising a helper class's `apiVersion` buys a DataRaptor nothing. Verify the OmniStudio setting itself. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
-**Detection hint:** Flag OmniStudio implementations exposed to guest or external users without CRUD/FLS enforcement verification. Check for missing "Respect User CRUD/FLS" setting.
+**Detection hint:** Flag OmniStudio implementations exposed to guest or external users without CRUD/FLS enforcement verification. Check for Data Mappers with "Check Field Level Security" left clear, and read the current value of `EnforceDMFLSAndDataEncryption` in Omni Interaction Configuration — since the week of 2 February 2026 Salesforce enables it by default, so a missing record is not evidence that enforcement is off.
 
 ---
 
@@ -140,7 +150,9 @@ Principle of least privilege:
 - Review permission assignments quarterly
 ```
 
-**Detection hint:** Flag OmniStudio Admin permission set assignments to non-admin users. Check for guest users with OmniStudio Admin or User permissions.
+**What the permission sets do not cover:** on the standard runtime — that is, once **Managed Package Runtime** is disabled in Omnistudio Settings — assigning the right permission set is necessary but not sufficient. Field-level security must also be explicitly set for Omni Process Compilation (Read, Edit), Omni Data Transformation (Read), and Omniscript Saved Sessions (Read, Edit) on every profile that runs Omnistudio components. Missing them surfaces as a blank FlexCard, an Omniscript that will not load, or an LWC compilation error rather than an access error, so the model reaches for cache-clearing and component rewrites instead of field permissions. See `references/gotchas.md` §5.
+
+**Detection hint:** Flag OmniStudio Admin permission set assignments to non-admin users. Check for guest users with OmniStudio Admin or User permissions. On standard-runtime orgs, check the three object grants above before accepting "the component is broken."
 
 ---
 
@@ -184,3 +196,37 @@ Custom LWC security review in OmniScript context:
 ```
 
 **Detection hint:** Flag custom LWC elements in OmniScripts that call @AuraEnabled methods without CRUD/FLS enforcement. Check for innerHTML usage in OmniScript-embedded LWCs.
+
+---
+
+## Anti-Pattern 8: A `global without sharing` Callable as the OmniStudio DML helper
+
+**What the LLM generates:** `global without sharing class QueryHelper implements Callable, omnistudio.VlocityOpenInterface` with `fetchRecords` concatenating a WHERE string from the IP map.
+
+**Why it happens:** OmniStudio needs system-mode DML; Callable is the documented extension point.
+
+**Correct pattern:** That class is invocable from **any** Integration Procedure, including ones a guest can reach via Aura. Do not ship a universal query helper onto a guest site. If system-mode DML is required, it is a **named, allowlisted** service with a fixed query shape — not a WHERE-string oracle — and tests must assert the guest cannot invoke it.
+
+**Detection hint:** `implements Callable` or `VlocityOpenInterface` plus `without sharing` plus string-concatenated SOQL.
+
+---
+
+## Anti-Pattern 9: Trusting `%ContextId%` as the Subject
+
+**What the LLM generates:** Remote Action Apex `Id target = (Id) input.get('ContextId');` then query that row.
+
+**Why it happens:** Record pages pass ContextId; the designer merge field looks official.
+
+**Correct pattern:** Resolve the subject from `UserInfo` or a server-minted session token. ContextId is a display hint. USER_MODE is not enough if the guest can already see the row.
+
+**Detection hint:** `%ContextId%` / `{Params.contactId}` / query-string `contactId` used as an authorization key.
+
+---
+
+## Anti-Pattern 10: Guest Share All Active OmniProcesses, Unsigned
+
+**What the LLM generates:** "Share OmniProcess Read to guest so the public script can run."
+
+**Correct pattern:** Type/SubType allowlist. Enable IP signatures. FlexCard Name-share ignores IsActive. GenericInvoke is the gate.
+
+**Detection hint:** Sharing rule `IsActive=true` on OmniProcess plus `isIntegProcdSignatureAvl=false`.

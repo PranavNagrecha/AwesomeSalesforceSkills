@@ -1,6 +1,6 @@
 ---
 name: community-user-data-migration
-description: "Use this skill to migrate external community/portal user accounts at scale: bulk creating Experience Cloud users via Data Loader, migrating users between license types (Customer Community to Customer Community Plus, or to Partner Community), importing Customer Portal users into Experience Cloud, and resolving Contact/Account hierarchy prerequisites. Trigger keywords: migrate community users, import external users Experience Cloud, bulk create portal users, move users between license types, migrate Customer Community to Partner Community. NOT for internal user data migration. NOT for general data migration (see data/bulk-data-migration). NOT for configuring Experience Cloud sites or profiles from scratch."
+description: "Use to migrate external community/portal user accounts at scale — bulk user creation via Data Loader, license-type moves (Customer Community to Customer Community Plus, or to Partner Community), Customer Portal imports, and Contact/Account hierarchy prerequisites. Trigger keywords: migrate community users, import external users Experience Cloud, bulk create portal users, move users between license types, migrate Customer Community to Partner Community. NOT for adding members, self-registration and login page setup — use admin/experience-cloud-member-management. NOT for a general multi-object data migration — use data/data-migration-planning."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

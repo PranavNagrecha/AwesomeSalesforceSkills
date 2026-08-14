@@ -1,6 +1,6 @@
 ---
 name: commerce-payment-integration
-description: "Use this skill when building or debugging a custom Salesforce Commerce payment gateway adapter using the CommercePayments Apex namespace — covering adapter implementation, RequestType handling, PCI tokenization patterns, and integration path selection. NOT for billing (Salesforce Billing / blng namespace), NOT for configuring the legacy sfdc_checkout.CartPaymentAuthorize interface (see admin/commerce-checkout-configuration), and NOT for storefront UI payment form design."
+description: "Use this skill when building or debugging a custom Salesforce Commerce payment gateway adapter using the CommercePayments Apex namespace — covering adapter implementation, RequestType handling, PCI tokenization patterns, and integration path selection. NOT for Salesforce Billing invoices and the blng namespace — use apex/billing-integration-apex. NOT for the legacy sfdc_checkout.CartPaymentAuthorize interface — use admin/commerce-checkout-configuration."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

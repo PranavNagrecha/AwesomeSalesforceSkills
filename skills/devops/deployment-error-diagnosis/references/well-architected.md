@@ -47,5 +47,5 @@
 - Profile Metadata Reference — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_profile.htm
 - PermissionSet Metadata Reference — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_permissionset.htm
 - Flow Metadata Reference (status values) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
-- Sibling skill — `skills/devops/sfdx-cicd-pipeline/SKILL.md` (when one exists)
+- Sibling skill — `skills/architect/ci-cd-pipeline-architecture/SKILL.md`
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

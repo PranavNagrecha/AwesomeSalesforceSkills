@@ -35,6 +35,32 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+# A method declaration that opens with a bare 'abstract' or 'override' — no
+# 'protected' / 'public' / 'global' in front of it. Requires a return type, a
+# method name and an open paren so that comment prose and field declarations
+# cannot match. Applied to comment-stripped source only.
+BARE_MODIFIER_PATTERN = re.compile(
+    r"(?m)^[ \t]*(?:override|abstract)[ \t]+"
+    r"(?!class\b|interface\b|enum\b)"
+    r"[A-Za-z_][\w<>,\[\]\. \t]*[ \t]+\w+[ \t]*\("
+)
+
+
+def strip_apex_comments(source: str) -> str:
+    """Blank out // and /* */ comments, preserving line structure.
+
+    Only used for declaration-shape checks. Newlines inside block comments are
+    kept so that line-anchored patterns still line up with the original file.
+    """
+    without_blocks = re.sub(
+        r"/\*.*?\*/",
+        lambda m: "\n" * m.group(0).count("\n"),
+        source,
+        flags=re.DOTALL,
+    )
+    return re.sub(r"//[^\n]*", "", without_blocks)
+
+
 def find_apex_classes(manifest_dir: Path) -> list[Path]:
     """Find all .cls files under the manifest directory."""
     candidates = []
@@ -85,6 +111,21 @@ def check_mcp_tool_definition_apex(manifest_dir: Path) -> list[str]:
             issues.append(
                 f"{fname}: uses 'public override' on an overriding method. "
                 "Methods overriding 'global abstract' from McpToolDefinition must use 'global override'."
+            )
+
+        # Check 2b: 'abstract'/'override' methods must carry an explicit access modifier.
+        # Winter '26: "In API version 65.0 and later, abstract and override methods
+        # require a protected, public, or global access modifier." A bare modifier-less
+        # declaration compiled at <=64.0 and is a compilation error at 65.0+.
+        # Comments are stripped first and the pattern demands a real method signature
+        # (return type, method name, open paren) so that prose mentioning the word
+        # "abstract" at the start of a line cannot flag a compliant class.
+        if BARE_MODIFIER_PATTERN.search(strip_apex_comments(content)):
+            issues.append(
+                f"{fname}: declares an 'abstract' or 'override' method with no access modifier. "
+                "In API version 65.0 and later, abstract and override methods require a "
+                "'protected', 'public', or 'global' access modifier; omitting one is a "
+                "compilation error. Use 'global override' / 'global abstract' here."
             )
 
         # Check 3: validate() must not return empty string as success signal

@@ -1,6 +1,6 @@
 ---
 name: quote-to-cash-process
-description: "Use when designing, mapping, or troubleshooting the end-to-end quote-to-cash process in orgs running Salesforce CPQ (managed package) or Revenue Cloud — covering the full object chain from SBQQ__Quote__c through Contract to blng__Invoice__c, approval routing via Advanced Approvals (sbaa__), billing schedule generation, and order activation. Trigger keywords: CPQ quote, SBQQ, revenue cloud billing, Advanced Approvals, subscription, blng invoice, contract pivot. NOT for standard Sales Cloud quote-to-cash or implementation of individual CPQ pricing rules, discount schedules, or guided selling configuration — use the quote-to-cash-requirements skill for standard objects."
+description: "Use when designing, mapping, or troubleshooting the end-to-end quote-to-cash process in orgs running Salesforce CPQ (managed package) or Revenue Cloud — covering the full object chain from SBQQ__Quote__c through Contract to blng__Invoice__c, approval routing via Advanced Approvals (sbaa__), billing schedule generation, and order activation. Trigger keywords: CPQ quote, SBQQ, revenue cloud billing, Advanced Approvals, subscription, blng invoice, contract pivot. NOT for quote-to-cash on standard Sales Cloud objects — use admin/quote-to-cash-requirements. NOT for setting up SBAA approval rules and chains — use admin/cpq-approval-workflows."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

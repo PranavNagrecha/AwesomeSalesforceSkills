@@ -104,9 +104,9 @@
     "ff13e4246e5786b9dccb",
     "ff3ab2d087cc63cec3b3"
   ],
-  "content_hash": "2470fac4fce19ef6b47fcc998798a74b692bbd791609ef3d60ffcad671e6cd83",
+  "content_hash": "eb8fa16ce2f4a3014fbdda32b61b79599ecfdb6a8043705e6adebe0193a7b928",
   "dependencies": [],
-  "description": "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria).",
+  "description": "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-class-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria).",
   "file_location": "skills/admin/acceptance-criteria-given-when-then",
   "id": "admin/acceptance-criteria-given-when-then",
   "inputs": [

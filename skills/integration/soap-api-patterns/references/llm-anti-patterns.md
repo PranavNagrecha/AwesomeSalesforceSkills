@@ -68,39 +68,48 @@ that must install in customer orgs with different schemas.
 
 ---
 
-## Anti-Pattern 3: Using login() with Username/Password Instead of OAuth Session ID
+## Anti-Pattern 3: Handing the User a `login()` Snippet That Is Already Dead at v65.0+
 
-**What the LLM generates:** SOAP API authentication via the `login()` call with hardcoded username, password, and security token, instead of using an OAuth access token injected into the SOAP session header.
+**What the LLM generates:** The classic SOAP login envelope as *the* way to authenticate a middleware or ETL job — typically pointed at the newest API version it knows, e.g. `https://login.salesforce.com/services/Soap/u/65.0` with `<username>` and `<password+token>` — then tells the user to reuse the returned `sessionId` and `serverUrl`.
 
-**Why it happens:** The `login()` call is the traditional SOAP API authentication method and appears in most legacy examples. OAuth-based SOAP authentication is less documented.
+**Why it happens:** `login()` is the canonical "get a session id" snippet across decades of training data. Two changes post-date most corpora: the call was removed in API 65.0, and newly created orgs gate it behind a permission the model has never heard of. So the model confidently emits a snippet that cannot work, and — worse — cannot explain why a brand-new scratch org rejects a `login()` that succeeds against an older production org.
+
+**Why it matters:** At v65.0+ that call never succeeds. On 31.0–64.0 it works but is on a fixed countdown to Summer '27. The model also reaches for *connected apps* as the replacement when the prescribed replacement is an **external client app**.
 
 **Correct pattern:**
 
 ```text
 SOAP API authentication options:
 
-DEPRECATED — login() with username/password:
+REMOVED at API 65.0+ / RETIRES Summer '27 — login() with username/password:
   <login>
     <username>user@org.com</username>
     <password>passwordSECURITY_TOKEN</password>
   </login>
-  Problems: password in config, breaks on password change, no MFA support
+  v65.0+          : HTTP 500, exception code UNSUPPORTED_API_VERSION
+  v31.0-64.0      : works only until Summer '27 is released
+  new orgs        : running user needs the "Any API Auth" permission
+  Other problems  : password in config, breaks on password change, no MFA support
 
-RECOMMENDED — OAuth token in SOAP header:
-  1. Obtain access_token via OAuth (JWT Bearer, Client Credentials, etc.)
-  2. Set the SessionHeader in SOAP requests:
+REQUIRED — OAuth token in SOAP header:
+  1. Register an EXTERNAL CLIENT APP (not a legacy connected app)
+  2. Obtain access_token via OAuth (JWT Bearer, Client Credentials,
+     or Web Server flow for browser-based integrations)
+  3. Set the SessionHeader in SOAP requests:
      <SessionHeader>
        <sessionId>{access_token}</sessionId>
      </SessionHeader>
-  3. Set the endpoint to the instance URL from the OAuth response
+  4. Set the endpoint to the instance URL from the OAuth response
 
-  The OAuth access_token IS a valid Salesforce session ID for SOAP API.
+  The OAuth access_token IS a valid Salesforce session ID for SOAP API,
+  and SOAP API now accepts JWT-based access tokens in that same
+  sessionId header element.
 
-This separates authentication (OAuth) from API usage (SOAP),
-enabling MFA support and credential rotation.
+Only the auth step changes: query(), create(), upsert(), queryMore()
+are all unaffected. This also enables MFA support and credential rotation.
 ```
 
-**Detection hint:** Flag SOAP API code that calls `login()` with username/password parameters. Look for hardcoded passwords or security tokens in SOAP configuration.
+**Detection hint:** Flag any SOAP code calling `login()` with username/password. Two extra checks the model routinely misses: (a) if the endpoint URL is v65.0 or later, the snippet is broken *right now*, not merely dated; (b) if the replacement it proposes is a "connected app", correct it to an external client app. Do not let "it still works on 64.0" stand as a recommendation — say the deadline out loud.
 
 ---
 

@@ -34,5 +34,5 @@
 ## Cross-Skill References
 
 - `omnistudio/omniscript-design-patterns` — implementation skill to use after requirements are complete
-- `admin/omnistudio-vs-standard-decision` — decision skill for whether OmniScript is the right tool
+- `architect/omnistudio-vs-standard-decision` — decision skill for whether OmniScript is the right tool
 - `admin/flexcard-requirements` — companion BA requirements skill for FlexCard components

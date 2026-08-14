@@ -49,7 +49,7 @@
 
 **How to avoid it:**
 - Make every `failureResponse` value a required review item before any deployment to UAT
-- Run a pre-deployment check: grep the IP JSON for "verbiage", "TBD", "placeholder", "TODO"
+- Run a pre-deployment check: grep the exported IP JSON for scaffold markers left behind by authoring — `verbiage`, `TBD`, `XXX`, `lorem`, `REPLACE_ME`
 - Default `failureResponse` should always be a real message, even if it's generic: "An error occurred. Please try again or contact support."
 
 ---
@@ -65,3 +65,40 @@
 - Error state checks `{IPResponse.error}` or your output `status` variable
 - Error state shows a user-friendly message, not the raw IP response
 - Test the error state explicitly: use the FlexCard preview with a mocked error response
+
+---
+
+## Inactive IP Versions With Hardcoded URLs Stay Callable
+
+**What happens:** The active Integration Procedure uses a Named Credential. An **inactive** older version still has `namedCredential: null` and a literal `https://…` URL. That version remains invocable (debug, Aura `GenericInvoke2NoCont`, nested IP). Credentials and internal hosts leak in the metadata and in debug transcripts.
+
+**When it bites you:** After a Named-Credential migration that "activated the new version" without deleting the old one. Leftover Remote Site Settings keep the dead URL live.
+
+**How to avoid it:**
+- One Named Credential plus a CMDT `restPath` / merge field — never a URL in the IP.
+- Delete inactive versions; do not leave them as history in a guest-reachable org.
+- Grep exported IP JSON for `https://` and `namedCredential": null`.
+
+---
+
+## Try-Catch Plus `failOnBlockError=false` Looks Like Success
+
+**What happens:** Catch logs and sets `error: true`. The procedure still returns 200. Nested parents and FlexCards proceed. See `omnistudio-error-handling-patterns`.
+
+**How to avoid it:** `rollbackOnError: true`, `failOnBlockError: true`, real `failureResponse`, chainable CPU/query limits set (not null). Named Credentials only. HTTP timeout set (30s is a choice; 0 is not).
+
+---
+
+## `chainOnStep` Plus Nested HTTP Hits the 120s Continuation Window
+
+**What happens:** Parent chains child IPs that each call out. `chainableActualTimeLimit` is null. Downstream already wrote; the client timed out and retried.
+
+**How to avoid it:** Cap chainable time. Idempotent HTTP. Do not nest callout IPs. Last mutating step should be the callout or an idempotency persist **before** it.
+
+---
+
+## Empty `namedCredential` Plus Absolute `restPath` Is Remote Site, Not Auth
+
+**What happens:** Newer versions use Named Credential + relative path. Older inactive versions still embed `https://…` and empty NC (~dozens of stubs). Remote Site Settings keep the dead host live.
+
+**How to avoid it:** NC + path merge (`%SetEndpointPath%` is fine; the **host** stays in the NC). Delete inactive versions. RSS does not replace NC.

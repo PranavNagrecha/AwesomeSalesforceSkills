@@ -107,9 +107,9 @@
     "f9abfe83e2c10ff29768",
     "fb049a24dcc38cbcbf44"
   ],
-  "content_hash": "841acf97c2f6c842eba96eb2cc9e21f2f24d38cffe7bfa2472232161687a1212",
+  "content_hash": "880cc21e305ccb7767a851fd0934a5242c78ca7d7a853a08f9349bb29af2b4cd",
   "dependencies": [],
-  "description": "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams with one lane per actor (user, system, integration, customer), explicit decision points, parallel paths, exception/sad-path handling, and per-step automation-tier annotations (Flow / Apex / Approval / Platform Event / Manual / Integration) that drive downstream build decisions. Use when discovery has named a business process and the team needs a structured map before any Flow, Apex, or Approval Process is built. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Sales-specific stage design (use sales-process-mapping). NOT for fundraising stewardship process mapping (use fundraising-process-mapping). NOT for FSL appointment scheduling flows (use fsl-scheduling-policies). NOT for actually building the Flow (use skills/flow/* and agents/flow-builder/AGENT.md). NOT for pure UI-side user journeys (use persona-and-journey-mapping-sf).",
+  "description": "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams \u2014 one lane per actor, explicit decision points, parallel and exception/sad paths, and per-step automation-tier annotations that drive downstream build decisions. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Opportunity stage and exit-criteria design \u2014 use admin/sales-process-mapping. NOT for picking Flow vs Apex for one requirement \u2014 use admin/process-automation-selection.",
   "file_location": "skills/admin/process-flow-as-is-to-be",
   "id": "admin/process-flow-as-is-to-be",
   "inputs": [

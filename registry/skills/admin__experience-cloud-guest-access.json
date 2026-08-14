@@ -22,6 +22,7 @@
     "48c6e31ba1a3275827f8",
     "4a9937b2dea7583a2d31",
     "5683ed6c404614216b97",
+    "5832367bb5a84cefa2f6",
     "589bd590165965ffa5bc",
     "5bfee077d3fe874a8670",
     "63dbfbfa1a4ccb634ff2",
@@ -76,7 +77,7 @@
     "febe1a4dbedc94f012a5",
     "fec65d748d2838fa818b"
   ],
-  "content_hash": "1302feb945d51a8cc581c7fcd7c6f08e5513b6e97f5cfc5653b4f10cc463d5a6",
+  "content_hash": "1a6226d47bdf1f4a9918a4dfd32b393b75ebbaa0e8b4f97f551e184555270f58",
   "dependencies": [],
   "description": "Use when designing or configuring public pages on an Experience Cloud site \u2014 guest user profile setup, page-level access settings in Experience Builder, object/field visibility for unauthenticated visitors, and explicit sharing rules that expose data on public pages. Triggers: 'configure public pages Experience Cloud', 'guest user profile setup', 'unauthenticated site access', 'public community page visibility', 'make page visible without login'. NOT for authenticated user features (use admin/experience-cloud-member-management). NOT for security hardening or remediation of guest user exposure (use security/guest-user-security).",
   "file_location": "skills/admin/experience-cloud-guest-access",
@@ -93,7 +94,7 @@
     "Secure Guest Users Sharing Settings \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_secure_guest_users.htm",
     "Give Secure Access to Unauthenticated Users \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_unauthenticated_access.htm",
     "Experience Cloud Developer Guide (Guest User Context) \u2014 https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_guest_user.htm",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+    "Object Permissions reference (`PermissionsViewAllFields`, API 63.0+) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_objectpermissions.htm \u2014 confirms View All Fields is object-scoped read on all fields including future ones; guest/external assignment restrictions documented in View All / Modify All overview. (verified 2026-08-14)"
   ],
   "outputs": [
     "Page-level access configuration guidance for Experience Builder",

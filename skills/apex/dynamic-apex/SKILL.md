@@ -1,6 +1,6 @@
 ---
 name: dynamic-apex
-description: "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries or query performance tuning — use soql-fundamentals or soql-query-optimization."
+description: "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries — use apex/soql-fundamentals. NOT for query performance tuning — use data/soql-query-optimization."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

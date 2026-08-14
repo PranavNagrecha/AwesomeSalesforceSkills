@@ -1,6 +1,6 @@
 ---
 name: record-locking-and-contention
-description: "Use when diagnosing or preventing UNABLE_TO_LOCK_ROW errors, record lock contention in Apex or Bulk API loads, FOR UPDATE locking, parent-child lock escalation, and deadlock scenarios. Triggers: 'UNABLE_TO_LOCK_ROW', 'record lock contention', 'FOR UPDATE SOQL', 'deadlock', 'lock timeout'. NOT for approval-process record locking (admin/approval-processes) or optimistic concurrency via timestamps."
+description: "Use when diagnosing or preventing UNABLE_TO_LOCK_ROW errors, record lock contention in Apex or Bulk API loads, FOR UPDATE locking, parent-child lock escalation, and deadlock scenarios. Triggers: 'UNABLE_TO_LOCK_ROW', 'record lock contention', 'FOR UPDATE SOQL', 'deadlock', 'lock timeout'. NOT for locks from a Flow — use flow/flow-record-locking-and-contention. NOT for approval-process locking — use admin/approval-processes."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

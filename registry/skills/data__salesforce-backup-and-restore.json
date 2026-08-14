@@ -59,9 +59,9 @@
     "f7aaf74c51c5e0078f1e",
     "fef071e6baa079f33bd9"
   ],
-  "content_hash": "65462a34c4a6b1b4d4d3a05118c043314d35762cea8fb061112ed54c2d152b84",
+  "content_hash": "ba9ed65e295d56a51c7ed1b3ccc9ecb1f4232cbd53e7ffe3f19d9c7cc15fdbfe",
   "dependencies": [],
-  "description": "Designing a backup and restore strategy for a Salesforce org \u2014 Salesforce Backup (the native paid product), the deprecated weekly Data Export Service, third-party tools (OwnBackup / Druva / Gearset / Spanning), and self-rolled Bulk API extracts. Covers RPO / RTO targeting, restore-of-a-single-record vs full-org restore, parent / child relationship rebuilding, and cost / coverage tradeoffs across vendors. NOT for sandbox refresh strategy (see devops/sandbox-strategy), NOT for metadata source-control / DevOps backups (see devops/sfdx-source-control).",
+  "description": "Backup and restore strategy for Salesforce org data \u2014 native Backup, third-party, RPO/RTO. Triggers: Salesforce backup, restore strategy, data recovery. NOT for sandbox refresh data \u2014 use devops/sandbox-refresh-and-templates. NOT for metadata source control \u2014 use devops/salesforce-dx-project-structure.",
   "file_location": "skills/data/salesforce-backup-and-restore",
   "id": "data/salesforce-backup-and-restore",
   "inputs": [

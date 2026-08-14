@@ -85,3 +85,23 @@ Bucket fields work per-block in joined reports. There is no
 cross-block bucket. If you need a bucket grouping that spans
 blocks, build the bucket as a formula field on the underlying
 record before reporting.
+
+---
+
+## Gotcha 10: `<deployed>false</deployed>` Hides Reports From Non-Admins, Not From Dashboards
+
+**What happens:** A custom report type left **In Development** is visible only to Manage Custom Report Types (typically admins). Reports on that type keep running for admins and for dashboard components, and are **invisible to everyone else** — including folders named for end users. One undeployed type can carry dozens of live reports.
+
+**When it occurs:** "We'll deploy the type when the reports are ready" — then the reports ship and the type never flips.
+
+**How to avoid:** Treat Deployed vs In Development as a **visibility gate**, not a WIP flag. Before sharing a folder, confirm every report's type is Deployed. Deploying a type without checking folder `sharedTo` can newly expose a pile of reports.
+
+---
+
+## Gotcha 11: Inner-Join Type Plus a WITHOUT Cross-Filter Is a Contradiction
+
+**What happens:** "Accounts with Contacts" (inner join) cannot answer "accounts with no contacts." Adding `Account WITHOUT Contact` **and** a filter on `Contact.CreatedDate` is contradictory: a filter on a child field cannot coexist with a demand that the child be absent. The report silently undercounts (often by 80%+).
+
+**When it occurs:** Cloning a with-contacts report to answer a without-contacts question.
+
+**How to avoid:** For "A without B", use a with-or-without report type **or** a WITHOUT cross-filter — not both a child-field filter and WITHOUT. Joined (MultiBlock) reports are the unused tool for "Account + Referral + Campaign on one canvas."

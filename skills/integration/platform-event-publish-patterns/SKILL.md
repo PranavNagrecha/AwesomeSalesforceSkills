@@ -1,6 +1,6 @@
 ---
 name: platform-event-publish-patterns
-description: "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for subscribing/consuming (use platform-event-subscribe-patterns). NOT for CDC architecture (use cdc-patterns)."
+description: "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for consuming events in Apex — use apex/platform-events-apex. NOT for CDC events — use integration/change-data-capture-integration."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

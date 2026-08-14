@@ -1,6 +1,6 @@
 ---
 name: agent-action-error-handling
-description: "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for generic Apex exception handling or Flow fault paths."
+description: "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for authoring the action itself — @InvocableMethod schema, labels, security context — use agentforce/custom-agent-actions-apex. NOT for the Apex tests that force each error branch — use agentforce/agent-action-unit-tests."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

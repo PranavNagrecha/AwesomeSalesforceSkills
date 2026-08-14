@@ -1,6 +1,6 @@
 ---
 name: agent-actions
-description: "Use when designing or reviewing Agentforce actions, including Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'flow action for agent', 'agent invocable action', 'action schema design', 'agent action error handling'. NOT for topic boundary design or general Apex invocable guidance when the main concern is not an agent-facing action contract."
+description: "Designing or reviewing Agentforce actions: Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'build an agent that can look up an order', 'make the agent able to check order status', 'give the agent a capability', 'agent that can retrieve a record', 'flow action for agent', 'agent invocable action', 'action schema design'. NOT for writing the Apex class itself — use agentforce/custom-agent-actions-apex. NOT for the reason_code error envelope that stops an agent retry loop — use agentforce/agent-action-error-handling."
 category: agentforce
 salesforce-version: "Spring '26+"
 well-architected-pillars:

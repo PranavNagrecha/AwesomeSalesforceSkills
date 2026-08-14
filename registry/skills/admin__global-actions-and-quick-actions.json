@@ -68,9 +68,9 @@
     "f86d12e185b506b4db4a",
     "fc2aad90b7dadd69a1ac"
   ],
-  "content_hash": "ced58e291b324d6c9cc72bea71120e31cb99ef235845683adc2ecc5a463ae025",
+  "content_hash": "d847923e6e7212ad0d747a3b330cf9409408a4ef31d06a9f059fe0aabc108e05",
   "dependencies": [],
-  "description": "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for Flow-triggered actions or Next Best Action recommendations (use flow/* or agentforce skills). NOT for Apex-defined actions.",
+  "description": "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for building an LWC that runs as a quick action \u2014 use lwc/lwc-quick-actions. NOT for converting Classic JavaScript or URL buttons \u2014 use admin/custom-button-to-action-migration.",
   "file_location": "skills/admin/global-actions-and-quick-actions",
   "id": "admin/global-actions-and-quick-actions",
   "inputs": [

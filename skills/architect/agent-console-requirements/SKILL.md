@@ -1,6 +1,6 @@
 ---
 name: agent-console-requirements
-description: "Use when gathering and documenting requirements for a Lightning Service Console deployment: agent workspace layout, page template selection, utility bar composition, macro requirements, case handling workflows, split-view navigation design, and licensing requirements. Triggers: service console requirements, agent workspace design, console page layout, utility bar planning, console licensing. NOT for console configuration steps or click-by-click setup (use admin/case-management), NOT for Omni-Channel routing model design (use architect/service-cloud-architecture), NOT for CTI telephony integration details."
+description: "Use when gathering and documenting requirements for a Lightning Service Console deployment: agent workspace layout, page template selection, utility bar composition, macro requirements, case handling workflows, split-view navigation design, and licensing requirements. Triggers: service console requirements, agent workspace design, console page layout, utility bar planning, console licensing. NOT for console configuration steps or click-by-click setup (use admin/case-management-setup), NOT for Omni-Channel routing model design (use architect/service-cloud-architecture), NOT for CTI telephony integration details."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

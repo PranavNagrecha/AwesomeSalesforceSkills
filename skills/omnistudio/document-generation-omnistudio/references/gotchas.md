@@ -84,3 +84,13 @@ Salesforce documents this explicitly in *Map Image Tokens in the Omnistudio Data
 - `DefaultRequiredPermission` (String, default none) — the fallback applied to components whose Required Permission is blank. You must implement the `VlocityRequiredPermissionCheck` class manually; it does not work properly from inside the Vlocity managed package.
 - `EnforceDMFLSAndDataEncryption` (True/False) — when true, Data Mappers run in the user context instead of the system context, so a Data Mapper cannot read a field the running user cannot see and merge it into the document, and encrypted fields render in plain text only for users with View Encrypted Data. Salesforce began enabling this setting by default in the week of 2 February 2026, so verify its current value rather than assuming either state.
 - `CheckCachedMetadataRecordSecurity` (True/False, default **False**) — while False, cached metadata is not secured when Salesforce Sharing Settings or Sharing Sets control access. Set it to True to perform a record-level security check on cached metadata, at a small cost to caching performance.
+
+---
+
+## Gotcha 8: Client-Side DocGen Plus In-Progress Timeout Off Is the 120s Retry Bug
+
+**What happens:** Client-side generation runs in the browser (token map / XML in the Omni JSON the guest can see). `isInProgRqstTmotEnab=false` means the request keeps waiting after the server accepted. The continuation dies near 120s; the client retries; a second PDF/ContentVersion appears.
+
+**When it occurs:** Mixed client+server DocGen; PDF Action after an HTTP IP that already succeeded.
+
+**How to avoid:** Prefer server-side. Enable in-progress request timeout. Do not put notice XML in the Omni JSON the guest sees. Persist an idempotency key before generate. The LWC wrapper that re-enables the OmniScript after PDF (`OmniscriptBaseMixin` + pubsub + `prefill`) must document the prefill contract or the script races.

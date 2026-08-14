@@ -1,6 +1,6 @@
 ---
 name: object-creation-and-design
-description: "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns)."
+description: "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for designing the fields on the object - use admin/custom-field-creation. NOT for sharing rules or role hierarchy configuration - use admin/sharing-and-visibility. NOT for lookup-vs-master-detail and junction design - use data/data-model-design-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -53,9 +53,9 @@
     "f52f5994e39de33f49e4",
     "f7f44c502e73fdde669b"
   ],
-  "content_hash": "d5fe56491b428a46510c3151ae3350d7fa86c2b61c3cf00f674788d542472404",
+  "content_hash": "9058d9a16d2108ce4544cb2ffa3f6d5226c7ae701d6e2f7028ac4af52f4df470",
   "dependencies": [],
-  "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
+  "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for sequencing a whole multi-object migration with automation bypass and rollback \u2014 use data/data-migration-planning. NOT for choosing the upsert key itself \u2014 use data/external-id-strategy.",
   "file_location": "skills/admin/data-import-and-management",
   "id": "admin/data-import-and-management",
   "inputs": [

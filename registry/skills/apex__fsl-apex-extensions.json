@@ -119,13 +119,13 @@
     "fdcc95d7228222908207",
     "fed3cb9493576d901d8a"
   ],
-  "content_hash": "72c3881dbe9630e8d990306fd2b9ce31127ea751ffd1a5053717502ca611e0ac",
+  "content_hash": "3899ed16391c0a73f0b9e6e376f6a1420ce37bfdfae3f8aa1be7f0c2761ec920",
   "dependencies": [
     "admin/fsl-scheduling-policies",
     "admin/fsl-service-territory-setup",
     "admin/fsl-service-resource-setup"
   ],
-  "description": "Use when writing Apex that calls Field Service Lightning scheduling APIs \u2014 AppointmentBookingService, ScheduleService, GradeSlotsService, or OAAS \u2014 to book, schedule, grade, or optimize service appointments programmatically. Trigger keywords: FSL Apex namespace, GetSlots, schedule service appointment via code, appointment booking API, FSL optimization API. NOT for standard Apex patterns unrelated to FSL, admin-level scheduling policy configuration, or declarative FSL scheduling.",
+  "description": "Use when writing Apex that calls Field Service Lightning scheduling APIs \u2014 AppointmentBookingService, ScheduleService, GradeSlotsService, or OAAS \u2014 to book, schedule, grade, or optimize service appointments programmatically. Trigger keywords: FSL Apex namespace, GetSlots, schedule service appointment via code, appointment booking API, FSL optimization API. NOT for scheduling policy or work rule config \u2014 use admin/fsl-scheduling-policies. NOT for optimization-mode and territory-sizing design \u2014 use architect/fsl-optimization-architecture.",
   "file_location": "skills/apex/fsl-apex-extensions",
   "id": "apex/fsl-apex-extensions",
   "inputs": [

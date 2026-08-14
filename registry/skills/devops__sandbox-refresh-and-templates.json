@@ -103,9 +103,9 @@
     "fe0beaf87bddc6012f5e",
     "fe140423055326c5272d"
   ],
-  "content_hash": "30b39ab10b1629c3f0f5ce12a4020c02f133ad94e46ae86aa4b4d8a53bf7a60d",
+  "content_hash": "0519288e38b83a2192781e88e39719d4df8fd45b67413bf2c9117e3468e1ecfa",
   "dependencies": [],
-  "description": "Sandbox refresh cycles, sandbox templates, post-refresh automation via the SandboxPostCopy Apex interface, and data handling during refresh. NOT for sandbox type selection (use sandbox-strategy).",
+  "description": "Sandbox refresh cycles, sandbox templates, post-refresh automation via the SandboxPostCopy Apex interface, and data handling during refresh. NOT for sandbox type selection \u2014 use admin/sandbox-strategy.",
   "file_location": "skills/devops/sandbox-refresh-and-templates",
   "id": "devops/sandbox-refresh-and-templates",
   "inputs": [

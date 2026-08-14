@@ -81,9 +81,9 @@
     "f9e96ab2fa9cd5f05f59",
     "fb244a18b4e9da088768"
   ],
-  "content_hash": "52c151d4e4e442a7ede2a67c311fe540660375362e90367f2ad2edb40c286bd2",
+  "content_hash": "021faec1a67859240553a126085f7343420666fa7dac2d14352d1cb6dbfc4e70",
   "dependencies": [],
-  "description": "Salesforce Shield as an architectural choice \u2014 Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's 10-year retention model, and why every Shield design starts with a license confirmation. NOT for individual feature setup steps (see security/platform-encryption, security/event-monitoring, security/field-audit-trail), NOT for compliance certification mapping (HIPAA / FedRAMP / PCI specifics).",
+  "description": "Salesforce Shield as an architectural choice \u2014 Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's 10-year retention model, and why every Shield design starts with a license confirmation. NOT for setting up one Shield feature \u2014 use security/platform-encryption, security/event-monitoring or security/field-audit-trail. NOT for HIPAA control mapping \u2014 use architect/hipaa-compliance-architecture. NOT for FedRAMP, FISMA or Government Cloud control mapping \u2014 use architect/government-cloud-compliance.",
   "file_location": "skills/architect/salesforce-shield-architecture",
   "id": "architect/salesforce-shield-architecture",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: service-cloud-voice-setup
-description: "Use this skill when setting up Service Cloud Voice with Amazon Connect — provisioning the contact center, configuring phone numbers, enabling real-time transcription, and configuring After Conversation Work Time. NOT for CTI adapter development, Open CTI customization, or custom Amazon Connect Lambda development outside the guided wizard."
+description: "Use this skill when setting up Service Cloud Voice with Amazon Connect — provisioning the contact center, configuring phone numbers, enabling real-time transcription, and configuring After Conversation Work Time. NOT for Omni-Channel routing setup — use admin/omni-channel-routing-setup. NOT for Open CTI softphone adapters — use apex/cti-adapter-development."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

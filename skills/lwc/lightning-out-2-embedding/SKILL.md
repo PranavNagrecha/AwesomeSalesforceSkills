@@ -1,6 +1,6 @@
 ---
 name: lightning-out-2-embedding
-description: "Use when embedding a custom Lightning web component into an external, non-Salesforce web app (React, Angular, Vue, or plain JavaScript) with Lightning Out 2.0 — the Winter '26 GA feature built on Lightning Web Runtime that renders each LWC inside a closed-shadow-DOM iframe, authenticated by a UI Bridge frontdoor URL. Covers the <lightning-out-application> markup (frontdoor-url, app-id, components), the host-page script tag, the token→frontdoor auth exchange, lifecycle events, and the documented limitations. NOT for the legacy Aura-based Lightning Out (beta) or its $Lightning.use() API, NOT for embedding LWCs on Salesforce-hosted surfaces (Lightning pages, Experience Cloud, Flow — use lwc/* or flow/* skills), and NOT for guest/unauthenticated access (not supported yet)."
+description: "Use when embedding a custom Lightning web component into an external, non-Salesforce web app (React, Angular, Vue, or plain JavaScript) with Lightning Out 2.0 — the Winter '26 GA feature built on Lightning Web Runtime that renders each. NOT for the legacy Aura-based Lightning Out (beta) or its $Lightning — use lwc/tableau-embedding-in-lightning."
 category: lwc
 salesforce-version: "Winter '26+"
 well-architected-pillars:

@@ -62,11 +62,6 @@ production, sandbox, and scratch orgs, but Salesforce recommends sandbox/scratch
 **What happens:** a plan states "Local Dev single-component preview is GA" for a Winter '26 org,
 or bundles it with the "unified testing API."
 
-**When it occurs:** single-component preview (`sf lightning dev component`) was **Beta as of
-Winter '26** (the release that added platform-module access) and reached **GA as "Single
-Component Live Preview" the week of April 13, 2026**. The Winter '26 "unified testing" work
-(Test Discovery / Test Runner APIs) is a **separate** capability scoped to Apex and Flow tests —
-it has nothing to do with LWC preview.
+**When it occurs:** the LWC Developer Guide documents `sf lightning dev component` as Single Component Live Preview and does not attach a GA/Beta label on that page. Inventing "still Beta" or "GA the week of April 13, 2026" is a documentation error. The Winter '26 "unified testing" work (Test Discovery / Test Runner APIs) is a **separate** capability scoped to Apex and Flow tests — it has nothing to do with LWC preview.
 
-**How to avoid:** state the single-component maturity precisely per the target release, and keep
-the Apex/Flow testing APIs out of any LWC local-development guidance.
+**How to avoid:** cite the current Live Preview guide; do not invent a maturity label. Keep the Apex/Flow testing APIs out of any LWC local-development guidance.

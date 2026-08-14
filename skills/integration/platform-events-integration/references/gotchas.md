@@ -18,7 +18,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any CometD subscriber implementation that does not continuously send `/meta/connect` long-poll requests. This is common in home-grown or naively implemented CometD clients that treat the initial handshake as sufficient to keep the channel alive.
 
-**How to avoid:** CometD clients must implement the full Bayeux long-poll loop: after a `/meta/connect` response arrives (with or without event data), immediately send another `/meta/connect`. Use the CometD reference client libraries (Java `org.cometd.client`, JavaScript `cometd`) rather than raw HTTP clients — they implement the heartbeat loop correctly. Add a subscriber health check that alerts if no events are received within N minutes during a period when events are expected, to detect silent disconnections.
+**How to avoid:** CometD clients must implement the full Bayeux long-poll loop: after a `/meta/connect` response arrives (with or without event data), immediately send another `/meta/connect`. Use the CometD reference client libraries (Java `org.cometd.client`, JavaScript `cometd`) rather than raw HTTP clients — they implement the heartbeat loop correctly, though not the server-initiated disconnect handling that Streaming API v64.0+ additionally requires (see Gotcha 6). Add a subscriber health check that alerts if no events are received within N minutes during a period when events are expected, to detect silent disconnections.
 
 ---
 
@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any durable subscriber that does not carefully sequence replay ID persistence relative to processing acknowledgment. Both orderings have failure modes.
 
 **How to avoid:** At-least-once is safer than at-most-once for most integration scenarios. Always store the `replayId` after successful processing rather than before. Accept that under failure conditions the same event may be reprocessed, and enforce idempotency (see Gotcha 3) to make reprocessing harmless. Document which failure mode the integration is designed to tolerate and test the reconnect scenario explicitly.
+
+---
+
+## Gotcha 6: The Server Can Disconnect You — CometD v64.0+ Needs a `/meta/disconnect` Listener
+
+**What happens:** A CometD subscriber that correctly runs the Bayeux long-poll loop still stops delivering events after some hours. Nothing in the client looks wrong: the last `/meta/connect` returned normally, the process is alive, the channel is still "subscribed", and the publisher keeps publishing. What the client received and silently dropped was a message on `/meta/disconnect` it never registered a listener for. The usual misdiagnosis is replay ID handling or an exhausted event delivery allocation; both are innocent.
+
+**When it occurs:** Streaming API **version 64.0 and later** — the version in the client's endpoint path (`/cometd/64.0`), not the org's release. Salesforce documents the behavior only for v64.0 and later, so a client still pinned to `/cometd/58.0` on the same Summer '26 org is outside the documented scope — but register the listener anyway; it costs nothing at any version, and the docs do not promise older endpoints are exempt. Salesforce: "In Streaming API version 64.0 and later, the server can sometimes send a disconnect message to the client. The disconnects, which happen more frequently when using a Hyperforce instance, are due to infrastructure auto-scaling." Pre-2025 guidance treated disconnects as client-initiated only, so most existing subscriber code wires up `/meta/handshake`, `/meta/connect` and `/meta/subscribe` and nothing else.
+
+**How to avoid:** Salesforce is explicit about the remedy: "To reconnect, the client must add a listener for the `/meta/disconnect` channel and reconnect after receiving a disconnect message." Register that listener, and have it re-handshake, re-subscribe, and resume from the **stored `replayId`** — not `-1` — so events published during the gap are replayed rather than skipped (Gotcha 5). Do not assume the CometD library covers this: the reference clients implement the long-poll loop, not a reconnect-after-server-disconnect policy. Detection: `grep -rn 'meta/disconnect' <subscriber source>` — against a v64.0+ endpoint, zero hits is the bug. Pub/Sub API subscribers are not exposed to this; a terminated gRPC stream surfaces as an error the client already has to handle, which is one more reason to prefer it for new work.

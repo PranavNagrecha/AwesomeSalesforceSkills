@@ -1,6 +1,6 @@
 ---
 name: care-program-management
-description: "Use when configuring or troubleshooting Health Cloud Care Programs — including CareProgram hierarchy setup, patient enrollment (CareProgramEnrollee), consent prerequisites, product-level enrollment (CareProgramEnrolleeProduct), and provider associations (CareProgramProvider). Trigger keywords: care program, program enrollment, enrollee, program product, CareProgramEnrollee, consent for enrollment, patient program outcome. NOT for Care Plans (per-patient task/goal framework), case management workflows, or general Health Cloud patient setup unrelated to program enrollment."
+description: "Configure or troubleshoot Health Cloud Care Programs: CareProgram hierarchy, patient enrollment (CareProgramEnrollee), consent prerequisites, program products (CareProgramEnrolleeProduct), provider associations (CareProgramProvider). Trigger keywords: care program, program enrollment, enrollee, program product, consent for enrollment, patient program outcome. NOT for care plan templates, problems and goals - use admin/care-plan-configuration. NOT for patient records, person accounts and care team roles - use admin/health-cloud-patient-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

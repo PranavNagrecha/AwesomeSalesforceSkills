@@ -1,6 +1,6 @@
 ---
 name: flow-time-based-patterns
-description: "Time-based execution in Salesforce Flow — Scheduled Paths in record-triggered flows (delays measured against a record date or trigger fire time), the Wait element in autolaunched / orchestration flows, scheduled flows that run on a cron-like cadence, and the time-zone rules that decide when 'tomorrow at 9 AM' actually fires. Covers the offset semantics (`+N` days vs `-N` days from a date field), the requeueing behavior on the source record changing, and the workflow-rule-time-based-action replacement playbook. NOT for the basic `Decision` or `Loop` element (that's plain Flow), NOT for Apex `System.scheduleBatch` (different runtime, see apex/scheduled-apex)."
+description: "Time-based execution in Salesforce Flow — Scheduled Paths in record-triggered flows (delays measured against a record date or trigger fire time), the Wait element in autolaunched / orchestration flows, scheduled flows on a cron-like cadence, the offset semantics (`+N` days vs `-N` days from a date field), requeueing when the source record changes, the time-zone rules that decide when 'tomorrow at 9 AM' actually fires, and the workflow-rule-time-based-action replacement playbook. NOT for tuning Scheduled Path batch size or monitoring Paused Flow Interviews — use admin/scheduled-path-patterns. NOT for scheduling Apex itself — use apex/apex-scheduled-jobs."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -64,9 +64,9 @@
     "eb8dc28c14f21a54ab95",
     "ef3e678ef7ac72748e30"
   ],
-  "content_hash": "dfe7678bd471a9f8817e756ddfbd58f920dac09f2fc020d0bb253f6f14a4017e",
+  "content_hash": "75f16512c3f87cb07a58ca8c2da4b634ca95a737049d41c0086fcf60f4676bae",
   "dependencies": [],
-  "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
+  "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection \u2014 use agentforce/agentforce-prompt-versioning.",
   "file_location": "skills/devops/pr-policy-templates",
   "id": "devops/pr-policy-templates",
   "inputs": [

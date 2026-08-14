@@ -87,32 +87,30 @@ git commit -m "chore: sync agent metadata from DevSandbox UI changes"
     <name>HospitalityServiceAgentTest</name>
     <subjectType>AGENT</subjectType>
     <subjectName>HospitalityServiceAgent</subjectName>
-    <testCases>
-        <testCase>
-            <inputs>
-                <utterance>I need to change my reservation for next Friday</utterance>
-            </inputs>
-            <expectedResults>
-                <expectation>
-                    <name>TopicClassification</name>
-                    <expectedValue>Reservations</expectedValue>
-                </expectation>
-            </expectedResults>
-        </testCase>
-        <testCase>
-            <inputs>
-                <utterance>What activities are available at the resort this weekend?</utterance>
-            </inputs>
-            <expectedResults>
-                <expectation>
-                    <name>TopicClassification</name>
-                    <expectedValue>GuestExperiences</expectedValue>
-                </expectation>
-            </expectedResults>
-        </testCase>
-    </testCases>
+    <testCase>
+        <number>1</number>
+        <inputs>
+            <utterance>I need to change my reservation for next Friday</utterance>
+        </inputs>
+        <expectation>
+            <name>topic_sequence_match</name>
+            <expectedValue>Reservations</expectedValue>
+        </expectation>
+    </testCase>
+    <testCase>
+        <number>2</number>
+        <inputs>
+            <utterance>What activities are available at the resort this weekend?</utterance>
+        </inputs>
+        <expectation>
+            <name>topic_sequence_match</name>
+            <expectedValue>GuestExperiences</expectedValue>
+        </expectation>
+    </testCase>
 </AiEvaluationDefinition>
 ```
+
+Two shapes in that XML are easy to get wrong. `testCase` and `expectation` are repeated elements, not collections — there is no `<testCases>` or `<expectedResults>` wrapper in `AiEvaluationDefinition`. And the expectation name is `topic_sequence_match`: lowercase, snake_case, and still using the pre-rename "topic" vocabulary even after subagents became the documented term. There is no `subagent_sequence_match`, and invented CamelCase names like `TopicClassification` are not valid.
 
 ```bash
 # Run in CI
@@ -170,3 +168,31 @@ sf project deploy start \
 ```bash
 sf project deploy start --manifest manifest/agent-bundle.xml --target-org DevSandbox
 ```
+
+---
+
+## Anti-Pattern: A Manifest That Omits AiAuthoringBundle
+
+**What practitioners do:** Reuse the four/five-type manifest above for an agent authored in the new Agentforce Builder, leaving `<version>` at 64.0 or lower.
+
+**What goes wrong:** The deploy and the retrieve both succeed. The runtime metadata moves, the agent answers in the target org — and the Agent Script source never enters version control. The `.agent` blueprint is the source of truth (the runtime metadata is its compiled output), so the repo now holds a build artifact with no build input. The next Builder edit has nothing to diff against, and a revert restores compiled metadata whose script is gone.
+
+**Correct approach:** Add `AiAuthoringBundle` and raise the manifest version to at least 65.0, the API version at which that type became available:
+
+```xml
+    <types>
+        <members>HospitalityServiceAgent</members>
+        <name>AiAuthoringBundle</name>
+    </types>
+    <version>65.0</version>
+```
+
+The retrieve then produces the bundle directory alongside the runtime metadata:
+
+```text
+force-app/main/default/aiAuthoringBundles/HospitalityServiceAgent/
+├── HospitalityServiceAgent.agent
+└── HospitalityServiceAgent.bundle-meta.xml
+```
+
+Review the `.bundle-meta.xml` `target` field before deploying: leave it out to land the agent in draft state, or set it to `{Bot}.{BotVersion}` to commit the agent version on deploy. Neither activates the agent — that remains a manual UI step in every org.

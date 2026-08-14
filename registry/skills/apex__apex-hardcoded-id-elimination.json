@@ -89,9 +89,9 @@
     "fa0940948661e43eba26",
     "ff9b11b65d283ecc79c6"
   ],
-  "content_hash": "521e62d9ae6de8c8634c59b670f0c1fe01365aa4ded06e55cde399ac73bfb73b",
+  "content_hash": "fd765083eccfe9ec3fd132d3de1a49033139452556b7926a0c771548662efe66",
   "dependencies": [],
-  "description": "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for storing config data \u2014 see apex-custom-settings-hierarchy / custom-metadata-in-apex. NOT for ID-based sharing rules (see sharing-selection).",
+  "description": "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for record type IDs in Flow, formulas or LWC \u2014 use admin/record-type-id-management. NOT for storing the config values themselves \u2014 use apex/custom-metadata-in-apex.",
   "file_location": "skills/apex/apex-hardcoded-id-elimination",
   "id": "apex/apex-hardcoded-id-elimination",
   "inputs": [

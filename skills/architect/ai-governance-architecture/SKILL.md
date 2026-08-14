@@ -1,6 +1,6 @@
 ---
 name: ai-governance-architecture
-description: "System architecture for Salesforce AI governance: MLOps pipeline design, AI Audit Trail architecture, Einstein Trust Layer security design, Policy-as-Code engine, and regulatory compliance design for EU AI Act and similar frameworks. NOT for general Salesforce security architecture, AI ethics policy documentation, or individual Agentforce agent configuration."
+description: "System architecture for Salesforce AI governance: MLOps pipeline design, AI Audit Trail architecture, Einstein Trust Layer security design, Policy-as-Code engine, and regulatory compliance design for EU AI Act and similar frameworks. NOT for authoring AI ethics policy and human-oversight requirements - use admin/ai-ethics-and-governance-requirements. NOT for model tier selection or Supervisor/Specialist topology - use architect/ai-platform-architecture."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

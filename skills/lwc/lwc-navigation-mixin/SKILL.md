@@ -1,6 +1,6 @@
 ---
 name: lwc-navigation-mixin
-description: "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns)."
+description: "Navigate between Lightning pages, records, and apps from LWC via NavigationMixin. Triggers: NavigationMixin, navigate, standard__recordPage. NOT for URL/deep-link strategy across apps — use lwc/navigation-and-routing. NOT for cross-tab state — use lwc/lwc-cross-tab-state-sync."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

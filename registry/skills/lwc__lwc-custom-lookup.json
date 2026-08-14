@@ -52,9 +52,9 @@
     "fbef625bd3b03e1a59f1",
     "fc413498655cf07cc5fe"
   ],
-  "content_hash": "dcc63a7d98a48da59b5c0d16b14039a656b009f21b31a844feeffd08191fcb8f",
+  "content_hash": "755abcb05bcdf8d99f958afd9049933e84e94bf6f37106f48e2ad808d03e7f9b",
   "dependencies": [],
-  "description": "Custom lookup component in LWC \u2014 typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for in-form lookups inside lightning-record-edit-form (use lightning-input-field) or lookup filters (use admin lookup filter config).",
+  "description": "Custom lookup component in LWC \u2014 typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for the base lightning-record-picker \u2014 use lwc/lwc-record-picker. NOT for in-form lookups inside lightning-record-edit-form.",
   "file_location": "skills/lwc/lwc-custom-lookup",
   "id": "lwc/lwc-custom-lookup",
   "inputs": [

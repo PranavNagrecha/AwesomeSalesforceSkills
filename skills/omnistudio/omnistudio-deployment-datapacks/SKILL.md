@@ -1,6 +1,6 @@
 ---
 name: omnistudio-deployment-datapacks
-description: "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components."
+description: "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components — use data/omnistudio-datapack-migration."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -35,7 +35,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # OmniStudio Deployment — DataPacks

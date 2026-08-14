@@ -41,7 +41,7 @@ curl -H "Authorization: Bearer $SF_TOKEN" \
 
 | Field | Value |
 |---|---|
-| `status` | Pending / InProgress / Succeeded / Failed / Canceled |
+| `status` | Pending / InProgress / FinalizingDeploy / FinalizingDeployFailed / Succeeded / SucceededPartial / Failed / Canceling / Canceled |
 | `numberComponentsDeployed` | |
 | `numberComponentsTotal` | |
 | `numberComponentErrors` | |
@@ -50,7 +50,7 @@ curl -H "Authorization: Bearer $SF_TOKEN" \
 
 ---
 
-## Component Failures (fill if status = Failed)
+## Component Failures (fill if status = Failed, SucceededPartial, or FinalizingDeployFailed)
 
 List each entry from `componentFailures[]`:
 
@@ -139,12 +139,12 @@ while true; do
       echo "PASS: Deployment succeeded."
       exit 0
       ;;
-    Failed|Canceled)
+    Failed|SucceededPartial|FinalizingDeployFailed|Canceled)
       echo "FAIL: Deployment $STATUS."
       echo "$REPORT" | jq '.result.details.componentFailures[]' 2>/dev/null || true
       exit 1
       ;;
-    Pending|InProgress)
+    Pending|InProgress|FinalizingDeploy|Canceling)
       sleep "$POLL_INTERVAL"
       ;;
     *)

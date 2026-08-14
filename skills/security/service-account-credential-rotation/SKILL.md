@@ -1,6 +1,6 @@
 ---
 name: service-account-credential-rotation
-description: "Use when designing credential rotation for integration users, connected apps, named credentials, and OAuth client secrets in Salesforce. Covers rotation cadence, zero-downtime handover, secret storage, and detection of stale credentials. Triggers: 'rotate integration user password', 'connected app secret rotation', 'named credential rotation', 'stale service account', 'zero downtime secret rotation'. NOT for end-user password policies."
+description: "Use when designing credential rotation for integration users, connected apps, named credentials, and OAuth client secrets in Salesforce. Covers rotation cadence, zero-downtime handover, secret storage, and detection of stale credentials. Triggers: 'rotate integration user. NOT for end-user password policies — use admin/connected-apps-and-auth."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

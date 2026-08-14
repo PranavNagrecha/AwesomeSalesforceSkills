@@ -132,7 +132,7 @@ After locking the platform decision, activate the appropriate implementation ski
 
 - **B2B Commerce on Core selected:** `admin/b2b-commerce-store-setup`
 - **SFCC selected:** `admin/b2c-commerce-store-setup`
-- **Commerce Extensions in scope (Core only):** `apex/commerce-extensions-development`
+- **Commerce Extensions in scope (Core only):** `apex/commerce-extension-points`
 - **SFCC + Salesforce CRM integration in scope:** `integration/salesforce-b2c-commerce-connector`
 
 ---

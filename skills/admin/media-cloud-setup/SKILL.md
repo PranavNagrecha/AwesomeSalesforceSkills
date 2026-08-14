@@ -1,6 +1,6 @@
 ---
 name: media-cloud-setup
-description: "Media Cloud setup for advertising sales management, audience segmentation, campaign management, revenue management, and cross-channel ad products. NOT for Salesforce Marketing Cloud (use marketing-cloud-account-setup). NOT for Data Cloud audience activation (use data-cloud-activation-patterns)."
+description: "Media Cloud setup for advertising sales management, audience segmentation, campaign management, revenue management, and cross-channel ad products. NOT for Marketing Cloud setup — use admin/marketing-cloud-engagement-setup. NOT for Data Cloud segments — use admin/data-cloud-segmentation."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -51,13 +51,15 @@ Activate when configuring Salesforce Media Cloud for a publisher, broadcaster, s
 
 ## Core Concepts
 
-### Deal → Contract → Placement → Delivery
+### Opportunity → Quote → Order line
 
-Media Cloud extends Revenue Cloud with media-specific objects. `MediaDeal` holds the negotiated scope. `MediaContract` is signed and versioned. `MediaPlacement` is the buy — a line item per ad product, flight, and target audience. `DeliveryActual` records served impressions from the ad server.
+Media Cloud Advertising Sales Management (ASM) ships **standard** objects, all prefixed `Ad`. `AdOpportunity` "Represents ad sales specific details of an advertisement campaign opportunity," with `AdOpportunityLineItem` as "a line item in an advertisement opportunity." `AdQuote` "Represents the details of a quote for an advertisement campaign" and `AdQuoteLine` "the details of a line item in an advertisement campaign quote." On the order side, `AdOrderItem` "Represents the advertisement campaign specific details of an ad order item."
+
+The buy's detail hangs off the line as a family of junctions and child records rather than fields — for orders: `AdOrderItemAdSpaceSpec`, `AdOrderItemCreativeSizeType`, `AdOrderItemDeliveryFrequency` ("the frequency at which an ad order item must be served"), `AdOrderItemDeliverySchedule` ("the time period and days for serving an ad order item"), `AdOrderItemPrintIssue`, `AdOrderItemUnitsSplit`, `AdOrderLineAdTarget`, `AdOrderLineHiatus`, `AdOrderLineTargetExpression`, `AdOrderLineTargetValue`. Each has an `AdQuoteLine…` mirror on the quote side.
 
 ### Audience segmentation and targeting
 
-Audiences come from Data Cloud or a DMP. Media Cloud references audience segments on each Placement. Audience fill rates and forecast availability are live calculations against the ad-server's inventory, not static lookups.
+Audiences come from Data Cloud or a DMP. Targeting is expressed on the line itself: `AdOrderLineAdTarget` "Represents selections made by users against a specific Ad Order Line item for a particular category," `AdOrderLineTargetExpression` "the expression that decides the targeting criteria for an ad order line," and `AdOrderLineTargetValue` the values within it. Fill rates and forecast availability are live calculations against the ad server's inventory, not static lookups.
 
 ### Revenue recognition per media type
 
@@ -67,7 +69,7 @@ Recognition rules differ by ad product: digital is delivery-based (ASC 606 perfo
 
 ### Pattern: Digital display order from deal to invoice
 
-`MediaDeal` negotiated → `MediaContract` signed → `MediaPlacement` created per flight / audience / creative → order pushed to ad server → daily delivery pulls back via integration → `DeliveryActual` aggregates → invoice generated from delivered impressions at contracted CPM.
+`AdOpportunity` negotiated → `AdQuote` and `AdQuoteLine` priced → `AdOrderItem` per flight, with `AdOrderItemDeliverySchedule` and `AdOrderItemDeliveryFrequency` setting when it serves and `AdOrderItemCreativeSizeType` fixing the creative → order pushed to the ad server through the AdTech Integration API → daily delivery pulled back → invoice generated from delivered impressions at contracted CPM.
 
 ### Pattern: Linear spot avail and rate card
 
@@ -75,24 +77,24 @@ Rate cards are matrix: daypart × program × week. Forecasting avails uses Progr
 
 ### Pattern: Cross-channel bundled sponsorship
 
-One deal spans digital + linear + streaming. A parent Contract; child Placements per channel. Revenue recognition rules differ per child — the Contract aggregates but each Placement runs its own recognition rule.
+One deal spans digital + linear + streaming. A single `AdQuote` carries an `AdQuoteLine` per channel, each with its own `AdQuoteMediaTypeProperty` ("information associated with the media type for an ad quote"). Revenue recognition rules differ per line — the quote aggregates the deal, but each line runs its own recognition rule.
 
 ## Decision Guidance
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Ad inventory forecasting | Ad-server integration with cached availability | Live inventory source of truth |
-| Audience targeting | Data Cloud + Media Cloud Placement reference | Single audience catalog |
+| Audience targeting | Data Cloud + `AdOrderLineAdTarget` / target expression | Single audience catalog |
 | Rate card management | Media Cloud rate cards per product | Shipped versioning |
 | Revenue recognition | Media Cloud Revenue Management | Handles product-specific rules |
-| Multi-channel bundle | One Contract, multiple Placements | Aggregated deal, per-channel rec |
+| Multi-channel bundle | One `AdQuote`, one `AdQuoteLine` per channel | Aggregated deal, per-channel rec |
 
 ## Recommended Workflow
 
 1. Confirm Media Cloud license, Revenue Cloud dependency, and ad-server integration path.
 2. Define the ad product catalog per media type (digital, linear, print, OOH, streaming).
 3. Build rate cards for each product with appropriate versioning and effective-dating.
-4. Configure Deal → Contract → Placement records; validate with a sample flight end-to-end.
+4. Configure `AdOpportunity` → `AdQuote`/`AdQuoteLine` → `AdOrderItem` records; validate with a sample flight end-to-end.
 5. Integrate with ad server: order push, daily delivery pull, reconciliation job.
 6. Configure revenue recognition rules per product family; validate with accounting.
 7. Build a campaign performance dashboard; sign off with sales, ops, and finance.
@@ -110,8 +112,8 @@ One deal spans digital + linear + streaming. A parent Contract; child Placements
 ## Salesforce-Specific Gotchas
 
 1. **Ad server delivery volumes are huge.** Loading raw impression logs into Salesforce kills storage; aggregate upstream and sync daily rollups only.
-2. **Audience size forecasts expire fast.** A Placement forecast based on yesterday's audience can mislead pricing; refresh on save.
-3. **Rate card versioning is not retroactive.** New rate card versions apply to new Placements only; in-flight contracts keep their original rates.
+2. **Audience size forecasts expire fast.** An `AdQuoteLine` forecast based on yesterday's audience can mislead pricing; refresh on save.
+3. **Rate card versioning is not retroactive.** New rate card versions apply to new `AdQuoteLine` records only; in-flight orders keep their original rates.
 
 ## Output Artifacts
 
@@ -124,6 +126,6 @@ One deal spans digital + linear + streaming. A parent Contract; child Placements
 
 ## Related Skills
 
-- `admin/revenue-cloud-cpq-setup` — underlying Revenue Cloud
-- `integration/platform-events-basics` — delivery-sync backbone
-- `data/data-cloud-activation-patterns` — audience source
+- `architect/revenue-cloud-architecture` — underlying Revenue Cloud
+- `integration/platform-events-integration` — delivery-sync backbone
+- `admin/data-cloud-segmentation` — audience source

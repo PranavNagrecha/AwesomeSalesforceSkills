@@ -1,6 +1,6 @@
 ---
 name: apex-connect-api-chatter
-description: "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for: email notifications (see apex-email-messaging), custom bell notifications (see apex-custom-notifications-from-apex), or Experience Cloud feed embeds (see community-feed-components)."
+description: "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for Experience Cloud feed embeds. NOT for sending email from Apex — use apex/apex-outbound-email-patterns. NOT for custom bell notifications — use apex/apex-custom-notifications-from-apex. NOT for turning down org-wide Chatter feed and digest noise — use admin/chatter-notification-tuning."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -187,6 +187,20 @@ ConnectApi.ChatterFeeds.postFeedElement(
 6. **Feed tracking must be on** — posting to a record whose object lacks feed tracking fails with a specific ConnectApiException.
 7. **Polls cannot be edited after posting** — only deleted and reposted.
 8. **ConnectApi does NOT call triggers on FeedItem** — `FeedItem` triggers fire on DML, but ConnectApi writes go through a separate path; relying on FeedItem triggers for ConnectApi posts is unreliable.
+
+---
+
+## Data 360 ConnectApi data graph reads (Spring '25–Spring '26)
+
+Chatter is the primary ConnectApi surface for this skill, but teams mixing **Data 360 data graphs** into Apex should know the **`ConnectApi.CdpQuery`** additions (check each method's documented API version):
+
+| Method family | API version | Use |
+|---|---|---|
+| `getDataGraphData(..., live)` | 63.0 (Spring '25) | Live/real-time data graph reads |
+| `getDataGraphDataWithLookupKeys(..., noCache)` | 64.0 (Summer '25) | Lookup-key reads that bypass cache |
+| `getMetadataEntities()` (+ overloads with dataspace) | 66.0 (Spring '26) | Discover graph entity metadata |
+
+Earlier APIs expose materialized-view reads only. Version-gate call sites on **`apiVersion`**, not org release calendar.
 
 ---
 

@@ -3,6 +3,7 @@
   "chunk_ids": [
     "23eea9113beb48cc33fe",
     "25053ea430d2ef92341c",
+    "278ce81ade0931aca984",
     "2a9191e4c2686ea89e10",
     "31e6e7900d17d94bce2d",
     "34f419f9c9d737b624db",
@@ -18,6 +19,7 @@
     "653dcde12606e656b3cb",
     "6a2369b7699872390d20",
     "6b5f88cbe5cdb7d69fcd",
+    "7275625663944d784580",
     "7b2663ffaa01eb90c0fc",
     "7e12963adfbc1c09730f",
     "80dcd4534ae214757db1",
@@ -56,9 +58,9 @@
     "fec967f9e50e76cd584a",
     "ff479e45d6d368808dbf"
   ],
-  "content_hash": "86100f951a60922e67574b0aef460676f8cf24ea530480658b116ad425ea7295",
+  "content_hash": "498e8bbcc15c6b53f1540cc96185fede9381b371083413f219d6b4a64cdb08c9",
   "dependencies": [],
-  "description": "Use this skill to elicit, document, and validate CRM Analytics requirements \u2014 covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications \u2014 before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for standard Salesforce Reports and Dashboards requirements, CRM Analytics implementation, SAQL query development, or KPI formula definition (use analytics-kpi-definition).",
+  "description": "Use this skill to elicit, document, and validate CRM Analytics requirements \u2014 covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications \u2014 before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for the formula and target behind each KPI \u2014 use admin/analytics-kpi-definition. NOT for building the dashboard once requirements are agreed \u2014 use admin/analytics-dashboard-design.",
   "file_location": "skills/admin/analytics-requirements-gathering",
   "id": "admin/analytics-requirements-gathering",
   "inputs": [

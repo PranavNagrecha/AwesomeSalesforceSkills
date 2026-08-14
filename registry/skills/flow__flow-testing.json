@@ -47,6 +47,7 @@
     "d0ea79bd263e4729372a",
     "d1195077a2fbbdeb93a5",
     "d263d7ce5afd27c15f75",
+    "d4dbe8a9b3e494074825",
     "d8a2b389a37d98ad677f",
     "d8e689b06b8ddbe03d1c",
     "e166dd7350a0a3c94203",
@@ -55,9 +56,9 @@
     "f3519e1e8066f03e5632",
     "f52d5e56709c618e2247"
   ],
-  "content_hash": "be8231d2b2d0d520db0dfa9f09e341deeeeb5feadbf361adde9ea4839981a55f",
+  "content_hash": "4fb8c53363da71078af0f099486f3589308462b2454b28d8543fc6f2d6a1a121",
   "dependencies": [],
-  "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior.",
+  "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging.",
   "file_location": "skills/flow/flow-testing",
   "id": "flow/flow-testing",
   "inputs": [

@@ -72,9 +72,9 @@
     "f895ee57ae6fdeb2b366",
     "f903c0610279a6d3391c"
   ],
-  "content_hash": "828e27c806b887b4881c519d6f77213b453a1cfd10eaec0017ba5ddb4a07b8f5",
+  "content_hash": "1084d84b7365e6da34ad534e1439b73d60debdb4651f8aa3ab5318d0d923ddfc",
   "dependencies": [],
-  "description": "Pattern catalog of common Salesforce metadata-deploy errors and their fixes \u2014 `Cannot change type` (field type already in use), dependent-metadata ordering (deploy field before profile that references it), profile / permission set delta issues (deactivated permissions blocking deploy), missing-reference errors, test class coverage failures, and the package.xml-shape mistakes that produce confusing first-line errors. Covers the SFDX / Metadata API error message shapes and how to translate them into the actual fix. NOT for designing the deployment pipeline (use devops/sfdx-cicd-pipeline), NOT for change set orchestration (use admin/changeset-builder).",
+  "description": "Pattern catalog of Salesforce metadata-deploy error strings and their fixes: `Cannot change type` of field, dependent-metadata ordering, profile / permission set delta issues, INVALID_CROSS_REFERENCE_KEY, missing-reference errors, inactive-flow and picklist component errors, `entity is in use` on field deletion, package.xml-shape mistakes. NOT for sandbox partial deploys, rollbackOnError, or testLevel coverage models \u2014 use devops/deployment-error-troubleshooting. NOT for change set orchestration \u2014 use devops/change-set-deployment.",
   "file_location": "skills/devops/deployment-error-diagnosis",
   "id": "devops/deployment-error-diagnosis",
   "inputs": [
@@ -91,7 +91,7 @@
     "Profile Metadata Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_profile.htm",
     "PermissionSet Metadata Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_permissionset.htm",
     "Flow Metadata Reference (status values) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm",
-    "Sibling skill \u2014 `skills/devops/sfdx-cicd-pipeline/SKILL.md` (when one exists)",
+    "Sibling skill \u2014 `skills/architect/ci-cd-pipeline-architecture/SKILL.md`",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

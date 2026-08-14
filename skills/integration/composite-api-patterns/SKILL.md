@@ -1,6 +1,6 @@
 ---
 name: composite-api-patterns
-description: "Use when designing, implementing, or troubleshooting Salesforce Composite API requests — covering the /composite/ resource with cross-subrequest referenceId wiring, /composite/sobjects/ bulk CRUD, /composite/tree/ hierarchical inserts, and /composite/batch/ independent subrequest bundling. Triggers: 'composite API', 'sObject Tree', 'sObject Collection', 'composite batch', 'subrequest', 'referenceId', 'allOrNone', 'parent child insert one call', 'bulk CRUD same object', 'batch API requests'. NOT for single REST API calls, Bulk API 2.0 large-data-load jobs, GraphQL API queries, Metadata API deployments, or custom Apex REST endpoints."
+description: "Use when designing, implementing, or troubleshooting Salesforce Composite API requests — covering the /composite/ resource with cross-subrequest referenceId wiring, /composite/sobjects/ bulk CRUD, /composite/tree/ hierarchical inserts, and /composite/batch/ independent subrequest bundling. Triggers: 'composite API', 'sObject Tree', 'sObject Collection', 'composite batch', 'subrequest', 'referenceId', 'allOrNone', 'parent child insert one call', 'bulk CRUD same object', 'batch API requests'. NOT for a single REST call, SOQL query pagination, or API rate limits — use integration/rest-api-patterns. NOT for loading or extracting tens of thousands of records — use integration/bulk-api-2-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

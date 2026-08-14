@@ -155,3 +155,28 @@ global override Object execute(Map<String, Object> params) {
 ```
 
 **Detection hint:** Any `return [SELECT ...]` that directly returns a SOQL result from execute() is the anti-pattern.
+
+---
+
+## Anti-Pattern 7: Omitting the Access Modifier Entirely on an `abstract` or `override` Method
+
+**What the LLM generates:**
+```apex
+global abstract class BaseOrgTool extends McpToolDefinition {
+    abstract Map<String, Object> buildSchema();   // no modifier
+    override Object execute(Map<String, Object> params) { ... }  // no modifier
+}
+```
+
+**Why it happens:** For a decade Apex accepted a bare `abstract`/`override` method and defaulted it to private, so the pattern is all over the training data. Models also describe the omission as harmless ("defaults to private"), which was true then and is not now.
+
+**Correct pattern:** Winter '26 tightened this. Per the Winter '26 developer release guide, *"In API version 65.0 and later, `abstract` and `override` methods require a `protected`, `public`, or `global` access modifier."* Declare one explicitly — for MCP tool classes that means `global`, since the base methods are `global abstract`:
+
+```apex
+global abstract class BaseOrgTool extends McpToolDefinition {
+    global abstract Map<String, Object> buildSchema();
+    global override Object execute(Map<String, Object> params) { ... }
+}
+```
+
+**Detection hint:** Grep for a line starting with `abstract ` or `override ` at method position with no preceding `protected`/`public`/`global`. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release, so the same file compiles at 64.0 and fails at 65.0 — when a user reports a base class that "suddenly stopped compiling," check for an API version bump before hunting for a code change. `scripts/check_mcp_tool_definition_apex.py` flags this as check 2b.

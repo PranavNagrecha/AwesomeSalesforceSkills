@@ -108,9 +108,9 @@
     "fe06afd210fe1add5844",
     "fff173fc428279281dea"
   ],
-  "content_hash": "97c4c5a56c8d2db999e6c12d192a95c0db81216521c16bc0fbd5055fadb336a9",
+  "content_hash": "0e2829ccfcd5eb854627d7540d141f970bf0a36e4bb4a59d3bb19fe3faeedd77",
   "dependencies": [],
-  "description": "Configuring Salesforce case management: case queues, assignment rules, escalation rules, auto-response rules, Email-to-Case, Web-to-Case, case teams, entitlements, and milestones. Use when setting up or troubleshooting the Service Cloud case handling layer. Trigger keywords: email-to-case, web-to-case, escalation rules, case teams, entitlements, milestones, auto-response, case queue. NOT for case assignment rule logic only (use assignment-rules skill). NOT for Omni-Channel routing (use omni-channel-routing-setup). NOT for CTI or telephony integration.",
+  "description": "Configuring Salesforce case management: case queues, assignment rules, escalation rules, auto-response rules, Email-to-Case, Web-to-Case, case teams, entitlements, and milestones. Use when setting up or troubleshooting the Service Cloud case handling layer. Trigger keywords: email-to-case, web-to-case, escalation rules, case teams, entitlements, milestones, auto-response, case queue. NOT for Standard vs On-Demand Email-to-Case and routing-address setup \u2014 use admin/email-to-case-configuration. NOT for routing case work items to agents \u2014 use admin/omni-channel-routing-setup.",
   "file_location": "skills/admin/case-management-setup",
   "id": "admin/case-management-setup",
   "inputs": [

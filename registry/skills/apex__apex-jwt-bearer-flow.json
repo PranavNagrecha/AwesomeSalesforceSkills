@@ -53,9 +53,9 @@
     "f7e339db7ee06b35cc5d",
     "fec86fb474dfbf9cef8c"
   ],
-  "content_hash": "814e71d9e53f278e72350b7e55f782250f542e7a3f60d439165cbefde1383874",
+  "content_hash": "e9c325e376096bef24def4389f8b8bcf535aa04eab2c44a26a72f6c628ccf70c",
   "dependencies": [],
-  "description": "OAuth 2.0 JWT Bearer Token Flow for server-to-server authentication from Apex \u2014 Connected App with certificate, Auth.JWT/Auth.JWS to mint signed assertions, token endpoint exchange, and the failure modes (clock skew, certificate not found, user not pre-authorized). NOT for user-context OAuth (use named-credentials-oauth-user-flow) or external client \u2192 Salesforce JWT (that is the inbound flow, configured in Connected App not Apex).",
+  "description": "OAuth 2.0 JWT Bearer Token Flow for server-to-server authentication from Apex \u2014 Connected App with certificate, Auth.JWT/Auth.JWS to mint signed assertions, token endpoint exchange, and the failure modes (clock skew, certificate not found, user not pre-authorized). NOT for choosing which OAuth flow to use \u2014 use integration/oauth-flows-and-connected-apps. NOT for Connected App setup \u2014 use admin/connected-apps-and-auth.",
   "file_location": "skills/apex/apex-jwt-bearer-flow",
   "id": "apex/apex-jwt-bearer-flow",
   "inputs": [

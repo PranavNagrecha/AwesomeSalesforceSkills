@@ -1,6 +1,6 @@
 ---
 name: agentforce-sales-ai-setup
-description: "Step-by-step setup and configuration of Einstein for Sales AI features: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI. Covers prerequisites, license checks, feature sequencing, and data readiness validation. NOT for core Agentforce agent creation, agent topic design, Einstein Trust Layer configuration, or Einstein Activity Capture troubleshooting."
+description: "Setup and configuration of Einstein for Sales AI features: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI — prerequisites, license checks, feature sequencing, data readiness validation. NOT for configuring or troubleshooting Einstein Activity Capture and Relationship Insights in a live org — use agentforce/einstein-copilot-for-sales. NOT for building an Agentforce agent — use agentforce/agentforce-agent-creation. NOT for its topic boundary design — use agentforce/agent-topic-design."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

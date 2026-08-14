@@ -4,6 +4,7 @@
     "028d1039b0056c5b5eed",
     "077bf94a03266de7c5f5",
     "09aad2dfd169bb0d6fdf",
+    "11361b129431c5201a81",
     "13c8aaa5c3ef669aa4da",
     "2913365bf11315cb0d20",
     "2f6a2cd79ab3c59a9528",
@@ -53,9 +54,9 @@
     "fcec81050d354a8d99bf",
     "fdd7afc42b46d703cd7a"
   ],
-  "content_hash": "308763a2aadce8265c628f6f9863bf799f24b76b6f0f6943dea63c62076539ad",
+  "content_hash": "b74c6d1e58e77fc995f04f55a7e931cde448102a08c687be33fb88a322b05711",
   "dependencies": [],
-  "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that.",
+  "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for tracing one named user's access to one specific record \u2014 use security/record-access-troubleshooting. NOT for object or field permissions \u2014 use admin/permission-sets-vs-profiles.",
   "file_location": "skills/admin/sharing-and-visibility",
   "id": "admin/sharing-and-visibility",
   "inputs": [
@@ -94,7 +95,7 @@
   "templates": [
     "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
   "version": "1.0.0"
 }

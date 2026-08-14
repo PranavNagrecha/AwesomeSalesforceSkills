@@ -32,4 +32,4 @@ A single site can serve both public and authenticated pages by mixing page acces
 - Secure Guest Users Sharing Settings — https://help.salesforce.com/s/articleView?id=sf.networks_secure_guest_users.htm
 - Give Secure Access to Unauthenticated Users — https://help.salesforce.com/s/articleView?id=sf.networks_unauthenticated_access.htm
 - Experience Cloud Developer Guide (Guest User Context) — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_guest_user.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Object Permissions reference (`PermissionsViewAllFields`, API 63.0+) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_objectpermissions.htm — confirms View All Fields is object-scoped read on all fields including future ones; guest/external assignment restrictions documented in View All / Modify All overview. (verified 2026-08-14)

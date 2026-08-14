@@ -83,9 +83,9 @@
     "fd02765311fe7df5ba8b",
     "fd609678c0721b00f32e"
   ],
-  "content_hash": "3733f597b439efffbc293c7779702bb70aba1004b1cdab1c23c5f85b256038ab",
+  "content_hash": "9019ca249dcb8b9adb1b9903ba1639dda71f6feb802f342239ab4a7cbc482b68",
   "dependencies": [],
-  "description": "Use this skill when setting up, configuring, or managing Salesforce Lightning Knowledge \u2014 including enabling the feature, designing record types on Knowledge__kav, configuring Data Categories for organization and visibility control, setting up publishing workflows, and layering approval processes. Trigger keywords: Lightning Knowledge setup, Knowledge article record types, Data Category visibility, Knowledge publishing workflow, Knowledge__kav configuration. NOT for Knowledge in Experience Cloud (use the experience-cloud-knowledge skill), NOT for Einstein Article Recommendations surfacing (use einstein-article-recommendations skill), NOT for Knowledge search tuning or Apex programmatic article management.",
+  "description": "Use this skill when setting up, configuring, or managing Salesforce Lightning Knowledge \u2014 enabling the feature, designing record types on Knowledge__kav, configuring Data Categories for organization and visibility control, setting up publishing workflows, and layering approval processes. Trigger keywords: Lightning Knowledge setup, Knowledge article record types, Data Category visibility, Knowledge publishing workflow, Knowledge__kav configuration. NOT for converting Classic Article Types to Lightning \u2014 use admin/knowledge-classic-to-lightning. NOT for bulk-loading articles from an external help center \u2014 use data/knowledge-article-import.",
   "file_location": "skills/admin/knowledge-base-administration",
   "id": "admin/knowledge-base-administration",
   "inputs": [

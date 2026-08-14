@@ -48,9 +48,9 @@
     "f62fce4fea102d6b1a11",
     "fdd4779fb9f806ce00b5"
   ],
-  "content_hash": "6a4fb256ba590f3a8cfe6a9dbb0d890f643a004eacf63056d887b4ed23026b96",
+  "content_hash": "80c22b52c2f0bd29e397f7328001c584416495259234b342dc1f70ed9ec3df31",
   "dependencies": [],
-  "description": "Use when designing or repairing lookup filters that constrain a child lookup using fields from the parent record (or a sibling record on the same object). Triggers: 'limit lookup based on another field', 'cross-object lookup filter', 'lookup filter $Source vs $User'. NOT for filter logic on report types, list views, or duplicate matching rules.",
+  "description": "Design or repair lookup filters that constrain a child lookup using fields from the parent record (or a sibling record on the same object). Triggers: 'limit lookup based on another field', 'cross-object lookup filter', 'lookup filter $Source vs $User'. NOT for choosing lookup vs master-detail - use admin/lookup-and-relationship-design. NOT for duplicate matching rule criteria - use admin/duplicate-management.",
   "file_location": "skills/admin/lookup-filter-cross-object-patterns",
   "id": "admin/lookup-filter-cross-object-patterns",
   "inputs": [

@@ -76,11 +76,11 @@
     "f2b9892cdcd884dd70c7",
     "ff6b9fee103de31e467d"
   ],
-  "content_hash": "2171cf461d7fc8dad6d411e91b992ff600efbe4b1c2ac360f40c26d12c0bf8c2",
+  "content_hash": "e8f85cea602684dc7f55e6918b1f072f05aa5428d68a748c15fb9adf9dc763c9",
   "dependencies": [
     "admin/health-cloud-patient-setup"
   ],
-  "description": "Use when configuring or troubleshooting Health Cloud Care Programs \u2014 including CareProgram hierarchy setup, patient enrollment (CareProgramEnrollee), consent prerequisites, product-level enrollment (CareProgramEnrolleeProduct), and provider associations (CareProgramProvider). Trigger keywords: care program, program enrollment, enrollee, program product, CareProgramEnrollee, consent for enrollment, patient program outcome. NOT for Care Plans (per-patient task/goal framework), case management workflows, or general Health Cloud patient setup unrelated to program enrollment.",
+  "description": "Configure or troubleshoot Health Cloud Care Programs: CareProgram hierarchy, patient enrollment (CareProgramEnrollee), consent prerequisites, program products (CareProgramEnrolleeProduct), provider associations (CareProgramProvider). Trigger keywords: care program, program enrollment, enrollee, program product, consent for enrollment, patient program outcome. NOT for care plan templates, problems and goals - use admin/care-plan-configuration. NOT for patient records, person accounts and care team roles - use admin/health-cloud-patient-setup.",
   "file_location": "skills/admin/care-program-management",
   "id": "admin/care-program-management",
   "inputs": [

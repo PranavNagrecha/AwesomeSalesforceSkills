@@ -1,6 +1,6 @@
 ---
 name: apex-transaction-finalizers
-description: "Use this skill when you need guaranteed post-Queueable cleanup, retry, or failure-logging logic that must run even when the parent Queueable throws an unhandled exception. Trigger keywords: FinalizerContext, System.attachFinalizer, Queueable cleanup on failure, post-job compensation, guaranteed async cleanup. NOT for batch job completion callbacks — use apex-batch-chaining. NOT for platform event publishing on failure — use platform-events-apex."
+description: "Use this skill when you need guaranteed post-Queueable cleanup, retry, or failure-logging logic that must run even when the parent Queueable throws an unhandled exception. Trigger keywords: FinalizerContext, System.attachFinalizer, Queueable cleanup on failure, post-job compensation, guaranteed async cleanup. NOT for Queueable design or chaining — use apex/apex-queueable-patterns. NOT for the same need in Flow — use flow/flow-transaction-finalizer-patterns."
 category: apex
 salesforce-version: "Summer '21+ (API v53.0+)"
 well-architected-pillars:

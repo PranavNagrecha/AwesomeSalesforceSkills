@@ -55,9 +55,9 @@
     "f8c2fda1f6845c5b0c5b",
     "fe49c50ccd6eb38256ff"
   ],
-  "content_hash": "3be85f8e1ef72b8e46aba6781f9f8764e58cc5c703954b2bf65675fa1ff1b1b6",
+  "content_hash": "5f5aac67a830d10bf339172e1d4682a9a67d8aef8b78cfbd435701568a2f4d68",
   "dependencies": [],
-  "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen.",
+  "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for 'which tool should stamp this field on save, and will it recurse' \u2014 use admin/workflow-field-update-patterns. NOT for actually running the conversion of an existing Process Builder \u2014 use flow/process-builder-to-flow-migration.",
   "file_location": "skills/admin/process-automation-selection",
   "id": "admin/process-automation-selection",
   "inputs": [

@@ -1,6 +1,6 @@
 ---
 name: change-management-and-deployment
-description: "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance."
+description: "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for change set upload mechanics — use devops/change-set-deployment. NOT for scoring release risk up front — use admin/deployment-risk-assessment."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: delegated-administration
-description: "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for user management (use user-management) or full system admin setup."
+description: "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for creating, deactivating or licensing users yourself — use admin/user-management. NOT for auto-assigning permission sets from user attributes — use admin/user-access-policies."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

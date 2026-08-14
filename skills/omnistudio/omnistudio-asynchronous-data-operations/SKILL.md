@@ -1,6 +1,6 @@
 ---
 name: omnistudio-asynchronous-data-operations
-description: "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads."
+description: "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads — use omnistudio/dataraptor-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

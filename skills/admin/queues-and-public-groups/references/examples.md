@@ -17,7 +17,7 @@ Queue 1:
   Label: Tier 1 Support
   Queue Email: support-tier1@company.com
   Supported Objects: Case
-  Members: Role "Tier 1 Support Agents" (or Roles and Subordinates if there are sub-teams)
+  Members: Role "Tier 1 Support Agents" (or Roles and Internal Subordinates if there are sub-teams)
 
 Queue 2:
   Label: Tier 2 Support
@@ -25,6 +25,8 @@ Queue 2:
   Supported Objects: Case
   Members: Role "Tier 2 Specialists"
 ```
+
+The member-type picker reads "Roles and Internal Subordinates" in orgs where the Secure Roles release update is enforced, and still "Roles and Subordinates" in orgs that have not taken it — see `gotchas.md` Gotcha 6 for which orgs are affected.
 
 Step 2 — Route new cases to Tier 1 via Case Assignment Rule:
 
@@ -72,7 +74,7 @@ Setup → Public Groups → New
   Label: EMEA Sales Team
   Members: Add Role "EMEA Account Executive"
             Add Role "EMEA Sales Development"
-            (Use "Roles and Subordinates" if sub-roles exist under these)
+            (Use "Roles and Internal Subordinates" if sub-roles exist under these)
 ```
 
 Step 2 — Create an Opportunity sharing rule:

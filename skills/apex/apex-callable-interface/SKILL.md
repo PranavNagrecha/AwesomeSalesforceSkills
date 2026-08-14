@@ -1,6 +1,6 @@
 ---
 name: apex-callable-interface
-description: "Use when building Apex classes meant to be invoked dynamically — from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for: Invocable methods exposed to Flow (see apex-invocable-methods) or REST endpoints (see apex-rest-services)."
+description: "Use when building Apex classes meant to be invoked dynamically — from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for an @InvocableMethod action exposed to Flow — use apex/invocable-methods. NOT for exposing the class as a REST endpoint — use apex/apex-rest-services."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

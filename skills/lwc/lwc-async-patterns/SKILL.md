@@ -1,6 +1,6 @@
 ---
 name: lwc-async-patterns
-description: "Async/await and Promise patterns in LWC: imperative Apex, loading states, error handling, concurrent wire + imperative, AbortController for in-flight cancellation, Promise.all for parallel calls. NOT for wire service basics (use lwc-wire-refresh-patterns). NOT for Lightning Data Service."
+description: "Async/await and Promise patterns in LWC: imperative Apex, loading states, error handling, concurrent wire + imperative, AbortController for in-flight cancellation, Promise.all for parallel calls. NOT for the basic imperative Apex import-and-call pattern or cacheable=true rules — use lwc/lwc-imperative-apex. NOT for @wire provisioning basics — use lwc/wire-service-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

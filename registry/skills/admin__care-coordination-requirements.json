@@ -56,13 +56,13 @@
     "f9e6b0bea79fa2c33b2d",
     "fbfbf7845eb9abc7351c"
   ],
-  "content_hash": "298d7e745920305aa88ba78ba817d739fad830afa4529891753102be62f06eb8",
+  "content_hash": "ca0d27591575c019e415d845219a4c8f4c67ef83152fdf15e8b39fc1e8c7441e",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-plan-configuration",
     "admin/care-program-management"
   ],
-  "description": "Use this skill when mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care handoffs, social determinants of health (SDOH) barrier tracking, and care gap identification. NOT for implementation of technical components \u2014 this skill covers requirements gathering and process design, not Apex/Flow build.",
+  "description": "Use this skill when mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care handoffs, social determinants of health (SDOH) barrier tracking, and care gap identification. NOT for building care plan templates, problems, and goals \u2014 use admin/care-plan-configuration. NOT for referral routing and provider networks \u2014 use admin/referral-management-health.",
   "file_location": "skills/admin/care-coordination-requirements",
   "id": "admin/care-coordination-requirements",
   "inputs": [

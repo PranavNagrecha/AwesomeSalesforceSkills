@@ -1,6 +1,6 @@
 ---
 name: org-edition-and-feature-licensing
-description: "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for user license seat count planning (use capacity-planning), NOT for AppExchange package licensing (use appexchange-management)."
+description: "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for auditing and reclaiming unused seats to cut cost — use architect/license-optimization-strategy. NOT for ISV/AppExchange package license management and Trialforce — use devops/isv-license-management-and-trialforce."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

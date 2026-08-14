@@ -1,6 +1,6 @@
 ---
 name: deployment-monitoring
-description: "Tracking the real-time and historical status of Salesforce metadata deployments via Metadata API checkDeployStatus, REST deployRequest polling, and the Deployment Status Setup page. Covers DeployResult field interpretation, component error triage, concurrent deployment queue behavior, and 30-day history limits. NOT for post-deployment functional smoke testing (use post-deployment-validation). NOT for CI/CD pipeline setup (use github-actions-for-salesforce). NOT for rollback execution."
+description: "Live and historical status of a Salesforce metadata deployment: Metadata API checkDeployStatus, REST deployRequest polling, the Deployment Status Setup page, DeployResult status enum, component error triage, deploy queue concurrency, 30-day history limit. NOT for whether the change actually works now that it landed — use devops/post-deployment-validation. NOT for reverting a bad deploy — use devops/rollback-and-hotfix-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

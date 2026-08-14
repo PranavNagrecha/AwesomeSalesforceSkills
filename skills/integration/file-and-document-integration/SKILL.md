@@ -1,6 +1,6 @@
 ---
 name: file-and-document-integration
-description: "Use when uploading, downloading, managing, or integrating files and documents with Salesforce — covering ContentVersion/ContentDocument, REST multipart uploads, base64 inserts, Files Connect for external storage reads, and virus scanning callout patterns. Triggers: 'upload file to Salesforce', 'ContentVersion REST API', 'Files Connect external storage', 'multipart file upload', 'document integration pattern', 'virus scan uploaded file'. NOT for Bulk API data loads, Chatter feed post content, email attachment handling via EmailMessage, or CRM Content classic libraries."
+description: "Use when uploading, downloading, managing, or integrating files and documents with Salesforce — covering ContentVersion/ContentDocument, REST multipart uploads, base64 inserts, Files Connect for external storage. NOT for Bulk API data loads, Chatter feed post content, email attachment handling via Em — use security/file-upload-virus-scanning."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

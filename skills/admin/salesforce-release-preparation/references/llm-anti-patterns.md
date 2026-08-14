@@ -126,3 +126,32 @@ Missing this step means users encounter unexplained behavior changes in producti
 ```
 
 **Detection hint:** A release readiness checklist that has no communication or notification step is incomplete regardless of how complete the technical steps are.
+
+---
+
+## Anti-Pattern 7: Quoting a Release Update's First-Announced Enforcement Release as Current Fact
+
+**What the LLM generates:** "Restrict User Access to Run Flows is scheduled for enforcement in Winter '25, so you still have time to opt in and test." Or, asked to build a permission set for a business user whose job is to run a screen flow, a permission set with object and field permissions and no Run Flows.
+
+**Why it happens:** Announcement-era release notes and the blog wave that follows them dominate training data. Postponements and the eventual enforcement are covered far more thinly, so the model reports the first date it ever saw and treats the update as perpetually pending. It also learned the era before enforcement, when launching a screen or autolaunched flow did not require an explicit Run Flows grant on a profile or permission set, so Run Flows never appears in a generated permission set.
+
+**Correct pattern:**
+
+```
+Never state a Release Update's enforcement release from memory.
+- Read it from Setup > Release Updates in the org being prepared.
+- Enforcement releases move: "Restrict User Access to Run Flows" was scheduled
+  for Winter '25 and was enforced in Winter '26.
+- Once enforced, there is no toggle and no opt-in window left — the only
+  remaining work is remediation.
+For that update specifically: the FlowSites org permission is deprecated, and a
+user needs Run Flows (or Manage Flow, which also covers create/update/delete)
+granted via a profile or permission set. This covers flows a user launches
+directly — screen and autolaunched flows. Record-triggered, scheduled-triggered
+and platform-event-triggered flows are unaffected, so do not widen the grant to
+everyone whose records automation touches. A permission set built for a persona
+who launches flows directly but omitting Run Flows leaves that user unable to
+launch the flow it was built for.
+```
+
+**Detection hint:** Any enforcement release stated without a Setup > Release Updates lookup or a current-release notes citation is a guess. Any permission set drafted for a screen-flow persona that does not list Run Flows is incomplete.

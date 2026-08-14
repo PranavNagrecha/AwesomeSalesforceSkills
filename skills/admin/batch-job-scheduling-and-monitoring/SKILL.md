@@ -1,6 +1,6 @@
 ---
 name: batch-job-scheduling-and-monitoring
-description: "Use when monitoring, diagnosing, or managing Batch Apex, Scheduled Apex, Queueable, and Flow scheduled jobs: Setup > Apex Jobs, AsyncApexJob queries, concurrent limits, failure detection, and notification patterns. NOT for writing batch Apex code (use batch-apex-patterns) or writing Schedulable implementations (use apex-scheduled-jobs)."
+description: "Use when monitoring, diagnosing, or managing Batch Apex, Scheduled Apex, Queueable, and Flow scheduled jobs: Setup > Apex Jobs, AsyncApexJob queries, concurrent limits, failure detection, and notification patterns. NOT for writing the Batch or Schedulable class itself — use apex/batch-apex-patterns or apex/apex-scheduled-jobs. NOT for BatchApexErrorEvent alerting in code — use apex/scheduled-apex-failure-detection-and-monitoring."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

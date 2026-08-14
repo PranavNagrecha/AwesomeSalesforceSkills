@@ -1,6 +1,6 @@
 ---
 name: pause-elements-and-wait-events
-description: "Use this skill when designing or troubleshooting flows that need to suspend execution and wait for an external signal — either a time-based alarm or a platform event. Trigger keywords: pause element, wait element, flow interview suspension, alarm event, platform event resume, async interview. NOT for scheduled flows that recur on a fixed schedule (use scheduled-flows), and NOT for record-triggered flow scheduled paths on a single record (those are set in the Start element, not a Pause element)."
+description: "Use this skill when designing or troubleshooting flows that need to suspend execution and wait for an external signal — either a time-based alarm or a platform event. Trigger keywords: pause element, wait element, flow. NOT for scheduled flows that recur on a fixed schedule (use scheduled-flows), and NOT fo — use flow/flow-time-based-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

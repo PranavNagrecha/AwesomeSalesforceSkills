@@ -1,6 +1,6 @@
 ---
 name: retry-and-backoff-patterns
-description: "Implementing resilient integration retry logic in Salesforce: exponential backoff, jitter, idempotency keys, dead-letter queues, and circuit breaker patterns for Apex callouts. Use when designing callout retry behavior, preventing thundering-herd issues, or handling persistent integration failures. NOT for Apex async patterns without callouts (use apex-queueable-patterns). NOT for callout governor limits (use callout-limits-and-async-patterns)."
+description: "Implementing resilient integration retry logic in Salesforce: exponential backoff, jitter, idempotency keys, dead-letter queues, and circuit breaker patterns for Apex callouts. Use when designing callout retry behavior, preventing thundering-herd issues, or handling persistent integration failures. NOT for how many callouts fit in a transaction or CalloutException after DML — use integration/callout-limits-and-async-patterns. NOT for chaining or debugging Queueable jobs that make no callout — use apex/apex-queueable-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

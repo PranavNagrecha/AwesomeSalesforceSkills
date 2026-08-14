@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-search-customization
-description: "Use this skill when configuring or extending search on an Experience Cloud site — covering Search Manager scope configuration, LWR vs Aura search component selection, federated search setup, guest user search access, and custom search result components. NOT for SOSL/SOQL query development. NOT for internal Salesforce global search or Einstein Search for agents."
+description: "Use this skill when configuring or extending search on an Experience Cloud site — covering Search Manager scope configuration, LWR vs Aura search component selection, federated search setup, guest user search access, and custom search result components. NOT for SOSL/SOQL query development — use lwc/experience-cloud-lwc-components."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

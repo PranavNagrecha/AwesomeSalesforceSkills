@@ -51,6 +51,33 @@ REF = re.compile(
     r"`([a-z][a-z0-9-]*/[a-z0-9][a-z0-9-]*)`"
     r"|(?<![\w/])skills/([a-z][a-z0-9-]*/[a-z0-9][a-z0-9-]*)"
 )
+
+# UNBACKTICKED references. Adding these closed a real blind spot: a cleanup wave
+# found dead slugs sitting in `dependencies:` YAML lists and in plain-text
+# "Related Skills" bullets, and reported them as "permanently invisible to
+# check_skill_crossrefs.py" — which they were, because the pattern above needs
+# backticks or a `skills/` prefix. Frontmatter is the canonical metadata source
+# per CLAUDE.md, so a dead pointer there is worse than one in prose.
+#
+# `domain/slug` unbackticked is also the shape of a path, a ratio and a module
+# import, so these are deliberately NARROW: the reference must either be a YAML
+# list item, a markdown bullet, or follow an explicit "use"/"see" verb. The
+# domain allowlist in collect_issues() then discards anything whose first
+# segment is not a real skill domain.
+# A skill reference must END there. The negative lookahead for `/` and `.` is
+# load-bearing: without it the pattern backtracks to a PREFIX of a real path and
+# invents dead slugs. A first draft reported `lwc/component` (from the templates
+# entry `- lwc/component-skeleton/`), `lwc/jest` (from `- lwc/jest.config.js`)
+# and `admin/naming-conventions` 18 times (from `- admin/naming-conventions.md`,
+# a docs file) — 25 fabricated findings out of 57, none of them skills.
+_END = r"(?![\w./-])"
+UNBACKTICKED_REFS = [
+    # A YAML list item or markdown bullet that is the WHOLE value:
+    #   "    - admin/person-accounts"
+    re.compile(rf"^\s*-\s+([a-z][a-z0-9-]*/[a-z0-9][a-z0-9-]*){_END}\s*[-–—:,.]?\s*(?:\S.*)?$"),
+    # An explicit verb: "use admin/sandbox-strategy", "see data/person-accounts"
+    re.compile(rf"\b(?:use|see|read)\s+([a-z][a-z0-9-]*/[a-z0-9][a-z0-9-]*){_END}", re.IGNORECASE),
+]
 # A line that is talking about code modules, not skills.
 MODULE_LINE = re.compile(
     r"\bimport\b|\bfrom\s*['\"]|require\(|module|npm|package\.json|/pubsub|lwc:|c-[a-z]"
@@ -95,9 +122,17 @@ def collect_issues(root: Path | None = None) -> list[dict]:
         for line_no, line in enumerate(lines, start=1):
             if MODULE_LINE.search(line):
                 continue
+            found: list[str] = []
             for m in REF.finditer(line):
-                ref = m.group(1) or m.group(2)
-                if not ref or ref.split("/", 1)[0] not in domains or ref in real:
+                found.append(m.group(1) or m.group(2))
+            for pat in UNBACKTICKED_REFS:
+                found.extend(pat.findall(line))
+            seen_on_line: set[str] = set()
+            for ref in found:
+                if not ref or ref in seen_on_line:
+                    continue
+                seen_on_line.add(ref)
+                if ref.split("/", 1)[0] not in domains or ref in real:
                     continue
                 issues.append({
                     "level": "WARN",

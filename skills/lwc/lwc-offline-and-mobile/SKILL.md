@@ -1,6 +1,6 @@
 ---
 name: lwc-offline-and-mobile
-description: "Use when designing or reviewing Lightning Web Components for the Salesforce mobile app, mobile device capabilities, or offline-aware behavior. Triggers: 'lightning/mobileCapabilities', 'mobile lwc', 'offline lwc', 'supported mobile app only', 'barcode scanner availability'. NOT for Mobile SDK or fully native app architecture unless the decision is whether LWC in the Salesforce mobile app is sufficient."
+description: "Use when designing or reviewing Lightning Web Components for the Salesforce mobile app, mobile device capabilities, or offline-aware behavior. Triggers: 'lightning/mobileCapabilities', 'mobile lwc', 'offline lwc'. NOT for Mobile SDK or fully native app architecture unless the decision is whether LWC i — use apex/fsl-mobile-app-extensions."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

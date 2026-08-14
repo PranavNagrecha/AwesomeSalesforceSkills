@@ -213,7 +213,7 @@ Non-obvious platform behaviors that cause real production problems:
 - `omnistudio/omnistudio-performance` — single-session performance tuning (NOT this skill): OmniScript step optimization, DataRaptor query tuning for one user's session
 - `omnistudio/integration-procedures` — Integration Procedure authoring patterns and safety settings
 - `architect/limits-and-scalability-planning` — org-wide governor limit planning across all Apex (not OmniStudio-specific)
-- `omnistudio/flexcard-requirements` — FlexCard design patterns, including data source selection at portal scale
+- `omnistudio/flexcard-design-patterns` — FlexCard design patterns, including data source selection at portal scale
 - `architect/well-architected-review` — formal Well-Architected review process that includes scalability pillar assessment
 
 ## Official Sources Used

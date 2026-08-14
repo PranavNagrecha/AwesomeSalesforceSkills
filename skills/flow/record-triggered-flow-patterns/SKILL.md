@@ -1,6 +1,6 @@
 ---
 name: record-triggered-flow-patterns
-description: "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for screen-flow UX or pure bulkification work when the trigger model is already correct."
+description: "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for tracing save order against triggers — use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:

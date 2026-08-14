@@ -1,6 +1,6 @@
 ---
 name: tableau-embedding-in-lightning
-description: "Embedding Tableau dashboards (and Tableau Pulse insights) inside Lightning App / Record / Home pages — Tableau Embedding API v3 in an LWC, the connected-app + JWT trust pattern for SSO from Salesforce to Tableau, row-level security so a Salesforce user only sees their data in Tableau, CSP / Trusted Sites configuration for the Tableau host, and the Tableau Viz Lightning Web Component (drag-and-drop alternative to a custom LWC). NOT for building Tableau dashboards / data sources (that's Tableau-side work), NOT for CRM Analytics (Tableau is the separate product; see data/crm-analytics-patterns)."
+description: "Embed Tableau dashboards and Pulse insights in Lightning pages via Tableau Embedding API. Triggers: Tableau embed Lightning, Tableau Pulse, embedding SDK. NOT for CRM Analytics dashboards — use admin/einstein-analytics-basics."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

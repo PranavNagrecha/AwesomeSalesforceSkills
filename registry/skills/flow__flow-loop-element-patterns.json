@@ -81,9 +81,9 @@
     "fe631ec50c8e98e0ddc1",
     "fec92fa27c1e4783603d"
   ],
-  "content_hash": "fb437609781050f6dafa941990a1f566047316b51059c6c7bd623b30b29cfd8b",
+  "content_hash": "431f1d416804919ba4113a96cf9a8703a3dbdce36ce303d03dd6306088548acc",
   "dependencies": [],
-  "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 covers DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for general collection processing semantics (see flow-collection-processing) and NOT for end-to-end bulkification redesign across an entire flow (see flow-bulkification).",
+  "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for collection elements on their own \u2014 use flow/flow-collection-processing. NOT for whole-flow bulk redesign \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/flow-loop-element-patterns",
   "id": "flow/flow-loop-element-patterns",
   "inputs": [

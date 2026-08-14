@@ -1,6 +1,6 @@
 ---
 name: salesforce-shield-deployment
-description: "Roll out Shield (Platform Encryption + Event Monitoring + Field Audit Trail) end-to-end, sequencing feature enablement to avoid data lockout. NOT for Classic Encryption or general PE design."
+description: "Roll out Shield (Platform Encryption + Event Monitoring + Field Audit Trail) end-to-end, sequencing feature enablement to avoid data lockout. NOT for Classic Encryption or general PE design — use architect/salesforce-shield-architecture."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -116,9 +116,9 @@
     "fa2fee548e61d336a840",
     "fd5f11e9e3ae48f19a05"
   ],
-  "content_hash": "b557725d898d0cde1dd6389a749dd9cd0b3ad87e073a065cbf20595c5bb2b06b",
+  "content_hash": "398658b3eab75b97d9fc5bc69fc4cf00857b7d245a561e4158e787d9cedf15e4",
   "dependencies": [],
-  "description": "Use this skill when storing large historical datasets in Salesforce using Big Objects, querying them with Async SOQL, or deciding between Big Objects and External Objects for high-volume or external data access patterns. Trigger keywords: big object, async SOQL, AsyncQueryJob, external object, Salesforce Connect, IoT data, audit history, event log archival, Database.insertImmediate, composite index. NOT for Salesforce Connect adapter configuration or OAuth setup (use salesforce-connect-external-objects), and NOT for standard data archival strategies (use data-archival-strategies).",
+  "description": "Use this skill when storing large historical datasets in Salesforce using Big Objects, querying them with Async SOQL, or deciding between Big Objects and External Objects for high-volume or external data access patterns. Trigger keywords: big object, async SOQL, AsyncQueryJob, external object, Salesforce Connect, IoT data, audit history, event log archival, Database.insertImmediate, composite index. NOT for reading the data live from the source system instead, via Salesforce Connect and External Objects \u2014 use integration/salesforce-connect-external-objects. NOT for planning what to archive and where to reclaim storage \u2014 use data/data-archival-strategies.",
   "file_location": "skills/data/external-data-and-big-objects",
   "id": "data/external-data-and-big-objects",
   "inputs": [

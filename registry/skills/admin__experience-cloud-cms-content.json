@@ -72,9 +72,9 @@
     "f4a9d3b4ff00e660020f",
     "ff949b07b85889f00b9f"
   ],
-  "content_hash": "0b1776fc751c715d391e9b71579661602467d47c4fdd1ab5208708a3a4864ddf",
+  "content_hash": "24cb3e39458fa14561803674af1c59f861bc724e635201bda42b60fb254bfd5f",
   "dependencies": [],
-  "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for Salesforce Knowledge articles, CMS Connect to external CMS platforms, or Experience Builder layout/theming work.",
+  "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for moderating member-posted content \u2014 use admin/experience-cloud-moderation. NOT for Knowledge vs an external CMS or CMS Connect \u2014 use architect/knowledge-vs-external-cms.",
   "file_location": "skills/admin/experience-cloud-cms-content",
   "id": "admin/experience-cloud-cms-content",
   "inputs": [

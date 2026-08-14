@@ -1,6 +1,6 @@
 ---
 name: prompt-template-versioning
-description: "Lifecycle management for Prompt Builder templates: version, test, promote, roll back via CMDT-backed bindings. NOT for authoring initial templates or generic prompt engineering."
+description: "Lifecycle management for Prompt Builder templates: version, test, promote, roll back via CMDT-backed bindings. NOT for source-control layout, model-version pinning, or versioning agent topic prompts — use agentforce/agentforce-prompt-versioning. NOT for authoring a template in Prompt Builder — use agentforce/prompt-builder-templates."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

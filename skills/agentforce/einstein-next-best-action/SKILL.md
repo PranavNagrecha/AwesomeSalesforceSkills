@@ -1,6 +1,6 @@
 ---
 name: einstein-next-best-action
-description: "Guide practitioners through building Einstein Next Best Action strategies using Flow Builder, configuring Recommendation records, and surfacing recommendations via the Actions & Recommendations Lightning component. Trigger keywords: next best action, NBA strategy, surface recommendations. NOT for Einstein Prediction Builder model training, Einstein Bots conversation design, or Agentforce agent topic routing."
+description: "Guide practitioners through building Einstein Next Best Action strategies using Flow Builder, configuring Recommendation records, and surfacing recommendations via the Actions & Recommendations Lightning component. Trigger keywords: next best action, NBA strategy, surface recommendations. NOT for training a custom prediction model on your own records — use agentforce/einstein-prediction-builder. NOT for Einstein Bot or Agentforce agent conversation design — use architect/einstein-bot-architecture."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

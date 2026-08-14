@@ -1,6 +1,6 @@
 ---
 name: agent-rate-limit-strategy
-description: "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints."
+description: "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback when the budget is exhausted. NOT for reducing tokens per conversation in the first place — use agentforce/agentforce-cost-optimization. NOT for API rate-limiting of Salesforce REST endpoints — use integration/api-governance-and-rate-limits."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

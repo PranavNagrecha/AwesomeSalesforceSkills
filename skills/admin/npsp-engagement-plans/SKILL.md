@@ -1,6 +1,6 @@
 ---
 name: npsp-engagement-plans
-description: "Use this skill when configuring, applying, or troubleshooting NPSP Engagement Plans — the framework that automatically generates standard Salesforce Task records on a timed schedule to guide donor stewardship and constituent outreach. Trigger keywords: engagement plan, donor stewardship tasks, NPSP task automation, engagement template, major donor follow-up. NOT for marketing automation, email campaigns, or Flow-based automation."
+description: "Use this skill when configuring, applying, or troubleshooting NPSP Engagement Plans — the framework that automatically generates standard Salesforce Task records on a timed schedule to guide donor stewardship and constituent outreach. Trigger keywords: engagement plan, donor stewardship tasks, NPSP task automation, engagement template, major donor follow-up. NOT for designing the cultivation and stewardship stages — use admin/fundraising-process-mapping. NOT for recording and receipting gifts — use admin/gift-entry-and-processing."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

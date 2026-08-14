@@ -113,9 +113,9 @@
     "fbfe3c87bfe151bcb1f5",
     "ff424d9b9fb68ace5ee3"
   ],
-  "content_hash": "23c88ba63c488db59610c83516a1817f15dcb53725a1b4457945b1bb8659ea8e",
+  "content_hash": "92788a3c41d40ba71547f7f2ce7871c87db804d3031c9a2b4b307664312c5ae1",
   "dependencies": [],
-  "description": "Use this skill when designing or evaluating a Health Cloud implementation to determine whether the org serves a payer (health insurer), a provider (care delivery organization), or both \u2014 and to derive the correct object model, PSL matrix, and feature activation accordingly. Triggers: 'should we use MemberPlan or ClinicalEncounter', 'payer vs provider Health Cloud', 'which Health Cloud objects does an insurer use', 'setting up a Health Cloud org for a hospital vs a health plan', 'Provider Relationship Management vs clinical provider'. NOT for individual feature implementation within an already-classified payer or provider org, and NOT for Salesforce Health Cloud implementations that are clearly a single deployment type with no cross-sector ambiguity.",
+  "description": "Use this skill when designing or evaluating a Health Cloud implementation to determine whether the org serves a payer (health insurer), a provider (care delivery organization), or both \u2014 and to derive the correct object model, PSL matrix, and feature activation. Triggers: 'should we use MemberPlan or ClinicalEncounter', 'payer vs provider Health Cloud', 'which Health Cloud objects does an insurer use', 'setting up a Health Cloud org for a hospital vs a health plan', 'Provider Relationship Management vs clinical provider'. NOT for an insurance carrier on FSC Insurance Cloud \u2014 policy admin, claims, underwriting \u2014 use architect/insurance-cloud-architecture. NOT for the Health Cloud object and field definitions themselves \u2014 use data/health-cloud-data-model.",
   "file_location": "skills/architect/payer-vs-provider-architecture",
   "id": "architect/payer-vs-provider-architecture",
   "inputs": [

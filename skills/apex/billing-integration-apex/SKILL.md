@@ -1,6 +1,6 @@
 ---
 name: billing-integration-apex
-description: "Use when programmatically generating invoices, integrating payment gateways, automating credit notes, or calling Salesforce Billing Apex APIs (blng.InvoiceAPI, blng.TransactionAPI) from custom Apex code. Trigger keywords: billing apex, blng.InvoiceAPI, blng.TransactionAPI, payment gateway adapter, invoice generation apex, credit note apex, programmatic invoice. NOT for admin billing setup, billing rule configuration, billing policy UI, or Invoice Run scheduling."
+description: "Programmatically generating invoices, automating credit notes, and calling Salesforce Billing Apex APIs from custom Apex. Trigger keywords: billing apex, blng.InvoiceAPI, blng.TransactionAPI, invoice generation apex, credit note apex, programmatic invoice, payment gateway adapter. NOT for a CommercePayments checkout gateway adapter — use apex/commerce-payment-integration. NOT for configuring billing schedules, billing rules or Invoice Runs in Setup — use admin/billing-schedule-setup."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

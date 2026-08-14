@@ -1,6 +1,6 @@
 ---
 name: crm-analytics-app-creation
-description: "Use when creating or configuring a CRM Analytics (Einstein Analytics) app — including app containers, lenses, datasets, data source connections, and app sharing. NOT for standard Salesforce reports and dashboards or Tableau."
+description: "Use when creating or configuring a CRM Analytics (Einstein Analytics) app — including app containers, lenses, datasets, data source connections, app sharing, and the row-level security that gates whether users see any data. NOT for choosing Reports vs CRM Analytics vs Tableau — use admin/einstein-analytics-basics. NOT for security predicate syntax, sharing inheritance or Analytics license assignment — use admin/analytics-permission-and-sharing."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

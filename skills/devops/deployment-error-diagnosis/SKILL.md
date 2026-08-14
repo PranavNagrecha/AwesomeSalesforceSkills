@@ -1,6 +1,6 @@
 ---
 name: deployment-error-diagnosis
-description: "Pattern catalog of common Salesforce metadata-deploy errors and their fixes — `Cannot change type` (field type already in use), dependent-metadata ordering (deploy field before profile that references it), profile / permission set delta issues (deactivated permissions blocking deploy), missing-reference errors, test class coverage failures, and the package.xml-shape mistakes that produce confusing first-line errors. Covers the SFDX / Metadata API error message shapes and how to translate them into the actual fix. NOT for designing the deployment pipeline (use devops/sfdx-cicd-pipeline), NOT for change set orchestration (use admin/changeset-builder)."
+description: "Pattern catalog of Salesforce metadata-deploy error strings and their fixes: `Cannot change type` of field, dependent-metadata ordering, profile / permission set delta issues, INVALID_CROSS_REFERENCE_KEY, missing-reference errors, inactive-flow and picklist component errors, `entity is in use` on field deletion, package.xml-shape mistakes. NOT for sandbox partial deploys, rollbackOnError, or testLevel coverage models — use devops/deployment-error-troubleshooting. NOT for change set orchestration — use devops/change-set-deployment."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: mcae-pardot-setup
-description: "Use this skill when configuring a new or existing Marketing Cloud Account Engagement (MCAE, formerly Pardot) business unit: Salesforce v2 connector activation, connector user permissions, Salesforce User Sync, prospect field sync rules, tracking domain setup, and Account Engagement Lightning App installation. NOT for Marketing Cloud Engagement (email studio, journeys) or Einstein Marketing features."
+description: "Use this skill when configuring a new or existing Marketing Cloud Account Engagement (MCAE, formerly Pardot) business unit: Salesforce v2 connector activation, connector user permissions, Salesforce User Sync, prospect field sync rules, tracking domain setup, and Account Engagement Lightning App installation. NOT for connecting Marketing Cloud Engagement (email studio, journeys) to Salesforce - use admin/marketing-cloud-connect. NOT for calling the Account Engagement REST API from code - use apex/mcae-pardot-api."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: lwc-internationalization
-description: "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup."
+description: "Build LWCs with translation, locale-aware formatting, and RTL layouts. Triggers: LWC i18n, custom labels LWC, RTL layout. NOT for Translation Workbench admin setup — use admin/custom-label-management. NOT for org-wide multi-language config — use admin/multi-language-and-translation."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -1,6 +1,6 @@
 ---
 name: salesforce-code-analyzer
-description: "Use this skill to run Salesforce Code Analyzer v5 for static analysis, CI quality gates, and AppExchange security review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine, taint analysis, retire js, ci gate, severity threshold, AppExchange scan. NOT for manual code review workflows, runtime debugging, performance profiling, or Checkmarx/CodeScan third-party tools."
+description: "Use this skill to run Salesforce Code Analyzer v5 for static analysis, CI quality gates, and AppExchange security review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine. NOT for manual code review workflows, runtime debugging, performance profiling, or Check — use security/secure-coding-review-checklist."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -114,15 +114,15 @@ All three custom-rule mechanisms are wired through `code-analyzer.yml`, but each
 engines:
   regex:
     custom_rules:
-      NoTodoComments:
-        regex: /\/\/[ \t]*TODO/gi
+      NoDebugStatements:
+        regex: /System\.debug\s*\(/gi
         file_extensions: [".cls", ".trigger"]
-        description: "Prevents TODO comments in Apex code."
+        description: "Flags leftover System.debug statements in Apex."
         severity: "Info"
         tags: ["TechDebt"]
 ```
 
-The pattern **must include the global modifier** — `/Todo/gi` is valid, `/Todo/i` is not. A pattern without it makes the regex engine return an error when the rule runs.
+The pattern **must include the global modifier** — `/System\.debug/gi` is valid, `/System\.debug/i` is not. A pattern without it makes the regex engine return an error when the rule runs.
 
 **2. PMD engine — ruleset XML, two authoring paths.** Register custom ruleset XML files via the `engines.pmd.custom_rulesets` array. Each entry is either an on-disk path (absolute or relative to `config_root`) or a resource path on the Java classpath (e.g. inside a JAR). Two ways to author the rules themselves:
 

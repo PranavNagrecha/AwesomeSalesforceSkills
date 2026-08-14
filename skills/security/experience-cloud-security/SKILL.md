@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-security
-description: "Use when configuring access controls, sharing, or site security for authenticated or guest Experience Cloud (community) users: external OWD, Sharing Sets, Share Groups, CSP, clickjack protection, guest user record access. NOT for internal sharing model configuration (use sharing-and-visibility)."
+description: "Use when configuring access controls, sharing, or site security for authenticated or guest Experience Cloud (community) users: external OWD, Sharing Sets, Share Groups, CSP, clickjack protection, guest user record access. NOT for internal sharing model configuration (use sharing-and-visibility) — use data/external-user-data-sharing."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

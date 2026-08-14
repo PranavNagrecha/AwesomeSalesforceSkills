@@ -100,9 +100,9 @@
     "fda5c39c30a8bb653c0d",
     "fe594e4d4b097cfd64e2"
   ],
-  "content_hash": "1a1ca5a91e78db142617a9923c32c25657f240d8585f4454789bd1bcc543ddc7",
+  "content_hash": "876b666631f78d1cd997eae448eb385b44d8a7fa00bc5b4d3b12bef8b8ac49b5",
   "dependencies": [],
-  "description": "Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility).",
+  "description": "Sharing records programmatically via Apex: Share objects, row cause, Apex sharing reason, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules \u2014 use admin/sharing-and-visibility. NOT for recalc job runtime \u2014 use data/sharing-recalculation-performance.",
   "file_location": "skills/apex/apex-managed-sharing",
   "id": "apex/apex-managed-sharing",
   "inputs": [

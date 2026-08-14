@@ -123,9 +123,9 @@
     "fbbbead74fb4bd97e794",
     "fc573574b21a3190029e"
   ],
-  "content_hash": "a797fc04e13cca259d4b866926ca32d62cddaa43b2e557b9d841c6eb8dfb535c",
+  "content_hash": "06caa75ed74afc6826098c52381cf9c0fe6d01be143fa3837b41b6807c682e07",
   "dependencies": [],
-  "description": "Use this skill when architecting Health Cloud orgs that must satisfy geographic data residency, HIPAA, GDPR, or national health-data regulations on Hyperforce \u2014 including scoping the HIPAA BAA, mapping transient processing exceptions, and documenting which features require separate compliance addenda. NOT for generic multi-region Salesforce architecture unrelated to healthcare data, and NOT for non-healthcare data residency requirements (use a general Hyperforce architecture skill for those).",
+  "description": "Use this skill when architecting Health Cloud orgs that must satisfy geographic data residency, HIPAA, GDPR, or national health-data regulations on Hyperforce \u2014 scoping the HIPAA BAA, mapping transient processing exceptions, and the features that require separate compliance addenda. NOT for choosing a Hyperforce region or planning a Hyperforce migration outside healthcare \u2014 use architect/hyperforce-architecture. NOT for Shield encryption and HIPAA technical safeguards \u2014 use architect/hipaa-compliance-architecture.",
   "file_location": "skills/architect/health-cloud-data-residency",
   "id": "architect/health-cloud-data-residency",
   "inputs": [

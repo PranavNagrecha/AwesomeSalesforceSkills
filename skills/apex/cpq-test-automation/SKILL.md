@@ -1,6 +1,6 @@
 ---
 name: cpq-test-automation
-description: "Use when writing, reviewing, or debugging test classes for Salesforce CPQ (Steelbrick) functionality — including quote creation, price rules, contracting, ordering, and CPQ API integration. Trigger keywords: CPQ test class, SBQQ test, quote calculation test, price rule test, CPQ Apex test, ServiceRouter test, QuoteCalculator test. NOT for standard Apex testing patterns unrelated to CPQ, nor for UI/Selenium test authoring outside the CPQ context."
+description: "Use when writing, reviewing, or debugging test classes for Salesforce CPQ (Steelbrick) functionality — quote creation, price rules, contracting, ordering, and CPQ API integration. Trigger keywords: CPQ test class, SBQQ test, quote calculation test, price rule test, CPQ Apex test, ServiceRouter test, QuoteCalculator test. NOT for production CPQ API code — use apex/cpq-api-and-automation. NOT for general Apex test design — use apex/test-class-standards."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:

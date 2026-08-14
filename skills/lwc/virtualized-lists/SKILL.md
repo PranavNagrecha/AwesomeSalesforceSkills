@@ -1,6 +1,6 @@
 ---
 name: virtualized-lists
-description: "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows."
+description: "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. Triggers: virtual scroll, long list LWC. NOT for hand-built windowed rendering past datatable limits — use lwc/lwc-virtualized-lists."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:

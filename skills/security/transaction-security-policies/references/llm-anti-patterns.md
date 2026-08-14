@@ -144,3 +144,39 @@ After creating a policy with Notification actions:
 ```
 
 **Detection hint:** If the advice sets notification recipients without mentioning the silent-failure-on-deactivation risk, alert gaps will form when users leave the org.
+
+---
+
+## Anti-Pattern 7: Attaching the 10,000-Record Threshold to the Report Export Step-Up Challenge
+
+**What the LLM generates:** Asked why a report export suddenly prompts for a verification code, the model answers that a Transaction Security Policy fired, or that the challenge kicks in above 10,000 rows, then sends the user to High Assurance session security or the Export Reports permission to relax it.
+
+**Why it happens:** Two separate controls landed on report export in 2026 and training data blends them into one. The row threshold belongs to only one of the two.
+
+**Correct pattern:**
+
+```
+Two distinct controls now touch report export. Do not merge them.
+
+1. Default ReportEvent Transaction Security Policy
+   - Triggered when an export exceeds 10,000 records
+   - UI report exports only — not API, not Data Loader CLI
+   - ARRIVES DISABLED. Salesforce does not enable it for you, so in
+     most orgs it is challenging nobody until an admin switches it on
+   - Requires Event Monitoring or Shield; Setup > Security > TSPs
+
+2. "Require periodic step-up authentication when exporting or printing"
+   - A session-level security policy, NOT a Transaction Security Policy
+   - Fires on the export action once the configured period has elapsed.
+     There is NO row-count and NO file-size threshold.
+   - Controlled by the "Step-Up Authentication Period (Minutes)" field,
+     which accepts 1 to 120 minutes
+   - Users with no MFA method enrolled fall back to a one-time passcode
+     (OTP) sent to the phone or email on their user record
+
+A user challenged on a 50-row export was stopped by (2), not (1) —
+and so was a user challenged on a 15,000-row export, unless someone
+enabled (1). Hunting for a TSP to disable will not stop either one.
+```
+
+**Detection hint:** If the answer attaches a row count to the periodic step-up challenge, or calls that challenge a Transaction Security Policy, the two controls have been conflated. Only the default `ReportEvent` policy carries the 10,000-record trigger.

@@ -1,6 +1,6 @@
 ---
 name: api-contract-documentation
-description: "Use this skill when producing or reviewing API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, and OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for API implementation (building the API endpoint), Apex REST service coding, or Connected App setup — those are covered by apex-rest-services and connected-app-security."
+description: "Produce or review API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for building the endpoint or writing the Apex REST service — use apex/apex-rest-services. NOT for upgrading the API version on your own Apex, LWC or sfdx-project.json — use devops/api-version-management."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -183,6 +183,6 @@ Run through these before marking work in this area complete:
 
 ## Related Skills
 
-- `integration/apex-rest-services` — Use for implementing custom Apex REST endpoints (@RestResource) — the implementation layer this skill documents
-- `integration/connected-app-security` — Use for OAuth flow setup and Connected App configuration
+- `apex/apex-rest-services` — Use for implementing custom Apex REST endpoints (@RestResource) — the implementation layer this skill documents
+- `integration/oauth-flows-and-connected-apps` — Use for OAuth flow selection and Connected App configuration for API consumers
 - `integration/api-led-connectivity` — Use for designing the API layer architecture before documenting individual endpoints

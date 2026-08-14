@@ -2,6 +2,7 @@
   "category": "devops",
   "chunk_ids": [
     "0185d989132ea9b8326f",
+    "02743f15561d2a6cbd2a",
     "0414d3c3afc47ba4e2b1",
     "048629ea43411f666dff",
     "04e3e36d6ce9cb775617",
@@ -11,6 +12,7 @@
     "1c46b627a816594d040e",
     "1f7987ec1952d96d0738",
     "28e03b036290cc3bab4f",
+    "2baaaa08f7ba4b49285d",
     "3310cdb13bf33d26e58c",
     "34ecbd75a0b56eb150d6",
     "361bede6d30f76ec363f",
@@ -36,7 +38,9 @@
     "75fe018573c278cd50ad",
     "77fe45c47434ae5c5a48",
     "7b3c8eb316999cd43e31",
+    "7f0920c265f7a1782136",
     "80d6b90458b2059d088c",
+    "84efd3a7c137251bf3ab",
     "8bfb6f821c4a90c85afd",
     "90cf39fbefae5dbdb5b8",
     "91ac1fc2ba955339b533",
@@ -44,6 +48,7 @@
     "9a0b8c15f485d39206b1",
     "9a512d8377930c8bf52f",
     "a27adac839d3e28166b9",
+    "a28b8d7dfbe5396ea4de",
     "a565ff2fb477ab385f11",
     "a5af1d6bd1567403c89e",
     "a6d2560a64cdcdabb468",
@@ -66,6 +71,7 @@
     "d8dc8be11e71ab7678bc",
     "e1beaccca45d2b0d38fb",
     "e5d16f90ff508e0854f4",
+    "e9ba100374bcffcbb688",
     "ebc207f8cbdfcbd91314",
     "ef9fe5f46c18fbc9d6b2",
     "f433dd4cfc5ccaefd75e",
@@ -73,9 +79,9 @@
     "f89b8df74db34945e3df",
     "fa0d87facd4afd554415"
   ],
-  "content_hash": "383b11a213ace50835012c1dd2c8c0ecf1262707aa1f5df13dd50eb8b25bc124",
+  "content_hash": "4bd9357ef1515d37b60df712fdf45784008bcde08adb1dd326697904bf8fa9fb",
   "dependencies": [],
-  "description": "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the force-app directory tree for source-driven development. NOT for scratch org definition files (use scratch-org-management), CLI command usage (use sf-cli-and-sfdx-essentials), or CI/CD pipeline configuration (use github-actions-for-salesforce or bitbucket-pipelines-for-salesforce).",
+  "description": "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the. NOT for scratch org definition files (use scratch-org-management), CLI command usage (us \u2014 use apex/sf-cli-and-sfdx-essentials.",
   "file_location": "skills/devops/salesforce-dx-project-structure",
   "id": "devops/salesforce-dx-project-structure",
   "inputs": [
@@ -91,7 +97,9 @@
     "Salesforce DX Developer Guide \u2014 Multiple Package Directories",
     "Salesforce DX Developer Guide \u2014 Unlocked Packages",
     "Salesforce CLI Command Reference \u2014 sf project deploy start",
-    "Metadata API Developer Guide \u2014 Source Format"
+    "Metadata API Developer Guide \u2014 Source Format",
+    "Salesforce Developers Blog \u2014 The Salesforce Developer's Guide to the Winter '26 Release",
+    "Salesforce CLI Setup Guide \u2014 Salesforce CLI Environment Variables"
   ],
   "outputs": [
     "Compliant sfdx-project.json configuration",

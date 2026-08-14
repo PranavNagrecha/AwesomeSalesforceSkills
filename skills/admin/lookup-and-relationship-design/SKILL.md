@@ -1,6 +1,6 @@
 ---
 name: lookup-and-relationship-design
-description: "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, relationship depth limits. NOT for record-type strategy (use data-model-design-patterns). NOT for junction object patterns (use many-to-many-relationships)."
+description: "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, junction objects, relationship depth limits. NOT for restricting which records a lookup can pick — use admin/lookup-filter-cross-object-patterns. NOT for a roll-up across a plain lookup — use data/roll-up-summary-alternatives."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

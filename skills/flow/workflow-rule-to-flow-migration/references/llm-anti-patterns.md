@@ -77,3 +77,16 @@ Pending time-based workflow actions are cancelled the moment the rule is deactiv
 In a record-triggered flow, use a Create Records element with subject, owner, activity date, and WhoId set from flow merge fields. Ensure the flow is bulk-safe (no per-record SOQL). The Create Records element handles the collection correctly when the flow fires on 200+ records.
 
 **Detection hint:** Code or flow logic that creates tasks with single-record assumptions rather than collection-based Create Records.
+
+---
+
+## Anti-Pattern 7: Claiming Workflow Rules Were Switched Off at the End of 2025
+
+**What the LLM generates:** "Workflow Rules were retired on December 31 2025 — your existing rules have stopped firing, so you must migrate before the shutdown date." Or the inverse framing: an urgency plan built around a deadline that has already passed.
+
+**Why it happens:** Training corpora are full of 2024–2025 "migrate before the deadline" marketing posts that describe end of support as a retirement event. The model conflates *end of support* with *end of execution*, and keeps the date in the future tense.
+
+**Correct pattern:**
+Salesforce's end-of-support article says it "no longer supports Workflow Rules and Process Builder as of December 31, 2025", and in the same page that "Your active Workflow Rules and Process Builder processes continue to run as they do today, even after 2025. The only change is that Salesforce no longer provides customer support or bug fixes for these features." No shutdown date is published. Frame migration as removing unsupported runtime risk — if a rule misfires, Support will not fix it — not as beating a clock. Do not promise a future cutoff Salesforce has not announced, and do not tell an admin their rules already stopped working.
+
+**Detection hint:** Not the word "retirement" on its own — Salesforce uses it, and so do this skill's own triggers and tags. The signal is a claim about *execution* or about an unannounced date: that rules "stopped firing", "no longer run", or were "turned off"; any shutdown or disablement date presented as if Salesforce had published one; or future-tense deadline framing ("before December 31 2025") that treats a date already past as still upcoming.

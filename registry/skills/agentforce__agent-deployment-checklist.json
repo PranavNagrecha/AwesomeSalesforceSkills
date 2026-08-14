@@ -28,9 +28,9 @@
     "fe6f48fa65d1b85df17f",
     "fffc6907a6f19d6f60e0"
   ],
-  "content_hash": "631a4352cb370ef215a0ee535c4eb38f77a37037427389ed0f28ec723b76b0d6",
+  "content_hash": "2f8fc90efc20e15466fa0af337d1fc3388bdf070883e840b3370fd65238ed360",
   "dependencies": [],
-  "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management).",
+  "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for the technical pre-prod verification behind those sign-off rows \u2014 cost telemetry, rate limits, canary rollout, latency benchmarks \u2014 use agentforce/agentforce-production-readiness-checklist. NOT for general Salesforce release management \u2014 use devops/release-management.",
   "file_location": "skills/agentforce/agent-deployment-checklist",
   "id": "agentforce/agent-deployment-checklist",
   "inputs": [

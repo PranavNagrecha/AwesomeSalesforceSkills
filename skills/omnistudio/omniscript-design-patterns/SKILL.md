@@ -1,6 +1,6 @@
 ---
 name: omniscript-design-patterns
-description: "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern."
+description: "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure design — use omnistudio/integration-procedures. NOT for DataRaptor design — use omnistudio/dataraptor-patterns."
 category: omnistudio
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -31,7 +31,7 @@ dependencies: []
 runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
 Use this skill when OmniScript is the guided interaction layer for a business journey and the design needs to stay understandable for users and maintainers. The key question is not just how to assemble elements, but how to keep steps, branching, data gathering, and backend calls balanced so the script remains fast and operable.
