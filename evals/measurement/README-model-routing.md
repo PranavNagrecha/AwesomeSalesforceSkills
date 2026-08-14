@@ -1,93 +1,91 @@
-# Model-driven routing benchmark
+# Model-routing benchmark — measuring the path that actually ships
 
-Measures the **shipped** skill-selection path — the one a fresh Claude install
-actually uses. This is distinct from `run_heldout.py`, which scores FTS5 /
-embedding retrieval over `vector_index/` (gitignored, does not ship).
+`run_heldout.py` measures `search_knowledge.py`. **Most users never run that
+code.** `vector_index/` is gitignored — `git ls-files vector_index` returns only
+`manifest.json`, `query-fixtures.json` and `query-variants.json` — so on a fresh
+install there is no FTS5 index and no embeddings.
 
-## What it measures
+What ships is a roster. Claude reads the 11 router `description:` values, opens
+one `.claude/skills/salesforce-<domain>/references/skill-index.md`, scans ~1,027
+one-line glosses, and picks. Lexical search is mechanism 3 of 3, behind a local
+`build_index.py` run; the MCP server is mechanism 2 and is not auto-wired.
 
-| Step | Source |
+**This benchmark measures mechanism 1.** It is the honest counterpart to
+`run_heldout.py`, in the same way `run_heldout.py` is the honest counterpart to
+`query-fixtures.json`.
+
+## Running it
+
+```
+Workflow { scriptPath: ".claude/workflows/model-routing-benchmark.js" }
+```
+
+Twenty agents. Ten route a tenth of `heldout-queries.json` each; ten then
+re-adjudicate every miss by reading both packages. Roughly 10 minutes.
+
+The routing agents are **forbidden** from running `search_knowledge.py`,
+querying `lexical.sqlite`, grepping `skills/`, or opening any
+`skills/**/SKILL.md`. They may read only the router descriptions and the roster
+files. That restriction is the measurement — lift it and the number silently
+becomes mechanism 3 again, which is how the previous attempt to measure this
+path was lost.
+
+They are also told to route BEFORE looking at `expected_skill`. A router that
+peeks produces a meaningless number.
+
+## Results, 2026-08-14
+
+Raw result sets are in `model-routing/`, one per run.
+
+| | baseline | after the routing wave |
+|---|---:|---:|
+| Hit@1 | 79.2% | **92.2%** |
+| expected in top 3 | 90.9% | **99.4%** |
+| correct router / domain | 88.3% | **96.1%** |
+| misses | 43 | 12 |
+| — genuine corpus defects | 22 | 8 |
+| — benchmark mislabels | 21 | 4 |
+
+For scale, `run_heldout.py` over the same 154 queries moved 37.0% → 40.9% Hit@1
+across the same change. Both paths improved; only one of them ships.
+
+What moved it: `NOT for X — use Y` clauses naming a package that exists went
+from 181 to 1,011 of 1,027 descriptions, and the share of shipped glosses where
+that destination survives the 220-character budget went from 9% to 97%.
+
+## Read the mislabels before trusting a miss
+
+**Half the baseline's misses were wrong LABELS, not wrong routing.** The
+adjudication phase exists to separate them, and it changes what you should fix.
+
+The clearest example: `"the org is a mess where do I start"` is labelled
+`admin/org-cleanup-and-technical-debt`. But that package's own description says
+*"NOT for assessing or reporting on technical debt (use
+architect/technical-debt-assessment)"*, and its declared inputs presuppose you
+already hold a list of metadata to clean. The router obeyed the corpus's
+explicit redirect and picked the triage package. The corpus was right and the
+label was wrong.
+
+So a falling Hit@1 is not automatically a regression, and a rising one is not
+automatically an improvement. Read `defects[].label_is_wrong` first.
+
+## Defect classes the analysis emits
+
+| class | fix it by |
 |---|---|
-| Router pick | `description:` on `.claude/skills/salesforce-*/SKILL.md` |
-| Skill pick | One-line gloss in the router's `references/skill-index.md` |
+| `WRONG_ROUTER` | the 11 router descriptions, not the 1,027 glosses |
+| `GLOSS_TOO_VAGUE` | put the query's own vocabulary in the expected package's description |
+| `NO_REDIRECT` | add `NOT for <topic> — use <slug>` to the package that WAS picked |
+| `GLOSS_TRUNCATED` | shorten the description; the budget is 220 characters |
+| `GENUINE_OVERLAP` | two packages both fairly cover it — a merge candidate |
+| `LABEL_ARBITRARY` | fix the benchmark, not the corpus |
 
-| Metric | Definition |
-|---|---|
-| **Hit@1** | `skill_picked == expected_skill` |
-| **Hit@3** | Expected skill was among the agent's top-3 candidates |
-| **Router correct** | Chosen router domain matches expected skill domain |
+Note where the leverage sits: a `WRONG_ROUTER` miss is fixed in one of eleven
+files, not one of a thousand.
 
-## Current numbers
+## Related
 
-Measured **2026-08-14** on branch `overhaul/2026-08-01-checkpoint`, 154 held-out
-queries, agent-simulated routing (no search index). Gold labels include the
-documented relabels (now 20).
-
-| Run | Hit@1 | Hit@3 | Router |
-|---|---:|---:|---:|
-| Live re-route + three post-fix edits (CI relabel; 100-callout and hallucination glosses) | **98.7%** | **100%** | 88.3% |
-| Live re-route (post-fix glosses + 19 relabels, before the three edits) | 96.8% | 99.4% | 88.3% |
-| Prior snapshot (pre-relabel gold, pre-fix glosses) | 79.2% | 90.9% | — |
-
-Two remaining Hit@1 misses are both SSO **setup** queries labelled
-`security/sso-saml-troubleshooting`, which NOT-fors initial setup. That package
-points at `admin/connected-apps-and-auth` (OAuth/connected apps) and at a
-nonexistent `security/sso-saml-setup`. Relabelling would hide a coverage gap.
-Router-correct is lower than Hit@1 because several correct picks follow a
-NOT-for into another domain.
-
-For comparison, the same queries through FTS5 retrieval (`run_heldout.py`):
-Hit@1 **37.0%**, Hit@3 **48.7%**, NONE **0.0%**.
-
-## Running
-
-Score a saved routing run (produced by the workflow):
-
-```bash
-python3 evals/measurement/run_model_routing.py \
-  --results .overhaul-2026-08/research/routing-benchmark-routed.json
-```
-
-Validate benchmark health and relabel status:
-
-```bash
-python3 evals/measurement/run_model_routing.py --check
-```
-
-Apply documented benchmark relabels (21 mislabels where the router pick was
-defensible):
-
-```bash
-python3 evals/measurement/run_model_routing.py --apply-relabels --dry-run
-python3 evals/measurement/run_model_routing.py --apply-relabels
-```
-
-Estimate post-relabel score without re-running agents:
-
-```bash
-python3 evals/measurement/run_model_routing.py --rescore-relabels
-```
-
-## Re-running live routing
-
-Live routing requires an LLM to read glosses and pick — it is not fully
-automatable. Re-run via the `sfskills-model-routing-benchmark` workflow script
-under `.claude/workflows/` (10 batches × route + analyse phases).
-
-Save output to `.overhaul-2026-08/research/routing-benchmark-routed.json` and
-defect analysis to `routing-benchmark-defects.json`.
-
-## The four harnesses
-
-| Harness | Question | Mechanism |
-|---|---|---|
-| `query-fixtures.json` + validate_repo step 5 | Does each skill retrieve for its indexed vocabulary? | FTS5 + optional embeddings |
-| `run_heldout.py` | Does retrieval work for practitioner phrasing? | FTS5 + optional embeddings |
-| **`run_model_routing.py`** | **Does Claude pick the right skill from glosses?** | **Router + roster (shipped)** |
-| `evals/golden/` | Is the activated skill's output correct? | Rubric grading |
-
-## CI status
-
-Not wired as of 2026-08-14. Intended shape: `--check` on every PR (fast),
-`--min-hit1` / `--min-hit3` floors on a slower agent-routing job after corpus
-changes that touch `description:` or rosters.
+- `README-heldout.md` — the same argument one layer down, for mechanism 3
+- `scripts/build_plugin.py` — `build_gloss()` and the `MAX_GLOSS_CHARS` block
+- `scripts/skill_doctor.py` — its `routing` check is this benchmark's lever,
+  evaluated per skill

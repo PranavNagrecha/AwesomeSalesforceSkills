@@ -1,0 +1,1892 @@
+{
+ "routed": [
+  {
+   "query": "create a validation rule",
+   "expected": "admin/validation-rules",
+   "router_picked": "salesforce-admin",
+   "router_correct": false,
+   "skill_picked": "admin/validation-rules",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that."
+  },
+  {
+   "query": "set up email templates",
+   "expected": "admin/email-templates-and-alerts",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/email-templates-and-alerts",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Gloss triggers 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email' \u2014 closest setup package; classic-email-template-migration is migration-only and email-service-inbound is inbound."
+  },
+  {
+   "query": "configure approval process",
+   "expected": "admin/approval-processes",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/approval-processes",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router description names approval process; gloss triggers include submit for approval / approval step (vs Apex-driving sibling)."
+  },
+  {
+   "query": "integrate with an external rest api",
+   "expected": "apex/callouts-and-http-integrations",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/callouts-and-http-integrations",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex owns outbound HTTP callouts; gloss triggers HttpRequest/Named Credential/callout. apex-rest-services redirects outbound here."
+  },
+  {
+   "query": "write apex unit tests",
+   "expected": "apex/test-class-standards",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/test-class-standards",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: Apex test patterns. Index: test-class-standards gloss is writing/reviewing Apex tests (SeeAllData, Test.startTest, assertions); factory redirects away."
+  },
+  {
+   "query": "clean up duplicate records",
+   "expected": "admin/duplicate-management",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/duplicate-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin description names 'clean up duplicates' verbatim. Gloss trigger is the query itself: 'clean up duplicate records'. NOT-for volume cleanup redirects to data/large-scale-deduplication, which this query does not ask for."
+  },
+  {
+   "query": "bulk load records into salesforce",
+   "expected": "data/bulk-api-and-large-data-loads",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/bulk-api-and-large-data-loads",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router description owns bulk loads / Data Loader / Bulk API. Index gloss triggers match bulk api, large data load, batch insert; top3 also data-loader-and-tools and bulk-api-patterns."
+  },
+  {
+   "query": "plan a data migration",
+   "expected": "data/data-migration-planning",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/data-migration-planning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data router description names data migration. Gloss is planning/reviewing a Salesforce data migration and tool selection; several sibling migration skills redirect generic planning here."
+  },
+  {
+   "query": "track field history",
+   "expected": "data/field-history-tracking",
+   "router_picked": "salesforce-security",
+   "router_correct": false,
+   "skill_picked": "data/field-history-tracking",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security description names field audit trail. field-audit-trail gloss: Shield FAT configuration/retention; NOT for field history tracking \u2014 use data/field-history-tracking. Followed that redirect."
+  },
+  {
+   "query": "configure omni channel routing",
+   "expected": "admin/omni-channel-routing-setup",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/omni-channel-routing-setup",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing \u2014 query is configure + omni channel + routing. OmniStudio roster is OmniScripts/FlexCards, not Service Cloud Omni-Channel. Admin Voice gloss also redirects Omni-Channel setup here."
+  },
+  {
+   "query": "manage picklist values",
+   "expected": "admin/picklist-and-value-sets",
+   "router_picked": "salesforce-admin",
+   "router_correct": false,
+   "skill_picked": "admin/picklist-and-value-sets",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "creating or managing picklist fields: choosing between Global Value Sets and object-local picklists \u2026. NOT for why the API or an integration ignores a dependency matrix - use admin/field-dependency-and-controlling."
+  },
+  {
+   "query": "review apex code for security",
+   "expected": "security/secure-coding-review-checklist",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/secure-coding-review-checklist",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex router disclaims codebase security review to salesforce-security; gloss says 'audit Apex, Visualforce, LWC, and Aura code for Salesforce security review'."
+  },
+  {
+   "query": "why is my LWC slow",
+   "expected": "lwc/lwc-performance",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-performance",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC router owns performance; gloss triggers 'slow lwc' / rerenders (budgets redirects here for runtime tuning)."
+  },
+  {
+   "query": "we hired someone, how do I get them into Salesforce",
+   "expected": "admin/user-management",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/user-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin user-setup; gloss triggers 'adding a new user'. integration-user-management is for API users only."
+  },
+  {
+   "query": "audit who has modify all data",
+   "expected": "security/privileged-access-management",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/privileged-access-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: privileged-access / security audit over admin permset design. Index: privileged-access-management explicitly names Modify All Data audit trails."
+  },
+  {
+   "query": "my batch job keeps timing out",
+   "expected": "apex/batch-apex-patterns",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/batch-apex-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex description owns 'batch'. Gloss is 'designing, reviewing, or debugging Batch Apex' with AsyncApexJob / batch scope. Timing out is a batch-execute governor problem, not Queueable-vs-Batch selection (async-apex) or nightly-failure alerting."
+  },
+  {
+   "query": "what breaks if we turn on person accounts",
+   "expected": "data/person-accounts",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/person-accounts",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data router owns data-model enablement. person-accounts gloss is enabling/configuring/troubleshooting Person Accounts and B2C model impact; edge-case PA duplicate skill redirects here for enablement."
+  },
+  {
+   "query": "test that my AI agent doesn't hallucinate",
+   "expected": "agentforce/agentforce-eval-harness",
+   "router_picked": "salesforce-agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agentforce-eval-harness",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Post-fix 2026-08-14: agentforce-eval-harness gloss triggers 'agent eval, hallucination, doesn't hallucinate'. testing-strategy now NOT-fors hallucination evals to eval-harness."
+  },
+  {
+   "query": "set up single sign on",
+   "expected": "security/sso-saml-troubleshooting",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "admin/connected-apps-and-auth",
+   "correct": false,
+   "expected_in_top3": true,
+   "why_picked": "Security description names SSO/SAML. sso-saml-troubleshooting gloss is assertion errors / SSO login failure; NOT for initial SSO configuration \u2014 use admin/connected-apps-and-auth. Query is setup, so followed the NOT.",
+   "miss_reason": "LABEL_ARBITRARY"
+  },
+  {
+   "query": "encrypt sensitive fields",
+   "expected": "security/platform-encryption",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/platform-encryption",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router names Shield / platform encryption. Gloss triggers: Shield Platform Encryption, data at rest, AES-256, tenant secret. encrypted-field-query-patterns and gdpr-data-privacy both NOT-for field-level encryption \u2192 this package. Classification gloss is labels, not encrypting."
+  },
+  {
+   "query": "give someone access to an object without changing their profile",
+   "expected": "admin/permission-sets-vs-profiles",
+   "router_picked": "salesforce-admin",
+   "router_correct": false,
+   "skill_picked": "admin/permission-sets-vs-profiles",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access \u2014 use admin/sharing-and-visibility for that."
+  },
+  {
+   "query": "stop sales reps from editing closed opportunities",
+   "expected": "admin/validation-rules",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/validation-rules",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin router names validation rule; gloss covers required-field / data-quality formulas that block saves. Beat opportunity-management (stages/Path) and permission-sets-vs-profiles (object access, not closed-state lock)."
+  },
+  {
+   "query": "make a field required only for one record type",
+   "expected": "admin/validation-rules",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/validation-rules",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin owns validation rules; gloss trigger 'required field formula' beats layout-per-RT wording for conditional required."
+  },
+  {
+   "query": "set up an approval when a discount is over 20 percent",
+   "expected": "admin/approval-processes",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/approval-processes",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin approval process; gloss includes 'discount approval'. No CPQ named so not cpq-approval-workflows."
+  },
+  {
+   "query": "our picklist has 400 values and nobody knows which are used",
+   "expected": "admin/picklist-data-integrity",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/picklist-data-integrity",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: picklist is an admin trigger. Index: picklist-data-integrity owns governance/value-deactivation; field-integrity-issues is for already-invalid values, not unused-value cleanup."
+  },
+  {
+   "query": "why can't my user see the record their manager owns",
+   "expected": "security/record-access-troubleshooting",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/record-access-troubleshooting",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security description owns troubleshooting a specific record-access denial; admin owns designing OWD/role hierarchy. Gloss: 'Diagnose why a user can or cannot see/edit a record'."
+  },
+  {
+   "query": "deactivate a user but keep their records",
+   "expected": "admin/user-management",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/user-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin user-setup triggers. user-management gloss explicitly lists deactivating a departing employee; delegated-administration redirects deactivation itself here."
+  },
+  {
+   "query": "send an email when a case has been open too long",
+   "expected": "admin/escalation-rules",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/escalation-rules",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Declarative case automation, no Flow named. escalation-rules gloss is time-based Case Escalation Rules; salesforce-support-escalation redirects 'escalating your own org's cases after N hours' here; entitlements/case-management were #2/#3."
+  },
+  {
+   "query": "build a report showing opportunities with no activity in 30 days",
+   "expected": "admin/reports-and-dashboards",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/reports-and-dashboards",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin description names report/dashboard. Gloss triggers 'report', 'pipeline report', 'cross-filter' \u2014 no-activity-in-30-days is the cross-filter pattern. Top3 also report-type-strategy (A-with-B-without) and reports-and-dashboards-fundamentals ('how do I build a report')."
+  },
+  {
+   "query": "my trigger fires twice and I don't know why",
+   "expected": "apex/recursive-trigger-prevention",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/recursive-trigger-prevention",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'trigger recursion', 'recursive update', 'trigger firing multiple times' \u2014 'fires twice' is that phrasing. trigger-framework lists recursion but is handler structure; bypass gloss NOT-for re-entry redirects here."
+  },
+  {
+   "query": "too many SOQL queries 101 error",
+   "expected": "apex/governor-limits",
+   "router_picked": "salesforce-apex",
+   "router_correct": false,
+   "skill_picked": "apex/governor-limits",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for org-level capacity planning \u2014 use architect/limits-and-scalability-planning."
+  },
+  {
+   "query": "how do I stop my flow from hitting SOQL limits",
+   "expected": "flow/flow-bulkification",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/flow-bulkification",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router pairs 'flow hitting SOQL limit' with 'flow bulkification'; gloss triggers 'Get Records in loop', 'Flow bulkification'. Top3 also flow-get-records-optimization and flow-governor-limits-deep-dive."
+  },
+  {
+   "query": "write a test that actually catches bulk problems",
+   "expected": "apex/test-class-standards",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/test-class-standards",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex owns test classes; gloss is the writing/reviewing Apex tests package (startTest / assertions) vs factory-only siblings."
+  },
+  {
+   "query": "call an external REST API from Apex with OAuth",
+   "expected": "apex/callouts-and-http-integrations",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/callouts-and-http-integrations",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Explicit from-Apex outbound callout; callouts gloss covers HttpRequest/Named Credential. OAuth auth setup would redirect to named-credentials-setup."
+  },
+  {
+   "query": "share data between two lightning web components",
+   "expected": "lwc/component-communication",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/component-communication",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: LWC component communication. Index: component-communication is the LMS vs @api pattern chooser; message-channel/state-management are narrower mechanics."
+  },
+  {
+   "query": "mock an HTTP callout in a test class",
+   "expected": "apex/apex-http-callout-mocking",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-http-callout-mocking",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex description names HttpCalloutMock and test class. Gloss is HttpCalloutMock / StaticResourceCalloutMock / Test.setMock. apex-mocking-and-stubs lists HttpCalloutMock but redirects per-endpoint HTTP mocks here."
+  },
+  {
+   "query": "the record page is loading really slowly",
+   "expected": "admin/lightning-page-performance-tuning",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/lightning-page-performance-tuning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Declarative Lightning record page (not named LWC). Gloss triggers: record page takes too long to load / EPT high / too many components."
+  },
+  {
+   "query": "migrate 5 million records into Salesforce without blowing up",
+   "expected": "data/bulk-api-and-large-data-loads",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/bulk-api-and-large-data-loads",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data router owns bulk loads at volume. Gloss triggers large data load / bulk api / serial vs parallel; featured entry is batch sizing and lock contention. Top3 also data-loader-batch-window-sizing and data-migration-planning."
+  },
+  {
+   "query": "clean up duplicate accounts",
+   "expected": "admin/duplicate-management",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/duplicate-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin description names 'clean up duplicates'. Gloss triggers 'clean up duplicate records', 'dedupe', 'matching rule'. Data router defers ordinary-volume cleanup here."
+  },
+  {
+   "query": "our reports are timing out on a big object",
+   "expected": "admin/report-performance-tuning",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/report-performance-tuning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin router names report. Gloss triggers: 'report times out', 'report is slow', 'report row limit hit' \u2014 literal timeout. reports-and-dashboards is build/missing-data, not timeout; CRM Analytics is NOT-for'd."
+  },
+  {
+   "query": "load data in the right order when objects reference each other",
+   "expected": "data/data-migration-planning",
+   "router_picked": "salesforce-data",
+   "router_correct": false,
+   "skill_picked": "data/data-migration-planning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "planning, reviewing, or troubleshooting a Salesforce data migration \u2014 covering tool selection (Data Loader, Bulk API 2.0, MuleSoft \u2026. NOT for Data Loader step-by-step mechanics \u2014 use admin/data-import-and-management."
+  },
+  {
+   "query": "delete personal data for GDPR",
+   "expected": "security/gdpr-data-privacy",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/gdpr-data-privacy",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security router names GDPR; gloss triggers GDPR, ShouldForget, Privacy Center. customer-data-request-workflow redirects underlying erasure mechanics here."
+  },
+  {
+   "query": "keep an external system and Salesforce in sync both ways",
+   "expected": "integration/real-time-vs-batch-integration",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/real-time-vs-batch-integration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration owns external sync; gloss triggers how to sync / real-time vs batch (Heroku bidirectional is product-specific)."
+  },
+  {
+   "query": "should I use Flow or Apex for this",
+   "expected": "admin/process-automation-selection",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/process-automation-selection",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router description redirects Flow-vs-Apex to admin/process-automation-selection; gloss triggers 'Flow or Apex trigger'."
+  },
+  {
+   "query": "when do I need a queueable instead of a future method",
+   "expected": "apex/async-apex",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/async-apex",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: queueable/@future named in apex gloss. Index: async-apex triggers include future method and queueable-vs-*; future/queueable pattern skills redirect selection here."
+  },
+  {
+   "query": "how do I decide between platform events and change data capture",
+   "expected": "integration/event-driven-architecture-patterns",
+   "router_picked": "salesforce-integration",
+   "router_correct": true,
+   "skill_picked": "integration/event-driven-architecture-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration description names Platform Event and Change Data Capture. Gloss triggers: 'platform events vs CDC', 'choose event pattern'. NOT-for implementing a single pattern redirects away from this choose-between question."
+  },
+  {
+   "query": "justify sharing model changes to leadership",
+   "expected": "admin/sharing-and-visibility",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/sharing-and-visibility",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security router defers designing the sharing model to admin. sharing-and-visibility covers OWD / role hierarchy / sharing rules\u2014the model being justified."
+  },
+  {
+   "query": "planning a multi org consolidation",
+   "expected": "architect/migration-architecture-patterns",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/migration-architecture-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect description names multi-org. Gloss is org migration / org merge (consolidate two orgs); multi-org-strategy is the upstream separate-orgs decision and ranked #2."
+  },
+  {
+   "query": "our security review flagged CRUD FLS issues",
+   "expected": "apex/apex-stripinaccessible-and-fls-enforcement",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-stripinaccessible-and-fls-enforcement",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex description names StripInaccessible and security enforcement. Gloss: use stripInaccessible to enforce CRUD/FLS. soql-security triggers 'security review finding' but NOT for enforcing FLS before DML \u2014 redirects here. Top3 also soql-security and apex-security-patterns."
+  },
+  {
+   "query": "encrypt a field that's already got data in it",
+   "expected": "security/platform-encryption",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/platform-encryption",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Still Shield field encryption (existing rows are PE background encryption), not query patterns or BYOK. Query-patterns gloss is SOQL on encrypted fields; shield-deployment is product rollout sequencing; kms-byok NOT-for field masking redirects to platform-encryption."
+  },
+  {
+   "query": "set up SSO with Okta",
+   "expected": "security/sso-saml-troubleshooting",
+   "router_picked": "salesforce-security",
+   "router_correct": false,
+   "skill_picked": "admin/connected-apps-and-auth",
+   "correct": false,
+   "expected_in_top3": true,
+   "why_picked": "Followed sso-saml-troubleshooting NOT: 'Troubleshoot SAML SSO failures \u2014 assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration \u2014 use admin/connected-apps-and-auth.' Landed gloss: Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'.",
+   "miss_reason": "LABEL_ARBITRARY"
+  },
+  {
+   "query": "restrict access by IP address",
+   "expected": "security/ip-relaxation-and-restriction",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/ip-relaxation-and-restriction",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: login IP range, trusted IP, IP relaxation, restricted IP, IP allowlist \u2014 verbatim restriction framing. network-security-and-trusted-ips redirects per-profile login IP policy here."
+  },
+  {
+   "query": "build an agent that can look up an order status",
+   "expected": "agentforce/agent-actions",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agent-actions",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Agentforce router; gloss trigger nearly verbatim: 'build an agent that can look up an order' / check order status."
+  },
+  {
+   "query": "my agentforce action returns the wrong record",
+   "expected": "agentforce/agent-action-input-slot-extraction",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agent-action-input-slot-extraction",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Wrong record from an action maps to slot/argument extraction gloss (input mapping), not topic routing."
+  },
+  {
+   "query": "ground a prompt template in CRM data",
+   "expected": "agentforce/prompt-builder-templates",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/prompt-builder-templates",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: grounding + prompt templates. Index: prompt-builder-templates triggers grounding/merge fields/Prompt Builder; Data Cloud grounding is RAG/retriever, not CRM merge-field grounding."
+  },
+  {
+   "query": "our deployment keeps failing on test coverage",
+   "expected": "devops/deployment-error-troubleshooting",
+   "router_picked": "salesforce-devops",
+   "router_correct": true,
+   "skill_picked": "devops/deployment-error-troubleshooting",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Devops description owns deployment troubleshooting. Gloss triggers include 'deployment failed' and 'code coverage failed'. deployment-error-diagnosis redirects testLevel coverage models here."
+  },
+  {
+   "query": "set up CI for a Salesforce project",
+   "expected": "devops/github-actions-for-salesforce",
+   "router_picked": "devops",
+   "router_correct": true,
+   "skill_picked": "devops/github-actions-for-salesforce",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps CI/CD. github-actions gloss triggers CI pipeline / sfdx ci / workflow yaml for greenfield CI setup; continuous-integration-testing and tooling-selection were #2/#3 (test-level vs tool choice)."
+  },
+  {
+   "query": "move changes from sandbox to production safely",
+   "expected": "devops/pre-deployment-checklist",
+   "router_picked": "devops",
+   "router_correct": true,
+   "skill_picked": "devops/pre-deployment-checklist",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps owns sandbox\u2192prod deploy. Featured go/no-go gate; gloss triggers pre-deploy checklist / deploy readiness / validation deploy. Top3 also change-set-deployment and go-live-cutover-planning."
+  },
+  {
+   "query": "what's the deal with unlocked packages",
+   "expected": "devops/unlocked-package-development",
+   "router_picked": "salesforce-devops",
+   "router_correct": true,
+   "skill_picked": "devops/unlocked-package-development",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps description names unlocked package. Gloss: designing/creating/versioning/installing unlocked packages. package-development-strategy is the managed-vs-unlocked choice; 2GP skill redirects unlocked here."
+  },
+  {
+   "query": "flow is erroring for some users but not others",
+   "expected": "flow/flow-runtime-context-and-sharing",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/flow-runtime-context-and-sharing",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: Flow sharing, run in system mode, Flow user context \u2014 'some users but not others' is user vs system / record access, not a fault-connector design or a generic debug-mode issue. Debugging and runtime-error-diagnosis stay in top3 as diagnosis fallbacks."
+  },
+  {
+   "query": "screen flow needs to show different fields based on a picklist",
+   "expected": "flow/flow-reactive-screen-components",
+   "router_picked": "salesforce-flow",
+   "router_correct": false,
+   "skill_picked": "flow/flow-reactive-screen-components",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens \u2014 use flow/flow-screen-input-validation-patterns."
+  },
+  {
+   "query": "schedule something to run every night",
+   "expected": "flow/scheduled-flows",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/scheduled-flows",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex router: nightly scheduling without naming code \u2192 flow; gloss triggers 'nightly flow job', 'scheduled flow design'."
+  },
+  {
+   "query": "flow keeps sending me error emails",
+   "expected": "flow/flow-error-notification-patterns",
+   "router_picked": "flow",
+   "router_correct": true,
+   "skill_picked": "flow/flow-error-notification-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router; gloss trigger exact phrase 'flow keeps sending me error emails' (fault-handling redirects diagnosis elsewhere)."
+  },
+  {
+   "query": "route cases to the right queue based on product",
+   "expected": "admin/assignment-rules",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/assignment-rules",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Case/queue assignment gloss; queues-and-public-groups redirects rule choice here. No Omni-Channel named."
+  },
+  {
+   "query": "set up business hours and holidays for SLAs",
+   "expected": "admin/entitlements-and-milestones",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/entitlements-and-milestones",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: declarative SLA/case config \u2192 admin. Index has no business-hours/holiday package; entitlements-and-milestones is the Case SLA skill (business hours feed entitlement clocks)."
+  },
+  {
+   "query": "build a customer portal where they can log cases",
+   "expected": "admin/experience-cloud-site-setup",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/experience-cloud-site-setup",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "No domain description names portal/Experience Cloud; admin is the declarative site-setup home. Gloss: create Experience Cloud site / community portal. portal-requirements-gathering says NOT for building \u2014 use experience-cloud-site-setup."
+  },
+  {
+   "query": "knowledge articles aren't showing up in search",
+   "expected": "admin/knowledge-base-administration",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/knowledge-base-administration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Knowledge admin (channels, data categories, publishing) vs generic global-search-configuration. knowledge-base-administration triggers Knowledge setup / Data Category visibility / publishing workflow."
+  },
+  {
+   "query": "our middleware calls are hitting API limits",
+   "expected": "integration/api-governance-and-rate-limits",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/api-governance-and-rate-limits",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration description names middleware and the API surface (inbound). Gloss is monitor/govern Salesforce API consumption and backoff; rest-api-patterns and retry-and-backoff were #2/#3."
+  },
+  {
+   "query": "expose Salesforce data to an external app securely",
+   "expected": "integration/rest-api-patterns",
+   "router_picked": "salesforce-integration",
+   "router_correct": true,
+   "skill_picked": "integration/rest-api-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration owns inbound / external system calling Salesforce. rest-api-patterns triggers Salesforce REST API, REST CRUD, OAuth Bearer token. Top3 also oauth-flows-and-connected-apps (client auth) and api-governance-and-rate-limits."
+  },
+  {
+   "query": "handle retries when a callout fails",
+   "expected": "apex/apex-callout-retry-and-resilience",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-callout-retry-and-resilience",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex owns outbound callouts. Gloss: bounded retry with backoff, queueable async retry chains, circuit-breaker. callouts-and-http-integrations is the callout itself; wsdl2apex NOT-for redirects here."
+  },
+  {
+   "query": "the org is a mess where do I start",
+   "expected": "architect/technical-debt-assessment",
+   "router_picked": "salesforce-architect",
+   "router_correct": false,
+   "skill_picked": "architect/technical-debt-assessment",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: technical debt review, org health check, dead code analysis, automation overlap, deprecated features, complexity audit. NOT for actually deleting the unused fields \u2026 use admin/org-cleanup-and-technical-debt"
+  },
+  {
+   "query": "make Salesforce faster",
+   "expected": "architect/limits-and-scalability-planning",
+   "router_picked": "salesforce-architect",
+   "router_correct": true,
+   "skill_picked": "architect/limits-and-scalability-planning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect router owns scalability; gloss triggers org governor limits / data-volume performance issues. Broader than LDV-architecture or org-limits-monitoring."
+  },
+  {
+   "query": "we're going live next month what should I check",
+   "expected": "devops/go-live-cutover-planning",
+   "router_picked": "devops",
+   "router_correct": true,
+   "skill_picked": "devops/go-live-cutover-planning",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Devops owns go-live/release; gloss is final cutover / major-release planning (pre-deploy checklist is deploy-scoped)."
+  },
+  {
+   "query": "reduce our technical debt",
+   "expected": "architect/technical-debt-assessment",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/technical-debt-assessment",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect description lists technical debt; assessment gloss. org-cleanup redirects assessment here."
+  },
+  {
+   "query": "our omniscript loses everything the user typed when they navigate back",
+   "expected": "omnistudio/omniscript-session-state",
+   "router_picked": "omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/omniscript-session-state",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: OmniScript named. Index: omniscript-session-state covers persist mid-flow state across navigation/refresh."
+  },
+  {
+   "query": "pull data into a flexcard without writing apex",
+   "expected": "omnistudio/flexcard-design-patterns",
+   "router_picked": "salesforce-omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/flexcard-design-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Omnistudio description names FlexCard and DataRaptor. Gloss: 'Design FlexCard layout, data sources, states, actions'. Data sources without Apex is the FlexCard design question, not DataRaptor-only extract/load debugging."
+  },
+  {
+   "query": "moving vlocity components between orgs keeps breaking",
+   "expected": "omnistudio/omnistudio-deployment-datapacks",
+   "router_picked": "omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/omnistudio-deployment-datapacks",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "OmniStudio router names Vlocity/DataPack. deployment-datapacks gloss is export/import of OmniStudio components via DataPacks; CI/CD pattern redirects manual DataPack ops here."
+  },
+  {
+   "query": "should we build this in omnistudio or just use flow",
+   "expected": "omnistudio/omnistudio-vs-flow-decision",
+   "router_picked": "omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/omnistudio-vs-flow-decision",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Query names OmniStudio; featured entry is the vs-Flow decision. Gloss trigger 'omnistudio or flow' is near-verbatim (second trigger truncated at 'omniscript vs screen')."
+  },
+  {
+   "query": "integration procedure takes 30 seconds to come back",
+   "expected": "omnistudio/omnistudio-performance",
+   "router_picked": "salesforce-omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/omnistudio-performance",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "OmniStudio description names Integration Procedure. omnistudio-performance gloss: diagnosing slow OmniStudio runtime. Top3 also integration-procedure-cacheable-patterns (cut latency) and omnistudio-asynchronous-data-operations (long-running IPs)."
+  },
+  {
+   "query": "how do I unit test an omniscript",
+   "expected": "omnistudio/omnistudio-testing-patterns",
+   "router_picked": "salesforce-omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/omnistudio-testing-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: OmniStudio testing, UTAM automation, OmniScript test. Debugging gloss is live runtime ('omniscript not working') and NOT-for testing. Versioning mentions testing a version, not unit-test patterns."
+  },
+  {
+   "query": "dataraptor extract is returning nothing at all",
+   "expected": "omnistudio/omnistudio-debugging",
+   "router_picked": "salesforce-omnistudio",
+   "router_correct": false,
+   "skill_picked": "omnistudio/omnistudio-debugging",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path d \u2014 use omnistudio/omnistudio-performance."
+  },
+  {
+   "query": "we want to retire vlocity and move to standard components",
+   "expected": "omnistudio/vlocity-to-native-omnistudio-migration",
+   "router_picked": "salesforce-omnistudio",
+   "router_correct": true,
+   "skill_picked": "omnistudio/vlocity-to-native-omnistudio-migration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Omnistudio router names Vlocity; gloss triggers 'Vlocity to OmniStudio migration', namespace migration. Beat omnistudio-vs-flow-decision (choice, not retire)."
+  },
+  {
+   "query": "we have 40 million rows on one object and queries crawl",
+   "expected": "architect/large-data-volume-architecture",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/large-data-volume-architecture",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect description names large data volume; data router defers LDV architecture here; gloss 'millions of records on custom object'."
+  },
+  {
+   "query": "write down why we picked this design so the next team knows",
+   "expected": "architect/architecture-decision-records",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/architecture-decision-records",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Documenting a design choice for later teams matches ADR gloss (design decision log)."
+  },
+  {
+   "query": "what should our disaster recovery plan look like",
+   "expected": "architect/ha-dr-architecture",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/ha-dr-architecture",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: HA/DR in architect gloss. Index: ha-dr-architecture is DR strategy; backup product/restore redirects to data."
+  },
+  {
+   "query": "are we going to run out of api calls at this growth rate",
+   "expected": "architect/org-limits-monitoring",
+   "router_picked": "salesforce-architect",
+   "router_correct": true,
+   "skill_picked": "architect/org-limits-monitoring",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect description owns scalability limits. Gloss triggers: 'set up alerts before we hit API limits', REST Limits resource. Closer than limits-and-scalability-planning, which talks governor limits / custom-object caps / data volume."
+  },
+  {
+   "query": "score this org against the well architected framework",
+   "expected": "architect/well-architected-review",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/well-architected-review",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Architect description names Well-Architected. Gloss triggers: well-architected review, WAF assessment, architecture health check."
+  },
+  {
+   "query": "draw the object relationships for the sales team",
+   "expected": "architect/salesforce-erd-and-diagramming",
+   "router_picked": "architect",
+   "router_correct": true,
+   "skill_picked": "architect/salesforce-erd-and-diagramming",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Draw implies an architecture diagram deliverable. Gloss is Mermaid/PlantUML data-model diagrams for Sales; redirects field inventory/data dictionary to admin/data-model-documentation. Top3 also sales-cloud-architecture and solution-design-patterns."
+  },
+  {
+   "query": "pick between mulesoft and point to point callouts",
+   "expected": "integration/middleware-integration-patterns",
+   "router_picked": "salesforce-integration",
+   "router_correct": true,
+   "skill_picked": "integration/middleware-integration-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration description names MuleSoft/middleware. Gloss triggers 'which iPaaS should I use', 'when do I need middleware for Salesforce'. Connector skill is Anypoint config, not the middleware-vs-P2P choice."
+  },
+  {
+   "query": "my wire adapter doesn't refresh after I save a record",
+   "expected": "lwc/lwc-wire-refresh-patterns",
+   "router_picked": "salesforce-lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-wire-refresh-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "refreshApex / getRecordNotifyChange / RefreshView after DML. wire-service-patterns lists refreshApex but NOT-for forcing a refresh after DML \u2192 this package. lwc-lds-writes is updateRecord cache shape; reactive-state also redirects wire refresh here."
+  },
+  {
+   "query": "the child component can't tell the parent something changed",
+   "expected": "lwc/lwc-custom-event-patterns",
+   "router_picked": "salesforce-lwc",
+   "router_correct": false,
+   "skill_picked": "lwc/lwc-custom-event-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'event not reaching parent', 'composed shadow DOM', 'child component cannot tell the parent something changed', \u2026. NOT for parent-to-child @api \u2014 use lwc/component-communication."
+  },
+  {
+   "query": "screen reader can't use my custom component",
+   "expected": "lwc/lwc-accessibility",
+   "router_picked": "salesforce-lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-accessibility",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC router names accessibility; gloss triggers 'screen reader', LWC accessibility, keyboard nav. lwc-accessibility-patterns is ARIA implementation detail."
+  },
+  {
+   "query": "jest tests fail because the wire adapter is undefined",
+   "expected": "lwc/lwc-testing",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-testing",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC Jest ownership; sibling glosses say NOT for Jest failures \u2014 use lwc-testing (runtime 'wire undefined' is not Jest)."
+  },
+  {
+   "query": "our datatable chokes on 5000 rows",
+   "expected": "lwc/lwc-virtualized-lists",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-virtualized-lists",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC datatable at 5k rows; lwc-performance redirects 1000+ lists to virtualized-lists. Top3 also datatable-advanced/performance."
+  },
+  {
+   "query": "convert an old aura component to lwc",
+   "expected": "lwc/aura-to-lwc-migration",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/aura-to-lwc-migration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: Aura migration trigger. Index: aura-to-lwc-migration is the dedicated Aura\u2192LWC package."
+  },
+  {
+   "query": "let users pick a record from a lookup in my component",
+   "expected": "lwc/lwc-record-picker",
+   "router_picked": "salesforce-lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-record-picker",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC description owns Lightning Web Component. Gloss is lightning-record-picker (object/record filter). lwc-custom-lookup is the fully custom typeahead and redirects the base picker here."
+  },
+  {
+   "query": "one component throws and the whole page goes blank",
+   "expected": "lwc/lwc-error-boundaries",
+   "router_picked": "lwc",
+   "router_correct": true,
+   "skill_picked": "lwc/lwc-error-boundaries",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "LWC component failure blanking a page. Gloss: isolate errors so one failure does not blank an entire page via errorCallback."
+  },
+  {
+   "query": "two developers overwrote each other's metadata",
+   "expected": "devops/source-tracking-and-conflict-resolution",
+   "router_picked": "devops",
+   "router_correct": true,
+   "skill_picked": "devops/source-tracking-and-conflict-resolution",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps description names source tracking. Gloss triggers source tracking / conflict / --force-overwrite; git-branching and Copado conflict were #2/#3 (Git merge is explicitly NOT-for on this gloss)."
+  },
+  {
+   "query": "how do we roll back a bad release fast",
+   "expected": "devops/rollback-and-hotfix-strategy",
+   "router_picked": "salesforce-devops",
+   "router_correct": true,
+   "skill_picked": "devops/rollback-and-hotfix-strategy",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps description names release and rollback. Gloss: planning/executing metadata rollbacks and emergency hotfixes. Beat release-management (trains/versioning) and change-set-deployment."
+  },
+  {
+   "query": "which sandboxes do we actually need",
+   "expected": "devops/environment-strategy",
+   "router_picked": "salesforce-devops",
+   "router_correct": true,
+   "skill_picked": "devops/environment-strategy",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "DevOps router names environment strategy + sandbox. Triggers: 'how many environments do I need', 'environment planning', 'org topology'. Admin sandbox-strategy is type (Dev/Partial/Full) and NOT-for how many \u2192 this package. Refresh/templates is cadence, not inventory."
+  },
+  {
+   "query": "sfdx project layout for a team of eight",
+   "expected": "devops/salesforce-dx-project-structure",
+   "router_picked": "salesforce-devops",
+   "router_correct": false,
+   "skill_picked": "devops/salesforce-dx-project-structure",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "setting up, configuring, or troubleshooting sfdx-project.json, organizing \u2026. NOT for scratch org definition files (use scratch-org-management), CLI command usage (us \u2014 use apex/sf-cli-and-sfdx-essentials."
+  },
+  {
+   "query": "keep secrets out of the pipeline logs",
+   "expected": "devops/pipeline-secrets-management",
+   "router_picked": "salesforce-devops",
+   "router_correct": true,
+   "skill_picked": "devops/pipeline-secrets-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Devops router owns CI/CD pipelines; only roster package about pipeline credentials/secrets injection. Gloss is store/inject rather than log-redaction, but no closer gloss."
+  },
+  {
+   "query": "delete a field as part of a deployment",
+   "expected": "devops/destructive-changes-deployment",
+   "router_picked": "devops",
+   "router_correct": true,
+   "skill_picked": "devops/destructive-changes-deployment",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Devops deploy + delete metadata; gloss is destructiveChanges.xml for safe metadata deletion."
+  },
+  {
+   "query": "store an api key somewhere safe for callouts",
+   "expected": "integration/named-credentials-setup",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/named-credentials-setup",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration owns Named Credential setup; apex-named-credentials and remote-site-settings redirect storage/setup here."
+  },
+  {
+   "query": "notify an outside system the moment a record changes",
+   "expected": "integration/outbound-webhook-from-salesforce",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/outbound-webhook-from-salesforce",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: outbound notify/CDC/PE is integration (not Apex callout how-to). Index: outbound-webhook gloss is POST to third party after record change; CDC is streaming alternative in top3."
+  },
+  {
+   "query": "an external service will post json to us, how do we receive it",
+   "expected": "integration/webhook-inbound-patterns",
+   "router_picked": "salesforce-integration",
+   "router_correct": true,
+   "skill_picked": "integration/webhook-inbound-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration description owns inbound webhook / external system calling Salesforce. Gloss: inbound webhook receiver via Apex REST. webhook-signature-verification redirects receiver end-to-end design here."
+  },
+  {
+   "query": "the same message got processed twice and created duplicates",
+   "expected": "integration/idempotent-integration-patterns",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/idempotent-integration-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Message processed twice \u2192 integration idempotency, not user-facing duplicate rules. Gloss: retry-safe integrations; redirects ordinary duplicate-management to admin."
+  },
+  {
+   "query": "read a table that lives in another database without copying it",
+   "expected": "integration/salesforce-connect-external-objects",
+   "router_picked": "integration",
+   "router_correct": true,
+   "skill_picked": "integration/salesforce-connect-external-objects",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Integration description names Salesforce Connect. Gloss triggers Salesforce Connect / External Objects / OData; zero-copy Data Cloud federation ranked #2 for 'without copying'."
+  },
+  {
+   "query": "one callout per record is blowing the 100 limit",
+   "expected": "integration/callout-limits-and-async-patterns",
+   "router_picked": "salesforce-apex",
+   "router_correct": false,
+   "skill_picked": "integration/callout-limits-and-async-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Post-fix 2026-08-14: Apex router still owns outbound callouts. governor-limits gloss now leads with 'NOT for the 100-callout-per-transaction ceiling \u2014 use integration/callout-limits-and-async-patterns'. Followed that redirect."
+  },
+  {
+   "query": "post a message into slack when a deal closes",
+   "expected": "flow/flow-for-slack",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/flow-for-slack",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow Core Actions for Slack to send messages. flow-email-and-notifications also lists 'Slack notification flow' so it stays in top3, but this package is the Slack action surface. NOT-for Slack-native workflows calling Flow (integration/slack-workflow-builder)."
+  },
+  {
+   "query": "keep the agent from answering questions outside its job",
+   "expected": "agentforce/agentforce-guardrails",
+   "router_picked": "salesforce-agentforce",
+   "router_correct": false,
+   "skill_picked": "agentforce/agentforce-guardrails",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, \u2026. NOT for Trust \u2026 use agentforce/prompt-builder-templates"
+  },
+  {
+   "query": "strip customer phone numbers before they reach the model",
+   "expected": "agentforce/agentforce-pii-redaction",
+   "router_picked": "salesforce-agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agentforce-pii-redaction",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "'the model' \u2192 Agentforce/LLM; gloss triggers pii redaction, data masking llm, prompt pii filter. einstein-trust-layer redirects own redaction work here."
+  },
+  {
+   "query": "our agent bill is climbing every month",
+   "expected": "agentforce/agentforce-cost-optimization",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agentforce-cost-optimization",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Agentforce cost/spend gloss ('agentforce cost', reduce spend); rate-limit skill redirects token reduction here."
+  },
+  {
+   "query": "hand the conversation to a human when the agent is stuck",
+   "expected": "agentforce/agentforce-agent-handoff-patterns",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agentforce-agent-handoff-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Gloss triggers 'agent to human handoff' / transfer conversation with context."
+  },
+  {
+   "query": "decide which topics the agent should own",
+   "expected": "agentforce/agent-topic-design",
+   "router_picked": "agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/agent-topic-design",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: agent topic. Index: agent-topic-design triggers topic design / scope boundary / topic selector."
+  },
+  {
+   "query": "someone typed instructions into the chat to jailbreak our bot",
+   "expected": "agentforce/prompt-injection-defense",
+   "router_picked": "salesforce-agentforce",
+   "router_correct": true,
+   "skill_picked": "agentforce/prompt-injection-defense",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Agentforce description names prompt injection. Gloss: 'prompt-injection and jailbreak attacks' \u2014 the query's jailbreak/chat phrasing is the trigger."
+  },
+  {
+   "query": "record triggered flow keeps re-firing itself",
+   "expected": "flow/recursion-and-re-entry-prevention",
+   "router_picked": "flow",
+   "router_correct": true,
+   "skill_picked": "flow/recursion-and-re-entry-prevention",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router for record-triggered. Gloss triggers: flow re-firing on same record / updates field then runs again / infinite loop."
+  },
+  {
+   "query": "what happens when my flow hits an error mid transaction",
+   "expected": "flow/fault-handling",
+   "router_picked": "flow",
+   "router_correct": true,
+   "skill_picked": "flow/fault-handling",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router description names fault handling. Gloss triggers fault connector / flow failed / record-triggered flow rollback; flow-rollback-patterns and flow-transactional-boundaries were #2/#3 for mid-transaction semantics."
+  },
+  {
+   "query": "wait three days then send a reminder",
+   "expected": "flow/pause-elements-and-wait-events",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/pause-elements-and-wait-events",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow owns delayed automation without naming Apex. pause-elements-and-wait-events triggers 'pause element', 'wait element'. Top3 also flow-time-based-patterns (scheduled-path delays) and scheduled-flows (recurring, which this is not)."
+  },
+  {
+   "query": "we still have old process builders to get rid of",
+   "expected": "flow/process-builder-to-flow-migration",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/process-builder-to-flow-migration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router names Process Builder migration. Gloss: Migrate Process Builder processes to record-triggered Flows. workflow-rule-to-flow and flow-migration-from-trigger both NOT-for PB \u2192 this package."
+  },
+  {
+   "query": "how do I write a test for a flow",
+   "expected": "flow/flow-testing",
+   "router_picked": "salesforce-flow",
+   "router_correct": false,
+   "skill_picked": "flow/flow-testing",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging."
+  },
+  {
+   "query": "break a giant flow into reusable pieces",
+   "expected": "flow/subflows-and-reusability",
+   "router_picked": "salesforce-flow",
+   "router_correct": true,
+   "skill_picked": "flow/subflows-and-reusability",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router names subflow; gloss triggers 'reuse this flow logic', 'too much duplicated flow logic', 'subflow contract design'."
+  },
+  {
+   "query": "who logged in from a country we don't operate in",
+   "expected": "security/login-forensics",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/login-forensics",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security monitoring; gloss investigates login activity via LoginHistory / Login Forensics (vs MFA or IP policy setup)."
+  },
+  {
+   "query": "force everyone onto mfa without locking out integrations",
+   "expected": "security/mfa-enforcement-strategy",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/mfa-enforcement-strategy",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Org-wide MFA rollout + exception governance for integrations; patterns is per-user-type follow-on."
+  },
+  {
+   "query": "guest users can see too much on our public site",
+   "expected": "security/guest-user-security",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/guest-user-security",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: guest user security trigger. Index: guest-user-security hardens guest profile / unauthenticated access; audit sibling is adjacent in top3."
+  },
+  {
+   "query": "rotate the credentials our integration user uses",
+   "expected": "security/service-account-credential-rotation",
+   "router_picked": "salesforce-security",
+   "router_correct": true,
+   "skill_picked": "security/service-account-credential-rotation",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Rotating credentials is org-hardening, not inbound-API design. Gloss: credential rotation for integration users; trigger 'rotate integration user'."
+  },
+  {
+   "query": "run the health check and fix what it flags",
+   "expected": "security/security-health-check",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/security-health-check",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Salesforce Security Health Check. Gloss: running, interpreting, or acting on Health Check results; org-hardening points here for Health Check gaps."
+  },
+  {
+   "query": "our sandbox has real customer emails in it",
+   "expected": "security/sandbox-data-masking",
+   "router_picked": "security",
+   "router_correct": true,
+   "skill_picked": "security/sandbox-data-masking",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Security owns compliance/PII (GDPR in description). Gloss triggers PII in sandbox / sandbox masking / data mask; devops sandbox-data-isolation-gotchas redirects masking here."
+  },
+  {
+   "query": "soql on a 20 million row object times out",
+   "expected": "data/soql-query-optimization",
+   "router_picked": "salesforce-data",
+   "router_correct": true,
+   "skill_picked": "data/soql-query-optimization",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data description owns query optimisation; Apex SOQL timeout at volume is selectivity/index, not syntax. Skill name matches; custom-index-requests NOT-for redirects query-opt techniques here. Gloss NOT is org-wide LDV architecture \u2014 kept that as #2 (architect/large-data-volume-architecture)."
+  },
+  {
+   "query": "we need to keep 7 years of cases but not in the main object",
+   "expected": "data/data-archival-strategies",
+   "router_picked": "salesforce-data",
+   "router_correct": true,
+   "skill_picked": "data/data-archival-strategies",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: archive old records, Big Objects, data retention policy \u2014 7 years off the Case object is retention + Big Object/external, not EmailMessage bloat. service-data-archival is attachment/email cleanup and NOT-for generic archival \u2192 this package; storage-management also redirects archival here."
+  },
+  {
+   "query": "storage is at 95 percent and we can't load anything",
+   "expected": "data/data-storage-management",
+   "router_picked": "salesforce-data",
+   "router_correct": false,
+   "skill_picked": "data/data-storage-management",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Salesforce storage management: monitoring data storage vs file storage usage, diagnosing storage \u2026. NOT for archiving aging records to Big Objects or external storage (S3, Heroku) \u2014 use data/data-archival-strategies."
+  },
+  {
+   "query": "match records coming from the ERP to what's already here",
+   "expected": "data/external-id-strategy",
+   "router_picked": "salesforce-data",
+   "router_correct": true,
+   "skill_picked": "data/external-id-strategy",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data router names external id; gloss triggers 'cross-system record matching', 'upsert key strategy', 'source system ID mapping'."
+  },
+  {
+   "query": "roll up child amounts when the relationship isn't master detail",
+   "expected": "data/roll-up-summary-alternatives",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/roll-up-summary-alternatives",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data model roll-up when native MD roll-up isn't enough; gloss NOT for ordinary master-detail native roll-ups."
+  },
+  {
+   "query": "search across objects for a phone number",
+   "expected": "data/sosl-search-patterns",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/sosl-search-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Data owns SOSL/cross-object search; gloss triggers 'search across objects'. Apex router excludes SOSL."
+  },
+  {
+   "query": "refreshing the sandbox wiped the data the testers needed",
+   "expected": "data/sandbox-refresh-data-strategies",
+   "router_picked": "data",
+   "router_correct": true,
+   "skill_picked": "data/sandbox-refresh-data-strategies",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: sandbox seed / SandboxPostCopy in data gloss (vs devops refresh mechanics). Index: sandbox-refresh-data-strategies is seed-after-refresh."
+  },
+  {
+   "query": "one class does everything and nobody wants to touch it",
+   "expected": "apex/apex-class-decomposition-pattern",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-class-decomposition-pattern",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex owns classes. Gloss: 'When and how to split an Apex class into Domain / Service / Selector layers'. apex-design-patterns is the fat-trigger/controller framing; this query is a god class, not specifically a trigger."
+  },
+  {
+   "query": "cpu time limit exceeded on a big transaction",
+   "expected": "apex/apex-cpu-and-heap-optimization",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-cpu-and-heap-optimization",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex description lists CPU time. Exact gloss trigger 'CPU time limit exceeded'; governor-limits is the generic redirect target."
+  },
+  {
+   "query": "chain one batch job into the next",
+   "expected": "apex/apex-batch-chaining",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-batch-chaining",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex description/featured own Batch chaining. Gloss is run one Batch Apex job immediately after another completes; batch-apex-patterns and async-apex were #2/#3."
+  },
+  {
+   "query": "mixed dml operation error when creating a user",
+   "expected": "apex/mixed-dml-and-setup-objects",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/mixed-dml-and-setup-objects",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex runtime exception. Gloss triggers 'MIXED_DML_OPERATION', 'setup object DML error', 'cannot insert User and Account together'. apex-system-runas is the test workaround and redirects the error outside tests here."
+  },
+  {
+   "query": "log errors somewhere I can actually query later",
+   "expected": "apex/custom-logging-and-monitoring",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/custom-logging-and-monitoring",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Custom logging framework with log sObject schema \u2014 queryable later, not Debug Log. debug-and-logging is System.debug vs durable choice; error-handling-framework is exception hierarchy / Platform Event capture. Queryable custom object is this package."
+  },
+  {
+   "query": "what order do things actually run in when a record saves",
+   "expected": "apex/order-of-execution-deep-dive",
+   "router_picked": "salesforce-apex",
+   "router_correct": false,
+   "skill_picked": "apex/order-of-execution-deep-dive",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Complete reference for the Salesforce record save order of execution: all 20 steps from DB load through commit, covering trigger placement \u2026. NOT for trigger framework design \u2014 use apex/trigger-framework."
+  },
+  {
+   "query": "run some code every night at 2am",
+   "expected": "apex/apex-scheduled-jobs",
+   "router_picked": "salesforce-apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-scheduled-jobs",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Flow router: apex takes nightly scheduling when code is named; gloss triggers 'run this code every night', 'run at 2am' verbatim."
+  },
+  {
+   "query": "unable to lock row errors under load",
+   "expected": "apex/record-locking-and-contention",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/record-locking-and-contention",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Apex contention; gloss trigger 'UNABLE_TO_LOCK_ROW' / record lock contention (Flow locks redirect elsewhere)."
+  },
+  {
+   "query": "hardcoded record type ids everywhere",
+   "expected": "apex/apex-hardcoded-id-elimination",
+   "router_picked": "apex",
+   "router_correct": true,
+   "skill_picked": "apex/apex-hardcoded-id-elimination",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Hardcoded RecordType IDs in code; elimination gloss. Lookup/caching redirects to admin/record-type-id-management."
+  },
+  {
+   "query": "one page layout per record type is unmanageable",
+   "expected": "admin/dynamic-forms-migration",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/dynamic-forms-migration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Router: page layout / record type \u2192 admin. Index: dynamic-forms-migration is migrating Page Layouts off record pages; record-types-and-page-layouts / strategy-at-scale are setup/refactor alternatives in top3."
+  },
+  {
+   "query": "guide reps through the stages with tips on each one",
+   "expected": "admin/path-and-guidance",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/path-and-guidance",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin is declarative Path/sales-process config. Gloss triggers: 'add guidance to stages', 'key fields on path', 'configure path steps'. in-app-guidance-and-walkthroughs redirects Path guidance here."
+  },
+  {
+   "query": "grant a team temporary admin rights",
+   "expected": "admin/delegated-administration",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/delegated-administration",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin permission/user setup from router description. delegated-administration gloss: let non-system-admins manage groups/passwords/assignments without full SysAdmin; user-management redirects delegated admin setup here via related triggers."
+  },
+  {
+   "query": "roll out the spring release safely",
+   "expected": "admin/salesforce-release-preparation",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/salesforce-release-preparation",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin description names Spring release / Release Updates / Sandbox Preview. Gloss triggers upcoming Salesforce release / release readiness checklist; devops/release-management redirects seasonal platform releases here."
+  },
+  {
+   "query": "we need a queue for the tier two team",
+   "expected": "admin/queues-and-public-groups",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/queues-and-public-groups",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin description names queue. Gloss triggers queue, queue membership, case queue. assignment-rules NOT-for creating the queue redirects here."
+  },
+  {
+   "query": "write acceptance criteria the devs can test",
+   "expected": "admin/acceptance-criteria-given-when-then",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/acceptance-criteria-given-when-then",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: given when then, gherkin, test first acceptance criteria, BDD \u2014 AC the devs can test. uat-and-acceptance-criteria is UAT scripts for business testers; user-story-writing is As-A I-Want, and this gloss NOT-for story format redirects the other way."
+  },
+  {
+   "query": "build a formula that shows days since last contact",
+   "expected": "admin/formula-fields",
+   "router_picked": "salesforce-admin",
+   "router_correct": false,
+   "skill_picked": "admin/formula-fields",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for a formula field slowing a SOQL \u2026 use apex/formula-field-performance-and-limits"
+  },
+  {
+   "query": "the child lookup should only show records under the parent",
+   "expected": "admin/lookup-filter-cross-object-patterns",
+   "router_picked": "salesforce-admin",
+   "router_correct": true,
+   "skill_picked": "admin/lookup-filter-cross-object-patterns",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Gloss triggers 'limit lookup based on another field', 'cross-object lookup filter'; lookup-and-relationship-design redirects restricting which records a lookup can pick here."
+  },
+  {
+   "query": "ask the customer for feedback after a case closes",
+   "expected": "admin/salesforce-surveys",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/salesforce-surveys",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Admin surveys; gloss triggers customer feedback form / survey invitation (CSAT choice redirects to architect)."
+  },
+  {
+   "query": "translate picklist labels for the french team",
+   "expected": "admin/multi-language-and-translation",
+   "router_picked": "admin",
+   "router_correct": true,
+   "skill_picked": "admin/multi-language-and-translation",
+   "correct": true,
+   "expected_in_top3": true,
+   "why_picked": "Translation Workbench / picklist value translation gloss; custom-label-management redirects picklist translation here."
+  }
+ ],
+ "defects": [
+  {
+   "query": "manage picklist values",
+   "expected": "admin/picklist-data-integrity",
+   "picked": "admin/picklist-and-value-sets",
+   "defect_class": "BENCHMARK_MISLABEL (near-duplicate pair, correct member picked)",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: none needed for routing \u2014 relabel the benchmark. `admin/picklist-and-value-sets` opens with the query verbatim: \"Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records.\" `admin/picklist-data-integrity` is the failure-mode package (Restricted vs Unrestricted, 'value not in picklist' phantom data, dependent picklist with a deactivated controller, API-vs-label mismatch). For a bare configuration query the picked package is strictly better. Change the golden label for 'manage picklist values' to admin/picklist-and-value-sets. SECONDARY (corpus hygiene, not a routing fix): the two packages both claim Global-Value-Set-vs-local, value deactivation, and mass-replace-values, so they will keep colliding. Sharpen picklist-data-integrity's description to lead diagnostic and cede configuration, e.g. prepend \"Use when an existing picklist is already producing bad data \u2014\" and append \"NOT for creating or configuring picklist fields, dependent picklists, or Global Value Sets from scratch \u2014 use admin/picklist-and-value-sets.\""
+  },
+  {
+   "query": "the org is a mess where do I start",
+   "expected": "admin/org-cleanup-and-technical-debt",
+   "picked": "architect/technical-debt-assessment",
+   "defect_class": "BENCHMARK_MISLABEL (expected package's own NOT-clause redirects to the picked package)",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: none needed for routing \u2014 relabel the benchmark. The expected package's description already contains, verbatim: \"NOT for assessing or reporting on technical debt (use architect/technical-debt-assessment).\" Its body repeats it: \"This skill covers the hands-on removal work. For assessment and reporting on what needs cleanup, use `architect/technical-debt-assessment`.\" 'Where do I start' is triage, not execution, and technical-debt-assessment's declared outputs are exactly the answer \u2014 \"Technical debt findings report with severity ratings\", \"Prioritized remediation backlog\", \"Complexity hotspot map\" \u2014 while org-cleanup-and-technical-debt's inputs presuppose you already have a \"List of metadata types targeted for cleanup\", i.e. that the triage is done. The router obeyed the corpus's own explicit redirect, so both the router hop to salesforce-architect and the skill pick were correct. Change the golden label for 'the org is a mess where do I start' to architect/technical-debt-assessment. SECONDARY (recall, not correctness): architect/technical-debt-assessment carries no vernacular phrasing for this \u2014 add two triggers in its `triggers:` list: \"the org is a mess and I do not know where to start\" and \"inherited a messy salesforce org what do I fix first\"."
+  },
+  {
+   "query": "the child component can't tell the parent something changed",
+   "expected": "lwc/lwc-custom-event-patterns",
+   "picked": "lwc/component-communication",
+   "defect_class": "NO_REDIRECT \u2014 broad package claims the deep package's signature symptom; redirect is asymmetric",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 1 (primary): add a NOT-clause to the PICKED package. In `skills/lwc/component-communication/SKILL.md`, append verbatim to the end of `description:` \u2014 \"NOT for the mechanics of a single child-to-parent CustomEvent \u2014 bubbles / composed / cancelable flag choice, detail payload shape, event naming, or an event that is not reaching the parent \u2014 use lwc/lwc-custom-event-patterns.\" LEVER 1b (same edit, required for it to work): component-communication currently claims the expected package's exact symptom in two of its own trigger lines \u2014 `- \"custom event is not reaching the parent component\"` and `- \"custom event not reaching parent use lms or api\"`. Delete the first outright and rewrite the second to the mechanism-selection framing it actually owns: `- \"three components need to coordinate and I do not know whether to use @api, events, or LMS\"`. Leaving those triggers in place will out-pull any NOT-clause, because the router matched on them. LEVER 2 (reinforcement): add the query's own vocabulary to the EXPECTED package's `triggers:` in `skills/lwc/lwc-custom-event-patterns/SKILL.md` \u2014 `- \"child component cannot tell the parent something changed\"` and `- \"how does a child lwc notify its parent\"`. Note the redirect today is one-way: lwc-custom-event-patterns already cedes parent-to-child (`@api` -> lwc/component-communication) and sibling fan-out (LMS -> lwc/lightning-message-service), but nothing points child-to-parent traffic back at it."
+  },
+  {
+   "query": "make Salesforce faster",
+   "expected": "architect/limits-and-scalability-planning",
+   "picked": "architect/limits-and-scalability-planning (runner-ups: admin/lightning-page-performance-tuning, admin/report-performance-tuning, data/soql-query-optimization)",
+   "defect_class": "NEARMISS_CORPUS_GAP_NO_TRIAGE_ENTRY_POINT \u2014 LEVER_B",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER_B (vocabulary). Verified against the corpus: 14 packages carry 'performance' in the slug (admin/lightning-page-performance-tuning, admin/report-performance-tuning, admin/data-skew-and-sharing-performance, architect/experience-cloud-performance, data/soql-query-optimization, data/cpq-performance-optimization, apex/apex-performance-profiling, flow/flow-performance-optimization, lwc/lwc-performance, lwc/lwc-performance-budgets, omnistudio/omnistudio-performance, devops/performance-testing-salesforce, formula-field-performance-and-limits, cross-object-formula-and-rollup-performance) and EVERY one is pre-scoped to a surface. Nothing owns undiagnosed org-wide slowness, so no gloss contains 'slow', 'faster', or bare 'performance problem'. No router description contains 'performance', 'slow', or 'faster' either. The label is close to arbitrary. Fix by making architect/limits-and-scalability-planning the explicit triage front door \u2014 append to its description: \"Trigger phrases also include: 'the org feels slow', 'make Salesforce faster', 'users say Salesforce is slow', 'where do we start on performance'. Start here for undiagnosed org-wide slowness, then branch to the surface-specific skill: record pages (admin/lightning-page-performance-tuning), reports (admin/report-performance-tuning), queries (data/soql-query-optimization), Apex (apex/apex-performance-profiling), LWC (lwc/lwc-performance), Flow (flow/flow-performance-optimization).\" Also add 'performance, org is slow, page load times' to the salesforce-architect ROUTER description, which currently reaches this package only via the word 'scalability'."
+  },
+  {
+   "query": "screen reader can't use my custom component",
+   "expected": "lwc/lwc-accessibility",
+   "picked": "lwc/lwc-accessibility (runner-up: lwc/lwc-accessibility-patterns)",
+   "defect_class": "NEARMISS_DUPLICATE_PAIR_NO_REDIRECT \u2014 LEVER_A+C",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER_A + LEVER_C (reciprocal NOT-for). CORRECTION to the router's own note: it claimed the token 'screen reader' appears only in lwc/lwc-accessibility. False \u2014 lwc-accessibility says 'screen-reader behavior' / 'screen reader labels' and lwc-accessibility-patterns says 'screen reader live regions'. Both match the query literally; the pick had no discriminator at all and the label is arbitrary. Two edits: (1) append to lwc/lwc-accessibility: \"NOT for attribute-level ARIA syntax, aria-live region recipes, role=grid/accessible-datatable construction, or shadow-DOM ARIA boundary workarounds \u2014 use lwc/lwc-accessibility-patterns.\" (2) append to lwc/lwc-accessibility-patterns: \"NOT for a whole-component accessibility design or review pass, or for triaging a user-reported assistive-technology failure \u2014 use lwc/lwc-accessibility; this skill is the implementation-level reference that one points to.\" This pair is also a merge candidate for the dedupe audit."
+  },
+  {
+   "query": "we want to retire vlocity and move to standard components",
+   "expected": "omnistudio/vlocity-to-native-omnistudio-migration",
+   "picked": "omnistudio/vlocity-to-native-omnistudio-migration (runner-ups: architect/omnistudio-vs-standard-decision, omnistudio/omnistudio-vs-flow-decision)",
+   "defect_class": "NEARMISS_MISSING_VOCABULARY_PLUS_DECOY_OWNS_IT \u2014 LEVER_B+C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_B + LEVER_C. Verified: the expected package's description and body contain ZERO instances of 'standard components', 'Standard Designers', or 'Standard OmniStudio Runtime' \u2014 the query's own noun phrase is absent from the winner. Meanwhile architect/omnistudio-vs-standard-decision owns exactly that vocabulary ('standard Salesforce tooling (Screen Flow, LWC, Apex)' and, decisively, 'migration path from managed package to Standard Designers'), which is a closer surface match to 'retire vlocity and move to standard components' than the labelled answer. The router's 'GLOSS_TRUNCATED' diagnosis was a harness artifact \u2014 the source NOT-for clause is complete ('...nor for Salesforce CPQ to Industries CPQ migration'); it simply never disambiguates 'standard'. Two edits: (1) append to omnistudio/vlocity-to-native-omnistudio-migration triggers: \"retire Vlocity, get off the Vlocity managed package, move to standard OmniStudio components, Standard OmniStudio Runtime, Standard Designers, unmanaged OmniStudio, decommission vlocity_cmt.\" (2) append to architect/omnistudio-vs-standard-decision: \"NOT for executing a Vlocity managed-package to native OmniStudio namespace migration \u2014 use omnistudio/vlocity-to-native-omnistudio-migration; this skill only decides whether to use OmniStudio at all.\""
+  },
+  {
+   "query": "how do I stop my flow from hitting SOQL limits",
+   "expected": "flow/flow-bulkification",
+   "picked": "flow/flow-bulkification (runner-ups: flow/flow-get-records-optimization, flow/flow-governor-limits-deep-dive)",
+   "defect_class": "NEARMISS_EXPECTED_GLOSS_LACKS_QUERY_VOCABULARY \u2014 LEVER_B+C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_B + LEVER_C. Verified: flow/flow-bulkification's description says 'without hitting transaction limits' and never contains the token SOQL, while flow/flow-get-records-optimization carries the literal query vocabulary ('flow soql, flow query limit') and flow/flow-governor-limits-deep-dive leads with 'SOQL, DML rows, CPU time, heap'. The label is right on the merits (the remediation for too-many-queries at volume is bulkification), but it is the weakest gloss for this exact phrasing \u2014 three packages compete and the winner is third on surface evidence. Note flow-governor-limits-deep-dive already self-deconflicts ('NOT for general bulkification (use flow-bulkification)'), so only two edits are needed: (1) append to flow/flow-bulkification triggers: \"'flow hitting SOQL limits', 'too many SOQL queries in a flow', 'flow query limit exceeded', 'System.LimitException: Too many SOQL queries from a flow'.\" (2) append to flow/flow-get-records-optimization: \"NOT for the loop-shaped cause of SOQL-limit failures under data loads or bulk updates \u2014 use flow/flow-bulkification; this skill tunes a single Get Records element, it does not fix per-record querying.\""
+  },
+  {
+   "query": "restrict access by IP address",
+   "expected": "security/ip-relaxation-and-restriction",
+   "picked": "security/ip-relaxation-and-restriction (runner-up: security/network-security-and-trusted-ips)",
+   "defect_class": "NEARMISS_DUPLICATE_PAIR_NO_REDIRECT \u2014 LEVER_A+C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_A + LEVER_C (reciprocal NOT-for). Verified genuine overlap: both packages claim profile login IP ranges AND org-wide trusted IPs. ip-relaxation-and-restriction's existing NOT-for names only external concepts ('network-layer firewalling, corporate VPN design, Shield Event Monitoring') and never names its sibling; network-security-and-trusted-ips's NOT-for names 'session settings, MFA, Transaction Security' and likewise never names its sibling. The only discriminator is the bare token 'restricted IP'. Two edits: (1) append to security/network-security-and-trusted-ips: \"NOT for per-profile login IP range policy, IP relaxation decisions, or their interaction with MFA and SSO \u2014 use security/ip-relaxation-and-restriction.\" (2) append to security/ip-relaxation-and-restriction: \"NOT for CSP Trusted Sites, CORS allowlists, TLS requirements, or troubleshooting a CSP violation \u2014 use security/network-security-and-trusted-ips.\""
+  },
+  {
+   "query": "delete personal data for GDPR",
+   "expected": "security/gdpr-data-privacy",
+   "picked": "security/gdpr-data-privacy (runner-up: security/customer-data-request-workflow)",
+   "defect_class": "NEARMISS_GENUINE_OVERLAP_UNGUARDED \u2014 LEVER_C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_C. Verified: security/customer-data-request-workflow's entire description is one sentence \u2014 'Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy.' \u2014 which claims GDPR deletion via Privacy Center just as loudly as the winner. It is the thinnest gloss in this batch and its only NOT-for excludes something nobody would confuse it with. Append to security/customer-data-request-workflow: \"NOT for the underlying erasure mechanics \u2014 Individual sObject linkage, ShouldForget, ContactPointConsent, data-portability export, or Privacy Center policy configuration \u2014 use security/gdpr-data-privacy; this skill covers only the intake-to-fulfilment request workflow and its SLA/audit trail.\""
+  },
+  {
+   "query": "schedule something to run every night",
+   "expected": "flow/scheduled-flows",
+   "picked": "flow/scheduled-flows (router fork: salesforce-flow vs salesforce-apex was under-determined)",
+   "defect_class": "NEARMISS_ROUTER_FORK_UNGUARDED_TECHNOLOGY_UNNAMED \u2014 LEVER_B (router-level)",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_B applied to the ROUTER descriptions at .claude/skills/salesforce-{flow,apex}/SKILL.md, not to a skill package. Verified: salesforce-apex advertises 'schedulable' and salesforce-flow advertises 'scheduled flow'; the query names no technology, so nothing in either roster resolves it. The benchmark's own cue is lexical \u2014 query 141 ('run some code every night at 2am') is labelled apex purely because it says 'code'. Encode that convention explicitly: (1) append to the salesforce-flow router description: \"Recurring automation stated without naming a technology ('run something every night', 'nightly job', 'schedule this daily') defaults here \u2014 declarative first; salesforce-apex takes it only when the request names code, a class, Apex, or Batch.\" (2) append the mirror clause to the salesforce-apex router description: \"Generic scheduling requests that never name code, a class, or Apex ('schedule something nightly') belong to salesforce-flow.\""
+  },
+  {
+   "query": "review apex code for security",
+   "expected": "security/secure-coding-review-checklist",
+   "picked": "security/secure-coding-review-checklist (runner-ups: apex/apex-security-patterns, apex/soql-security)",
+   "defect_class": "NEARMISS_ROUTER_FORK_ONE_SENTENCE_MARGIN \u2014 LEVER_C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_C. Verified: apex/apex-security-patterns reads 'Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement...' \u2014 it claims the verb 'reviewing', the noun 'Apex', and the topic 'security' with no clause ceding whole-codebase review. Its only NOT-for points sideways to apex/soql-security. The security router won solely because it names 'XSS, injection'. Two edits: (1) append to apex/apex-security-patterns: \"NOT for a full code-security review pass across Apex, Visualforce, LWC and Aura (SOQL injection, XSS, CSRF, open redirect) or AppExchange security review readiness \u2014 use security/secure-coding-review-checklist; this skill covers sharing-keyword and CRUD/FLS design decisions inside Apex you are writing.\" (2) append to the salesforce-apex ROUTER: \"A security review of an existing codebase, or AppExchange security review readiness, belongs to salesforce-security; this router owns security enforcement decisions inside code you are authoring.\""
+  },
+  {
+   "query": "strip customer phone numbers before they reach the model",
+   "expected": "agentforce/agentforce-pii-redaction",
+   "picked": "agentforce/agentforce-pii-redaction (runner-up: agentforce/einstein-trust-layer)",
+   "defect_class": "NEARMISS_SHARED_TRIGGER_TOKENS \u2014 LEVER_C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_C. Verified overlap: agentforce/einstein-trust-layer's triggers include 'data masking' and 'PII masking LLM'; agentforce/agentforce-pii-redaction's triggers include 'data masking llm' and \u2014 the shared token \u2014 'einstein trust layer'. The winner survived only because 'before it reaches Agentforce prompts, models, and logs' echoes the query's 'before they reach the model' almost verbatim, which is luck of phrasing rather than a scope boundary. Append to agentforce/einstein-trust-layer: \"NOT for designing or implementing your own pre-prompt PII redaction/masking layer over Agentforce inputs, outputs, and logs \u2014 use agentforce/agentforce-pii-redaction; this skill covers the platform-provided Trust Layer controls you configure, not custom redaction you build.\" Optionally drop the bare 'einstein trust layer' token from agentforce-pii-redaction's trigger list, which currently pulls the sibling's name into the winner's gloss."
+  },
+  {
+   "query": "match records coming from the ERP to what's already here",
+   "expected": "data/external-id-strategy",
+   "picked": "data/external-id-strategy (runner-up: data/data-reconciliation-patterns)",
+   "defect_class": "NEARMISS_GENUINE_OVERLAP_UNGUARDED \u2014 LEVER_C",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_C. Verified: data/data-reconciliation-patterns claims 'reconciling Salesforce data with external systems' and explicitly lists 'external ID upsert patterns'. It already carries three NOT-for clauses (data-migration-planning, change-data-capture, large-scale-deduplication) but none names data/external-id-strategy \u2014 the one sibling it actually overlaps on. The winner held on the near-verbatim trigger 'cross-system record matching'. Append to data/data-reconciliation-patterns: \"NOT for choosing or designing the external ID field / upsert key itself, including composite keys and relationship resolution by external ID \u2014 use data/external-id-strategy; this skill assumes the key already exists and covers detecting and repairing drift against it.\""
+  },
+  {
+   "query": "run some code every night at 2am",
+   "expected": "apex/apex-scheduled-jobs",
+   "picked": "apex/apex-scheduled-jobs (decoy: apex/scheduled-apex-failure-detection-and-monitoring)",
+   "defect_class": "NEARMISS_DECOY_HAS_STRONGER_SURFACE_MATCH \u2014 LEVER_B",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER_B (low priority \u2014 scope phrasing held this one, but the surface match is inverted). Verified: apex/scheduled-apex-failure-detection-and-monitoring contains the literal string 'nightly batch failed at 2am with no notification', so it out-matches the winner on the query's most distinctive token ('2am'). apex/apex-scheduled-jobs is written in API vocabulary only ('Schedulable interface, execute(), cron expressions, System.schedule(), CronTrigger') and carries no natural-language trigger phrases at all. Append to apex/apex-scheduled-jobs: \"Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'.\" No edit needed on the decoy \u2014 its 'failing without anyone noticing' scope phrase is already the correct discriminator."
+  },
+  {
+   "query": "clean up duplicate records",
+   "expected": "admin/duplicate-management",
+   "picked": "data/large-scale-deduplication",
+   "defect_class": "WRONG_ROUTER \u2014 router description captures the verb without the scale qualifier",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER: (a) router-description scoping [primary], (b) query vocabulary into the expected package's triggers [secondary].\n\nVERDICT: the label is right. data/large-scale-deduplication self-scopes in its own body to 'tens of thousands to millions of duplicate records' and 'automating merges beyond UI limits'; the query states no volume at all, so the pick was a scope overreach. admin/duplicate-management already owns the unqualified cleanup case \u2014 its Mode 2 is literally 'cleanup projects with no governance' and its decision matrix has the row 'Clean up historical mess across many records \u2192 Stewardship process with survivorship rules and merge queue'. The routing evidence, not the corpus content, is what failed.\n\nEDIT A \u2014 `.claude/skills/salesforce-data/SKILL.md`, frontmatter `description:` (and the mirrored prose paragraph below it). Replace the clause `cleaning up duplicates that already exist` with `high-volume deduplication of duplicates that already exist (tens of thousands of records or more)`. Replace the keyword `merge existing duplicates` with `bulk-merge tens of thousands of existing duplicates`. Replace the redirect sentence `For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead.` with, verbatim: `For preventing duplicates with matching and duplicate rules, and for an unqualified \"clean up our duplicate records\" request where no record volume is stated, use salesforce-admin instead.`\n\nEDIT B \u2014 `.claude/skills/salesforce-admin/SKILL.md`, frontmatter `description:`. After the existing keywords `duplicate rule, matching rule, duplicate prevention`, append verbatim: `, clean up duplicate records, merge duplicates, dedupe, survivorship, merge governance`.\n\nEDIT C \u2014 `skills/admin/duplicate-management/SKILL.md`. Add two `triggers:` entries verbatim: `- \"clean up duplicate records\"` and `- \"we have a lot of duplicate accounts, how do we clean them up\"`. Append to `description:` verbatim: ` NOT for tens-of-thousands-plus batch merge programmes or third-party dedup tooling (use data/large-scale-deduplication).`\n\nEDIT D \u2014 `skills/data/large-scale-deduplication/SKILL.md`, append to `description:` verbatim: ` NOT for an unqualified \"clean up our duplicates\" request with no stated record volume (use admin/duplicate-management).`\n\nEdits A+B alone would have fixed this miss; C+D are the cheap reinforcement inside the roster."
+  },
+  {
+   "query": "how do I decide between platform events and change data capture",
+   "expected": "architect/event-driven-architecture",
+   "picked": "integration/event-driven-architecture-patterns",
+   "defect_class": "LABEL_WRONG \u2014 the expected package explicitly disclaims this query and redirects to the picked one",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: none of the three \u2014 this is a BENCHMARK fix, not a corpus fix. Make no edit to either package.\n\nEVIDENCE: `skills/architect/event-driven-architecture/SKILL.md` description ends verbatim with `NOT for selecting between specific Salesforce event mechanisms such as Platform Events, CDC, or Pub/Sub API (use integration/event-driven-architecture-patterns).` Its body opens: 'Use this skill when the question is *whether* and *how* to adopt event-driven architecture as a strategic style \u2014 not which specific Salesforce mechanism (Platform Events, CDC, Pub/Sub API) to use.' It also carries `dependencies: [integration/event-driven-architecture-patterns]`. The picked package's body is the mechanism-selection layer: 'Platform Events and CDC share infrastructure (Pub/Sub API) but serve fundamentally different purposes,' with a decision matrix. The query is pure mechanism selection.\n\nACTION: change the benchmark row's `expected` to `integration/event-driven-architecture-patterns`. Do NOT weaken or delete the architect package's NOT-for clause to make the label reachable \u2014 that clause is working exactly as designed and is the reason the router landed correctly. If the benchmark intends to exercise the strategy layer, rewrite the QUERY instead, e.g. `should we go event-driven at all or stick with request-reply` or `choreography vs orchestration across our three systems`."
+  },
+  {
+   "query": "our deployment keeps failing on test coverage",
+   "expected": "devops/deployment-error-diagnosis",
+   "picked": "devops/deployment-error-troubleshooting",
+   "defect_class": "NEAR_CLONE_PAIR \u2014 two undifferentiated packages own the same topic; label is arbitrary between them",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: (a) NOT-for on the picked package [lever 3], (b) query vocabulary into the expected package's triggers [lever 2] \u2014 but the honest structural fix is a MERGE.\n\nVERDICT: the pick was defensible-to-better. Both packages carry real coverage content: expected has `### Test coverage failures` + `Pattern C \u2014 Test coverage failure on a deploy` with the `ApexCodeCoverageAggregate` SOQL; picked has `### Test Level Semantics and Coverage Calculation` + `Pattern 3: Fix RunSpecifiedTests Coverage Failures`, and explains the per-class vs org-wide model that is the usual cause of a deploy that KEEPS failing on coverage. Neither description names an axis a router could use to split them: 'Pattern catalog of common metadata-deploy errors and their fixes' vs 'Use when a metadata deployment fails and you need to diagnose and fix the error'. They are the same package written twice.\n\nSTRUCTURAL FIX (preferred): merge `devops/deployment-error-troubleshooting` into `devops/deployment-error-diagnosis`, keeping the test-level semantics table and Pattern 3 from the former, and leave a redirect. Then relabel is unnecessary.\n\nIF THE PAIR MUST STAND, make the split explicit and mechanical:\n- `skills/devops/deployment-error-diagnosis/SKILL.md` `description:` \u2014 prepend the scope sentence verbatim: `Use when you have the verbatim deploy error STRING and need it translated into the fix.` and append verbatim: ` NOT for choosing a test level or re-running a deploy end to end (use devops/deployment-error-troubleshooting).` Add `triggers:` entries verbatim: `- \"our deployment keeps failing on test coverage\"` and `- \"deploy blocked at 75 percent code coverage\"`.\n- `skills/devops/deployment-error-troubleshooting/SKILL.md` `description:` \u2014 remove the trigger keyword `'code coverage failed'` (it is what won the query) and append verbatim: ` NOT for translating a single deploy error string into its fix (use deployment-error-diagnosis).`\n\nOTHERWISE: relabel the benchmark row's `expected` to `devops/deployment-error-troubleshooting` and accept the miss as mislabelled."
+  },
+  {
+   "query": "integrate with an external rest api",
+   "expected": "integration/rest-api-patterns",
+   "picked": "apex/callouts-and-http-integrations",
+   "defect_class": "LABEL_ARBITRARY",
+   "label_is_wrong": true,
+   "concrete_fix": "NO CORPUS EDIT \u2014 fix the BENCHMARK label. integration/rest-api-patterns is inbound-only: its body opens 'Use this skill when the integration task involves calling the Salesforce REST API to read, create, update, or delete records' and its sections are Base URL /services/data/vXX.0/, Authorization: Bearer <token>, sObject CRUD Resources, Composite, sObject Tree. That is somebody else calling OUR API. 'An external rest api' is outbound, which apex/callouts-and-http-integrations owns ('outbound Apex HTTP callouts, Named Credentials, request/response handling'). The benchmark also contradicts itself: query 4 in this same batch ('call an external REST API from Apex with OAuth') is labelled to apex/callouts-and-http-integrations. Two paraphrases of one intent are labelled to two different packages, so at most one label can be right, and it is the apex one. Relabel this row's expected to apex/callouts-and-http-integrations. If the benchmark wants an integration-domain answer for the bare, tool-less phrasing, the honest label is integration/integration-pattern-selection (or standards/decision-trees/integration-pattern-selection.md), never rest-api-patterns."
+  },
+  {
+   "query": "should I use Flow or Apex for this",
+   "expected": "admin/process-automation-selection",
+   "picked": "flow/flow-migration-from-trigger",
+   "defect_class": "WRONG_ROUTER",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 (add 'NOT for <query topic> \u2014 use <expected-slug>' to the PICKED package), applied twice, because both existing pointers dangle to a non-package file. (a) skills/flow/flow-migration-from-trigger/SKILL.md \u2014 replace the final description clause 'NOT for brand-new automation decisions (use automation-selection.md).' with verbatim: 'NOT for brand-new automation decisions or \"should I use Flow or Apex for this\" when no trigger exists yet \u2014 use admin/process-automation-selection (decision tree: standards/decision-trees/automation-selection.md).' (b) skills/flow/flow-transactional-boundaries/SKILL.md \u2014 replace 'NOT for choosing Flow vs Apex (use automation-selection.md)' with verbatim: 'NOT for choosing Flow vs Apex (use admin/process-automation-selection).' Root cause is domain-gate, not vocabulary: admin/process-automation-selection already matches the query almost verbatim ('Triggers: \"Flow or Apex trigger\", \"which automation tool should I use\"' and trigger line 'should this be a flow or an apex trigger'), so lever 2 is a no-op \u2014 the router never reaches the admin roster because the only routable noun in the query is 'Flow'. Companion router edit, .claude/skills/salesforce-flow/SKILL.md description, append verbatim: 'For \"should this be a Flow or Apex?\" where nothing is built yet, this router does not own the choice \u2014 use admin/process-automation-selection.' The flow roster already says to read standards/decision-trees/automation-selection.md FIRST, but a tree is a file, not a package, so it cannot terminate a package pick; every one of these pointers must name a real slug."
+  },
+  {
+   "query": "force everyone onto mfa without locking out integrations",
+   "expected": "security/mfa-enforcement-strategy",
+   "picked": "security/mfa-enforcement-patterns",
+   "defect_class": "NO_REDIRECT",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 primary + LEVER 2 secondary. Label is correct: strategy is v1.1.0 / updated 2026-07-08 and carries the 2026 enforcement waves (sandbox June 22 2026, production July 20 2026), the PRMFA privileged-user population, and an 'Integration surface' input; patterns is v1.0.0 / 2026-04-23 and predates all of it, so it cannot answer 'force everyone' correctly. (a) LEVER 3 \u2014 skills/security/mfa-enforcement-patterns/SKILL.md, append to description verbatim: 'NOT for planning org-wide MFA enforcement itself \u2014 the 2026 sandbox and production enforcement waves, phishing-resistant MFA for privileged users, or a phased rollout that keeps integration and API-only users from being locked out \u2014 use security/mfa-enforcement-strategy.' (b) LEVER 2 \u2014 skills/security/mfa-enforcement-strategy/SKILL.md has NO 'Triggers:' keyword list while its twin does, which is exactly why it lost the coin flip; insert before its 'NOT for' clause verbatim: 'Triggers: turn on org-wide MFA, force everyone onto MFA, MFA rollout without locking out integrations, MFA deadline, phishing-resistant MFA, integration user MFA exemption, API-only user MFA.' Also queue these two for the duplicate audit \u2014 they are a genuine near-clone pair with no mutual redirect in either direction, and the merge (patterns -> strategy) is the durable fix."
+  },
+  {
+   "query": "search across objects for a phone number",
+   "expected": "data/sosl-search-patterns",
+   "picked": "apex/soql-fundamentals",
+   "defect_class": "WRONG_ROUTER",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 + LEVER 2 + a router-description bug. The router bug is the root cause: .claude/skills/salesforce-apex/SKILL.md advertises 'SOSL' in its own trigger list ('Apex, trigger, SOQL, SOSL, Apex governor limit, ...') while the apex domain holds ZERO sosl-* packages, and .claude/skills/salesforce-data/SKILL.md \u2014 which holds all four (sosl-search-patterns, sosl-with-clauses, sosl-search-result-limits, sosl-external-object-search-limits) \u2014 never says 'search' or 'SOSL' at all. (a) ROUTER \u2014 in .claude/skills/salesforce-apex/SKILL.md description, delete the token 'SOSL' from the mention list and append verbatim: 'NOT for SOSL or cross-object text search \u2014 use salesforce-data.' (b) ROUTER \u2014 in .claude/skills/salesforce-data/SKILL.md description, add to its mention list verbatim: 'SOSL, FIND clause, cross-object search, search across all objects, full-text search in Apex.' (c) LEVER 3 \u2014 skills/apex/soql-fundamentals/SKILL.md, complete its dangling pointer: replace 'or SOSL full-text search.' with verbatim 'or SOSL cross-object / full-text search \u2014 use data/sosl-search-patterns.' No apex package currently redirects to data/sosl-search-patterns (only admin/global-search-configuration and the three sibling sosl-* skills do), so there is no recovery hop today. (d) LEVER 2 \u2014 skills/data/sosl-search-patterns/SKILL.md, extend its trigger list from \"'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'\" to add verbatim: \"'search across objects', 'search all objects at once', 'find a phone number or email across objects', 'search multiple sObjects'\" \u2014 the corpus has 'cross object search' but not the natural-language inversion the query used."
+  },
+  {
+   "query": "write apex unit tests",
+   "expected": "apex/apex-test-setup-patterns",
+   "picked": "apex/test-class-standards",
+   "defect_class": "LABEL_ARBITRARY",
+   "label_is_wrong": true,
+   "concrete_fix": "BENCHMARK RELABEL, not a corpus fix. Read both: apex/apex-test-setup-patterns is a narrow @TestSetup-semantics package (one-time creation per class, @TestVisible, System.runAs, startTest/stopTest reset, mixed-DML boundaries) that already redirects the two things a generic request needs -- 'NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking).' apex/test-class-standards carries the verbatim trigger 'writing and generating an Apex test class' and outputs a 'test class scaffold with factory, assertions, and mocks'. For a bare 'write apex unit tests' the picked package is strictly better. Relabel the row to apex/test-class-standards. OPTIONAL hardening (lever 1, on the mislabelled expected package) so the boundary can never drift: append to the apex/apex-test-setup-patterns description -- 'NOT for a general \"write me an Apex test class\" request (use test-class-standards); this skill covers @TestSetup, System.runAs and Test.startTest/stopTest semantics only.' LEVER: 1 (NOT-clause on the expected package), secondary to the relabel."
+  },
+  {
+   "query": "when do I need a queueable instead of a future method",
+   "expected": "apex/apex-queueable-patterns",
+   "picked": "apex/async-apex",
+   "defect_class": "LABEL_ARBITRARY",
+   "label_is_wrong": true,
+   "concrete_fix": "BENCHMARK RELABEL. The corpus behaved exactly as designed: apex/apex-queueable-patterns says verbatim 'NOT for basic async Apex mechanism selection (use async-apex)' and scopes itself to chaining, Finalizer, AsyncOptions, stack depth and state passing -- none of which this query asks about. apex/async-apex is the mechanism-selection package ('Use when selecting... Queueable, Batch, Future, or Schedulable', triggers 'queueable vs batch', 'future method', trigger line 'should this be queueable or batch apex'). 'When do I need a queueable instead of a future method' IS mechanism selection. Relabel the row to apex/async-apex. HARDENING (lever 2, on the correct package) so future-vs-queueable phrasing is nailed down rather than left to inference: add to apex/async-apex triggers -- 'when do I need a queueable instead of a future method' -- and change the description's trigger list from \"Triggers: 'queueable vs batch', 'future method', 'flex queue'...\" to \"Triggers: 'queueable vs batch', 'queueable vs future', 'future method', 'flex queue'...\". LEVER: 2 (query vocabulary added to the package that should win)."
+  },
+  {
+   "query": "notify an outside system the moment a record changes",
+   "expected": "integration/platform-events-integration",
+   "picked": "integration/outbound-webhook-from-salesforce",
+   "defect_class": "GENUINE_OVERLAP",
+   "label_is_wrong": true,
+   "concrete_fix": "LABEL IS MARGINALLY WRONG, AND THERE IS STILL A REAL CORPUS DEFECT. integration/outbound-webhook-from-salesforce opens with 'Salesforce has four viable ways to POST to an external endpoint on a record change: legacy Outbound Messages, Flow HTTP Callout, Apex Queueable with callout, and Event Relay' -- it owns the whole decision the query asks, plus signing, retries and dead-lettering. integration/platform-events-integration is scoped to ONE mechanism and mostly to the far side of it ('external system publishes Platform Events into Salesforce via REST, or a middleware consumer subscribes using CometD or Pub/Sub API'); it would still need apex/platform-events-apex to publish the event on record change in the first place. So the pick is at least as good. The defect that survives: three packages (outbound-webhook-from-salesforce, change-data-capture-integration 'stream Salesforce record changes to external systems', platform-events-integration) are all plausible for this phrasing and NONE names the umbrella question. CONCRETE EDIT (lever 1, on the expected package) -- append to the integration/platform-events-integration description: 'NOT for choosing how Salesforce should notify an external system when a record changes -- use integration/outbound-webhook-from-salesforce for POST-to-an-endpoint patterns and integration/change-data-capture-integration for streaming record changes; this skill is for custom Platform Events crossing the org boundary.' SUPPORTING EDIT (lever 2, on the winning package) -- add to integration/outbound-webhook-from-salesforce triggers: 'notify an external system the moment a record changes'. Also worth a routing note: this query straddles PE / CDC / callout, so standards/decision-trees/integration-pattern-selection.md 'Direction 1: Salesforce calls out' is the tree that should be read before any of the three activates. LEVER: 1 (primary) + 2 (supporting)."
+  },
+  {
+   "query": "refreshing the sandbox wiped the data the testers needed",
+   "expected": "data/sandbox-refresh-data-strategies",
+   "picked": "devops/sandbox-refresh-and-templates",
+   "defect_class": "WRONG_ROUTER",
+   "label_is_wrong": false,
+   "concrete_fix": "LABEL IS CORRECT -- this is a real two-level defect. data/sandbox-refresh-data-strategies is unambiguously the answer ('deciding which reference data must be re-seeded after every refresh, native Data Seeding, SandboxPostCopy implementations that hand off to Queueable for large data loads') and it already carves its own boundary: 'NOT for ... sandbox refresh mechanics and PII masking (use sandbox-refresh-and-templates)'. The devops package does NOT carve the reciprocal boundary -- its description ends '...and data handling during refresh', an uncarved phrase that captures exactly this query, and it owns the trigger 'what data gets copied into a Partial Copy sandbox and how do I control it'. FIX (a), ROUTER GLOSS, the primary lever -- the labelled package was never visible because .claude/skills/salesforce-data/SKILL.md names no sandbox or test-data vocabulary at all while .claude/skills/salesforce-devops/SKILL.md lists 'sandbox' outright. Add to the salesforce-data router description's 'Use when the request mentions' list: 'sandbox seed data, re-seed reference data after a sandbox refresh, test data missing after a refresh, SandboxPostCopy data load, native Data Seeding'. FIX (b), lever 3 on the PICKED package -- in devops/sandbox-refresh-and-templates, replace 'and data handling during refresh.' with 'and the pre/post-refresh operational runbook. NOT for deciding which reference or test data must be re-seeded after a refresh (use data/sandbox-refresh-data-strategies).' FIX (c), lever 2, optional -- add to data/sandbox-refresh-data-strategies triggers: 'the sandbox refresh wiped the data the testers needed'. LEVER: router-gloss vocabulary (primary) + 3 + 2."
+  },
+  {
+   "query": "one page layout per record type is unmanageable",
+   "expected": "admin/dynamic-forms-and-actions",
+   "picked": "admin/record-types-and-page-layouts",
+   "defect_class": "NO_REDIRECT",
+   "label_is_wrong": true,
+   "concrete_fix": "FOUR-WAY VOCABULARY COLLISION; THE LABEL NAMES NONE OF THE BEST TWO. NOTE: both admin packages were rewritten at 09:16 today by a concurrent wave -- the descriptions quoted in the routing run are stale, and the current state is WORSE for this query. Current candidates: (1) admin/record-types-and-page-layouts still claims \"Triggers: ... 'dynamic forms'\" in its description, still owns the verbatim trigger 'how do I simplify too many page layouts' and the trigger 'dynamic forms not showing the right fields', and its body genuinely answers the query (line ~102: 'Instead of 4 Record Types with 4 page layouts that differ only in which fields are shown -- use 1 Record Type + Dynamic Forms with field visibility rules'); (2) admin/dynamic-forms-and-actions, the label, now carries TWO clauses pushing away from this query -- 'NOT for page layout design or record type assignment' AND the new 'NOT for converting an existing page layout wholesale -- use admin/dynamic-forms-migration'; (3) admin/dynamic-forms-migration is now the most precise owner ('replacing record-type-driven layouts with field-visibility filters'); (4) admin/record-type-strategy-at-scale claims 'layout assignment explosion'. The pick is at least as good as the label, so relabel the benchmark row to admin/dynamic-forms-migration. PRIMARY EDIT (lever 3, on the PICKED package) -- in admin/record-types-and-page-layouts: delete 'dynamic forms' from the description's Triggers list, delete the trigger line 'dynamic forms not showing the right fields', narrow the trigger 'how do I simplify too many page layouts' to 'how do I simplify too many record types', and append 'NOT for collapsing one-layout-per-record-type into a single Lightning page with Dynamic Forms field-visibility rules -- use admin/dynamic-forms-migration.' SUPPORTING EDIT (lever 2, on the package that should win) -- add to admin/dynamic-forms-migration triggers: 'one page layout per record type is unmanageable' and 'we have too many page layouts to maintain'. LEVER: 3 (primary) + 2 (supporting)."
+  },
+  {
+   "query": "encrypt sensitive fields",
+   "expected": "architect/salesforce-shield-architecture",
+   "picked": "security/platform-encryption",
+   "defect_class": "LABEL_ARBITRARY \u2014 expected package self-disclaims the query",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER 0 (BENCHMARK RELABEL \u2014 no corpus edit warranted). Change the expected label for 'encrypt sensitive fields' from architect/salesforce-shield-architecture to security/platform-encryption. Evidence: (a) platform-encryption's FIRST trigger is near-verbatim the query \u2014 'we need to encrypt sensitive PII fields like SSN or credit card numbers at rest in Salesforce'; (b) shield-architecture's own description ends 'NOT for individual feature setup steps (see security/platform-encryption, security/event-monitoring, security/field-audit-trail)', so the labelled package disclaims the labelled query; (c) shield-architecture's body says 'Shield is the wrong size of question to answer with go-to-Setup-enable-encryption... This skill is the architectural decision layer' \u2014 it owns component/license/BYOK-posture selection, not 'which fields do I encrypt'. WARNING \u2014 do NOT apply the router-level fix the miss_reason implies. Adding encryption vocabulary ('encrypt', 'Shield', 'platform encryption') to the salesforce-architect router description to honour this label would steal query #5 of this same batch ('encrypt a field that's already got data in it' \u2192 security/platform-encryption), which currently routes correctly. The two encryption queries in batch 9 are labelled to different domains on identical vocabulary; the corpus boundary is already correct and the benchmark is the thing that is inconsistent. If the label is kept regardless, the ONLY corpus edit that satisfies it is adding a trigger 'which sensitive fields should we encrypt in salesforce' to architect/salesforce-shield-architecture \u2014 and that edit is a net regression, so it should not be batched."
+  },
+  {
+   "query": "handle retries when a callout fails",
+   "expected": "integration/retry-and-backoff-patterns",
+   "picked": "apex/apex-callout-retry-and-resilience",
+   "defect_class": "LABEL_ARBITRARY / NEAR_DUPLICATE_PAIR \u2014 twin packages split across two domains",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER 3 (NOT-clause on the EXPECTED package, redirecting to the picked one) \u2014 because the pick is correct-by-contract and the pair is a genuine near-clone. The two packages cover the same five mechanisms: retry-and-backoff-patterns = 'exponential backoff, jitter, idempotency keys, dead-letter queues, and circuit breaker patterns for Apex callouts'; apex-callout-retry-and-resilience = 'bounded retry with backoff, queueable async retry chains, circuit-breaker via Platform Cache, idempotency keys, dead-letter pattern'. Same headings, same depth (730 vs 744 total lines across the package). The integration one even scopes itself to Apex \u2014 its body says 'It does not cover native platform retry mechanisms (Outbound Messages, Platform Events) beyond documenting them as alternatives' \u2014 so it holds no non-Apex surface that would justify the integration domain. The router did exactly what the roster tells it to: salesforce-apex 'Owns calling an external API FROM Salesforce', salesforce-integration disclaims the outbound direction, and 'callout' is outbound vocabulary. EDIT TO MAKE: append to the description: of integration/retry-and-backoff-patterns, verbatim \u2014 'NOT for the Apex HTTP callout retry policy itself \u2014 use apex/apex-callout-retry-and-resilience.' Note that this clause leaves the package with almost no remaining scope, which is the real finding: this pair belongs in scripts/audit_duplicates.py triage as a merge candidate (fold the integration package's Pattern 2 Custom-Metadata circuit breaker and Pattern 3 External-Id idempotency guard into the apex package, keep the apex slug). Also relabel the benchmark row to apex/apex-callout-retry-and-resilience; leaving it pointed at the integration twin will keep producing flip-flop misses on any query containing the word 'callout'."
+  },
+  {
+   "query": "post a message into slack when a deal closes",
+   "expected": "integration/slack-salesforce-integration-setup",
+   "picked": "flow/flow-for-slack",
+   "defect_class": "LABEL_ARBITRARY \u2014 prerequisite labelled instead of the requirement",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER 0 (BENCHMARK RELABEL \u2014 no corpus edit warranted). Change the expected label from integration/slack-salesforce-integration-setup to flow/flow-for-slack. Evidence: (a) flow-for-slack Pattern 1 is verbatim the query \u2014 'Notify a Slack channel when a Salesforce record reaches a specific state (e.g., Opportunity stage change, Case escalation)', implemented as 'Create a Record-Triggered Flow on the target object (e.g., Opportunity)' plus the Send Slack Message core action; (b) the labelled package's description ends 'not for Flow-based Slack messaging (use flow-for-slack skill)', so it disclaims the labelled query; (c) grep for Opportunity/deal/Close/Won across both packages returns six hits, all in flow-for-slack and zero in slack-salesforce-integration-setup \u2014 the labelled package is the three-party org-to-workspace OAuth handshake, i.e. the prerequisite, not the requirement. The routing note's own diagnosis is right: the label names the setup step a user must have already done, and the query asks for the automation. SECONDARY (worth batching anyway, independent of the relabel): the redirect chain that got the router here was readable only because it was truncated mid-clause \u2014 integration/slack-workflow-builder says 'not for Flow Core Actions that send Slack messages from \u2026'. Re-check the description-truncation width used by the router harness rather than editing the skill; the underlying clause in slack-workflow-builder already reads '\u2026that send Slack messages from Salesforce (use flow-for-slack)' and is correct as authored. Same truncation artifact hit devops/environment-strategy in this batch ('NOT for sandbox-type-only decisions (use \u2026'), where it nearly caused a second miss \u2014 one harness fix clears both."
+  },
+  {
+   "query": "planning a multi org consolidation",
+   "expected": "architect/multi-org-strategy",
+   "picked": "architect/migration-architecture-patterns",
+   "defect_class": "BENCHMARK_LABEL_WRONG",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: NOT-clause on the EXPECTED package (boundary hardening only \u2014 the pick was correct). The picked package genuinely owns this query: skills/architect/migration-architecture-patterns/SKILL.md contains '### Pattern A \u2014 Org merge with phased cutover', a '### Pre-migration metadata audit' section, and a Decision Guidance row 'Two source orgs, M&A driver, exec-mandated consolidation | Merge with phased cutover (Pattern A) | Standard consolidation; sequenced waves de-risk the data load'. The expected package, skills/architect/multi-org-strategy/SKILL.md, mentions consolidation exactly once \u2014 line 177, a review-checklist bullet: 'If not, consolidation should be evaluated' \u2014 and its three declared modes are 'Design a Multi-Org Strategy from Scratch', 'Review an Existing Multi-Org Architecture', and 'Troubleshoot Multi-Org Integration Problems'. None of them plans a consolidation project. 'Planning a consolidation' presupposes the should-we decision that multi-org-strategy owns, so migration-architecture-patterns is the better answer and the label is arbitrary. To make the boundary un-guessable for a future router, append this clause verbatim to the description: in skills/architect/multi-org-strategy/SKILL.md \u2014 'NOT for executing a consolidation once the decision is made \u2014 org merge, org split, or coexistence sequencing (use architect/migration-architecture-patterns).' (Its current NOT-list names sandbox-strategy, integration/ skills and named-credentials-and-callouts, but never org merge or consolidation.) Secondary: add the query's own phrasing to migration-architecture-patterns triggers \u2014 'planning a multi-org consolidation project'."
+  },
+  {
+   "query": "move changes from sandbox to production safely",
+   "expected": "devops/release-management",
+   "picked": "devops/pre-deployment-checklist",
+   "defect_class": "BENCHMARK_LABEL_WRONG + SELF_DEFEATING_NOT_CLAUSE",
+   "label_is_wrong": true,
+   "concrete_fix": "LEVER: rewrite the NOT-clause on the EXPECTED package (it is currently misrouting away from itself). The query carries no release-governance vocabulary \u2014 no version, no rollback, no go/no-go, no release calendar \u2014 only 'move changes' (deployment mechanics) and 'safely' (gates). skills/devops/pre-deployment-checklist/SKILL.md is at least as good an answer: its Core Concepts are '### Validation Deploy (checkOnly)', '### Dependency Completeness', '### Pre-Release Backup', '### Deployment Window Safety'. The router explicitly ruled the expected package out using that package's OWN clause, which is a corpus defect independent of the label: skills/devops/release-management/SKILL.md says 'NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment)' while its own body contains '### Validation Deploy + Quick Deploy' and '### Freeze Window Coordination' \u2014 i.e. it disclaims content it actually has, and its redirect list omits pre-deployment-checklist, the package that really owns the pre-deploy gate. It also says 'sandbox preview alignment', putting the token 'sandbox' in the description in a wholly unrelated sense, which is a live confounder for any 'sandbox to production' query. Replace the clause verbatim in skills/devops/release-management/SKILL.md with: 'NOT for the pre-deploy gate check itself (use devops/pre-deployment-checklist), post-deploy smoke tests (use devops/post-deployment-validation), or change set UI mechanics (use devops/change-set-deployment).' Secondary, to lock in the correct destination: add to skills/devops/pre-deployment-checklist/SKILL.md triggers \u2014 'how do I move changes from sandbox to production safely'."
+  },
+  {
+   "query": "roll out the spring release safely",
+   "expected": "admin/salesforce-release-preparation",
+   "picked": "devops/release-management",
+   "defect_class": "ROUTER_VOCABULARY_GAP + PICKED_PACKAGE_OVERCLAIMS",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 1 (primary \u2014 query vocabulary on the expected side, at ROUTER level): the salesforce-admin router description in /Users/pranavnagrecha/VS Code/Personal/SfSkills/.claude/skills/salesforce-admin/SKILL.md lists only declarative config objects and contains zero seasonal-release vocabulary, while the salesforce-devops router lists 'release' outright \u2014 so the correct package was invisible from the router the query reached. Append verbatim to the admin router's 'Use when the request mentions' list: 'Salesforce seasonal release, Spring release, Summer release, Winter release, release notes triage, Release Updates, Sandbox Preview opt-in, production upgrade date, critical update.' Note the package is also absent from that file's '## Featured entry points' list \u2014 add 'skills/admin/salesforce-release-preparation \u2014 seasonal release readiness: release notes triage, Release Updates, Sandbox Preview'. LEVER 2 (NOT-clause on the PICKED package \u2014 required, because devops/release-management actively claims the vocabulary): skills/devops/release-management/SKILL.md carries the trigger 'our deployment is happening near the Salesforce seasonal release upgrade' and the heading '### Seasonal Platform Releases and Sandbox Preview'. Delete or retarget that trigger, and append verbatim to its description: 'NOT for Salesforce''s own seasonal platform release (Spring/Summer/Winter) readiness \u2014 release notes triage, Release Updates, Sandbox Preview opt-in (use admin/salesforce-release-preparation); this skill governs YOUR release train, not Salesforce''s.' LEVER 3 (query vocabulary on the expected package): skills/admin/salesforce-release-preparation/SKILL.md triggers all phrase the topic as 'preparation'/'triage' and never use the user''s verb \u2014 add 'roll out the Spring release safely' and 'is our org ready for the Spring release'."
+  },
+  {
+   "query": "make a field required only for one record type",
+   "expected": "admin/record-types-and-page-layouts",
+   "picked": "admin/validation-rules",
+   "label_is_wrong": true,
+   "defect_class": "BENCHMARK_LABEL_WRONG \u2014 expected package's own body routes this query to the picked package",
+   "concrete_fix": "No corpus edit. Relabel the benchmark row to admin/validation-rules. Evidence: skills/admin/record-types-and-page-layouts/SKILL.md line 74 decision table reads '| Different required fields per process | \u274c No | Validation rule scoped to RT |', and line 158 Related Skills reads '**admin/validation-rules**: Use when the only difference between processes is required fields or save-time enforcement.' The expected package explicitly disowns conditional requiredness. skills/admin/validation-rules/references/examples.md line 65 is titled 'Example: Conditional Required with Record Type Scope' and gives the exact RecordType.DeveloperName-scoped formula. If a defensive edit is wanted anyway, it belongs on the EXPECTED package to make the picked answer MORE certain (lever 1, reversed): append to admin/record-types-and-page-layouts description \u2014 \"NOT for making a field required on only one record type \u2014 that is a validation rule scoped to RecordType.DeveloperName, use admin/validation-rules.\""
+  },
+  {
+   "query": "write a test that actually catches bulk problems",
+   "expected": "apex/test-data-factory-patterns",
+   "picked": "apex/test-class-standards",
+   "label_is_wrong": true,
+   "defect_class": "BENCHMARK_LABEL_WRONG \u2014 expected package's description explicitly redirects this query to the picked package",
+   "concrete_fix": "No corpus edit. Relabel the benchmark row to apex/test-class-standards. Evidence: skills/apex/test-data-factory-patterns/SKILL.md description says verbatim 'NOT for test class structure and assertions (use apex/test-class-standards)' \u2014 and 'a test that actually catches bulk problems' IS assertion design. skills/apex/test-class-standards/SKILL.md line 40 self-describes as 'tests [that] prove behavior instead of merely satisfying deployment coverage \u2026 verify positive paths, negative paths, bulk behavior', line 88 'Include at least one negative test and one bulk or multi-record test for code that is supposed to be bulk-safe', line 142 'One assertion at the end is not enough \u2014 bulk, negative, and security-sensitive behaviors need focused assertions'. The factory package owns GENERATING 200 records, not proving the trigger survives them. Only if the benchmark keeps its label would a corpus edit apply, and it would be lever 3 on the picked package \u2014 but do not make it: it would contradict test-data-factory-patterns' own redirect."
+  },
+  {
+   "query": "keep an external system and Salesforce in sync both ways",
+   "expected": "data/cdc-data-sync-patterns",
+   "picked": "integration/real-time-vs-batch-integration",
+   "label_is_wrong": true,
+   "defect_class": "BENCHMARK_LABEL_WRONG + CORPUS_GAP \u2014 CDC is one-directional by construction; no bidirectional-sync package exists",
+   "concrete_fix": "Relabel the benchmark: CDC cannot answer 'both ways'. CDC is a Salesforce\u2192external change stream; skills/data/cdc-data-sync-patterns/SKILL.md contains zero occurrences of 'bidirectional', 'two-way', or 'both ways' across its 17KB, and its outputs are all outbound replication artefacts (day-0 Bulk API load, replay ID persistence, gap-event fallback). Writing bidirectional vocabulary into its description to satisfy the label would be a factual error. The picked package is the better answer on the merits \u2014 skills/integration/real-time-vs-batch-integration/SKILL.md lists as an input 'Direction of data flow (Salesforce-to-external, external-to-Salesforce, or bidirectional)'. Optional lever-2 reinforcement on the picked package, changing its inline Triggers clause to: \"Trigger keywords: should I use real-time or batch, keep two systems in sync both ways, bidirectional sync between Salesforce and an external system, how to sync high-volume data, when to use Platform Events vs Bulk API, integration latency vs volume tradeoff.\" SEPARATE CORPUS GAP worth queueing: the 61-entry integration roster has no package on bidirectional sync mechanics \u2014 echo/loop prevention, per-field system of record, conflict resolution, last-write-wins vs merge. Note also that data/cdc-data-sync-patterns' gloss truncates to '\u2026replication lifecycle for CDC-based data \u2026', dropping the word 'synchronization' entirely, so it is invisible to any sync-phrased query regardless of this row."
+  },
+  {
+   "query": "build an agent that can look up an order status",
+   "expected": "agentforce/agent-actions",
+   "picked": "agentforce/agentforce-agent-creation",
+   "label_is_wrong": false,
+   "defect_class": "GLOSS_TRUNCATION_DROPS_REDIRECT + TRIGGER_VOCABULARY_GAP \u2014 only the first NOT clause survives, and it was truncated mid-target",
+   "concrete_fix": "Two edits. (LEVER 3, primary) The picked package's full description already says 'NOT for topic design or action contract design \u2014 use agentforce/agent-topic-design and agentforce/agent-actions respectively', but the roster gloss at .claude/skills/salesforce-agentforce/references/skill-index.md line 34 renders it as 'NOT for topic design or action contract \u2026 use agentforce/agent-topic-design' \u2014 agent-actions is truncated away, so the router was pushed toward topics and never saw the actions pointer. Reorder so the actions redirect comes FIRST and names the query's shape. Replace the trailing clause of skills/agentforce/agentforce-agent-creation/SKILL.md description with: \"NOT for designing what the agent can DO \u2014 an agent that looks up an order, checks a case, or creates a record is action design, use agentforce/agent-actions. NOT for topic boundary design \u2014 use agentforce/agent-topic-design.\" (LEVER 2, secondary) The expected package's gloss is pure builder jargon ('agent actions', 'flow action for agent', 'action schema design') with no natural-language capability phrasing. Replace the Triggers clause in skills/agentforce/agent-actions/SKILL.md description with: \"Triggers: 'agent actions', 'build an agent that can look up an order', 'make the agent able to check order status', 'give the agent a capability', 'agent that can retrieve a record', 'flow action for agent', 'agent invocable action', 'action schema design'.\""
+  },
+  {
+   "query": "flow keeps sending me error emails",
+   "expected": "flow/flow-error-notification-patterns",
+   "picked": "flow/flow-runtime-error-diagnosis",
+   "label_is_wrong": false,
+   "defect_class": "GLOSS_LEAD_NOT_FRONT_LOADED + MISSING_RECIPROCAL_REDIRECT \u2014 expected package has no inline Triggers clause, so its gloss truncates to unusable prose",
+   "concrete_fix": "Two edits. (LEVER 2, primary) skills/flow/flow-error-notification-patterns/SKILL.md has its triggers only in the YAML `triggers:` list, never inline in `description:`, so the gloss builder falls back to lead prose and renders 'Fault-path design and error notification for Salesforce Flow \u2014 what the default \u2026' (.claude/skills/salesforce-flow/references/skill-index.md line 39) \u2014 cut exactly where fault-email behaviour would have been named. Meanwhile the picked package's gloss opens with the verbatim string 'Flow error email'. Front-load an inline Triggers clause: replace the opening of the description with \"Use when Flow fault emails are noisy, repeated, going to the wrong person, or need to go somewhere other than email. Triggers: 'flow keeps sending me error emails', 'too many flow error emails', 'stop flow fault emails', 'change who receives flow error emails', 'route flow errors to Slack or a custom log object', 'apex exception email recipient'.\" then keep the existing explanatory prose after it. (LEVER 3, secondary) Add as the FIRST NOT clause of skills/flow/flow-runtime-error-diagnosis/SKILL.md description \u2014 first position matters, only one survives truncation: \"NOT for changing who receives fault emails, routing errors to a log object or Platform Event, or suppressing repeated noisy fault notifications \u2014 use flow/flow-error-notification-patterns.\" WATCH-OUT for the batching wave: this is a three-way collision, not two \u2014 skills/flow/flow-error-monitoring ('routing fault emails \u2026 at org scale') also competes for this exact query, so disambiguate all three in one pass or the fix will just move the miss."
+  },
+  {
+   "query": "we have 40 million rows on one object and queries crawl",
+   "expected": "architect/large-data-volume-architecture",
+   "picked": "data/soql-query-optimization",
+   "label_is_wrong": false,
+   "defect_class": "MISSING_RECIPROCAL_REDIRECT \u2014 the redirect exists one-way only (LDV\u2192SOQL) and not back",
+   "concrete_fix": "Two edits plus a router note. (LEVER 3, primary) skills/architect/large-data-volume-architecture/SKILL.md already says 'NOT for rewriting individual SOQL statements or interpreting Query Plan output in isolation (use data/soql-query-optimization)', but skills/data/soql-query-optimization/SKILL.md has no reciprocal clause at all \u2014 its gloss reads 'NOT for Apex CPU or heap governor limit issues (use \u2026' and it claims 'large object performance' as a trigger, which is what caught 'queries crawl'. Add as the FIRST NOT clause of its description: \"NOT for org-wide large-data-volume architecture \u2014 tens of millions of rows on one object, ownership or account data skew, skinny tables, archival to Big Objects \u2014 use architect/large-data-volume-architecture.\" (LEVER 2, secondary) The query supplies no SOQL text at all; only scale. Add to the LDV Triggers clause: \"40 million rows on one object and queries crawl, tens of millions of records and everything is slow, object has grown too large and reports time out.\" (ROUTER-LEVEL, this row was also WRONG_ROUTER) salesforce-data's router description claims 'query optimisation' with no scale ceiling. Append to it: \"For org-wide large-data-volume architecture \u2014 tens of millions of records on one object, ownership skew, skinny tables, archival \u2014 use salesforce-architect.\""
+  },
+  {
+   "query": "clean up duplicate accounts",
+   "expected": "admin/duplicate-management",
+   "picked": "data/large-scale-deduplication",
+   "defect_class": "ROUTER_BOUNDARY_MISSCOPED",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 (primary \u2014 fix the description that captured the query, here the router's own). `.claude/skills/salesforce-data/SKILL.md` frontmatter currently reads `... query optimisation, cleaning up duplicates that already exist, archival and storage. For PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead.` The split is prevention-vs-cleanup, but data/large-scale-deduplication's own gloss scopes it to `cleaning millions of duplicate records, automating merges beyond UI limits` \u2014 the query gives no volume signal at all, so the router hands off a small-org merge job to a DemandTools/Batch-Apex package. Replace that sentence verbatim with: `... query optimisation, deduplicating at volume, archival and storage. For duplicate cleanup at ordinary volume \u2014 merge governance, survivorship policy, stewardship queues \u2014 and for PREVENTING duplicates with matching and duplicate rules, use salesforce-admin instead. Come here only when the duplicate count is in the hundreds of thousands, merges must run beyond UI limits, or a third-party dedup tool is in scope.` SECONDARY, LEVER 2: admin/duplicate-management currently has no cleanup vocabulary in its triggers (all seven are prevention- or merge-failure-shaped). Add two triggers verbatim: `- \"clean up duplicate accounts\"` and `- \"we already have duplicates, how do we get rid of them\"`, and change its description clause `NOT for cleaning up millions of duplicates that already exist - use data/large-scale-deduplication` to `Covers cleaning up duplicates that already exist at ordinary volume: merge sequencing, survivorship, stewardship ownership. NOT for cleanup at volume \u2014 hundreds of thousands of records, batch merge jobs, DemandTools/Cloudingo \u2014 use data/large-scale-deduplication.` Note the picked package's redirect (`NOT for duplicate rule configuration`) actively confirmed staying put, because it scopes the handoff to rule CONFIG, which the router had already labelled the prevention case; the volume qualifier is what is missing on both sides."
+  },
+  {
+   "query": "our security review flagged CRUD FLS issues",
+   "expected": "apex/apex-stripinaccessible-and-fls-enforcement",
+   "picked": "apex/apex-security-patterns",
+   "defect_class": "OVERLAPPING_GLOSS_NEAR_CLONE",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 (primary). apex/apex-security-patterns' description claims the expected package's whole surface: `Triggers: 'with sharing', 'inherited sharing', 'stripInaccessible', 'AuraEnabled security', 'CRUD FLS'` \u2014 it carries both the query's literal phrase AND the expected package's mechanism name, and its only NOT-for is scoped to SOQL injection. Replace that trigger sentence verbatim with: `Triggers: 'with sharing', 'inherited sharing', 'AuraEnabled security', 'what execution context does this class run in', 'system mode vs user mode'. NOT for remediating a CRUD/FLS finding \u2014 use apex/apex-stripinaccessible-and-fls-enforcement for stripInaccessible, AccessType, SObjectAccessDecision and WITH USER_MODE mechanics. NOT for SOQL injection review alone \u2014 use apex/soql-security.` Dropping 'stripInaccessible' and 'CRUD FLS' from this package's trigger list is the load-bearing half of the edit; the two skills currently name the same mechanism in the same field. SECONDARY, LEVER 2: apex/apex-stripinaccessible-and-fls-enforcement has no review-finding vocabulary \u2014 its six triggers are all mechanism-shaped ('sobjectaccessdecision getrecords getremovedfields how to use'). Add verbatim: `- \"our security review flagged crud and fls issues\"` and `- \"appexchange security review crud fls finding remediation\"`. Adjudication note: I ruled the label correct rather than arbitrary because the picked package carries a five-step boilerplate Recommended Workflow and no checker, while the expected carries a seven-step remediation with AccessType selection, the child-collection non-recursion trap and check_apex_stripinaccessible_and_fls_enforcement.py \u2014 a flagged finding needs the fix, not the taxonomy. It is close, though: apex-security-patterns lists `Apex security review | Findings on sharing intent, CRUD/FLS enforcement` as an output, so the pick was defensible and the real defect is that both descriptions describe one topic."
+  },
+  {
+   "query": "expose Salesforce data to an external app securely",
+   "expected": "apex/apex-rest-services",
+   "picked": "integration/rest-api-patterns",
+   "defect_class": "MISLABELLED_BENCHMARK_CASE",
+   "label_is_wrong": true,
+   "concrete_fix": "No corpus defect caused this miss; the label is arbitrary. The query names no custom endpoint, no Apex, and no operation the standard API cannot express \u2014 and apex/apex-rest-services' own first input is `resource use case and whether a custom endpoint is really necessary`, i.e. the expected package opens by asking whether it is even the right answer. The default correct read for 'expose data to an external app securely' is the standard REST API surface plus OAuth/Connected App, which is exactly integration/rest-api-patterns ('REST CRUD', 'OAuth Bearer token', composite). Recommend relabelling the case to integration/rest-api-patterns, or rewording the query to carry the custom-endpoint signal, e.g. 'build a custom endpoint so an external app can pull Salesforce data'. If the label is kept as-is, the only edit that would flip the pick is LEVER 2 on the expected package \u2014 append to apex/apex-rest-services' description: `Triggers: ... 'expose Salesforce data to an external app through a custom endpoint', 'the standard REST API cannot express this operation'. NOT for exposing data through the standard Salesforce REST or Composite API, which needs no Apex \u2014 use integration/rest-api-patterns.` That NOT-for is worth adding on its own merit (it makes the boundary explicit from the Apex side, where today only integration/rest-api-patterns states it), but it would push the router further AWAY from the label on this particular query, which is itself evidence the label is wrong."
+  },
+  {
+   "query": "pick between mulesoft and point to point callouts",
+   "expected": "architect/api-led-connectivity-architecture",
+   "picked": "integration/middleware-integration-patterns",
+   "defect_class": "MISLABELLED_BENCHMARK_CASE",
+   "label_is_wrong": true,
+   "concrete_fix": "No corpus defect caused this miss; the label is arbitrary and the pick is strictly better. integration/middleware-integration-patterns carries the query as a verbatim trigger \u2014 `when do I need middleware versus just using Apex callouts or native Salesforce APIs` \u2014 and its description opens `Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) ... or when determining whether a scenario requires middleware at all versus native Salesforce capabilities.` The expected package is post-decision layer design (System/Process/Experience separation, versioning and deprecation policy) and explicitly disclaims the callout side: `NOT for individual Apex callout implementation`. A user still choosing between MuleSoft and point-to-point has not reached three-tier design yet. Recommend relabelling to integration/middleware-integration-patterns. SEPARATE REAL CORPUS DEFECT surfaced by this case, worth its own work item: architect/api-led-connectivity-architecture and integration/api-led-connectivity are near-clones of one topic split across two domains \u2014 both lead on System/Process/Experience layers, both tag mulesoft + agent-fabric, and neither names the other in a NOT-for, so a query about API layering can land in either domain by coin-flip. Fix with LEVER 1: pick one canonical home, and add to the survivor's description `NOT for <the other's residual scope> \u2014 use <other-slug>`, or fold the pair into a single package."
+  },
+  {
+   "query": "one callout per record is blowing the 100 limit",
+   "expected": "integration/callout-limits-and-async-patterns",
+   "picked": "apex/governor-limits",
+   "defect_class": "PACKAGE_FILED_OUTSIDE_ITS_ROUTER",
+   "label_is_wrong": false,
+   "concrete_fix": "LEVER 3 (primary). The expected package answers the query verbatim \u2014 its trigger list contains `how to make more than 100 callouts from a trigger` and `how many callouts can I make in a single Apex transaction` \u2014 but it is filed in `integration`, and the salesforce-apex router description says `Owns calling an external API FROM Salesforce` plus lists `callout, HTTP callout, HttpRequest`, so an outbound-callout limit question can never legally leave the apex domain. Meanwhile no apex package names the callout ceiling: apex/governor-limits' description is `'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'` with callouts absent, and apex/callouts-and-http-integrations is construction-only ('HttpRequest', 'Named Credential', 'HttpCalloutMock'). Append to apex/governor-limits' description, after the existing NOT-fors, verbatim: `NOT for the 100-callouts-per-transaction ceiling or the 120-second cumulative callout timeout \u2014 use integration/callout-limits-and-async-patterns for the sync vs @future vs Queueable vs Continuation choice that gets you under it.` SECONDARY, LEVER 1 (NOT-for on the expected package's in-domain neighbour): append to apex/callouts-and-http-integrations' description: `NOT for the per-transaction callout ceiling or moving callouts async to stay under it \u2014 use integration/callout-limits-and-async-patterns.` Both edits are needed because the two apex packages split the query's vocabulary between them ('callout' in one, 'limit' in the other) and neither redirects. STRUCTURAL OPTION worth considering instead of the two redirects: relocate the package to apex/callout-limits-and-async-patterns so it sits in the domain its own subject matter is routed to, since every remaining alternative leaves a cross-domain hop on the hottest path in the apex roster."
+  }
+ ]
+}
