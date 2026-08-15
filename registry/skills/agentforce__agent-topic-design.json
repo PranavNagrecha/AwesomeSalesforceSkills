@@ -75,9 +75,9 @@
     "f6ff105635d452d357f8",
     "f885d104f5f0f5fe35ea"
   ],
-  "content_hash": "10ea33d564ab6e77f4a5c234bd7de3b846b40c1e94096d1080a4a37630f14ea5",
+  "content_hash": "2903aa91397adda1c9c95b793ff2c0457d807f0c587099c75314d4c54a3dab17",
   "dependencies": [],
-  "description": "Use when designing or reviewing Agentforce topic (renamed subagent in April 2026) structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) \u2014 use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out \u2014 Omni-Channel routing and the context package \u2014 use agentforce/agentforce-agent-handoff-patterns.",
+  "description": "Use when designing or reviewing Agentforce topic (renamed subagent in April 2026) structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agentforce subagents (formerly topics)', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) \u2014 use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out \u2014 Omni-Channel routing and the context package \u2014 use agentforce/agentforce-agent-handoff-patterns.",
   "file_location": "skills/agentforce/agent-topic-design",
   "id": "agentforce/agent-topic-design",
   "inputs": [

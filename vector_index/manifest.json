@@ -4,7 +4,7 @@
   "embedding_backend": "fastembed",
   "embedding_count": 0,
   "embeddings_enabled": true,
-  "generated_from_hash": "ef86de3d7b03a2d0bb370258231b4627ee318510862b589bf36f53928224c392",
+  "generated_from_hash": "174d3afdde68be03cac01ff1755f7666ace28980d1e4a823268eed20801ecd12",
   "knowledge_source_count": 36,
   "schema_version": 1,
   "skill_count": 1027

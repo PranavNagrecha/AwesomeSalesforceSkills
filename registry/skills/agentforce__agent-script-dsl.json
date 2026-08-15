@@ -151,9 +151,9 @@
     "fc34b64959230b91b1eb",
     "fc4deffc053ad719c11b"
   ],
-  "content_hash": "22673a42fee9ed78308c81686321281013ebea33dca335aee7b4d7dbaa9a1f85",
+  "content_hash": "28731fe0bef38941471876a273efdb6e253eeb431d9eaa0050e2b6a509d9e53f",
   "dependencies": [],
-  "description": "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions \u2014 use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI \u2014 use agentforce/agentforce-agent-creation.",
+  "description": "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'convert an agent topic to a subagent', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions \u2014 use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI \u2014 use agentforce/agentforce-agent-creation.",
   "file_location": "skills/agentforce/agent-script-dsl",
   "id": "agentforce/agent-script-dsl",
   "inputs": [

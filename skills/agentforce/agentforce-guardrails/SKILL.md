@@ -1,6 +1,6 @@
 ---
 name: agentforce-guardrails
-description: "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents — including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates)."
+description: "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents — including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, subagent scope, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates)."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:

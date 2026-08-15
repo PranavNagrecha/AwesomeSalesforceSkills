@@ -122,9 +122,9 @@
     "f93f5b91911e26b35eb1",
     "fcb0c04b815071605cad"
   ],
-  "content_hash": "5563c1da11c31893a4d9dad2674f0322d22d754ab3b870c38bdbf0e79a0b79ae",
+  "content_hash": "76978d1c368637916c6066be60f4dd2f07d7aa8e7a58b5d4f6888ae226dfdb7d",
   "dependencies": [],
-  "description": "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents \u2014 including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates).",
+  "description": "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents \u2014 including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, subagent scope, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates).",
   "file_location": "skills/agentforce/agentforce-guardrails",
   "id": "agentforce/agentforce-guardrails",
   "inputs": [

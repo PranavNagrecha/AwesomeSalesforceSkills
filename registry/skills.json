@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "ef86de3d7b03a2d0bb370258231b4627ee318510862b589bf36f53928224c392",
+  "generated_from_hash": "174d3afdde68be03cac01ff1755f7666ace28980d1e4a823268eed20801ecd12",
   "schema_version": 1,
   "skill_count": 1027,
   "skills": [
@@ -36444,9 +36444,9 @@
         "fc34b64959230b91b1eb",
         "fc4deffc053ad719c11b"
       ],
-      "content_hash": "22673a42fee9ed78308c81686321281013ebea33dca335aee7b4d7dbaa9a1f85",
+      "content_hash": "28731fe0bef38941471876a273efdb6e253eeb431d9eaa0050e2b6a509d9e53f",
       "dependencies": [],
-      "description": "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions \u2014 use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI \u2014 use agentforce/agentforce-agent-creation.",
+      "description": "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'convert an agent topic to a subagent', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions \u2014 use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI \u2014 use agentforce/agentforce-agent-creation.",
       "file_location": "skills/agentforce/agent-script-dsl",
       "id": "agentforce/agent-script-dsl",
       "inputs": [
@@ -36750,9 +36750,9 @@
         "fb658170b82cecfbe069",
         "ff539430c1952a8df1ca"
       ],
-      "content_hash": "6648376eb893a9a42bdda5f1a7cbacfe3ec0855c5a16ed993b2b714314ef6036",
+      "content_hash": "5aefe20a0ae48e2c936abb81356af53fb7a0710835a565ae0073273b5423ae20",
       "dependencies": [],
-      "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic (now subagent) coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
+      "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic (now subagent) coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong subagent', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
       "file_location": "skills/agentforce/agent-testing-and-evaluation",
       "id": "agentforce/agent-testing-and-evaluation",
       "inputs": [
@@ -36889,9 +36889,9 @@
         "f6ff105635d452d357f8",
         "f885d104f5f0f5fe35ea"
       ],
-      "content_hash": "10ea33d564ab6e77f4a5c234bd7de3b846b40c1e94096d1080a4a37630f14ea5",
+      "content_hash": "2903aa91397adda1c9c95b793ff2c0457d807f0c587099c75314d4c54a3dab17",
       "dependencies": [],
-      "description": "Use when designing or reviewing Agentforce topic (renamed subagent in April 2026) structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) \u2014 use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out \u2014 Omni-Channel routing and the context package \u2014 use agentforce/agentforce-agent-handoff-patterns.",
+      "description": "Use when designing or reviewing Agentforce topic (renamed subagent in April 2026) structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agentforce subagents (formerly topics)', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for restricting what the agent may do or say (topic Scope, action filters, abuse prevention) \u2014 use agentforce/agentforce-guardrails. NOT for the mechanics of transferring a live conversation out \u2014 Omni-Channel routing and the context package \u2014 use agentforce/agentforce-agent-handoff-patterns.",
       "file_location": "skills/agentforce/agent-topic-design",
       "id": "agentforce/agent-topic-design",
       "inputs": [
@@ -38103,9 +38103,9 @@
         "f93f5b91911e26b35eb1",
         "fcb0c04b815071605cad"
       ],
-      "content_hash": "5563c1da11c31893a4d9dad2674f0322d22d754ab3b870c38bdbf0e79a0b79ae",
+      "content_hash": "76978d1c368637916c6066be60f4dd2f07d7aa8e7a58b5d4f6888ae226dfdb7d",
       "dependencies": [],
-      "description": "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents \u2014 including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, agent instructions, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates).",
+      "description": "Use this skill when designing, auditing, or troubleshooting behavioral boundaries for Agentforce agents \u2014 including topic (now subagent) Scope fields, agent-level system instructions, topic/action filters, the Escalation topic, restricted topics, and Instruction Adherence monitoring. Trigger keywords: agent guardrails, agent out of scope, restrict agent behavior, topic scope, subagent scope, agent fallback, Escalation topic, abuse prevention, action filters. NOT for Trust Layer content filtering (Einstein Trust Layer is a separate product concern), NOT for general topic routing design (use agentforce/agent-topic-design), NOT for prompt template construction (use agentforce/prompt-builder-templates).",
       "file_location": "skills/agentforce/agentforce-guardrails",
       "id": "agentforce/agentforce-guardrails",
       "inputs": [

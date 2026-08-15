@@ -155,9 +155,9 @@
     "fb658170b82cecfbe069",
     "ff539430c1952a8df1ca"
   ],
-  "content_hash": "6648376eb893a9a42bdda5f1a7cbacfe3ec0855c5a16ed993b2b714314ef6036",
+  "content_hash": "5aefe20a0ae48e2c936abb81356af53fb7a0710835a565ae0073273b5423ae20",
   "dependencies": [],
-  "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic (now subagent) coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
+  "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic (now subagent) coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong subagent', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
   "file_location": "skills/agentforce/agent-testing-and-evaluation",
   "id": "agentforce/agent-testing-and-evaluation",
   "inputs": [
