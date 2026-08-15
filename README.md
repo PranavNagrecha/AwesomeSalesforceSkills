@@ -8,7 +8,7 @@ asking your actual org whether the thing already exists.
 
 [![Validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
 [![PR Lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![License: PolyForm Small Business](https://img.shields.io/badge/License-PolyForm_Small_Business_1.0.0-orange.svg)](./LICENSE)
 
 ---
 
@@ -393,6 +393,23 @@ Tool schemas and design notes: [`mcp/sfskills-mcp/README.md`](./mcp/sfskills-mcp
 
 ---
 
+## License
+
+SfSkills is **source-available**, not open source. Read it freely; whether you
+may *use* it for free depends on how big your organisation is.
+
+- **Free** — individuals, freelancers and consultants (including on billable
+  client work), and any company with **fewer than 100 people and under USD 1M
+  in prior-year revenue**.
+- **Needs a commercial license** — everyone above either threshold, internal
+  enterprise use included.
+
+Governed by the [PolyForm Small Business License 1.0.0](./LICENSE)
+(`PolyForm-Small-Business-1.0.0`). [`LICENSING.md`](./LICENSING.md) explains the
+thresholds in plain English and how to buy a commercial license.
+
+---
+
 **Pranav Nagrecha** — Salesforce Technical Architect ·
 [Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues) ·
-Apache-2.0 ([LICENSE](./LICENSE))
+[License](./LICENSE) · [Commercial use](./LICENSING.md)

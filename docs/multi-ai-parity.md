@@ -359,17 +359,32 @@ differed between `/Users/…` and `/home/runner/…`.
 
 ## FAQ
 
-### Why Apache 2.0 instead of MIT?
+### Why PolyForm Small Business instead of an open-source license?
 
-Apache 2.0 grants a patent license alongside the copyright grant, which protects
-corporate consumers from patent-assertion attacks. MIT doesn't. Given SfSkills is
-consumed inside enterprise Salesforce work, Apache 2.0 is the more defensive
-choice.
+SfSkills is source-available, not open source. Everything here is readable and
+forkable, but free *use* is conditional: companies under 100 people and under
+USD 1M in prior-year revenue pay nothing, and larger organisations need a
+commercial licence. The intent is that individuals and small consultancies keep
+full access while enterprise use funds the work.
+
+Like Apache 2.0, PolyForm Small Business grants a patent licence alongside the
+copyright grant, so that protection is not lost in the move. What is lost is OSI
+approval — if an OSI-approved licence is a hard procurement requirement on your
+side, this project will not satisfy it. See [`LICENSING.md`](../LICENSING.md).
 
 ### Can I ship SfSkills as part of a commercial product?
 
-Apache 2.0 allows that. Include the license, attribution, and any changes you
-made — details in [LICENSE](../LICENSE).
+Only under a commercial licence. Embedding any part of SfSkills in a product or
+service you distribute is outside the free grant regardless of your company's
+size, because the free grant covers use "for the benefit of your company", not
+redistribution inside something you sell. Email <pranav.nagrecha11@gmail.com>.
+
+### We forked it under Apache-2.0 before the change. Where does that leave us?
+
+Exactly where you were. The grant you received cannot be withdrawn, so the copy
+you already have stays under Apache-2.0 forever, as do `sfskills-mcp` 0.4.6 and
+0.4.7 from PyPI under MIT. The new licence governs releases from 2026-08-15
+onward — pulling those is what brings you under it.
 
 ### Can I rename skills in my fork?
 
@@ -403,7 +418,8 @@ The PR that caused the failure is blocked. Three typical resolutions:
 
 ## See also
 
-- [LICENSE](../LICENSE) — Apache 2.0.
+- [LICENSE](../LICENSE) — PolyForm Small Business 1.0.0 (source-available).
+- [LICENSING.md](../LICENSING.md) — who uses it free, who needs to buy.
 - [architecture.md](architecture.md) — what ships versus what has to be built locally.
 - [MIGRATION.md](./MIGRATION.md) — deprecation timeline + retired-agent mapping.
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — how to contribute skills + agents.

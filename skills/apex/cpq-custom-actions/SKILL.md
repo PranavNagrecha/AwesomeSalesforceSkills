@@ -49,7 +49,7 @@ Gather this context before working on anything in this domain:
 
 - Confirm the CPQ managed package (`SBQQ__`) is installed and the user has the "Salesforce CPQ Admin" or appropriate permission set to create and edit `SBQQ__CustomAction__c` records.
 - Identify the target screen: QLE (Quote Line Editor), product configurator, or amendment/renewal flow. Each is a separate `Location` value on the `SBQQ__CustomAction__c` object.
-- Count the existing custom actions for the target context — CPQ enforces a hard limit of five per location (see **The Five-Action Hard Limit Per Context** below).
+- Take a count of what already exists at that location. Five per location is a hard ceiling in CPQ, and it is worth knowing how much headroom is left before you design anything — **The Five-Action Hard Limit Per Context** below covers the consequences.
 - Determine whether Apex logic is required. Custom actions cannot invoke Apex directly — only URL navigation, Screen/Autolaunched Flow execution, or standard CPQ operations (Save, Calculate, Add Group) are supported action types.
 
 ---
@@ -159,13 +159,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-See [`references/gotchas.md`](references/gotchas.md) for detailed write-ups with avoidance strategies. Key gotchas at a glance:
+Each of these is written up in full, with the avoidance strategy, in [`references/gotchas.md`](references/gotchas.md). The short version:
 
-1. **Five-action limit is silent, not an error** — exceeding 5 active actions per location silently drops buttons with no log entry.
-2. **Flow must be Activated before the action fires** — Draft Flows cause a generic runtime error when the rep clicks the button.
-3. **Conditional visibility evaluates at page load only** — field changes inside the QLE do not toggle button visibility until reload.
-4. **URL merge fields resolve based on Location context** — `{!Id}` means line ID at `Line Item` location but quote ID at `Global`.
-5. **Custom actions render only in CPQ screens** — buttons do not appear on the standard Lightning record page.
+1. **Going past five actions fails quietly.** Nothing errors and nothing is logged — the surplus buttons simply never render at that location.
+2. **A Draft Flow is not a working action.** Activate it first, or the rep gets an unhelpful generic runtime error the moment they click.
+3. **Conditional visibility is resolved once, at page load.** Editing a field inside the QLE will not make a hidden button appear until the page is reloaded.
+4. **`{!Id}` means different things in different Locations.** At `Line Item` it resolves to the line's ID; at `Global` it resolves to the quote's.
+5. **These buttons live inside CPQ screens only.** Don't expect them on the standard Lightning record page.
 
 ---
 

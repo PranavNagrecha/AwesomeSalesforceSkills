@@ -1485,7 +1485,7 @@ def render_plugin_manifest(registry: dict, shipped: list[str], commands: list[tu
         "author": {"name": AUTHOR_NAME, "url": REPO_URL},
         "homepage": f"{REPO_URL}#readme",
         "repository": REPO_URL,
-        "license": "Apache-2.0",
+        "license": "PolyForm-Small-Business-1.0.0",
         "keywords": [
             "salesforce",
             "apex",
@@ -1532,7 +1532,7 @@ def render_marketplace_manifest(registry: dict, shipped: list[str], commands: li
         "author": {"name": AUTHOR_NAME, "url": REPO_URL},
         "homepage": f"{REPO_URL}#readme",
         "repository": REPO_URL,
-        "license": "Apache-2.0",
+        "license": "PolyForm-Small-Business-1.0.0",
         "category": "development",
         "keywords": ["salesforce", "apex", "flow", "lwc", "agentforce", "well-architected"],
         "tags": ["salesforce", "crm", "apex", "soql", "admin", "architecture"],

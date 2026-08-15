@@ -459,6 +459,28 @@ Agents run the same gates as manual contributions. Nothing bypasses
 
 ---
 
+## Licensing of Contributions
+
+SfSkills is source-available under the
+[PolyForm Small Business License 1.0.0](./LICENSE) — free below 100 people and
+USD 1M prior-year revenue, commercially licensed above it. See
+[`LICENSING.md`](./LICENSING.md).
+
+**By opening a pull request you agree that your contribution is licensed to the
+project under those same terms**, and that you have the right to grant that
+licence — i.e. the work is yours, or your employer has cleared it.
+
+Two practical consequences:
+
+- **Write original prose.** Author from the official Salesforce documentation
+  in your own words. Do not paste text out of another repository, a blog post,
+  Stack Exchange, or vendor material, even when its licence looks permissive —
+  attribution obligations attach to it and follow the file forever.
+- **Say so if you are adapting something.** If a contribution is derived from
+  an external source, flag it in the PR description with the source and its
+  licence. Permissive sources can usually be adapted with attribution; anything
+  else needs a clean-room rewrite. `/onboard-source` handles this properly.
+
 ## Getting Help
 
 - Search existing skills: `python3 scripts/search_knowledge.py "<topic>"`

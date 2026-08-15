@@ -1,5 +1,8 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+# Floor 77.0.3 — first setuptools release with PEP 639 support, which the
+# `license` SPDX expression and `license-files` keys below both require.
+# Building with anything older silently drops the license metadata.
+requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,7 +13,18 @@ description = "Model Context Protocol server exposing the SfSkills Salesforce sk
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Pranav Nagrecha" }]
-license = { text = "MIT" }
+# Source-available, NOT open source. Free below the PolyForm Small Business
+# thresholds (<100 people AND <USD 1M prior-year revenue); every larger
+# organisation needs a commercial license. See ../../LICENSING.md.
+#
+# This is a PEP 639 SPDX expression, not the legacy `{ text = ... }` table.
+# Two things follow from that and must not be undone:
+#   1. No `License ::` trove classifier may appear below — PyPI rejects an
+#      upload carrying both a License-Expression and a License:: classifier.
+#   2. `license-files` globs cannot escape this directory, so LICENSE is a
+#      copy of the repo-root file kept in sync by scripts/check_license.py.
+license = "PolyForm-Small-Business-1.0.0"
+license-files = ["LICENSE"]
 keywords = [
   "salesforce", "mcp", "model-context-protocol", "ai", "sfskills",
   "salesforce-cli", "apex", "lwc", "flow", "agentforce",
@@ -26,7 +40,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
   "Topic :: Software Development :: Code Generators",
   "Operating System :: OS Independent",
-  "License :: OSI Approved :: MIT License",
+  # No "License ::" classifier here on purpose — see the `license` key above.
 ]
 dependencies = [
   # Bounded on BOTH ends; both bounds were measured, not guessed (2026-08-01).
@@ -69,6 +83,7 @@ embeddings = [
 "Repository" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
 "Documentation" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/mcp/sfskills-mcp/README.md"
 "Issues" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues"
+"Licensing" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/LICENSING.md"
 "Connect Recipes" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/mcp/sfskills-mcp/docs/CONNECT.md"
 
 [project.scripts]

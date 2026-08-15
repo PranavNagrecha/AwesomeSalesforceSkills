@@ -4,6 +4,69 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ## [Unreleased]
 
+### Changed — licence: Apache-2.0 / MIT → PolyForm Small Business 1.0.0
+
+**SfSkills is now source-available rather than open source.** The source stays
+public and forkable; what changed is that free *use* is now conditional on the
+size of the organisation using it. Under the
+[PolyForm Small Business License 1.0.0](./LICENSE)
+(`PolyForm-Small-Business-1.0.0`), use is free for any company with fewer than
+100 employees and contractors and under USD 1M in prior-year revenue; larger
+organisations need a commercial licence. [`LICENSING.md`](./LICENSING.md) is
+the plain-English guide and carries the contact path.
+
+This also resolves the "License declarations disagree" known issue recorded
+under 0.4.7 — but by replacing all three declarations, not by reconciling them
+to a permissive one.
+
+- Root `LICENSE` replaced with the verbatim PolyForm text plus a
+  `Required Notice:` line, which the licence's Notices section obliges
+  redistributors to carry.
+- `mcp/sfskills-mcp/pyproject.toml` now declares a PEP 639 SPDX expression
+  (`license = "PolyForm-Small-Business-1.0.0"`) with `license-files`, and the
+  `License :: OSI Approved :: MIT License` trove classifier is gone — PyPI
+  rejects an upload carrying both a License-Expression and a `License ::`
+  classifier. The build-system floor rises to `setuptools>=77.0.3`, the first
+  release with PEP 639 support; older setuptools drops the metadata silently.
+- `mcp/sfskills-mcp/LICENSE` added, so the wheel and sdist finally ship one.
+  It is a copy of the root file because PEP 639 `license-files` globs cannot
+  reference parent directories.
+- `.claude-plugin/*.json` regenerated from `scripts/build_plugin.py`, where the
+  two `"license"` literals were updated. The JSON is generated — never edit it.
+- `CONTRIBUTING.md` gained inbound-licence terms. There were none before, which
+  is precisely how the repo ended up carrying Apache-2.0 contributions it could
+  not unilaterally relicense.
+
+**Two limits worth stating plainly.** First, this is forward-only: the repo was
+public under Apache-2.0 and `sfskills-mcp` 0.4.6 / 0.4.7 shipped to PyPI
+declaring MIT. Those grants are irrevocable for the copies already
+distributed. Second, the licence excludes but does not collect — it says large
+organisations need a licence without saying where to buy one, which is what
+`LICENSING.md` exists to answer.
+
+### Added
+
+- **`scripts/check_license.py`** — consistency gate across every surface that
+  declares a licence: root `LICENSE`, the packaged copy, the pyproject SPDX
+  expression and classifier list, the plugin generator, the generated plugin
+  manifests, the README badge, and the presence of `LICENSING.md`. Wired into
+  `validate_repo.py` on every invocation. `--fix` re-copies the packaged
+  LICENSE; everything else reports rather than rewrites, because a stale
+  licence string is a decision to re-make, not a typo to patch. The 0.4.7
+  known issue survived because no gate compared these surfaces to each other.
+
+### Changed — chain of title
+
+- Four `SKILL.md` files (`apex/cpq-custom-actions`,
+  `flow/flow-email-and-notifications`, `lwc/lwc-focus-management`,
+  `security/record-access-troubleshooting`) had their remaining
+  externally-contributed prose rewritten before the relicence, so no passage
+  contributed under the previous Apache-2.0 inbound terms is redistributed
+  under terms its author never agreed to. Technical facts are unchanged
+  throughout; only the expression differs. What still blames to the original
+  contributor is blank lines, table separators, code fences and one closing
+  brace — syntax-dictated scaffolding that carries no copyright.
+
 ## [0.4.7] — 2026-08-15 — sfskills-mcp (routing surface, documentation rewrite, release plumbing)
 
 ### Fixed — the surface that actually routes
@@ -68,11 +131,13 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ### Known issues
 
-- **License declarations disagree.** Root `LICENSE` and
-  `.claude-plugin/plugin.json` say Apache-2.0; `mcp/sfskills-mcp/pyproject.toml`
-  declares MIT in both the `license` field and the trove classifier, and the
-  package ships no LICENSE file. This predates 0.4.7 — 0.4.6 shipped the same
-  way — and is left for the owner to resolve rather than changed silently.
+- ~~**License declarations disagree.**~~ *Resolved in [Unreleased]* — root
+  `LICENSE` and `.claude-plugin/plugin.json` said Apache-2.0 while
+  `mcp/sfskills-mcp/pyproject.toml` declared MIT in both the `license` field
+  and the trove classifier, and the package shipped no LICENSE file. This
+  predated 0.4.7 (0.4.6 shipped the same way) and was left for the owner to
+  resolve. All three surfaces now declare `PolyForm-Small-Business-1.0.0`,
+  guarded by `scripts/check_license.py`.
 - **CLI and MCP retrieval diverge** on queries containing `_` or non-ASCII:
   `_sanitize_query_for_fts5` strips them before the shared tokenizer, so
   `with_sharing keyword` returns 2 skills on the CLI and 3 via MCP.
