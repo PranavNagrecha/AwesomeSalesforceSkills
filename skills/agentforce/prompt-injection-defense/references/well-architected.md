@@ -2,12 +2,13 @@
 
 **Security:** prompt injection is an authorization problem wearing a language-model
 costume. The durable mitigation is that no action trusts a value the model produced:
-every action re-establishes its own facts under the running user's access, and topic
-instructions are treated as a way to reduce attempt frequency rather than as a control.
+every action re-establishes its own facts under the running user's access, and subagent
+instructions (subagents were called topics before April 2026) are treated as a way to
+reduce attempt frequency rather than as a control.
 
 **Reliability:** a committed adversarial suite, run under the agent's real run-as
 identity, converts "the agent feels safe" into a pass/fail gate that survives the next
-topic edit. Without it, guardrails decay silently because agent behaviour is not
+subagent edit. Without it, guardrails decay silently because agent behaviour is not
 deterministic.
 
 ## Official Sources Used

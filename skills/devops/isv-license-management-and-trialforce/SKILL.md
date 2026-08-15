@@ -1,6 +1,6 @@
 ---
 name: isv-license-management-and-trialforce
-description: "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package — covers License Management App (LMA) install and registration, Lead/License object. NOT for general managed-package version creation, ancestor pinning, or PostInstall handl — use devops/appexchange-app-analytics."
+description: "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package — covers License Management App (LMA) install and registration, Lead/License object. NOT for general managed-package version creation, ancestor pinning, or PostInstall handler design — use devops/managed-package-development."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -29,9 +29,9 @@ outputs:
   - "Trialforce architecture diagram (TMO vs TSO vs Template) and trial-method decision"
   - "Feature Parameter inventory with direction (LmoToSubscriber / SubscriberToLmo), default values, and Apex consumption pattern"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-08-14
 ---
 
 # ISV License Management and Trialforce

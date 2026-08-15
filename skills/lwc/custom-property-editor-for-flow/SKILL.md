@@ -1,6 +1,6 @@
 ---
 name: custom-property-editor-for-flow
-description: "Use when building or reviewing an LWC Custom Property Editor for Flow screen or. Triggers: custom property editor, Flow configuration editor, builderContext. NOT for a Flow screen component with no design-time editor — use lwc/lwc-in-flow-screens. NOT for deciding whether a property editor is warranted — use flow/flow-custom-property-editors."
+description: "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration. Triggers: custom property editor, Flow configuration editor, builderContext. NOT for a Flow screen component with no design-time editor — use lwc/lwc-in-flow-screens. NOT for deciding whether a property editor is warranted — use flow/flow-custom-property-editors."
 category: lwc
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -29,9 +29,9 @@ outputs:
   - "review findings for metadata registration and builder contract issues"
   - "LWC pattern for editor eventing and validation"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-08-14
 ---
 
 # Custom Property Editor For Flow

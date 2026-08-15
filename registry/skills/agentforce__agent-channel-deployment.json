@@ -126,7 +126,7 @@
     "fd67c414facd6bfee7e2",
     "fff0065d05f546be221e"
   ],
-  "content_hash": "e6cbeb6406fa024f1d6aa0398644e1797e6c04e0a42e5e5a617214b3555f4c32",
+  "content_hash": "59c3f9faa0d261d047e5fa0d9892e62e8090b923c20c43195cd2763486e9a3a8",
   "dependencies": [],
   "description": "Use when deploying an Agentforce agent to a channel surface: Embedded Service web chat, Slack, Experience Cloud, Agent REST API, or Salesforce Mobile. Triggers: 'deploy agent to website', 'add Agentforce to Slack', 'enable agent for mobile app', 'configure embedded service for agent', 'agent API for custom integration', 'multi-channel agent deployment'. NOT for agent logic design \u2014 use agentforce/agent-topic-design or agentforce/agent-actions for topics, instructions, and action contracts.",
   "file_location": "skills/agentforce/agent-channel-deployment",
@@ -179,7 +179,7 @@
   "templates": [
     "skills/agentforce/agent-channel-deployment/templates/agent-channel-deployment-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -139,9 +139,9 @@
     "f7bf972485b983f74b15",
     "ffc9d377ce1bf5e9b9e5"
   ],
-  "content_hash": "5c78cb3843404c6f4aa30b659e8d11bdbaf1cd381643b58edeac4fff279c0fe6",
+  "content_hash": "24350eae2eaa40af4c9ec3a4a83adf25cf8293856c4bf85c122895fdd42a5a31",
   "dependencies": [],
-  "description": "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta. NOT for 2GP managed packages (ISV packaging with namespaces, push upgrades, or AppExchan \u2014 use devops/second-generation-managed-packages.",
+  "description": "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta to released), and subscriber installation. NOT for 2GP managed packages (ISV namespaces, push upgrades, AppExchange distribution) \u2014 use devops/second-generation-managed-packages.",
   "file_location": "skills/devops/unlocked-package-development",
   "id": "devops/unlocked-package-development",
   "inputs": [
@@ -191,7 +191,7 @@
   "templates": [
     "skills/devops/unlocked-package-development/templates/unlocked-package-development-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

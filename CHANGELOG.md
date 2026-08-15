@@ -2,7 +2,119 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
-## [Unreleased] — sfskills-mcp v0.4.3 (production hardening)
+## [Unreleased]
+
+### Retracted
+
+- **The "79.2% → 92.2% Hit@1" routing result published on 2026-08-14 does not
+  hold and is withdrawn.** Re-scoring both committed runs against a single
+  label set inverts the direction: 98.5% → 92.5% excluding the 20 relabelled
+  queries, with 10 regressions and 0 improvements. Two causes. First the
+  comparison was circular — 41 of the baseline's 43 miss rows had `expected`
+  rewritten to whatever the *baseline itself* picked, so the after-run was
+  scored against labels derived from its predecessor's behaviour. Second,
+  exact-match scoring charges the router for the corpus's own near-duplicate
+  pairs; 8 of the 10 "regressions" are pairs where the other package is
+  defensible (`mfa-enforcement-strategy` vs `mfa-enforcement-patterns`,
+  `data-archival-strategies` vs `service-data-archival`).
+  **Router accuracy 88.3% → 96.1% stands** — it is label-independent.
+  Full analysis and the rule it establishes ("never score a corpus change
+  against labels derived from a run of that same corpus") are in
+  `evals/measurement/README-model-routing.md`.
+
+### Fixed — corpus currency
+
+- API 67.0 sweep: every remaining `WITH SECURITY_ENFORCED` reference now
+  carries the removal qualifier. `apex/apex-soql-relationship-queries` was
+  *recommending* the removed clause; `devops/code-review-checklist-salesforce`
+  and `architect/well-architected-review` listed it as an accepted enforcement
+  idiom for reviewers.
+- `skills/apex/visualforce-fundamentals/scripts/` accepted
+  `WITH SECURITY_ENFORCED` as satisfying FLS enforcement, so a query carrying a
+  removed clause scored clean — contradicting the agent contract's rule that a
+  scanner flags it rather than passing it. Fixed additively, preserving
+  sub-67.0 behaviour.
+- Documented the API 65.0 rule that abstract/override methods require an
+  explicit access modifier, in `templates/apex/README.md`,
+  `apex/trigger-framework` and `apex/fflib-enterprise-patterns`.
+  `templates/apex/` itself audited clean — all pinned to 67.0 with explicit
+  modifiers.
+- Two blog-sourced "breaking changes" were **investigated and rejected**: the
+  claimed 67.0 no-argument-constructor requirement for invocable-action input
+  types, and the claimed LWS block on `data:` URIs in anchor `href`. Neither
+  appears on any primary Salesforce documentation page.
+
+### Fixed — descriptions and routing
+
+- 25 packages had `description:` frontmatter truncated mid-word by the
+  2026-08-14 wave (`(use the security secure-coding chec — use …`). The damage
+  was in the SKILL.md source, so it reached the registry, the rosters, FTS5 and
+  the plugin simultaneously.
+
+### Fixed — documentation
+
+- `docs/architecture.md` documented the FTS5 retrieval pipeline in full and
+  never described the mechanism that actually ships. Restructured so the
+  model-driven roster scan comes first, with the retrieval pipeline reframed as
+  mechanisms 2 and 3, both of which require a local `build_index.py` run.
+- `README.md` and `docs/installing-the-plugin.md` both stated the GitHub plugin
+  install was blocked because `.claude-plugin/` was not on the default branch.
+  It is — along with the 12 router skills, 66 commands and 48 agents.
+- Corrected: 4 decision trees → 7; 66 slash commands → 67; the embeddings
+  story (configured on, but inert until `fastembed` is installed, since it is
+  commented out of `requirements.txt`); and the claim that golden evals do not
+  gate CI, which has been false since the eval structure lint landed.
+- `config/retrieval-config.yaml` held-out figures re-measured: 36.4/44.2 →
+  37.0/48.7 (2026-08-13) became 39.6/48.1 → 40.9/53.9 (2026-08-14). The
+  difference is corpus change, not relabelling — Hit@1 is identical against
+  either label set.
+
+### Fixed — tooling
+
+- `scripts/skill_doctor.py` silently accepted a path argument and reported an
+  existing package as missing, telling the caller to scaffold it. Now
+  normalises `domain/slug`, `skills/domain/slug` and absolute paths, and fails
+  loudly with a suggestion on a genuinely unknown id.
+- `evals/measurement/run_model_routing.py` defaulted its `--results` path into
+  a session-scratch directory and could not read the envelope the benchmark
+  writes.
+- Both shipped workflow scripts hardcoded an absolute developer home directory.
+- `.claude/workflows/add-skill.js` restated the Apex security idiom from memory
+  — the exact practice `AGENT_CONTRACT.md` rule 10 forbids — and restated it
+  incorrectly. Replaced with a pointer to the canonical table plus the three
+  verbatim 67.0 quotations.
+
+## [0.4.6] — 2026-06-17 — sfskills-mcp (count reconciliation + upstream merge)
+
+- Reconciled agent, skill and MCP tool counts across the docs and added a drift
+  lint (`scripts/check_doc_counts.py`) so they cannot silently diverge again.
+  Corrected in passing: runtime agents 47 → 56 → 48 as the roster settled, MCP
+  tools 15 → 38, skill count 978 → 1,003.
+- Merged the `upstream-learnings-2026-06-15` line: clean-room radar tooling for
+  the upstream `sf-skills` repository, plus the skills it verified as genuine
+  gaps.
+- Standardised `apiVersion` to 67.0 (Summer '26) across `templates/`.
+- De-stubbed 5 skills (apex / lwc / devops) to full content.
+- Two gap-analysis runs (2026-05-18, 2026-05-26) each found 0 verified gaps,
+  establishing that the catalog is saturated and that depth, not breadth, is
+  the remaining work.
+
+Version 0.4.5 was reserved for a hotfix that was never needed and never shipped.
+
+## [0.4.4] — 2026-05-10 — sfskills-mcp (post pre-prod QA)
+
+- `emit_envelope` enforces its schema, and the schemas use URN `$id`s; `run_id`
+  now rejects `:`.
+- Graceful fallback when `fastembed` is not installed, rather than an import
+  error.
+- `tooling_query` skips the automatic `LIMIT` on non-grouped aggregates;
+  `list_custom_fields` drops an unsupported SOQL `ESCAPE` clause.
+- Removed agent citations to a skill that did not exist
+  (`data-cloud-reverse-etl-to-core-salesforce`), and aligned slash-command
+  names in agent prompts with the actual command filenames.
+- Retired a stale "950+" corpus-size fallback in the server instructions.
+
+## [0.4.3] — 2026-05-10 — sfskills-mcp (production hardening)
 
 10 fixes surfaced by live-org integration testing against an Education
 Cloud sandbox (4,000+ ApexClass, 30,000+ CustomField, 694 Flow, 1,209 LWC).
@@ -108,7 +220,7 @@ Users on v0.4.2:
 - Every fix in this release was live-verified against ExampleOrg Dev PN
   (Education Cloud + NPSP + several AppExchange managed packages).
 
-## [Unreleased] — sfskills-mcp v0.4.2 (retrieval quality)
+## [0.4.2] — 2026-05-09 — sfskills-mcp (retrieval quality)
 
 Retrieval quality release. Three of the four MCP corpora (agents, templates,
 decision-trees) had no measured Hit@1 baseline before this. A 247/195/34-query
@@ -195,7 +307,7 @@ Measured on 2026-05-09 across three audits. All gates passed.
 Per-query latency (fastembed cold start ~14s once per process; per-query
 encode ~30ms after warm-up).
 
-## [Unreleased] — sfskills-mcp v0.4.1 (hygiene patch)
+## [0.4.1] — 2026-05-08 — sfskills-mcp (hygiene patch)
 
 Patch release rebuilding the data bundle attached to the GitHub Release
 without hardcoded `/Users/<author>/` paths. Wheel itself is unchanged
@@ -222,7 +334,7 @@ fetches `releases/latest`) auto-picks up the cleaned data bundle.
   (the agent validator's "duplicate prose between AGENT.md files" rule
   was rejecting both files until one of them was paraphrased).
 
-## [Unreleased] — sfskills-mcp v0.4.0 (Tier A → D)
+## [0.4.0] — 2026-05-08 — sfskills-mcp (Tier A → D)
 
 A focused 4-tier evolution of `mcp/sfskills-mcp/` from the v0.1 prototype to a v0.4 production-ready MCP server. Plan + per-tier audit history live in [`.planning/mcp-v0.2-plan.md`](./.planning/mcp-v0.2-plan.md).
 
@@ -248,7 +360,7 @@ A focused 4-tier evolution of `mcp/sfskills-mcp/` from the v0.1 prototype to a v
 
 Before Tier A: 65 pass / 2 fail. After Tier D: **177 pass / 0 fail**.
 
-## [Unreleased] — Full 8-Wave Redesign
+## [Library] — 2026-04 — Full 8-Wave Redesign
 
 A substantial redesign completed in April 2026, landing all 8 waves of the approved plan at `an internal redesign plan (kept locally)`. This section documents Waves 4b, 4c, 5, 6, 7 added on top of the earlier Wave 3 + 4a work (originally in commits `8bcabde` through `f7de019`).
 

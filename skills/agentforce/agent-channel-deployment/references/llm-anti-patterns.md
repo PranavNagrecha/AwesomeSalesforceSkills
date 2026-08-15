@@ -134,14 +134,14 @@ Configuration path:
 
 ## Anti-Pattern 6: Assuming Channel Deployment Updates Automatically When Agent Changes Are Saved
 
-**What the LLM generates:** Advice that after updating agent instructions, topics, or actions in Agentforce Builder, the changes are immediately live on all deployed channel surfaces. The LLM tells the user to "save the agent and the widget will update automatically."
+**What the LLM generates:** Advice that after updating agent instructions, subagents (called topics before April 2026), or actions in Agentforce Builder, the changes are immediately live on all deployed channel surfaces. The LLM tells the user to "save the agent and the widget will update automatically."
 
 **Why it happens:** LLMs associate saving configuration changes with immediate platform propagation, which is true for many Salesforce features (e.g., saving a Flow and activating it, or saving a Permission Set). For Agentforce channel deployments, the publish step is a separate, explicit action that is not triggered by saving agent changes.
 
 **Correct pattern:**
 
 ```text
-After any agent change (instructions, topics, actions):
+After any agent change (instructions, subagents, actions):
 1. Save and verify the change in Agentforce Builder's Conversation Preview.
 2. For each Embedded Service deployment associated with this agent:
    - Setup > Embedded Service Deployments > select deployment > Publish

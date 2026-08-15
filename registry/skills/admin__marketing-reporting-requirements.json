@@ -106,7 +106,7 @@
     "f81b366e9fb72c0ae136",
     "fd38dcb1a1fe68008837"
   ],
-  "content_hash": "1ef9de6453bb6d2142d59c7e80add41b7bc0122d7684a32c25f25bf07907e265",
+  "content_hash": "770698c2b34fd69a073e7fdbcf5cbf27252c761ab4f0022f9fc70b764cef4086",
   "dependencies": [],
   "description": "Gathering and documenting Salesforce marketing reporting requirements: defining KPIs, choosing an attribution model (First Touch / Last Touch / Even Distribution / Multi-Touch), selecting the right Campaign Influence configuration, and mapping business questions to report types and dashboard features. NOT for actually building the Campaign Hierarchy and CCI models - use admin/campaign-planning-and-attribution. NOT for CRM Analytics dataset and dashboard requirements - use admin/analytics-requirements-gathering.",
   "file_location": "skills/admin/marketing-reporting-requirements",

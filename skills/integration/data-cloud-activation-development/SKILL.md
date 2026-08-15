@@ -1,6 +1,6 @@
 ---
 name: data-cloud-activation-development
-description: "Use this skill when building developer-driven Data Cloud activation surfaces: webhook Data Action Targets with HMAC-SHA256 signing, Salesforce Platform Event data actions, Data Cloud-Triggered Flows on DMO insert. NOT for configuring standard admin-level Activation Targets (SFTP, ad platform segment p — use integration/webhook-inbound-patterns."
+description: "Use this skill when building developer-driven Data Cloud activation surfaces: webhook Data Action Targets with HMAC-SHA256 signing, Salesforce Platform Event data actions, Data Cloud-Triggered Flows on DMO insert. NOT for standard admin-level Activation Targets (SFTP, ad platform segment publishing) — use admin/data-cloud-segmentation. NOT for receiving webhooks into Salesforce — use integration/webhook-inbound-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,9 +34,9 @@ triggers:
   - "Data Action Target vs Activation Target difference"
   - "Data Cloud near-real-time event delivery setup"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-08-14
 ---
 
 # Data Cloud Activation Development

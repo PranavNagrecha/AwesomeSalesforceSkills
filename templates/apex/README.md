@@ -209,6 +209,16 @@ convention.
 - Use `WITH USER_MODE` in SOQL (Spring '23+, API 57.0). BaseSelector does this by
   default. `WITH SECURITY_ENFORCED` is removed in API 67.0 (Summer '26) — do not
   reintroduce it.
+- Keep the explicit access modifier on every `abstract`, `virtual`, and `override`
+  method when you subclass. The Apex Developer Guide's versioned behavior changes
+  state that "in API version 65.0 and later, an abstract or override method requires
+  a protected, public, or global access modifier" and that "if one of these access
+  modifiers isn't explicitly included in the method declaration, then method access
+  defaults to private" — which makes the class fail to compile. Every `.cls-meta.xml`
+  here is pinned to `67.0`, and every hook in `TriggerHandler.cls` is declared
+  `protected virtual`, so subclass overrides must be written
+  `protected override void beforeInsert()`, never a bare `override void beforeInsert()`.
+  The same applies to anything extending `BaseDomain`, `BaseService`, or `BaseSelector`.
 - Create the `TriggerControl_BypassAll` Custom Permission and assign it to your
   data-load user (section above).
 - Create a `Logger_Setting__mdt` record named `Default` with

@@ -24,49 +24,105 @@ outputs:
   - "Versioning policy doc"
   - "promotion checklist"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Prompt Template Versioning
 
-Prompt Builder templates drift because authors iterate in Setup without a change-log or rollback plan. This skill defines a three-stage lifecycle (Draft → Candidate → Active) stored as custom-metadata pointers, promoted with a signed-off checklist, and rolled back via the same CMDT.
+This skill covers the **runtime promotion mechanics** of a prompt template: how
+the live version changes, what a rollback costs in wall-clock time, and how to
+serve two variants at once. The repository shape, changelog, model-pinning
+policy, and drift detection live in `agentforce/agentforce-prompt-versioning`.
+The two meet at `activeVersionIdentifier` — that skill decides which version
+should be live, this one is about the flip.
+
+## Start From What The Platform Already Does
+
+Prompt Builder has **native versioning**. You can create and use multiple
+versions of a template and control which one users reach through activation and
+deactivation, with **only one version active at a time**. The metadata mirrors
+it: `GenAiPromptTemplate` (directory `genAiPromptTemplates`, minimum API 60.0)
+holds every retained version in `templateVersions[]` — each with `versionNumber`,
+`versionIdentifier`, `status` (`Published`/`Draft`), `content`, `primaryModel`,
+`inputs`, `outputSchema`, `responseFormat`, and `templateDataProviders` — and
+`activeVersionIdentifier` names the live one.
+
+So "how do I keep a history" is already solved. Two gaps remain, and everything
+below addresses one of them:
+
+1. **Promotion latency equals your metadata deploy latency** — an organisational
+   property, not a technical one.
+2. **Concurrent variants are impossible natively** — a hard platform limit.
 
 ## Recommended Workflow
 
-1. Create a CMDT `Prompt_Template_Binding__mdt` with fields DeveloperName, Target_Slot__c (e.g. 'SalesEmail'), Version__c, Active__c.
-2. Author new prompt versions in Setup with suffixed DeveloperNames (`SalesEmail_v3`, `_v4`).
-3. Update consumers (Flow/Apex/Agent) to read the DeveloperName from `Prompt_Template_Binding__mdt` at invocation — never hardcode the template name.
-4. Run the fixture test set against `_v4`; record metrics (accuracy, latency, token cost) in a release note.
-5. On promotion: flip Active__c on CMDT from `_v3` row to `_v4` row; on rollback, reverse. Both are deploy-validated CMDT changes — reviewable in git.
+1. Keep versions **inside one template** and have consumers reference the
+   template, never a version. Promotion is then a one-field change to
+   `activeVersionIdentifier`, and rollback is its inverse — both diffable in git,
+   neither touching a Flow or Apex class.
+2. Before promoting, run a **structural diff of the version envelope**, not just
+   the prose. A new `required` input fails at invocation rather than deploy;
+   `responseFormat` and `outputSchema` break parsers silently;
+   `templateDataProviders` changes what data reaches the model; `primaryModel`
+   invalidates the goldens even when the text is byte-identical.
+3. Order the release: **deploy consumers first** (able to handle both versions),
+   activate second, observe, retire third on a recorded date. Consumers that
+   only handle the new version remove your rollback.
+4. **Measure** the rollback wall-clock time in a rehearsal and record it. That
+   measurement — not a preference for configurability — is the only good reason
+   to add a CMDT slot-binding layer.
+5. For a canary, accept that you need **two templates plus your own resolver**:
+   bucket deterministically on user id, emit a variant-assignment event *before*
+   the ramp starts, ramp 10 → 25 → 50 → 100 with a full working day of
+   observation at each step, and delete the scaffolding on completion.
+6. Put `GenAiPromptTemplate` **early in `package.xml`** — the Metadata API
+   deploys types in file order, and the template must exist before anything
+   referencing it (for example `AiAgentScorerDefinition`) can deploy.
 
 ## Key Considerations
 
-- Prompt Builder has no native version history — once you save, the old text is gone. The CMDT pointer + named versions give you git-backed history.
-- Flow-referenced prompts are bound by DeveloperName; if you rename, the Flow breaks. Use the CMDT layer of indirection.
-- Retest whenever the underlying model changes (model upgrades happen transparently).
+- A canary with no variant tag produces two populations and no conclusion, and
+  attribution cannot be recovered after the conversations end.
+- CMDT indirection widens who can change production behaviour. Deploy binding
+  records as metadata so a change is still a reviewable commit.
+- Retention *is* the rollback plan. Keep at least two prior versions; retire on a
+  date, not on a cleanup instinct.
+- A grounding change (`templateDataProviders`) is a security event. Agents get no
+  Trust Layer masking, so new grounding re-opens the PII register review.
 
 ## Worked Examples (see `references/examples.md`)
 
-- *CMDT-backed template binding* — Sales email prompt updated weekly.
-- *Canary rollout via user-hash bucketing* — Shipping `_v4` to 10% of reps before going full.
+- *Versions inside one template* — promotion as a one-field change, with the
+  wrong version-per-template alternative shown alongside.
+- *When indirection earns its keep* — CMDT slot binding, and the honest
+  tradeoff table for when not to use it.
+- *Canary with attribution* — deterministic bucketing, variant tag, ramp rules.
+- *What actually breaks on promotion* — the four envelope fields and their
+  failure signatures.
 
 ## Common Gotchas (see `references/gotchas.md`)
 
-- **Setup UI 'Save' loses the prior text** — You can't compare v3 vs v4 without an external copy.
-- **Model silently upgrades** — Identical prompt, different output next week.
-- **Bound variable schema change** — v4 needs a new {{record.Field__c}} that doesn't exist in your sandbox.
+- **Only one version can be active** — no platform traffic split; concurrent
+  variants need two templates and your own resolver.
+- **Required-input changes fail at invocation, not deploy** — deploy consumers
+  first, always.
+- **`primaryModel` changes make the goldens stale** — even with byte-identical
+  prompt text.
 
 ## Top LLM Anti-Patterns (full list in `references/llm-anti-patterns.md`)
 
-- Hardcoding template DeveloperName in Flow/Apex — rollback requires redeploy.
-- Editing prompts in place — no diff, no rollback.
-- Skipping fixture tests 'because the change is small' — prompts amplify small changes.
+- Claiming Prompt Builder has no version history — it does, and designs built on
+  the opposite premise solve nothing.
+- Inventing a subagent-level `prompt_variants: weight:` traffic split (subagents
+  were called topics before April 2026).
+- Inventing `<modelVersion>` metadata — the real field is `primaryModel`.
 
 ## Official Sources Used
 
-- Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Einstein Trust Layer — https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm
-- Invocable Actions (Apex) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm
-- Agentforce Testing Center — https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm
+- GenAiPromptTemplate (Metadata API) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_genaiprompttemplate.htm
+- Use Multiple Versions of a Prompt Template — https://help.salesforce.com/s/articleView?id=sf.prompt_builder_use_multiple_versions.htm&type=5
+- Activate and Deactivate Prompt Templates — https://help.salesforce.com/s/articleView?id=sf.prompt_builder_activate_deactivate_templates.htm&type=5
+- Manage Prompt Templates — https://help.salesforce.com/s/articleView?id=ai.prompt_builder_manage_prompt_templates.htm&type=5
+- Create Custom Scorers (deploy ordering) — https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-custom-scorers.html

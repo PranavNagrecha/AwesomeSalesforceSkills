@@ -108,7 +108,7 @@
     "fe0b34eb39f08169ea19",
     "fffe5083f6ccd5243ca9"
   ],
-  "content_hash": "58d5d8b855821ae6c073b4f950b5cf344d5e17a6195783855bce427f39cd400a",
+  "content_hash": "fc890e38aecc729fca7ed10f1159de85cabd12ed0a5f8e847796b4625db38f6b",
   "dependencies": [],
   "description": "Sales-specific AI features in Sales Cloud: Einstein Opportunity Scoring setup and optimization, Einstein Activity Capture configuration, AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. NOT for the license check and enablement sequence before any of these are turned on \u2014 use agentforce/agentforce-sales-ai-setup. NOT for the Service Cloud equivalents such as Case Classification and Work Summaries \u2014 use agentforce/einstein-copilot-for-service.",
   "file_location": "skills/agentforce/einstein-copilot-for-sales",
@@ -161,7 +161,7 @@
   "templates": [
     "skills/agentforce/einstein-copilot-for-sales/templates/einstein-copilot-for-sales-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

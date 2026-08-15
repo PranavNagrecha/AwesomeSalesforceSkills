@@ -1,6 +1,6 @@
 ---
 name: transaction-security-policies
-description: "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monito — use security/event-monitoring."
+description: "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup — use security/event-monitoring."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - "Policy audit guidance (review active vs. monitor-only policies)"
   - "Troubleshooting checklist for policies that silently fail to fire"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Transaction Security Policies

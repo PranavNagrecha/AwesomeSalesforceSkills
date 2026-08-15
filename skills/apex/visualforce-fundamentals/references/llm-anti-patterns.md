@@ -66,7 +66,7 @@ public AccountExtension(ApexPages.StandardController sc) {
 }
 ```
 
-**Detection hint:** Search for `[SELECT` in extension classes that do NOT include `WITH USER_MODE` or `WITH SECURITY_ENFORCED`. Any such query bypasses FLS regardless of the controller type used in the page.
+**Detection hint:** Search for `[SELECT` in extension classes that do NOT include `WITH USER_MODE` or `WITH SECURITY_ENFORCED`. Any such query bypasses FLS regardless of the controller type used in the page — except on a controller pinned at `apiVersion` 67.0 or above, where database operations default to user mode and a bare query is already enforced. `WITH SECURITY_ENFORCED` is itself a finding, not a pass: it was removed in API 67.0 (Summer '26) and does not compile there, so emit `WITH USER_MODE` when rewriting. Per-version detail: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 

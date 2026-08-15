@@ -38,7 +38,7 @@
     "f15a86d81551bb6db3f3",
     "f84f9a8a1052a86e29ad"
   ],
-  "content_hash": "faa84f19ddca34aee00bd5bbf33ec13838c6954b5bcd7a5ed9a6273ebbf87f38",
+  "content_hash": "52e83da67275e0e2e7248815d0f85db44a1c0cb54a2e882741a98ed8cbf8d024",
   "dependencies": [],
   "description": "Apex test patterns for @InvocableMethod agent actions: per-reason-code branch coverage, bulk safety, callout mocking, deterministic assertions. NOT for testing whether the agent routes to the right topic or answers well \u2014 use agentforce/agent-testing-and-evaluation. NOT for designing the error envelope the tests assert on \u2014 use agentforce/agent-action-error-handling.",
   "file_location": "skills/agentforce/agent-action-unit-tests",
@@ -76,7 +76,7 @@
   "templates": [
     "skills/agentforce/agent-action-unit-tests/templates/agent-action-unit-tests-template.md"
   ],
-  "updated": "2026-08-01",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

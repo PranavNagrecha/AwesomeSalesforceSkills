@@ -1,14 +1,14 @@
 # LLM Anti-Patterns — Data Cloud Grounding For Agentforce
 
-## Anti-Pattern 1: Pack Facts Into The Topic Prompt
+## Anti-Pattern 1: Pack Facts Into The Subagent Prompt
 
-**What the LLM generates:** a topic instruction that embeds lists of policies,
-SKUs, or account statuses.
+**What the LLM generates:** a subagent instruction (subagents were called topics
+before April 2026) that embeds lists of policies, SKUs, or account statuses.
 
-**Why it happens:** the topic prompt feels like the obvious place.
+**Why it happens:** the subagent prompt feels like the obvious place.
 
-**Correct pattern:** facts go in a retriever. Topics hold rules. This
-separation lets facts change without redeploying topics.
+**Correct pattern:** facts go in a retriever. Subagents hold rules. This
+separation lets facts change without redeploying subagents.
 
 ## Anti-Pattern 2: Vectorize Structured Data
 
@@ -54,5 +54,5 @@ documented staleness window.
 
 **Why it happens:** freshness is invisible until users complain.
 
-**Correct pattern:** write the SLA into the topic design. Align ingestion and
+**Correct pattern:** write the SLA into the subagent design. Align ingestion and
 cache TTLs to the SLA.

@@ -109,14 +109,14 @@
     "fc213a26b3cbc3df09c4",
     "ff4146f99a21aa226086"
   ],
-  "content_hash": "79a0e5808f4c422b4a882fb65fed727a15a2ae2eac1bd30afb5785df00f9ebfc",
+  "content_hash": "bcded2fd9d9d8476aeea1d47f93156d1a2b30507c4d66f9cb264b3aa7fc87e56",
   "dependencies": [
     "omnistudio/omniscript-design-patterns",
     "omnistudio/omnistudio-lwc-integration",
     "omnistudio/dataraptor-patterns",
     "omnistudio/integration-procedures"
   ],
-  "description": "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-na \u2014 use omnistudio/omnistudio-deployment-datapacks.",
+  "description": "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to omnistudio. NOT for greenfield OmniStudio setup or migrating between OmniStudio-native orgs \u2014 use omnistudio/omnistudio-deployment-datapacks.",
   "file_location": "skills/omnistudio/vlocity-to-native-omnistudio-migration",
   "id": "omnistudio/vlocity-to-native-omnistudio-migration",
   "inputs": [
@@ -169,5 +169,5 @@
   ],
   "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

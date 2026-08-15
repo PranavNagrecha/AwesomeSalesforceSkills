@@ -1,6 +1,6 @@
 ---
 name: flow-formula-and-expression-patterns
-description: "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects — — use admin/formula-fields. NOT for Validation Rule formulas (different runtime context) — — use admin/validation-rules."
+description: "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects — use admin/formula-fields. NOT for Validation Rule formulas — use admin/validation-rules."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - Cached Assignment alternative when formula is referenced repeatedly inside a loop
   - Composed formula chain when the single-formula 5,000-char limit is at risk
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-27
+updated: 2026-08-14
 ---
 
 # Flow Formula And Expression Patterns

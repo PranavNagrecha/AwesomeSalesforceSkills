@@ -1,9 +1,10 @@
 # LLM Anti-Patterns — Agent Action Unit Tests
 
-Scope: tests for `@InvocableMethod` classes that Agentforce topics and Flow Builder
-invoke. Generic `@IsTest` structure, `@TestSetup` and factory design belong to
-`apex/test-class-standards` and `apex/test-data-factory-patterns` — read those for the
-fundamentals. Everything below is specific to the Invocable Request/Response contract.
+Scope: tests for `@InvocableMethod` classes that Agentforce subagents (called topics
+before April 2026) and Flow Builder invoke. Generic `@IsTest` structure, `@TestSetup` and
+factory design belong to `apex/test-class-standards` and
+`apex/test-data-factory-patterns` — read those for the fundamentals. Everything below is
+specific to the Invocable Request/Response contract.
 
 ## Anti-Pattern 1: One Request per test, so the size-and-order contract is never exercised
 

@@ -1,6 +1,6 @@
 ---
 name: metadata-api-coverage-gaps
-description: "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and. NOT for general deployment error troubleshooting, Metadata API usage tutorials, or archi — use devops/deployment-error-diagnosis."
+description: "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and 2GP managed packages. NOT for deployment error troubleshooting, Metadata API tutorials, or dependency mapping — use devops/deployment-error-diagnosis."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -31,9 +31,9 @@ outputs:
   - "Workaround recommendations (Tooling API, post-deploy scripts, Setup UI steps, or data loader)"
   - "package.xml or sfdx-project.json adjustments to exclude unsupported types and avoid silent failures"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # Metadata API Coverage Gaps

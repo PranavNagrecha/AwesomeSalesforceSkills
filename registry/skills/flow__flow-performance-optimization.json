@@ -60,9 +60,9 @@
     "f17f4fc6112e2258a9d1",
     "ff53f02049c40411b2af"
   ],
-  "content_hash": "3efdf88e0cc47cb05a00d23b6f4a0cabc51d21b269499835c3a4c0667555c29d",
+  "content_hash": "48b44f4c6afb43fc98219fe73e7f5e7fafbbed39a0aaeb5a98d7c013c1fd2537",
   "dependencies": [],
-  "description": "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the. NOT for governor-limit math (use flow-governor-limits-deep-dive) \u2014 use flow/flow-large-data-volume-patterns.",
+  "description": "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the 80/20 wins. NOT for governor-limit math \u2014 use flow/flow-governor-limits-deep-dive. NOT for LDV strategy \u2014 use flow/flow-large-data-volume-patterns.",
   "file_location": "skills/flow/flow-performance-optimization",
   "id": "flow/flow-performance-optimization",
   "inputs": [
@@ -106,7 +106,7 @@
   "templates": [
     "skills/flow/flow-performance-optimization/templates/flow-performance-optimization-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

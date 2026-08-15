@@ -1,6 +1,6 @@
 ---
 name: data-model-design-patterns
-description: "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices — lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for the Setup steps to create the object itself — use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits — use admin/lookup-and-relationship-design."
+description: "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices — lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for drawing or diagramming the model — use architect/salesforce-erd-and-diagramming. NOT for the Setup steps to create the object itself — use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits — use admin/lookup-and-relationship-design."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -40,7 +40,7 @@ outputs:
   - "Data model anti-pattern findings with remediation steps"
   - "Completed data-model-design-patterns-template.md for the org"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
 updated: 2026-08-14
 ---

@@ -19,7 +19,7 @@ Chunk overlap:    64 tokens
 Refresh mode:     Continuous (near-real-time)
 ```
 
-Step 3 — In Agentforce Setup, open the "Technical Support" agent topic and add a Grounding record:
+Step 3 — In Agentforce Setup, open the "Technical Support" subagent (called a topic before April 2026) and add a Grounding record:
 ```
 Vector Index:     knowledge_rag_index
 Top-K:            5
@@ -42,14 +42,14 @@ Step 4 — Test in Agent Preview. The Grounding tab shows which article chunks w
 
 Step 1 — Ensure the DMO includes a `Product_Line__c` field populated during ingest (e.g., derived from the source folder or document tag).
 
-Step 2 — In the agent topic context variables, resolve the current product line from the CRM record (e.g., `Account.Product_Line__c` from the linked account).
+Step 2 — In the subagent context variables, resolve the current product line from the CRM record (e.g., `Account.Product_Line__c` from the linked account).
 
 Step 3 — Configure the Grounding metadata filter:
 ```
 Product_Line__c = '{!topic.currentProductLine}'
 ```
 
-Where `topic.currentProductLine` is a context variable resolved from the active case or account record at topic invocation.
+Where `topic.currentProductLine` is a context variable resolved from the active case or account record at subagent invocation.
 
 Step 4 — Verify with the Grounding tab in Agent Preview: submit "reset my password" with `currentProductLine = 'CRM'` — confirm all 5 returned chunks are CRM-specific.
 

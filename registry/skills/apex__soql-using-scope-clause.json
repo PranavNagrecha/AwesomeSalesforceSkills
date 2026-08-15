@@ -75,7 +75,7 @@
     "f009630af211a699e225",
     "fefa2bb0152c6e2d53e9"
   ],
-  "content_hash": "4966d00d9594d211d7ea9b32dbb15af996e0ad209707ac4956c2d41dccf480b1",
+  "content_hash": "859cf810837a7b0642172f8a608197c858c46b0114a36dba7c796f83a1764e15",
   "dependencies": [],
   "description": "Use when writing or reviewing a SOQL query (in Apex, a selector, or via the API) that must return only a subset of records defined by ownership, team, territory, delegation, or an active scoping rule \u2014 through the optional USING SCOPE filterScope clause (mine, everything, team, delegated, my_territory, my_team_territory, mine_and_my_groups, scopingRule) placed after FROM and before WHERE. Also covers the mandatory USING SCOPE EVERYTHING requirement for the Scoping Rules SOQL operator. NOT for plain SELECT / WHERE / ORDER BY syntax \u2014 use apex/soql-fundamentals. NOT for WITH USER_MODE or CRUD/FLS enforcement \u2014 use apex/soql-security. NOT for the with sharing / without sharing choice \u2014 use apex/apex-with-without-sharing-decision. NOT the Metadata API ListView filterScope enum (different casing and value set), and NOT for authoring scoping rules beyond their SOQL-operator criteria.",
   "file_location": "skills/apex/soql-using-scope-clause",
@@ -118,7 +118,7 @@
   "templates": [
     "skills/apex/soql-using-scope-clause/templates/soql-using-scope-clause-template.md"
   ],
-  "updated": "2026-07-08",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -25,7 +25,8 @@ const WANT_SLUG = a.slug || null
 // is a recorded decision rather than an invisible one.
 const FORCE = a.force === true
 
-const REPO = process?.env?.SFSKILLS_ROOT || '/Users/pranavnagrecha/VS Code/Personal/SfSkills'
+// Agents run with the repo as cwd, so "." is correct for any clone.
+const REPO = process?.env?.SFSKILLS_ROOT || '.'
 
 // ---------------------------------------------------------------------------
 // Schemas
@@ -222,7 +223,15 @@ WHAT TO PRIORITISE — these are the two things this corpus measurably lacks (on
 3. Hard limits and their EXACT dimension. Number-relabelling is the commonest defect here: a real Salesforce number attached to the wrong thing (a display cap written as an export cap, an API processing limit written as a UI hard stop). Re-read the page rather than trusting a summary.
 4. What an LLM trained on older material gets WRONG about this — the specific wrong answer.
 
-CURRENCY: today is 2026-08-14. API 67.0 (Summer '26) removed \`WITH SECURITY_ENFORCED\` and inverted the Apex defaults (user mode, and \`with sharing\` for a class with no keyword), gated on the class's \`.cls-meta.xml\` apiVersion — not the org's release. Apex TRIGGERS still run in system mode at every version. See \`${REPO}/agents/_shared/AGENT_CONTRACT.md\` § "Apex security idiom by API version".
+CURRENCY: today is 2026-08-14; the current Salesforce API version is 67.0 (Summer '26). There is no 68.0 and no Winter '27 in published documentation — do not write either into a skill.
+
+Do NOT restate the Apex security idiom from memory. It is canonical in ONE place and has gone stale in-place before by being copied: read \`agents/_shared/AGENT_CONTRACT.md\` § "Apex security idiom by API version" and cite it. The controlling fact is the \`apiVersion\` in the class's own \`.cls-meta.xml\`, not the org's release.
+
+The three verbatim 67.0 statements, from https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/versioned_behavior_changes.htm — quote these rather than paraphrasing:
+  "In API version 67.0 and later, Apex runs in user context by default, meaning that the current user's permissions and field-level security (FLS) are enforced during code execution."
+  "In API version 67.0 and later, classes without an explicit sharing declaration are run in the current user context."
+  "With API version 67.0 and later, you cannot use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code."
+Note the middle one says "run in the current user context" — NOT "defaults to \`with sharing\`". Use the doc's wording; the paraphrase has caused errors here before. The same page records one 65.0 change ("an abstract or override method requires a protected, public, or global access modifier") and none for 66.0.
 
 Return the structured object.`,
   { label: 'research', phase: 'Research', schema: FACTS }

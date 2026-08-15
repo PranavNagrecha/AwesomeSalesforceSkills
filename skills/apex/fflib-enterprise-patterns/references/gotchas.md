@@ -77,3 +77,18 @@ public class AccountsDomain extends fflib_SObjectDomain {
 **When it occurs:** When developers bypass the Application factory in production code by constructing layer classes directly instead of calling `Application.Selector.newInstance(...)`.
 
 **How to avoid:** Always obtain layer class instances through the Application factory in production code. Direct construction should only appear inside the factory registration itself. In tests, use `Application.Selector.setMock(...)` or `Application.Service.setMock(...)` to inject stubs.
+
+---
+
+## Gotcha 8: A Bare `override` on an fflib Hook Stops Compiling at `apiVersion` 65.0
+
+**What happens:** fflib is override-dense — Selectors override `getSObjectType()`, `getSObjectFieldList()`, and `isEnforcingFLS()`; Domains override `onValidate()`, `onApplyDefaults()`, and the `onBefore*`/`onAfter*` hooks. Written without an access modifier (`override List<Schema.SObjectField> getSObjectFieldList()`), those methods default to private and the class no longer compiles at API version 65.0 or later.
+
+**When it occurs:** On any fflib class created or version-bumped to 65.0+, and on the large body of copy-pasted fflib sample code that predates the change. The Apex Developer Guide's versioned behavior changes state it verbatim: "In API version 65.0 and later, an abstract or override method requires a protected, public, or global access modifier," and "if one of these access modifiers isn't explicitly included in the method declaration, then method access defaults to private."
+
+Because the fflib base classes declare these hooks `public` or `protected` and the subclass method silently becomes private, the failure surfaces as a deploy-time compile error, not a behavior change. It is easy to attribute to something else when a bulk `apiVersion` bump touches dozens of classes at once.
+
+**How to avoid:**
+- Match the base class's visibility explicitly on every override: `public override Schema.SObjectType getSObjectType()`, `public override Boolean isEnforcingFLS()`, `public override void onValidate()`.
+- The gate is the `apiVersion` in each class's own `.cls-meta.xml`, not the org's release, so a staged version bump surfaces the errors in whatever order the classes are raised.
+- Treat it as a checklist item on any fflib upgrade or `apiVersion` sweep, alongside Gotcha 3's FLS opt-in — both are silent defaults that only bite when someone changes a version number.

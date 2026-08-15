@@ -1,6 +1,6 @@
 ---
 name: performance-testing-salesforce
-description: "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization ( — use data/soql-query-optimization."
+description: "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, or query tuning — use data/soql-query-optimization."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,9 +36,9 @@ outputs:
 dependencies:
   - architect/nfr-definition-for-salesforce
   - devops/environment-strategy
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # Performance Testing Salesforce

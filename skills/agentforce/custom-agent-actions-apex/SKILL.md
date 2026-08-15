@@ -30,9 +30,9 @@ outputs:
   - "Input/output DTO classes with descriptive labels"
   - "Error handling strategy returning structured failure responses"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Custom Agent Actions Apex
@@ -214,7 +214,7 @@ public static List<OrderStatusOutput> getOrderStatus(List<OrderStatusInput> inpu
 4. Implement the action class with `with sharing`. Use `WITH USER_MODE` in SOQL. Handle all exceptions and return structured error outputs — never throw to the agent.
 5. Add `callout=true` if any HTTP callout is needed. Use Named Credentials.
 6. Write an Apex unit test that covers both success and failure paths. Test with a mock callout if the action makes HTTP requests.
-7. Deploy and wire the action to the appropriate agent topic in Agentforce Builder. Test the agent's ability to invoke the action correctly by running test conversations.
+7. Deploy and wire the action to the appropriate subagent (called a topic before April 2026) in Agentforce Builder. Test the agent's ability to invoke the action correctly by running test conversations.
 
 ---
 
@@ -248,7 +248,7 @@ public static List<OrderStatusOutput> getOrderStatus(List<OrderStatusInput> inpu
 |---|---|
 | Custom action Apex class | @InvocableMethod class with input/output DTOs, security enforcement, error handling |
 | Action unit tests | Apex test class covering success and failure paths, mock callout responses if applicable |
-| Action wiring documentation | Topic and action configuration in Agentforce Builder, including which topics invoke this action |
+| Action wiring documentation | Subagent and action configuration in Agentforce Builder, including which subagents invoke this action |
 
 ---
 

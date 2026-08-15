@@ -21,9 +21,9 @@ inputs:
 outputs:
   - "Test class with per-branch assertions + bulk test"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-01
+updated: 2026-08-14
 ---
 
 # Agent Action Unit Tests

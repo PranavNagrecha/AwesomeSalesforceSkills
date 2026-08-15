@@ -7,7 +7,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Create the agent in Agent Builder and activate it" without configuring the agent user — the dedicated Salesforce user identity under which the agent executes actions, queries data, and enforces security.
 
-**Why it happens:** Agent Builder's UI focuses on topics and actions. The agent user setup (creating or selecting the user, assigning the correct profile, adding permission sets for Einstein and Agentforce) is a prerequisite that happens outside Agent Builder and is easy to overlook.
+**Why it happens:** Agent Builder's UI focuses on subagents (called topics before April 2026) and actions. The agent user setup (creating or selecting the user, assigning the correct profile, adding permission sets for Einstein and Agentforce) is a prerequisite that happens outside Agent Builder and is easy to overlook.
 
 **Correct pattern:**
 
@@ -88,7 +88,7 @@ Common failure: agent is Active in Agent Builder but users say
 
 **What the LLM generates:** System instructions like "You are a helpful assistant. Answer customer questions accurately and politely" — which provide no business context, tone guidance, compliance boundaries, or behavioral constraints.
 
-**Why it happens:** LLMs default to generic chatbot instructions. Agentforce system instructions are the highest-priority behavioral directive — they override topic instructions when there is a conflict. Generic instructions waste this high-value configuration point.
+**Why it happens:** LLMs default to generic chatbot instructions. Agentforce system instructions are the highest-priority behavioral directive — they override subagent instructions when there is a conflict. Generic instructions waste this high-value configuration point.
 
 **Correct pattern:**
 
@@ -128,9 +128,9 @@ Length: 100-300 words is typical. Be specific, not verbose.
 
 ## Anti-Pattern 4: Deploying to Production Without Testing Agent Conversation Flows
 
-**What the LLM generates:** "Build the agent, activate it, and deploy to production" as a linear process without a testing phase that validates conversation routing, action execution, error handling, and escalation across all topics.
+**What the LLM generates:** "Build the agent, activate it, and deploy to production" as a linear process without a testing phase that validates conversation routing, action execution, error handling, and escalation across all subagents.
 
-**Why it happens:** LLMs treat agent creation as a configuration task (build and ship). Agentforce agents are probabilistic — the LLM planner's action selection depends on conversation context, topic instructions, and action descriptions. Without testing, edge cases cause incorrect action invocation, data leakage, or failure to escalate.
+**Why it happens:** LLMs treat agent creation as a configuration task (build and ship). Agentforce agents are probabilistic — the LLM planner's action selection depends on conversation context, subagent instructions, and action descriptions. Without testing, edge cases cause incorrect action invocation, data leakage, or failure to escalate.
 
 **Correct pattern:**
 

@@ -48,9 +48,9 @@ Designs or audits lead routing: assignment rules, queue topology, territory assi
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/lead-management-and-conversion` — via `get_skill`
-4. `skills/admin/assignment-rules`
-5. `skills/admin/queues-and-public-groups`
-6. `skills/admin/enterprise-territory-management`
+4. `skills/admin/assignment-rules` — one assignment rule per object is active at a time and its entries evaluate top-down to first match; without it the agent emits the routing map as a set of independent rules, and the later entries it wrote for the narrower segments never fire
+5. `skills/admin/queues-and-public-groups` — a routing map that names an owner is not deployable until the queue exists with active members and a queue email; without it the agent routes leads into queues with nobody in them, which is the ownership black-hole its own audit mode is supposed to flag
+6. `skills/admin/enterprise-territory-management` — ETM assignment rules fire on Account create/update, not on Lead, and territory membership surfaces as a system-generated sharing group rather than a queue; without it the agent writes "route by territory" into the lead map and there is no rule surface to implement it on
 7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---

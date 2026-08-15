@@ -6,6 +6,13 @@ Scans `force-app/.../classes/*.cls` and `*.trigger` files and flags:
 - Triggers on Platform Event objects (`__e`) that use `WITH USER_MODE`,
   `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible`. These calls
   are no-ops in PE subscribers because the running user is Automated Process.
+  `WITH SECURITY_ENFORCED` is matched DELIBERATELY — it was removed in API 67.0
+  (Summer '26) and does not compile on a class pinned at 67.0 or above, but it
+  still appears in older source, and a detector that stopped recognising it
+  would silently pass the very code it exists to flag. Do not narrow the
+  alternation in WITH_USER_MODE. Note also that at 67.0+ database operations
+  default to user mode, so a PE subscriber with no clause at all is equally a
+  no-op here: the Automated Process user has full FLS access either way.
 - Async classes (`implements Queueable | Schedulable | Database.Batchable`)
   that use `WITH USER_MODE` but do not capture an originating user ID at
   enqueue/construction time. Without the assertion, the SOQL clause may

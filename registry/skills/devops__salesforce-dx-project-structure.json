@@ -79,9 +79,9 @@
     "f89b8df74db34945e3df",
     "fa0d87facd4afd554415"
   ],
-  "content_hash": "4bd9357ef1515d37b60df712fdf45784008bcde08adb1dd326697904bf8fa9fb",
+  "content_hash": "edaef48263b72923f3135db988d504c62f1119a0e22403aae8d947e8f6a5dcd2",
   "dependencies": [],
-  "description": "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the. NOT for scratch org definition files (use scratch-org-management), CLI command usage (us \u2014 use apex/sf-cli-and-sfdx-essentials.",
+  "description": "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the standard source-format directory tree. NOT for scratch org definition files (use devops/scratch-org-management) or CLI command usage \u2014 use apex/sf-cli-and-sfdx-essentials.",
   "file_location": "skills/devops/salesforce-dx-project-structure",
   "id": "devops/salesforce-dx-project-structure",
   "inputs": [
@@ -129,7 +129,7 @@
   "templates": [
     "skills/devops/salesforce-dx-project-structure/templates/salesforce-dx-project-structure-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

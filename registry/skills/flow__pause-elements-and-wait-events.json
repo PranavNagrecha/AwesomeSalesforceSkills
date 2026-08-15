@@ -99,13 +99,13 @@
     "f9e769a4cccb3d79d3e2",
     "fcb3ad053b62a7b5233f"
   ],
-  "content_hash": "75413aa82acd96f4060ef16bacdd22c21564047a7f8d724fb2de56f25b85dedd",
+  "content_hash": "337a72a5e3230832c83f6c0c1c5c87d2095e2eada1af6ef7da50254d07de5d4e",
   "dependencies": [
     "scheduled-flows",
     "auto-launched-flow-patterns",
     "fault-handling"
   ],
-  "description": "Use this skill when designing or troubleshooting flows that need to suspend execution and wait for an external signal \u2014 either a time-based alarm or a platform event. Trigger keywords: pause element, wait element, flow. NOT for scheduled flows that recur on a fixed schedule (use scheduled-flows), and NOT fo \u2014 use flow/flow-time-based-patterns.",
+  "description": "Use this skill when designing or troubleshooting flows that need to suspend execution and wait for an external signal \u2014 either a time-based alarm or a platform event. Trigger keywords: pause element, wait element, paused flow interview. NOT for flows that recur on a fixed schedule (use flow/scheduled-flows) or scheduled-path setup \u2014 use flow/flow-time-based-patterns.",
   "file_location": "skills/flow/pause-elements-and-wait-events",
   "id": "flow/pause-elements-and-wait-events",
   "inputs": [
@@ -161,7 +161,7 @@
   "templates": [
     "skills/flow/pause-elements-and-wait-events/templates/pause-elements-and-wait-events-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

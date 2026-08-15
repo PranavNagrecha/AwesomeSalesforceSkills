@@ -37,7 +37,7 @@ When [edge case scenario], [behavioral description]. If [scope boundary],
 
 ## Checklist
 
-- [ ] Persona is in agent-level instructions only (not topic instructions)
+- [ ] Persona is in agent-level instructions only (not subagent instructions — "topic" before April 2026)
 - [ ] Opening instruction has role declaration and voice adjectives
 - [ ] No contradictory directives (checked with AI Assist)
 - [ ] No long must/never/always chains

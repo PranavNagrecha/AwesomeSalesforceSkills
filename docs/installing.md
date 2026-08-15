@@ -3,12 +3,17 @@
 Canonical setup reference for a fresh clone.
 
 **What works with no setup at all.** A clone carries `CLAUDE.md`, the 12 router
-skills under `.claude/skills/` and the 48 run-time agent loaders under
+skills under `.claude/skills/` (a top-level `salesforce` router plus 11 domain
+routers), their 11 rosters, and the 48 run-time agent loaders under
 `.claude/agents/`. Open the directory in Claude Code and ask a Salesforce
-question: the model reads a router, opens that router's
-`references/skill-index.md` roster covering all 1,027 packages, and opens the
-one it picks. No index is involved in that path, which is why every router says
-the shipped rosters work with no setup.
+question: the model reads the router descriptions, hands off to one domain
+router, opens that router's `references/skill-index.md` — the roster of that
+domain's packages, one 220-character gloss each — and opens the one it picks.
+
+There are **eleven** rosters, not one, and Claude reads **one** of them: an Apex
+question costs the apex roster's 158 glosses, never the corpus's 1,027. No index
+is involved anywhere in that path, which is why every router says the shipped
+rosters work with no setup.
 
 **What bootstrap adds.** Three generated artefacts are deliberately not
 committed, and one command builds them:
@@ -17,11 +22,18 @@ committed, and one command builds them:
 |---|---|
 | `vector_index/chunks.jsonl` | `scripts/search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents that maintain the library |
 | `vector_index/lexical.sqlite` | same — this is the FTS5 index search reads |
-| `.claude/commands/` | the 66 slash commands inside Claude Code |
+| `.claude/commands/` | the 67 slash commands inside Claude Code |
 
 So bootstrap is required for the *search* and *slash-command* surfaces, not for
 the library to be reachable. Skipping it degrades library maintenance work and
 the CLI; it does not stop Claude from finding and reading a skill package.
+
+One consequence worth stating up front, because two of this repo's own docs got
+it wrong: **accuracy figures for search are not accuracy figures for the
+library.** Every number on this page that carries a Hit@1 or Hit@3 measures the
+keyword-search path, which most users never build. The routing path is measured
+separately and is documented in
+[architecture.md](architecture.md#how-this-path-is-measured-and-one-retraction).
 
 - New user, want search and slash commands: [1. One command](#1-one-command).
 - Wiring an AI client to the MCP server: [5. MCP install paths](#5-mcp-install-paths).
@@ -68,6 +80,13 @@ $ python3 scripts/bootstrap.py
 Bootstrap complete in 9s.
 ```
 
+That transcript is verbatim from 2026-08-01 and two of its counts have since
+moved. `commands/` holds **67** specs today (`commands/add-skill.md` was added),
+so phases 5 and 6 print 67; and the corpus now chunks to **132,743** rather than
+130,151 (`vector_index/manifest.json`, key `chunk_count`). Both numbers are live
+counts, never constants — compare them against `ls commands/*.md | wc -l` and
+against the manifest rather than against any figure written into a doc.
+
 **Those timings are one machine's, not a guarantee.** Measured on macOS 26.5,
 Apple silicon (arm64): **9 s** for a cold run with both artefacts deleted
 (3 runs, all 9 s) and **7-8 s** for a re-run (10 runs) — a re-run is faster
@@ -86,14 +105,17 @@ python3 scripts/search_knowledge.py "trigger recursion"
 
 The only entry under `Top skills:` should be `apex/recursive-trigger-prevention`.
 The number beside it is a ranking output and moves whenever the ranker is
-retuned — assert the skill id, never the score.
+retuned — assert the skill id, never the score. Measured on this checkout on
+2026-08-14, that query answers in **0.49 s**; five runs across three queries
+landed between 0.49 s and 0.72 s. If yours takes tens of seconds, see
+[troubleshooting.md](troubleshooting.md#search-is-slow-or-appears-to-hang).
 
 ### Flags
 
 | Flag | Effect |
 |---|---|
 | *(none)* | Build the lexical index, install slash commands, verify. The normal path. |
-| `--with-embeddings` | Also encode semantic embeddings. **+535 MB and hours of encode time**, and it requires `embeddings.enabled: true` in `config/retrieval-config.yaml` — see [section 4](#4-embeddings-are-opt-in). |
+| `--with-embeddings` | Also encode semantic embeddings. Requires `fastembed` to be installed and `embeddings.enabled: true` in `config/retrieval-config.yaml` — see [section 4](#4-embeddings-configured-on-inert-until-you-install-fastembed). |
 | `--skip-commands` | Do not write `.claude/commands/`. For non-Claude-Code users. |
 | `--verify-only` | Build nothing; just check that the index answers a known-good query. Exits 1 if the index is missing. |
 | `--quiet` | Suppress progress lines. Failures and the final result still print. |
@@ -109,7 +131,7 @@ disables embeddings ([section 4](#--with-embeddings-cannot-turn-embeddings-on-by
 | Phase | Does |
 |---|---|
 | 1. preflight | Checks Python ≥ 3.10 and that PyYAML + jsonschema import. Prints the resolved repo root, the interpreter path, and whether `fastembed` is available. Exits 2 with the exact remediation command if anything is missing. |
-| 2. chunks | `pipelines.sync_engine.build_state(root, skip_embeddings=True)` — scans 1,027 skill packages into ~130k retrieval chunks, in-process. |
+| 2. chunks | `pipelines.sync_engine.build_state(root, skip_embeddings=True)` — scans 1,027 skill packages into ~133k retrieval chunks, in-process. |
 | 3. integrity | Compares the freshly computed `chunks_hash` against the committed `vector_index/manifest.json`. A mismatch prints a WARNING naming both hashes and continues — it is the expected result when you have local skill edits. |
 | 4. write | Writes `vector_index/chunks.jsonl` and `vector_index/lexical.sqlite`. Both are gitignored. Nothing else is written. |
 | 5. commands | Runs `scripts/install_local_commands.py`, copying `commands/*.md` into `.claude/commands/`. |
@@ -150,10 +172,17 @@ of which **29 MB** is `.git`.
 
 | Path | Size | Why not committed |
 |---|---:|---|
-| `vector_index/lexical.sqlite` | 166 MB | Past GitHub's file-size limits; a binary that changes wholesale on every rebuild. |
-| `vector_index/chunks.jsonl` | 126 MB | Same — 130,151 lines regenerated from `skills/`. |
-| `vector_index/embeddings.jsonl` | 535 MB | Opt-in; see [section 4](#4-embeddings-are-opt-in). |
-| `.claude/commands/` | 66 files, 304 KB | Byte-for-byte copies of the tracked `commands/*.md`. Tracking both would create a permanent drift surface between two copies of the same file. |
+| `vector_index/lexical.sqlite` | 165 MB | Past GitHub's file-size limits; a binary that changes wholesale on every rebuild. |
+| `vector_index/chunks.jsonl` | 124 MB | Same — 132,743 lines regenerated from `skills/`. |
+| `vector_index/skill_embeddings.jsonl` | 5 MB | 1,027 vectors, one per skill. Written only when `fastembed` is installed; see [section 4](#4-embeddings-configured-on-inert-until-you-install-fastembed). |
+| `.claude/commands/` | 67 files | Byte-for-byte copies of the tracked `commands/*.md`. Tracking both would create a permanent drift surface between two copies of the same file. |
+
+`vector_index/embeddings.jsonl`, the chunk-level vector file that earlier
+versions of this page listed at 535 MB, is **not built by the current
+pipeline**. It is absent from this checkout and nothing loads it. Any cost
+figure quoting it describes a configuration nobody is running.
+
+Total on this checkout: **295 MB** (`du -sh vector_index/`).
 
 **In the clone:**
 
@@ -198,51 +227,87 @@ built the index. Run `python3 scripts/bootstrap.py --verify-only` — unlike
 
 ---
 
-## 4. Embeddings are opt-in
+## 4. Embeddings: configured on, inert until you install fastembed
 
-`requirements.txt` installs PyYAML and jsonschema only. `fastembed` is
-present but commented out, on purpose, and `scripts/bootstrap.py` passes
-`skip_embeddings=True` by default — so the default run is deterministic and
-takes seconds even if you happen to have `fastembed` installed globally.
+Three facts only make sense together, and this page has previously stated one
+of them without the others:
 
-To opt in:
+1. `config/retrieval-config.yaml` sets `embeddings.enabled: true`. The config
+   turns them **on**.
+2. `fastembed` is commented out of `requirements.txt` (line 12). A plain
+   `pip install -r requirements.txt` does **not** install it.
+3. With no backend present, `pipelines/embedding_backends.py` logs a warning
+   and falls back to lexical-only without crashing.
+
+So the accurate statement is that embeddings are **configured on and inert
+until you install `fastembed` yourself**. They are not "opt-in behind a flag" —
+the config already enables them — and they are not "on by default" — the
+dependency is not installed. Both earlier phrasings, including this section's
+old title, were wrong.
+
+`scripts/bootstrap.py` additionally passes `skip_embeddings=True` by default, so
+the standard run stays deterministic and takes seconds even on a machine that
+happens to have `fastembed` installed globally.
+
+To use them:
 
 ```bash
+python3 -m pip install 'fastembed>=0.4,<1.0'
 python3 scripts/bootstrap.py --with-embeddings
 ```
 
-### Cost: hours, not minutes
+### What you get, and what it costs
 
-Disk cost is **+535 MB** (`vector_index/embeddings.jsonl`). Time cost is
-**hours**. Measured against this corpus on 2026-08-01: a 521-chunk strided
-sample (every 250th chunk, so it spans every domain; mean 481 chars) encoded
-through `BAAI/bge-small-en-v1.5` at **9.4 chunks/sec**, with model load and
-cold start excluded. At that rate the full 130,151 chunks take **~3 h 50 m**.
+Skill-level vectors are what both search surfaces actually load:
+`vector_index/skill_embeddings.jsonl`, 1,027 vectors at **about 5 MB**, built by
+`python3 scripts/build_skill_embeddings.py`. Per-query overhead is roughly 50 ms
+once the model is warm, after a one-off cold start of about 14 s.
 
-| Source | Full-corpus encode |
+The **535 MB and several hours** this section used to quote describes
+`vector_index/embeddings.jsonl`, the chunk-level file. The current pipeline does
+not build it, it is absent from this checkout, and `scripts/search_knowledge.py`
+loads an empty mapping when it asks for it. Those figures are kept here only
+because they are still accurate about a configuration you could construct:
+
+| Source | Full chunk-level encode |
 |---|---|
 | `config/retrieval-config.yaml` (comment) | ~2 h 20 m on M-series CPU |
 | `requirements.txt` (comment) | ~2-3 h on CPU |
-| Measured here, 2026-08-01 | ~3 h 50 m (9.4 chunks/sec × 130,151 chunks) |
+| Measured 2026-08-01 | ~3 h 50 m (9.4 chunks/sec, strided 521-chunk sample through `BAAI/bge-small-en-v1.5`, machine already busy) |
 
-Treat the measured figure as an upper bound: it was taken on Apple silicon with
-the machine already busy (load average 3.5 across 8 cores), so an idle machine
-should land nearer the repository's own ~2 h 20 m. All three agree on the order
-of magnitude. **Budget hours and run it overnight.** Re-runs are far cheaper —
+If you build it, budget hours and run it overnight. Re-runs are far cheaper —
 the content-hash cache in `pipelines/embedding_backends.py` re-encodes only
 chunks whose text changed.
 
-Retrieval benefit is small and depends on which query set you measure:
+### Retrieval benefit — measured 2026-08-14
 
-| Query set | Without embeddings | With embeddings |
-|---|---|---|
-| 400 curated fixtures | 95.5% Hit@1 / 99.8% Hit@3 | identical — **0.0pp** |
-| Held-out realistic phrasings | 34.4% Hit@1 / 42.2% Hit@3 | 35.7% / 46.8% |
+Over the 154 hand-written held-out queries, with
+`python3 evals/measurement/run_heldout.py --json` versus `--no-embeddings`, on a
+machine carrying `fastembed` 0.8.0:
 
-The curated fixtures are close paraphrases of the `triggers:` frontmatter that
-is itself indexed, so they measure the easy case; the held-out set is the
-honest one, and there embeddings buy about **+1.3pp Hit@1 / +4.6pp Hit@3**.
-Enable this only if you are actively evaluating semantic retrieval.
+| retrieval config | Hit@1 | Hit@3 | Coverage: NONE |
+|---|---:|---:|---:|
+| lexical-only | 39.6% | 48.1% | 0.0% |
+| + `fastembed` skill vectors | **40.9%** | **53.9%** | 0.0% |
+
+**+1.3pp Hit@1 and +5.8pp Hit@3.** Both rows measure the keyword-search path
+only, not the routing path a clone or plugin user exercises.
+
+This replaces the table that stood here before, which quoted 34.4%/42.2% →
+35.7%/46.8% on the same held-out set and 95.5%/99.8% with "identical — 0.0pp"
+on 400 curated fixtures, then concluded *"enable this only if you are actively
+evaluating semantic retrieval"*. Two corrections. The held-out absolutes moved
+because the index moved underneath them — note that
+`config/retrieval-config.yaml` itself quotes a third pair, 36.4/44.2 → 37.0/48.7,
+from the 2026-08-13 re-enable. Re-run `run_heldout.py` rather than copying any
+of the three. And the 400 fixtures are close paraphrases of the `triggers:`
+frontmatter that is itself indexed, so they measure the easy case and saturate
+near the ceiling; a saturated benchmark cannot show a difference in either
+direction, which is why "no difference at all" was the wrong conclusion to draw
+from it.
+
+The 0% `Coverage: NONE` rate is itself worth noting: a 2026-07-31 measurement
+on realistic phrasings recorded 23.3%.
 
 ### `--with-embeddings` cannot turn embeddings on by itself
 
@@ -267,6 +332,14 @@ $ python3 scripts/bootstrap.py --with-embeddings
 BOOTSTRAP FAILED: embeddings are disabled repository-wide, so --with-embeddings would encode nothing.
 Set embeddings.enabled: true in config/retrieval-config.yaml, or drop the flag.
 ```
+
+**You will not see that failure on the current config**, which has
+`embeddings.enabled: true` and has since 2026-05-09 (re-enabled 2026-08-13). The
+transcript above is what the guard prints if someone flips the key back. The
+condition you *are* likely to hit is the other one: the flag runs, the config
+agrees, and `fastembed` is not installed — in which case phase 1 prints
+`fastembed  not installed (lexical-only retrieval — this is the default)` and
+the encode produces nothing. Install the package first.
 
 ---
 
@@ -440,8 +513,11 @@ skips the embedding encode and writes nothing tracked.)
 
 | Symptom | Go to |
 |---|---|
-| `Coverage: NONE` on every query | [Section 3](#the-failure-mode-if-you-skip-bootstrap) — you have not built the index. |
+| Claude opened the wrong skill package | [`docs/troubleshooting.md`](./troubleshooting.md#claude-opened-the-wrong-skill-package) — the shipped path has no coverage gate, so this is its characteristic failure. Nothing to install. |
+| Claude says the topic is not covered | [`docs/troubleshooting.md`](./troubleshooting.md#claude-says-the-topic-is-not-covered) — almost always the same cause; every router forbids the claim without pasted lookup output. |
+| `Coverage: NONE` on every query | [Section 3](#the-failure-mode-if-you-skip-bootstrap) — you have not built the index. This means "nothing built", never "empty library". |
 | Slash commands missing in Claude Code | Run `python3 scripts/bootstrap.py`, then restart Claude Code. It loads commands at session start. |
+| Search takes tens of seconds | [`docs/troubleshooting.md`](./troubleshooting.md#search-is-slow-or-appears-to-hang) — no longer normal; expect 0.5–0.7 s. |
 | `ModuleNotFoundError: No module named 'mcp.server.fastmcp'` | [Section 5](#the-mcp-sdk-pin) — pip resolved mcp 2.0.x. |
 | `sfskills-mcp-init: HTTP 404` | [Section 6](#6-cutting-a-github-release-maintainer-only) — expected; use the clone path. |
 | Client can't find the repo root | [`CONNECT.md`](../mcp/sfskills-mcp/docs/CONNECT.md) — set `SFSKILLS_REPO_ROOT` to an absolute path. |
@@ -451,8 +527,10 @@ Related documents:
 
 - [`docs/getting-started.md`](./getting-started.md) — remains authoritative for
   the three-entry-point framing (Claude Code checkout / MCP server / plain
-  export to Cursor, Windsurf and other tools). This page covers setup
-  mechanics; that one covers which entry point you want.
+  export to Cursor, Windsurf and other tools), including the split inside the
+  Claude Code entry point between the no-build router path and the optional
+  search build. This page covers setup mechanics; that one covers which entry
+  point you want.
 - [`docs/installing-the-plugin.md`](./installing-the-plugin.md) — Claude Code
   plugin packaging.
 - [`docs/installing-single-agents.md`](./installing-single-agents.md) —

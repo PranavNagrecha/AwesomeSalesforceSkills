@@ -4,7 +4,7 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 
 ## Anti-Pattern 1: Treating the LLM context window as durable memory
 
-**What the LLM generates:** Agent topic prompts that reference "earlier in the conversation" with no fallback when the turn is truncated out of context.
+**What the LLM generates:** Subagent prompts (topics before the April 2026 rename) that reference "earlier in the conversation" with no fallback when the turn is truncated out of context.
 
 **Why it happens:** LLMs pattern-match from chat apps where the whole history is always in scope.
 
@@ -38,15 +38,15 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 
 ---
 
-## Anti-Pattern 4: Re-asking for identity on every topic entry
+## Anti-Pattern 4: Re-asking for identity on every subagent entry
 
-**What the LLM generates:** Each topic starts with "First, can I have your account number?"
+**What the LLM generates:** Each subagent starts with "First, can I have your account number?"
 
-**Why it happens:** LLMs treat topics as independent scripts.
+**Why it happens:** LLMs treat subagents as independent scripts.
 
-**Correct pattern:** Cross-topic identity variables with timed expiry. See the SKILL's Pattern 2.
+**Correct pattern:** Cross-subagent identity variables with timed expiry. See the SKILL's Pattern 2.
 
-**Detection hint:** More than one topic with an identity-verification as its first step.
+**Detection hint:** More than one subagent with an identity-verification as its first step.
 
 ---
 
@@ -58,7 +58,7 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 
 **Correct pattern:** Two-strike rule. After 2 consecutive unparseable turns, escalate to human. Document the strike count as an explicit session variable.
 
-**Detection hint:** Topic logic that re-asks without incrementing a strike counter.
+**Detection hint:** Subagent logic that re-asks without incrementing a strike counter.
 
 ---
 
@@ -68,21 +68,21 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 
 **Why it happens:** LLMs default to "verify-before-action" without caching.
 
-**Correct pattern:** Verify once, cache in session variable, re-verify only on topic transitions or long pauses.
+**Correct pattern:** Verify once, cache in session variable, re-verify only on subagent transitions or long pauses.
 
-**Detection hint:** Topic logic that calls a verification action more than once per conversation.
+**Detection hint:** Subagent logic that calls a verification action more than once per conversation.
 
 ---
 
-## Anti-Pattern 7: Topic entry conditions that don't handle missing variables
+## Anti-Pattern 7: Subagent entry conditions that don't handle missing variables
 
-**What the LLM generates:** Topic entry condition: `session.accountId != null`. If the variable was never set, the topic never activates.
+**What the LLM generates:** Subagent entry condition: `session.accountId != null`. If the variable was never set, the subagent never activates.
 
 **Why it happens:** LLMs don't think about null-handling in declarative conditions.
 
 **Correct pattern:** Entry condition includes an alternate path: "if `session.accountId` is null, ask for it first, then proceed."
 
-**Detection hint:** Topic entry conditions that reference session variables without a null-path.
+**Detection hint:** Subagent entry conditions that reference session variables without a null-path.
 
 ---
 

@@ -55,11 +55,11 @@ Two modes:
 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
-3. `skills/admin/custom-metadata-types`
-4. `skills/admin/custom-metadata-types-and-settings`
-5. `skills/apex/custom-metadata-in-apex`
-6. `skills/devops/environment-specific-value-injection`
-7. `skills/apex/feature-flags-and-kill-switches`
+3. `skills/admin/custom-metadata-types` — carries the protected-vs-public choice that decides whether a subscriber can edit the shipped defaults; without it the agent emits every type as public and packaged configuration becomes editable in the subscriber org
+4. `skills/admin/custom-metadata-types-and-settings` — a Hierarchy Custom Setting resolves user, then profile, then org default, and a type with no org-default row returns null for everyone the hierarchy misses; without it the audit mode cannot tell a deliberately sparse hierarchy from the "no org default" defect it is meant to report
+5. `skills/apex/custom-metadata-in-apex` — runtime mutation of a CMT record happens through the Apex Metadata API, which is asynchronous and gives the caller no synchronous confirmation; without it the agent flags "mutated at runtime" as an anti-pattern in audit mode with nothing to say about what the caller must do instead
+6. `skills/devops/environment-specific-value-injection` — CMT records deploy as metadata while Custom Setting rows do not, so a value that differs per org must not ship as a deployed CMT default; without it the agent emits a design whose sandbox endpoint promotes into production alongside the type
+7. `skills/apex/feature-flags-and-kill-switches` — a kill switch has to be flippable in production without a deploy, which rules out the protected CMT the design mode otherwise defaults to; without it the agent designs a flag that can only be turned off by shipping a release
 8. `skills/admin/picklist-and-value-sets` — CMT entity references to pickups
 9. `templates/apex/cmdt/` — if CMT query patterns are emitted
 10. `templates/admin/naming-conventions.md`

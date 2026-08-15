@@ -157,4 +157,4 @@ List<Account> accs = Database.queryWithBinds(
 );
 ```
 
-**Detection hint:** `WITH USER_MODE` or `WITH SECURITY_ENFORCED` co-occurring with string concatenation of variables in the same query.
+**Detection hint:** `WITH USER_MODE` or `WITH SECURITY_ENFORCED` co-occurring with string concatenation of variables in the same query. `WITH SECURITY_ENFORCED` is a second finding in its own right — it was removed in API 67.0 (Summer '26), so on a class pinned at 67.0 or above the query fails at parse time; replace it with `WITH USER_MODE` as well as fixing the concatenation.

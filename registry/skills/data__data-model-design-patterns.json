@@ -133,9 +133,9 @@
     "fbea0e9ea47b04783f84",
     "fc64f790b030ef71a5eb"
   ],
-  "content_hash": "20d5d310ddb44901759139be0478904c2c4492e6f18020cc4b1e548616b93ebb",
+  "content_hash": "2f7fe9bdef8fa7d277a1a68646457cabb9fd2191313879c738ac63c50b74ce63",
   "dependencies": [],
-  "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for the Setup steps to create the object itself \u2014 use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits \u2014 use admin/lookup-and-relationship-design.",
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for drawing or diagramming the model \u2014 use architect/salesforce-erd-and-diagramming. NOT for the Setup steps to create the object itself \u2014 use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits \u2014 use admin/lookup-and-relationship-design.",
   "file_location": "skills/data/data-model-design-patterns",
   "id": "data/data-model-design-patterns",
   "inputs": [
@@ -191,5 +191,5 @@
   ],
   "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

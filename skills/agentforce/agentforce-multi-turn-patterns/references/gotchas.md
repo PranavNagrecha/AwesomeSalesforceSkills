@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Session variables don't survive a topic exit unless scoped cross-topic
+## Gotcha 1: Session variables don't survive a subagent exit unless scoped cross-subagent
 
-**What happens:** State captured in topic A disappears when the conversation enters topic B. The agent asks the user to re-provide the order number it already had.
+**What happens:** State captured in subagent A (called a topic before April 2026) disappears when the conversation enters subagent B. The agent asks the user to re-provide the order number it already had.
 
-**When it occurs:** Declaring session variables at topic-internal scope (default) when they should be cross-topic (e.g., `verifiedAccountId`).
+**When it occurs:** Declaring session variables at subagent-internal scope (default) when they should be cross-subagent (e.g., `verifiedAccountId`).
 
-**How to avoid:** At variable creation, explicitly mark cross-topic scope for any fact that should survive topic transitions. Document scope in the variable description.
+**How to avoid:** At variable creation, explicitly mark cross-subagent scope for any fact that should survive subagent transitions. Document scope in the variable description.
 
 ---
 
@@ -72,13 +72,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 8: Two topics with overlapping keywords cause routing instability
+## Gotcha 8: Two subagents with overlapping keywords cause routing instability
 
 **What happens:** User says "cancel". Sometimes it routes to Cancel_Subscription; sometimes to Cancel_Order. Same input, different routes run-to-run.
 
-**When it occurs:** Topic descriptions aren't discriminating. The LLM makes coin-flip decisions.
+**When it occurs:** Subagent descriptions aren't discriminating. The LLM makes coin-flip decisions.
 
-**How to avoid:** Rewrite topic descriptions so they're mutually exclusive. Use concrete examples in each topic's description. If ambiguity is unavoidable, add a router topic that asks: "Are you trying to cancel your subscription or an individual order?"
+**How to avoid:** Rewrite subagent descriptions so they're mutually exclusive. Use concrete examples in each subagent's description. If ambiguity is unavoidable, add a router subagent that asks: "Are you trying to cancel your subscription or an individual order?"
 
 ---
 

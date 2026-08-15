@@ -98,9 +98,9 @@
     "fb670aeb41874ff34766",
     "fda12b0938ea30322684"
   ],
-  "content_hash": "79b477cd358cecc866517dbd03a066ebea117e6a32d2f952e2ecbc18233fbca4",
+  "content_hash": "4bf338bff12295bee614d0d002d8f605f86e3202444978b2d36e5a098c0efeb6",
   "dependencies": [],
-  "description": "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub. NOT for basic scratch org lifecycle (use scratch-org-management), scratch org definition \u2014 use devops/scratch-org-management.",
+  "description": "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub. NOT for basic scratch org lifecycle, definition files, or test data seeding \u2014 use devops/scratch-org-management.",
   "file_location": "skills/devops/scratch-org-pools",
   "id": "devops/scratch-org-pools",
   "inputs": [
@@ -144,7 +144,7 @@
   "templates": [
     "skills/devops/scratch-org-pools/templates/scratch-org-pools-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

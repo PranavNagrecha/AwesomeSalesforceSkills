@@ -7,7 +7,9 @@ export const meta = {
   ],
 }
 
-const REPO = "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+// Repo root. Agents run with the repo as cwd, so "." is correct for any clone.
+// Override with SFSKILLS_ROOT when driving this from somewhere else.
+const REPO = process?.env?.SFSKILLS_ROOT || "."
 
 // 154 held-out queries, split into batches. Each batch is routed independently.
 const BATCHES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

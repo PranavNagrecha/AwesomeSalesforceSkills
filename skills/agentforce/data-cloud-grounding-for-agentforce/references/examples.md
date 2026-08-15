@@ -1,13 +1,13 @@
 # Data Cloud Grounding — Examples
 
-## Example 1: Order Status Topic (Structured Retriever)
+## Example 1: Order Status Subagent (Structured Retriever)
 
 **User utterance:** "Where is my order?"
 
 **Design:**
 - Retriever: structured, against `Order_Engagement_DMO`.
 - Filter: `UnifiedIndividualId = :contextUser` AND `Status != 'Delivered'` ORDER BY `OrderDate DESC` LIMIT 3.
-- Topic instruction: "Use the retriever result. If none, say 'no recent open orders.' Do not guess."
+- Subagent instruction (subagents were called topics before April 2026): "Use the retriever result. If none, say 'no recent open orders.' Do not guess."
 - Citation: OrderId.
 
 **Why:** small, focused, filtered, cheap, deterministic.
@@ -21,7 +21,7 @@
 **Design:**
 - Retriever: vector, against Knowledge articles chunked by section heading.
 - Top-k: 3, rerank to 1.
-- Topic instruction: "Quote the steps from the article; do not paraphrase policy language."
+- Subagent instruction: "Quote the steps from the article; do not paraphrase policy language."
 - Citation: article URL + section anchor.
 
 **Why:** semantic chunking preserves steps together; top-1 after rerank keeps prompt small.

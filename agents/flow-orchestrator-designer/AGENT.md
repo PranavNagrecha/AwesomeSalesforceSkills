@@ -90,7 +90,7 @@ Two modes:
 5. `skills/flow/pause-elements-and-wait-events` — work-item waiting semantics
 6. `skills/flow/screen-flows` — interactive steps are Screen Flows
 7. `skills/flow/auto-launched-flow-patterns` — background steps
-8. `skills/flow/fault-handling`
+8. `skills/flow/fault-handling` — the fault-connector patterns every stage subflow the design emits has to carry; without it the agent ships stages whose steps have no fault path, so a mid-orchestration failure rolls that step's DML back and leaves the work item open with nowhere to route the error
 9. `skills/admin/approval-processes` — when Orchestrator is the right target vs Approval Process
 10. `skills/admin/queues-and-public-groups` — work-item routing
 11. `standards/decision-trees/automation-selection.md`

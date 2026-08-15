@@ -27,9 +27,9 @@ outputs:
   - "A describe-backed confirmation that the target object supports the chosen scope"
   - "Guidance on pairing the scope with WITH USER_MODE / with sharing so the query is also secure"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-08-14
 ---
 
 # SOQL USING SCOPE Clause

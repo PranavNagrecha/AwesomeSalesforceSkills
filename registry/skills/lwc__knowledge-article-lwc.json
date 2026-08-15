@@ -91,9 +91,9 @@
     "fe44b11feec5264e7a30",
     "fe711fb2cbe66c2010ba"
   ],
-  "content_hash": "6a51bdd87b1aa96d19d1dff7c1b18238be6e363e4fcc4b1a04174d1719f3f610",
+  "content_hash": "2eddd8afe77dc4f0e58bba326716274587281b7ce530e0210cfbe94cb9590cfe",
   "dependencies": [],
-  "description": "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles \u2014 covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience. NOT for Knowledge admin setup (article types, data categories, channels), Einstein Artic \u2014 use admin/knowledge-base-administration.",
+  "description": "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles \u2014 covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience. NOT for Knowledge admin setup (article types, categories) or Einstein Article Recommendations \u2014 use admin/knowledge-base-administration.",
   "file_location": "skills/lwc/knowledge-article-lwc",
   "id": "lwc/knowledge-article-lwc",
   "inputs": [
@@ -142,7 +142,7 @@
   "templates": [
     "skills/lwc/knowledge-article-lwc/templates/knowledge-article-lwc-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

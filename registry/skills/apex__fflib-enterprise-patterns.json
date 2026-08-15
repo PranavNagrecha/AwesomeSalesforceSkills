@@ -5,6 +5,7 @@
     "0b1572a1c74408a42f43",
     "0e50c9a473196f040e41",
     "13c6990832b0585522da",
+    "14421c16bdbef6a3de46",
     "1991d44796143f2d529a",
     "1e07642135b8f76fcb97",
     "1ed39dfd93ca081c4fba",
@@ -20,6 +21,7 @@
     "33c5972bcdc532803760",
     "34ce0b04430e1b7753e4",
     "37fd4fafb3fe072c011e",
+    "3d3442d04107a0800581",
     "4651c7b278e5936ca175",
     "47c6507df69028d7b9b1",
     "49473aca92a3edfef667",
@@ -66,7 +68,7 @@
     "f8423951871d4ffbd09d",
     "f969b16a262bd0c298fa"
   ],
-  "content_hash": "1654e6a4e47d21bd8a8e0c1d48dbb1c13a289749990ead247295e03e87a5e96d",
+  "content_hash": "47b12cea58a0b3168e88edc7d68483592744e625dd164a991fc56daa10fd4d0b",
   "dependencies": [
     "apex-design-patterns"
   ],
@@ -113,7 +115,7 @@
   "templates": [
     "skills/apex/fflib-enterprise-patterns/templates/fflib-enterprise-patterns-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

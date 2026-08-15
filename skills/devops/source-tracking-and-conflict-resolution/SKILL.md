@@ -1,6 +1,6 @@
 ---
 name: source-tracking-and-conflict-resolution
-description: "Use when diagnosing and resolving SFDX source-tracking conflicts between a. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments — use devops/metadata-api-retrieve-deploy."
+description: "Use when diagnosing and resolving SFDX source-tracking conflicts between a local project and a Salesforce org. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments — use devops/metadata-api-retrieve-deploy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - "Recovery procedure for corrupted tracking files"
   - "Pre-deployment conflict preview output from --dry-run"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Source Tracking and Conflict Resolution

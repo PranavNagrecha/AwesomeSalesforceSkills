@@ -72,12 +72,12 @@
     "fa48de52921d40fcf4e4",
     "fefe7cc3db070c05d158"
   ],
-  "content_hash": "86ddfd36f4820a7c4c9621b7d5964097814899b292d7ea236b7c68ce2bf46d65",
+  "content_hash": "b95959b14ae863fbcbf679b86f9c053d618be91bea166f3e1427932e874e9d0a",
   "dependencies": [
     "architect/nfr-definition-for-salesforce",
     "devops/environment-strategy"
   ],
-  "description": "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, query optimization ( \u2014 use data/soql-query-optimization.",
+  "description": "Use when planning or executing load tests, stress tests, or performance benchmarks against a Salesforce org. Covers Salesforce Scale Test, third-party tools (JMeter, BlazeMeter, k6), API throughput testing, Experience Page Time. NOT for Apex unit test performance assertions, LWC Jest tests, or query tuning \u2014 use data/soql-query-optimization.",
   "file_location": "skills/devops/performance-testing-salesforce",
   "id": "devops/performance-testing-salesforce",
   "inputs": [
@@ -124,7 +124,7 @@
   "templates": [
     "skills/devops/performance-testing-salesforce/templates/performance-testing-salesforce-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

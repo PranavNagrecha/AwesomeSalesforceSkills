@@ -4,7 +4,7 @@
 Walks an SFDX-style metadata tree (force-app/) and reports configuration drift
 that would degrade Sales Coach effectiveness or block the rollout entirely:
 
-1. Missing or unpublished agent definition that references Sales Coach topics
+1. Missing or unpublished agent definition that references Sales Coach subagents
    (looks under force-app/main/default/genAiPlannerBundles/, agents/, or
    bots/, depending on metadata vintage).
 2. Opportunity stage list drift from the standard stage names that the
@@ -216,7 +216,7 @@ def main() -> int:
                 print(f"      - {s}")
             print(
                 "    Either align labels back to standard, or remap stage "
-                "triggers in the agent topic instructions. See gotchas.md → "
+                "triggers in the subagent instructions. See gotchas.md → "
                 "Gotcha 1."
             )
             findings_count += 1

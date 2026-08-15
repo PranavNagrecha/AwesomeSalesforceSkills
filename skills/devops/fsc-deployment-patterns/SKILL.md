@@ -1,6 +1,6 @@
 ---
 name: fsc-deployment-patterns
-description: "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) — including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation. NOT for general Salesforce metadata deployment patterns (use pre-deployment-checklist or — use architect/fsc-architecture-patterns."
+description: "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) — including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation. NOT for general metadata deployment (use devops/pre-deployment-checklist) or FSC architecture — use architect/fsc-architecture-patterns."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ outputs:
   - "Namespace compatibility audit: FinServ__ vs standard-object API names across metadata artifacts"
   - "Post-deploy CDS validation checklist"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-08-14
 ---
 
 # FSC Deployment Patterns

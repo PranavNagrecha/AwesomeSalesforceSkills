@@ -112,9 +112,9 @@
     "fc0ca8c137e115e48633",
     "fe45908ac0dbc3f50bbc"
   ],
-  "content_hash": "672642cc7d38651009bce787296508e3a7735e589c4fe23c235cf4e8f5efc370",
+  "content_hash": "f914682e695f1b61233616c93247e8ce1926a0162b31391900f6913c8de7568b",
   "dependencies": [],
-  "description": "Use this skill when designing or implementing an integration between a Student Information System (SIS) \u2014 such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or. NOT for Salesforce Admissions Connect application processing, Financial Aid integration \u2014 use architect/sales-cloud-integration-patterns.",
+  "description": "Use this skill when designing or implementing an integration between a Student Information System (SIS) \u2014 such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or Workday Student \u2014 and Salesforce Education Cloud. NOT for Salesforce Admissions Connect application processing, Financial Aid integration \u2014 use architect/sales-cloud-integration-patterns.",
   "file_location": "skills/integration/sis-integration-patterns",
   "id": "integration/sis-integration-patterns",
   "inputs": [
@@ -167,7 +167,7 @@
   "templates": [
     "skills/integration/sis-integration-patterns/templates/sis-integration-patterns-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

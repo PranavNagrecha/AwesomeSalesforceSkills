@@ -1,6 +1,6 @@
 ---
 name: flow-transactional-boundaries
-description: "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the. NOT for choosing Flow vs Apex (use automation-selection — use flow/record-triggered-flow-patterns."
+description: "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the limits that reset when a new transaction starts. NOT for choosing Flow vs Apex (use admin/process-automation-selection) or record-triggered design — use flow/record-triggered-flow-patterns."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,9 +34,9 @@ outputs:
   - Governor-limit budget per boundary
   - Idempotency + recoverability notes
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Flow Transactional Boundaries

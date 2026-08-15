@@ -108,12 +108,12 @@
     "febbe1c80a8aa1d2c0ed",
     "ff2407d7242ac7cab7db"
   ],
-  "content_hash": "f0555ded6c8751c3dee8d619d8ed6d28e31953a568146972cfa3b55d0ef9913d",
+  "content_hash": "1a4a5e7a875d718ae9a35bd76581d163eef73b64da5afab88164e9c5aeaa8dd5",
   "dependencies": [
     "retry-and-backoff-patterns",
     "apex-rest-services"
   ],
-  "description": "Designing HTTP error classification, RFC 7807-style error payload structure, and client-side error parsing for Salesforce REST/SOAP integrations and custom Apex REST endpoints. Use when deciding which HTTP status. NOT for retry execution mechanics or circuit breaker implementation (use retry-and-backo \u2014 use architect/integration-framework-design.",
+  "description": "Designing HTTP error classification, RFC 7807-style error payload structure, and client-side error parsing for Salesforce REST/SOAP integrations and custom Apex REST endpoints. Use when deciding which HTTP status codes an endpoint returns and how callers classify them. NOT for retry mechanics or circuit breakers (use integration/retry-and-backoff-patterns) \u2014 use architect/integration-framework-design.",
   "file_location": "skills/integration/api-error-handling-design",
   "id": "integration/api-error-handling-design",
   "inputs": [
@@ -161,7 +161,7 @@
   "templates": [
     "skills/integration/api-error-handling-design/templates/api-error-handling-design-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -81,9 +81,9 @@
     "e8e9b7fddaac78922ceb",
     "f8b5bd2496d7b82f8ff4"
   ],
-  "content_hash": "4028f3c39d7fa296823c53e571537224c0d8400a130c55df0b9e86747ff9db26",
+  "content_hash": "2f5759544927b861cce9d58b14a7a7a7c605bed66c3e5131149cb1cc0ed13cf1",
   "dependencies": [],
-  "description": "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying. NOT for SOQL queries against standard Salesforce objects, not for Data Cloud segment fil \u2014 use data/data-cloud-data-streams.",
+  "description": "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying. NOT for SOQL against standard objects, Data Cloud segment filtering in the UI, or vector search \u2014 use data/data-cloud-data-streams.",
   "file_location": "skills/integration/data-cloud-query-api",
   "id": "integration/data-cloud-query-api",
   "inputs": [
@@ -138,7 +138,7 @@
   "templates": [
     "skills/integration/data-cloud-query-api/templates/data-cloud-query-api-template.md"
   ],
-  "updated": "2026-07-07",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

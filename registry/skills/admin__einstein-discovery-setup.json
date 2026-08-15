@@ -77,7 +77,7 @@
     "fb8dff2fa0b4ec577823",
     "fc555f3f988e5e02ac6b"
   ],
-  "content_hash": "aa402e3dbc268e14de481dbb852da3871c74327ac99e5fd36efb9156a73be76b",
+  "content_hash": "2b5dc44922d40adf26e2d13c4a03e2e503048dd41dcf72d90e12804a47b1a726",
   "dependencies": [],
   "description": "Use this skill when an admin needs to create an Einstein Discovery story in CRM Analytics Studio, configure prediction definitions, deploy writeback fields, set up what-if analysis, or manage model refresh and activation. Trigger keywords: Einstein Discovery story, prediction definition, writeback field, CRM Analytics Studio, model refresh, what-if analysis, bulk scoring, prediction field, 1OR prefix. NOT for the Einstein Discovery Flow action or model-health monitoring in Model Manager \u2014 use admin/einstein-discovery-deployment. NOT for Einstein Prediction Builder, a separate product needing no CRM Analytics license \u2014 use agentforce/einstein-prediction-builder. NOT for programmatic scoring through the Connect REST API \u2014 use agentforce/einstein-discovery-development.",
   "file_location": "skills/admin/einstein-discovery-setup",

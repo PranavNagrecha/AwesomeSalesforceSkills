@@ -1,6 +1,6 @@
 ---
 name: secure-coding-review-checklist
-description: "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness — covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing, Shield Platform Encryption key management, or — use apex/soql-security."
+description: "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness — covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing or Shield Platform Encryption key management — use security/platform-encryption. NOT for fixing a single query's injection or FLS gap — use apex/soql-security."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -25,9 +25,9 @@ outputs:
   - "Prioritized list of security findings with line-level remediation guidance"
   - "Security review readiness checklist with pass/fail status per category"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-13
+updated: 2026-08-14
 ---
 
 # Secure Coding Review Checklist

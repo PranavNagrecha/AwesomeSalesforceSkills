@@ -98,7 +98,7 @@
     "fcdcabaf2adca54b4fa5",
     "fd9fa995aa2060fe206d"
   ],
-  "content_hash": "0b9c9721ef64e6bb40a53ee7fb4e3be87d2b4b363d8da02b9b7f816411871d84",
+  "content_hash": "73b739b259066ffd7afd6aa1079e85878ba4f218567935234d76b937a3642e4e",
   "dependencies": [],
   "description": "Configure, audit, or troubleshoot Einstein Trust Layer security controls for generative AI features including Agentforce, Einstein Copilot, and Prompt Builder. Trigger keywords: trust layer, data masking, zero data retention, ZDR, toxicity detection, AI audit trail, grounding controls, PII masking LLM, Einstein generative AI security. NOT for redaction you build yourself in prompt-assembly code \u2014 use agentforce/agentforce-pii-redaction. NOT for org-wide AI governance and policy-as-code architecture \u2014 use architect/ai-governance-architecture.",
   "file_location": "skills/agentforce/einstein-trust-layer",
@@ -147,7 +147,7 @@
   "templates": [
     "skills/agentforce/einstein-trust-layer/templates/einstein-trust-layer-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

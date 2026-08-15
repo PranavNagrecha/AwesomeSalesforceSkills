@@ -6,7 +6,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Agent API Name Is Permanent — You Cannot Rename It
 
-**What happens:** A practitioner creates an agent with a placeholder or temporary API Name during early development (for example, `Test_Agent_1` or `Service_Agent_v2`). Later, when the name needs to match a naming convention or org standard, they discover there is no rename option. The API Name field is greyed out and read-only in Setup. The only resolution is to create a new agent with the correct API Name and manually recreate all topics and actions.
+**What happens:** A practitioner creates an agent with a placeholder or temporary API Name during early development (for example, `Test_Agent_1` or `Service_Agent_v2`). Later, when the name needs to match a naming convention or org standard, they discover there is no rename option. The API Name field is greyed out and read-only in Setup. The only resolution is to create a new agent with the correct API Name and manually recreate all subagents (called topics before April 2026) and actions.
 
 **When it occurs:** Any time the agent's API Name is not finalized before the first save. This is most common when building under time pressure or when naming conventions are decided after development starts.
 
@@ -26,7 +26,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: Embedded Service Deployment Must Be Republished After Any Agent Change
 
-**What happens:** A team updates agent instructions, modifies a topic, or adds a new action in sandbox and deploys to production. After deployment and activation, the chat widget on the Experience Cloud site still shows old behavior. The agent in Setup shows the correct updated configuration. Users report that the changes are not taking effect.
+**What happens:** A team updates agent instructions, modifies a subagent, or adds a new action in sandbox and deploys to production. After deployment and activation, the chat widget on the Experience Cloud site still shows old behavior. The agent in Setup shows the correct updated configuration. Users report that the changes are not taking effect.
 
 **When it occurs:** Any time agent metadata is updated after the Embedded Service deployment was last published. The published deployment captures a snapshot of the channel configuration at publish time. Changes to the agent after the last publish are not reflected until the deployment is republished.
 
@@ -44,10 +44,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Topic-Action Design Is A Prerequisite, Not A Post-Launch Cleanup
+## Gotcha 5: Subagent-Action Design Is A Prerequisite, Not A Post-Launch Cleanup
 
-**What happens:** An agent is activated with template or placeholder topics (such as the default topics included with the Agentforce Service Agent template that have not been customized). The agent appears Active and the channel widget shows up. Users interact with the agent but it consistently routes to the wrong topic, cannot complete tasks, or falls back to "I cannot help with that" for every request. The team assumes the agent needs tuning and spends time adjusting instructions before realizing the topics have no meaningful classification descriptions or actions.
+**What happens:** An agent is activated with template or placeholder subagents (such as the default subagents included with the Agentforce Service Agent template that have not been customized). The agent appears Active and the channel widget shows up. Users interact with the agent but it consistently routes to the wrong subagent, cannot complete tasks, or falls back to "I cannot help with that" for every request. The team assumes the agent needs tuning and spends time adjusting instructions before realizing the subagents have no meaningful classification descriptions or actions.
 
-**When it occurs:** When agent creation and topic design are treated as sequential rather than parallel workstreams. Creating the agent shell is fast; designing working topics and actions takes deliberate effort and should be complete before activation.
+**When it occurs:** When agent creation and subagent design are treated as sequential rather than parallel workstreams. Creating the agent shell is fast; designing working subagents and actions takes deliberate effort and should be complete before activation.
 
-**How to avoid:** Follow the `agentforce/agent-topic-design` and `agentforce/agent-actions` skills as part of the creation workflow. Do not activate the agent until at least one topic has a clear classification description and at least one executable action that can be tested end-to-end in Conversation Preview.
+**How to avoid:** Follow the `agentforce/agent-topic-design` and `agentforce/agent-actions` skills as part of the creation workflow. Do not activate the agent until at least one subagent has a clear classification description and at least one executable action that can be tested end-to-end in Conversation Preview.

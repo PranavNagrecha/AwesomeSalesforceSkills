@@ -1,12 +1,12 @@
 # Examples — Agentforce In Slack
 
-## Example 1: Enabling The General Slack Actions Topic To Unlock Create Canvas
+## Example 1: Enabling The General Slack Actions Subagent To Unlock Create Canvas
 
 **Context:** A Salesforce admin has connected an Agentforce agent to a company Slack workspace using the standard Slack deployment flow. The agent is active and responding to Slack messages. The team wants the agent to create Slack canvases summarizing meeting action items when asked.
 
 **Problem:** After connecting the agent to Slack, no Slack-specific actions appear in the agent's action list. The agent can answer questions using its Salesforce-backed actions but has no ability to create canvases, send DMs, or search message history. Users who ask the agent to "create a canvas" receive a response indicating the agent does not know how to do that.
 
-**Root cause:** The General Slack Actions topic is not added to agents automatically when a Slack deployment is configured. It must be explicitly added.
+**Root cause:** The General Slack Actions subagent (called a topic before April 2026) is not added to agents automatically when a Slack deployment is configured. It must be explicitly added.
 
 **Solution:**
 
@@ -16,7 +16,7 @@ Step 2 — In Salesforce Setup, navigate to **Agentforce Agents** and click on t
 
 Step 3 — Click the **Topics** tab. Click **Add Topic**.
 
-Step 4 — In the topic picker, search for **General Slack Actions**. This is a Salesforce-managed standard topic — it appears in the standard topic library, not in custom topics.
+Step 4 — In the topic picker, search for **General Slack Actions**. This is a Salesforce-managed standard subagent — it appears in the standard library, not among custom subagents.
 
 Step 5 — Select it and click **Add**. Save the agent.
 
@@ -33,7 +33,7 @@ highest-priority open cases. You can view it here: [canvas link]
 
 Step 8 — If canvas creation fails, check the Einstein Trust Layer logs for the action invocation trace. A `CANVAS_CREATE_PLAN_RESTRICTION` error code indicates the Slack plan does not support canvases. A `SCOPE_MISSING` error indicates the `canvas:write` OAuth scope was not granted during app installation.
 
-**Why it works:** The General Slack Actions topic contains the Create Canvas, Search Message History, Send DM, and Look Up User actions bundled together. Adding the topic registers these actions with the agent's reasoning engine. The agent can then select the appropriate Slack-native action based on the user's request, just as it would select any other registered action.
+**Why it works:** The General Slack Actions subagent contains the Create Canvas, Search Message History, Send DM, and Look Up User actions bundled together. Adding the subagent registers these actions with the agent's reasoning engine. The agent can then select the appropriate Slack-native action based on the user's request, just as it would select any other registered action.
 
 ---
 
@@ -84,4 +84,4 @@ Step 6 — Verify in Trust Layer logs that the private action is now stamped wit
 - The Slack API's `canvas.create` endpoint and DM endpoint require app-level permissions that the Salesforce-managed app already holds — creating a second Slack app or token for this purpose creates a duplicate permission footprint that Slack workspace admins have to manage separately.
 - Maintenance burden: when Slack updates its API or the managed app's capabilities expand with new Salesforce releases, the custom action duplicates effort and may fall out of sync.
 
-**Correct approach:** Add the General Slack Actions standard topic to the agent in Agent Builder. This is a one-step configuration that unlocks all four Slack-native actions (Create Canvas, Search Message History, Send DM, Look Up User) without any custom code, additional OAuth tokens, or Trust Layer gaps.
+**Correct approach:** Add the General Slack Actions standard subagent to the agent in Agent Builder. This is a one-step configuration that unlocks all four Slack-native actions (Create Canvas, Search Message History, Send DM, Look Up User) without any custom code, additional OAuth tokens, or Trust Layer gaps.

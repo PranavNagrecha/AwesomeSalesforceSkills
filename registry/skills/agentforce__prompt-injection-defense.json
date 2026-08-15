@@ -6,27 +6,25 @@
     "18c8b25622d9114f1fb5",
     "1c1518aab9b9112c8fba",
     "22f6f2dc728e6303067b",
-    "2c4286d7c24d944bd409",
     "319a3cd858ab715199ea",
     "32740c6a7886079b1a97",
     "3677efc35293d65d03d1",
     "3747a00b90894e957ca1",
     "3854dca006f6a3d23888",
     "3a03a22626adb7f108ce",
+    "3a4ef2e0e394a0c308d7",
     "3a55667852cf698dad19",
     "3d2267a3c625557b97c6",
     "444ed50f8b674fda3fda",
     "44ff47f14ed54ef87449",
     "5069de71bdc2d7b8d442",
     "5ed3f2ddc6d56afe96aa",
-    "601b599b4cf7e8228af4",
     "679fb9b3876e8f42946e",
     "7b14e527c01006abba73",
-    "845e7ebbbbba6a60ac77",
     "85bf866d5f21b5f31826",
+    "8a9394a76adcec1d05df",
     "8e9c978c101157a81e23",
     "8f318dc746dd7011c1a6",
-    "9693745e87f1bb4d8626",
     "9e337a51ba8299c6fb6e",
     "a61395a7b943c07466a9",
     "a88c5eb23b1f33fef191",
@@ -37,9 +35,11 @@
     "c6f804a6461fa748128d",
     "d1e4c83546276f9df12a",
     "d47705f449aa29ef6cbe",
-    "dd751097104e5fa12c7f"
+    "dd751097104e5fa12c7f",
+    "e7f49fa015efb506f78b",
+    "fae681232e3287fa49ac"
   ],
-  "content_hash": "c7cf09047cf6104cde2ec137611431593e6bb764f92b3f827c77a155f9bd8423",
+  "content_hash": "13d2e920ead3484b351a77215d315cc813a57d44cc0b1c86c9ecb7c1bf70db5a",
   "dependencies": [],
   "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify adversarial test cases and guardrails, scoped to the agent boundary rather than general application-security review. NOT for the overall agent test plan (topic coverage, golden sets, regression harness) \u2014 use agentforce/agentforce-testing-strategy. NOT for keeping PII out of prompts, model calls and logs \u2014 use agentforce/agentforce-pii-redaction.",
   "file_location": "skills/agentforce/prompt-injection-defense",
@@ -80,7 +80,7 @@
   "templates": [
     "skills/agentforce/prompt-injection-defense/templates/prompt-injection-defense-template.md"
   ],
-  "updated": "2026-08-01",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

@@ -43,9 +43,9 @@ outputs:
   - "explicit statement of what the log cannot tell you plus concrete next steps"
   - "ordered recommendations from stop-the-bleeding to long-term fix"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-24
+updated: 2026-08-14
 ---
 
 # Salesforce Debug Log Analysis
@@ -262,7 +262,7 @@ The `references/` folder has dedicated guides. Load the ones relevant to the cat
 - `governor-and-performance.md`: all governor limits, per-namespace tracking, CPU and heap analysis, SOQL selectivity, query plan reading, performance optimization patterns
 - `legacy-automation.md`: workflow rules, process builder (now flow), approval processes, assignment rules, auto-response, escalation, entitlement, time-based actions, order of execution
 - `integration.md`: callouts, named credentials, external services, platform events as integration, CDC, outbound messaging, streaming API, OAuth, Bulk API, MuleSoft/Boomi, Salesforce Connect
-- `security-sharing.md`: OWD, role hierarchy, sharing rules, manual sharing, Apex managed sharing (__Share), implicit sharing, territory management, restriction rules, profile vs permission set, FLS, CRUD, with/without sharing, WITH SECURITY_ENFORCED, USER_MODE/SYSTEM_MODE, Shield Platform Encryption, Guest User, Community/Experience Cloud access
+- `security-sharing.md`: OWD, role hierarchy, sharing rules, manual sharing, Apex managed sharing (__Share), implicit sharing, territory management, restriction rules, profile vs permission set, FLS, CRUD, with/without sharing, USER_MODE/SYSTEM_MODE and the `apiVersion` 67.0 default-user-mode change, the removal of WITH SECURITY_ENFORCED at 67.0, Shield Platform Encryption, Guest User, Community/Experience Cloud access
 - `specialized-topics.md`: Platform Cache, Transaction Finalizers, Continuations, Big Objects, Custom Metadata, Custom Settings, Duplicate Rules, Matching Rules, Lead Conversion, Case Merge, Omni-Channel, Einstein Bots, Einstein Next Best Action, Einstein Activity Capture, Lightning Message Service, Salesforce Functions (deprecated), Heroku Connect, Data Cloud/CDP, Slack integration, Approval Processes, Account/Opportunity/Case Teams, Record Types, Person Accounts, S2S, mobile, and more
 - `recipes.md`: end-to-end investigation workflows for the most common problems: flip-flop field, merge failure, governor limit, UNABLE_TO_LOCK_ROW concurrency, performance bottleneck, recursion/infinite loop, missing field update, user access issue, async job stuck, integration silently failing, bulk upload failing, emergency "stop the bleeding" checklist
 - `examples.md`, `gotchas.md`, `well-architected.md`, `llm-anti-patterns.md`: repo-standard quality-gate files (worked examples, platform gotchas, pillar framing, anti-patterns to avoid).

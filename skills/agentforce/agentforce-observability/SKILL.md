@@ -32,16 +32,22 @@ outputs:
   - "Dashboard or report configuration for key agent performance metrics"
   - "Interpretation of session trace data to diagnose specific agent issues"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 # Agentforce Observability
 
 Use this skill when monitoring Agentforce agent sessions in production, analyzing conversation logs stored in Data Cloud, measuring agent effectiveness (deflection rate, escalation rate, avg response latency), or diagnosing specific agent behavior issues by examining session trace data.
 
-Agentforce Observability is a product built on the **Session Tracing Data Model** with three capability pillars: **Agent Analytics** (topic-level effectiveness metrics, surfaced through Tableau Next), **Agent Optimization** (unresolved-interaction and knowledge-gap analysis over the reasoning chain), and **Agent Health Monitoring** (near-real-time uptime/reliability signals on deployed agents). There is no single unified maturity label: Agent Analytics and Agent Optimization reached GA (Nov 2025), Agent Health Monitoring is a Spring '26 addition, and the programmatic OTel session-export API is documented as Beta. Confirm the current status of each pillar against the official docs before you rely on it.
+Agentforce Observability is a product built on the **Session Tracing Data Model** with three capability pillars: **Agent Analytics** (subagent-level effectiveness metrics, surfaced through Tableau Next), **Agent Optimization** (unresolved-interaction and knowledge-gap analysis over the reasoning chain), and **Agent Health Monitoring** (near-real-time uptime/reliability signals on deployed agents). There is no single unified maturity label: Agent Analytics and Agent Optimization reached GA (Nov 2025), Agent Health Monitoring is a Spring '26 addition, and the programmatic OTel session-export API is documented as Beta. Confirm the current status of each pillar against the official docs before you rely on it.
+
+> **Terminology.** Salesforce renamed agent *topics* to *subagents* in April 2026.
+> Nothing about behaviour changed, and the API surface did not follow: the DMO
+> attributes in the SQL below are still spelled `TopicName` and
+> `TopicConfidenceScore`, and `GenAiPlugin` is still the metadata type behind a
+> subagent. This skill says *subagent* in prose and leaves identifiers alone.
 
 ---
 
@@ -78,7 +84,7 @@ Key metrics computable from these objects:
 - **Deflection rate:** Sessions with a resolved/completed status (agent resolved without human) ÷ total sessions
 - **Escalation rate:** Sessions with an escalated status ÷ total sessions
 - **Avg agent latency:** Average response latency across interactions
-- **Sessions by topic:** Topic-level effectiveness is surfaced primarily through **Agent Analytics** in Tableau Next rather than a standalone raw topic DMO
+- **Sessions by subagent:** Subagent-level effectiveness is surfaced primarily through **Agent Analytics** in Tableau Next rather than a standalone raw subagent DMO
 
 ### Utterance Analysis
 
@@ -86,7 +92,7 @@ The `AIAgentInteractionMessage` DMO contains the full text of each user message 
 
 ### The Three Pillars
 
-- **Agent Analytics** — topic-level effectiveness across your agents: agent topics, average feedback, and metrics such as **escalation rate, deflection rate, and abandoned sessions**. Consumed through Tableau Next.
+- **Agent Analytics** — subagent-level effectiveness across your agents: subagents, average feedback, and metrics such as **escalation rate, deflection rate, and abandoned sessions**. Consumed through Tableau Next.
 - **Agent Optimization** — go a layer deeper: dig into unresolved interactions, identify knowledge gaps, and inspect the agent's reasoning chain (user utterances, LLM calls, tool/action invocations, guardrail checks, response timing) session by session. This is a distinct pillar from Analytics, gated behind the **Access Agentforce Optimization** permission set.
 - **Agent Health Monitoring** — near-real-time uptime, reliability, and responsiveness signals across your deployed agent fleet, so silent failures surface as actionable trust signals rather than going unnoticed until users complain.
 
@@ -160,7 +166,7 @@ WHERE u.SessionId = '5MR...<session-id>'
 ORDER BY u.SequenceNumber ASC
 ```
 
-**Why it works:** This gives the full turn-by-turn conversation with topic classification at each turn — the raw material for diagnosing misrouting or poor response quality.
+**Why it works:** This gives the full turn-by-turn conversation with subagent classification at each turn — the raw material for diagnosing misrouting or poor response quality.
 
 ### Monitoring Average Response Latency
 
@@ -219,7 +225,7 @@ Step-by-step instructions for setting up Agentforce observability:
 1. **Enable the feature and grant access.** In **Setup → Einstein Audit, Analytics, and Monitoring Setup**, turn on **Agentforce Session Tracing and Data Model** and **Agentforce Optimization**. Assign the **Tableau Next Limited Consumer** / **Tableau Next Platform Analyst** and **Data Cloud User** permission sets (and **Access Agentforce Optimization** for Optimization users), and confirm **API Enabled** on the profile.
 2. **Confirm the Session Tracing DMOs are populating.** Run a simple count in Data Cloud SQL: `SELECT COUNT(*) FROM AIAgentSession` (allow ~30 minutes for session tracing data to land). If empty, check Data Cloud provisioning and the Agentforce Data Cloud connector.
 3. **Establish baseline metrics.** Review escalation/deflection/abandonment in Agent Analytics (Tableau Next), or run baseline deflection and session-count queries for the last 30 days, and record them for comparison. Remember analytics lags session tracing by ~45–60 minutes.
-4. **Build a monitoring view in Tableau Next** with: sessions per day, deflection-rate trend, escalation-rate trend, avg latency per agent, top topics by volume.
+4. **Build a monitoring view in Tableau Next** with: sessions per day, deflection-rate trend, escalation-rate trend, avg latency per agent, top subagents by volume.
 5. **Turn on Agent Optimization** to surface unresolved interactions and knowledge gaps, and use session-ID filtering to pull full interaction/step traces for escalated or QA-flagged sessions.
 6. **Set up alert thresholds and external export.** If deflection rate drops below target or avg latency exceeds an SLA, trigger a Salesforce Flow-based notification to the Agentforce admin team, and lean on **Agent Health Monitoring** for near-real-time silent-failure signals. Optionally wire the **OTel export API (Beta)** into an external APM (Splunk/Datadog/New Relic) via an External Client App if your org standardizes agent telemetry outside Salesforce — remember its 72-hour, single-session limits.
 7. **Retire any legacy dashboard dependency.** The pre-GA Agentforce Analytics dashboard retired May 31, 2026; migrate anything still pointing at it to the Session Tracing DMOs + Tableau Next.
@@ -269,6 +275,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- agentforce-guardrails — configuring topic scope and escalation triggers that affect session outcomes
-- agent-topic-design — designing topics that reduce misrouting (which shows up in observability data)
+- agentforce-guardrails — configuring subagent scope and escalation triggers that affect session outcomes
+- agent-topic-design — designing subagents that reduce misrouting (which shows up in observability data)
 - einstein-trust-layer — Trust Layer audit logging (distinct from session observability)

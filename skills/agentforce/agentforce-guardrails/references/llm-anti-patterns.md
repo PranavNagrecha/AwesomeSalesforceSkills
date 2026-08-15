@@ -5,12 +5,12 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Putting Routing Logic in the Scope Field
 
-**What the LLM generates:** Instructions that add routing exclusions to the topic Scope field, such as:
+**What the LLM generates:** Instructions that add routing exclusions to the subagent Scope field (subagents were called *topics* before April 2026), such as:
 ```
 Scope: "Handle IT support questions only. Do not handle HR questions, billing questions, or returns."
 ```
 
-**Why it happens:** LLMs conflate the Scope field with the Classification Description because both relate to topic boundaries. Training data may include generic descriptions of "topic scope" that blur this distinction. The LLM treats Scope as the all-purpose topic boundary control.
+**Why it happens:** LLMs conflate the Scope field with the Classification Description because both relate to subagent boundaries. Training data may include generic descriptions of "topic scope" that blur this distinction. The LLM treats Scope as the all-purpose subagent boundary control.
 
 **Correct pattern:**
 ```
@@ -84,9 +84,9 @@ their websites directly."
 
 ---
 
-## Anti-Pattern 4: Skipping Omni-Channel Verification for the Escalation Topic
+## Anti-Pattern 4: Skipping Omni-Channel Verification for the Escalation Subagent
 
-**What the LLM generates:** Configuration steps that end at setting the Escalation topic routing destination in the agent setup UI, without verifying the full Omni-Channel path:
+**What the LLM generates:** Configuration steps that end at setting the Escalation subagent routing destination in the agent setup UI, without verifying the full Omni-Channel path:
 ```
 Steps:
 1. Go to Agent Setup > Escalation Topic
@@ -109,39 +109,39 @@ Steps:
    conversation appears in Omni-Channel supervisor console and can be accepted
 ```
 
-**Detection hint:** Any Escalation topic configuration that does not include an end-to-end test step is incomplete. Flag for addition of verification step.
+**Detection hint:** Any Escalation subagent configuration that does not include an end-to-end test step is incomplete. Flag for addition of verification step.
 
 ---
 
-## Anti-Pattern 5: Confusing Action Filters With Topic Filters
+## Anti-Pattern 5: Confusing Action Filters With Subagent Filters
 
-**What the LLM generates:** Topic filter instructions that claim to globally block an action:
+**What the LLM generates:** Subagent filter instructions that claim to globally block an action:
 ```
 "To prevent the Refund Action from being called in the General Inquiry topic,
 add a topic filter on the Refund Action within the General Inquiry topic.
 This will prevent the action from being invoked anywhere the user might misuse it."
 ```
 
-**Why it happens:** LLMs understand per-topic action configuration but conflate topic-level and global filtering because both are described as "filters" in documentation. The distinction between scope of effect (one topic vs. all topics) is frequently missed.
+**Why it happens:** LLMs understand per-subagent action configuration but conflate subagent-level and global filtering because both are described as "filters" in documentation. The distinction between scope of effect (one subagent vs. all subagents) is frequently missed.
 
 **Correct pattern:**
 ```
-Topic filter: Applied within a specific topic's action configuration. Controls whether
-an action is available within that topic. Does NOT prevent the action from being invoked
-in other topics where it is also configured.
+Subagent filter: Applied within a specific subagent's action configuration. Controls whether
+an action is available within that subagent. Does NOT prevent the action from being invoked
+in other subagents where it is also configured.
 
-Action filter: Applied on the action itself (not on the topic). Globally prevents any
-topic from invoking the action. Use for actions that must never be accessible to the agent,
-regardless of topic context.
+Action filter: Applied on the action itself (not on the subagent). Globally prevents any
+subagent from invoking the action. Use for actions that must never be accessible to the agent,
+regardless of subagent context.
 
 For the Refund Action:
-- If it should be available in Returns topic only: add action to Returns topic; do NOT
-  add it to General Inquiry or any other topic.
+- If it should be available in Returns subagent only: add action to Returns subagent; do NOT
+  add it to General Inquiry or any other subagent.
 - If it should never be accessible to the agent at all: apply an action filter at the
   action level.
 ```
 
-**Detection hint:** If the recommendation says "add a topic filter to block globally", that is incorrect. Global blocking requires an action filter, not a topic filter.
+**Detection hint:** If the recommendation says "add a subagent filter to block globally", that is incorrect. Global blocking requires an action filter, not a subagent filter.
 
 ---
 
@@ -153,9 +153,9 @@ For the Refund Action:
 
 **Correct pattern:**
 ```
-Agentforce guardrails (this skill): topic Scope, system instructions, restricted topics,
-action filters, Escalation topic, Instruction Adherence monitoring.
-These control agent behavior at the topic/action/instruction level.
+Agentforce guardrails (this skill): subagent Scope, system instructions, restricted topics,
+action filters, Escalation subagent, Instruction Adherence monitoring.
+These control agent behavior at the subagent/action/instruction level.
 
 Einstein Trust Layer (separate concern): controls the LLM API call pipeline,
 including PII masking, toxicity filtering, and zero-data-retention enforcement.

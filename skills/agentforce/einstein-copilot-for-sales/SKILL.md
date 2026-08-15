@@ -33,14 +33,14 @@ outputs:
   - Pipeline Inspection AI insights visible to forecast managers
   - Email recommendations and composition enabled for reps
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Einstein Copilot for Sales
 
-This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the sales-specific AI features in Sales Cloud: Opportunity Scoring, Einstein Activity Capture (EAC), AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. It does NOT cover core Agentforce agent creation, agent topic design, or Einstein Trust Layer setup — use the dedicated skills for those areas.
+This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the sales-specific AI features in Sales Cloud: Opportunity Scoring, Einstein Activity Capture (EAC), AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. It does NOT cover core Agentforce agent creation, subagent design (subagents were called topics before April 2026), or Einstein Trust Layer setup — use the dedicated skills for those areas.
 
 ---
 
@@ -210,5 +210,5 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `einstein-trust-layer` — Configure data masking, toxicity filters, and audit trails for all Einstein generative features before enabling email generation
-- `agent-topic-design` — Use when building custom Agentforce agent topics for Sales processes beyond the built-in Einstein Sales AI features
+- `agent-topic-design` — Use when building custom Agentforce subagents for Sales processes beyond the built-in Einstein Sales AI features
 - `agentforce-agent-creation` — Use when creating a full custom Agentforce agent for Sales use cases rather than enabling the pre-built Einstein Sales AI features

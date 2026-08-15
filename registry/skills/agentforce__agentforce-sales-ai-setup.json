@@ -89,7 +89,7 @@
     "fb9e06e8fdf392f53efc",
     "fe3506cebd7c84e94a8e"
   ],
-  "content_hash": "46cbec0b9eab06b9938ce6c046f0ec10db5d7905ef1341b4d6d614dff2a098f8",
+  "content_hash": "1265e33bf8056a03c7e931b45a923973907ec4c060f72a6ab6f06ecab60679c8",
   "dependencies": [],
   "description": "Setup and configuration of Einstein for Sales AI features: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI \u2014 prerequisites, license checks, feature sequencing, data readiness validation. NOT for configuring or troubleshooting Einstein Activity Capture and Relationship Insights in a live org \u2014 use agentforce/einstein-copilot-for-sales. NOT for building an Agentforce agent \u2014 use agentforce/agentforce-agent-creation. NOT for its topic boundary design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-sales-ai-setup",
@@ -141,7 +141,7 @@
   "templates": [
     "skills/agentforce/agentforce-sales-ai-setup/templates/agentforce-sales-ai-setup-template.md"
   ],
-  "updated": "2026-04-11",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

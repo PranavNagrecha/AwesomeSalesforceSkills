@@ -82,17 +82,17 @@ session.put('worker', worker);   // The agent can now reference any field
 
 ---
 
-## Anti-Pattern 6: Fabricating standard topic names or SKU details
+## Anti-Pattern 6: Fabricating standard subagent names or SKU details
 
 **What the LLM generates:**
 
 > "The Employee Service license includes the following standard topics out of the box: Leave_Request_Standard, Benefits_Open_Enrollment_Walkthrough, PTO_Balance_Lookup_Standard, Onboarding_Day_One_Checklist, ..."
 
 **Why it's wrong:**
-- The names of shipped topics, the exact SKU coverage, and the entitlement matrix change per release. Naming specific topics in this confident way creates an expectation the org will then look for in their builder UI. When they don't find that exact name, they assume their license is wrong.
+- The names of shipped subagents (called topics before April 2026, and still called that in the metadata API), the exact SKU coverage, and the entitlement matrix change per release. Naming specific subagents in this confident way creates an expectation the org will then look for in their builder UI. When they don't find that exact name, they assume their license is wrong.
 - Releases (Spring '25, Summer '25, Winter '26) shift this content; LLM training data lags real release notes.
 
-**What to do instead:** Recommend opening Agentforce Builder → Templates → Employee Service in the actual org and reviewing the real shipped roster against the actual entitlement. Frame the rollout in terms of "configure the standard topics your license includes" rather than naming a specific list.
+**What to do instead:** Recommend opening Agentforce Builder → Templates → Employee Service in the actual org and reviewing the real shipped roster against the actual entitlement. Frame the rollout in terms of "configure the standard subagents your license includes" rather than naming a specific list.
 
 ---
 

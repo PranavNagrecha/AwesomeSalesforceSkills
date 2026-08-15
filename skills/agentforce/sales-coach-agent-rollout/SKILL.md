@@ -36,9 +36,9 @@ outputs:
   - "Privacy memo: what's sent to the LLM, what's logged where, retention defaults, opt-out path"
   - "Measurement plan with leading indicators (engagement frequency) and lagging indicators (win-rate delta, ramp time)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-08-14
 ---
 
 # Sales Coach Agent Rollout
@@ -46,6 +46,11 @@ updated: 2026-05-08
 Activate this skill when an admin, enablement lead, or RevOps team is rolling out the **Sales Coach** agent — the Agentforce out-of-the-box template that role-plays opportunity-stage conversations with sellers and gives stage-appropriate feedback. The skill is about *deployment, configuration, and adoption* of the template, not about building a bespoke coaching agent from scratch.
 
 Note on naming: depending on doc vintage and licensing pack, this template is referenced as **Sales Coach**, **Agentforce Sales Coach**, or **Einstein Sales Coach**. Treat the names as interchangeable for this skill — the underlying template is the same.
+
+> **Terminology.** Agentforce *topics* were renamed **subagents** in April 2026.
+> This skill leads with *subagent*. The older term still appears in metadata and
+> API names, in older Help articles, and in many orgs; nothing about behaviour
+> changed with the rename.
 
 ---
 
@@ -65,7 +70,7 @@ Gather this context before configuring anything:
 
 ### Concept 1 — What Sales Coach actually is
 
-Sales Coach is a packaged Agentforce *agent template* — a pre-defined agent with topics, actions, and instructions tuned to opportunity-stage selling. It does three things, layered:
+Sales Coach is a packaged Agentforce *agent template* — a pre-defined agent with subagents, actions, and instructions tuned to opportunity-stage selling. It does three things, layered:
 
 1. **Role-plays a buyer.** A rep asks for practice on a specific stage; the coach plays the buyer side of the conversation, reacting to the rep's pitch with realistic objections, push-back, and follow-up questions.
 2. **Critiques the rep's approach.** After or during the role-play, the coach evaluates the rep's responses against the configured methodology — did they discover pain, qualify budget, handle the objection, surface a value prop?
@@ -75,7 +80,7 @@ What it is *not*: a real-time call coach (that is a separate Einstein Conversati
 
 ### Concept 2 — Stage configuration: which prompts activate on which stage
 
-Sales Coach ships with five stage personas mapped to the standard Opportunity stages. The mapping is enforced via topic instructions inside the agent — not via a hard-coded SOQL filter — which means stage names *labels* matter.
+Sales Coach ships with five stage personas mapped to the standard Opportunity stages. The mapping is enforced via subagent instructions inside the agent — not via a hard-coded SOQL filter — which means stage names *labels* matter.
 
 | Standard stage | Coached behaviors |
 |---|---|
@@ -87,14 +92,14 @@ Sales Coach ships with five stage personas mapped to the standard Opportunity st
 
 Two patterns matter for activation:
 
-- **Stage-name match.** The shipped prompts reference stage names verbatim. If your `OpportunityStage` picklist values are `Discovery` and `Needs Analysis` you're fine; if they're `Stage 2 — Discover` and `Stage 3 — Validate`, the coach won't auto-suggest the right role-play scenario when invoked from a record. Fix: either rename stages back to standard, or edit the agent topic instructions in Agent Builder to reference your local stage names.
-- **Open vs closed opportunities.** Sales Coach is intended for *open* pipeline. The shipped agent topics filter to `IsClosed = false` so a Closed-Won opportunity won't trigger Negotiation role-play. If your team uses a "post-mortem" stage on closed opps, that flow is *not* what Sales Coach does — point reps to a different debrief tool.
+- **Stage-name match.** The shipped prompts reference stage names verbatim. If your `OpportunityStage` picklist values are `Discovery` and `Needs Analysis` you're fine; if they're `Stage 2 — Discover` and `Stage 3 — Validate`, the coach won't auto-suggest the right role-play scenario when invoked from a record. Fix: either rename stages back to standard, or edit the agent's subagent instructions in Agent Builder to reference your local stage names.
+- **Open vs closed opportunities.** Sales Coach is intended for *open* pipeline. The shipped subagents filter to `IsClosed = false` so a Closed-Won opportunity won't trigger Negotiation role-play. If your team uses a "post-mortem" stage on closed opps, that flow is *not* what Sales Coach does — point reps to a different debrief tool.
 
 ### Concept 3 — Customizing role-play scenarios
 
 The shipped role-play prompts are deliberately generic. A rollout that stops at "default + publish" produces a coach that sounds like a B-school case study — directionally right, never actually relevant. Three customization points matter:
 
-1. **Industry and persona seeds.** In Agent Builder, the topic instructions for each stage allow free-text additions like "When playing the buyer persona, default to a {Industry} {Title} archetype with {top 3 priorities}." Inject your ICP segments here. This is the highest-leverage customization — it transforms generic coaching into "you're now selling to a CISO at a 5,000-employee health system."
+1. **Industry and persona seeds.** In Agent Builder, the subagent instructions for each stage allow free-text additions like "When playing the buyer persona, default to a {Industry} {Title} archetype with {top 3 priorities}." Inject your ICP segments here. This is the highest-leverage customization — it transforms generic coaching into "you're now selling to a CISO at a 5,000-employee health system."
 2. **Objection library.** The coach generates objections from the LLM's general knowledge, augmented by grounded knowledge sources. If your sellers face specific objections (`"why your platform vs incumbent X"`, `"the data residency question"`, `"ROI for the SMB tier is hard to justify"`), put them in a Knowledge article tagged for Agent grounding. The coach will then surface them during role-play.
 3. **Value-prop and proof-point grounding.** Same mechanism — a Knowledge article enumerating your three top value props, key proof points, and competitive battle cards is *the* substrate for the coach's critique behavior. Without it, "did the rep handle the value prop well?" defaults to LLM generality.
 
@@ -115,7 +120,7 @@ Common analytical mistake: comparing coached-opp win rate to global win rate. Re
 
 1. **Verify prerequisites.** Confirm Agentforce SKU, Einstein Generative AI activation, Trust Layer settings, and Opportunity stage hygiene. Run the bundled `scripts/check_sales_coach_agent_rollout.py` against retrieved metadata to detect: missing agent definition, opportunity-stage drift from standard, absent grounded knowledge sources tagged for Sales Coach.
 2. **Ground the methodology.** Locate or author the canonical methodology document (MEDDIC, BANT, Challenger, custom). Publish as a Knowledge article with the data-classification + Agent-accessible flag set. Without this, customization is shallow.
-3. **Customize stage prompts in Agent Builder.** Open the Sales Coach template, walk each of the five stage topics, and inject ICP seeds, industry archetypes, and references to grounded knowledge. Do *not* paste battle cards directly into instructions — reference grounded sources.
+3. **Customize stage prompts in Agent Builder.** Open the Sales Coach template, walk each of the five stage subagents, and inject ICP seeds, industry archetypes, and references to grounded knowledge. Do *not* paste battle cards directly into instructions — reference grounded sources.
 4. **Configure the embed surface.** Decide between (a) embedding in the Lightning sales console as a utility item / Einstein panel, (b) embedding on the Opportunity record page as a component, or (c) launching a separate `/agentforce` portal. Console embedding has the highest engagement; portal isolates legal exposure if you're nervous. Pick one for the pilot — don't do all three.
 5. **Run a privacy review.** Document what data flows to the LLM (Opportunity fields read by the agent's actions, rep's typed input), what is logged (Agentforce session logs in Setup → Einstein), and retention defaults. Get sign-off from legal/compliance before publishing to production. For EU tenants confirm Einstein Trust Layer EU data-residency settings are honored.
 6. **Pilot with the chosen cohort.** Publish to a subset of users via permission set. Communicate the *purpose* (practice tool, not a deal-tracking tool, no manager surveillance), the *measurement plan*, and the feedback loop (where reps report bad coaching). Run 4 weeks before expanding.

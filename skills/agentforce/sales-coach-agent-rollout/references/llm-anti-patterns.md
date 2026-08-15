@@ -6,11 +6,11 @@ Common mistakes AI assistants make when generating Sales Coach rollout plans, co
 
 ## Anti-Pattern 1: Recommending bespoke-agent build instead of customizing the shipped template
 
-**What the LLM generates:** "Open Agent Builder and create a new agent. Add topics for each opportunity stage. Define actions for reading the Opportunity record. Add prompt templates for each role-play scenario..."
+**What the LLM generates:** "Open Agent Builder and create a new agent. Add subagents for each opportunity stage. Define actions for reading the Opportunity record. Add prompt templates for each role-play scenario..."
 
 **Why it's wrong:** The shipped Sales Coach template already covers 80% of this. Re-building from scratch loses upstream Salesforce-released improvements, adds maintenance burden, and ignores the platform-managed behavior on which the template's reliability rests.
 
-**What to do instead:** Recommend cloning or activating the shipped Sales Coach template, then customizing through (a) grounded Knowledge articles for methodology and objections and (b) topic-instruction additions for ICP seeds. Bespoke build only if the methodology is genuinely incompatible with opportunity-stage role-play.
+**What to do instead:** Recommend cloning or activating the shipped Sales Coach template, then customizing through (a) grounded Knowledge articles for methodology and objections and (b) additions to the subagent instructions (called topics before April 2026) for ICP seeds. Bespoke build only if the methodology is genuinely incompatible with opportunity-stage role-play.
 
 ---
 
@@ -19,7 +19,7 @@ Common mistakes AI assistants make when generating Sales Coach rollout plans, co
 **What the LLM generates:**
 
 ```
-Topic instructions:
+Subagent instructions:
 You are a buyer. When the rep mentions pricing, raise these objections:
 1. "Your competitor X is 30% cheaper"
 2. "We have budget approval through Q3 only"
@@ -27,9 +27,9 @@ You are a buyer. When the rep mentions pricing, raise these objections:
 ... (50 more objections enumerated in the instruction body)
 ```
 
-**Why it's wrong:** Hard-coded objection lists in topic instructions inflate prompt-token budget on every session, can't be updated without re-publishing the agent, and bleed into every role-play regardless of relevance. Reps perceive the coach as scripted/canned rather than adaptive.
+**Why it's wrong:** Hard-coded objection lists in subagent instructions inflate prompt-token budget on every session, can't be updated without re-publishing the agent, and bleed into every role-play regardless of relevance. Reps perceive the coach as scripted/canned rather than adaptive.
 
-**What to do instead:** Put objections in Knowledge articles tagged for grounding (e.g., `objection-library-healthcare`, `objection-library-finserv`). Reference the tag in topic instructions: "Reference the objection-library-{industry} grounded source for industry-appropriate objections." The retrieval layer surfaces the relevant 3–5 objections based on context, not all 50.
+**What to do instead:** Put objections in Knowledge articles tagged for grounding (e.g., `objection-library-healthcare`, `objection-library-finserv`). Reference the tag in subagent instructions: "Reference the objection-library-{industry} grounded source for industry-appropriate objections." The retrieval layer surfaces the relevant 3–5 objections based on context, not all 50.
 
 ---
 
@@ -73,12 +73,12 @@ You are a buyer. When the rep mentions pricing, raise these objections:
 
 ---
 
-## Anti-Pattern 7: Hard-coding sales methodology in topic instructions
+## Anti-Pattern 7: Hard-coding sales methodology in subagent instructions
 
 **What the LLM generates:**
 
 ```
-Topic instructions:
+Subagent instructions:
 Always evaluate the rep against the MEDDIC framework:
 - Metrics: did the rep quantify the buyer's pain?
 - Economic Buyer: did the rep identify who controls the budget?
@@ -88,4 +88,4 @@ Always evaluate the rep against the MEDDIC framework:
 
 **Why it's wrong:** The methodology is now buried in Agent Builder, invisible to anyone outside that tool, can't be referenced by Reports or dashboards, and requires re-publishing the agent every time the methodology evolves. Worse: if the org runs more than one methodology (e.g., MEDDIC for enterprise, BANT for SMB), you end up with multiple agents diverging from the canonical methodology document.
 
-**What to do instead:** Author the methodology as a Knowledge article tagged for grounding. Topic instructions reference the tag: "Critique the rep against the methodology documented in the `sales-methodology` grounded source." Methodology updates propagate without touching the agent.
+**What to do instead:** Author the methodology as a Knowledge article tagged for grounding. Subagent instructions reference the tag: "Critique the rep against the methodology documented in the `sales-methodology` grounded source." Methodology updates propagate without touching the agent.

@@ -28,18 +28,22 @@ outputs:
   - "action contract and naming review findings"
   - "error-handling and confirmation guidance"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agent Actions
 
-Use this skill when the agent already knows the right topic, but still needs a safe and understandable way to do work. Agent actions are the operational boundary between conversational intent and real system side effects. Poor action design leads to vague capabilities, hard-to-recover failures, and agents invoking the wrong tool because names or contracts are ambiguous.
+Use this skill when the agent already knows the right subagent, but still needs a safe and understandable way to do work. Agent actions are the operational boundary between conversational intent and real system side effects. Poor action design leads to vague capabilities, hard-to-recover failures, and agents invoking the wrong tool because names or contracts are ambiguous.
 
 The design goal is simple: a small, well-named action set with stable inputs, predictable outputs, and deliberate confirmation for side effects. Salesforce guidance emphasizes keeping action counts low, using clear names and descriptions, and shaping input types so the agent can select and execute actions reliably. Action design should help the agent understand what the tool does, what data it needs, and when failure should be surfaced to the user versus returned as a structured business result.
 
 Agent actions can be Flow-based, Apex invocable, or prompt-template oriented depending on the task. Flow actions are strong when declarative orchestration is enough. Apex invocable actions are better when service-layer control, strict contracts, or heavier logic matter. Prompt-template actions fit generation tasks, not destructive record mutation. The boundary should be chosen intentionally.
+
+> **Terminology.** *Subagent* is the April 2026 rename of *topic*. Nothing about
+> behaviour changed, and metadata types, API names, and the "topic selector"
+> pattern name still say *topic*.
 
 ---
 
@@ -258,7 +262,7 @@ Surface these WITHOUT being asked:
 
 ## Related Skills
 
-- **agentforce/agent-topic-design** — when the bigger problem is topic boundary and routing.
+- **agentforce/agent-topic-design** — when the bigger problem is subagent boundary and routing.
 - **agentforce/einstein-trust-layer** — when the action's data-handling is a Trust Layer concern.
 - **agentforce/agentforce-guardrails** — overall guardrail strategy that actions fit into.
 - **agentforce/agent-testing-and-evaluation** — how to verify actions behave correctly in agent context.

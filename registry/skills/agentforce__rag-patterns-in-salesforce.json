@@ -23,7 +23,6 @@
     "1f91d367ce0cd3f29ff2",
     "210cb3ea46759d11b30b",
     "23e7ad8522512bde39b3",
-    "2815636e5756c2bc5b1a",
     "2c789404705223844dce",
     "2d7b689aa4570c091d4d",
     "308c265e09c983c2e125",
@@ -58,6 +57,7 @@
     "7df8d55661204dc5ba97",
     "7e145951d36d159bbcad",
     "84984550fcd313cacc5e",
+    "859a06162616ae7479a8",
     "8b4fc7022a910959498b",
     "8b86b8e26960194c8d4f",
     "8e48d3aa68f8f29466c4",
@@ -104,7 +104,7 @@
     "fc488a923796e3f9d822",
     "fea6c73e8b163c517df0"
   ],
-  "content_hash": "4b4bc29c719ecc94253aa67d5a87ec00b8c5753c1c6f809632566754335c688a",
+  "content_hash": "2dacfa7046633b88244cc3195ee33a84db4921afe93fd94effafc5691a844fbf",
   "dependencies": [
     "prompt-builder-templates",
     "einstein-trust-layer"
@@ -157,7 +157,7 @@
   "templates": [
     "skills/agentforce/rag-patterns-in-salesforce/templates/rag-patterns-in-salesforce-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

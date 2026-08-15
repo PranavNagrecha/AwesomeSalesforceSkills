@@ -36,14 +36,14 @@ outputs:
   - Enabled and validated Einstein for Sales features
   - Permission set assignments for sales reps and forecast managers
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-08-14
 ---
 
 # Agentforce Sales AI Setup
 
-This skill activates when a practitioner needs to set up or configure the Einstein for Sales AI feature stack from scratch: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI. It focuses on prerequisites, sequencing, license tiers, and data readiness — not feature troubleshooting after setup. It does NOT cover core Agentforce agent creation, agent topic design, Einstein Trust Layer setup, or Einstein Activity Capture configuration — use the dedicated skills for those areas.
+This skill activates when a practitioner needs to set up or configure the Einstein for Sales AI feature stack from scratch: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI. It focuses on prerequisites, sequencing, license tiers, and data readiness — not feature troubleshooting after setup. It does NOT cover core Agentforce agent creation, subagent design (subagents were called topics before April 2026), Einstein Trust Layer setup, or Einstein Activity Capture configuration — use the dedicated skills for those areas.
 
 The most common source of Einstein for Sales failures is skipping prerequisites: enablement steps have hard dependencies that Salesforce does not always surface clearly in Setup UI, and missing a dependency silently disables downstream features.
 

@@ -10,7 +10,11 @@ probe plugin in this document is named `sfskills`, matching the real plugin —
 [a name mismatch is what corrupted the previous
 calibration](#what-the-previous-constants-got-wrong-and-why-it-is-instructive).
 **The marketplace source in every measured run was a local path; the GitHub
-source is documented but untested.** Read
+source is documented but untested.** Note that `commands/` held **66** specs
+when these measurements were taken and holds **67** today
+(`commands/add-skill.md` was added afterwards), so every "66 commands" below is
+the count as measured on 2026-08-07, not the current one; `origin/main` still
+carries 66. Re-run `build_plugin.py --measure` for current token figures. Read
 [Verify the plugin path](#verify-the-plugin-path) before trusting any check —
 "it works when I'm in the repo" proves nothing about the plugin.
 
@@ -47,17 +51,23 @@ Schema sources, researched before anything was written:
 
 ## Install
 
-> **Prerequisite:** the plugin manifests live on `overhaul/2026-08-01-checkpoint`
-> and are not yet on the default branch, so neither recipe below works until
-> that branch merges to `main`. Verify for yourself with
-> `git ls-tree origin/main .claude-plugin/` — it returns nothing today, which
-> means `marketplace add PranavNagrecha/AwesomeSalesforceSkills` resolves a
-> branch with no `marketplace.json` and no `plugin.json` on it. Until that
-> changes, install from a **local path** pointed at a working tree that
-> contains `.claude-plugin/`, as in
+> **Status, re-verified 2026-08-14: the GitHub install path works.** An earlier
+> revision of this page said the manifests were not yet on the default branch
+> and that both recipes were blocked. That is no longer true — every payload
+> the plugin declares is on `main`. Check it yourself:
+>
+> ```bash
+> git ls-tree origin/main .claude-plugin/                       # both manifests
+> git ls-tree -r --name-only origin/main .claude/skills/        # 12 router skills
+> git ls-tree -r --name-only origin/main commands/              # 66 commands
+> git ls-tree -r --name-only origin/main .claude/agents/        # 48 agents
+> ```
+>
+> The local-path recipe below still works and is the right choice when you want
+> to install a working tree you are editing — see
 > [The check that cannot be faked](#the-check-that-cannot-be-faked).
 
-### From GitHub (normal path — blocked by the prerequisite above)
+### From GitHub (normal path)
 
 Inside Claude Code:
 
@@ -76,23 +86,18 @@ claude plugin install sfskills@sfskills
 ### From a local clone
 
 The repository is its own marketplace, so a clone works as a source with no
-extra setup — but the clone has to be on a branch that carries
-`.claude-plugin/`, which the default branch is not (see the prerequisite
-above). A local path is the source type every measurement in this document
-used; a fresh clone is not, for the reason immediately below the block:
+extra setup. `.claude-plugin/` is on the default branch, so a plain clone is
+enough — no branch switch. A local path is the source type every measurement in
+this document used:
 
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
-git -C AwesomeSalesforceSkills switch overhaul/2026-08-01-checkpoint
 claude plugin marketplace add ./AwesomeSalesforceSkills
 claude plugin install sfskills@sfskills
 ```
 
-That `switch` needs the branch to exist on the remote. It does not yet
-(`git ls-remote --heads origin overhaul/2026-08-01-checkpoint` returns
-nothing), so for now the only source that works is a **path to an existing
-working tree** on that branch — for example the checkout you are reading this
-file in.
+Use this form when you want to install a working tree you are editing, so
+`build_plugin.py` output is picked up without pushing first.
 
 Inside Claude Code the same pair is:
 
@@ -684,11 +689,14 @@ loader means `Agents (0)` for everyone installing that way.
 
 ### 3. `vector_index/` is not shipped, so `search_knowledge.py` needs a one-time build
 
-`vector_index/chunks.jsonl`, `vector_index/lexical.sqlite` and
-`vector_index/embeddings.jsonl` are gitignored (126 MB / 166 MB / 535 MB on
-disk here), so an installed copy has no retrieval index and
-`scripts/search_knowledge.py` cannot run. Only `vector_index/manifest.json`
-and the query fixtures are tracked.
+`vector_index/chunks.jsonl` and `vector_index/lexical.sqlite` are gitignored
+(124 MB / 165 MB on disk here, 295 MB for the whole directory), so an installed
+copy has no retrieval index and `scripts/search_knowledge.py` cannot run. Only
+`vector_index/manifest.json` and the query fixtures are tracked. The
+chunk-level `vector_index/embeddings.jsonl` that older revisions of this page
+costed at 535 MB is **not built** by the current pipeline and does not exist on
+disk; installing `fastembed` adds `skill_embeddings.jsonl` at about 5 MB
+instead.
 
 Build it once per clone, from the repository root (a clone, or the plugin's
 cache directory — `claude plugin details sfskills` prints its path):
@@ -736,29 +744,31 @@ The constants and the length/quality measurements behind 220 are in the
 
 ### 4. The clone is heavy
 
-Measured 2026-08-07 on `overhaul/2026-08-01-checkpoint`. These drift with every
-commit — re-run the commands below rather than trusting the table.
+Re-measured 2026-08-14. These drift with every commit — re-run the commands
+below rather than trusting the table.
 
-| What | Size (as of 2026-08-07) |
+| What | Size (as of 2026-08-14) |
 |---|---|
-| Tracked working tree | 85.55 MB across 9,347 files |
-| `.git` | 537 MB (`size-pack` 389.86 MiB) |
-| Plugin cache after a **local** install | 1.7 GB |
+| Tracked working tree | 86.22 MB across 9,323 files |
+| `.git` | 479 MB (`size-pack` 406.68 MiB) |
+| Plugin cache after a **local** install | 1.7 GB (measured 2026-08-07, not re-taken) |
 
 A **local-path** install copies the entire working tree — including gitignored
-`vector_index/` (805 MB) and `exports/` (252 MB) — into the plugin cache,
-which is where the 1.7 GB comes from. A **GitHub** install never sees those,
-because untracked files are not cloned; it pays the ~390 MiB pack fetch
-instead. Neither number is small, but GitHub is the cheaper of the two.
+`vector_index/` (295 MB) and `exports/` (253 MB) — into the plugin cache, which
+is where the bulk of that figure comes from. A **GitHub** install never sees
+those, because untracked files are not cloned; it pays the ~407 MiB pack fetch
+instead. Neither number is small, but GitHub is the cheaper of the two. The
+1.7 GB cache figure dates from 2026-08-07, when `vector_index/` was larger; it
+has not been re-measured since and is an upper bound today.
 
 Reproduce:
 
 ```bash
-git ls-files | wc -l                                    # 9347
+git ls-files | wc -l                                    # 9323
 git ls-files -z | xargs -0 stat -f '%z' | awk '{s+=$1} END {print s/1048576" MB"}'
-                                                        # 85.5511 MB
-git count-objects -vH | grep size-pack                  # size-pack: 389.86 MiB
-du -sh .git                                             # 537M
+                                                        # 86.2269 MB
+git count-objects -vH | grep size-pack                  # size-pack: 406.68 MiB
+du -sh .git                                             # 479M
 ```
 
 ### 5. All 66 commands ship, including deprecated aliases

@@ -1,6 +1,6 @@
 ---
 name: flow-open-a-page-action
-description: "Use when a Screen Flow needs to send the user to another page — the native Open a Page action (Summer '26) that opens a Salesforce record or an external URL directly from a flow. NOT for launching/embedding a flow ( — use flow/screen-flows. NOT for building a custom navigation LWC screen component ( — use flow/flow-screen-lwc-components."
+description: "Use when a Screen Flow needs to send the user to another page — the native Open a Page action (Summer '26) that opens a Salesforce record or an external URL directly from a flow. NOT for launching or embedding a flow — use flow/screen-flows. NOT for a custom navigation LWC — use flow/flow-screen-lwc-components."
 category: flow
 salesforce-version: "Summer '26+"
 well-architected-pillars:
@@ -27,9 +27,9 @@ outputs:
   - "A migration plan replacing a legacy redirect (custom LWC / Redirect local action / retURL) with the native action"
   - "A navigation-design decision (native action vs. finish behavior vs. custom component)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-08-14
 ---
 
 # Flow Open A Page Action

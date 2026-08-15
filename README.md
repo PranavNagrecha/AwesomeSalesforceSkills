@@ -92,22 +92,39 @@ Open that directory in Claude Code and ask a Salesforce question. That is the
 whole setup for the main path.
 
 A clone carries everything the AI needs to find a skill: `CLAUDE.md`, the **12
-router skills** under `.claude/skills/`, and the **48 run-time agent loaders**
-under `.claude/agents/`. Selection is model-driven, not search-driven — Claude
-reads the router descriptions, opens that router's `references/skill-index.md`
-(a flat roster of one-line glosses covering all 1,027 packages), and opens the
-package it picks. No index is consulted.
+router skills** under `.claude/skills/` (one top-level `salesforce` router plus
+11 domain routers), and the **48 run-time agent loaders** under
+`.claude/agents/`. Selection is model-driven, not search-driven. Claude reads
+the router descriptions, hands off to one domain router, opens that router's
+`references/skill-index.md` — a roster of that domain's packages, one 220-char
+gloss each — and opens the package it picks. Eleven rosters, 1,027 glosses
+between them; Claude reads one. No index is consulted and nothing is built.
+
+That indirection is the whole design. Exporting all 1,027 skill descriptions
+flat would cost about **138,334 tokens** at session start, before you type
+anything. Everything actually loaded up front — 12 routers, 67 commands and 48
+agent loaders — costs **5,490**, or **4.0%** of that
+(`python3 scripts/build_plugin.py --measure`). The token model is an estimate,
+calibrated against a real Claude Code install; the method and its caveat are in
+[`docs/architecture.md`](./docs/architecture.md#why-the-library-is-tiered).
 
 Two things are *not* in a clone, because both are generated:
-`.claude/commands/` (the 66 slash commands) and the retrieval index under
+`.claude/commands/` (the 67 slash commands) and the retrieval index under
 `vector_index/`. Step 2 builds both.
 
 **As a Claude Code plugin** — namespaced skills plus the slash commands,
 without adding this repo to your project:
-[`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md). Read its
-prerequisite note first; the marketplace manifests under `.claude-plugin/` are
-not on the default branch yet, so the GitHub install path is blocked until they
-land (`git ls-tree origin/main .claude-plugin/` returns nothing today).
+
+```
+/plugin marketplace add PranavNagrecha/AwesomeSalesforceSkills
+/plugin install sfskills@sfskills
+```
+
+The default branch carries the manifests and the payload they point at —
+`git ls-tree origin/main .claude-plugin/` returns both `marketplace.json` and
+`plugin.json`, and `origin/main` holds the 12 router skills, the 11 rosters and
+the command directory. Flags, the local-path variant, and the measured token
+cost of an install: [`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md).
 
 **For Cursor, Windsurf, Aider, Augment, or Codex CLI** — run
 `python3 scripts/export_skills.py --target cursor` and copy the generated
@@ -130,24 +147,47 @@ score.
 
 This builds the FTS5 index behind the *keyword-search* way of finding a skill —
 `search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents
-that maintain the library. Skip it and `search_knowledge.py` reports `Coverage: NONE` for every
-query and still exits 0, which looks like an empty library rather than a missing
-index. Skipping it does **not** stop Claude from reaching a skill package
-through the routers above.
+that maintain the library. `vector_index/` is gitignored, so a fresh clone has
+no index at all: skip this step and `search_knowledge.py` reports
+`Coverage: NONE` for every query and still exits 0, which looks like an empty
+library rather than a missing index. Skipping it does **not** stop Claude from
+reaching a skill package through the routers above.
 
-Bootstrap also installs the 66 slash commands into `.claude/commands/`; restart
+Bootstrap also installs the 67 slash commands into `.claude/commands/`; restart
 Claude Code afterwards, since it loads commands at session start.
 
 Cost, per the captured first-run transcript in
 [`docs/installing.md` §1](./docs/installing.md#1-one-command): about **9 s** on
 a `git clone --depth 1` (macOS, Apple silicon), writing roughly **290 MB** into
-the gitignored `vector_index/` — 126 MB of `chunks.jsonl` and 166 MB of
-`lexical.sqlite`. Those are one machine's numbers, not a guarantee. Lexical-only
-is the default because `fastembed` is commented out of `requirements.txt`.
-Semantic embeddings are opt-in behind `--with-embeddings`, cost **+535 MB and
-hours** of encode time, and bought 0.0pp on the curated fixtures — see
-[`docs/installing.md` §4](./docs/installing.md#4-embeddings-are-opt-in) before
-enabling them.
+the gitignored `vector_index/` — 124 MB of `chunks.jsonl` and 165 MB of
+`lexical.sqlite` on this checkout. Those are one machine's numbers, not a
+guarantee.
+
+**Embeddings, stated precisely, because this repo has described them wrong
+twice.** `config/retrieval-config.yaml` sets `embeddings.enabled: true`, but
+`fastembed` is commented out of `requirements.txt:12`, so
+`pipelines/embedding_backends.py` logs a warning and falls back to lexical-only.
+They are neither "opt-in behind a flag" nor "on by default" — they are
+**configured on and inert until you `pip install fastembed` yourself**. Do that
+and the build adds `skill_embeddings.jsonl`, about **5 MB**, not the 535 MB this
+README used to claim: that figure described `embeddings.jsonl`, a chunk-level
+file the current pipeline does not build.
+
+What they buy, measured on 2026-08-14 over 154 hand-written held-out queries
+(`python3 evals/measurement/run_heldout.py --json`, versus `--no-embeddings`):
+
+| retrieval config | Hit@1 | Hit@3 |
+|---|---:|---:|
+| lexical-only | 39.6% | 48.1% |
+| + `fastembed` vectors | **40.9%** | **53.9%** |
+
+So +1.3pp Hit@1 and +5.8pp Hit@3. An earlier re-measurement in this repo
+reported "no difference at all" and concluded embeddings were not worth
+installing; that conclusion does not survive the held-out set and is withdrawn.
+Both numbers describe *keyword search*. They say nothing about the routing path
+in step 1, which is the one a clone or plugin user actually exercises —
+[`docs/architecture.md`](./docs/architecture.md) keeps the three mechanisms
+apart and labels every accuracy figure with the one it measures.
 
 > **Use `scripts/bootstrap.py`, not `scripts/build_index.py`.**
 > `build_index.py` reaches the same retrieval outcome through
@@ -168,15 +208,32 @@ sf org login web --alias my-dev              # auth stays in the sf CLI
 ### What to expect
 
 All **1,027 of 1,027** skill packages are structurally complete — `SKILL.md`
-plus all four `references/` files, verified 2026-08-07 by walking `skills/*/*/`.
+plus all four `references/` files, re-verified 2026-08-14 by walking
+`skills/*/*/`. Zero incomplete.
 
 Routing is a different question, and it is honest to say it is imperfect. Which
 package Claude opens is a model decision made from router descriptions and
-one-line glosses, so it is probabilistic and it does miss: a 12-question
-fresh-clone walkthrough on 2026-08-07 landed on the right package for 9,
-half-right for 1, and wrong for 2 — both misses traced to a gloss or a router
-keyword list, not to missing content. Twelve questions is a sample, not a hit
-rate. If Claude opens the wrong package, name the domain ("this is a sharing
+one-line glosses, so it is probabilistic and it does miss.
+
+The measurement worth quoting is **router accuracy: 88.3% → 96.1%** across a
+2026-08-14 rewrite of the router descriptions — that is which of the 12 routers
+gets opened, over 154 held-out queries, and it does not depend on any skill
+label.
+
+The measurement *not* worth quoting is the one this project published first. A
+headline of "79.2% → 92.2% Hit@1" for which *package* got opened was refuted on
+re-scoring: 41 of the baseline run's 43 misses had their expected label
+rewritten to whatever that same baseline had picked, so the comparison was
+circular, and exact-match scoring charges the router for the corpus's own
+near-duplicate pairs (`security/mfa-enforcement-strategy` vs
+`security/mfa-enforcement-patterns` is not a wrong answer). Re-scored against
+one label set the direction inverts — 10 regressions, 0 improvements. **That
+headline is retracted.** The full post-mortem, and the rule it produced —
+never score a corpus change against labels derived from a run of that same
+corpus — is in
+[`evals/measurement/README-model-routing.md`](./evals/measurement/README-model-routing.md).
+
+If Claude opens the wrong package, name the domain ("this is a sharing
 question") or run `python3 scripts/search_knowledge.py "<your question>"` after
 step 2.
 
@@ -190,9 +247,12 @@ step 2.
   active runtime agents), and `scripts/validate_skill_factuality.py` (samples
   skills and checks the field/object references actually exist). Reports land
   in `docs/validation/` — see [`docs/validation/README.md`](./docs/validation/README.md).
-- **Output quality is tested, not asserted.** Golden P0 cases with assertions,
-  rubrics, and reference answers live in `evals/golden/`; lint them with
-  `python3 evals/scripts/run_evals.py --structure`.
+- **Output quality has golden cases — for a thin slice.** P0 cases with
+  assertions, rubrics and reference answers live in `evals/golden/`; lint them
+  with `python3 evals/scripts/run_evals.py --structure`. Coverage is 10 of
+  1,027 packages (1.0%) across 4 of 11 domains — apex 4, integration 3, lwc 2,
+  flow 1. `admin` is the largest domain at 253 skills and has zero, as do
+  `data`, `security`, `devops`, `architect`, `agentforce` and `omnistudio`.
 - **Every claim is source-graded.** A 4-tier trust ladder — official docs beat
   Trailhead/Architects beat community blogs beat forum signal — defined in
   [`standards/source-hierarchy.md`](./standards/source-hierarchy.md) and
@@ -202,9 +262,15 @@ step 2.
   exit 0 on every change; the full gate list is in
   [`standards/validation-gates.md`](./standards/validation-gates.md).
 
-Honest caveat: the retrieval-quality gate is currently skipped in CI and the
-golden evals do not block a merge. See
-[`docs/comparison.md`](./docs/comparison.md) for the full list of weak spots.
+Honest caveat, narrower than it used to be. Golden eval **structure** does gate
+a merge now (`.github/workflows/validate.yml`, the `evals` job's *golden eval structure* step), as do the 1,356 query
+fixtures inside the sharded validator run, agent-eval structure, and CLI/MCP
+retrieval parity across all 154 held-out queries. What still gates nothing:
+eval **output quality** — no workflow scores an answer against its rubric — and
+neither retrieval benchmark, since `run_heldout.py`'s Hit@1/Hit@3 thresholds are
+not referenced by any workflow and the model-routing benchmark needs live agents
+to run at all. See [`docs/comparison.md`](./docs/comparison.md) for the full
+list of weak spots.
 
 ---
 
@@ -219,8 +285,9 @@ golden evals do not block a merge. See
   ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton,
   Flow fault path, and Agentforce action shell that every skill points at
   ([`templates/README.md`](./templates/README.md)). `standards/decision-trees/`
-  routes automation / async / integration / sharing choices before any code
-  gets written.
+  holds seven trees — automation selection, flow pattern, Agentforce
+  capability, async tier, integration pattern, sharing mechanism, performance
+  tuning — consulted before any code gets written.
 - **Agents** (`agents/`) — instruction files any agentic AI can follow.
   **Build-time (14)** maintain the library; **Run-time (48)** do real
   Salesforce work in your codebase or org, across four tiers —
@@ -237,7 +304,7 @@ golden evals do not block a merge. See
 Shipped in v1:
 
 - [x] 1027 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
-- [x] Shared Apex / LWC / Flow / Agentforce templates and four decision trees
+- [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] MCP server on PyPI exposing the library plus live-org lookups
 

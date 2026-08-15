@@ -32,9 +32,9 @@ outputs:
   - "Apex code that safely accesses child records via getSObjects()"
   - "TYPEOF clause for polymorphic fields with WHEN/ELSE branches"
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-08-14
 ---
 
 # SOQL Relationship Queries in Apex

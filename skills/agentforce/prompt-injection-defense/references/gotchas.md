@@ -22,9 +22,9 @@
 
 ---
 
-## Gotcha 3: Over-indexing on topic instructions
+## Gotcha 3: Over-indexing on subagent instructions
 
-**What happens:** 100-line topic instructions dilute priority and slow every turn.
+**What happens:** 100-line subagent instructions (subagents were called topics before April 2026) dilute priority and slow every turn.
 
 **When it occurs:** Every new threat gets a new sentence.
 

@@ -1,6 +1,6 @@
 ---
 name: xss-and-injection-prevention
-description: "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability'. NOT for Apex CRUD/FLS enforcement (use soql-security or apex-crud-and-fls), NOT for Shie — use apex/soql-security."
+description: "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability'. NOT for Apex CRUD/FLS enforcement, Shield encryption, or AppExchange security review — use apex/soql-security."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -28,9 +28,9 @@ outputs:
   - "Corrected code using bind variables for SOQL and encoding functions for output"
   - "Open redirect fix using PageReference domain whitelisting"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # XSS and Injection Prevention

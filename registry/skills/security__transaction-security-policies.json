@@ -114,9 +114,9 @@
     "fb83d9a5d4f27e0bf163",
     "fd19470bba19ecbc790a"
   ],
-  "content_hash": "82aaa785025bc39771c596d4aa032a17ec19588015d457334f01df188b7dcc23",
+  "content_hash": "2e099eef29e16ca2d1652454e51cb108b8da1c3c27c307c2e5b195563abd56c0",
   "dependencies": [],
-  "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monito \u2014 use security/event-monitoring.",
+  "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup \u2014 use security/event-monitoring.",
   "file_location": "skills/security/transaction-security-policies",
   "id": "security/transaction-security-policies",
   "inputs": [
@@ -166,7 +166,7 @@
   "templates": [
     "skills/security/transaction-security-policies/templates/transaction-security-policies-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

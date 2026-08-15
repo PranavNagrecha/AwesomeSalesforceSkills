@@ -27,7 +27,7 @@ Answer these before starting any configuration work:
 - **Embedding model:** Salesforce-managed / BYO via Model Builder (specify model):
 - **Estimated source record count:**
 - **Query API required?** Yes / No — if Yes, Data Cloud Connected App with cdp_query_api scope exists: Yes / No
-- **Grounding configuration target:** Agent topic name / Prompt Template name
+- **Grounding configuration target:** Subagent name (called a topic before April 2026) / Prompt Template name
 - **top-K value:**
 - **Metadata filters required?** Yes / No — if Yes, filter field and expression:
 - **PII or sensitive fields in source DMO?** Yes / No — if Yes, classified in DC field taxonomy: Yes / No / Pending
@@ -69,7 +69,7 @@ Answer these before starting any configuration work:
 | Parameter | Value |
 |---|---|
 | Grounding config name | |
-| Target (agent topic or prompt template) | |
+| Target (subagent or prompt template) | |
 | Vector index referenced | |
 | top-K | |
 | Metadata filter expression | (or N/A) |
@@ -108,7 +108,7 @@ Answer these before starting any configuration work:
 - [ ] Grounding configuration record created and references the correct vector index
 - [ ] top-K set to starting value of 3–5 (raise only after recall testing)
 - [ ] Metadata filters validated: filter expression syntax correct and merge field resolves at runtime
-- [ ] Grounding configuration attached to the correct agent topic or Prompt Template
+- [ ] Grounding configuration attached to the correct subagent or Prompt Template
 
 ### Validation and QA
 

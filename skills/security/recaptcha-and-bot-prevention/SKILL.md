@@ -1,6 +1,6 @@
 ---
 name: recaptcha-and-bot-prevention
-description: "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable. NOT for AppExchange security review (use secure-coding-review-checklist), NOT for sessio — use security/experience-cloud-security."
+description: "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable reCAPTCHA on Web-to-Case'. NOT for AppExchange security review or session-level login policies — use security/session-management-and-timeout."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -29,9 +29,9 @@ outputs:
   - "Server-side token verification pattern in Apex with score threshold handling"
   - "Bot-mitigation checklist covering all public-facing entry points in the org"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # reCAPTCHA and Bot Prevention

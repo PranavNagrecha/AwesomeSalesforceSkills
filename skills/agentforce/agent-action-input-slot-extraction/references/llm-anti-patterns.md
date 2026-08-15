@@ -43,7 +43,7 @@ public Date appointmentDate;
 
 **Correct pattern:** Configure per-slot re-prompts naming the missing slot and giving an example. Generic re-prompts confuse users.
 
-**Detection hint:** A required `@InvocableVariable` with no corresponding entry in the topic's re-prompt config.
+**Detection hint:** A required `@InvocableVariable` with no corresponding entry in the re-prompt config of the subagent (called a topic before April 2026).
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: code-review-checklist-salesforce
-description: "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment — governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives (use the security secure-coding chec — use security/secure-coding-review-checklist."
+description: "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment — governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives — use security/secure-coding-review-checklist."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -30,9 +30,9 @@ outputs:
   - "Section-by-section review notes tied to this checklist"
   - "List of blocking vs advisory findings for the PR or release record"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-08-14
 ---
 
 # Code Review Checklist Salesforce
@@ -46,7 +46,7 @@ This skill activates when a team needs a repeatable, platform-grounded review of
 Gather this context before working on anything in this domain:
 
 - Identify the execution entry points (trigger on `Account`, `@AuraEnabled` method, REST, batch `execute`, etc.) and the maximum batch size they must support (200 for synchronous trigger contexts).
-- Confirm sharing intent: `with sharing`, `without sharing`, `inherited sharing`, or explicit `WITH SECURITY_ENFORCED` / `WITH USER_MODE` patterns — mismatches here are data leaks, not style issues.
+- Confirm sharing intent: `with sharing`, `without sharing`, `inherited sharing`, and the query-level access mode (`WITH USER_MODE` / `WITH SYSTEM_MODE`) — mismatches here are data leaks, not style issues. The correct idiom is gated on the class's own `apiVersion` in its `.cls-meta.xml`, not on the org's release; see [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 - Pull the latest local test run or CI output so coverage numbers are not mistaken for assertion quality.
 
 ---
@@ -59,7 +59,11 @@ Salesforce enforces per-transaction limits on SOQL, DML, heap, CPU, and callouts
 
 ### CRUD, FLS, and sharing
 
-Reading or writing data without respecting the running user’s permissions is both a security defect and a deployment risk. Prefer `WITH USER_MODE` on inline SOQL where appropriate, `WITH SECURITY_ENFORCED` when you need sharing-aware queries that fail closed on FLS violations, and `Security.stripInaccessible` when returning dynamic query rows to callers. Triggers run in system context unless the class uses sharing keywords — call that out explicitly in review.
+Reading or writing data without respecting the running user’s permissions is both a security defect and a deployment risk. Prefer `WITH USER_MODE` on inline SOQL, and `Security.stripInaccessible(AccessType, records).getRecords()` when returning dynamic query rows to callers — user mode throws and fails the whole DML, while `stripInaccessible` drops the inaccessible fields and continues, so the choice is about whether silent partial success is acceptable.
+
+`WITH SECURITY_ENFORCED` is **not** an option a reviewer accepts. Per the Apex versioned-behavior-changes page, *"With API version 67.0 and later, you cannot use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code."* On a 67.0+ class its presence is a compile failure, not a style note; at 57.0–66.0 it is tech debt with a named migration to `WITH USER_MODE`. Treating it as evidence of a secure query is a defect in the review, at every version.
+
+The controlling fact is the `apiVersion` in the class's own `.cls-meta.xml`, not the org's release — a Summer '26 org runs a class pinned to 58.0 with the older behaviour. The canonical per-version table is [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version); cite it rather than restating it here.
 
 ### Tests as contract, not decoration
 
@@ -111,7 +115,7 @@ The Apex Developer Guide trigger best-practices guidance calls for a single trig
 
 1. Map entry points and data flows from the diff; note trigger context variables used (`Trigger.newMap`, etc.) and the transaction context (synchronous trigger, async job, REST controller).
 2. Walk the governor and bulk section: SOQL/DML/callouts per loop, collection sizes, queries against large objects; all synchronous trigger paths must tolerate 200 records without per-row queries or DML.
-3. Verify CRUD/FLS and sharing: explicit `with sharing` / `without sharing` / `inherited sharing` on every class and trigger; SOQL modifiers (`WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible` on returned rows) for user-facing reads.
+3. Verify CRUD/FLS and sharing: explicit `with sharing` / `without sharing` / `inherited sharing` on every class; SOQL access mode (`WITH USER_MODE`, or `Security.stripInaccessible` on returned rows) for user-facing reads. Flag any `WITH SECURITY_ENFORCED` — removed at API 67.0 — rather than accepting it as enforcement.
 4. Read test classes: assert messages, bulk test methods (200 rows), negative/error paths, `System.runAs` for permission-sensitive code; target 90%+ meaningful line coverage, not 75% minimum.
 5. Scan naming against Apex Developer Guide conventions (`ObjectNameTrigger`, handler suffix, test class suffix `_Test` or `Test`); flag dead code and `System.debug` statements left on production paths.
 6. Verify architectural compliance: one trigger per object, no business logic in the trigger body (no SOQL, DML, branching, or service calls inline); logic must live in a dedicated handler class.
@@ -125,7 +129,8 @@ Run through these before marking work in this area complete:
 
 - [ ] No SOQL, DML, or callouts inside loops over query or trigger row collections; totals stay within per-transaction limits for the expected path.
 - [ ] Triggers and synchronous services tolerate 200 records without redundant queries or per-row DML.
-- [ ] Sharing model is explicit and justified; user-facing queries enforce FLS/CRUD (`WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `stripInaccessible` on results as appropriate).
+- [ ] Sharing model is explicit and justified; user-facing queries enforce FLS/CRUD (`WITH USER_MODE`, or `stripInaccessible` on results as appropriate).
+- [ ] No `WITH SECURITY_ENFORCED` in new or rewritten code — removed at API 67.0; on a 67.0+ class it does not compile.
 - [ ] Dynamic SOQL/SOSL uses binding or escaping; no string concatenation of raw end-user input into queries.
 - [ ] Tests assert outcomes (not only coverage); include bulk and negative cases where behavior branches; avoid `SeeAllData=true` unless documented and unavoidable.
 - [ ] Async entry points (`execute`, `start`, schedulable `execute`) respect queueable/batch limits and do not chain blindly into unbounded recursion.

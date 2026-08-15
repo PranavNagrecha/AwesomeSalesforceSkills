@@ -117,9 +117,9 @@
     "f781871b2d4eed69c0db",
     "f8faf5d1bf505607c10d"
   ],
-  "content_hash": "59049ad00dbd5cde237599a7a89c9032c6fbfb6fa6acf4cb5055c88709fc0879",
+  "content_hash": "a5fce656b66485db79914b1dfe2d6179cd2ebd77b85692a7c1c7ac68ed7c35dd",
   "dependencies": [],
-  "description": "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) \u2014 including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation. NOT for general Salesforce metadata deployment patterns (use pre-deployment-checklist or \u2014 use architect/fsc-architecture-patterns.",
+  "description": "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) \u2014 including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation. NOT for general metadata deployment (use devops/pre-deployment-checklist) or FSC architecture \u2014 use architect/fsc-architecture-patterns.",
   "file_location": "skills/devops/fsc-deployment-patterns",
   "id": "devops/fsc-deployment-patterns",
   "inputs": [
@@ -169,7 +169,7 @@
   "templates": [
     "skills/devops/fsc-deployment-patterns/templates/fsc-deployment-patterns-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

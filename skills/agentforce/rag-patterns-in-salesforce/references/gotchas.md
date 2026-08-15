@@ -16,9 +16,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Metadata filters in the Grounding configuration are applied as pre-filters before ANN ranking. If the filter condition matches zero records in the index (e.g., a typo in a filter value, a merge field that resolves to null, or a case-sensitive mismatch), the vector search returns zero chunks. The agent then responds with no grounding context, appearing to ignore the knowledge base entirely. No error is surfaced to the agent user — the response simply looks ungrounded.
 
-**When it occurs:** Most commonly when filter merge fields like `{!topic.productLine}` resolve to null because the context variable was not populated by the time the Grounding call executes (e.g., the account record was not loaded yet, or the agent topic action that sets the variable fires after the retrieval step). Also occurs when filter values are compared case-sensitively against DMO field values that were ingested with inconsistent casing.
+**When it occurs:** Most commonly when filter merge fields like `{!topic.productLine}` (the merge-field namespace kept the old name when topics were renamed subagents in April 2026) resolve to null because the context variable was not populated by the time the Grounding call executes (e.g., the account record was not loaded yet, or the subagent action that sets the variable fires after the retrieval step). Also occurs when filter values are compared case-sensitively against DMO field values that were ingested with inconsistent casing.
 
-**How to avoid:** In Agent Preview, check the Grounding tab for "0 chunks retrieved" results. Validate filter merge field values by adding a Debug action before the retrieval step to log the resolved value. Use case-insensitive filter operators where available, or normalize casing during Data Transform ingest. Add a fallback Grounding configuration without the filter as a secondary retriever for the same topic, triggered when the primary returns zero results.
+**How to avoid:** In Agent Preview, check the Grounding tab for "0 chunks retrieved" results. Validate filter merge field values by adding a Debug action before the retrieval step to log the resolved value. Use case-insensitive filter operators where available, or normalize casing during Data Transform ingest. Add a fallback Grounding configuration without the filter as a secondary retriever for the same subagent, triggered when the primary returns zero results.
 
 ---
 
@@ -46,9 +46,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Each retrieved chunk is inserted into the prompt payload before the LLM call. With `top_k = 10` and `chunk_size = 512 tokens`, retrieval alone contributes up to 5,120 tokens to the prompt. For agents using GPT-4 class models with a 128K context window this is rarely a problem, but for configurations with shorter windows, or when the prompt template also includes long CRM record fields and conversation history, total prompt size can exceed the model's context limit. When this happens, the platform silently truncates either the conversation history or the retrieved chunks — and the agent degrades without a clear error.
 
-**When it occurs:** During load testing or when agent topics have complex system prompts combined with high top-K values and large chunk sizes. Also occurs when conversation history accumulates over a long multi-turn session.
+**When it occurs:** During load testing or when subagents have complex system prompts combined with high top-K values and large chunk sizes. Also occurs when conversation history accumulates over a long multi-turn session.
 
-**How to avoid:** During QA, monitor total prompt token consumption using the Einstein Trust Layer audit log (which records input and output token counts per call). Tune `top_k` and `chunk_size` together — reducing top-K from 10 to 5 halves retrieval token cost with minimal recall impact for most use cases. Set a prompt token budget guard in the agent topic's system prompt length design.
+**How to avoid:** During QA, monitor total prompt token consumption using the Einstein Trust Layer audit log (which records input and output token counts per call). Tune `top_k` and `chunk_size` together — reducing top-K from 10 to 5 halves retrieval token cost with minimal recall impact for most use cases. Set a prompt token budget guard in the subagent's system prompt length design.
 
 ---
 

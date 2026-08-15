@@ -42,11 +42,11 @@ Complete this section before any migration work begins.
 
 ---
 
-## Dialog to Topic Mapping
+## Dialog to Subagent Mapping
 
-For each bot dialog, complete this mapping table.
+For each bot dialog, complete this mapping table. (Agentforce subagents were called topics before April 2026; the metadata type is still `GenAiPlugin`.)
 
-| Bot Dialog | Agentforce Topic Name | Topic Description (routing instruction) | Actions Required | Implementation Status |
+| Bot Dialog | Agentforce Subagent Name | Subagent Description (routing instruction) | Actions Required | Implementation Status |
 |---|---|---|---|---|
 | (dialog name) | | | | Draft / In Progress / Complete |
 | | | | | |
@@ -83,8 +83,8 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 
 - [ ] Bot type confirmed — Classic or Enhanced. Migration tool eligibility determined.
 - [ ] Legacy Chat channel status confirmed — if in use, cutover planned before Feb 14 2026.
-- [ ] Every Dialog has a corresponding Topic with a clear LLM-routing description (not just the dialog name).
-- [ ] Raw utterance imports replaced with Topic description language or removed.
+- [ ] Every Dialog has a corresponding Subagent with a clear LLM-routing description (not just the dialog name).
+- [ ] Raw utterance imports replaced with Subagent description language or removed.
 - [ ] Every Action placeholder from the migration tool has real logic implemented (Flow, Apex, or service action).
 - [ ] GenAiPlannerBundle is present in the deployed BotVersion metadata.
 - [ ] Agent User (EinsteinServiceAgent User) is selected via dropdown, not typed.
@@ -101,7 +101,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 | Metric | Existing Bot (baseline) | Agentforce Agent (measured) | SLA Target | Pass / Fail |
 |---|---|---|---|---|
 | First response time (ms) | | | | |
-| Topic routing time (ms) | | | | |
+| Subagent routing time (ms) | | | | |
 | End-to-end dialog completion time (s) | | | | |
 
 ---
@@ -110,7 +110,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 
 | Step | Owner | Target Date | Status |
 |---|---|---|---|
-| Migrate all Topics and Actions to Agentforce | | | |
+| Migrate all Subagents and Actions to Agentforce | | | |
 | Validate routing accuracy in sandbox | | | |
 | Validate latency SLA in sandbox | | | |
 | UAT sign-off | | | |

@@ -71,11 +71,11 @@
     "fd494b360286be5f34eb",
     "ff4da42314e823cc357b"
   ],
-  "content_hash": "7eee21e5935d86aad2deab9c30d73c3833a765baafe8c499d778537c0d147f97",
+  "content_hash": "c7d6a912150409ae52b7e1e713ee13143953b3279472173506e770a6975a11e9",
   "dependencies": [
     "integration-procedures"
   ],
-  "description": "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element'. NOT for Integration Procedure internal design (use integration-procedures) or generic Ap \u2014 use omnistudio/omnistudio-error-handling-patterns.",
+  "description": "Use when configuring, troubleshooting, or choosing between Remote Action types in OmniScript or FlexCard. Triggers: 'remote action', 'OmniScript action', 'IP action', 'Apex action element'. NOT for Integration Procedure internal design or generic Apex callout patterns \u2014 use omnistudio/integration-procedures.",
   "file_location": "skills/omnistudio/omnistudio-remote-actions",
   "id": "omnistudio/omnistudio-remote-actions",
   "inputs": [
@@ -120,5 +120,5 @@
   ],
   "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

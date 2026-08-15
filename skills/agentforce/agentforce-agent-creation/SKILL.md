@@ -33,16 +33,24 @@ outputs:
   - "lifecycle management and promotion-to-production guidance"
   - "permission and agent user configuration findings"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Agent Creation
 
-Use this skill when the work is standing up a new Agentforce agent or troubleshooting one that will not activate, will not appear to users, or behaves unexpectedly after deployment. This skill covers the agent definition, agent user, channel assignment, instructions and system prompt, activation, and lifecycle across environments. It does not cover topic boundary design or action contract design — those have their own skills.
+Use this skill when the work is standing up a new Agentforce agent or troubleshooting one that will not activate, will not appear to users, or behaves unexpectedly after deployment. This skill covers the agent definition, agent user, channel assignment, instructions and system prompt, activation, and lifecycle across environments. It does not cover subagent boundary design or action contract design — those have their own skills.
 
-Agentforce is Salesforce's autonomous AI agent platform (formerly Einstein Copilot). Agents are powered by a reasoning engine (GenAiPlannerBundle) layered on top of a Bot/BotVersion shell that governs the channel surface. A fully working agent requires the right platform prerequisites, a correctly configured agent definition, at least one topic with one action, and a channel to surface it on. Missing any layer produces silent failures or a blank agent panel.
+Agentforce is Salesforce's autonomous AI agent platform (formerly Einstein Copilot). Agents are powered by a reasoning engine (GenAiPlannerBundle) layered on top of a Bot/BotVersion shell that governs the channel surface. A fully working agent requires the right platform prerequisites, a correctly configured agent definition, at least one subagent with one action, and a channel to surface it on. Missing any layer produces silent failures or a blank agent panel.
+
+> **Terminology.** This skill leads with *subagent* because that is the current
+> product term — beginning in April 2026, agent topics are called subagents,
+> with no change to functionality. It deliberately keeps *topic* in metadata and
+> API names (`GenAiPlugin` is still documented as "an agent topic"), in the
+> `agent-topic-design` skill path, and in search keywords — those did not
+> change, and readers arriving with the older vocabulary still need to find
+> this skill.
 
 ---
 
@@ -66,7 +74,7 @@ An Agentforce agent is not a single record. It consists of three linked metadata
 
 - **Bot + BotVersion** — the top-level shell and channel routing definition. Provides the conversation container (session, language, fallback).
 - **GenAiPlannerBundle** (API v64+; GenAiPlanner in API v60–63) — the reasoning engine. Attaches to the BotVersion and gives the bot agent-level reasoning capability. Deploying BotVersion without GenAiPlannerBundle produces a chatbot, not an agent.
-- **GenAiPlugin** (Topics) and **GenAiFunction** (Actions) — the capability payload. Topics define jobs the agent performs; actions define tools within those jobs.
+- **GenAiPlugin** (Subagents) and **GenAiFunction** (Actions) — the capability payload. Subagents define jobs the agent performs; actions define tools within those jobs.
 
 All layers must be deployed together and remain consistent. When retrieving or deploying agent metadata, treat the bundle as one unit.
 
@@ -113,7 +121,7 @@ Each channel type has its own prerequisites. Embedded Service requires a publish
    | Company | Organizational context included in system instructions. |
    | Agent User | Select the EinsteinServiceAgent User from the dropdown; do not type manually. |
    | Enhanced Event Logs | Enable for conversation tracing during testing and audit. |
-4. Add topics and actions via Agentforce Builder (see `agentforce/agent-topic-design` and `agentforce/agent-actions`).
+4. Add subagents and actions via Agentforce Builder (see `agentforce/agent-topic-design` and `agentforce/agent-actions`).
 5. Review **Agent Instructions** — the system-prompt persona block that shapes tone, constraints, and fallback behavior. Specific, deterministic instructions produce more predictable agent behavior than vague persona statements.
 6. Click **Activate** in Agentforce Builder (upper-right corner). The agent transitions from Draft to Active.
 7. Assign to channel. For Embedded Service: Setup > Embedded Service Deployments > New (Messaging for In-App and Web). Configure the routing rule to target the agent. Add the Embedded Messaging component in Experience Builder and publish the site. Allow up to 10 minutes for changes to propagate.
@@ -128,8 +136,8 @@ Each channel type has its own prerequisites. Embedded Service requires a publish
 2. Confirm the Agent User has the correct permission set and can access the records the agent needs at runtime.
 3. Open the agent in Agentforce Builder. Review:
    - Agent instructions and system prompt for contradictions or vague scope.
-   - Topic classification descriptions — do they match the queries being tested?
-   - Action availability within each topic and whether action configurations are complete.
+   - Subagent classification descriptions — do they match the queries being tested?
+   - Action availability within each subagent and whether action configurations are complete.
 4. Use the **Conversation Preview** panel in Agentforce Builder to reproduce the failure interactively.
 5. For production agents, review **Enhanced Event Logs** conversation records to inspect the prompt and response pipeline.
 6. Verify the channel configuration has not drifted. If a Flow routes to the agent, confirm the flow targets the correct agent name and the flow version is Active.
@@ -154,11 +162,11 @@ Each channel type has its own prerequisites. Embedded Service requires a publish
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| New agent for Service Cloud web chat | Agentforce Service Agent template + Embedded Service Deployment | Template pre-populates standard service topics; Embedded Service routes through Omni-Channel |
+| New agent for Service Cloud web chat | Agentforce Service Agent template + Embedded Service Deployment | Template pre-populates standard service subagents; Embedded Service routes through Omni-Channel |
 | New agent for internal Salesforce app use | Standard Agentforce (Default) agent in standard footer | No external channel setup required |
 | Agent for a custom or third-party channel | Agent API REST endpoint | Decouples channel surface from Salesforce UI entirely |
 | Agent needs to move from sandbox to production | Deploy metadata, then manually activate in production | Activation state does not carry across org boundaries |
-| API Name chosen incorrectly at creation | Create a new agent with the correct name; migrate topics and actions | API Name is immutable |
+| API Name chosen incorrectly at creation | Create a new agent with the correct name; migrate subagents and actions | API Name is immutable |
 | Actions not appearing in channel after agent change | Deactivate and reactivate Agentforce toggle; republish deployment | Known platform state issue with action registration |
 
 ---
@@ -186,7 +194,7 @@ Run through these before marking work in this area complete:
 - [ ] Agent API Name is finalized before creation — it cannot be changed afterward.
 - [ ] EinsteinServiceAgent User is assigned to the agent using the dropdown picker (not typed).
 - [ ] The agent user has the Einstein Agent User permission set assigned.
-- [ ] At least one topic with at least one action exists before activation.
+- [ ] At least one subagent with at least one action exists before activation.
 - [ ] Agent is in Active state (not Draft or Inactive).
 - [ ] Channel deployment (Embedded Service or Messaging) has been published after agent activation.
 - [ ] Enhanced Event Logs are enabled for post-launch conversation audit.
@@ -199,11 +207,11 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Agent API Name is permanent** — the API Name assigned at creation cannot be changed. A wrong API Name requires creating a new agent from scratch and migrating all topics and actions. Choose it carefully before the first save.
+1. **Agent API Name is permanent** — the API Name assigned at creation cannot be changed. A wrong API Name requires creating a new agent from scratch and migrating all subagents and actions. Choose it carefully before the first save.
 2. **Activation does not transfer between environments** — deploying agent metadata via Metadata API or a change set leaves the agent in Inactive state in the target org. Teams that assume sandbox activation carries to production will go live with a broken, invisible agent.
-3. **Embedded Service deployment must be republished after agent changes** — changes to agent instructions, topics, or actions do not reach users until the Embedded Service deployment is republished. CDN propagation can take up to 10 minutes after republishing.
+3. **Embedded Service deployment must be republished after agent changes** — changes to agent instructions, subagents, or actions do not reach users until the Embedded Service deployment is republished. CDN propagation can take up to 10 minutes after republishing.
 4. **EinsteinServiceAgent User must be selected from the dropdown, never typed** — manually typing the user name in the Agent User field fails silently or creates a misconfigured agent that passes validation but cannot execute actions at runtime.
-5. **An active agent without well-designed topics is still broken** — activating an agent that has only placeholder or template topics produces an agent that appears live but cannot reliably route or complete tasks. Treat topic design as a prerequisite to activation, not a post-launch cleanup task.
+5. **An active agent without well-designed subagents is still broken** — activating an agent that has only placeholder or template subagents produces an agent that appears live but cannot reliably route or complete tasks. Treat subagent design as a prerequisite to activation, not a post-launch cleanup task.
 
 ---
 
@@ -220,7 +228,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `agentforce/agent-topic-design` — use when the problem is topic boundary design, not agent definition or channel setup.
-- `agentforce/agent-actions` — use when the problem is action contract quality, naming, or error handling within a topic.
+- `agentforce/agent-topic-design` — use when the problem is subagent boundary design, not agent definition or channel setup.
+- `agentforce/agent-actions` — use when the problem is action contract quality, naming, or error handling within a subagent.
 - `agentforce/einstein-trust-layer` — use alongside this skill to validate data masking, ZDR, and grounding policies before activating an agent.
 - `devops/scratch-org-management` — use when the agent lifecycle includes scratch org-based development or package creation workflows.

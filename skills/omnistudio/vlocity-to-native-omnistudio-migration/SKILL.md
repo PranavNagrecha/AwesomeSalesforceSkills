@@ -1,6 +1,6 @@
 ---
 name: vlocity-to-native-omnistudio-migration
-description: "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to. NOT for new OmniStudio setup in greenfield orgs, nor for migrating between OmniStudio-na — use omnistudio/omnistudio-deployment-datapacks."
+description: "Use when migrating an org from the Vlocity managed package (vlocity_ins, vlocity_cmt, vlocity_ps) to native OmniStudio. Trigger keywords: Vlocity to OmniStudio migration, namespace migration, vlocity_ins to omnistudio. NOT for greenfield OmniStudio setup or migrating between OmniStudio-native orgs — use omnistudio/omnistudio-deployment-datapacks."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -43,7 +43,7 @@ dependencies:
   - omnistudio/omnistudio-lwc-integration
   - omnistudio/dataraptor-patterns
   - omnistudio/integration-procedures
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
 updated: 2026-08-14
 runtime_orphan: true

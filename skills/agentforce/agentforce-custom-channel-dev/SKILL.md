@@ -40,9 +40,9 @@ outputs:
   - Conversation state management approach
 dependencies:
   - agentforce/agent-channel-deployment
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-08-14
 ---
 
 # Agentforce Custom Channel Dev
@@ -287,7 +287,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `agentforce/agent-channel-deployment` — use for standard channel setup (Embedded Service widget, Slack, standard Messaging), NOT for programmatic API integrations
 - `agentforce/custom-agent-actions-apex` — use when building Apex-based agent actions that the Agentforce agent calls during a session; this skill handles the session/channel layer, not the action layer
-- `agentforce/agentforce-agent-creation` — use for UI-driven agent setup, topic assignment, and activation in Setup before implementing any channel integration
+- `agentforce/agentforce-agent-creation` — use for UI-driven agent setup, subagent assignment (subagents were called topics before April 2026), and activation in Setup before implementing any channel integration
 - `integration/api-led-connectivity` — use when the external system connects to Salesforce through MuleSoft or an API gateway layer rather than directly to the Agent API
 
 ---

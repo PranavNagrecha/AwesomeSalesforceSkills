@@ -1,6 +1,6 @@
 ---
 name: session-management-and-timeout
-description: "Use this skill when configuring session timeout values, concurrent session limits, session IP locking, or logout behavior in Salesforce. Covers org-wide session settings, profile-level overrides, Connected App session. NOT for OAuth token refresh flows, login IP ranges, or MFA/identity-provider configurati — use security/oauth-token-management."
+description: "Use this skill when configuring session timeout values, concurrent session limits, session IP locking, or logout behavior in Salesforce. Covers org-wide session settings, profile-level overrides, Connected App session. NOT for OAuth token refresh flows, login IP ranges, or MFA/identity-provider configuration — use security/oauth-token-management."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -30,9 +30,9 @@ outputs:
   - Metadata API SecuritySettings snippet for deployment
   - Review checklist for session hardening
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # Session Management And Timeout

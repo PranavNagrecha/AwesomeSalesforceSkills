@@ -56,7 +56,7 @@ The canonical DMOs are `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentIn
 
 **Why it happens:** Both involve logging Agentforce activity. LLMs conflate the two distinct logging surfaces.
 
-**Correct pattern:** Einstein Trust Layer logs cover LLM prompt/response pairs and data masking events for compliance purposes. Session observability (utterances, session status, topic classification) is the user-facing conversation layer stored in Data Cloud. Use session trace objects for agent performance monitoring, Trust Layer logs for compliance and security auditing.
+**Correct pattern:** Einstein Trust Layer logs cover LLM prompt/response pairs and data masking events for compliance purposes. Session observability (utterances, session status, subagent classification — subagents were called topics before April 2026) is the user-facing conversation layer stored in Data Cloud. Use session trace objects for agent performance monitoring, Trust Layer logs for compliance and security auditing.
 
 **Detection hint:** Any mention of "Trust Layer" in the context of measuring agent deflection rate or viewing conversation utterances.
 
@@ -68,7 +68,7 @@ The canonical DMOs are `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentIn
 
 **Why it happens:** LLMs assume all stored data is always queryable. They do not model data retention policies.
 
-**Correct pattern:** Utterance text in Data Cloud is subject to retention policies. Build aggregated metrics (deflection rate, session count, topic distribution) as the durable operational record. Use raw utterance queries only for recent sessions within the retention window.
+**Correct pattern:** Utterance text in Data Cloud is subject to retention policies. Build aggregated metrics (deflection rate, session count, subagent distribution) as the durable operational record. Use raw utterance queries only for recent sessions within the retention window.
 
 **Detection hint:** Any query or report design that assumes utterance text from 90+ days ago is available without checking the Data Cloud retention policy configuration.
 

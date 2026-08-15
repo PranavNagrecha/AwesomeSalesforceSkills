@@ -7,7 +7,6 @@
     "0e6fb94a39398e7fead0",
     "0f6b8abf642e77988840",
     "10ed375c41c2f303721d",
-    "1371fff5b87a8ff11cd5",
     "138d1d654939b386164c",
     "175af2dd89521080e306",
     "1dd399e296f2617bfec8",
@@ -45,6 +44,7 @@
     "980d3040fe324f03c216",
     "9eb298df22ed8030a444",
     "9ebef69b76122e46380e",
+    "a45ea6ed9889e1514b3c",
     "aab62cc6187cb6424442",
     "adc4b400d88278c342e5",
     "aeb3087f5f37090d76e1",
@@ -53,6 +53,7 @@
     "b8a5c64c3e486e11c6fc",
     "bbba9e21076874165b39",
     "be7a059f4fcebe8c8f65",
+    "bf771936fd43e614ddad",
     "c3342a0877d2ed3be10f",
     "c7843f3c510f87c906c3",
     "c7bd0e1a9a06311f2032",
@@ -69,9 +70,9 @@
     "f96e47ff7f43db040ed0",
     "fde185c2fcb1ba46adc8"
   ],
-  "content_hash": "297aa7e34f48a864551229db5a5e3aac8c1376d85fb4a55253004959996b83b9",
+  "content_hash": "a69a099655f045f2d8661adc2aa2047aac50f5fa796639bb262410fb045eec1a",
   "dependencies": [],
-  "description": "Safe construction of dynamic SOQL \u2014 Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE / WITH SECURITY_ENFORCED interaction. NOT for reviewing a query for injection or CRUD/FLS generally \u2014 use apex/soql-security. NOT for Schema.describe and runtime type inspection \u2014 use apex/dynamic-apex.",
+  "description": "Safe construction of dynamic SOQL \u2014 Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE interaction (WITH SECURITY_ENFORCED was removed in API 67.0). NOT for reviewing a query for injection or CRUD/FLS generally \u2014 use apex/soql-security. NOT for Schema.describe and runtime type inspection \u2014 use apex/dynamic-apex.",
   "file_location": "skills/apex/apex-dynamic-soql-binding-safety",
   "id": "apex/apex-dynamic-soql-binding-safety",
   "inputs": [
@@ -115,7 +116,7 @@
   "templates": [
     "skills/apex/apex-dynamic-soql-binding-safety/templates/apex-dynamic-soql-binding-safety-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

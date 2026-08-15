@@ -1,6 +1,6 @@
 ---
 name: security-incident-response
-description: "When to use: active or suspected Salesforce org compromise, unauthorized access investigation, attacker containment, forensic evidence collection from EventLogFile/LoginHistory, session revocation, OAuth token cleanup. NOT for general security setup, permission set design, field-level security configuratio — use security/oauth-token-management."
+description: "When to use: active or suspected Salesforce org compromise, unauthorized access investigation, attacker containment, forensic evidence collection from EventLogFile/LoginHistory, session revocation, OAuth token cleanup. NOT for general security setup, permission set design, or field-level security configuration — use admin/permission-sets-vs-profiles."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -39,9 +39,9 @@ outputs:
 dependencies:
   - security/event-monitoring
   - security/transaction-security-policies
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Security Incident Response — Salesforce

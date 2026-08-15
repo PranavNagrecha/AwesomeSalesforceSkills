@@ -40,9 +40,9 @@ outputs:
   - "Surface decision with rationale (Slack vs Teams vs in-Salesforce) and channel deployment checklist"
   - "Measurement plan with deflection / FRT / CSAT instrumentation, baseline survey, 30-60-90 review cadence"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-08-14
 ---
 
 # Employee HR Service Agent Rollout
@@ -55,6 +55,11 @@ The work is operationally similar to launching a Service Cloud agent (knowledge-
 2. The visibility model is **employee-self-only by default**, with carefully scoped "manager-of-team" expansion. A leak of one employee's pay stub to another employee is materially different from a customer-service leak.
 3. Most employees do not live in the Salesforce console day-to-day; the agent's natural surface is Slack or Microsoft Teams, not Lightning.
 
+> **Terminology.** Salesforce renamed agent *topics* to *subagents* in April 2026.
+> Nothing about behaviour changed, and the API surface kept the old word —
+> `GenAiPlugin` is still the metadata type behind a subagent. This skill says
+> *subagent*; older Help articles and your org's metadata still say *topic*.
+
 ---
 
 ## Before Starting
@@ -63,7 +68,7 @@ Gather this context before drafting any rollout plan:
 
 - **Which workflows are in scope?** "All HR" is not an answer. Common starting set: time-off balance lookup, leave-request creation, benefits-explainer (FAQ over policy KB), onboarding checklist progress. More advanced: paystub explainer, performance-review nudges, expense-reimbursement status. Drag the list down to 3–5 workflows for the pilot.
 - **Where is the source of truth?** Most HR data lives in an HRIS (Workday, ADP, BambooHR, UKG, SuccessFactors), not Salesforce. Decide per workflow: read-only (agent fetches and displays) vs read-write (agent submits a leave request back to Workday). Read-write doubles integration effort and triples compliance risk; default the pilot to read-only and graduate selectively.
-- **What's the license posture?** Employee Agent and Service Agent are licensed differently. Confirm with your AE which SKU you have and which standard topics are entitled, before promising end users a feature that requires a SKU you don't own. Also confirm Einstein Trust Layer entitlements — masking and zero-retention behaviors are tied to the platform license.
+- **What's the license posture?** Employee Agent and Service Agent are licensed differently. Confirm with your AE which SKU you have and which standard subagents are entitled, before promising end users a feature that requires a SKU you don't own. Also confirm Einstein Trust Layer entitlements — masking and zero-retention behaviors are tied to the platform license.
 - **What's the surface decision?** Three live options: in-Salesforce console (works for HR business partners, fails for end employees), Slack (works for Slack-native orgs, requires Slack Enterprise Grid for some governance features), Microsoft Teams (works for Teams-native orgs, deployment maturity is behind Slack). Multi-surface is supported but multiplies test matrix.
 - **What's the compliance posture?** EU works councils may block read-write back to HRIS until consultation completes. GDPR / CCPA both apply to chat transcripts containing employee PII; retention defaults need to be deliberate. Some regions require employee consent before storing chat with their identifying data.
 
@@ -71,15 +76,15 @@ Gather this context before drafting any rollout plan:
 
 ## Core Concepts
 
-### Concept 1 — Standard topics ship; rollout is mostly *configuration*, not authoring
+### Concept 1 — Standard subagents ship; rollout is mostly *configuration*, not authoring
 
-Salesforce ships a set of pre-built topics for the Employee Service / HR use case. The exact roster varies by release and entitlement, but the common starting set covers leave-request creation, benefits-FAQ, onboarding checklist, and time-off balance. The rollout posture should be:
+Salesforce ships a set of pre-built subagents for the Employee Service / HR use case. The exact roster varies by release and entitlement, but the common starting set covers leave-request creation, benefits-FAQ, onboarding checklist, and time-off balance. The rollout posture should be:
 
-1. **Inventory standard topics shipped with your license tier.** Open Agentforce Builder → Templates → Employee Service. The topics you see there are starter content, not finished product.
-2. **For each in-scope workflow, decide:** use standard topic as-is, customize standard topic, or author net-new. Net-new should be the minority — pilot success comes from configuring the shipped topics, not rewriting them.
-3. **Most authoring effort is on grounding data.** Standard topics rely on policy KB articles (for benefits explainer) and HRIS connector actions (for leave-balance). The topic logic ships; you provide the data.
+1. **Inventory standard subagents shipped with your license tier.** Open Agentforce Builder → Templates → Employee Service. The subagents you see there are starter content, not finished product.
+2. **For each in-scope workflow, decide:** use standard subagent as-is, customize standard subagent, or author net-new. Net-new should be the minority — pilot success comes from configuring the shipped subagents, not rewriting them.
+3. **Most authoring effort is on grounding data.** Standard subagents rely on policy KB articles (for benefits explainer) and HRIS connector actions (for leave-balance). The subagent logic ships; you provide the data.
 
-The single biggest rollout-time mistake is treating the agent as if it must be authored from scratch. The shipped topics carry years of conversation-design patterns; the org's job is to *connect them to org-specific data*, not reinvent the conversational flows.
+The single biggest rollout-time mistake is treating the agent as if it must be authored from scratch. The shipped subagents carry years of conversation-design patterns; the org's job is to *connect them to org-specific data*, not reinvent the conversational flows.
 
 ### Concept 2 — HRIS integration: read-only is the safe default; read-write needs explicit gating
 
@@ -129,9 +134,9 @@ If the org has no Slack and no Teams, an Embedded Service widget on the intranet
 
 ## Recommended Workflow
 
-1. **Define scope: 3–5 workflows for pilot.** Pick from the standard-topic roster first. Avoid net-new authoring in the pilot. Document scope in a one-pager that names the HRIS source of truth, read-only vs read-write posture, and target surface for each workflow.
-2. **Confirm license posture and Trust Layer entitlements.** Validate Employee Agent SKU coverage with your AE. Confirm masking and zero-retention behaviors apply to your tier. If your org is on a Service Agent license being repurposed for employees, document the gaps explicitly — some standard Employee Service topics may not be entitled.
-3. **Wire the HRIS integration as a separate work-stream.** Treat HRIS connectivity (Workday / ADP / BambooHR / UKG / SuccessFactors) as a parallel architecture decision, not a sub-task of agent build. Settle on read-only for the pilot. Build Apex action wrappers with Named Credentials; do not hard-code HRIS endpoints inside agent topics.
+1. **Define scope: 3–5 workflows for pilot.** Pick from the standard-subagent roster first. Avoid net-new authoring in the pilot. Document scope in a one-pager that names the HRIS source of truth, read-only vs read-write posture, and target surface for each workflow.
+2. **Confirm license posture and Trust Layer entitlements.** Validate Employee Agent SKU coverage with your AE. Confirm masking and zero-retention behaviors apply to your tier. If your org is on a Service Agent license being repurposed for employees, document the gaps explicitly — some standard Employee Service subagents may not be entitled.
+3. **Wire the HRIS integration as a separate work-stream.** Treat HRIS connectivity (Workday / ADP / BambooHR / UKG / SuccessFactors) as a parallel architecture decision, not a sub-task of agent build. Settle on read-only for the pilot. Build Apex action wrappers with Named Credentials; do not hard-code HRIS endpoints inside subagents.
 4. **Ground the agent on HR policy KB.** Inventory existing policy content (Confluence, SharePoint, Workday Help, intranet pages). Decide whether to import into Salesforce Knowledge or use Data Cloud / external grounding. Test grounding quality on 20–30 representative employee questions before going live.
 5. **Define the PII / visibility model.** Document, per workflow, what data the agent reads, what data it shows, and what data goes to the LLM. Enforce visibility in the action layer (sharing checks, manager-relationship lookups). Do *not* rely on prompt instructions to enforce visibility.
 6. **Choose the surface; configure channel deployment.** Slack-first is the usual pick for frontline employees; Salesforce console is fine for HRBPs. Configure the channel per `agentforce/agent-channel-deployment`. Test the channel surface with a 5-employee pilot before broadcasting.

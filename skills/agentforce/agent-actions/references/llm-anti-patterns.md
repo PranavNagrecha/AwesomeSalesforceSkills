@@ -62,7 +62,7 @@ Composable (recommended):
 Benefits:
 - Agent can skip "List Open Cases" if user already provided context
 - Each action is independently testable
-- Actions are reusable across multiple topics
+- Actions are reusable across multiple subagents (formerly topics)
 - Agent planner can reason about each step
 ```
 

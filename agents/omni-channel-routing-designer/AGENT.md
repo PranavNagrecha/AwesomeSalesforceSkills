@@ -49,10 +49,10 @@ Designs or audits an Omni-Channel routing configuration across Case, Chat/Messag
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/omni-channel-routing-setup` — via `get_skill`
-4. `skills/admin/case-management-setup`
-5. `skills/admin/messaging-and-chat-setup`
-6. `skills/architect/omni-channel-capacity-model`
-7. `skills/architect/multi-channel-service-architecture`
+4. `skills/admin/case-management-setup` — Omni pulls work from the same Case queues that assignment rules write into and that escalation rules later re-own; without it the agent designs a routing topology that competes with the rules already setting Case owner, and ownership lands wherever the last write happened
+5. `skills/admin/messaging-and-chat-setup` — a messaging session routes through a Messaging Channel and can consume Status-Based Capacity rather than the fixed per-item weight a Service Channel applies; without it the agent uses one capacity model across Case and chat and counts a long-lived session as a single unit for its whole life
+6. `skills/architect/omni-channel-capacity-model` — supplies the arithmetic behind the capacity-per-presence-status deliverable: channel weighting, interruptible work, and overflow; without it the agent assigns numbers that look reasonable per channel and over-subscribe any agent working two channels at once
+7. `skills/architect/multi-channel-service-architecture` — the design spans Case, Messaging and Lead in one pass, and cross-channel prioritisation is decided here; without it the agent tunes each channel's routing in isolation and the highest-priority channel loses to whichever queue happens to have capacity first
 8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---

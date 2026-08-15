@@ -75,9 +75,9 @@
     "f421d048c4d0a12ccb71",
     "f99f4a71735e07a216c4"
   ],
-  "content_hash": "b3698e9545dc14452788ce7d4a9faf9d028c906c6d18b765b0d56eddb2fe8027",
+  "content_hash": "21577d7896650f91ace518ddf41abea3f57ed0969447340146cb43531fabd797",
   "dependencies": [],
-  "description": "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable. NOT for AppExchange security review (use secure-coding-review-checklist), NOT for sessio \u2014 use security/experience-cloud-security.",
+  "description": "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable reCAPTCHA on Web-to-Case'. NOT for AppExchange security review or session-level login policies \u2014 use security/session-management-and-timeout.",
   "file_location": "skills/security/recaptcha-and-bot-prevention",
   "id": "security/recaptcha-and-bot-prevention",
   "inputs": [
@@ -121,7 +121,7 @@
   "templates": [
     "skills/security/recaptcha-and-bot-prevention/templates/recaptcha-and-bot-prevention-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

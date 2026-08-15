@@ -35,9 +35,9 @@ ORDER BY 1 DESC
 
 ## Example 2: Diagnosing Why an Agent Keeps Escalating on Billing Questions
 
-**Context:** The service team notices that sessions containing billing-related questions escalate to a human agent at a much higher rate than other topics. They want to understand why.
+**Context:** The service team notices that sessions containing billing-related questions escalate to a human agent at a much higher rate than other subagents (called topics before April 2026; the DMO attribute is still `TopicName`). They want to understand why.
 
-**Problem:** The legacy dashboard does not show topic-level breakdowns, and they cannot see the actual conversation content.
+**Problem:** The legacy dashboard does not show subagent-level breakdowns, and they cannot see the actual conversation content.
 
 **Solution:**
 
@@ -62,9 +62,9 @@ WHERE SessionId = '5MRxx...'
 ORDER BY SequenceNumber ASC
 ```
 
-Step 3 — Review the utterance trace. In this case, the agent is not handling refund-related questions because the Billing_Inquiry topic scope does not include refund processing.
+Step 3 — Review the utterance trace. In this case, the agent is not handling refund-related questions because the Billing_Inquiry subagent scope does not include refund processing.
 
-**Why it works:** The utterance trace reveals the exact conversation turn where the agent failed to provide a useful response, leading to escalation. The team can then update the topic scope or add an action to handle refund queries.
+**Why it works:** The utterance trace reveals the exact conversation turn where the agent failed to provide a useful response, leading to escalation. The team can then update the subagent scope or add an action to handle refund queries.
 
 ---
 

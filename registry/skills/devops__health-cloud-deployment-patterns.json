@@ -135,12 +135,12 @@
     "fe1d8f5cf260e49a3454",
     "fe574f3e180168a09c46"
   ],
-  "content_hash": "6c02d92bf15d2a738d0e4c706aaf4bca0f8b1686016cfacf13e1dcfe1b4166f7",
+  "content_hash": "09337499eae6f722825ff4df4cbb153759eeb8a2dfbddaf8a2c337056b4c0947",
   "dependencies": [
     "devops/permission-set-deployment-ordering",
     "devops/go-live-cutover-planning"
   ],
-  "description": "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance. NOT for Health Cloud data model design (use health-cloud-data-model), NOT for Apex exten \u2014 use admin/hipaa-workflow-design.",
+  "description": "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance. NOT for Health Cloud data model design or Apex extensions in Health Cloud \u2014 use data/health-cloud-data-model.",
   "file_location": "skills/devops/health-cloud-deployment-patterns",
   "id": "devops/health-cloud-deployment-patterns",
   "inputs": [
@@ -191,7 +191,7 @@
   "templates": [
     "skills/devops/health-cloud-deployment-patterns/templates/health-cloud-deployment-patterns-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

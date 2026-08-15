@@ -1,6 +1,6 @@
 ---
 name: api-version-management
-description: "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. NOT for REST/SOAP API design patterns (use rest-api-patterns or soap-api-patterns), OAut — use integration/api-versioning-strategy."
+description: "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. NOT for REST/SOAP API design patterns, OAuth configuration, or Metadata API deployment mechanics — use integration/api-versioning-strategy."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - "Upgrade plan with prioritized list of components to update"
   - "Validated sfdx-project.json and component metadata at target version"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # API Version Management

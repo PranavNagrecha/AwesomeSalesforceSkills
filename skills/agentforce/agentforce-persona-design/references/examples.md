@@ -37,10 +37,10 @@ Keep responses focused and concise — aim for 2-3 sentences unless a detailed e
 
 ---
 
-## Anti-Pattern: Encoding Persona Only in Topic Instructions
+## Anti-Pattern: Encoding Persona Only in Subagent Instructions
 
-**What practitioners do:** Add tone and voice instructions to individual topic instructions (e.g., "Respond formally when discussing billing") rather than agent-level system instructions, assuming this is equivalent.
+**What practitioners do:** Add tone and voice instructions to individual subagent instructions (subagents were called topics before April 2026) — e.g., "Respond formally when discussing billing" — rather than agent-level system instructions, assuming this is equivalent.
 
-**What goes wrong:** Topic instructions only apply when the LLM routes to that specific topic. If the conversation matches a different topic, falls back to unhandled intent, or is in the escalation path, the persona instructions are absent. The agent's tone becomes inconsistent — formal during billing discussions, neutral or generic elsewhere.
+**What goes wrong:** Subagent instructions only apply when the LLM routes to that specific subagent. If the conversation matches a different subagent, falls back to unhandled intent, or is in the escalation path, the persona instructions are absent. The agent's tone becomes inconsistent — formal during billing discussions, neutral or generic elsewhere.
 
-**Correct approach:** Encode persona exclusively in agent-level system instructions. Topic instructions should focus on task scope, required actions, and response format for that topic — not tone or voice. The agent-level persona applies uniformly across all topics and fallback states.
+**Correct approach:** Encode persona exclusively in agent-level system instructions. Subagent instructions should focus on task scope, required actions, and response format for that subagent — not tone or voice. The agent-level persona applies uniformly across all subagents and fallback states.

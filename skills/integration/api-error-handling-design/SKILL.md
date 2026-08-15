@@ -1,6 +1,6 @@
 ---
 name: api-error-handling-design
-description: "Designing HTTP error classification, RFC 7807-style error payload structure, and client-side error parsing for Salesforce REST/SOAP integrations and custom Apex REST endpoints. Use when deciding which HTTP status. NOT for retry execution mechanics or circuit breaker implementation (use retry-and-backo — use architect/integration-framework-design."
+description: "Designing HTTP error classification, RFC 7807-style error payload structure, and client-side error parsing for Salesforce REST/SOAP integrations and custom Apex REST endpoints. Use when deciding which HTTP status codes an endpoint returns and how callers classify them. NOT for retry mechanics or circuit breakers (use integration/retry-and-backoff-patterns) — use architect/integration-framework-design."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -35,9 +35,9 @@ outputs:
 dependencies:
   - retry-and-backoff-patterns
   - apex-rest-services
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # API Error Handling Design

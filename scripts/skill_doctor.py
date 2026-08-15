@@ -308,6 +308,31 @@ def print_report(rep: Report, verbose: bool) -> None:
         print(f"\n  NEXT: {nxt}")
 
 
+def _normalise_skill_arg(raw: str, real: set[str]) -> str:
+    """Accept `domain/slug`, `skills/domain/slug`, or a path to either.
+
+    Everything downstream joins the argument onto ``ROOT / "skills"``, so a
+    path-form argument used to resolve to ``skills/skills/<domain>/<slug>`` and
+    every check failed. That reported a real package as missing and told the
+    caller to scaffold it — confidently wrong output, which is worse than an
+    error. Normalise instead, and fail loudly when the id does not exist.
+    """
+    s = raw.strip()
+    try:  # a path into this repo, absolute or relative — resolve before stripping
+        s = str(Path(s).resolve().relative_to(ROOT))
+    except (ValueError, OSError):
+        pass
+    s = s.strip("/")
+    if s.startswith("skills/"):
+        s = s[len("skills/"):]
+    if s not in real:
+        near = sorted(x for x in real if x.split("/")[-1] == s.split("/")[-1])
+        hint = f"  Did you mean: {', '.join(near[:3])}" if near else \
+               "  Use `domain/slug`, e.g. apex/trigger-framework. `--all` reports every skill."
+        raise SystemExit(f"skill_doctor: no such skill '{raw}'\n{hint}")
+    return s
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -323,7 +348,7 @@ def main() -> int:
         ap.error("give a skill id, or --all")
 
     registry, cited, fixtures, real = _load_registry(), _agent_citations(), _fixture_skills(), _all_skill_ids()
-    targets = sorted(real) if args.all else [args.skill.strip().strip("/")]
+    targets = sorted(real) if args.all else [_normalise_skill_arg(args.skill, real)]
     reports = [diagnose(s, registry=registry, cited=cited, fixtures=fixtures, real=real) for s in targets]
 
     if args.json:

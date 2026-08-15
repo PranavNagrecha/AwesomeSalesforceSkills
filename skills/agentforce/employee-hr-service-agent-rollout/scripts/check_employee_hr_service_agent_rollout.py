@@ -3,10 +3,10 @@
 
 Walks an SFDX-style metadata tree (force-app/) and reports:
 
-1. Agent (`Bot` / `GenAiPlanner` / `GenAiPlugin`) definitions whose topics or
-   actions reference Employee Service / HR concepts (leave, benefits,
-   onboarding, time-off, paystub, hris) — these are the candidate agents
-   for rollout.
+1. Agent (`Bot` / `GenAiPlanner` / `GenAiPlugin`) definitions whose subagents
+   (called topics before April 2026) or actions reference Employee Service /
+   HR concepts (leave, benefits, onboarding, time-off, paystub, hris) — these
+   are the candidate agents for rollout.
 2. Slack / Microsoft Teams app integration metadata under `connectedApps/`
    or `slackApps/` — the rollout requires a chat surface; absence is a
    warning.
@@ -40,7 +40,7 @@ from pathlib import Path
 
 NS = {"s": "http://soap.sforce.com/2006/04/metadata"}
 
-# Concept regexes — case-insensitive, applied to topic / action / file content.
+# Concept regexes — case-insensitive, applied to subagent / action / content.
 HR_CONCEPT_RE = re.compile(
     r"\b(leave|pto|time[\s_-]?off|benefits?|onboard(?:ing)?|paystub|"
     r"payslip|hris|workday|adp|bamboohr|ukg|successfactors|enrollment|"

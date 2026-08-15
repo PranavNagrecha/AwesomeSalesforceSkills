@@ -56,9 +56,9 @@
     "fa4abf720bad29ceb8ac",
     "fccc7ffacd97d7813ef5"
   ],
-  "content_hash": "816d0dfd16470c950c56755aa44249d6acae592a7d645946bf1987a1db7a5ab5",
+  "content_hash": "61ed3bc1890debe40e099a6c8d54c90b1244d1c2f6569c012c40ea78af850d61",
   "dependencies": [],
-  "description": "Use this skill when setting up or extending Salesforce Loyalty Management \u2014 including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalt \u2014 use architect/loyalty-program-architecture.",
+  "description": "Use this skill when setting up or extending Salesforce Loyalty Management \u2014 including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design or B2B loyalty via Sales Cloud \u2014 use architect/loyalty-program-architecture.",
   "file_location": "skills/integration/loyalty-management-setup",
   "id": "integration/loyalty-management-setup",
   "inputs": [
@@ -105,7 +105,7 @@
   "templates": [
     "skills/integration/loyalty-management-setup/templates/loyalty-management-setup-template.md"
   ],
-  "updated": "2026-04-16",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

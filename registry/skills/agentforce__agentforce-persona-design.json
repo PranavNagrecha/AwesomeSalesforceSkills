@@ -1,7 +1,9 @@
 {
   "category": "agentforce",
   "chunk_ids": [
+    "0d4b2dc8bd2e836ed010",
     "0e8b582da4e93495d145",
+    "0ecccee0411e86438f41",
     "10e8d96ca2ab08cf20a3",
     "10ee80389032573beb7a",
     "1e2b0dc9dc98a1e25a05",
@@ -11,10 +13,11 @@
     "2ececc9cebecf771bd52",
     "35f1a54b5fae5e43d9d8",
     "38b3b93caa228d926cb6",
+    "3aa610a16ec198d4d1e5",
     "3eb45921a82c016d29b8",
     "40d0ce0d9f2f151289a8",
-    "49a2c241019f59371fc3",
     "4d57a044dfaa9397febb",
+    "4ea48328b4e6e795aeb1",
     "4efa99d57a1ce783d30b",
     "4f1a1aed2938ecaae043",
     "5062364203f0576aa1e5",
@@ -23,14 +26,13 @@
     "6080bdeb95c45967e146",
     "60b700e7ab58d6327e30",
     "62317964e04874c6f619",
+    "62c73be566047e63a4a6",
     "6c6e6c1d1bad4851380f",
     "7ec0509e3e5e8705c4f8",
     "7f896afe707782884545",
     "881e6ae60a74721e504a",
     "8a89d42a7e1343cad0fe",
-    "8cf892c243bbdc901d51",
     "95afb1603baf624bd3e5",
-    "993cd062537a8ce51881",
     "9c9d615e9837b7e17cc9",
     "a38dad02c4fd44b8b28f",
     "a4ee5fc8342eca1f5e32",
@@ -48,7 +50,6 @@
     "c686c037c088548c21bb",
     "ca08a88659304f901a76",
     "cb0305cc2b4bdbcfa3b1",
-    "d047672ff9f44abcea5f",
     "d9a201672bfaf45e9275",
     "e1fa3b1014d0aeed9951",
     "e4c7c966d4e6aa02f477",
@@ -62,7 +63,7 @@
     "fcc159a7c9f7439433cf",
     "ff6b57b20c3c66f0a35b"
   ],
-  "content_hash": "0ef81fe5028142654d2c6e81ba8315924713eb25c5d499cca317697ed71838d2",
+  "content_hash": "8e1438d82106b57e5a0d074ec801813cab0a9d2d6ee31741071028729f9de86e",
   "dependencies": [],
   "description": "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for writing the actual conversational copy \u2014 utterances, fallback messages, escalation phrasing \u2014 use admin/agent-conversation-design. NOT for topic scope design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-persona-design",
@@ -105,7 +106,7 @@
   "templates": [
     "skills/agentforce/agentforce-persona-design/templates/agentforce-persona-design-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

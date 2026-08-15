@@ -40,7 +40,9 @@ no `WITH USER_MODE`, often from a `without sharing` class.
 ```
 
 **Detection hint:** advice that presents `USING SCOPE mine` as a security control, or a scoped
-query with no `WITH USER_MODE` / `WITH SECURITY_ENFORCED` / `with sharing` alongside it.
+query with no `WITH USER_MODE` / `with sharing` alongside it. A scoped query carrying the older
+`WITH SECURITY_ENFORCED` counts as unenforced for new code: that clause was removed in API 67.0
+(Summer '26) and does not compile on a class pinned at 67.0 or above. Write `WITH USER_MODE`.
 
 ---
 

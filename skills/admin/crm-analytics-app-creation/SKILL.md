@@ -39,6 +39,8 @@ dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-12
+runtime_orphan: true
+runtime_orphan_reason: "No run-time agent covers CRM Analytics / Einstein Discovery. This skill was previously listed in audit-router's Mandatory Reads, but no audit-router classifier routes to it and report_dashboard's own scope excludes CRM Analytics migration, so the citation was decorative rather than load-bearing. Removed 2026-08-14 rather than left as a citation an agent never honoured. Re-wire when a CRM Analytics agent exists."
 ---
 
 # CRM Analytics App Creation

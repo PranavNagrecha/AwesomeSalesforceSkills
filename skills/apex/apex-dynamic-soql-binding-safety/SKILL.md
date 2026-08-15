@@ -1,6 +1,6 @@
 ---
 name: apex-dynamic-soql-binding-safety
-description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE / WITH SECURITY_ENFORCED interaction. NOT for reviewing a query for injection or CRUD/FLS generally — use apex/soql-security. NOT for Schema.describe and runtime type inspection — use apex/dynamic-apex."
+description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE interaction (WITH SECURITY_ENFORCED was removed in API 67.0). NOT for reviewing a query for injection or CRUD/FLS generally — use apex/soql-security. NOT for Schema.describe and runtime type inspection — use apex/dynamic-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -30,9 +30,9 @@ outputs:
   - SOQL-injection negative tests asserting safe behavior on attack payloads
   - Documented USER_MODE / SYSTEM_MODE choice with justification
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Apex Dynamic SOQL Binding Safety
@@ -117,9 +117,11 @@ String dir = ('DESC'.equalsIgnoreCase(userDir)) ? 'DESC' : 'ASC';
 
 For LIMIT and OFFSET, parse to `Integer` first; never let a String reach the query. Apex `Integer.valueOf` throws on non-numeric input — that is the desired failure mode.
 
-### Dynamic SOQL with `WITH USER_MODE` / `WITH SECURITY_ENFORCED`
+### Dynamic SOQL with `WITH USER_MODE`
 
-Both clauses are valid INSIDE a dynamic query string. `WITH USER_MODE` (API 58+) is preferred and is enforced at parse time on the field list. `WITH SECURITY_ENFORCED` is the older equivalent. They protect what the query CAN ASK FOR; they do not protect HOW the query is built. A dynamic query with `WITH USER_MODE` is still injectable if you concatenate user input into the WHERE clause — `WITH USER_MODE` just stops the attacker from selecting fields they cannot see.
+`WITH USER_MODE` (GA at API 57.0, Spring '23) is the access-mode clause to put inside a dynamic query string, and it is enforced at parse time on the field list. `WITH SECURITY_ENFORCED` is the older, weaker equivalent: it was removed in API 67.0 (Summer '26) and a class pinned at 67.0 or above fails to compile with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. Because the clause lives inside a *string* here, a dynamic query hides that compile error until the string is parsed at run time — so it surfaces as a `QueryException` in production rather than a build failure. Never build `WITH SECURITY_ENFORCED` into a query string. Per-version detail: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+
+The access-mode clause protects what the query CAN ASK FOR; it does not protect HOW the query is built. A dynamic query with `WITH USER_MODE` is still injectable if you concatenate user input into the WHERE clause — `WITH USER_MODE` just stops the attacker from selecting fields they cannot see.
 
 Prefer `Database.queryWithBinds(..., AccessLevel.USER_MODE)` over an in-string `WITH USER_MODE`; the AccessLevel argument does the same job and stays out of the parsed string.
 

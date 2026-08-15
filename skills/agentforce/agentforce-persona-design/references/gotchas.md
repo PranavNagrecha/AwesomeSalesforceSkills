@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Persona in Topic Instructions Only Applies When That Topic Is Active
+## Gotcha 2: Persona in Subagent Instructions Only Applies When That Subagent Is Active
 
-**What happens:** A practitioner adds tone and brand voice instructions to individual topic instructions (e.g., "Respond formally when handling billing questions"). When the agent handles unmatched queries, is in escalation, or routes to a different topic, those tone instructions are absent. The agent's voice becomes inconsistent — formal during billing, neutral or generic during other interactions.
+**What happens:** A practitioner adds tone and brand voice instructions to individual subagent instructions (subagents were called topics before April 2026), e.g., "Respond formally when handling billing questions". When the agent handles unmatched queries, is in escalation, or routes to a different subagent, those tone instructions are absent. The agent's voice becomes inconsistent — formal during billing, neutral or generic during other interactions.
 
-**When it occurs:** Persona instructions are placed at the topic level instead of the agent level, usually because the practitioner follows the same authoring pattern they used for topic-specific behavior.
+**When it occurs:** Persona instructions are placed at the subagent level instead of the agent level, usually because the practitioner follows the same authoring pattern they used for subagent-specific behavior.
 
-**How to avoid:** Agent-level system instructions are the only location where persona is consistently applied across all conversations and all topics. Topic instructions should focus on task scope and action guidelines, not tone or brand voice.
+**How to avoid:** Agent-level system instructions are the only location where persona is consistently applied across all conversations and all subagents. Subagent instructions should focus on task scope and action guidelines, not tone or brand voice.
 
 ---
 

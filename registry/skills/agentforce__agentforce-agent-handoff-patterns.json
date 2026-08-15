@@ -12,7 +12,6 @@
     "379573ef91915d104f8e",
     "3d20d6cad0f1fa9e9e8d",
     "3dfc858d55a4a300ea61",
-    "3f1b011ce0f51b51076c",
     "3f7fbf3058b9f6ccc518",
     "3fce3081fa163ab5c760",
     "47f1b5dac0d6fa212f90",
@@ -33,6 +32,7 @@
     "8c7bb03f0903b2416e2f",
     "94bc8c83c405ae154adb",
     "959852fbe93e089b9ae8",
+    "a0abe005e316397f6346",
     "a36d47be332a160a1bb3",
     "a8ce688879acca0239d9",
     "ac349fbb00d0355b20ab",
@@ -55,7 +55,7 @@
     "f9a599d25b5b60b83c31",
     "fd8c197b1b13db51b8d6"
   ],
-  "content_hash": "4f15749bb0ff8f4f6e8e19c4368cc991bcd0411d0df8b410ff9f058c0abd2c10",
+  "content_hash": "8abfcd66b75ca61d8c040af7c6942a5c315c15775a5d493aeb480b20c39c71b3",
   "dependencies": [],
   "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic scope and selector design \u2014 use agentforce/agent-topic-design. NOT for the overall Einstein Bot plus Agentforce estate topology \u2014 use architect/conversational-ai-architecture.",
   "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
@@ -96,7 +96,7 @@
   "templates": [
     "skills/agentforce/agentforce-agent-handoff-patterns/templates/handoff-design.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

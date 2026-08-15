@@ -37,9 +37,9 @@ outputs:
 dependencies:
   - prompt-builder-templates
   - einstein-trust-layer
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # RAG Patterns in Salesforce
@@ -78,14 +78,19 @@ Source: [Data Cloud Vector Search](https://help.salesforce.com/s/articleView?id=
 
 ### 2. Knowledge Grounding and the Retriever
 
-**Grounding** is the mechanism by which Agentforce agents receive contextually relevant documents before generating a response. A **retriever** is the platform-managed component that bridges an agent topic or prompt template with a vector search index.
+**Grounding** is the mechanism by which Agentforce agents receive contextually relevant documents before generating a response. A **retriever** is the platform-managed component that bridges a subagent or prompt template with a vector search index.
+
+> **Terminology.** Agent *topics* were renamed *subagents* in April 2026, with no
+> change to functionality. This skill leads with *subagent* in prose, and keeps
+> *topic* in metadata names, merge fields such as `{!topic.…}`, and search
+> keywords, because those did not change.
 
 At runtime:
 1. The agent framework extracts a semantic query from the user turn (or uses the full user message).
 2. The retriever calls the configured Data Cloud vector index with that query.
 3. Top-K chunks are returned and injected into the prompt as grounding context before the LLM call.
 
-The retriever is configured inside a **Grounding** record linked to the agent topic or directly to a Prompt Template. It specifies which vector index to query, the top-K value, and any metadata filters to narrow results (e.g., filter by `product_line` field on the source DMO).
+The retriever is configured inside a **Grounding** record linked to the subagent or directly to a Prompt Template. It specifies which vector index to query, the top-K value, and any metadata filters to narrow results (e.g., filter by `product_line` field on the source DMO).
 
 Source: [Einstein Copilot Grounding](https://help.salesforce.com/s/articleView?id=sf.einstein_copilot_grounding.htm)
 
@@ -122,7 +127,7 @@ The Data Stream refresh cadence controls how quickly new or updated source recor
 1. Enable the Salesforce Knowledge → Data Cloud CRM connector and create a Data Stream mapping `KnowledgeArticleVersion` to a DMO (e.g., `KnowledgeArticle__dlm`).
 2. In Data Cloud, create a vector search index on the `Body__c` field of that DMO. Set chunk size to 512 tokens, overlap to 64 tokens.
 3. Select the Salesforce-managed embedding model (no additional license required).
-4. In Agentforce Setup, open the agent topic and add a **Grounding** configuration pointing to the new vector index with `top_k = 5`.
+4. In Agentforce Setup, open the subagent and add a **Grounding** configuration pointing to the new vector index with `top_k = 5`.
 5. Test by submitting queries in the Agent Preview panel — the Grounding tab shows which chunks were retrieved per turn.
 
 **Why not the alternative:** Without a retriever, the agent relies entirely on LLM training data, which does not reflect org-specific article content and drifts as articles are updated.
@@ -133,7 +138,7 @@ The Data Stream refresh cadence controls how quickly new or updated source recor
 
 **How it works:**
 1. Ensure the source DMO includes a filterable metadata field — e.g., `Product_Line__c` — populated during ingestion.
-2. In the Grounding configuration, add a **metadata filter**: `Product_Line__c = '{!topic.product}'` where `{!topic.product}` is a merge field resolved from the agent topic context.
+2. In the Grounding configuration, add a **metadata filter**: `Product_Line__c = '{!topic.product}'` where `{!topic.product}` is a merge field resolved from the subagent context.
 3. The retriever passes the filter to Data Cloud's vector search, which applies it as a pre-filter before ANN ranking — only chunks matching the product line are candidates.
 
 **Why not the alternative:** Relying on semantic similarity alone to implicitly separate product content fails when different product lines use similar vocabulary, causing cross-product chunk contamination.
@@ -216,7 +221,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Data Cloud vector search index | The configured index including embedding model, chunk size, and overlap settings; deployable via Data Kit in packaging scenarios |
-| Grounding configuration record | The retriever definition linking the agent topic or prompt template to the vector index, including top-K and any metadata filters |
+| Grounding configuration record | The retriever definition linking the subagent or prompt template to the vector index, including top-K and any metadata filters |
 | Decision record | Documents chunk size, overlap, top-K, embedding model choice, and data residency rationale for audit and future tuning |
 | Einstein Trust Layer audit log excerpt | QA evidence that retrieval events are logged and masking behavior is as expected |
 | Agent preview test results | Minimum 5 representative queries with retrieved chunk traces from the Grounding tab |
@@ -227,6 +232,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `prompt-builder-templates` — Use alongside this skill to construct the prompt template that receives grounding merge fields; controls how retrieved chunks are positioned in the prompt body
 - `einstein-trust-layer` — Governs masking, zero-retention, and audit logging policies that apply to retrieved chunks before they reach the LLM
-- `agentforce-agent-creation` — Prerequisite skill for creating the agent topic to which a Grounding configuration is attached
+- `agentforce-agent-creation` — Prerequisite skill for creating the subagent to which a Grounding configuration is attached
 - `model-builder-and-byollm` — Use when the default Salesforce-managed embedding model is insufficient and a custom embedding model must be registered for the vector index
-- `agent-topic-design` — Informs how agent topics are scoped so that retrieval is triggered on the right turns and metadata filter merge fields are available at runtime
+- `agent-topic-design` — Informs how subagents are scoped so that retrieval is triggered on the right turns and metadata filter merge fields are available at runtime

@@ -1,6 +1,6 @@
 ---
 name: agentforce-cost-optimization
-description: "Use when Agentforce run costs are climbing, you need to forecast scale, or you want to reduce tokens per conversation without hurting quality. Covers topic design impact on cost, prompt/template reuse, grounding size discipline, caching, and model-tier selection. Triggers: 'agentforce cost', 'tokens per conversation too high', 'reduce agentforce runs spend', 'forecast agentforce scale cost', 'einstein trust layer tokens'. NOT for capping spend per user with a budget gate and fallback — use agentforce/agent-rate-limit-strategy. NOT for org-wide model-tier and BYOLLM platform strategy — use architect/ai-platform-architecture."
+description: "Use when Agentforce run costs are climbing, you need to forecast scale, or you want to reduce tokens per conversation without hurting quality. Covers topic (now subagent) design impact on cost, prompt/template reuse, grounding size discipline, caching, and model-tier selection. Triggers: 'agentforce cost', 'tokens per conversation too high', 'reduce agentforce runs spend', 'forecast agentforce scale cost', 'einstein trust layer tokens'. NOT for capping spend per user with a budget gate and fallback — use agentforce/agent-rate-limit-strategy. NOT for org-wide model-tier and BYOLLM platform strategy — use architect/ai-platform-architecture."
 category: agentforce
 salesforce-version: "Spring '26+"
 well-architected-pillars:
@@ -29,23 +29,29 @@ outputs:
   - "token-reduction plan"
   - "model-tier recommendation"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Cost Optimization
 
-Agentforce cost looks like "we'll just pay per run" right up until volume meets reality. A customer-service agent handling 200,000 conversations/month can consume 10× the tokens of a well-tuned version of the same agent — same quality, same topics, different token discipline. The cost drivers are predictable: topic instruction length, prompt template verbosity, grounding payload size, tool-call round-trips, and model tier. None of these are free to change, but they all respond to focused work.
+Agentforce cost looks like "we'll just pay per run" right up until volume meets reality. A customer-service agent handling 200,000 conversations/month can consume 10× the tokens of a well-tuned version of the same agent — same quality, same subagents, different token discipline. The cost drivers are predictable: subagent instruction length, prompt template verbosity, grounding payload size, tool-call round-trips, and model tier. None of these are free to change, but they all respond to focused work.
 
-The job is to measure first, then optimize the top three contributors. Most orgs find that topic instructions and grounding dominate — often 60-80% of tokens per conversation. Once those are disciplined, the remaining optimizations (template reuse, model-tier selection) become viable.
+The job is to measure first, then optimize the top three contributors. Most orgs find that subagent instructions and grounding dominate — often 60-80% of tokens per conversation. Once those are disciplined, the remaining optimizations (template reuse, model-tier selection) become viable.
+
+> **Terminology.** This skill leads with *subagent* because that is the current
+> product term — Salesforce renamed agent *topics* to *subagents* in April 2026,
+> with no change to functionality. It deliberately keeps *topic* in metadata and
+> API names and in search keywords, because those did not change, and readers
+> arriving with the older vocabulary still need to find this skill.
 
 ---
 
 ## Before Starting
 
 - Pull 7 days of Agentforce runs; compute average and p95 token counts per conversation.
-- Inventory topics, prompt templates, and grounding sources.
+- Inventory subagents, prompt templates, and grounding sources.
 - Confirm model tier currently in use and any rate-limit headroom.
 - Confirm business tolerance for quality-vs-cost tradeoffs.
 
@@ -56,7 +62,7 @@ The job is to measure first, then optimize the top three contributors. Most orgs
 Every conversation pays for:
 
 1. **System prompt** — the framework-level Agentforce prompt.
-2. **Topic instructions** — active topic's instructions injected verbatim.
+2. **Subagent instructions** — active subagent's instructions injected verbatim.
 3. **Prompt template** — any custom template rendered per turn.
 4. **Grounding** — retrieved content from Data Cloud, Knowledge, or explicit variables.
 5. **Conversation history** — full turn history on each call.
@@ -64,13 +70,13 @@ Every conversation pays for:
 
 ### The 80/20 Rule
 
-For most agents, topic instructions + grounding = 60-80% of token spend. Conversation history grows linearly in long sessions. Tool output is lumpy but occasionally large (SOQL result sets dumped raw into context).
+For most agents, subagent instructions + grounding = 60-80% of token spend. Conversation history grows linearly in long sessions. Tool output is lumpy but occasionally large (SOQL result sets dumped raw into context).
 
-### Reducing Topic Instruction Tokens
+### Reducing Subagent Instruction Tokens
 
 - Delete department-name preamble ("As a customer service agent working for Acme Insurance...").
 - Collapse redundant examples; 2 good examples outperform 10 mediocre ones.
-- Externalize static policy ("always use formal English") into the system prompt instead of per-topic.
+- Externalize static policy ("always use formal English") into the system prompt instead of per-subagent.
 
 ### Reducing Grounding Tokens
 
@@ -94,16 +100,16 @@ Not every action needs the most capable model. Use tiered routing:
 
 ### Caching Opportunities
 
-- Topic instructions are stable across conversations — framework should cache; you don't need to change anything unless your template is dynamic.
+- Subagent instructions are stable across conversations — framework should cache; you don't need to change anything unless your template is dynamic.
 - Grounding retrieval can cache per query; watch freshness needs.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Topic Instruction Audit And Trim
+### Pattern 1: Subagent Instruction Audit And Trim
 
-Per-topic, measure instruction token count. Target 150-300 tokens per topic instruction. Trim anything above 500 without a compelling reason.
+Per subagent, measure instruction token count. Target 150-300 tokens per subagent instruction. Trim anything above 500 without a compelling reason.
 
 ### Pattern 2: k-3 Retriever With Reranker
 
@@ -128,7 +134,7 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Token usage high, unknown contributor | Instrument and measure first | Avoid guessing |
-| Topic instructions > 500 tokens | Trim (Pattern 1) | Biggest win |
+| Subagent instructions > 500 tokens | Trim (Pattern 1) | Biggest win |
 | Grounding k ≥ 5 without evaluation | Reduce k + rerank (Pattern 2) | Second biggest win |
 | Long conversations | Summarize (Pattern 3) | Linear savings per turn |
 | Classification step using largest model | Switch to smaller tier (Pattern 4) | Cheap wins |
@@ -138,7 +144,7 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 
 - [ ] Per-conversation token metrics collected and dashboarded.
 - [ ] Top 3 token contributors identified per agent.
-- [ ] Topic instruction length audited.
+- [ ] Subagent instruction length audited.
 - [ ] Grounding k and chunk size justified.
 - [ ] Long-conversation strategy exists.
 - [ ] Model tier routing considered.
@@ -148,7 +154,7 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 
 1. Measure — 7 days of run data broken down by token source.
 2. Identify top 3 contributors.
-3. Optimize topic instructions first.
+3. Optimize subagent instructions first.
 4. Optimize grounding second.
 5. Add conversation summarization if sessions are long.
 6. Apply tier routing where quality allows.
@@ -161,12 +167,12 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 1. Trust Layer adds tokens — masking, citation, guardrails all add context weight.
 2. Grounding sources can include large boilerplate (Knowledge article footers); index selectively.
 3. Tool output is counted even if the agent ignores it.
-4. Managed topics may have opaque instruction length; audit via runtime logs.
+4. Managed subagents may have opaque instruction length; audit via runtime logs.
 5. Switching model tier changes quality — do not do this without A/B evaluation.
 
 ## Proactive Triggers
 
-- Topic instruction > 500 tokens → Flag High.
+- Subagent instruction > 500 tokens → Flag High.
 - Retriever k ≥ 10 without reranker → Flag High.
 - Average conversation > 20 turns with no summarization → Flag Medium.
 - Classification step on flagship model → Flag Medium.
@@ -182,7 +188,7 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 
 ## Related Skills
 
-- `agentforce/agent-topic-design` — topic structure quality.
+- `agentforce/agent-topic-design` — subagent structure quality.
 - `agentforce/prompt-builder-templates` — prompt template hygiene.
 - `agentforce/data-cloud-grounding-for-agentforce` — grounding retrieval.
 - `agentforce/agentforce-observability` — measurement infrastructure.

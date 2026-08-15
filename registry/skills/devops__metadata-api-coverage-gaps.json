@@ -81,9 +81,9 @@
     "f1671ae4e8cd8b7df6aa",
     "f93947f699314a97cbf0"
   ],
-  "content_hash": "ab84dd1dfdf1c66e206072686dca2d3edefe6b989aa716dae5eab70e4916c0b3",
+  "content_hash": "c9bcdc325be140f0e0bdf5c44b3645953e1424e197f6f406d2cf8e4aea871a9c",
   "dependencies": [],
-  "description": "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and. NOT for general deployment error troubleshooting, Metadata API usage tutorials, or archi \u2014 use devops/deployment-error-diagnosis.",
+  "description": "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and 2GP managed packages. NOT for deployment error troubleshooting, Metadata API tutorials, or dependency mapping \u2014 use devops/deployment-error-diagnosis.",
   "file_location": "skills/devops/metadata-api-coverage-gaps",
   "id": "devops/metadata-api-coverage-gaps",
   "inputs": [
@@ -127,7 +127,7 @@
   "templates": [
     "skills/devops/metadata-api-coverage-gaps/templates/metadata-api-coverage-gaps-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

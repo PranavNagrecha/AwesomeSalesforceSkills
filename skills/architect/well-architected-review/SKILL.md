@@ -34,9 +34,9 @@ outputs:
   - Prioritized recommendations with effort and impact ratings
   - Summary scorecard (Red/Amber/Green per pillar)
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 Use this skill when conducting a formal Salesforce Well-Architected Framework (WAF) review against an org or a solution design. It applies all three high-level pillars — Trusted, Easy, and Adaptable — and produces a structured assessment with scored findings, prioritized recommendations, and a summary scorecard. It does not replace pillar-specific deep-dives; it is the entry point that tells you which deep-dives are needed.
@@ -68,7 +68,7 @@ Use when assessing an existing production org holistically. Suitable for annual 
 
 **Review sequence:**
 
-1. **Trusted pillar:** Security model audit (sharing model completeness, OWDs, sharing rules), FLS coverage check in Apex (use of `WITH SECURITY_ENFORCED`, `stripInaccessible`, or `WITH USER_MODE`), authentication strength (MFA enforced, SSO configured), Shield assessment (field audit trail, event monitoring, platform encryption for regulated fields), data classification inventory (what data lives where, is it classified, is sensitive data masked in sandboxes).
+1. **Trusted pillar:** Security model audit (sharing model completeness, OWDs, sharing rules), FLS coverage check in Apex (`WITH USER_MODE` or `stripInaccessible`; `WITH SECURITY_ENFORCED` is a finding, not a pass — it was removed at API 67.0), authentication strength (MFA enforced, SSO configured), Shield assessment (field audit trail, event monitoring, platform encryption for regulated fields), data classification inventory (what data lives where, is it classified, is sensitive data masked in sandboxes).
 
 2. **Easy pillar:** Lightning page performance review (identify pages with 10+ components, missing lazy loading, synchronous Apex on load), process complexity assessment (count of active Flows, are any redundant, are users doing manual work that should be automated), adoption signal review (field usage, report and dashboard activity, object record counts vs licence count), mobile readiness (mobile navigation configured, key pages mobile-optimised), accessibility compliance (are custom LWC components meeting WCAG 2.1 AA where possible).
 
@@ -118,7 +118,7 @@ The Salesforce Well-Architected Framework uses three top-level pillars. Each map
 
 ### Trusted
 
-Security model completeness covers OWD settings, sharing rules, role hierarchy, and Apex sharing. Every custom object should have a documented OWD justification. Apex that queries or mutates data should enforce FLS using `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `stripInaccessible`. Any class using `without sharing` must have a documented reason.
+Security model completeness covers OWD settings, sharing rules, role hierarchy, and Apex sharing. Every custom object should have a documented OWD justification. Apex that queries or mutates data should enforce FLS using `WITH USER_MODE` or `stripInaccessible`; at API 67.0+ user mode is already the default and `WITH SECURITY_ENFORCED` no longer compiles, so finding it is itself an audit finding. Any class using `without sharing` must have a documented reason.
 
 Compliance readiness means understanding what regulated data the org holds and whether appropriate controls are in place. GDPR requires a data map and a right-to-erasure process. HIPAA requires audit logging and access controls on PHI. PCI-DSS prohibits storing cardholder data in standard Salesforce fields without encryption.
 

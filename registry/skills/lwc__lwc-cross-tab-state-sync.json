@@ -52,9 +52,9 @@
     "fcb411b194aa90218501",
     "fda57ce45844df5d39ab"
   ],
-  "content_hash": "fc8d67d040ae00f50c229d96681608a15f18ef4252cd555b59b8fc7bab7ff566",
+  "content_hash": "e739a8ebbfa8696bb0db964e7d39567ee78f2e89786b98c3f035bfac3402ece3",
   "dependencies": [],
-  "description": "Use when an LWC needs to react to events that happen in another browser tab \u2014 record updates, login state, draft autosave, console-tab navigation. Triggers: 'sync data across tabs', 'BroadcastChannel LWC', 'storage event. NOT for state sync within the same Lightning page (use Lightning Message Service) or for \u2014 use lwc/lwc-console-workspace-api.",
+  "description": "Use when an LWC needs to react to events that happen in another browser tab \u2014 record updates, login state, draft autosave, console-tab navigation. Triggers: 'sync data across tabs', 'BroadcastChannel LWC', 'storage event fallback'. NOT for state sync within the same Lightning page \u2014 use lwc/component-communication. NOT for console tab and utility bar APIs \u2014 use lwc/lwc-console-workspace-api.",
   "file_location": "skills/lwc/lwc-cross-tab-state-sync",
   "id": "lwc/lwc-cross-tab-state-sync",
   "inputs": [
@@ -96,7 +96,7 @@
   "templates": [
     "skills/lwc/lwc-cross-tab-state-sync/templates/lwc-cross-tab-state-sync-template.md"
   ],
-  "updated": "2026-04-30",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

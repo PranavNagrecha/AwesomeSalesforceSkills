@@ -1,6 +1,6 @@
 ---
 name: loyalty-management-setup
-description: "Use this skill when setting up or extending Salesforce Loyalty Management — including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design (separate product), not for B2B loyalt — use architect/loyalty-program-architecture."
+description: "Use this skill when setting up or extending Salesforce Loyalty Management — including program and currency creation, tier group design, qualifying vs. non-qualifying point currency separation, DPE batch job. NOT for Marketing Cloud engagement program design or B2B loyalty via Sales Cloud — use architect/loyalty-program-architecture."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ triggers:
   - "set up loyalty program rules tier point accrual"
   - "configure loyalty management for retail brand"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-08-14
 ---
 
 # Loyalty Management Setup

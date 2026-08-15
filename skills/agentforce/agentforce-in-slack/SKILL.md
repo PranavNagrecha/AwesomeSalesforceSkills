@@ -39,16 +39,24 @@ outputs:
   - "canvas plan validation guidance and fallback design for Free workspaces"
   - "Trust Layer verification steps confirming private actions execute under correct Salesforce identity"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-08-14
 ---
 
 # Agentforce In Slack
 
-Use this skill when an Agentforce agent has already been deployed to Slack (the Slack deployment flow in Setup is complete and the agent responds to Slack messages) and the work now involves Slack-specific action capabilities, user identity management, or private vs. public action scope. This skill is the post-deployment configuration layer that unlocks Slack-native agent behaviors. It does NOT cover core Agentforce setup, agent creation, topic design, or the initial Slack OAuth installation flow — those are handled by `agentforce/agentforce-agent-creation`, `agentforce/agent-topic-design`, and `agentforce/agent-channel-deployment`.
+Use this skill when an Agentforce agent has already been deployed to Slack (the Slack deployment flow in Setup is complete and the agent responds to Slack messages) and the work now involves Slack-specific action capabilities, user identity management, or private vs. public action scope. This skill is the post-deployment configuration layer that unlocks Slack-native agent behaviors. It does NOT cover core Agentforce setup, agent creation, subagent design, or the initial Slack OAuth installation flow — those are handled by `agentforce/agentforce-agent-creation`, `agentforce/agent-topic-design`, and `agentforce/agent-channel-deployment`.
 
 The most important concept in this skill domain is that Agentforce connects to Slack via a **Salesforce-managed Slack app** — not a custom app created by the customer. This managed app holds the OAuth scopes, handles the session model, and routes traffic through the Einstein Trust Layer. All Slack-native actions operate through this managed app. Attempts to replicate Slack-native functionality with custom Apex invocable methods that call the Slack API directly bypass the Trust Layer, introduce token management overhead, and are an anti-pattern.
+
+> **Terminology.** This skill leads with *subagent* because that is the current
+> product term — agent topics were renamed subagents in April 2026, with no
+> change to functionality. It keeps *topic* in the Agent Builder navigation
+> labels quoted below (**Topics** tab, **Add Topic**), in metadata and API
+> names, and in search keywords, because those did not change. Slack's own
+> notions of channels, threads, and conversation topics are unrelated to either
+> term.
 
 ---
 
@@ -57,7 +65,7 @@ The most important concept in this skill domain is that Agentforce connects to S
 Gather this context before working on anything in this domain:
 
 - Has the Slack deployment been completed? Confirm in Setup > Agentforce > Slack Deployment that the workspace is connected and the agent is in Active state. This skill starts where agent-channel-deployment ends.
-- Which Slack-native actions are needed? The four managed Slack-native actions are: Create Canvas, Search Message History, Send DM, and Look Up User. All four require the General Slack Actions topic.
+- Which Slack-native actions are needed? The four managed Slack-native actions are: Create Canvas, Search Message History, Send DM, and Look Up User. All four require the General Slack Actions subagent.
 - What is the Slack workspace plan? Canvas creation is not available on the Slack Free plan. Confirm the plan before designing canvas-based workflows.
 - Are any actions user-specific (querying or modifying data the invoking user owns)? These require private action scope and Salesforce-to-Slack identity mapping.
 - Have all Slack users completed identity mapping? For private actions, each Slack user must have their Slack User ID mapped to a Salesforce User ID. Unmapped users trigger hard authorization failures, not graceful degradation.
@@ -66,11 +74,11 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-### The General Slack Actions Topic Is Not Auto-Added After Slack Deployment
+### The General Slack Actions Subagent Is Not Auto-Added After Slack Deployment
 
-Connecting an Agentforce agent to Slack through the Setup deployment flow does not automatically include Slack-native actions in the agent's action set. The General Slack Actions topic is a standard Salesforce-managed topic that must be explicitly added to the agent in Agent Builder. Until this topic is added, the agent has no ability to create canvases, send DMs, search message history, or look up Slack users — even though the Slack connection is active and the agent is responding to messages.
+Connecting an Agentforce agent to Slack through the Setup deployment flow does not automatically include Slack-native actions in the agent's action set. The General Slack Actions subagent is a standard Salesforce-managed subagent that must be explicitly added to the agent in Agent Builder. Until this subagent is added, the agent has no ability to create canvases, send DMs, search message history, or look up Slack users — even though the Slack connection is active and the agent is responding to messages.
 
-The General Slack Actions topic bundles all four Slack-native actions together. Adding the topic once unlocks all four. Removing the topic removes all four simultaneously.
+The General Slack Actions subagent bundles all four Slack-native actions together. Adding the subagent once unlocks all four. Removing the subagent removes all four simultaneously.
 
 ### Public vs. Private Action Scope Controls Data Visibility
 
@@ -93,13 +101,13 @@ Identity mappings are stored as data records, not metadata. They are org-specifi
 
 ### Canvas Creation Requires A Paid Slack Plan
 
-Slack canvases are a paid feature. The Create Canvas action is available in the General Slack Actions topic regardless of the workspace plan, so it will appear available in Agent Builder and the agent will attempt to use it. However, at runtime, canvas creation will fail in a Free workspace. The failure may not surface as a clear plan-restriction error in the Slack conversation. Always validate the workspace plan before building canvas-dependent workflows. Design fallback behavior (plain text responses) for workspaces that may be on or transition to the Free plan.
+Slack canvases are a paid feature. The Create Canvas action is available in the General Slack Actions subagent regardless of the workspace plan, so it will appear available in Agent Builder and the agent will attempt to use it. However, at runtime, canvas creation will fail in a Free workspace. The failure may not surface as a clear plan-restriction error in the Slack conversation. Always validate the workspace plan before building canvas-dependent workflows. Design fallback behavior (plain text responses) for workspaces that may be on or transition to the Free plan.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Enable General Slack Actions Topic
+### Pattern 1: Enable General Slack Actions Subagent
 
 **When to use:** The Slack deployment is active but the agent has no Slack-native action capabilities (no canvas creation, no Send DM, no message history search, no Look Up User).
 
@@ -108,12 +116,12 @@ Slack canvases are a paid feature. The Create Canvas action is available in the 
 1. In Setup, navigate to **Agentforce Agents** and click the relevant agent to open Agent Builder.
 2. Click the **Topics** tab.
 3. Click **Add Topic**.
-4. Search for **General Slack Actions** in the topic picker. This is a standard Salesforce-managed topic — it appears in the standard library, not in custom topics.
+4. Search for **General Slack Actions** in the topic picker. This is a standard Salesforce-managed subagent — it appears in the standard library, not among custom subagents.
 5. Select it and click **Add**. Save the agent.
 6. If the agent transitions out of Active state after saving, click **Activate**.
 7. Test in Slack: ask the agent to look up a user, search message history, or (if the workspace is on a paid plan) create a canvas.
 
-**Why not the alternative:** Do not build custom Apex invocable methods or external REST actions to call the Slack API directly. The managed topic provides all four actions with Trust Layer coverage, no token management, and Salesforce-maintained support. Custom Slack API calls bypass the Trust Layer, require managing OAuth tokens as Named Credentials, and duplicate functionality the platform already provides.
+**Why not the alternative:** Do not build custom Apex invocable methods or external REST actions to call the Slack API directly. The managed subagent provides all four actions with Trust Layer coverage, no token management, and Salesforce-maintained support. Custom Slack API calls bypass the Trust Layer, require managing OAuth tokens as Named Credentials, and duplicate functionality the platform already provides.
 
 ### Pattern 2: Configure Private Action Scope And Identity Mapping
 
@@ -141,7 +149,7 @@ Slack canvases are a paid feature. The Create Canvas action is available in the 
 3. If the workspace is on Free, either:
    - Remove canvas-dependent agent instructions and replace with plain text equivalents.
    - Or initiate a workspace plan upgrade with the Slack workspace admin before designing canvas workflows.
-4. Add explicit fallback instructions to the agent topic: "If canvas creation is unavailable, respond with a formatted plain-text summary instead."
+4. Add explicit fallback instructions to the subagent: "If canvas creation is unavailable, respond with a formatted plain-text summary instead."
 5. After a canvas action is tested and confirmed working, check Einstein Trust Layer logs to confirm the canvas content passed through ZDR policies as expected.
 
 ---
@@ -150,13 +158,13 @@ Slack canvases are a paid feature. The Create Canvas action is available in the 
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Agent connected to Slack but Slack-native actions not available | Add General Slack Actions topic in Agent Builder | Topic is never auto-added; required for all four managed Slack actions |
+| Agent connected to Slack but Slack-native actions not available | Add General Slack Actions subagent in Agent Builder | The subagent is never auto-added; required for all four managed Slack actions |
 | Action returns user-specific Salesforce data | Set action scope to Private; configure identity mapping | Public scope executes as integration user — wrong data for every user |
 | Action returns shared non-sensitive data (FAQ, announcements) | Public scope is acceptable | No identity mapping needed; simpler deployment |
 | Canvas creation needed | Verify paid Slack plan first; design fallback for Free plan | Canvas is unavailable on Free; failure is silent without plan check |
 | New hire has no identity mapping | User self-service OAuth connection flow (or admin bulk import) | Mapping is not auto-created; must be provisioned per user |
 | Moving from sandbox to production | Re-provision identity mappings in production explicitly | Mappings are data records, not metadata; deployments do not transfer them |
-| Custom Slack API call being considered | Use General Slack Actions topic instead | Custom calls bypass Trust Layer and require manual OAuth token management |
+| Custom Slack API call being considered | Use General Slack Actions subagent instead | Custom calls bypass Trust Layer and require manual OAuth token management |
 
 ---
 
@@ -165,10 +173,10 @@ Slack canvases are a paid feature. The Create Canvas action is available in the 
 Step-by-step instructions for configuring Slack-specific Agentforce capabilities on an already-deployed Slack agent:
 
 1. **Confirm deployment baseline** — verify in Setup > Agentforce > Slack Deployment that the workspace is connected, the agent is Active, and users can already interact with the agent in Slack. This skill starts after the initial deployment is complete.
-2. **Add the General Slack Actions topic** — open the agent in Agent Builder, navigate to Topics, and add the General Slack Actions standard topic. Save and reactivate if needed. This single step unlocks Create Canvas, Search Message History, Send DM, and Look Up User.
+2. **Add the General Slack Actions subagent** — open the agent in Agent Builder, navigate to Topics, and add the General Slack Actions standard subagent. Save and reactivate if needed. This single step unlocks Create Canvas, Search Message History, Send DM, and Look Up User.
 3. **Designate public vs. private scope for each action** — for every action in the agent, evaluate whether it accesses user-specific Salesforce data. Mark user-specific actions as Private. Mark shared-data actions as Public. Document the scope decision for each action.
 4. **Provision identity mappings for private actions** — communicate the one-time connection flow to all Slack users who will trigger private actions, or bulk-import identity mappings via the admin interface. Verify mappings in Setup > Slack for Salesforce > User Mappings.
-5. **Validate canvas plan compatibility** — if any canvas actions are configured, confirm the Slack workspace is on a paid plan. Add fallback topic instructions for canvas failure cases.
+5. **Validate canvas plan compatibility** — if any canvas actions are configured, confirm the Slack workspace is on a paid plan. Add fallback subagent instructions for canvas failure cases.
 6. **Test all action types end-to-end in sandbox** — test each Slack-native action (canvas, DM, message search, user lookup), test at least one private action with a mapped user, and test the unmapped-user flow to confirm the agent returns a clear connection prompt.
 7. **Confirm Trust Layer coverage** — review Einstein Trust Layer logs after testing to verify all Slack action traffic (canvas content, DM payloads, search results) is logged and subject to org ZDR policies.
 
@@ -178,12 +186,12 @@ Step-by-step instructions for configuring Slack-specific Agentforce capabilities
 
 Run through these before marking Slack action configuration work complete:
 
-- [ ] General Slack Actions topic is present in the agent's topic list in Agent Builder.
-- [ ] Agent is in Active state after the General Slack Actions topic was added.
+- [ ] General Slack Actions subagent is present in the agent's subagent list in Agent Builder.
+- [ ] Agent is in Active state after the General Slack Actions subagent was added.
 - [ ] Every user-specific action (querying or modifying user-owned records) is set to Private scope.
 - [ ] Every shared-data action (non-sensitive, org-wide content) is set to Public scope.
 - [ ] Slack workspace plan has been confirmed as paid if canvas creation workflows are configured.
-- [ ] Fallback topic instructions exist for canvas failure (plain text response alternative).
+- [ ] Fallback subagent instructions exist for canvas failure (plain text response alternative).
 - [ ] All Slack users who will trigger private actions have identity mappings in Setup > Slack for Salesforce > User Mappings.
 - [ ] Unmapped-user failure flow tested: agent returns a clear "connect your account" prompt.
 - [ ] Private action tested with mapped user: response contains the user's own data, not integration user data.
@@ -196,9 +204,9 @@ Run through these before marking Slack action configuration work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **General Slack Actions topic is never auto-added** — every Slack deployment requires a manual post-deployment step in Agent Builder to add the topic. Missing this step means the agent has no Slack-native capabilities despite being fully connected.
+1. **General Slack Actions subagent is never auto-added** — every Slack deployment requires a manual post-deployment step in Agent Builder to add the subagent. Missing this step means the agent has no Slack-native capabilities despite being fully connected.
 2. **Canvas creation fails silently on Slack Free plan** — the Create Canvas action appears available in Agent Builder regardless of workspace plan. The failure only appears at runtime, often without a clear error in the Slack conversation.
-3. **Private action failures are hard failures, not graceful degradation** — an unmapped user triggering a private action gets a hard refusal, not a fallback to a broader context. Design explicit connection-prompt instructions into private-action topics.
+3. **Private action failures are hard failures, not graceful degradation** — an unmapped user triggering a private action gets a hard refusal, not a fallback to a broader context. Design explicit connection-prompt instructions into private-action subagents.
 4. **Identity mappings are data, not metadata** — sandbox mappings do not survive sandbox refreshes or production promotions. Every go-live checklist must include re-provisioning identity mappings as a mandatory step.
 5. **Send DM requires `im:write` scope which may be missing in older deployments** — workspaces that installed the Salesforce-managed Slack app before Spring '25 may lack this scope. The Slack workspace admin must re-authorize the app to grant the missing scope.
 
@@ -219,8 +227,8 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `agentforce/agent-channel-deployment` — use for initial Slack OAuth setup, managed app installation, and DM vs. channel-mention mode configuration. This skill starts where agent-channel-deployment ends.
-- `agentforce/agent-actions` — use when the problem is action contract design, invocable method structure, or action availability within topics generally (not Slack-specific).
-- `agentforce/agent-topic-design` — use when the problem is topic boundary design, topic instructions, or classification logic.
+- `agentforce/agent-actions` — use when the problem is action contract design, invocable method structure, or action availability within subagents generally (not Slack-specific).
+- `agentforce/agent-topic-design` — use when the problem is subagent boundary design, subagent instructions, or classification logic.
 - `agentforce/einstein-trust-layer` — use alongside this skill to review ZDR, data masking, and audit logging policies for canvas content and DM payloads.
 - `agentforce/agentforce-agent-creation` — use if the agent itself has not yet been created or if core agent setup work is needed before Slack channel work begins.
 

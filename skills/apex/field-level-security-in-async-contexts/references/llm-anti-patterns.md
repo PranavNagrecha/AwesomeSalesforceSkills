@@ -52,7 +52,7 @@ List<Account> visible = (List<Account>) Security.stripInaccessible(
 EventBus.publish(new Account_Sync__e(Payload__c = JSON.serialize(visible)));
 ```
 
-**Detection hint:** Any trigger on a `__e` object that uses `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible`. These calls are no-ops in that context.
+**Detection hint:** Any trigger on a `__e` object that uses `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible`. These calls are no-ops in that context. Two version notes when you find one: `WITH SECURITY_ENFORCED` was removed in API 67.0 (Summer '26) and does not compile on a class pinned at 67.0 or above, so it is a build failure as well as a no-op; and at 67.0+ the default user mode is equally a no-op here, because the Automated Process user has full FLS access whether or not a clause is written.
 
 ---
 

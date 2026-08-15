@@ -16,28 +16,15 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
-    - admin/analytics-adoption-strategy
-    - admin/analytics-dashboard-design
-    - admin/analytics-dashboard-json
-    - admin/analytics-data-manager
-    - admin/analytics-dataflow-development
-    - admin/analytics-dataset-management
-    - admin/analytics-kpi-definition
     - admin/analytics-permission-and-sharing
-    - admin/analytics-recipe-design
-    - admin/analytics-requirements-gathering
     - admin/approval-process-apex-patterns
     - admin/cpq-approval-workflows
-    - admin/crm-analytics-app-creation
     - admin/custom-button-to-action-migration
     - admin/data-export-service
-    - admin/einstein-discovery-deployment
-    - admin/einstein-discovery-setup
     - admin/global-actions-and-quick-actions
     - admin/global-search-configuration
     - admin/lightning-experience-transition
     - admin/list-views-and-compact-layouts
-    - admin/marketing-reporting-requirements
     - admin/picklist-data-integrity
     - admin/record-type-id-management
     - admin/related-list-configuration
@@ -90,33 +77,20 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 13. `skills/admin/report-type-strategy` — Custom report types, with/without joins, report type strategy
 14. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
 15. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging (my_domain_session_security)
-16. `skills/admin/analytics-adoption-strategy` — Analytics/reporting: Analytics adoption strategy
-17. `skills/admin/analytics-dashboard-design` — Analytics/reporting: Analytics dashboard design
-18. `skills/admin/analytics-dashboard-json` — Analytics/reporting: Analytics dashboard json
-19. `skills/admin/analytics-data-manager` — Analytics/reporting: Analytics data manager
-20. `skills/admin/analytics-dataflow-development` — Analytics/reporting: Analytics dataflow development
-21. `skills/admin/analytics-dataset-management` — Analytics/reporting: Analytics dataset management
-22. `skills/admin/analytics-kpi-definition` — Analytics/reporting: Analytics kpi definition
-23. `skills/admin/analytics-permission-and-sharing` — Analytics/reporting: Analytics permission and sharing
-24. `skills/admin/analytics-recipe-design` — Analytics/reporting: Analytics recipe design
-25. `skills/admin/analytics-requirements-gathering` — Analytics/reporting: Analytics requirements gathering
-26. `skills/admin/approval-process-apex-patterns` — Approval process: Approval process apex patterns
-27. `skills/admin/cpq-approval-workflows` — Approval process: Cpq approval workflows
-28. `skills/admin/crm-analytics-app-creation` — Analytics/reporting: Crm analytics app creation
-29. `skills/admin/custom-button-to-action-migration` — Action button/quick action: Custom button to action migration
-30. `skills/admin/einstein-discovery-deployment` — Analytics/reporting: Einstein discovery deployment
-31. `skills/admin/einstein-discovery-setup` — Analytics/reporting: Einstein discovery setup
-32. `skills/admin/global-actions-and-quick-actions` — Action button/quick action: Global actions and quick actions
-33. `skills/admin/list-views-and-compact-layouts` — Record type/layout: List views and compact layouts
-34. `skills/admin/marketing-reporting-requirements` — Analytics/reporting: Marketing reporting requirements
-35. `skills/admin/picklist-data-integrity` — Picklist: Picklist data integrity
-36. `skills/admin/record-type-id-management` — Record type/layout: Record type id management
-37. `skills/admin/report-performance-tuning` — Analytics/reporting: Report performance tuning
-38. `skills/admin/reports-and-dashboards` — Analytics/reporting: Reports and dashboards
-39. `skills/admin/reports-and-dashboards-fundamentals` — Analytics/reporting: Reports and dashboards fundamentals
-40. `skills/security/dynamic-sharing-recalculation` — Sharing/security: Dynamic sharing recalculation
-41. `skills/admin/global-search-configuration` — search-layout and searchable-field settings the list-view and record-page audit domains both depend on
-42. `skills/admin/related-list-configuration` — related-list scope for the record-page audit domain — a page can look clean while its related lists carry the debt
+16. `skills/admin/analytics-permission-and-sharing` — CRM Analytics apps and datasets are gated by row-level security predicates, not by the report-folder sharing the router just audited; without it the run closes a PII-exposure finding on the folder surface while the same data stays open through an Analytics dataset
+17. `skills/admin/approval-process-apex-patterns` — supplies the `ProcessInstance` / `ProcessInstanceWorkitem` query shape the `approval_process` inventory needs; without it `APPROVAL_STALE_INFLIGHT` and `APPROVAL_INACTIVE_WITH_PENDING` have no way to count pending requests and both silently report zero
+18. `skills/admin/cpq-approval-workflows` — a negative check: on a CPQ org the approval logic lives in `SBAA__ApprovalRule__c` records that a `ProcessDefinition` inventory cannot see; without it the router reports an approval surface as thin when most of it is in the managed package it is about to refuse
+19. `skills/admin/custom-button-to-action-migration` — supplies the `suggested_fix` behind `QA_VF_ORPHANED`, `QA_VF_BACKED_DEEMPHASIZED` and `QA_DUPLICATES_STANDARD`; without it those three codes name a migration target with no route to it, and the JavaScript-button cases get a fix that cannot be implemented
+20. `skills/admin/global-actions-and-quick-actions` — the `quick_action` domain's object model: which action types exist, how predefined values and action layouts are built; without it the router cannot tell a headless action legitimately carrying no layout from the `QA_NO_LAYOUT` P0 it is meant to raise
+21. `skills/admin/list-views-and-compact-layouts` — the `list_view_search_layout` domain's object model, including the sharing modes a list view can carry; without it the router reads "visible to All Users" as a display setting rather than the data-exposure finding it is
+22. `skills/admin/picklist-data-integrity` — restricted-vs-unrestricted, GVS-vs-local and the per-record-type value model behind `PICKLIST_NOT_RESTRICTED`, `PICKLIST_GVS_ELIGIBLE` and `PICKLIST_UNUSED_VALUE`; without it the router flags every unrestricted picklist alike and misses that deactivating a value breaks the reports already filtering on it
+23. `skills/admin/record-type-id-management` — record types get referenced by hard-coded 18-character Id as often as by DeveloperName; without it the reference scan behind `RT_INACTIVE_REFERENCED` misses every Id-literal reference and the router recommends retiring an RT under `RT_ORPHAN` that Apex and Flow still point at
+24. `skills/admin/report-performance-tuning` — the selectivity model behind the `report_dashboard` row-limit checks; without it the router scores every large report as a performance finding instead of separating an unselective filter from a legitimately large result set
+25. `skills/admin/reports-and-dashboards` — dashboard running-user posture is the finding both report domains turn on; without it the router reads a narrowly-shared folder as safe and misses that a "run as specified user" dashboard bypasses the viewer's access entirely
+26. `skills/admin/reports-and-dashboards-fundamentals` — the report type decides which rows a report can ever return; without it the router scores a zero-row report as stale when the actual defect is a with-child report type on an object whose children were never created
+27. `skills/security/dynamic-sharing-recalculation` — the operational content behind `SHARE_RECALC_COST_HIGH`'s suggested fix; without it the router reports a recalculation cost with no advice on how the recalc is actually triggered or sequenced, and the finding cannot be acted on
+28. `skills/admin/global-search-configuration` — search-layout and searchable-field settings the list-view and record-page audit domains both depend on
+29. `skills/admin/related-list-configuration` — related-list scope for the record-page audit domain — a page can look clean while its related lists carry the debt
 
 ---
 

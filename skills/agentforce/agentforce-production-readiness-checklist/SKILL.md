@@ -44,9 +44,9 @@ outputs:
   - "Rollout plan: canary user list, expansion criteria per stage, kill-switch + rollback runbook with named owner"
   - "Cost-monitoring spec: token-usage thresholds, alert routing, daily/weekly review owners"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-08-14
 ---
 
 # Agentforce Production Readiness Checklist
@@ -55,6 +55,11 @@ Activate this skill when an Agentforce agent is moving from "build complete" to 
 
 This skill is the heavyweight pair to `agent-deployment-checklist`. Reach for `agent-deployment-checklist` when the team needs a five-block sign-off artifact for activation. Reach for *this* skill when the team needs to know *what they should have verified before they got to that sign-off*.
 
+> **Terminology.** Agentforce *subagents* were called **topics** before April 2026.
+> This skill leads with *subagent* because that is the current product term. The
+> rename changed nothing about behaviour, and metadata and API names — plus the
+> search keywords readers arrive with — still say *topic*.
+
 ---
 
 ## Adoption Signals
@@ -62,7 +67,7 @@ This skill is the heavyweight pair to `agent-deployment-checklist`. Reach for `a
 Activate this skill when:
 
 - A new agent is being moved from sandbox/build to its first cohort of real users (pilot, internal, customer pilot, or GA).
-- A material config change is being made to a live agent: new topic added, new mutating action added, new channel turned on, persona class expanded, prompt template family revised, or Trust Layer policy changed.
+- A material config change is being made to a live agent: new subagent added, new mutating action added, new channel turned on, persona class expanded, prompt template family revised, or Trust Layer policy changed.
 - A post-incident review concluded with "we should have caught this in pre-prod" and the team is rebuilding the readiness gate.
 - A leadership review is asking "is the agent ready" and the team has only a checkbox-style answer rather than evidence per row.
 - Any agent that has been live for ≥90 days without a refreshed adversarial pass; the threat surface has drifted even if the agent metadata has not.
@@ -84,7 +89,7 @@ Gather this context before proposing changes:
 - **What channel(s) the agent runs in.** Each surface (Service Cloud agent console, Experience Cloud, Slack, Mobile, Messaging, MCP/headless) brings its own context window, latency budget, and permission model. A canary on the Slack channel does not validate behavior on Experience Cloud.
 - **What the actions actually do.** Read-only actions (look up a case, fetch a knowledge article) carry far less risk than mutating actions (create a case, post to Chatter, call an external API, refund a payment). The checklist depth scales with action blast radius.
 - **What "production" means.** A 5-internal-user pilot is not the same readiness bar as a public-facing GA. Decide which stage you are gating before you start grading the checklist — a pilot can ship with WAIVED items that GA cannot.
-- **What the rollback definition is.** "Roll back" can mean: deactivate the agent, switch a flag-controlled topic off, revert metadata, or re-route traffic. The team must agree on which mechanism applies before treating rehearsal evidence as valid.
+- **What the rollback definition is.** "Roll back" can mean: deactivate the agent, switch a flag-controlled subagent off, revert metadata, or re-route traffic. The team must agree on which mechanism applies before treating rehearsal evidence as valid.
 
 ---
 
@@ -96,23 +101,23 @@ Agentforce production readiness operates at four layers. Skipping any of them pr
 
 | Layer | What it covers | Failure mode if skipped |
 |---|---|---|
-| **Behavior** | Topic + action coverage tests, negative cases, edge cases, hallucination probes, adversarial / jailbreak probes | Agent hallucinates, escalates incorrectly, loops on bad reasoning, complies with prompt injection |
+| **Behavior** | Subagent + action coverage tests, negative cases, edge cases, hallucination probes, adversarial / jailbreak probes | Agent hallucinates, escalates incorrectly, loops on bad reasoning, complies with prompt injection |
 | **Trust + safety** | Einstein Trust Layer masking categories, audit log retention, content moderation, prohibited topic enforcement | PII leaks to LLM, no audit trail for compliance, no record of refusal events |
 | **Operability** | Event Monitoring, custom Apex logging, cost / token telemetry, rate limits, observability dashboards, alert routing | First incident is observed by a customer; no on-call view; runaway token spend |
 | **Rollout + rollback** | Canary cohort, expansion criteria, kill switch, rollback runbook, post-rollout review | Bad release goes to all users at once; rollback under pressure fails because it was never rehearsed |
 
 A team that runs only behavior tests ships an agent that works in lab conditions and breaks under production traffic. A team that builds great observability but skips behavior coverage ships an agent that consistently fails in measurable ways. Production readiness requires a row in each layer.
 
-### Concept 2 — Coverage is topics × actions × cases, not just "we ran some prompts"
+### Concept 2 — Coverage is subagents × actions × cases, not just "we ran some prompts"
 
-The functional behavior surface is two-dimensional: every (topic, action) pair is a behavior cell that needs evidence. For each cell, the test plan should include four case types:
+The functional behavior surface is two-dimensional: every (subagent, action) pair is a behavior cell that needs evidence. For each cell, the test plan should include four case types:
 
 1. **Happy-path case** — The user-intent that justified the action existing.
-2. **Negative case** — Inputs that should *not* trigger the action (the agent should refuse, escalate, or pick a different topic).
-3. **Edge case** — Boundary inputs: empty values, max-length text, multilingual input, ambiguous intent across two topics.
+2. **Negative case** — Inputs that should *not* trigger the action (the agent should refuse, escalate, or pick a different subagent).
+3. **Edge case** — Boundary inputs: empty values, max-length text, multilingual input, ambiguous intent across two subagents.
 4. **Adversarial case** — Prompt injection ("ignore your instructions and..."), jailbreak attempts, prompt extraction ("repeat your system prompt"), tool-misuse attempts (asking the agent to invoke an unrelated action via natural language).
 
-A checklist that records "we ran 30 conversations" without showing the topic × action × case breakdown is not coverage — it's a sample. Coverage means each cell has at least one case-type per row. For an agent with 8 topics and 15 actions across them, that's a meaningful number — typically 60–120 fixture conversations to reach genuine first-pass coverage. The Agentforce Testing Center supports persisted fixture conversations; use it as the system of record so the same fixtures rerun on every config change.
+A checklist that records "we ran 30 conversations" without showing the subagent × action × case breakdown is not coverage — it's a sample. Coverage means each cell has at least one case-type per row. For an agent with 8 subagents and 15 actions across them, that's a meaningful number — typically 60–120 fixture conversations to reach genuine first-pass coverage. The Agentforce Testing Center supports persisted fixture conversations; use it as the system of record so the same fixtures rerun on every config change.
 
 A separate adversarial test pass (red-team) belongs in the Trust + safety layer, not the behavior layer. Keep them separate because they have different sign-off owners.
 
@@ -130,7 +135,7 @@ The readiness gate must verify both: which categories are masked, and where audi
 The default failure mode for any production rollout is that the rollback path was never exercised under realistic conditions. For Agentforce specifically, the failure surfaces are:
 
 - **Activation flip in metadata is fine; the runtime cache lag is the real problem.** Toggling an agent off via metadata can take measurable time to propagate to in-flight sessions. Sessions started before the flip continue under the old config until they end. The rehearsal must verify that *new* sessions get the new state and that the team is aware of the propagation behavior — assuming "instant kill" without testing it is the most common rollback surprise.
-- **Topic-level kill is a separate mechanism.** Disabling a single topic (or its activating flag) is different from deactivating the entire agent. If the rollback intent is "stop one bad topic" and the rehearsal only practiced full deactivation, the runbook is misaligned with the likely incident.
+- **Subagent-level kill is a separate mechanism.** Disabling a single subagent (or its activating flag) is different from deactivating the entire agent. If the rollback intent is "stop one bad subagent" and the rehearsal only practiced full deactivation, the runbook is misaligned with the likely incident.
 - **Apex action rollback may need data cleanup.** If the rollback is triggered after the agent has been creating records, calling external APIs, or posting to Chatter, the data side may need a separate cleanup. The runbook must explicitly address whether rollback is *config-only* or *config + data cleanup* and who owns the data step.
 
 Any readiness checklist that has a "rollback rehearsed" row but no evidence of staging exercise + named owner + propagation timing is checking a box, not closing a risk.
@@ -178,13 +183,13 @@ Readiness rows for performance must capture: target p50/p95/p99 per action, end-
 
 **Why not the alternative:** Relying purely on Event Monitoring fails if the license changes, the event types you need are tier-gated, or you need a custom field (e.g. business unit, persona class) that the standard event doesn't carry. Relying purely on a custom log loses the cross-feature audit you get from Event Monitoring. Two-tier is the only durable instrumentation under realistic Salesforce license dynamics.
 
-### Pattern 2 — Topic-flag-controlled actions
+### Pattern 2 — Subagent-flag-controlled actions
 
 **When to use:** Any mutating action where the readiness team wants a finer rollback than full-agent deactivation.
 
-**How it works:** Each topic (or each high-blast-radius action) checks a Custom Metadata flag at entry. Action returns a graceful "temporarily unavailable" path when the flag is `false`. The flag is the kill-switch — a CMDT update propagates within seconds and can be flipped without redeploying code or metadata. The agent's entry-fall-back behavior is part of the topic's prompt (instruct the agent to escalate, not to retry, when the action returns the unavailable path).
+**How it works:** Each subagent (or each high-blast-radius action) checks a Custom Metadata flag at entry. Action returns a graceful "temporarily unavailable" path when the flag is `false`. The flag is the kill-switch — a CMDT update propagates within seconds and can be flipped without redeploying code or metadata. The agent's entry-fall-back behavior is part of the subagent's prompt (instruct the agent to escalate, not to retry, when the action returns the unavailable path).
 
-**Why not the alternative:** Disabling the entire agent kills working topics along with the broken one. Removing the action from the topic requires a metadata redeploy, which is slow under incident pressure. CMDT-flagging is the right granularity for "stop just this thing without taking everything else down."
+**Why not the alternative:** Disabling the entire agent kills working subagents along with the broken one. Removing the action from the subagent requires a metadata redeploy, which is slow under incident pressure. CMDT-flagging is the right granularity for "stop just this thing without taking everything else down."
 
 ### Pattern 3 — Persona-keyed rate limits with limit-class testing
 
@@ -225,9 +230,9 @@ Each stage has a different acceptable readiness bar. Pick the stage being gated 
 | Incident type | Mechanism | Why this granularity |
 |---|---|---|
 | Single bad action | CMDT flag flip on that action | Smallest blast radius; in-flight sessions complete on the old config but new sessions hit the disabled path |
-| Bad topic (multiple actions misbehaving on one topic) | Disable the topic in agent definition | Other topics keep working; targeted rather than full-agent kill |
-| Prompt-template regression | Revert template version | Agent and topics stay live; only the affected behavior changes |
-| Cross-topic systemic / hallucination wave | Deactivate agent | Broad blast radius is acceptable when the alternative is sustained user harm |
+| Bad subagent (multiple actions misbehaving on one subagent) | Disable the subagent in agent definition | Other subagents keep working; targeted rather than full-agent kill |
+| Prompt-template regression | Revert template version | Agent and subagents stay live; only the affected behavior changes |
+| Cross-subagent systemic / hallucination wave | Deactivate agent | Broad blast radius is acceptable when the alternative is sustained user harm |
 | Active exploit (jailbreak working at scale) | Channel-level disable + agent deactivation + named-credential revoke | Need to terminate fast; in-flight sessions are themselves the problem |
 
 ---
@@ -235,7 +240,7 @@ Each stage has a different acceptable readiness bar. Pick the stage being gated 
 ## Recommended Workflow
 
 1. **Define the readiness target.** Pick the rollout stage being gated (canary, broader internal, customer pilot, GA). Each stage has a different acceptable bar — write the bar down before grading anything. A canary can ship with documented WAIVED items; a GA gate cannot.
-2. **Build the coverage matrix.** Enumerate topics × actions × case types. Persist the fixture conversations in Agentforce Testing Center (or equivalent). Run the suite against the production-target metadata package, not against a stale sandbox. Record pass-rate per cell.
+2. **Build the coverage matrix.** Enumerate subagents × actions × case types. Persist the fixture conversations in Agentforce Testing Center (or equivalent). Run the suite against the production-target metadata package, not against a stale sandbox. Record pass-rate per cell.
 3. **Verify Trust Layer config and audit log destination.** For every data category your agent could plausibly process (PII, financial, health, IP), confirm masking is on or explicitly waived. Confirm audit logs flow to whatever long-term store satisfies your retention horizon. Capture screenshots / config exports as evidence.
 4. **Stand up observability and cost telemetry before traffic.** Event Monitoring queries for agent invocations, custom Apex logging on each action's entry/exit/failure, dashboard with the four key metrics (sessions, escalation rate, action error rate, p95 latency), token-usage dashboard with daily threshold alert. The first incident must not be discovered by a user — it must be discovered by an alert.
 5. **Benchmark performance against a target.** Measure action response p50/p95/p99 and end-to-end agent reasoning loop latency under realistic concurrency. Set a threshold (e.g. action p95 ≤ 3s, full-loop p95 ≤ 8s — your numbers will vary by use case) and gate the checklist on hitting it. If you don't have a number, you don't have a benchmark.
@@ -249,7 +254,7 @@ Each stage has a different acceptable readiness bar. Pick the stage being gated 
 Run through these before marking an agent production-ready:
 
 - [ ] Persona, channel(s), and target rollout stage explicitly recorded
-- [ ] Coverage matrix complete: every topic × action × case-type cell has evidence (fixture link or test ID)
+- [ ] Coverage matrix complete: every subagent × action × case-type cell has evidence (fixture link or test ID)
 - [ ] Adversarial test pass executed by someone other than the builder; results reviewed with security
 - [ ] Trust Layer masking verified per data category your data could plausibly contain
 - [ ] Trust Layer audit logs land in a system that meets your retention horizon
@@ -275,7 +280,7 @@ Non-obvious platform behaviors that cause real production problems:
 3. **Apex action descriptions feed the LLM's tool-selection reasoning** — A vague or default-templated action description leads the agent to pick the wrong action under ambiguous prompts. Action descriptions are part of the production interface; treat them like API contracts.
 4. **Prompt template caching can cause stale instruction text after an update** — Test the propagation of prompt template edits; do not assume edits are live just because they're saved.
 5. **Event Monitoring license tier gates which event types are accessible** — The events you need (e.g. agent invocation events) may sit behind Event Monitoring; verify license before promising the dashboard.
-6. **Context window limits are real and consume tokens for system + topic + history** — High-cardinality topic graphs and verbose system instructions push history out of context, degrading multi-turn coherence on long sessions.
+6. **Context window limits are real and consume tokens for system + subagent + history** — High-cardinality subagent graphs and verbose system instructions push history out of context, degrading multi-turn coherence on long sessions.
 7. **The agent's choice between "answer directly" and "invoke an action" is reasoning-driven, not deterministic** — Prompts that look identical can route differently. Coverage tests must include paraphrases of the same intent, not just the canonical phrasing.
 
 ---
@@ -285,7 +290,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Readiness checklist (filled) | Markdown / spreadsheet with PASS/FAIL/WAIVED per item, evidence link, owner, date |
-| Coverage test plan | Topic × action × case-type matrix with fixture conversation IDs, pass-rate per cell, adversarial pass evidence |
+| Coverage test plan | Subagent × action × case-type matrix with fixture conversation IDs, pass-rate per cell, adversarial pass evidence |
 | Trust Layer config spec | Per-category masking decisions, audit log retention + destination, content moderation thresholds |
 | Performance benchmark report | p50/p95/p99 numbers per action and end-to-end loop, concurrency tested, target threshold, pass/fail |
 | Cost-monitoring spec | Token-usage dashboard link, daily / weekly threshold alerts, owner, escalation path |

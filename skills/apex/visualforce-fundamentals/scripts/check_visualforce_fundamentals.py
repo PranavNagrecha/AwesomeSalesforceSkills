@@ -2,7 +2,8 @@
 """Checker script for Visualforce Fundamentals skill.
 
 Scans Salesforce metadata for common Visualforce anti-patterns:
-  - SOQL queries in Apex controllers without WITH USER_MODE or WITH SECURITY_ENFORCED
+  - SOQL queries in Apex controllers without WITH USER_MODE
+  - SOQL queries still carrying WITH SECURITY_ENFORCED, removed in API 67.0 (Summer '26)
   - Non-transient List/Map controller properties (view state bloat risk)
   - DML operations inside page-action-bound methods
   - window.top / window.parent usage in VF page scripts (LEX incompatibility)
@@ -32,8 +33,21 @@ _SOQL_NO_ENFORCEMENT = re.compile(
     r"\[[\s]*SELECT\b.*?\]",
     re.DOTALL | re.IGNORECASE,
 )
+# SECURITY_ENFORCED is matched here DELIBERATELY. It was removed in API 67.0
+# (Summer '26), but a query that carries it did enforce FLS at the versions
+# where it compiled, so treating it as "no enforcement at all" would be a
+# false positive on a controller pinned below 67.0. It is reported separately
+# by _LEGACY_SECURITY_ENFORCED below. Do not drop the alternation.
 _SOQL_USER_MODE = re.compile(
     r"\bWITH\s+(USER_MODE|SECURITY_ENFORCED)\b",
+    re.IGNORECASE,
+)
+# The removed clause itself. Per agents/_shared/AGENT_CONTRACT.md
+# (Apex security idiom by API version), a scanner flags WITH SECURITY_ENFORCED
+# rather than scoring it clean: on a 67.0+ class it is a compile failure, and
+# below that it is legacy tech debt with WITH USER_MODE as the named migration.
+_LEGACY_SECURITY_ENFORCED = re.compile(
+    r"\bWITH\s+SECURITY_ENFORCED\b",
     re.IGNORECASE,
 )
 
@@ -105,8 +119,19 @@ def check_apex_files(apex_dir: Path) -> list[str]:
             if not _SOQL_USER_MODE.search(query_text):
                 issues.append(
                     f"[SOQL-NO-ENFORCEMENT] {cls_file.name}: "
-                    f"SOQL query missing WITH USER_MODE or WITH SECURITY_ENFORCED — "
+                    f"SOQL query missing WITH USER_MODE — "
                     f"snippet: {query_text[:80].strip()!r}"
+                )
+            elif _LEGACY_SECURITY_ENFORCED.search(query_text):
+                issues.append(
+                    f"[SOQL-LEGACY-SECURITY-ENFORCED] {cls_file.name}: "
+                    f"SOQL query uses WITH SECURITY_ENFORCED, which was removed in "
+                    f"API 67.0 (Summer '26). On a controller pinned at 67.0 or above "
+                    f"this does not compile ('WITH SECURITY_ENFORCED is no longer "
+                    f"supported, use WITH USER_MODE instead'); below 67.0 it is the "
+                    f"weaker construct and should migrate to WITH USER_MODE. The gate "
+                    f"is the apiVersion in the class's .cls-meta.xml, not the org's "
+                    f"release — snippet: {query_text[:80].strip()!r}"
                 )
 
         # Check for non-transient collection declarations in VF controllers

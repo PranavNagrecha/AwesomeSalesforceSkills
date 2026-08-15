@@ -1,6 +1,6 @@
 ---
 name: flow-element-naming-conventions
-description: "Canonical naming conventions for Flow elements (Get_/Update_/Decision_/Loop_/Assignment_), resource variables (var/coll/map/formula/choice/constant/stage/screen), Decision branch outcomes, Stage/Step labels in Orchestrations, Subflow input/output contracts, and fault-path target names. NOT for object/field naming — — use flow/flow-governance."
+description: "Canonical naming conventions for Flow elements (Get_/Update_/Decision_/Loop_/Assignment_), resource variables (var/coll/map/formula/choice/constant/stage/screen), Decision branch outcomes, Stage/Step labels in Orchestrations, Subflow input/output contracts, and fault-path target names. NOT for object or field API naming (use admin/object-creation-and-design) or flow portfolio retirement — use flow/flow-governance."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -31,9 +31,9 @@ outputs:
   - Subflow input/output rename + version-bump recommendation
   - Audit table of non-conforming element names with proposed replacements
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-27
+updated: 2026-08-14
 ---
 
 # Flow Element Naming Conventions

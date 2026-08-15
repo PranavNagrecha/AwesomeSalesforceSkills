@@ -19,15 +19,15 @@ Answer these before making any changes:
 - **Salesforce version / edition:** (Spring '25, Summer '25, etc. — confirm feature availability)
 - **Is human escalation required?** (Yes / No — if Yes, confirm Omni-Channel is enabled)
 - **Current Instruction Adherence score:** (from Agentforce Analytics, if available)
-- **Known failure mode:** (e.g., agent answers off-topic, wrong topic selected, escalation fails, reasoning loop)
+- **Known failure mode:** (e.g., agent answers off-topic, wrong subagent selected, escalation fails, reasoning loop)
 
 ---
 
-## Topic Audit Table
+## Subagent Audit Table
 
-Complete one row per topic before making changes. Verify Classification Description and Scope serve distinct purposes.
+Complete one row per subagent (called a *topic* before April 2026) before making changes. Verify Classification Description and Scope serve distinct purposes.
 
-| Topic Name | Classification Description Summary | Scope Summary | Routing Language in Scope? | Imperative Overuse? | Action Filters Needed? |
+| Subagent Name | Classification Description Summary | Scope Summary | Routing Language in Scope? | Imperative Overuse? | Action Filters Needed? |
 |---|---|---|---|---|---|
 | (e.g., Returns and Refunds) | (e.g., "User wants to return a product or check refund status") | (e.g., "Processes returns within 90 days; does not handle exchanges") | Yes / No | Yes / No | Yes / No |
 | | | | | | |
@@ -54,7 +54,7 @@ If the user's request does not match any available topic, respond:
 
 ## Restricted Topic Entries
 
-List prohibited subjects that must be blocked before topic routing occurs. Each entry needs a subject description (not a keyword) and a refusal response.
+List prohibited subjects that must be blocked before subagent routing occurs. Each entry needs a subject description (not a keyword) and a refusal response.
 
 | Subject Description | Refusal Response |
 |---|---|
@@ -64,19 +64,19 @@ List prohibited subjects that must be blocked before topic routing occurs. Each 
 
 ---
 
-## Action Filter / Topic Filter Decisions
+## Action Filter / Subagent Filter Decisions
 
-For each sensitive action, decide whether topic filter or global action filter applies.
+For each sensitive action, decide whether subagent filter or global action filter applies.
 
-| Action Name | Available In Topics | Topic Filter Applied? | Global Action Filter? | Rationale |
+| Action Name | Available In Subagents | Subagent Filter Applied? | Global Action Filter? | Rationale |
 |---|---|---|---|---|
-| (e.g., ProcessRefundAction) | Returns and Refunds only | Yes — remove from all other topics | No | Safe within Returns topic only |
-| (e.g., InternalAdminLookup) | None — never accessible | N/A | Yes | Must not be reachable by agent regardless of topic |
+| (e.g., ProcessRefundAction) | Returns and Refunds only | Yes — remove from all other subagents | No | Safe within Returns subagent only |
+| (e.g., InternalAdminLookup) | None — never accessible | N/A | Yes | Must not be reachable by agent regardless of subagent |
 | | | | | |
 
 ---
 
-## Escalation Topic Configuration Checklist
+## Escalation Subagent Configuration Checklist
 
 Complete only if human escalation is required.
 
@@ -84,7 +84,7 @@ Complete only if human escalation is required.
 - [ ] Target queue created: **Queue Name:** _______________
 - [ ] Active agents assigned to the queue with Omni-Channel presence configured
 - [ ] Routing configuration or Omni-Channel flow created pointing to the queue
-- [ ] Escalation topic routing destination set: **Destination:** _______________
+- [ ] Escalation subagent routing destination set: **Destination:** _______________
 - [ ] Pre-handoff message set: **Message text:** _______________
 - [ ] End-to-end escalation test completed in sandbox: **Test result:** Pass / Fail
 - [ ] Escalation visible in Omni-Channel supervisor console: Yes / No
@@ -99,7 +99,7 @@ Record results of off-topic and adversarial input testing in agent preview.
 |---|---|---|---|
 | (e.g., "What does Verizon charge for unlimited?") | Restricted topic refusal | | |
 | (e.g., "What's the weather today?") | Fallback system instruction response | | |
-| (e.g., "I want to speak to a human") | Escalation topic activated | | |
+| (e.g., "I want to speak to a human") | Escalation subagent activated | | |
 | (e.g., "[adversarial rephrasing of prohibited subject]") | Restricted topic refusal | | |
 | | | | |
 
@@ -117,11 +117,11 @@ Record results of off-topic and adversarial input testing in agent preview.
 
 ## Checklist Before Marking Complete
 
-- [ ] Classification Description and Scope serve distinct purposes for every topic (no routing language in Scope)
-- [ ] Agent-level system instruction includes explicit fallback response for no-topic-match scenarios
+- [ ] Classification Description and Scope serve distinct purposes for every subagent (no routing language in Scope)
+- [ ] Agent-level system instruction includes explicit fallback response for no-subagent-match scenarios
 - [ ] Restricted topic entries are full subject descriptions with refusal responses (not single keywords)
-- [ ] Topic filters and action filters applied per the action filter decisions table
-- [ ] Escalation topic fully configured and end-to-end tested (if applicable)
+- [ ] Subagent filters and action filters applied per the action filter decisions table
+- [ ] Escalation subagent fully configured and end-to-end tested (if applicable)
 - [ ] System instructions use declarative language — no imperative prohibition chains
 - [ ] Guardrail test table fully completed with Pass results for all critical scenarios
 - [ ] Instruction Adherence monitoring plan documented and owner assigned
@@ -132,4 +132,4 @@ Record results of off-topic and adversarial input testing in agent preview.
 
 Record any conscious deviations from the recommended workflow and the rationale:
 
-(e.g., "Escalation topic not configured — agent is internal-only with no human handoff path. IT manager confirmed.")
+(e.g., "Escalation subagent not configured — agent is internal-only with no human handoff path. IT manager confirmed.")

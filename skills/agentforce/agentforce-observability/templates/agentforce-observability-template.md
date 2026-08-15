@@ -1,6 +1,6 @@
 # Agentforce Observability — Monitoring Setup Template
 
-Use this template when setting up or reviewing Agentforce agent monitoring.
+Use this template when setting up or reviewing Agentforce agent monitoring. *Subagent* below is the April 2026 rename of *topic*; the DMO attribute names did not rename with it.
 
 ## Agent Being Monitored
 
@@ -22,7 +22,7 @@ Run these queries and record baseline values:
 | Deflection rate (last 7 days) | | |
 | Escalation rate (last 7 days) | | |
 | Avg response latency (ms) | | |
-| Top 3 topics by session volume | | |
+| Top 3 subagents by session volume | | |
 
 ## Monitoring Dashboard Components
 
@@ -32,7 +32,7 @@ Built in Tableau Next (Agent Analytics), sourced from the Session Tracing DMOs:
 |---|---|---|---|
 | Daily session count | Bar chart by status | AIAgentSession | Daily |
 | Rolling deflection rate | KPI + trend line | AIAgentSession | Daily |
-| Topic distribution | Pie chart | Agent Analytics (topic effectiveness) | Weekly |
+| Subagent distribution | Pie chart | Agent Analytics (subagent effectiveness) | Weekly |
 | Avg latency by agent | Table | AIAgentInteraction / AIAgentInteractionMessage | Daily |
 
 ## Alert Thresholds

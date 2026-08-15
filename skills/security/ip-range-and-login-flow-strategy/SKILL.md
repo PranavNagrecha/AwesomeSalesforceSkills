@@ -1,6 +1,6 @@
 ---
 name: ip-range-and-login-flow-strategy
-description: "Design and implement Salesforce Login Flows (Screen Flows assigned to profiles or Experience Cloud sites) that run post-authentication to enforce conditional MFA, IP-based branching, terms-of-service acceptance, or. NOT for static IP allowlisting or profile Login IP Ranges (see network-security-and-trus — use security/mfa-enforcement-strategy."
+description: "Design and implement Salesforce Login Flows (Screen Flows assigned to profiles or Experience Cloud sites) that run post-authentication to enforce conditional MFA, IP-based branching, terms-of-service acceptance, or Experience Cloud custom login pages. NOT for IP allowlisting (use security/network-security-and-trusted-ips) or org-wide MFA rollout — use security/mfa-enforcement-strategy."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -31,9 +31,9 @@ outputs:
   - "IP-based decision logic within the flow for conditional routing"
   - "Testing plan covering happy-path login, blocked-IP login, and edge cases"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # IP Range and Login Flow Strategy

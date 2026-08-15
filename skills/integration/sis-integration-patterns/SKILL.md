@@ -1,6 +1,6 @@
 ---
 name: sis-integration-patterns
-description: "Use this skill when designing or implementing an integration between a Student Information System (SIS) — such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or. NOT for Salesforce Admissions Connect application processing, Financial Aid integration — use architect/sales-cloud-integration-patterns."
+description: "Use this skill when designing or implementing an integration between a Student Information System (SIS) — such as Ellucian Banner, Ellucian Colleague, Anthology Student, Oracle PeopleSoft Campus Solutions, or Workday Student — and Salesforce Education Cloud. NOT for Salesforce Admissions Connect application processing, Financial Aid integration — use architect/sales-cloud-integration-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -43,9 +43,9 @@ outputs:
   - "Watermark strategy for incremental loads from SIS"
   - "Review checklist for SIS integration go-live"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # SIS Integration Patterns

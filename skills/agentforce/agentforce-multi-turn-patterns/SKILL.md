@@ -1,6 +1,6 @@
 ---
 name: agentforce-multi-turn-patterns
-description: "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic handoff, and the right abstractions for accumulating state across turns. NOT for deciding the topic boundaries themselves or out-of-scope behavior — use agentforce/agent-topic-design. NOT for single-turn agent actions and their input/output contracts — use agentforce/agent-actions."
+description: "Design Agentforce conversations that span multiple turns without losing context: session variable scoping, conversation memory, clarifying-question patterns, topic-to-topic (now subagent) handoff, and the right abstractions for accumulating state across turns. NOT for deciding the topic boundaries themselves or out-of-scope behavior — use agentforce/agent-topic-design. NOT for single-turn agent actions and their input/output contracts — use agentforce/agent-actions."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,12 +32,19 @@ outputs:
   - Clarifying-question patterns per ambiguous input class
   - Hand-off criteria and escalation flow
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Multi-Turn Conversation Patterns
+
+> **Terminology.** This skill leads with *subagent* because that is the current
+> product term — beginning in April 2026, agent topics are called subagents,
+> with no change to functionality. It deliberately keeps *topic* in metadata and
+> API names, in transcript examples that name a configured entity, and in search
+> keywords — those did not change, and readers arriving with the older
+> vocabulary still need to find this skill.
 
 ## Core concept — conversation state lives in three places
 
@@ -57,10 +64,10 @@ Rules:
 ## Recommended Workflow
 
 1. **Inventory the turn-to-turn facts.** List every piece of information the agent must know in turn N that was given in turn N-1 or earlier. This is your session-variable schema.
-2. **Decide the scope of each fact.** Within-topic-only, cross-topic, cross-session? Each scope maps to a different store.
-3. **Design topics around user intent shifts, not UI screens.** A topic boundary should match a meaningful change in what the user is trying to accomplish.
+2. **Decide the scope of each fact.** Within-subagent-only, cross-subagent, cross-session? Each scope maps to a different store.
+3. **Design subagents around user intent shifts, not UI screens.** A subagent boundary should match a meaningful change in what the user is trying to accomplish.
 4. **Plan clarifying-question triggers.** For every ambiguous input class, decide: can the agent proceed with a plausible assumption and verify, or does it need to ask?
-5. **Wire the topic-to-topic handoff.** When a topic exits, which session variables survive? Which are reset?
+5. **Wire the subagent-to-subagent handoff.** When a subagent exits, which session variables survive? Which are reset?
 6. **Plan escalation.** After how many failed turns does the agent hand off to a human? Which signals count as "failed"?
 7. **Build an eval set of 10+ multi-turn transcripts** covering happy paths, ambiguity, and escalation. Run before every prompt change (see `agentforce-eval-harness`).
 
@@ -92,9 +99,9 @@ Key design:
 - The next turn's prompt incorporates all accumulated facts: "To confirm, you're returning item X from order Y for reason Z."
 - If the user changes their mind mid-flow ("wait, actually it was the red scarf"), the agent updates the variable and re-asks the downstream question.
 
-### Pattern 2 — Cross-topic memory
+### Pattern 2 — Cross-subagent memory
 
-User switches from Support (Case topic) to Sales (Upgrade topic) mid-session.
+User switches from Support (Case subagent) to Sales (Upgrade subagent) mid-session.
 
 ```
 Turn 1-3: Support topic resolves billing question.
@@ -110,8 +117,8 @@ Turn 5:
 ```
 
 Key design:
-- The `verifiedAccountId` session variable has **cross-topic scope**.
-- The Support topic's internal variables (`caseId`, `resolutionStatus`) are **topic-scoped** and don't survive the topic exit.
+- The `verifiedAccountId` session variable has **cross-subagent scope**.
+- The Support subagent's internal variables (`caseId`, `resolutionStatus`) are **subagent-scoped** and don't survive the subagent exit.
 - Declaring scope explicitly at variable-creation time prevents information leaks.
 
 ### Pattern 3 — Clarifying question with fallback
@@ -166,7 +173,7 @@ Agent conversations are inherently one-user-one-conversation. Bulk safety here i
 
 - **Reliability** — explicit state stores + bounded list sizes prevent context-window overflow failures. Two-strike escalation prevents infinite clarification loops.
 - **User Experience** — the quality of multi-turn conversations is the difference between an agent users trust and one they avoid. Clarifying vs assume-and-verify must be tuned per task.
-- **Security** — session variables may hold PII. Scope discipline prevents PII from leaking across topics; platform-data writes must respect FLS.
+- **Security** — session variables may hold PII. Scope discipline prevents PII from leaking across subagents; platform-data writes must respect FLS.
 
 ## Gotchas
 
@@ -176,8 +183,8 @@ See `references/gotchas.md`.
 
 Multi-turn conversations need **transcript-level evals**, not single-turn unit tests. See `skills/agentforce/agentforce-eval-harness` for the harness + fixture format. Minimum coverage:
 
-- Happy path for each topic (linear flow, all variables captured correctly).
-- Topic switch mid-conversation (state handoff correct).
+- Happy path for each subagent (linear flow, all variables captured correctly).
+- Subagent switch mid-conversation (state handoff correct).
 - Ambiguity requiring clarification.
 - Two-strike escalation.
 - User correction mid-flow ("actually, change that to...").

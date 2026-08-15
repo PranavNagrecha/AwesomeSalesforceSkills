@@ -33,9 +33,9 @@ outputs:
   - Decision guidance on grounding strategy and data exposure scope
   - Review checklist confirming security posture for generative AI deployments
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Einstein Trust Layer

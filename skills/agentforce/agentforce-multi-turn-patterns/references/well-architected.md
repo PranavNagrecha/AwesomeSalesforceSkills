@@ -3,8 +3,8 @@
 ## Relevant Pillars
 
 - **Reliability** — Multi-turn agents fail silently when context truncates, when a variable is stale after correction, or when an escalation loses context. Explicit session-variable state + cascade resets + bounded escalation are the load-bearing structures that keep conversations recoverable under edge cases.
-- **User Experience** — The difference between an agent users return to and one they abandon is almost entirely multi-turn design. Asking one question per ambiguity, batching clarifications, and preserving identity across topics are what make conversations feel competent.
-- **Security** — Session variables may hold PII (account IDs, phone numbers, addresses). Scope discipline prevents PII from leaking cross-topic. Escalation handoff payloads must redact PII before logging.
+- **User Experience** — The difference between an agent users return to and one they abandon is almost entirely multi-turn design. Asking one question per ambiguity, batching clarifications, and preserving identity across subagents (called topics before April 2026) are what make conversations feel competent.
+- **Security** — Session variables may hold PII (account IDs, phone numbers, addresses). Scope discipline prevents PII from leaking cross-subagent. Escalation handoff payloads must redact PII before logging.
 
 ## Architectural Tradeoffs
 
@@ -29,12 +29,12 @@ Rule of thumb: session variables are the default; promote to platform data only 
 
 Rule: if the plausible-assumption success rate is > 90%, use assume-and-verify with confirmation. Below 90%, ask.
 
-### Topic granularity
+### Subagent granularity
 
-Topics too narrow: agent loses conversation coherence when user drifts slightly.
-Topics too broad: one topic ends up owning disparate workflows and its description can't discriminate well from neighbors.
+Subagents too narrow: agent loses conversation coherence when user drifts slightly.
+Subagents too broad: one subagent ends up owning disparate workflows and its description can't discriminate well from neighbors.
 
-Rule: topic per coherent user-intent family (e.g., "Returns", "Billing", "Technical Support"), not per specific task (e.g., "Return_Shirt" is too narrow).
+Rule: subagent per coherent user-intent family (e.g., "Returns", "Billing", "Technical Support"), not per specific task (e.g., "Return_Shirt" is too narrow).
 
 ## Anti-Patterns
 
@@ -46,7 +46,7 @@ Rule: topic per coherent user-intent family (e.g., "Returns", "Billing", "Techni
 
 4. **Context-free escalation** — Transferring to a human with just the latest message. Forces the human to restart from zero. Fix: escalation payload with full transcript + redacted session state.
 
-5. **Per-topic identity verification** — Asking for account verification at every topic boundary. Users feel the agent doesn't trust them. Fix: cross-topic identity with expiry.
+5. **Per-subagent identity verification** — Asking for account verification at every subagent boundary. Users feel the agent doesn't trust them. Fix: cross-subagent identity with expiry.
 
 ## Official Sources Used
 

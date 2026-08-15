@@ -34,12 +34,17 @@ outputs:
   - Baseline run with scores
   - CI job that runs evals on every prompt change
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
 updated: 2026-08-14
 ---
 
 # Agentforce Eval Harness
+
+> **Terminology.** Agentforce *topics* were renamed *subagents* in April 2026.
+> Behaviour did not change and the API surface did not rename — metadata types
+> and evaluation expectation names still say *topic*. This skill leads with
+> *subagent*; the fixture format below keeps its `topic:` key.
 
 ## Core concept — three eval dimensions
 
@@ -93,7 +98,7 @@ Turn 2 (user provides "A7842"):
 
 ## Recommended Workflow
 
-1. **Audit the agent's topics and actions.** Every topic needs ≥ 2 P0 eval cases. Every action needs ≥ 1 case that exercises it.
+1. **Audit the agent's subagents and actions.** Every subagent needs ≥ 2 P0 eval cases. Every action needs ≥ 1 case that exercises it.
 2. **Collect real transcripts from UAT or production** (anonymized). These are better than synthetic cases — they capture actual user phrasing patterns.
 3. **Write one case per failure mode.** Not just happy paths; explicitly test ambiguity, refusal, escalation, and multi-turn correction.
 4. **Author the rubric in calibration pairs.** Two engineers score the same reference answer independently; if they disagree on a score, tighten the rubric definition before scaling.

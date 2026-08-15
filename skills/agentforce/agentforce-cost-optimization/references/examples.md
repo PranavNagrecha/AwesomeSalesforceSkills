@@ -1,8 +1,8 @@
 # Agentforce Cost Optimization — Examples
 
-## Example 1: Topic Instruction Trim
+## Example 1: Subagent Instruction Trim
 
-**Before:** Topic `Case_Status_Check` had 720-token instructions including a 4-paragraph company overview, tone rules, and 8 examples.
+**Before:** Subagent (called a topic before April 2026) `Case_Status_Check` had 720-token instructions including a 4-paragraph company overview, tone rules, and 8 examples.
 
 **After:** 240 tokens — company overview moved to system prompt, tone rules generalized to the agent level, 2 high-coverage examples.
 
@@ -22,10 +22,10 @@
 
 ## Example 3: Tiered Model Routing
 
-Classification step (intent-to-topic mapping) switched from flagship to a smaller tier. Final response remained on flagship. Overall cost per conversation dropped 18% with no measurable quality change.
+Classification step (intent-to-subagent mapping) switched from flagship to a smaller tier. Final response remained on flagship. Overall cost per conversation dropped 18% with no measurable quality change.
 
 ---
 
-## Anti-Pattern: "One Huge Topic" Inflation
+## Anti-Pattern: "One Huge Subagent" Inflation
 
-A single topic with 15 capabilities. Every conversation injected all its instructions. Splitting into 5 narrow topics reduced average instruction tokens per conversation by 60%.
+A single subagent with 15 capabilities. Every conversation injected all its instructions. Splitting into 5 narrow subagents reduced average instruction tokens per conversation by 60%.

@@ -58,12 +58,12 @@ Two modes:
 2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
 3. `skills/devops/change-set-deployment` — Change Set canon
 4. `skills/devops/metadata-api-coverage-gaps` — what Change Sets cannot carry
-5. `skills/devops/pre-deployment-checklist`
-6. `skills/devops/deployment-error-troubleshooting`
-7. `skills/devops/destructive-changes-deployment`
-8. `skills/devops/permission-set-deployment-ordering`
+5. `skills/devops/pre-deployment-checklist` — the activation checklist has a pre-deploy half: the validation-only run that yields the quick-deploy id, and the backup taken before it; without it the agent hands over a manifest with no gate between upload and production
+6. `skills/devops/deployment-error-troubleshooting` — `validate` mode's whole job is predicting the failures this skill diagnoses after the fact; without it the agent checks only that each named component exists and misses the dependency classes ("dependent class is invalid") a Change Set does not pull in on its own
+7. `skills/devops/destructive-changes-deployment` — a Change Set cannot delete anything, so the destructive half of the plan has to ship as a separate `destructiveChanges.xml` deployment ordered pre- or post-; without it the agent lists deletions inside the component list, where they are silently inert
+8. `skills/devops/permission-set-deployment-ordering` — a permission set deployed ahead of the objects, fields and classes it references drops those entries instead of failing; without it the agent orders the manifest by component type and the deploy reports success with FLS missing
 9. `skills/devops/migration-from-change-sets-to-sfdx` — the off-ramp
-10. `skills/admin/change-management-and-deployment`
+10. `skills/admin/change-management-and-deployment` — supplies the rollback and release-guardrail half of the plan, and the decision matrix that tells the agent when to send the caller to the entry-9 off-ramp instead of building the Change Set it was asked for
 11. `templates/admin/naming-conventions.md`
 12. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 13. `skills/devops/release-notes-automation` — post-deploy notes generated from change-set scope

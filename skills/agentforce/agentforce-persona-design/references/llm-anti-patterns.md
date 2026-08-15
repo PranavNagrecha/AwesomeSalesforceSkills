@@ -21,23 +21,23 @@ to resolution.
 
 ---
 
-## Anti-Pattern 2: Placing All Persona Instructions in Topic Instructions
+## Anti-Pattern 2: Placing All Persona Instructions in Subagent Instructions
 
-**What the LLM generates:** Tone and voice directives inside individual topic instructions (e.g., within the "Billing" topic instructions: "Respond formally and professionally when handling billing questions") rather than in agent-level system instructions.
+**What the LLM generates:** Tone and voice directives inside individual subagent instructions (subagents were called topics before April 2026) — e.g., within the "Billing" subagent instructions: "Respond formally and professionally when handling billing questions" — rather than in agent-level system instructions.
 
-**Why it happens:** The LLM knows that Agentforce has both agent-level and topic-level instructions but conflates them as interchangeable containers for behavioral guidance. The scoping difference (agent-level = always applies; topic-level = only when active) is a nuance not widely documented.
+**Why it happens:** The LLM knows that Agentforce has both agent-level and subagent-level instructions but conflates them as interchangeable containers for behavioral guidance. The scoping difference (agent-level = always applies; subagent-level = only when active) is a nuance not widely documented.
 
 **Correct pattern:**
 ```
 Persona and tone belong ONLY in agent-level system instructions.
-Topic instructions should contain:
-- Topic scope definition (what this topic handles, what it does NOT handle)
-- Required actions the agent must take within the topic
-- Response format preferences for this specific topic
-Topic instructions should NOT contain tone, voice, or brand voice guidelines.
+Subagent instructions should contain:
+- Subagent scope definition (what this subagent handles, what it does NOT handle)
+- Required actions the agent must take within the subagent
+- Response format preferences for this specific subagent
+Subagent instructions should NOT contain tone, voice, or brand voice guidelines.
 ```
 
-**Detection hint:** Any tone adjective ("professional", "empathetic", "concise") appearing in topic-level instructions rather than the agent-level instructions block.
+**Detection hint:** Any tone adjective ("professional", "empathetic", "concise") appearing in subagent-level instructions rather than the agent-level instructions block.
 
 ---
 

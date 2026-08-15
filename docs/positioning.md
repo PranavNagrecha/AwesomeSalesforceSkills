@@ -96,7 +96,7 @@ write dated reports into `docs/validation/`:
 | Harness | Latest report | Result |
 |---|---|---|
 | `scripts/validate_probes_against_org.py` | [`docs/validation/probe_report_2026-04-17.md`](./validation/probe_report_2026-04-17.md) | 21 probe queries executed, 21 passed |
-| `scripts/smoke_test_agents.py` | [`docs/validation/agent_smoke_rollup_2026-04-19.md`](./validation/agent_smoke_rollup_2026-04-19.md) | 42 agents tested, 42 passed |
+| `scripts/smoke_test_agents.py` | [`docs/validation/agent_smoke_rollup_2026-04-19.md`](./validation/agent_smoke_rollup_2026-04-19.md) | 42 agents tested, 42 passed — the roster was 42 active run-time agents at that date; it is 48 now, so this report does not cover the 6 added since. Re-run to refresh. |
 | `scripts/validate_skill_factuality.py` | [`docs/validation/skill_factuality_2026-04-17.md`](./validation/skill_factuality_2026-04-17.md) | 100-skill sample, 32 testable, 0 wrong claims |
 
 Output quality has a separate harness: golden P0 cases with assertions,
@@ -167,17 +167,22 @@ Shipping today as `sfskills-mcp` 0.4.6 on
   (`gh run list --workflow=org-validation.yml --json conclusion` → `[]`,
   2026-07-31). The defensible version is "three re-runnable harnesses, with
   the dated reports in the repo".
-- **"Drop it into Claude Code and it works."** The honest install today is
-  clone, `pip install -r requirements.txt`, and a one-time
-  `python3 scripts/build_index.py` — the retrieval index is gitignored, and
-  without it `scripts/search_knowledge.py` answers `Coverage: NONE` to every
-  query rather than erroring. Plugin manifests now exist in-tree
-  (`.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, both
-  declaring the tiered router-skill layout), but the plugin has not been
-  submitted to or accepted by any plugin directory, so there is still no
-  one-command install a stranger can run
-  (<https://code.claude.com/docs/en/plugin-marketplaces>). Describe it as
-  clone, install, build index — not as drop-in.
+- **"You need to build an index before it works."** Corrected 2026-08-14 — this
+  claim was backwards. Reaching a skill needs no build step: Claude reads the
+  router descriptions and one domain roster, both of which are plain files on
+  the default branch. `pip install -r requirements.txt` and
+  `python3 scripts/build_index.py` buy the *second and third* ways in —
+  `scripts/search_knowledge.py` and the MCP `search_skill` tool. Skip them and
+  `search_knowledge.py` answers `Coverage: NONE` to every query rather than
+  erroring, which looks like an empty library; it is a missing index.
+- **"One command and a stranger has it."** Still overclaiming, but narrowly.
+  `.claude-plugin/plugin.json` and `marketplace.json` are on the default branch
+  (`git ls-tree origin/main .claude-plugin/`), so
+  `/plugin marketplace add PranavNagrecha/AwesomeSalesforceSkills` does work.
+  What is missing is *discovery*: the plugin has not been submitted to or
+  accepted by any third-party plugin directory
+  (<https://code.claude.com/docs/en/plugin-marketplaces>), so nobody finds it
+  without being told the repo name.
 
 ---
 

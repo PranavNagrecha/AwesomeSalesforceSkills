@@ -129,7 +129,7 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 26. `skills/lwc/lwc-styling-hooks` — styles that "don't apply" because they pierce shadow DOM
 27. `skills/lwc/lwc-light-dom` — shadow vs light DOM lookup boundaries
 28. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode mismatch with consumer
-29. `skills/lwc/lwc-web-components-interop`
+29. `skills/lwc/lwc-web-components-interop` — when the element that failed is a third-party custom element rather than an LWC, every hypothesis in entries 14–28 mis-diagnoses it; this is what separates "the component never rendered" from "the custom element was never upgraded"
 30. `skills/lwc/static-resources-in-lwc` — load order / 404 / CSP
 
 ### Surface / exposure axis

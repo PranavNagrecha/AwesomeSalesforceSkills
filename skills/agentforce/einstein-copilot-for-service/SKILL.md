@@ -39,14 +39,14 @@ outputs:
   - Work Summary generating post-conversation case summaries
   - Service Replies drafting email and chat responses grounded in Knowledge
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Einstein Copilot for Service
 
-This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the service-specific AI features in Service Cloud: Case Classification, Article Recommendations, Reply Recommendations, Work Summary, Service Replies with Einstein, Auto-Routing, and Einstein Conversation Mining. It does NOT cover core Agentforce agent creation, Agent Builder topic design, or Einstein Trust Layer configuration — use the dedicated skills for those areas.
+This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the service-specific AI features in Service Cloud: Case Classification, Article Recommendations, Reply Recommendations, Work Summary, Service Replies with Einstein, Auto-Routing, and Einstein Conversation Mining. It does NOT cover core Agentforce agent creation, Agent Builder subagent design (subagents were called topics before April 2026), or Einstein Trust Layer configuration — use the dedicated skills for those areas.
 
 ---
 
@@ -248,4 +248,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `einstein-trust-layer` — Configure data masking, grounding enforcement, and audit trails for all Einstein generative features (Work Summary, Service Replies) before enabling them in production
 - `agentforce-agent-creation` — Use when creating an autonomous Agentforce Service Agent (Agentforce Agent Builder) rather than enabling the embedded Service Cloud Einstein AI features covered by this skill
-- `agent-topic-design` — Use when designing topics and actions for an Agentforce autonomous agent, not when configuring the embedded Einstein for Service features
+- `agent-topic-design` — Use when designing subagents and actions for an Agentforce autonomous agent, not when configuring the embedded Einstein for Service features

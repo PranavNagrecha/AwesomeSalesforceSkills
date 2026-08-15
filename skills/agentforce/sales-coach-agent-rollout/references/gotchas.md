@@ -8,9 +8,9 @@ Non-obvious platform behaviors and configuration traps that bite teams during a 
 
 **Symptom:** Sales Coach is published, reps invoke it from an Opportunity, but it never picks the stage-specific role-play. Generic coaching only.
 
-**Why:** Sales Coach topic instructions reference stage names like `Discovery`, `Needs Analysis`, `Proposal/Price Quote` literally. If your `OpportunityStage` picklist values are `02 — Discover`, `03 — Validate`, `04 — Propose`, the agent's natural-language stage matching can't reliably tie them to the shipped behaviors. The agent is keyed on labels, not the underlying `IsClosed` / `ForecastCategory` semantics.
+**Why:** Sales Coach subagent instructions (subagents were called topics before April 2026) reference stage names like `Discovery`, `Needs Analysis`, `Proposal/Price Quote` literally. If your `OpportunityStage` picklist values are `02 — Discover`, `03 — Validate`, `04 — Propose`, the agent's natural-language stage matching can't reliably tie them to the shipped behaviors. The agent is keyed on labels, not the underlying `IsClosed` / `ForecastCategory` semantics.
 
-**Fix:** Two options. (1) Align local stage labels back to the standard names — usually low-risk if the only variant is a numeric prefix. (2) Edit the agent topic instructions in Agent Builder to map your local labels to the coached behaviors, e.g., "When the Opportunity stage is `02 — Discover` or `Discovery`, use the Discovery coaching behavior." Document the mapping so it survives stage-list churn.
+**Fix:** Two options. (1) Align local stage labels back to the standard names — usually low-risk if the only variant is a numeric prefix. (2) Edit the agent's subagent instructions in Agent Builder to map your local labels to the coached behaviors, e.g., "When the Opportunity stage is `02 — Discover` or `Discovery`, use the Discovery coaching behavior." Document the mapping so it survives stage-list churn.
 
 ---
 
@@ -30,7 +30,7 @@ Non-obvious platform behaviors and configuration traps that bite teams during a 
 
 **Why:** When the agent reads `Opportunity.Amount`, it gets the value in the record's currency, but the coach's LLM context doesn't always carry the `CurrencyIsoCode` reliably. The model defaults to USD-flavored framing because that's the dominant training data.
 
-**Fix:** Ensure the agent's Opportunity-read action explicitly includes `CurrencyIsoCode` in its read field set. In the topic instructions, add a directive: "When discussing Opportunity Amount, always state the currency code from the record. Do not assume USD." Test with EUR and GBP opportunities before publishing.
+**Fix:** Ensure the agent's Opportunity-read action explicitly includes `CurrencyIsoCode` in its read field set. In the subagent instructions, add a directive: "When discussing Opportunity Amount, always state the currency code from the record. Do not assume USD." Test with EUR and GBP opportunities before publishing.
 
 ---
 
@@ -48,9 +48,9 @@ Non-obvious platform behaviors and configuration traps that bite teams during a 
 
 **Symptom:** Admin authors a Knowledge article with the methodology and tags it `sales-methodology`. Rep asks the coach what methodology it's using; coach gives a generic MEDDIC summary that doesn't match the article.
 
-**Why:** Tagging a Knowledge article does not automatically make it accessible to the agent. The article must be in a Knowledge data category / data type that is exposed to the Agent's grounding layer, AND the agent's topic instructions must reference the tag. If either step is missing, the coach falls back to LLM general knowledge.
+**Why:** Tagging a Knowledge article does not automatically make it accessible to the agent. The article must be in a Knowledge data category / data type that is exposed to the Agent's grounding layer, AND the agent's subagent instructions must reference the tag. If either step is missing, the coach falls back to LLM general knowledge.
 
-**Fix:** (1) In Setup → Einstein → Agent Builder → the agent's grounding configuration, verify the Knowledge data source includes the article's data category. (2) In the topic instructions, reference the tag explicitly. (3) Test by asking the coach a methodology-specific question and checking whether the article's specifics surface — if you get generic answers, grounding is broken.
+**Fix:** (1) In Setup → Einstein → Agent Builder → the agent's grounding configuration, verify the Knowledge data source includes the article's data category. (2) In the subagent instructions, reference the tag explicitly. (3) Test by asking the coach a methodology-specific question and checking whether the article's specifics surface — if you get generic answers, grounding is broken.
 
 ---
 

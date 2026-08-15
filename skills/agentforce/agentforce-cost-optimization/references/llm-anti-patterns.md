@@ -6,15 +6,15 @@
 
 **Why it happens:** These are common levers.
 
-**Correct pattern:** Measure first. The contributor driving cost may be topic instructions or conversation history, not retrieval.
+**Correct pattern:** Measure first. The contributor driving cost may be subagent instructions (subagents were called topics before April 2026) or conversation history, not retrieval.
 
 ## Anti-Pattern 2: Trimming Examples Uniformly
 
-**What the LLM generates:** "Cut every topic's examples to one."
+**What the LLM generates:** "Cut every subagent's examples to one."
 
 **Why it happens:** Uniform cuts are easy to describe.
 
-**Correct pattern:** Evaluate per topic. Some topics need 2-3 examples for quality; others tolerate zero.
+**Correct pattern:** Evaluate per subagent. Some subagents need 2-3 examples for quality; others tolerate zero.
 
 ## Anti-Pattern 3: Optimizing Tool Output First
 
@@ -22,7 +22,7 @@
 
 **Why it happens:** Engineering-touchable.
 
-**Correct pattern:** Tool output is usually a small contributor. Topics and grounding dominate. Attack the big contributors first.
+**Correct pattern:** Tool output is usually a small contributor. Subagents and grounding dominate. Attack the big contributors first.
 
 ## Anti-Pattern 4: Model Tier Downgrade With No A/B
 

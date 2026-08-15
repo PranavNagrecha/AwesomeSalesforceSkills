@@ -54,11 +54,11 @@ Two modes:
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
 3. `skills/admin/entitlements-and-milestones` — canon
-4. `skills/admin/case-management-setup`
+4. `skills/admin/case-management-setup` — auto-entitlement resolves off the Case's Contact / Account / Asset lookups, and the Email-to-Case and Web-to-Case creation paths this skill covers leave those blank; without it the agent designs a lookup that only works for manually-created cases and ships the "cases arriving without an entitlement" defect its own audit mode exists to catch
 5. `skills/admin/escalation-rules` — coexistence with escalation rules
 6. `skills/admin/assignment-rules` — case-to-queue
 7. `skills/admin/omni-channel-routing-setup` — if milestones feed Omni-based escalation
-8. `skills/admin/service-console-configuration`
+8. `skills/admin/service-console-configuration` — a milestone's success criteria is met by an agent action (Send Email, a macro, a Quick Text reply), so a milestone whose completing action is not surfaced in the console app is unattainable however the process is configured; this is what turns the audit's "success criteria never attainable" finding from a formula review into a check on where the agent actually works
 9. `templates/admin/naming-conventions.md`
 10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 

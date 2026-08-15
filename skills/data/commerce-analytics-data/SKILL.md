@@ -1,6 +1,6 @@
 ---
 name: commerce-analytics-data
-description: "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analy — use data/analytics-data-governance."
+description: "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics. NOT for CRM Analytics platform configuration, Einstein Analytics, or Experience Cloud analytics — use data/analytics-data-governance."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,9 +36,9 @@ outputs:
   - "Decision table mapping metric needs to the right tool and data source"
   - "Export and scheduling approach for ongoing reporting"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-15
+updated: 2026-08-14
 ---
 
 # Commerce Analytics Data

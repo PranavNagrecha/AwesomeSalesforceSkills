@@ -62,7 +62,7 @@
     "e818d52704631a849adf",
     "f7516fe9fe9be46a50e5"
   ],
-  "content_hash": "eae0e198b619599858385931d1b1e1d34939ee04db263a848da483b091fd29f5",
+  "content_hash": "9d1d9ec938ca5fa9ff48cbe2afb47d1256b9a79debca92af22c0e9a53e6c29a5",
   "dependencies": [],
   "description": "Building custom Apex-based actions for Agentforce agents: designing @InvocableMethod classes for Atlas Reasoning Engine invocation, defining input/output schema, handling errors, and managing security context. NOT for choosing between Apex, Flow, External Service and prompt-template tool shapes \u2014 use agentforce/agentforce-tool-use-patterns. NOT for the Apex test class that covers each action branch \u2014 use agentforce/agent-action-unit-tests.",
   "file_location": "skills/agentforce/custom-agent-actions-apex",
@@ -105,7 +105,7 @@
   "templates": [
     "skills/agentforce/custom-agent-actions-apex/templates/custom-agent-actions-apex-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

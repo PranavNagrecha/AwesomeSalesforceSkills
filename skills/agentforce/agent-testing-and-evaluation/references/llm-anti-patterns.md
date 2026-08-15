@@ -4,21 +4,21 @@ Common mistakes AI coding assistants make when generating or advising on Agentfo
 
 ## Anti-Pattern 1: Testing Only the Happy Path
 
-**What the LLM generates:** A test suite where every test case is the most obvious, canonical utterance for the topic — "where is my order", "I want to return an item", "billing question" — with all cases passing.
+**What the LLM generates:** A test suite where every test case is the most obvious, canonical utterance for the subagent (called a topic before April 2026; the metadata fields kept the old word) — "where is my order", "I want to return an item", "billing question" — with all cases passing.
 
-**Why it happens:** LLMs pattern-match on the topic name or description and generate the most prototypical utterance. Training data bias toward simple, clear examples means edge cases, paraphrases, and boundary utterances are systematically omitted.
+**Why it happens:** LLMs pattern-match on the subagent name or description and generate the most prototypical utterance. Training data bias toward simple, clear examples means edge cases, paraphrases, and boundary utterances are systematically omitted.
 
 **Correct pattern:**
 
 ```
-For each topic, test cases MUST include:
+For each subagent, test cases MUST include:
 - 2 happy-path utterances (canonical, clearly in-scope)
 - 2 edge-case utterances (paraphrase, typo, non-native phrasing, abbreviation)
-- 1+ boundary utterances (semantically close to an adjacent topic's scope)
+- 1+ boundary utterances (semantically close to an adjacent subagent's scope)
 - 1+ out-of-scope utterances (deliberately off-topic to verify escalation or decline)
 ```
 
-**Detection hint:** If every test case in a generated AiEvaluationDefinition has a different `expectTopicName` for each test case and none of them repeat the same topic with different utterances, the suite is almost certainly happy-path only.
+**Detection hint:** If every test case in a generated AiEvaluationDefinition has a different `expectTopicName` for each test case and none of them repeat the same subagent with different utterances, the suite is almost certainly happy-path only.
 
 ---
 
@@ -32,9 +32,9 @@ For each topic, test cases MUST include:
 
 ```
 Testing API validates:
-  - Topic classification (did the agent route to the right topic?)
+  - Subagent classification (did the agent route to the right subagent?)
   - Action selection (did the reasoning engine plan to call the right action(s)?)
-  - Instruction adherence (does the response text comply with topic instructions?)
+  - Instruction adherence (does the response text comply with subagent instructions?)
 
 Testing API does NOT:
   - Execute DML (no records are created/updated)
@@ -48,24 +48,24 @@ For functional validation of action execution, run live sandbox conversations wi
 
 ---
 
-## Anti-Pattern 3: Ignoring Topic Boundary Overlap When Designing Tests
+## Anti-Pattern 3: Ignoring Subagent Boundary Overlap When Designing Tests
 
-**What the LLM generates:** Test suites where each topic is tested independently, with no utterances that challenge the boundary between adjacent topics. Topics like `ReturnRequest` and `BillingInquiry` are tested in isolation with no utterances that could plausibly belong to either.
+**What the LLM generates:** Test suites where each subagent is tested independently, with no utterances that challenge the boundary between adjacent subagents. Subagents like `ReturnRequest` and `BillingInquiry` are tested in isolation with no utterances that could plausibly belong to either.
 
-**Why it happens:** LLMs build test cases topic-by-topic, optimizing for coverage of the individual topic without modeling the competitive routing space. Real routing failures at topic boundaries are invisible in this approach.
+**Why it happens:** LLMs build test cases subagent-by-subagent, optimizing for coverage of the individual subagent without modeling the competitive routing space. Real routing failures at subagent boundaries are invisible in this approach.
 
 **Correct pattern:**
 
 ```
-For every pair of adjacent topics (topics with overlapping semantic territory):
+For every pair of adjacent subagents (subagents with overlapping semantic territory):
 - Identify 2-3 utterances that sit on the boundary (e.g., "I was charged twice and want a refund")
-- Add these as test cases in BOTH topics' test sets
-- For the primary intended topic, mark them as expected to route correctly
-- Confirm they do NOT route to the wrong adjacent topic by adding a negative assertion
+- Add these as test cases in BOTH subagents' test sets
+- For the primary intended subagent, mark them as expected to route correctly
+- Confirm they do NOT route to the wrong adjacent subagent by adding a negative assertion
   or by reviewing actual routing in results
 ```
 
-**Detection hint:** If two topics have semantically related classification descriptions and no shared boundary utterances appear in the test suite, the boundary overlap anti-pattern is in play.
+**Detection hint:** If two subagents have semantically related classification descriptions and no shared boundary utterances appear in the test suite, the boundary overlap anti-pattern is in play.
 
 ---
 

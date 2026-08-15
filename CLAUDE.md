@@ -242,12 +242,17 @@ A skill or framework change is not complete unless:
 
 ## Decision Trees Layer
 
-Cross-skill routing logic lives under `standards/decision-trees/`:
+Cross-skill routing logic lives under `standards/decision-trees/` — **seven
+trees**. `standards/decision-trees/README.md` is the authoritative table
+(which tree, what it routes between, and what to read it before):
 
 - `automation-selection.md` — Flow vs Apex vs Agentforce vs Approvals vs Platform Events
+- `flow-pattern-selector.md` — which *kind* of Flow, once automation-selection has said Flow
+- `agentforce-capability-selector.md` — Agentforce Agent vs Prompt Builder vs Next Best Action vs Model Builder vs Einstein Bots
 - `async-selection.md` — `@future` vs Queueable vs Batch vs Schedulable vs Platform Events
 - `integration-pattern-selection.md` — REST vs Bulk API vs PE vs CDC vs Pub/Sub vs Salesforce Connect vs MuleSoft
 - `sharing-selection.md` — OWD vs Role Hierarchy vs Sharing Rules vs Teams vs Manual vs Apex Managed vs Restriction
+- `performance-tuning.md` — where the time is going: CPU/heap vs SOQL vs sharing recalc vs LDV vs cache vs LWC render
 
 Rule: when a user query straddles more than one technology in a tree's
 scope, read the tree before activating any skill. Cite the tree step that

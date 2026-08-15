@@ -1,6 +1,6 @@
 ---
 name: sandbox-data-masking
-description: "Use this skill when configuring or reviewing Salesforce Data Mask to protect PII/PHI in partial or full copy sandboxes after a refresh. Trigger keywords: data mask, sandbox masking, PII in sandbox, GDPR sandbox, HIPAA. NOT for sandbox refresh mechanics (use sandbox-refresh-and-templates), NOT for productio — use admin/sandbox-strategy."
+description: "Use this skill when configuring or reviewing Salesforce Data Mask to protect PII/PHI in partial or full copy sandboxes after a refresh. Trigger keywords: data mask, sandbox masking, PII in sandbox, GDPR sandbox, HIPAA. NOT for sandbox refresh mechanics (use devops/sandbox-refresh-and-templates) or production data anonymization — use admin/sandbox-strategy."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -31,9 +31,9 @@ outputs:
   - "Compliance gap list: fields not maskable due to platform limitations"
   - "Review checklist for confirming masking completed before granting sandbox access"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Sandbox Data Masking

@@ -28,4 +28,4 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** When Data Cloud retention policies are configured to purge detailed utterance content after a set number of days for privacy compliance.
 
-**How to avoid:** Do not rely on raw utterance text for long-term analytics. Build aggregated metrics (deflection rate, topic distribution, latency percentiles) as the operational record. Store utterance content in a separate retention-controlled location if conversation replay capability is required for compliance.
+**How to avoid:** Do not rely on raw utterance text for long-term analytics. Build aggregated metrics (deflection rate, subagent distribution, latency percentiles) as the operational record — *subagent* is the April 2026 rename of *topic*. Store utterance content in a separate retention-controlled location if conversation replay capability is required for compliance.

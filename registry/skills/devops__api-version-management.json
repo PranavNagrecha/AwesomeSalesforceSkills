@@ -109,9 +109,9 @@
     "f7a04d4790bac1f60ff3",
     "fba4e7c5a08ccdf144ff"
   ],
-  "content_hash": "2f9c5af121690ffdb54e9fddad47e62d9b584059ab40c74e66d2af6203e90d86",
+  "content_hash": "8b53ca46d9780202602c3a425cfc6525cdc0eee6238404e53280fcab15678d3c",
   "dependencies": [],
-  "description": "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. NOT for REST/SOAP API design patterns (use rest-api-patterns or soap-api-patterns), OAut \u2014 use integration/api-versioning-strategy.",
+  "description": "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. NOT for REST/SOAP API design patterns, OAuth configuration, or Metadata API deployment mechanics \u2014 use integration/api-versioning-strategy.",
   "file_location": "skills/devops/api-version-management",
   "id": "devops/api-version-management",
   "inputs": [
@@ -161,7 +161,7 @@
   "templates": [
     "skills/devops/api-version-management/templates/api-version-management-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -1,6 +1,6 @@
 ---
 name: scratch-org-pools
-description: "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub. NOT for basic scratch org lifecycle (use scratch-org-management), scratch org definition — use devops/scratch-org-management."
+description: "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub. NOT for basic scratch org lifecycle, definition files, or test data seeding — use devops/scratch-org-management."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - "Dev Hub allocation audit queries"
   - "Monitoring and replenishment strategy"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Scratch Org Pools

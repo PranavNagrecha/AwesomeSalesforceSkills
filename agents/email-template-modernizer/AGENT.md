@@ -46,7 +46,7 @@ Audits email templates (Classic HTML, Visualforce, Lightning) in the target org,
 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
-3. `skills/admin/email-templates-and-alerts`
+3. `skills/admin/email-templates-and-alerts` — automation references the Email Alert, not the template underneath it, so the retire/keep call has to be made against the alert's consumers; without it the agent recommends retiring a template whose alert keeps firing, and the break surfaces at send time rather than at retire time
 4. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 5. `skills/apex/apex-outbound-email-patterns` — Messaging.SingleEmailMessage, OWA, replies, templates
 6. `skills/admin/classic-email-template-migration` — the Classic → Lightning migration path this agent's whole plan is built on, including what does not survive it

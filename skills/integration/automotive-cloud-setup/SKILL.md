@@ -1,6 +1,6 @@
 ---
 name: automotive-cloud-setup
-description: "Use this skill when setting up or extending Salesforce Automotive Cloud — including the Vehicle / VehicleDefinition data model, dealer-OEM relationship modeling via AccountAccountRelation, ActionableEvent orchestration. NOT for general Sales Cloud opportunity work on a vehicle product (use standard Opportun — use architect/industries-data-model."
+description: "Use this skill when setting up or extending Salesforce Automotive Cloud — including the Vehicle / VehicleDefinition data model, dealer-OEM relationship modeling via AccountAccountRelation, ActionableEvent orchestration. NOT for general Sales Cloud opportunity work on a vehicle product (use admin/opportunity-management) — use architect/industries-data-model."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ triggers:
   - "vehicle 360 asset 360 auto industry data model in salesforce"
   - "set up automotive cloud for a dealership network"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-03
+updated: 2026-08-14
 ---
 
 # Automotive Cloud Setup

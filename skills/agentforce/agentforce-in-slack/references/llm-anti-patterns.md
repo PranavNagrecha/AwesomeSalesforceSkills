@@ -14,23 +14,23 @@ Common mistakes AI assistants make when helping with Agentforce Slack-specific c
 - Creates a duplicate permission footprint in the Slack workspace that the Slack workspace admin must manage independently.
 - Does not integrate with the agent session model — the custom Apex call is a fire-and-forget REST call with no awareness of the conversation context.
 
-**Correct guidance:** All Slack-native agent actions (Create Canvas, Search Message History, Send DM, Look Up User) are available through the General Slack Actions standard topic in Agent Builder. Adding the topic is a one-step configuration that unlocks all four actions through the managed app with full Trust Layer coverage.
+**Correct guidance:** All Slack-native agent actions (Create Canvas, Search Message History, Send DM, Look Up User) are available through the General Slack Actions standard subagent (called a topic before April 2026) in Agent Builder. Adding the subagent is a one-step configuration that unlocks all four actions through the managed app with full Trust Layer coverage.
 
 ---
 
-## Anti-Pattern 2: Not Adding The General Slack Actions Topic Before Attempting To Use Slack-Native Actions
+## Anti-Pattern 2: Not Adding The General Slack Actions Subagent Before Attempting To Use Slack-Native Actions
 
-**What the AI does:** The AI sees that the Slack deployment is configured and the agent is Active and responding in Slack. When the user reports that Slack-native actions are unavailable or the agent says it cannot create canvases or send DMs, the AI suggests checking Apex action definitions, reviewing Named Credentials, or investigating the Slack app OAuth scopes at api.slack.com — without first checking whether the General Slack Actions topic is present in the agent's topic list.
+**What the AI does:** The AI sees that the Slack deployment is configured and the agent is Active and responding in Slack. When the user reports that Slack-native actions are unavailable or the agent says it cannot create canvases or send DMs, the AI suggests checking Apex action definitions, reviewing Named Credentials, or investigating the Slack app OAuth scopes at api.slack.com — without first checking whether the General Slack Actions subagent is present in the agent's subagent list.
 
-**Why it is wrong:** The most common cause of missing Slack-native actions is that the General Slack Actions topic has not been added to the agent. The Slack deployment flow does not add it automatically. Checking OAuth scopes, Named Credentials, or Apex code is the wrong diagnostic path when the topic is simply absent.
+**Why it is wrong:** The most common cause of missing Slack-native actions is that the General Slack Actions subagent has not been added to the agent. The Slack deployment flow does not add it automatically. Checking OAuth scopes, Named Credentials, or Apex code is the wrong diagnostic path when the subagent is simply absent.
 
-**Correct guidance:** The first diagnostic check when Slack-native actions are unavailable is always: open the agent in Agent Builder > Topics and confirm the General Slack Actions topic is present. If it is absent, add it. This resolves the issue in the majority of cases without any other investigation.
+**Correct guidance:** The first diagnostic check when Slack-native actions are unavailable is always: open the agent in Agent Builder > Topics and confirm the General Slack Actions subagent is present. If it is absent, add it. This resolves the issue in the majority of cases without any other investigation.
 
 ---
 
 ## Anti-Pattern 3: Assuming Canvas Creation Works On Slack Free Plan
 
-**What the AI does:** The AI confirms that the General Slack Actions topic has been added, sees that Create Canvas appears in the agent's available actions in Agent Builder, and tells the user that canvas creation is ready to use. The AI does not ask about the Slack workspace plan and does not include a plan check in the configuration guidance.
+**What the AI does:** The AI confirms that the General Slack Actions subagent has been added, sees that Create Canvas appears in the agent's available actions in Agent Builder, and tells the user that canvas creation is ready to use. The AI does not ask about the Slack workspace plan and does not include a plan check in the configuration guidance.
 
 **Why it is wrong:** Slack canvases are a paid feature. They are unavailable on the Slack Free plan. The Create Canvas action appears in Agent Builder and the agent will attempt to invoke it regardless of the workspace plan. The failure only occurs at runtime, often without a clear error message surfaced in the Slack conversation. Users experience unexplained canvas failures without understanding that the workspace plan is the root cause.
 
@@ -50,7 +50,7 @@ Common mistakes AI assistants make when helping with Agentforce Slack-specific c
 
 ## Anti-Pattern 5: Assuming Salesforce Identity Mappings Persist Across Sandbox Refreshes
 
-**What the AI does:** The AI helps a user configure and fully test identity mappings and private actions in a sandbox environment. When the user is ready to go to production, the AI advises deploying the metadata (agent definition, topics, actions) and treats the project as complete. The AI does not mention that identity mappings must be re-provisioned in production separately.
+**What the AI does:** The AI helps a user configure and fully test identity mappings and private actions in a sandbox environment. When the user is ready to go to production, the AI advises deploying the metadata (agent definition, subagents, actions) and treats the project as complete. The AI does not mention that identity mappings must be re-provisioned in production separately.
 
 **Why it is wrong:** Salesforce-to-Slack identity mappings are stored as data records in the Salesforce org. They are not metadata and are not included in any metadata deployment mechanism (change sets, Salesforce DX, Copado, or otherwise). When a sandbox is refreshed, all identity mapping records are deleted. When a deployment is promoted from sandbox to production, identity mapping records are not included in the deployment. Production starts with zero identity mappings even if the sandbox was fully mapped. All private actions fail for all users on go-live day until mappings are re-provisioned.
 

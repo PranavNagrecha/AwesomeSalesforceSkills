@@ -4,11 +4,11 @@
 
 ### Security
 
-Guardrails are the primary mechanism for controlling what an Agentforce agent can disclose, what actions it can execute, and which subjects it will engage with. Customer-facing agents without properly configured restricted topics, action filters, and fallback instructions represent a direct information disclosure and unauthorized action execution risk. The principle of least privilege applies directly: action filters and topic filters should grant only the minimum action access the agent needs for each topic. Abuse prevention patterns (declarative fallback, restricted topics, pre-handoff message before escalation) reduce the attack surface for adversarial prompt injection from untrusted users.
+Guardrails are the primary mechanism for controlling what an Agentforce agent can disclose, what actions it can execute, and which subjects it will engage with. Customer-facing agents without properly configured restricted topics, action filters, and fallback instructions represent a direct information disclosure and unauthorized action execution risk. The principle of least privilege applies directly: action filters and subagent filters should grant only the minimum action access the agent needs for each subagent (called a *topic* before April 2026). Abuse prevention patterns (declarative fallback, restricted topics, pre-handoff message before escalation) reduce the attack surface for adversarial prompt injection from untrusted users.
 
 ### Reliability
 
-The Escalation topic and fallback system instructions are reliability constructs. A customer-facing agent without a working escalation path and an explicit fallback response will either stall silently or produce off-policy output when conversation inputs fall outside the designed topic set. Both of these outcomes degrade user experience and erode trust in the agent deployment. Instruction Adherence monitoring is the primary operational reliability signal: a sustained low adherence score indicates the agent is not behaving predictably, which is a reliability risk before it becomes a security risk.
+The Escalation subagent and fallback system instructions are reliability constructs. A customer-facing agent without a working escalation path and an explicit fallback response will either stall silently or produce off-policy output when conversation inputs fall outside the designed subagent set. Both of these outcomes degrade user experience and erode trust in the agent deployment. Instruction Adherence monitoring is the primary operational reliability signal: a sustained low adherence score indicates the agent is not behaving predictably, which is a reliability risk before it becomes a security risk.
 
 ### Operational Excellence
 
@@ -24,11 +24,11 @@ Overly long system instructions and Scope fields add latency to LLM reasoning. W
 
 ### Defense-in-Depth vs. Configuration Complexity
 
-Running all four guardrail layers (restricted topics, agent-level instructions, topic Scope, action filters) provides the strongest behavioral control but also increases configuration complexity and the risk of over-filtering (blocking legitimate agent behavior). The tradeoff: start with restricted topics and a fallback system instruction as the minimum viable guardrail set. Add topic Scope refinements and action filters only where specific risk has been identified.
+Running all four guardrail layers (restricted topics, agent-level instructions, subagent Scope, action filters) provides the strongest behavioral control but also increases configuration complexity and the risk of over-filtering (blocking legitimate agent behavior). The tradeoff: start with restricted topics and a fallback system instruction as the minimum viable guardrail set. Add subagent Scope refinements and action filters only where specific risk has been identified.
 
 ### Pre-Classification vs. Post-Classification Controls
 
-Restricted topics are the only pre-classification guardrail. All other controls (Scope, system instructions, action filters, topic filters) operate after topic selection. For high-risk subjects (legal advice, medical advice, competitor information), pre-classification controls (restricted topics) are the appropriate choice because they do not rely on the LLM routing the conversation correctly first. For nuanced in-topic boundaries (e.g., "this topic processes standard returns but not policy exceptions"), post-classification Scope controls are appropriate.
+Restricted topics are the only pre-classification guardrail. All other controls (Scope, system instructions, action filters, subagent filters) operate after subagent selection. For high-risk subjects (legal advice, medical advice, competitor information), pre-classification controls (restricted topics) are the appropriate choice because they do not rely on the LLM routing the conversation correctly first. For nuanced in-subagent boundaries (e.g., "this subagent processes standard returns but not policy exceptions"), post-classification Scope controls are appropriate.
 
 ### Explicit Fallback vs. Implicit Agent Behavior
 
@@ -38,11 +38,11 @@ If no fallback system instruction is written, the agent's behavior for unmatched
 
 ## Anti-Patterns
 
-1. **Single-Layer Guardrail Configuration** — Relying solely on topic Scope fields to enforce all behavioral boundaries. Scope is a post-classification control. Pre-classification threats (adversarial inputs, off-topic requests that partially match a topic's Classification Description) bypass Scope. Defense requires at least restricted topics (pre-classification) and a fallback system instruction (no-match handling).
+1. **Single-Layer Guardrail Configuration** — Relying solely on subagent Scope fields to enforce all behavioral boundaries. Scope is a post-classification control. Pre-classification threats (adversarial inputs, off-topic requests that partially match a subagent's Classification Description) bypass Scope. Defense requires at least restricted topics (pre-classification) and a fallback system instruction (no-match handling).
 
 2. **Imperative Instruction Stacking** — Writing system instructions or Scope fields as lists of "must not" and "never" commands copied from compliance policy documents. This pattern causes LLM reasoning loop instability, is harder to maintain as policy changes, and produces lower Instruction Adherence scores. Declarative boundary language ("This agent addresses X only. Other requests receive: [canned response].") is more stable and achieves equivalent policy enforcement.
 
-3. **Unverified Escalation Topic Deployment** — Configuring the Escalation topic in Setup and treating it as done without an end-to-end handoff test. The Escalation topic requires Omni-Channel infrastructure that is frequently incomplete at time of agent launch. Silent escalation failures damage user trust and create support blind spots.
+3. **Unverified Escalation Subagent Deployment** — Configuring the Escalation subagent in Setup and treating it as done without an end-to-end handoff test. The Escalation subagent requires Omni-Channel infrastructure that is frequently incomplete at time of agent launch. Silent escalation failures damage user trust and create support blind spots.
 
 ---
 

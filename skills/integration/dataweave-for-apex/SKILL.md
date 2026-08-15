@@ -1,6 +1,6 @@
 ---
 name: dataweave-for-apex
-description: "Use when transforming structured data inside Apex — CSV → JSON, XML → SObject list, JSON → flattened CSV, or schema-mapping a third-party payload to a Salesforce model — and the existing options (`JSON.deserialize`. NOT for MuleSoft Anypoint DataWeave running off-platform (use mulesoft-anypoint-architec — use apex/apex-json-serialization."
+description: "Use when transforming structured data inside Apex — CSV → JSON, XML → SObject list, JSON → flattened CSV, or schema-mapping a third-party payload to a Salesforce model — and the existing options (`JSON.deserialize`, `Dom.Document` traversal) are too fragile. NOT for MuleSoft Anypoint DataWeave running off-platform (use architect/mulesoft-anypoint-architecture) — use apex/apex-json-serialization."
 category: integration
 salesforce-version: "Summer '24+"
 well-architected-pillars:
@@ -29,9 +29,9 @@ outputs:
   - "Apex caller using `Dataweave.Script` and `dwscript.execute()`"
   - "test fixture covering the input payload variants and the failure modes (empty input, malformed JSON, oversize payload)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-07
+updated: 2026-08-14
 ---
 
 # DataWeave for Apex

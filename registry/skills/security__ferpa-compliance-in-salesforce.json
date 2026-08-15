@@ -69,9 +69,9 @@
     "f1ffe78b35a3a6749fca",
     "f36a79d037060626d8ee"
   ],
-  "content_hash": "7fbc42bf9673bd7d55d50603127f95e61d22218f3ea764294fc3f639c3ae3291",
+  "content_hash": "d689941d6a6333ba8341eb52419d9369ab7ac04ae319a8f2e5ed2995a0f64baf",
   "dependencies": [],
-  "description": "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields. NOT for GDPR/CCPA general data privacy (see gdpr-data-privacy skill), platform encryptio \u2014 use architect/health-cloud-data-residency.",
+  "description": "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields. NOT for GDPR/CCPA data privacy, platform encryption at rest, or HIPAA health-data compliance \u2014 use architect/health-cloud-data-residency.",
   "file_location": "skills/security/ferpa-compliance-in-salesforce",
   "id": "security/ferpa-compliance-in-salesforce",
   "inputs": [
@@ -118,7 +118,7 @@
   "templates": [
     "skills/security/ferpa-compliance-in-salesforce/templates/ferpa-compliance-in-salesforce-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

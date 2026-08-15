@@ -60,7 +60,7 @@
     "f4a3fa44ecd0112b7ecb",
     "f52bf783a34d7c2fe931"
   ],
-  "content_hash": "14b83cdb838a74141a56c7f02e9b115c21319616ac022a1a07a6a327686d002c",
+  "content_hash": "5dbb71fd425a325b7a43a67be11d1293a3841ad456833dabce9d501c59ba492d",
   "dependencies": [],
   "description": "Use when designing or troubleshooting CRM Analytics dashboards \u2014 chart types, bindings, faceting, dashboard interactions, mobile layout, and filters. NOT for standard Salesforce reports and dashboards \u2014 use admin/reports-and-dashboards-fundamentals. NOT for hand-editing dashboard JSON or a SAQL step \u2014 use admin/analytics-dashboard-json.",
   "file_location": "skills/admin/analytics-dashboard-design",

@@ -124,6 +124,7 @@
     "d23cf247feb9f838e2e1",
     "d43fa1d991659b790ca9",
     "da67bfb8201bd4815d35",
+    "db5e27ec799179715313",
     "dc81fa593555b8270af7",
     "dd4eb415754338c6dc3c",
     "de3bab851b614b676310",
@@ -138,7 +139,7 @@
     "fc529bcc70aa3e1bec4b",
     "fd4012b51d79967dab66"
   ],
-  "content_hash": "8b19931c113a2ff3f21d38001e98acafefc5a77f29826e7325df6489d0bd58cd",
+  "content_hash": "6692633b940244b07a26c384911d321792d930af029eff92febb3e5c72d541f2",
   "dependencies": [
     "rag-patterns-in-salesforce",
     "einstein-trust-layer"
@@ -200,7 +201,7 @@
   "templates": [
     "skills/agentforce/data-cloud-vector-search-dev/templates/data-cloud-vector-search-dev-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

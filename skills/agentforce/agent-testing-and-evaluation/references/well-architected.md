@@ -2,17 +2,17 @@
 
 ## Relevant Pillars
 
-- **Reliability** — Testing is the primary mechanism for ensuring an Agentforce agent behaves predictably across utterance variations, conversational contexts, and after configuration changes. Without a structured test suite covering topic routing, action sequences, and regression baselines, reliability is accidental rather than engineered. A reliable agent has documented, passing tests for every topic before it is activated, and those tests are re-run after every change.
+- **Reliability** — Testing is the primary mechanism for ensuring an Agentforce agent behaves predictably across utterance variations, conversational contexts, and after configuration changes. Without a structured test suite covering subagent routing (subagents were called topics before April 2026 — a rename with no functional change), action sequences, and regression baselines, reliability is accidental rather than engineered. A reliable agent has documented, passing tests for every subagent before it is activated, and those tests are re-run after every change.
 
 - **Operational Excellence** — Post-deploy monitoring closes the loop that pre-deploy testing opens. Enhanced Event Logs, containment rate dashboards, and escalation rate trends are the operational instruments that surface gaps in the test suite that pre-production testing did not catch. Operational Excellence requires treating anomalies in production metrics as inputs to the test suite — every production failure mode should produce a new test case.
 
-- **Security** — Testing surfaces unintended agent behavior that could expose sensitive data or bypass intended scope restrictions. Out-of-scope utterance tests confirm the agent declines gracefully rather than hallucinating an in-scope topic and invoking unauthorized actions. Instruction adherence tests validate that data-handling constraints in topic instructions are respected in agent responses.
+- **Security** — Testing surfaces unintended agent behavior that could expose sensitive data or bypass intended scope restrictions. Out-of-scope utterance tests confirm the agent declines gracefully rather than hallucinating an in-scope subagent and invoking unauthorized actions. Instruction adherence tests validate that data-handling constraints in subagent instructions are respected in agent responses.
 
 ## Architectural Tradeoffs
 
 **Deterministic test gates vs. probabilistic quality signals:** Topic and action tests are deterministic and suitable as hard pipeline gates. Instruction adherence tests use an LLM judge and have inherent variance. Mixing them in the same gate tier causes flaky pipelines. Keep them in separate tiers with different gate policies.
 
-**Test coverage breadth vs. run time:** Testing API runs are asynchronous and each invocation adds latency. A test suite with hundreds of cases will block a CI pipeline noticeably. The tradeoff: run the full regression suite on release branches but run a smaller smoke suite (happy path only, ~10 cases per topic) on every feature branch merge. Document the tiering policy explicitly.
+**Test coverage breadth vs. run time:** Testing API runs are asynchronous and each invocation adds latency. A test suite with hundreds of cases will block a CI pipeline noticeably. The tradeoff: run the full regression suite on release branches but run a smaller smoke suite (happy path only, ~10 cases per subagent) on every feature branch merge. Document the tiering policy explicitly.
 
 **Raw Connect API scripting vs. Agentforce DX CLI:** The Connect API endpoints and the `sf agent test` command family drive the same evaluation engine. The CLI trades flexibility for operability: it reuses org auth, handles job polling (`--wait`, `resume`, `results --job-id`), and emits JUnit/TAP/JSON result files (`--result-format`, `--output-dir`) that CI runners parse natively — eliminating three classes of bespoke pipeline script. Prefer the CLI for pipelines; reserve raw Connect API calls (or `sf api request rest`) for callers outside a CLI environment or endpoints the command family doesn't wrap.
 
@@ -20,9 +20,9 @@
 
 ## Anti-Patterns
 
-1. **Happy-path-only test suite** — building a test suite that covers only the canonical, clearly in-scope utterance for each topic. This gives full pass rates in CI while leaving topic boundary failures and edge-case routing errors undiscovered until production. The fix: require boundary utterances and out-of-scope utterances in every topic's test case set before promotion.
+1. **Happy-path-only test suite** — building a test suite that covers only the canonical, clearly in-scope utterance for each subagent. This gives full pass rates in CI while leaving subagent boundary failures and edge-case routing errors undiscovered until production. The fix: require boundary utterances and out-of-scope utterances in every subagent's test case set before promotion.
 
-2. **Testing without a saved baseline** — running test suites but not persisting the results, then applying topic or action changes and re-running. Without a baseline, a regression cannot be distinguished from a pre-existing failure, and newly broken cases go undetected. The fix: save the full Testing API result payload as a versioned artifact and diff it against the new run after every change.
+2. **Testing without a saved baseline** — running test suites but not persisting the results, then applying subagent or action changes and re-running. Without a baseline, a regression cannot be distinguished from a pre-existing failure, and newly broken cases go undetected. The fix: save the full Testing API result payload as a versioned artifact and diff it against the new run after every change.
 
 3. **Relying on Testing API alone for end-to-end validation** — assuming that 100% test pass rate means the agent is production-ready, without running live sessions in sandbox to validate action execution. The fix: treat Testing API as a routing/reasoning validator and layer live functional testing on top before every production promotion.
 

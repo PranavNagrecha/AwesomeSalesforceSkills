@@ -10,9 +10,20 @@ import sys
 from pathlib import Path
 
 
-TOPIC_RE = re.compile(r"\btopic\b", re.IGNORECASE)
+# Salesforce renamed agent "topics" to "subagents" in April 2026, but the
+# metadata layer did not rename with it — `GenAiPlugin` is still documented as
+# "an agent topic" and `AiEvaluationDefinition` still uses `topic_sequence_match`.
+# So a real org can name its assets either way, and matching only one term makes
+# this checker report `HIGH: no topic-like agent assets found` against a
+# perfectly good org that uses the newer vocabulary. Match both, permanently.
+TOPIC_RE = re.compile(r"\b(?:topic|subagent)\b", re.IGNORECASE)
 AGENT_RE = re.compile(r"agentforce|agent", re.IGNORECASE)
-PLACEHOLDER_RE = re.compile(r"Topic\s+\d+|topic_\d+|General Help|Support", re.IGNORECASE)
+# Placeholder names in either vocabulary — "Topic 1" and "Subagent 1" are the
+# same smell.
+PLACEHOLDER_RE = re.compile(
+    r"(?:Topic|Subagent)\s+\d+|(?:topic|subagent)_\d+|General Help|Support",
+    re.IGNORECASE,
+)
 BOUNDARY_RE = re.compile(r"out of scope|handoff|escalat|transfer|not for", re.IGNORECASE)
 ACTION_RE = re.compile(r"\baction\b", re.IGNORECASE)
 SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}

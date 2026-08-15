@@ -46,6 +46,6 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Developers see `WITH USER_MODE` in a dynamic query and assume it makes the whole query safe. It only restricts the FIELDS the query can return; it does NOT prevent injection into the WHERE clause, ORDER BY, or LIMIT.
 
-**When it occurs:** When `WITH USER_MODE` (or the older `WITH SECURITY_ENFORCED`) is added as a "security checkbox" without the rest of the bind/allowlist discipline.
+**When it occurs:** When `WITH USER_MODE` (or the older `WITH SECURITY_ENFORCED`, removed in API 67.0 and a compile failure on any class pinned at 67.0 or above) is added as a "security checkbox" without the rest of the bind/allowlist discipline.
 
 **How to avoid:** Treat `WITH USER_MODE` / `AccessLevel.USER_MODE` as one layer (FLS enforcement). Treat binding and allowlisting as a separate, mandatory layer (parser-injection prevention). You need both.

@@ -34,9 +34,9 @@ outputs:
   - Error-surfacing plan (soft-error field vs exception vs silent fallback)
   - Chaining topology if multiple tools are needed
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Tool Use Patterns

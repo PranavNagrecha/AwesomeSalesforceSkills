@@ -96,9 +96,9 @@
     "fa6c345265e1bd598f33",
     "fb969de8597d8f853890"
   ],
-  "content_hash": "12ccd15118f2d6df846961523f27f7742ab53ac12539a10f0177809b12f1756c",
+  "content_hash": "01a7c55b45f837134e3ee3e0cb637e0a7cbd3cb2b0550642df7f32128f8b02bb",
   "dependencies": [],
-  "description": "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package \u2014 covers License Management App (LMA) install and registration, Lead/License object. NOT for general managed-package version creation, ancestor pinning, or PostInstall handl \u2014 use devops/appexchange-app-analytics.",
+  "description": "Use when an ISV partner is wiring license enforcement, trial provisioning, or feature-flag distribution into a managed package \u2014 covers License Management App (LMA) install and registration, Lead/License object. NOT for general managed-package version creation, ancestor pinning, or PostInstall handler design \u2014 use devops/managed-package-development.",
   "file_location": "skills/devops/isv-license-management-and-trialforce",
   "id": "devops/isv-license-management-and-trialforce",
   "inputs": [
@@ -143,7 +143,7 @@
   "templates": [
     "skills/devops/isv-license-management-and-trialforce/templates/isv-license-management-and-trialforce-template.md"
   ],
-  "updated": "2026-05-08",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

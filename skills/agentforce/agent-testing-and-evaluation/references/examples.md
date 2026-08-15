@@ -1,10 +1,10 @@
 # Examples — Agent Testing and Evaluation
 
-## Example 1: Minimal AiEvaluationDefinition for Topic Routing Validation
+## Example 1: Minimal AiEvaluationDefinition for Subagent Routing Validation
 
-**Context:** A service agent has three topics: `OrderStatus`, `ReturnRequest`, and `BillingInquiry`. The team wants automated confirmation that utterances route to the correct topic before every production promotion.
+**Context:** A service agent has three subagents (called topics before April 2026, and still called that by the metadata fields below): `OrderStatus`, `ReturnRequest`, and `BillingInquiry`. The team wants automated confirmation that utterances route to the correct subagent before every production promotion.
 
-**Problem:** Without structured tests, topic routing regressions are only caught by QA testers manually chatting with the agent — which is slow, non-repeatable, and misses edge cases.
+**Problem:** Without structured tests, subagent routing regressions are only caught by QA testers manually chatting with the agent — which is slow, non-repeatable, and misses edge cases.
 
 **Solution:**
 
@@ -74,13 +74,13 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evalua
   -H "Authorization: Bearer SESSION_ID"
 ```
 
-**Why it works:** The `AiEvaluationDefinition` is version-controlled alongside the agent metadata. Every promotion deploys the latest test definition and executes it. Topic routing failures surface before production, not after.
+**Why it works:** The `AiEvaluationDefinition` is version-controlled alongside the agent metadata. Every promotion deploys the latest test definition and executes it. Subagent routing failures surface before production, not after.
 
 ---
 
 ## Example 2: Multi-Turn Conversation Test for a Context-Dependent Return Flow
 
-**Context:** The `ReturnRequest` topic requires the agent to first retrieve an order before it can process a return. The second user message ("yes, that one") is only meaningful if the agent correctly surfaced the order details in the first turn.
+**Context:** The `ReturnRequest` subagent requires the agent to first retrieve an order before it can process a return. The second user message ("yes, that one") is only meaningful if the agent correctly surfaced the order details in the first turn.
 
 **Problem:** Single-utterance tests cannot catch failures in turn 2 that depend on turn 1 context. A team testing only the opening utterance will miss cases where the agent "forgets" context mid-conversation.
 
@@ -110,7 +110,7 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evalua
 </testCase>
 ```
 
-**Why it works:** The `conversationHistory` array puts the agent in the correct conversational state before the test utterance is evaluated. The test confirms both that the topic persists through the context and that the `InitiateReturn` action is invoked in the right step — not just in a fresh session.
+**Why it works:** The `conversationHistory` array puts the agent in the correct conversational state before the test utterance is evaluated. The test confirms both that the subagent persists through the context and that the `InitiateReturn` action is invoked in the right step — not just in a fresh session.
 
 ---
 
@@ -158,8 +158,8 @@ sf agent test list
 
 ## Anti-Pattern: Testing Only the Agent's Happy Path Utterances
 
-**What practitioners do:** They write one test per topic using the most obvious phrasing — "track my order", "I want to return something", "billing question" — and declare the agent ready for production when all three pass.
+**What practitioners do:** They write one test per subagent using the most obvious phrasing — "track my order", "I want to return something", "billing question" — and declare the agent ready for production when all three pass.
 
 **What goes wrong:** Real customers use unexpected phrasings, abbreviations, and mixed-intent messages ("I got the wrong item and was overcharged"). Happy-path-only test suites give false confidence. The first sprint after go-live fills with escalation reports for utterances the team never tested.
 
-**Correct approach:** Apply the 4-type utterance model: happy path (2), edge case (2), boundary near adjacent topics (1+), and out-of-scope (1+) per topic. Boundary and out-of-scope utterances expose the routing failures that produce production incidents. Treat a coverage matrix as a required deliverable alongside the test code.
+**Correct approach:** Apply the 4-type utterance model: happy path (2), edge case (2), boundary near adjacent subagents (1+), and out-of-scope (1+) per subagent. Boundary and out-of-scope utterances expose the routing failures that produce production incidents. Treat a coverage matrix as a required deliverable alongside the test code.

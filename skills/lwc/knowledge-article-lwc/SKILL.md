@@ -1,6 +1,6 @@
 ---
 name: knowledge-article-lwc
-description: "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles — covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience. NOT for Knowledge admin setup (article types, data categories, channels), Einstein Artic — use admin/knowledge-base-administration."
+description: "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles — covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience. NOT for Knowledge admin setup (article types, categories) or Einstein Article Recommendations — use admin/knowledge-base-administration."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,9 +32,9 @@ outputs:
   - "Apex DML methods for voting / feedback submission"
   - "Permission and sharing configuration notes for Experience Cloud guest access"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-08-14
 ---
 
 # Knowledge Article LWC

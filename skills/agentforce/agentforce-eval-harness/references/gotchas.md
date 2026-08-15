@@ -96,6 +96,6 @@ Non-obvious platform behaviors that cause production problems.
 
 **What happens:** Evals measure the base LLM's quality, not the agent's. When the LLM provider ships a better version, scores go up even if the agent design is still wrong.
 
-**When it occurs:** Fixtures that exercise general reasoning instead of the agent's specific topic coverage.
+**When it occurs:** Fixtures that exercise general reasoning instead of the agent's specific subagent coverage (subagents were called topics before April 2026).
 
 **How to avoid:** Fixtures should test the agent's business logic: correct tool selection, grounded responses in the agent's domain, appropriate refusals. Not "what's 2+2".

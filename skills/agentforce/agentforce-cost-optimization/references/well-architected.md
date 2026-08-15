@@ -15,7 +15,7 @@
 ## Anti-Patterns
 
 1. Blind cost cuts with no evaluation.
-2. Optimizing tool output before topics and grounding (smaller potential win).
+2. Optimizing tool output before subagents and grounding (smaller potential win).
 3. Changing model tier mid-quarter with no A/B.
 
 ## Official Sources Used

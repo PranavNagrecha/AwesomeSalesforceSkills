@@ -58,7 +58,7 @@
     "fec967f9e50e76cd584a",
     "ff479e45d6d368808dbf"
   ],
-  "content_hash": "498e8bbcc15c6b53f1540cc96185fede9381b371083413f219d6b4a64cdb08c9",
+  "content_hash": "ff0cf83f33d65f97be513296cd8e2281b404f3cbea8cadffed9c01c9d681b5ed",
   "dependencies": [],
   "description": "Use this skill to elicit, document, and validate CRM Analytics requirements \u2014 covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications \u2014 before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for the formula and target behind each KPI \u2014 use admin/analytics-kpi-definition. NOT for building the dashboard once requirements are agreed \u2014 use admin/analytics-dashboard-design.",
   "file_location": "skills/admin/analytics-requirements-gathering",

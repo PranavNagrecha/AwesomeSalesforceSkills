@@ -192,7 +192,7 @@ Review cadence:
 Trust Layer is not optional for Agentforce:
 
 Every Agentforce interaction flows through the Trust Layer:
-  User utterance → Topic routing → Action execution →
+  User utterance → Subagent (topic) routing → Action execution →
   Prompt construction → TRUST LAYER → LLM → TRUST LAYER → Response
 
 Trust Layer controls that affect Agentforce:

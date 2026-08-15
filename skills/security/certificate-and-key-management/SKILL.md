@@ -1,6 +1,6 @@
 ---
 name: certificate-and-key-management
-description: "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry. NOT for Named Credential configuration (use named-credentials-setup skill), NOT for Shie — use integration/mutual-tls-callouts."
+description: "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry. NOT for Shield Platform Encryption key management or Named Credential setup — use integration/named-credentials-setup."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,9 +36,9 @@ outputs:
   - Warnings about non-exportable private keys and metadata API limitations
   - Review checklist for certificate setup completeness
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Certificate and Key Management

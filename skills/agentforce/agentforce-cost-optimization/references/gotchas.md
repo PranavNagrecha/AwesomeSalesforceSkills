@@ -12,9 +12,9 @@ Knowledge article footers, legal disclaimers, templated headers all get indexed 
 
 The agent paying for tool output tokens even if it ignores them. Project the fields you need.
 
-## 4. Managed Topic Opacity
+## 4. Managed Subagent Opacity
 
-Managed-package topics may have opaque instruction length. Audit via runtime logs, not via the UI.
+Managed-package subagents (called topics before April 2026) may have opaque instruction length. Audit via runtime logs, not via the UI.
 
 ## 5. Model Tier Changes Quality
 

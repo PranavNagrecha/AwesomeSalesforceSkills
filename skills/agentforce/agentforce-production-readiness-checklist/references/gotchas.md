@@ -16,11 +16,11 @@ Non-obvious Agentforce platform behaviors that bite teams during pre-prod readin
 
 ## Gotcha 2: The agent's choice between answering directly and invoking an action is reasoning-driven and non-deterministic across paraphrases
 
-**What happens:** During build, "show me the case status of 12345" routes correctly to `GetCaseStatus`. In production, "what's going on with case 12345?" sometimes routes to a different topic, sometimes answers directly from the LLM with hallucinated content, and sometimes correctly invokes the action — across visually similar prompts.
+**What happens:** During build, "show me the case status of 12345" routes correctly to `GetCaseStatus`. In production, "what's going on with case 12345?" sometimes routes to a different subagent (called a topic before April 2026), sometimes answers directly from the LLM with hallucinated content, and sometimes correctly invokes the action — across visually similar prompts.
 
-**When it occurs:** Topic and action descriptions are too generic, or two topics have overlapping scope language, or the system instructions don't strongly disambiguate. The LLM picks based on the closest semantic match it sees in its tool list at each turn.
+**When it occurs:** Subagent and action descriptions are too generic, or two subagents have overlapping scope language, or the system instructions don't strongly disambiguate. The LLM picks based on the closest semantic match it sees in its tool list at each turn.
 
-**How to avoid:** Treat action and topic descriptions as production interface contracts. Tighten them so each has a clearly distinguishing scope phrase the LLM can latch on to. Test paraphrases of the same intent in the coverage matrix — three to five paraphrase variants per happy-path case, not just the canonical phrasing.
+**How to avoid:** Treat action and subagent descriptions as production interface contracts. Tighten them so each has a clearly distinguishing scope phrase the LLM can latch on to. Test paraphrases of the same intent in the coverage matrix — three to five paraphrase variants per happy-path case, not just the canonical phrasing.
 
 ---
 
@@ -44,13 +44,13 @@ Non-obvious Agentforce platform behaviors that bite teams during pre-prod readin
 
 ---
 
-## Gotcha 5: Context window spent on system + topic catalog + history degrades multi-turn coherence on long sessions
+## Gotcha 5: Context window spent on system + subagent catalog + history degrades multi-turn coherence on long sessions
 
 **What happens:** The agent answers correctly for the first few turns, then mid-session starts losing the thread — forgetting earlier user-provided details, rerunning lookups it already did, or contradicting earlier answers.
 
-**When it occurs:** The agent has a high-cardinality topic graph (many topics, each with rich descriptions) and verbose system instructions, leaving little context budget for actual conversation history. Long sessions push the earliest turns out of context.
+**When it occurs:** The agent has a high-cardinality subagent graph (many subagents, each with rich descriptions) and verbose system instructions, leaving little context budget for actual conversation history. Long sessions push the earliest turns out of context.
 
-**How to avoid:** During readiness review, run a fixed-length stress test (e.g. 20-turn fixture) and verify coherence at turn 15 and turn 20, not just turn 3. Trim topic descriptions to the minimum that still disambiguates. Compress system instructions. If you cannot fit topics + history into the budget, split the agent into multiple smaller agents with topic-domain handoffs rather than one giant agent.
+**How to avoid:** During readiness review, run a fixed-length stress test (e.g. 20-turn fixture) and verify coherence at turn 15 and turn 20, not just turn 3. Trim subagent descriptions to the minimum that still disambiguates. Compress system instructions. If you cannot fit subagents + history into the budget, split the agent into multiple smaller agents with subagent-domain handoffs rather than one giant agent.
 
 ---
 

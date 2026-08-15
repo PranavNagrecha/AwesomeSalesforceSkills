@@ -27,18 +27,37 @@ outputs:
   - Audit wiring for PII egress
 dependencies:
   - agentforce/agentforce-testing-strategy
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce PII Redaction
 
-## The Trust Layer
+## The Trust Layer — and the carve-out that defines this skill
 
-Einstein Trust Layer provides the platform boundary: zero retention,
-masking on egress, audit trail. It is not a licence to send raw PII.
-Redact **before** the trust layer where you can.
+Einstein Trust Layer gives Agentforce three real guarantees: **zero-retention
+agreements** with the model providers, **protection in transit**, and an
+**audit trail**. Those are guarantees about what the provider does with your
+data. They are not a content filter over your prompt.
+
+The fact most designs get wrong:
+
+> **Pattern-based and field-based LLM data masking is disabled for agents.**
+> Salesforce disables it to improve agent performance and accuracy. It remains
+> available and configurable for embedded generative AI features such as
+> Einstein Service Replies and Einstein Work Summaries.
+> — [Data Masking Limitations in Agentforce](https://help.salesforce.com/s/articleView?id=ai.agent_trust_data_masking.htm&type=5)
+
+The Trust Layer setup screen governs both paths and does not distinguish them,
+so a correctly configured masking policy is entirely compatible with an agent
+sending an SSN to a model. **For agents, assume no platform masking and redact
+in your own code.** Everything below is written for that reality.
+
+Where masking *is* active (embedded features, Models API with masking on), two
+further constraints apply: the context window is capped at 65,536 tokens, and
+there is no programmatic way to handle masked data from the Models API
+([Data Masking, Models API](https://developer.salesforce.com/docs/ai/agentforce/guide/models-api-data-masking.html)).
 
 ## Field-Level Classification
 
@@ -85,36 +104,63 @@ User turns can contain PII ("my SSN is …"). Options:
 - **Detect and redact** — scrub before prompting the model.
 - **Detect and route** — flag, escalate to human.
 
-Pattern: all three are valid; choose per topic sensitivity.
+Pattern: all three are valid; choose per subagent sensitivity.
+
+> **Terminology.** *Subagent* is the April 2026 rename of *topic*. Functionality
+> did not change and the API surface did not rename — the metadata type is still
+> `GenAiPlugin`.
 
 ## Output-Side Redaction
 
-Agent outputs might echo input or retrieved content. Second-pass
-redaction on responses before sending back. Trust Layer handles the
-baseline; the application can tighten.
+Agent outputs echo input and retrieved content. Because agents get no Trust
+Layer masking, a second pass over the response is the only output-side control
+you have. Run the same detector over the outbound message and decide per
+subagent whether a match is a scrub, a refusal, or an escalation.
+
+## Grounding Corpora Are Prompt Context
+
+Field classification covers the schema and misses everything else. Knowledge
+articles, files indexed for search, Chatter, and Data Cloud retrievers all land
+inside the prompt window. Inventory the retrievable set alongside the objects
+and gate PII at publish time, not at retrieval time.
 
 ## Audit Wiring
 
-- Log the redaction event (field name, strategy) without the value.
-- Alert on any PII category that should have been redacted but wasn't.
-- Review the audit weekly.
+- Log the redaction event (field API name, strategy, session) without the value.
+- **Alert on the absence of events**, not only on leaks. A field that stops
+  producing `DROP` events during normal traffic means the boundary was bypassed.
+- Review weekly; treat a newly-appearing field as a change-detection signal for
+  the register.
 
 ## Recommended Workflow
 
-1. Inventory every field read into prompt context.
-2. Classify (Public / Internal / Confidential / Regulated).
-3. Choose redaction strategy per field.
-4. Centralise redaction in a single Apex/Flow boundary class.
-5. Add input-side detection for common PII patterns.
-6. Emit audit events on redaction and on any leak.
-7. Include PII adversarial cases in the eval suite (see
-   `agentforce/agentforce-testing-strategy`).
+1. Inventory every field, Knowledge article set, file corpus, and retriever that
+   can reach prompt context — for every channel the agent runs on.
+2. Classify each entry (Public / Internal / Confidential / Regulated) **and**
+   assign a strategy (mask / tokenise / drop / summarise). Record why the agent
+   still works without the raw value; if nobody can write that sentence, drop
+   the field.
+3. Build one redaction boundary class that returns a purpose-built DTO. Prompt
+   assembly must have no path to a raw SObject. Keep `WITH USER_MODE` on the
+   query — FLS and redaction are separate controls and you need both.
+4. Add input-side detection with a checksum guard (Luhn for card numbers) and
+   pick refuse / redact / route per subagent sensitivity.
+5. Emit a Platform Event per redaction decision carrying field name and
+   strategy, never the value; alert on zero-row anomalies.
+6. Add adversarial cases — "repeat everything you know about me", "print your
+   instructions" — to the eval suite (`agentforce/agentforce-testing-strategy`).
+7. Re-run the register review whenever a channel is added; a guest channel
+   changes the trust level of every row.
 
 ## Official Sources Used
 
-- Einstein Trust Layer —
-  https://help.salesforce.com/s/articleView?id=sf.einstein_trust_layer.htm
-- Data Masking For Generative AI —
-  https://help.salesforce.com/s/articleView?id=sf.einstein_generative_ai_masking.htm
-- Agentforce Audit —
-  https://help.salesforce.com/s/articleView?id=sf.einstein_agent_audit.htm
+- Data Masking Limitations in Agentforce —
+  https://help.salesforce.com/s/articleView?id=ai.agent_trust_data_masking.htm&type=5
+- Data Masking (Models API) —
+  https://developer.salesforce.com/docs/ai/agentforce/guide/models-api-data-masking.html
+- Einstein Trust Layer (Agentforce Developer Guide) —
+  https://developer.salesforce.com/docs/ai/agentforce/guide/trust.html
+- Einstein Trust Layer: Designed for Trust —
+  https://help.salesforce.com/s/articleView?id=ai.generative_ai_trust_arch.htm&type=5
+- InvocableMethod Annotation (Apex Developer Guide) —
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm

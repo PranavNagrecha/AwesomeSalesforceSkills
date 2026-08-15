@@ -29,9 +29,9 @@ outputs:
   - Freshness SLA and refresh plan
   - Citation / transparency pattern
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Data Cloud Grounding For Agentforce
@@ -50,6 +50,11 @@ This skill covers picking the right DMOs and data graphs, chunking and
 filtering for relevance, enforcing field-level and record-level visibility at
 query time, setting a freshness SLA that fits the use case, and returning
 answers that cite their sources.
+
+> **Terminology.** Agentforce *topics* were renamed **subagents** in April 2026.
+> This skill leads with *subagent*. The older term still appears in metadata and
+> API names, in older Help articles, and in many orgs; nothing about behaviour
+> changed with the rename.
 
 ## Recommended Workflow
 
@@ -82,17 +87,17 @@ answers that cite their sources.
 | "What does the transcript of the last call say?" | Vector + metadata filter | Filter by call_id |
 | Blend ("account summary + last case note") | Hybrid | Two retrievers, ranked and fused |
 
-## Grounding Strategy Per Topic
+## Grounding Strategy Per Subagent
 
-For each topic, classify each fact you want the agent to use:
+For each subagent, classify each fact you want the agent to use:
 
-- **Instructional (in topic prompt):** unchanging, short, domain rules.
+- **Instructional (in subagent prompt):** unchanging, short, domain rules.
 - **Grounded (retriever):** account- or case-specific, volatile, or too big
   for a prompt. 
 - **Action-derived (from an action call):** live data that must be fetched at
   answer time (balance, entitlement, real-time inventory).
 
-Over-packing the topic prompt with facts is the #1 token waste.
+Over-packing the subagent prompt with facts is the #1 token waste.
 
 ## Sharing Enforcement
 
@@ -109,11 +114,11 @@ incident, not a UX bug.
 ## Freshness
 
 Ingestion latency + retriever cache TTL = worst-case staleness. State this
-number explicitly in the topic design. Examples:
+number explicitly in the subagent design. Examples:
 
-- Agent topic for "what's my order status" — SLA = 5 min; Data Cloud stream
+- Subagent for "what's my order status" — SLA = 5 min; Data Cloud stream
   job must run ≤ 3 min.
-- Agent topic for "what did we email last week" — SLA = 24h; daily batch is
+- Subagent for "what did we email last week" — SLA = 24h; daily batch is
   fine.
 
 ## Citation Pattern
@@ -127,7 +132,7 @@ template then includes "Source: <title> (<id>)". This enables:
 
 ## Anti-Patterns (see references/llm-anti-patterns.md)
 
-- Stuffing facts into topic instructions that belong in a retriever.
+- Stuffing facts into subagent instructions that belong in a retriever.
 - Returning answers with no citations.
 - Filtering sharing in the agent response instead of at retrieval.
 - Setting retriever k to 20+ "just in case."

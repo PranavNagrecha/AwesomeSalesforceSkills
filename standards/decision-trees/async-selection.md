@@ -31,7 +31,7 @@ synchronous transaction.
 | Queueable | 50,000 rows is a practical guide, not a platform limit — the real ceiling is the async transaction (50,000 rows queried, 60 s CPU, 12 MB heap) | Yes (chain inside `execute()`) | Yes (`AllowsCallouts`) | Yes (member variables) | Apex Jobs | 0–minutes |
 | Batch Apex | 50 million rows returned by `Database.QueryLocator` | `Database.executeBatch(next)` in `finish()` | Yes (`Database.AllowsCallouts`) | `Database.Stateful` | Apex Jobs + Bulk API Monitoring | seconds–minutes |
 | Schedulable | n/a (delegates out) | n/a | n/a | No | Scheduled Jobs | cron-based |
-| Platform Event | 250,000 published per hour (EE / PE / UE); 50,000/hour in Developer Edition. Delivery is the tighter allocation: 25,000 events per 24 h in EE, 50,000 in PE/UE | Subscribe → Queueable | Yes in subscriber | n/a | Event Monitoring | ~seconds |
+| Platform Event | **Publishing:** 250,000 per hour (EE / PE / UE); 50,000/hour in Developer Edition. **Delivery:** 25,000 per 24 h in EE, 50,000 in PE/UE — but delivery bounds *API* subscribers only, and does not apply to Apex triggers, flows, or Process Builder (see the note below) | Subscribe → Queueable | Yes in subscriber | n/a | Event Monitoring | ~seconds |
 | Schedule-triggered Flow | 250,000 interviews per 24 h org-wide, or user licenses × 200, whichever is greater — one interview per queried record | No | Limited | No | Paused/Waiting Interviews | cron-based |
 | Async SOQL / Bulk API | billions | No | n/a | n/a | Bulk API job UI | seconds–minutes |
 
@@ -40,6 +40,22 @@ above is the clearest case — the headline number is 5× different between
 Developer Edition and production. Always confirm against the current
 "Execution Governors and Limits" and "Platform Event Allocations" docs before
 quoting one at a customer.
+
+**The delivery allocation is narrower than it looks, and reading it as universal
+has killed workable designs.** The Platform Events Developer Guide scopes it
+explicitly: the event delivery allocation "is how many event messages can be
+delivered in a 24-hour period to Pub/Sub API and CometD subscribers, empApi
+Lightning components, and event relays," and "published event messages that are
+delivered to non-API subscribers, such as Apex triggers, flows, and Process
+Builder processes, don't count against the delivery allocation." So:
+
+- **All internal subscribers** (Apex triggers, flows, Process Builder) → the
+  binding number is the **publishing** allocation, measured **per hour**.
+- **Any external or API subscriber** (Pub/Sub API, CometD, empApi, event relays)
+  → the delivery allocation applies to that traffic, per 24 hours.
+
+Do not reject an in-org fan-out on "we only get 25,000 deliveries a day." Cite
+this note and cost the design against publishing instead.
 
 ---
 
@@ -161,6 +177,11 @@ Do NOT use a Platform Event when:
   rather than in your scratch org. Always check for the terminating condition.
 - **Schedulable with real logic in `execute()`.** You cannot test it at scale
   and cannot re-run ad hoc. Always wrap a Queueable/Batch.
+- **Rejecting an in-org fan-out on the event delivery allocation.** "Enterprise
+  only allows 25,000 deliveries a day" is true and irrelevant when every
+  subscriber is an Apex trigger or a flow — those are excluded from the delivery
+  allocation by name. Cost the design against the publishing allocation, per
+  hour, at peak. See the note under the capability matrix.
 - **Batch Apex for < 10k records.** Overkill, and batch start-up latency
   dominates total runtime. Queueable is faster.
 - **Platform Event publish inside a trigger with no `EventBus.publish()`
@@ -194,6 +215,6 @@ Do NOT use a Platform Event when:
 - Apex Developer Guide — Invoking Future Methods ("The specified parameters must be primitive data types, arrays of primitive data types, or collections of primitive data types"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm
 - Apex Developer Guide — Queueable Apex (50 jobs per synchronous transaction, 1 from an async transaction; stack depth of 5 for Developer Edition and Trial orgs): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm
 - Apex Developer Guide — Use Batch Apex (default scope 200, max 2,000 with a QueryLocator; 50 million rows per QueryLocator; "The start, execute, and finish methods can implement up to 100 callouts each"; 5 concurrent batch jobs; 250,000 executions per 24 h or licenses × 200): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm
-- Platform Events Developer Guide — Platform Event Allocations (250,000 published per hour in EE/PE/UE, 50,000 in Developer Edition; 25,000 delivered per 24 h in EE, 50,000 in PE/UE): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
+- Platform Events Developer Guide — Platform Event Allocations (250,000 published per hour in EE/PE/UE, 50,000 in Developer Edition; 25,000 delivered per 24 h in EE, 50,000 in PE/UE — delivery covering Pub/Sub API and CometD subscribers, empApi components and event relays only, and explicitly excluding Apex triggers, flows and Process Builder): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
 - Salesforce Help — Schedule-Triggered Flow Considerations (250,000 interviews per 24 h, or user licenses × 200, whichever is greater): https://help.salesforce.com/s/articleView?language=en_US&id=platform.flow_considerations_trigger_schedule.htm&type=5
 - Apex Developer Guide — Asynchronous Callout Limits (Continuation: 120 s max timeout, 3 parallel callouts, 3 chained callouts, 1 MB max HTTP response): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_continuation_limits.htm

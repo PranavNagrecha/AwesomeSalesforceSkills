@@ -3,6 +3,7 @@
   "chunk_ids": [
     "02e42c88c137a2a5540d",
     "03a187947862d0cc4420",
+    "05d1462b5ca9037da7d9",
     "0aa44828d9551e1acd51",
     "0e07146f2122a765709f",
     "0ecb6ed2f74b4dc2fec8",
@@ -69,7 +70,7 @@
     "ae0fc386e64e4174a51d",
     "b0bd6069498267fc8d90",
     "b6f78b37ec22961ae3bf",
-    "bb9476372b72e4bc499c",
+    "b7ca6b3e11269c40fb9f",
     "be9b8c1a2b07b09a37b0",
     "bfbba398effb58d7b073",
     "c25c2223f20d1d5c931e",
@@ -77,6 +78,7 @@
     "c6a67c55298e383ac333",
     "cc9dc186d8d4d58b838b",
     "cd6c21e638d23d4bfc00",
+    "ce1582ff5d6adfd423ef",
     "d081d775906467e7ba07",
     "d7242b986df9ad2b94ca",
     "d75fc66ed2a99267a656",
@@ -86,15 +88,14 @@
     "e70695c6e54dee984642",
     "ec464d6e794781f1e0e2",
     "ed2068483a0a2ab573b4",
-    "f56a17cf45fa478a14d3",
     "f626836303fc20c47b5c",
     "f6b80704ef7a0c9f8245",
+    "f85fbea1ea1cfe30f364",
     "f9fa829c0e83ac4b15a7",
-    "fd5b659e9a1c8cb1779f",
     "fdb3e1fde54baa5e41fe",
     "fe32092f6248d306beb5"
   ],
-  "content_hash": "834b54803e2a806bd4fc52c22cfecf2e4bc3e0c71cd63e6f421ed34cfe48c495",
+  "content_hash": "1de9b390d5ef0ec505ec40abd643beafd9142aef93cf8cc98ce34e1694d2284c",
   "dependencies": [],
   "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for designing what the agent can DO \u2014 an agent that looks up an order, checks a case, or creates a record is action design, use agentforce/agent-actions. NOT for topic boundary design \u2014 use agentforce/agent-topic-design.",
   "file_location": "skills/agentforce/agentforce-agent-creation",
@@ -141,7 +142,7 @@
   "templates": [
     "skills/agentforce/agentforce-agent-creation/templates/agentforce-agent-creation-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

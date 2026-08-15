@@ -1,8 +1,8 @@
 # Retriever Design Template
 
-## Topic
+## Subagent
 
-- Topic name:
+- Subagent name (subagents were called topics before April 2026):
 - User questions it must answer (≥ 10):
 
 ## Fact Classification

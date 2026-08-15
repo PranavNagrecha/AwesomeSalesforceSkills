@@ -21,7 +21,7 @@ Common mistakes AI assistants make when generating or advising on a production-r
 ```
 | Item | Evidence required | Status | Owner | Link |
 |---|---|---|---|---|
-| Topic × action coverage | Fixture IDs and pass-rate per cell | PASS (24/24) | Builder | [link to Testing Center fixture set] |
+| Subagent × action coverage | Fixture IDs and pass-rate per cell | PASS (24/24) | Builder | [link to Testing Center fixture set] |
 | Trust Layer masking per category | Config export listing each category's state | PASS | Security | [link to config export] |
 | Rollback rehearsed | Staging run log with timing + named owner | PASS | On-call | [link to runbook] |
 ```
@@ -34,11 +34,11 @@ Common mistakes AI assistants make when generating or advising on a production-r
 
 **What the LLM generates:** "We tested the agent with 30 representative prompts and all passed, so it's ready for production."
 
-**Why it happens:** LLMs don't naturally generate the topic × action × case-type matrix; they generate plausible-sounding test counts.
+**Why it happens:** LLMs don't naturally generate the subagent × action × case-type matrix (subagents were called topics before April 2026); they generate plausible-sounding test counts.
 
-**Correct pattern:** Coverage is two-dimensional (topic × action) with at least four case types per cell (happy / negative / edge / adversarial). The output should always include the matrix or a reference to it. Without the matrix, "30 prompts tested" is a sample, not coverage.
+**Correct pattern:** Coverage is two-dimensional (subagent × action) with at least four case types per cell (happy / negative / edge / adversarial). The output should always include the matrix or a reference to it. Without the matrix, "30 prompts tested" is a sample, not coverage.
 
-**Detection hint:** No matrix, no enumeration of (topic, action) pairs, no separation between adversarial cases and behavior cases.
+**Detection hint:** No matrix, no enumeration of (subagent, action) pairs, no separation between adversarial cases and behavior cases.
 
 ---
 
@@ -48,7 +48,7 @@ Common mistakes AI assistants make when generating or advising on a production-r
 
 **Why it happens:** "Deactivate the agent" sounds like a complete answer and matches the shape of one-line rollback instructions in unrelated runbook content.
 
-**Correct pattern:** Rollback is a decision table: incident-type → mechanism → owner → expected time-to-restore. Mutating-action incidents need data cleanup; topic-only incidents need topic-level kill; full-compromise needs full deactivation. Each branch must be rehearsed.
+**Correct pattern:** Rollback is a decision table: incident-type → mechanism → owner → expected time-to-restore. Mutating-action incidents need data cleanup; subagent-only incidents need subagent-level kill; full-compromise needs full deactivation. Each branch must be rehearsed.
 
 **Detection hint:** Rollback section has fewer than three distinct mechanisms, or no decision table mapping incident types to mechanisms.
 

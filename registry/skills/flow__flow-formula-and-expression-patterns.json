@@ -179,9 +179,9 @@
     "fefa1427ede663c84aaa",
     "ff9ce60481d9525a5f2f"
   ],
-  "content_hash": "5cd589b4db43a81f4350fe9540b9e6c7bf584470c6084c1a547766811b0b4a1f",
+  "content_hash": "f9b74c0e6af058011ac167d9f2872f1dbd037ccb9d625a2613dbbdbfcb9cdda9",
   "dependencies": [],
-  "description": "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects \u2014 \u2014 use admin/formula-fields. NOT for Validation Rule formulas (different runtime context) \u2014 \u2014 use admin/validation-rules.",
+  "description": "Author NULL-safe, type-correct, performance-aware Formula resources and condition expressions in Flow: lazy re-evaluation, BLANKVALUE/ISBLANK guards, ISPICKVAL vs =. NOT for record-level formula fields on objects \u2014 use admin/formula-fields. NOT for Validation Rule formulas \u2014 use admin/validation-rules.",
   "file_location": "skills/flow/flow-formula-and-expression-patterns",
   "id": "flow/flow-formula-and-expression-patterns",
   "inputs": [
@@ -233,7 +233,7 @@
   "templates": [
     "skills/flow/flow-formula-and-expression-patterns/templates/flow-formula-and-expression-patterns-template.md"
   ],
-  "updated": "2026-04-27",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -82,9 +82,9 @@
     "f9dd437a2ba7d7ee709b",
     "ffb299e9c8344dceef60"
   ],
-  "content_hash": "9e02b40b042271dad726808b503b99c644e861bcd78908b5b21527213186479a",
+  "content_hash": "6d705bb50dcc03c2ed16b6f94ecc8214c39f5c6ddcc9ef7293bb7be0fbd01673",
   "dependencies": [],
-  "description": "Design and implement Salesforce Login Flows (Screen Flows assigned to profiles or Experience Cloud sites) that run post-authentication to enforce conditional MFA, IP-based branching, terms-of-service acceptance, or. NOT for static IP allowlisting or profile Login IP Ranges (see network-security-and-trus \u2014 use security/mfa-enforcement-strategy.",
+  "description": "Design and implement Salesforce Login Flows (Screen Flows assigned to profiles or Experience Cloud sites) that run post-authentication to enforce conditional MFA, IP-based branching, terms-of-service acceptance, or Experience Cloud custom login pages. NOT for IP allowlisting (use security/network-security-and-trusted-ips) or org-wide MFA rollout \u2014 use security/mfa-enforcement-strategy.",
   "file_location": "skills/security/ip-range-and-login-flow-strategy",
   "id": "security/ip-range-and-login-flow-strategy",
   "inputs": [
@@ -131,7 +131,7 @@
   "templates": [
     "skills/security/ip-range-and-login-flow-strategy/templates/ip-range-and-login-flow-strategy-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

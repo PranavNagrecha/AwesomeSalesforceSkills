@@ -116,6 +116,6 @@ Common mistakes AI coding assistants make when authoring evals.
 
 **Why it happens:** LLMs map eval coverage to code coverage.
 
-**Correct pattern:** Fixture count based on user-intent coverage. One action may need 5 fixtures (happy, ambiguous, refused, escalated, corrected); one topic may need 15. Coverage is defined by intent, not code.
+**Correct pattern:** Fixture count based on user-intent coverage. One action may need 5 fixtures (happy, ambiguous, refused, escalated, corrected); one subagent (called a topic before April 2026) may need 15. Coverage is defined by intent, not code.
 
-**Detection hint:** Fixture-to-action or fixture-to-topic ratio of 1:1.
+**Detection hint:** Fixture-to-action or fixture-to-subagent ratio of 1:1.

@@ -79,3 +79,18 @@ static void testAfterInsert_secondMethod() {
 - Detect in-batch duplicates *yourself* inside the handler before the platform's retry kicks in — build a `Map<Object, SObject>` keyed by the unique value while looping `Trigger.new`, and `addError()` the second occurrence with a message that does not depend on a persisted record ID.
 - Never key user-facing "duplicate of record ..." messages on the ID Salesforce returns in the constraint error during a bulk batch; identify the collision by the unique value itself.
 - Reproduce this with a bulk test that inserts 200 records containing an intentional in-batch duplicate — a single-record test will never surface the rollback/retry behavior.
+
+---
+
+## A Bare `override` on a Handler Hook Stops Compiling at `apiVersion` 65.0
+
+**What happens:** A subclass hook is written without an access modifier — `override void beforeInsert() { ... }` instead of `protected override void beforeInsert() { ... }`. Below API 65.0 the compiler accepted it. From 65.0 the class fails to compile.
+
+**When it bites you:** Whenever a handler is created or bumped to `apiVersion` 65.0 or higher — which includes every class scaffolded against the current default of 67.0. The failure is a build error at deploy, not a runtime surprise, so it shows up as a broken deployment rather than bad data. It is easy to miss when reading old blog-post framework code, where the bare form is common.
+
+The Apex Developer Guide's versioned behavior changes state it directly: "In API version 65.0 and later, an abstract or override method requires a protected, public, or global access modifier," and "if one of these access modifiers isn't explicitly included in the method declaration, then method access defaults to private." A private method cannot override a `protected virtual` one, so the compiler rejects the class.
+
+**How to avoid it:**
+- Declare every hook override with the same visibility the base class used. [`templates/apex/TriggerHandler.cls`](../../../../templates/apex/TriggerHandler.cls) declares its seven hooks `protected virtual`, so subclasses write `protected override void beforeInsert()`.
+- The rule is not specific to trigger handlers — it applies to every `abstract` and `override` method, including `BaseDomain`, `BaseService`, and `BaseSelector` subclasses, and to third-party frameworks such as fflib.
+- The gate is the `apiVersion` in the class's own `.cls-meta.xml`, not the org's release. A handler pinned at 64.0 keeps compiling with the bare form; raise the version and the same source stops building.

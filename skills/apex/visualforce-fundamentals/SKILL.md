@@ -30,9 +30,9 @@ outputs:
   - "view state analysis and transient variable recommendations"
   - "security hardening checklist (CSRF, SOQL injection, FLS)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # Visualforce Fundamentals

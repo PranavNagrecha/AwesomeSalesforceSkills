@@ -28,9 +28,9 @@ outputs:
 dependencies:
   - flow/flow-http-callout-action
   - flow/flow-invocable-from-apex
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-08-14
 ---
 
 # Flow Apex-Defined Types
@@ -53,45 +53,81 @@ updated: 2026-04-23
 
 ## Contract
 
-An Apex-Defined Type is a plain Apex class whose instance fields are all
-`@AuraEnabled` and serialisable. Flow reflects those fields as accessible
-Flow variable attributes.
+An Apex-Defined Type is a data-only Apex class whose fields Flow reflects as
+variable attributes. The constraints are unusually tight, and **almost all of
+them compile cleanly and fail in the flow at run time** — which is the defining
+property of this domain.
+
+| Requirement | Detail |
+|---|---|
+| Field types | Boolean, Integer, Long, Decimal, Double, Date, DateTime, String — single values and lists of each, plus lists of other supported Apex-defined types |
+| Annotation | `@AuraEnabled` on every field Flow must see |
+| Constructor | A no-argument constructor is **required** |
+| Inner classes | **Not supported** |
+| Outer class named the same as an inner class | Not supported |
+| Class methods | Not supported |
+| Getter methods for fields | Not supported |
+| List of lists as a field | Not supported |
+| Referential integrity | Not supported — modify or delete a field in the class and the flow fails |
 
 ```apex
+// InvoiceLine.cls — top-level, in its own file.
 public class InvoiceLine {
-    @AuraEnabled public String productCode;
+    @AuraEnabled public String  productCode;
     @AuraEnabled public Decimal quantity;
     @AuraEnabled public Decimal unitPrice;
     @AuraEnabled public List<String> tags;
+
+    // Required: a no-argument constructor. Declared explicitly so that adding
+    // a convenience constructor later does not silently remove it.
+    public InvoiceLine() {}
 }
 ```
 
-Rules:
+**Two consequences people miss.** There is no `Map` on the supported type list —
+model it as `List<KeyValue>` with `KeyValue` as its own **top-level** class. And
+because inner classes are unsupported, a nested structure is built from separate
+top-level classes, not from the nested-class shape every Apex developer reaches
+for first.
 
-- Every exposed field **must** be `@AuraEnabled`.
-- No `static`, no private state, no constructor params.
-- Types: primitives, `Date`, `Datetime`, another Apex-Defined Type, or a
-  `List<>` of the above.
-- No `Map<>`. Flow cannot bind a Map — model it as `List<KeyValue>` where
-  `KeyValue` is itself an Apex-Defined Type.
+## When NOT To Use
+
+- The shape is a real sObject — use the sObject variable.
+- The shape is a flat list of primitives — a collection of primitives is lighter.
+- The structure changes faster than a deploy cycle — a JSON string plus a
+  targeted parse avoids churning a class whose every field is a commitment.
+- You need map semantics inside the flow. Flow has no map either, so a key
+  lookup over a `List<KeyValue>` is a Loop with a Decision — O(n) per lookup,
+  multiplied by the interview batch size. Resolve it in Apex and expose named
+  fields.
 
 ## Recommended Workflow
 
-1. Identify the smallest serialisable shape Flow actually needs. Do not
-   mirror the whole upstream class.
-2. Write the Apex class with `@AuraEnabled` fields and no logic.
-3. Write a unit test that serialises and deserialises an instance to
-   prove the class is JSON round-tripable.
-4. Reference the class as the Flow variable type. Bind from the HTTP
-   Callout / External Service / invocable return.
-5. Document the class in `references/examples.md` so future changes go
-   through a review step.
-6. When adding a field, check for Flow consumers first — removing a
-   field is a breaking change to callers.
+1. **Identify the smallest shape Flow actually consumes.** Do not mirror the
+   upstream schema — referential integrity is unsupported, so every exposed
+   field is a name you have committed not to change without a caller inventory.
+2. **Write each type as a top-level class in its own file,** with `@AuraEnabled`
+   on every field, an explicit no-argument constructor, no methods, and no
+   getters.
+3. **Check every field type against the supported list.** No `Map`, no list of
+   lists, no sObject fields.
+4. **Write two tests:** one that JSON round-trips an instance (which also proves
+   the no-argument constructor exists), and one that asserts the serialized
+   field-name set, so a rename fails the build rather than the next scheduled
+   batch.
+5. **Bind the class as the Flow variable type** from the HTTP Callout, External
+   Service, or invocable return. For invocables, take and return `List<>` so the
+   flow can call once with a collection instead of once per record inside a loop.
+6. **Treat the field names as a published interface.** Adding a field is safe;
+   renaming or removing one is a breaking change with no compile-time signal, so
+   inventory the consuming flows first.
 
 ## Official Sources Used
 
-- Apex-Defined Data Types in Flow —
-  https://help.salesforce.com/s/articleView?id=sf.flow_ref_resources_variable_apex.htm
-- @AuraEnabled —
-  https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_annotation_AuraEnabled.htm
+- Considerations for the Apex-Defined Data Type — https://help.salesforce.com/s/articleView?id=platform.flow_considerations_apex_data_type.htm&type=5
+- Apex-Defined Data Type — https://help.salesforce.com/s/articleView?id=platform.flow_concepts_apex_type.htm&type=5
+- Extend Flows with the Apex-Defined Data Type — https://help.salesforce.com/s/articleView?id=sf.flow_build_extend_apex_type.htm&type=5
+- AuraEnabled Annotation — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm
+- Supported Data Types in Flows (LWC Developer Guide) — https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-data-types.html
+
+The full annotated list is in `references/well-architected.md`.

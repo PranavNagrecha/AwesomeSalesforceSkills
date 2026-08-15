@@ -59,11 +59,11 @@ Plans a Salesforce release train: branch model, package strategy (unlocked vs 2G
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/devops/release-management` — via `get_skill`
-4. `skills/devops/environment-strategy`
-5. `skills/devops/package-development-strategy`
-6. `skills/devops/unlocked-package-development`
-7. `skills/devops/second-generation-managed-packages`
-8. `skills/devops/git-branching-for-salesforce`
+4. `skills/devops/environment-strategy` — the promotion path is a function of which org types exist and how often each can be refreshed; without it the agent commits to a cadence whose UAT stage sits on a sandbox type that cannot refresh inside it
+5. `skills/devops/package-development-strategy` — namespace and package-type choice is effectively irreversible once the first version is created; without it the agent defaults the plan to unlocked packages and the program discovers at first release that its distribution model required 2GP managed
+6. `skills/devops/unlocked-package-development` — a promoted package version is immutable, so the train's real cut date is the promotion date, not the merge date; without it the agent builds a calendar that assumes a released version can be patched in place
+7. `skills/devops/second-generation-managed-packages` — patch versions are cut from a released version and are the only thing that can reach subscribers between minor releases; without it the agent routes a managed-package hotfix down the same pipeline as a feature and it cannot ship inside the window
+8. `skills/devops/git-branching-for-salesforce` — the branch model and the environment topology have to be chosen together; without it the agent pairs a trunk-based branch model with an environment-branch promotion path, and the two contradict each other at the first hotfix
 9. `skills/devops/feature-flag-custom-metadata` — decouple deploy from release
 10. `skills/devops/pipeline-secrets-management` — JWT auth + rotation
 11. `skills/devops/sfdx-monorepo-patterns` — multi-package repo layout

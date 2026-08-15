@@ -1,6 +1,6 @@
 ---
 name: ferpa-compliance-in-salesforce
-description: "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields. NOT for GDPR/CCPA general data privacy (see gdpr-data-privacy skill), platform encryptio — use architect/health-cloud-data-residency."
+description: "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields. NOT for GDPR/CCPA data privacy, platform encryption at rest, or HIPAA health-data compliance — use architect/health-cloud-data-residency."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -35,9 +35,9 @@ outputs:
   - "45-day response window tracking workflow (Case or custom object)"
   - "Review checklist for FERPA compliance posture"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # FERPA Compliance in Salesforce

@@ -4,20 +4,20 @@
 
 **Context:** A retail company has an Enhanced Einstein Bot handling three dialogs: Order Status, Return Request, and Password Reset. The bot runs on Legacy Chat. The team has until Feb 14 2026 to migrate off Legacy Chat. They want to use the migration tool to get a structural head start.
 
-**Problem:** After running "Create AI Agent from Bot", the generated Agentforce agent routes "I want to return something" to the Order Status topic instead of Return Request. Additionally, the Return Request Action placeholder has no logic implemented — the Flow it should call does not exist yet in the new agent.
+**Problem:** After running "Create AI Agent from Bot", the generated Agentforce agent routes "I want to return something" to the Order Status subagent (called a topic before April 2026) instead of Return Request. Additionally, the Return Request Action placeholder has no logic implemented — the Flow it should call does not exist yet in the new agent.
 
 **Solution:**
 
-1. Open the generated agent in Agentforce Builder. Navigate to the Return Request Topic.
-2. The generated Topic description reads: `Return Request`. Rewrite it as a routing instruction:
+1. Open the generated agent in Agentforce Builder. Navigate to the Return Request Subagent.
+2. The generated Subagent description reads: `Return Request`. Rewrite it as a routing instruction:
    ```
-   Use this topic when a customer wants to initiate, track, or cancel a return or refund
+   Use this subagent when a customer wants to initiate, track, or cancel a return or refund
    for an order they have already received. This includes requests to return items,
    exchange products, or receive a store credit.
    ```
-3. Review the Order Status Topic description and narrow it to tracking only:
+3. Review the Order Status Subagent description and narrow it to tracking only:
    ```
-   Use this topic when a customer asks about the current location, shipping progress,
+   Use this subagent when a customer asks about the current location, shipping progress,
    or estimated delivery date of an order they have placed. Do not use for return or
    refund requests.
    ```
@@ -25,7 +25,7 @@
 5. Test in Conversation Preview with 10+ return-intent phrasings. Confirm routing is correct.
 6. Verify the Legacy Chat channel cutover is planned before Feb 14 2026.
 
-**Why it works:** Agentforce routes semantically against Topic descriptions, not against trained utterances. Two Topics with similar names but vague descriptions produce ambiguous routing. Specific, scope-bounded descriptions — including negative scope ("do not use for") — let the LLM make a clear routing decision without any NLU training.
+**Why it works:** Agentforce routes semantically against Subagent descriptions, not against trained utterances. Two Subagents with similar names but vague descriptions produce ambiguous routing. Specific, scope-bounded descriptions — including negative scope ("do not use for") — let the LLM make a clear routing decision without any NLU training.
 
 ---
 
@@ -38,7 +38,7 @@
 **Solution — Hybrid architecture:**
 
 1. Upgrade the Classic Bot to Enhanced (required prerequisite for the hybrid handoff pattern). The six compliance dialogs remain as Enhanced Bot Dialogs.
-2. Create a new Agentforce agent manually via Setup > Agentforce Agents > New Agent. Add Topics for each of the six open-ended query categories with LLM-routing descriptions.
+2. Create a new Agentforce agent manually via Setup > Agentforce Agents > New Agent. Add Subagents for each of the six open-ended query categories with LLM-routing descriptions.
 3. Add two custom fields to the `MessagingSession` object: `Bot_Authenticated_User__c` (Text) and `Disclosure_Completed__c` (Checkbox).
 4. In the Enhanced Bot, add a step at the end of each compliance dialog that invokes a Flow. The Flow sets `Bot_Authenticated_User__c` to the session user Id and `Disclosure_Completed__c` to true, then hands off to the Agentforce agent.
 5. Implement a "Get Session Context" Action in the Agentforce agent that queries the `MessagingSession` record and exposes these fields to the reasoning engine. The agent can then confirm the user is authenticated and disclosures are complete before proceeding.
@@ -50,8 +50,8 @@
 
 ## Anti-Pattern: Treating Utterance Lists as the Primary Routing Mechanism After Migration
 
-**What practitioners do:** After running the migration tool, they find utterance lists imported into the Topic instructions. When routing mismatches occur, they add more utterances — treating the Topic instructions as a training dataset the way they treated utterances in the old NLU-based bot.
+**What practitioners do:** After running the migration tool, they find utterance lists imported into the Subagent instructions. When routing mismatches occur, they add more utterances — treating the Subagent instructions as a training dataset the way they treated utterances in the old NLU-based bot.
 
-**What goes wrong:** Adding utterances to Topic instructions does not improve routing accuracy. Agentforce does not train an NLU classifier from utterances. The LLM reads the full Topic description and matches user intent semantically. A Topic description that is a list of 50 utterances is harder for the LLM to interpret than a single paragraph describing the Topic's scope. Routing ambiguity increases as the description becomes less coherent.
+**What goes wrong:** Adding utterances to Subagent instructions does not improve routing accuracy. Agentforce does not train an NLU classifier from utterances. The LLM reads the full Subagent description and matches user intent semantically. A Subagent description that is a list of 50 utterances is harder for the LLM to interpret than a single paragraph describing the Subagent's scope. Routing ambiguity increases as the description becomes less coherent.
 
-**Correct approach:** Replace utterance lists with a clear, natural-language paragraph describing when this Topic applies. Include positive scope (what it covers), negative scope (what it does not cover), and 2-3 example intents in sentence form. Write the description for a language model to interpret, not for a human to skim.
+**Correct approach:** Replace utterance lists with a clear, natural-language paragraph describing when this Subagent applies. Include positive scope (what it covers), negative scope (what it does not cover), and 2-3 example intents in sentence form. Write the description for a language model to interpret, not for a human to skim.

@@ -1,6 +1,6 @@
 ---
 name: heroku-salesforce-integration
-description: "Heroku ↔ Salesforce integration paths — Heroku Connect (Postgres bidirectional sync), Heroku AppLink (expose Heroku APIs to Flow / Apex / Agentforce), Heroku External Objects (Salesforce Connect oData), Platform Events, REST API in either direction, and Salesforce Canvas for UI. NOT for AWS integration ( — use integration/aws-salesforce-patterns."
+description: "Heroku ↔ Salesforce integration paths — Heroku Connect (Postgres bidirectional sync), Heroku AppLink (expose Heroku APIs to Flow / Apex / Agentforce), Heroku External Objects (Salesforce Connect oData), Platform Events, REST API in either direction, and Salesforce Canvas for UI. NOT for AWS integration — use integration/aws-salesforce-patterns."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -32,9 +32,9 @@ outputs:
   - "Decision: integration user setup, region co-location, plan tier"
   - "Specific limits the chosen path will hit"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-08-14
 ---
 
 # Heroku ↔ Salesforce Integration

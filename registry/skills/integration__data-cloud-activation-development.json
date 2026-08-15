@@ -59,9 +59,9 @@
     "f59ffa6fc6148bc89ca4",
     "f70579ba06a8c0c7b93d"
   ],
-  "content_hash": "bd370fdf48aa98c534129ce524fc7f20c3a3b25a62957fa8d496361157c91ea0",
+  "content_hash": "647c7b54e3c25080ff70764ef47415755152eee0aac7926724d20e83ae925783",
   "dependencies": [],
-  "description": "Use this skill when building developer-driven Data Cloud activation surfaces: webhook Data Action Targets with HMAC-SHA256 signing, Salesforce Platform Event data actions, Data Cloud-Triggered Flows on DMO insert. NOT for configuring standard admin-level Activation Targets (SFTP, ad platform segment p \u2014 use integration/webhook-inbound-patterns.",
+  "description": "Use this skill when building developer-driven Data Cloud activation surfaces: webhook Data Action Targets with HMAC-SHA256 signing, Salesforce Platform Event data actions, Data Cloud-Triggered Flows on DMO insert. NOT for standard admin-level Activation Targets (SFTP, ad platform segment publishing) \u2014 use admin/data-cloud-segmentation. NOT for receiving webhooks into Salesforce \u2014 use integration/webhook-inbound-patterns.",
   "file_location": "skills/integration/data-cloud-activation-development",
   "id": "integration/data-cloud-activation-development",
   "inputs": [
@@ -108,7 +108,7 @@
   "templates": [
     "skills/integration/data-cloud-activation-development/templates/data-cloud-activation-development-template.md"
   ],
-  "updated": "2026-04-16",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

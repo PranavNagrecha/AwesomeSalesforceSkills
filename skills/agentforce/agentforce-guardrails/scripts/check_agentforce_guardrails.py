@@ -42,7 +42,11 @@ ROUTING_IN_SCOPE_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\bdo not route\b", re.IGNORECASE),
     re.compile(r"\bonly route\b", re.IGNORECASE),
     re.compile(r"\bnot for\b.*\bquestions\b", re.IGNORECASE),
-    re.compile(r"\bdo not select this topic\b", re.IGNORECASE),
+    # Match both vocabularies. Salesforce renamed agent "topics" to "subagents"
+    # in April 2026 and this skill now teaches the newer wording, so matching
+    # only "topic" would make this pattern stop firing on the exact Scope text
+    # the skill recommends writing.
+    re.compile(r"\bdo not select this (?:topic|subagent)\b", re.IGNORECASE),
 ]
 
 IMPERATIVE_THRESHOLD = 2  # Warn when more than this many imperatives found in a block

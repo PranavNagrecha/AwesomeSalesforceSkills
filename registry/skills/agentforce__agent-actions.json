@@ -63,7 +63,7 @@
     "f81add6ec1383deb8c38",
     "fce45be9210a35b2d0dc"
   ],
-  "content_hash": "af86618268a9b6d4f259e8074a4b517fc80e687ad49a0ab146eb7950d358f702",
+  "content_hash": "cd13353dda9ec9a63be22415b51d5909082434eebef364e171da0946cd8d59bb",
   "dependencies": [],
   "description": "Designing or reviewing Agentforce actions: Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'build an agent that can look up an order', 'make the agent able to check order status', 'give the agent a capability', 'agent that can retrieve a record', 'flow action for agent', 'agent invocable action', 'action schema design'. NOT for writing the Apex class itself \u2014 use agentforce/custom-agent-actions-apex. NOT for the reason_code error envelope that stops an agent retry loop \u2014 use agentforce/agent-action-error-handling.",
   "file_location": "skills/agentforce/agent-actions",
@@ -104,7 +104,7 @@
   "templates": [
     "skills/agentforce/agent-actions/templates/agent-actions-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

@@ -32,15 +32,15 @@ Turn 3 (user): "actually my order is A7843"
 
 ---
 
-## Example 2: Cross-topic account verification
+## Example 2: Cross-subagent account verification
 
-**Context:** User starts in Support topic (verifies identity via case number) and later switches to Billing topic (which would normally require identity verification too).
+**Context:** User starts in the Support subagent (called a topic before April 2026, and still named that way in the metadata) — it verifies identity via case number — and later switches to the Billing subagent, which would normally require identity verification too.
 
 **Problem:** Re-asking for verification feels broken; skipping it is a security hole.
 
 **Solution:**
 
-Declare `session.verifiedAccountId` at cross-topic scope when the Support topic completes identity verification. Billing topic's entry condition checks `session.verifiedAccountId != null`; if present, skip re-verification. If the Billing topic exits and a third topic opens beyond a short window (e.g., 10 minutes), force re-verification.
+Declare `session.verifiedAccountId` at cross-subagent scope when the Support subagent completes identity verification. The Billing subagent's entry condition checks `session.verifiedAccountId != null`; if present, skip re-verification. If the Billing subagent exits and a third subagent opens beyond a short window (e.g., 10 minutes), force re-verification.
 
 ```
 Support topic:
@@ -55,7 +55,7 @@ Billing topic entry:
   - If both pass: proceed. Else: re-verify.
 ```
 
-**Why it works:** Verification survives the topic boundary but expires quickly enough to preserve security posture.
+**Why it works:** Verification survives the subagent boundary but expires quickly enough to preserve security posture.
 
 ---
 
@@ -101,10 +101,10 @@ Escalation payload:
 
 ---
 
-## Anti-Pattern: Re-verifying identity on every topic transition
+## Anti-Pattern: Re-verifying identity on every subagent transition
 
-**What practitioners do:** Treat every topic as a fresh conversation and re-ask for identity.
+**What practitioners do:** Treat every subagent as a fresh conversation and re-ask for identity.
 
 **What goes wrong:** Users feel like the agent doesn't know them.
 
-**Correct approach:** Cross-topic verification variable with a timed expiry. See Example 2.
+**Correct approach:** Cross-subagent verification variable with a timed expiry. See Example 2.

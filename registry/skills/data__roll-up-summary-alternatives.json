@@ -52,9 +52,9 @@
     "dd2173e53b6e28952f18",
     "ee18fbf6e17f7c1ec5ec"
   ],
-  "content_hash": "2b64bd199a4ff2a598f5caadf6b1bdefeed2fddb6c5930b45a40416657c836c1",
+  "content_hash": "fde19599e2907700f4d27eb2e707c1acdd6db9d660ed357d995981f18dfca233",
   "dependencies": [],
-  "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on. NOT for ordinary master-detail roll-up fields that fit native limits without extra desig \u2014 use apex/cross-object-formula-and-rollup-performance.",
+  "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup'. NOT for ordinary master-detail roll-ups that fit native limits \u2014 use apex/cross-object-formula-and-rollup-performance.",
   "file_location": "skills/data/roll-up-summary-alternatives",
   "id": "data/roll-up-summary-alternatives",
   "inputs": [
@@ -93,7 +93,7 @@
   "templates": [
     "skills/data/roll-up-summary-alternatives/templates/roll-up-summary-alternatives-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

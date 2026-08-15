@@ -27,9 +27,9 @@ outputs:
   - "Conversation preview test plan for brand voice validation"
   - "Multi-persona strategy recommendation if multiple audiences are served"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Persona Design
@@ -38,6 +38,11 @@ This skill activates when an Agentforce practitioner needs to define, encode, or
 
 Persona is NOT prompt-engineering trivia — it's the single biggest driver of whether users trust the agent. An agent with the right tool set and the wrong persona feels robotic or presumptuous; users disengage. An agent with the right persona and weaker tooling still feels helpful because users forgive capability gaps when the interaction feels human-reasonable.
 
+> **Terminology.** Agentforce *subagents* were called **topics** before April 2026.
+> This skill leads with *subagent* because that is the current product term. The
+> rename changed nothing about behaviour, and metadata and API names — plus the
+> search keywords readers arrive with — still say *topic*.
+
 ---
 
 ## Before Starting
@@ -45,7 +50,7 @@ Persona is NOT prompt-engineering trivia — it's the single biggest driver of w
 Check for `salesforce-context.md` in the project root. If present, read it first.
 
 Gather if not available:
-- Identify whether persona design is at the agent level (system instructions) or topic level (topic instructions) — these are distinct and this skill covers the agent level only.
+- Identify whether persona design is at the agent level (system instructions) or subagent level (subagent instructions) — these are distinct and this skill covers the agent level only.
 - Gather brand voice guidelines: adjective pairs (e.g., empathetic but concise, professional but approachable), prohibited phrases, any existing style guides.
 - Confirm the target channel(s) — adaptive response formats (Spring '26) allow different rendering decisions per channel, and a persona that works for web chat may need adjustment for Slack or API responses.
 - Who is the primary user? (Employee? Customer? Partner? Guest visitor?)
@@ -56,13 +61,13 @@ Gather if not available:
 
 ## Core Concepts
 
-### Agent-Level System Instructions vs Topic Instructions
+### Agent-Level System Instructions vs Subagent Instructions
 
 Agentforce has two instruction layers:
-1. **Agent-level system instructions** — apply to every conversation regardless of which topic is active. This is where persona, tone, and brand voice live.
-2. **Topic instructions** — apply only when the agent is handling that specific topic. These define scope and behavior for a particular subject, not the overall personality.
+1. **Agent-level system instructions** — apply to every conversation regardless of which subagent is active. This is where persona, tone, and brand voice live.
+2. **Subagent instructions** — apply only when the agent is handling that specific subagent. These define scope and behavior for a particular subject, not the overall personality.
 
-Persona must be encoded in agent-level instructions. Topic instructions should not repeat or override persona — they focus on task execution.
+Persona must be encoded in agent-level instructions. Subagent instructions should not repeat or override persona — they focus on task execution.
 
 ### Tone Encoding via Descriptive Voice Adjectives
 
@@ -93,7 +98,7 @@ customer's concern before acting.
 Agent Builder in Salesforce includes an AI Assist feature that analyzes agent-level instructions and flags conflicting, ambiguous, or overly prescriptive guidance. Use AI Assist after drafting instructions to identify:
 - Contradicting directives (e.g., "always be brief" and "always explain your reasoning in detail")
 - Ambiguous modal verb chains (must/never/always sequences)
-- Instructions that overlap with topic-level configuration
+- Instructions that overlap with subagent-level configuration
 
 ### Adaptive Response Formats (Spring '26)
 
@@ -110,7 +115,7 @@ Persona instructions degrade over context length. In long conversations, the LLM
 - Tone shifts toward default LLM patterns ("I'd be happy to...").
 - Signature phrases disappear.
 
-Mitigations: shorter conversations (hand off sooner to human), periodic persona reinforcement in topic instructions (only if reinforcement aligns — don't contradict agent-level), system-instruction placement that the model weights more heavily (opening paragraph is highest-priority).
+Mitigations: shorter conversations (hand off sooner to human), periodic persona reinforcement in subagent instructions (only if reinforcement aligns — don't contradict agent-level), system-instruction placement that the model weights more heavily (opening paragraph is highest-priority).
 
 ---
 
@@ -127,7 +132,7 @@ Mitigations: shorter conversations (hand off sooner to human), periodic persona 
 4. Run AI Assist to check for conflicts and ambiguous instructions.
 5. Test in conversation preview with 5–10 scripted utterances designed to probe tone at the edges.
 
-**Why not topic instructions:** Persona encoded in topic instructions applies only when that topic is active. If the LLM selects a different topic or falls back to the default, the persona may disappear.
+**Why not subagent instructions:** Persona encoded in subagent instructions applies only when that subagent is active. If the LLM selects a different subagent or falls back to the default, the persona may disappear.
 
 ### Pattern 2: Conversation Preview Test Plan
 
@@ -148,15 +153,15 @@ Run each in conversation preview and score against the brand voice adjectives. A
 
 **Structure:**
 1. Build a SEPARATE agent per audience.
-2. Each agent has its own system instructions + persona + topic set.
+2. Each agent has its own system instructions + persona + subagent set.
 3. Route to the appropriate agent at the conversation-entry point (based on user attributes, channel, or URL parameter).
-4. Agents may SHARE some topic-level logic (via subflows or invocables) but NOT persona.
+4. Agents may SHARE some subagent-level logic (via subflows or invocables) but NOT persona.
 
 ### Pattern 4: Persona Reinforcement for Long Conversations
 
 **When to use:** Conversations routinely exceed 10+ turns and drift is observed.
 
-**Structure:** Brief persona-reinforcement snippet in each topic's instructions that ALIGNS with (does not override) agent-level persona. Example: "Maintain a warm, concise tone throughout." One sentence — not a second full persona block.
+**Structure:** Brief persona-reinforcement snippet in each subagent's instructions that ALIGNS with (does not override) agent-level persona. Example: "Maintain a warm, concise tone throughout." One sentence — not a second full persona block.
 
 ### Pattern 5: Prohibited-Pattern Explicit List
 
@@ -183,7 +188,7 @@ Kept SHORT — long prohibition lists are modal-verb chains and cause reasoning 
 | Tone is inconsistent across conversations | Audit agent-level instructions for contradictions using AI Assist | Contradictory instructions cause non-deterministic tone |
 | Channel requires different response format (Slack vs API) | Configure adaptive response formats at channel level (Spring '26) | Do not hardcode markdown/JSON in persona instructions |
 | Agent uses excessive must/never/always chains | Rewrite as positive behavioral statements with adjectives (Pattern 1) | Modal verb chains cause reasoning loops |
-| Long-conversation drift observed | Add persona reinforcement in topic instructions (Pattern 4) | System-instruction attention weakens over context |
+| Long-conversation drift observed | Add persona reinforcement in subagent instructions (Pattern 4) | System-instruction attention weakens over context |
 | Brand has strong prohibitions | Explicit short list (Pattern 5) | Concrete > vague |
 
 ---
@@ -198,13 +203,13 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 4. Test in conversation preview with a structured test plan: 5+ utterances covering routine, frustrated, off-topic, complex request, and confusion scenarios.
 5. Score each response against the target voice adjectives. Iterate on wording until all scenarios are consistent.
 6. If multiple audiences need different personas, create a separate agent per audience and document which agent handles which audience in the deployment configuration.
-7. Monitor production conversations for persona drift; tune topic-level reinforcement if long-conversation drift is observed.
+7. Monitor production conversations for persona drift; tune subagent-level reinforcement if long-conversation drift is observed.
 
 ---
 
 ## Review Checklist
 
-- [ ] Persona is in agent-level instructions, not topic instructions.
+- [ ] Persona is in agent-level instructions, not subagent instructions.
 - [ ] Opening instruction paragraph contains role declaration and 3–5 tone adjectives.
 - [ ] No contradictory directives (e.g., "be brief" AND "explain everything in detail").
 - [ ] No long must/never/always chains — rewritten as positive behavioral statements.
@@ -230,10 +235,10 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 ## Salesforce-Specific Gotchas
 
 1. **Modal verb chains cause reasoning loops** — Long sequences of `must`/`never`/`always` instructions cause the LLM to spend inference tokens evaluating rule compliance instead of generating a helpful response.
-2. **Persona in topic instructions only applies when that topic is active** — If placed in a topic's instructions rather than the agent-level instructions, it only applies when the LLM routes to that topic.
+2. **Persona in subagent instructions only applies when that subagent is active** — If placed in a subagent's instructions rather than the agent-level instructions, it only applies when the LLM routes to that subagent.
 3. **AI Assist reviews instructions but does not enforce them at runtime** — AI Assist is a static analysis tool; conflicting instructions it flags may still appear to work in simple tests but fail at the edges.
 4. **A single agent cannot switch personas based on user input** — Attempting conditional persona switching leads to inconsistent behavior.
-5. **Persona drift over long conversations** — LLM's attention to system instructions weakens over context length; mitigation via topic-level reinforcement.
+5. **Persona drift over long conversations** — LLM's attention to system instructions weakens over context length; mitigation via subagent-level reinforcement.
 6. **Instruction length past 2000 characters degrades reliability** — the LLM's ability to hold the full persona diminishes with length; prefer tight.
 7. **Tone adjectives that conflict with the LLM's training produce uncanny output** — e.g., asking an LLM trained on helpful content to be "aloof" usually produces a robotic version of helpful, not aloof.
 8. **Channel-specific formatting instructions in the persona breaks other channels** — e.g., "respond in markdown" breaks API consumers; use adaptive response formats instead.
@@ -246,7 +251,7 @@ Surface these WITHOUT being asked:
 
 - **Persona instructions > 2000 characters** → Flag as High. Reliability risk.
 - **Modal verb chains (3+ `must/never/always` in a row)** → Flag as High. Reasoning loop risk.
-- **Persona in topic instructions instead of agent-level** → Flag as Critical. Coverage gap.
+- **Persona in subagent instructions instead of agent-level** → Flag as Critical. Coverage gap.
 - **No AI Assist run logged** → Flag as Medium. Static-analysis gap.
 - **Single agent trying to serve B2B + B2C with conditional instructions** → Flag as High. Multi-persona needed.
 - **No conversation-preview test plan** → Flag as High. Persona-validation gap.
@@ -261,13 +266,13 @@ Surface these WITHOUT being asked:
 | Conversation preview test plan | Scripted utterances with expected tone outcomes for QA |
 | Multi-persona agent roster | If multiple audiences served, list of agents with persona profiles |
 | AI Assist review log | Documented issues flagged and resolution |
-| Persona reinforcement snippets | Topic-level additions (Pattern 4) for long-conversation drift |
+| Persona reinforcement snippets | Subagent-level additions (Pattern 4) for long-conversation drift |
 
 ---
 
 ## Related Skills
 
-- **agentforce/agent-topic-design** — designing topic scope and instructions for task execution (separate from persona).
+- **agentforce/agent-topic-design** — designing subagent scope and instructions for task execution (separate from persona).
 - **agentforce/agent-testing-and-evaluation** — structured testing methodology for agent conversations.
 - **agentforce/agentforce-agent-creation** — end-to-end agent setup including channel assignment and deployment.
 - **agentforce/agent-actions** — the action contract that persona-driven conversations invoke.

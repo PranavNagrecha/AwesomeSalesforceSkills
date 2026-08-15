@@ -74,9 +74,9 @@
     "fc68e16553743508623d",
     "fca49bf3c9ef2c9c3048"
   ],
-  "content_hash": "c8f4a13a8c0cb6bfeb032afb50c5aa825e5f75a434148253f6f0eef0e78b524d",
+  "content_hash": "018a93123cd22bce2b4fda2f1fd5eaa02692c1d17e1b415931079914ee9eab07",
   "dependencies": [],
-  "description": "Heroku \u2194 Salesforce integration paths \u2014 Heroku Connect (Postgres bidirectional sync), Heroku AppLink (expose Heroku APIs to Flow / Apex / Agentforce), Heroku External Objects (Salesforce Connect oData), Platform Events, REST API in either direction, and Salesforce Canvas for UI. NOT for AWS integration ( \u2014 use integration/aws-salesforce-patterns.",
+  "description": "Heroku \u2194 Salesforce integration paths \u2014 Heroku Connect (Postgres bidirectional sync), Heroku AppLink (expose Heroku APIs to Flow / Apex / Agentforce), Heroku External Objects (Salesforce Connect oData), Platform Events, REST API in either direction, and Salesforce Canvas for UI. NOT for AWS integration \u2014 use integration/aws-salesforce-patterns.",
   "file_location": "skills/integration/heroku-salesforce-integration",
   "id": "integration/heroku-salesforce-integration",
   "inputs": [
@@ -121,7 +121,7 @@
   "templates": [
     "skills/integration/heroku-salesforce-integration/templates/heroku-salesforce-integration-template.md"
   ],
-  "updated": "2026-05-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

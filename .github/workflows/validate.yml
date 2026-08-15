@@ -52,10 +52,15 @@ jobs:
       # shard here. The old comment's "~40 shallow skills fail" estimate was
       # stale by an order of magnitude.
       #
-      # KNOWN FAILURE at re-enable time: query `translate omniscript` does not
-      # return `omnistudio/omnistudio-multi-language` in its top 3. That is a
-      # genuine retrieval defect, not a flake. Fix the ranking or that skill's
-      # triggers — do NOT re-add the skip flag to make the shard green.
+      # RESOLVED 2026-08-14. The known failure at re-enable time was the query
+      # `translate omniscript` not returning `omnistudio/omnistudio-multi-language`
+      # in its top 3. It now ranks #1 at 1.499, clear of the runner-up
+      # (`admin/multi-language-and-translation`, 0.570) — re-check with
+      # `python3 scripts/search_knowledge.py "translate omniscript"`.
+      #
+      # The standing rule that fixed it still applies: when a fixture fails,
+      # fix the ranking or that skill's triggers — do NOT re-add the skip flag
+      # to make the shard green.
       #
       # .githooks/pre-push deliberately keeps the skip: it runs all 4 shards
       # sequentially, so the fixtures would add ~4 minutes to every push.

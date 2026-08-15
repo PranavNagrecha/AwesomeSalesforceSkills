@@ -27,9 +27,9 @@ outputs:
   - Breaking-change detection checklist
 dependencies:
   - devops/flow-deployment-activation-ordering
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-08-14
 ---
 
 # Flow Versioning Strategy
@@ -64,19 +64,64 @@ old one drain.
 ## Cleanup Cadence
 
 - Retain the last 3 inactive versions (rollback depth).
-- After 30 days without paused interviews on a version, delete.
-- Cap total versions per flow at 10 (platform hard limit is 50) — force
-  the discipline before the platform does.
+- Delete a version only when **zero interviews reference it**. Age is a cheap
+  pre-filter for that condition, never a substitute — a paused interview resumes
+  on the version it started on, and since Spring '24 the org has no cap on how
+  many paused interviews accumulate.
+- Size the retention window per flow from the observed interview lifetime. A
+  screen flow with an overnight pause and a scheduled flow with a 90-day wait
+  need different windows; one org-wide number is wrong for both.
+- Cap total versions per flow at 10 by policy, so pruning happens on a calm
+  cadence rather than in response to a failed save.
+  The platform ceiling is **50 versions per flow** — stated in the Visual
+  Workflow Implementation Guide's limits table, and the number Salesforce returns
+  in the save error ("Maximum number of Versions per flow is 50").
+  <!-- PARTIALLY VERIFIED: 50 is corroborated by the Implementation Guide's table
+  and by the runtime error text. What was not confirmed during authoring is
+  whether the current General Flow Limits page restates it, because that page is
+  a Lightning SPA that fetchers cannot read. Two other figures on the same legacy
+  page (2,000 executed elements, 500 active flows) are known stale, so cite 50
+  from the error message rather than from that page. -->
 
 ## Breaking-Change Detection
 
-Before activating, diff against current active:
+The test is mechanical: **if anything outside the flow has to change at the same
+moment the flow changes, it is a new flow, not a new version.** The contract
+surface binds by *name* at run time — Apex `Flow.Interview.createInterview`,
+`lightning-flow` with `inputVariables`, another flow's `<subflows>` input
+assignments, quick actions, Experience Cloud pages — and nothing compiles over
+it.
+
+Before activating, diff against the current active version:
 
 - Added required variables? → breaking.
-- Removed variables still referenced by callers? → breaking.
+- Renamed or removed variables still referenced by callers? → breaking.
 - Changed element outputs on a path before a Pause? → breaking.
-- Added a Pause at the top of a flow that previously completed
-  inline? → behaviour-changing; test callers.
+- Removed an element a paused interview could currently occupy? → breaking.
+- Added a Pause at the top of a flow that previously completed inline? →
+  behaviour-changing; test callers.
+- API version moved? → behaviour-changing. Flow behaviour is versioned, and
+  Flow Builder can bump the version on save. Crossing API 52.0 changes the
+  run-mode default; crossing 57.0 removes the executed-elements cap.
+
+## Querying the Right Object
+
+Four objects answer four different questions, and picking the wrong one produces
+"sObject type 'Flow' is not supported."
+
+| Question | Object | API |
+|---|---|---|
+| Versions, their status, their definition | `Flow` | **Tooling API** |
+| Which version is active per definition | `FlowDefinitionView` | Standard |
+| Version metadata, read-only | `FlowVersionView` | Standard (46.0+) |
+| Live and paused interviews | `FlowInterview` | Standard |
+
+Flow version `Status` has five values: `Active`, `Draft`, `Obsolete`,
+`InvalidDraft`, and `UnderReview`. None of them means "safe to delete," and the
+API values do not match the UI labels — `Draft` and `Obsolete` both display as
+*Inactive*, `InvalidDraft` displays as *Draft*, `UnderReview` as *Under Review*.
+Filter cleanup queries on `Status != 'Active'` rather than enumerating the
+inactive values, so a value you did not think of cannot fall out of the inventory.
 
 ## Change Log
 
@@ -100,19 +145,32 @@ From v12 → v13
 
 ## Recommended Workflow
 
-1. Define "breaking change" list for your flows.
-2. Before new version, diff inputs/outputs against active.
-3. Decide: new version or new flow.
-4. Activate new version; monitor paused interview resume rates.
-5. Retain the last 3 inactive; delete older.
-6. Set alert on paused-interview age and version count.
-7. Track activations in a changelog per flow.
+1. **Inventory the callers first**, not last. Search the repository for the
+   flow's API name and for every input/output variable name it exposes. This is
+   the input to the decision, not a check afterwards.
+2. **Apply the breaking-change test.** Anything outside the flow that must change
+   at the same moment makes it a new flow. Otherwise, a new version.
+3. **Capture the currently active version number, per environment,** before
+   activating. It is the entire rollback plan.
+4. **Activate, and write the changelog entry** — breaking or not with the reason,
+   the callers checked, the live paused-interview count, and the rollback version
+   number.
+5. **Roll back by activating the prior version**, never by redeploying its
+   source. Redeploying creates a new version whose content matches the old one;
+   it does not restore the old one. Keep the bad version as evidence.
+6. **Prune on the interview-reference condition,** retaining at least three
+   inactive versions.
+7. **Treat every subflow activation as a multi-caller production change.** Search
+   the metadata for `<flowName>` references before activating; resolution is late,
+   so the parent runs whatever version of the child is active at run time.
 
 ## Official Sources Used
 
-- Flow Versioning —
-  https://help.salesforce.com/s/articleView?id=sf.flow_distribute_version.htm
-- Paused Interviews —
-  https://help.salesforce.com/s/articleView?id=sf.flow_concepts_runtime_paused.htm
-- Activate A Flow —
-  https://help.salesforce.com/s/articleView?id=sf.flow_distribute_activate.htm
+- FlowDefinition (Metadata API) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_flowdefinition.htm
+- Flow (Metadata API) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
+- Flow (Tooling API) — https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_flow.htm
+- FlowVersionView (Object Reference) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_flowversionview.htm
+- Have Unlimited Paused and Waiting Flows (Spring '24) — https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_mgmt_remove_paused_interview_limit.htm&release=248&type=5
+- General Flow Limits — https://help.salesforce.com/s/articleView?id=platform.flow_considerations_limit.htm&type=5
+
+The full annotated list is in `references/well-architected.md`.

@@ -36,16 +36,21 @@ outputs:
   - "Agent API authentication and request/response usage guidance"
   - "multi-channel testing and validation checklist"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Agent Channel Deployment
 
-Use this skill when an Agentforce agent has been created and activated and now needs to be surfaced on a channel so that end users can interact with it. This skill covers all supported Agentforce channel surfaces — Embedded Service (web chat), Slack, Experience Cloud, the Agent REST API for programmatic integrations, and Salesforce Mobile — including configuration, CORS/CSP requirements, OAuth setup, and multi-channel coordination. It does NOT cover agent logic design: topics, instructions, action contracts, or reasoning engine configuration are handled by `agentforce/agent-topic-design` and `agentforce/agent-actions`.
+Use this skill when an Agentforce agent has been created and activated and now needs to be surfaced on a channel so that end users can interact with it. This skill covers all supported Agentforce channel surfaces — Embedded Service (web chat), Slack, Experience Cloud, the Agent REST API for programmatic integrations, and Salesforce Mobile — including configuration, CORS/CSP requirements, OAuth setup, and multi-channel coordination. It does NOT cover agent logic design: subagents, instructions, action contracts, or reasoning engine configuration are handled by `agentforce/agent-topic-design` and `agentforce/agent-actions`.
 
 Channel deployment is a distinct lifecycle stage that comes after agent creation and activation. A successfully activated agent in Agentforce Builder is not yet accessible to users. Each channel requires its own separate configuration and publishing step.
+
+> **Terminology.** *Subagent* is the April 2026 rename of *topic*. Functionality
+> did not change and the API surface did not rename — the metadata type is still
+> `GenAiPlugin`, and skill slugs such as `agentforce/agent-topic-design` keep the
+> older word.
 
 ---
 
@@ -66,7 +71,7 @@ Gather this context before working on anything in this domain:
 
 ### Channel Surfaces Are Independent Of Agent Definition
 
-An Agentforce agent definition (the Bot + BotVersion + GenAiPlannerBundle metadata bundle) exists independently of any channel. The same agent can be associated with multiple channel surfaces simultaneously. Each channel surface is a separate Salesforce metadata component or platform configuration record that points to the agent. Changing the agent definition (adding topics, updating instructions) requires republishing each dependent channel deployment for the changes to reach users — the channels do not auto-refresh.
+An Agentforce agent definition (the Bot + BotVersion + GenAiPlannerBundle metadata bundle) exists independently of any channel. The same agent can be associated with multiple channel surfaces simultaneously. Each channel surface is a separate Salesforce metadata component or platform configuration record that points to the agent. Changing the agent definition (adding subagents, updating instructions) requires republishing each dependent channel deployment for the changes to reach users — the channels do not auto-refresh.
 
 ### Embedded Service Deployment Is The Primary Web Channel
 
@@ -158,7 +163,7 @@ A single agent deployed across multiple channels will behave identically in term
 
 Step-by-step instructions for deploying an Agentforce agent to one or more channels:
 
-1. **Confirm agent readiness** — verify the agent is in Active state in Setup > Agentforce Agents. Confirm topics, actions, and instructions are finalized. Confirm the Einstein Trust Layer has been reviewed for the channel's audience (internal vs. external users).
+1. **Confirm agent readiness** — verify the agent is in Active state in Setup > Agentforce Agents. Confirm subagents, actions, and instructions are finalized. Confirm the Einstein Trust Layer has been reviewed for the channel's audience (internal vs. external users).
 2. **Identify target channels** — determine which channel surfaces are required (Embedded Service, Slack, Agent API, or a combination). For each channel, collect the prerequisites: domain origins for web, Slack workspace admin contact for Slack, Connected App credentials for API.
 3. **Configure the channel** — follow the channel-specific pattern from the Common Patterns section. For Embedded Service: create the deployment, associate the agent, configure CORS/CSP, publish, and embed the snippet. For Slack: run the OAuth install flow, associate the agent, configure channel or DM mode, publish. For Agent API: create the Connected App, retrieve the agent ID, test the session and message endpoints.
 4. **Test on the actual channel surface in sandbox** — do not rely solely on Conversation Preview. Test each channel independently. Verify the widget loads (web), the Slack app responds (Slack), and the API returns valid JSON (Agent API). Check browser console for CORS errors (web), OAuth errors (Slack), and HTTP 4xx responses (API).
@@ -191,7 +196,7 @@ Run through these before marking channel deployment work complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Agent must be Active before channel deployment can be published** — the agent selector in Embedded Service Deployment and Slack Deployment Setup only shows agents in Active state. If the agent is in Draft or Inactive, it will not appear in the dropdown and the deployment cannot be associated.
-2. **Embedded Service deployment must be republished after every agent change** — modifying agent instructions, topics, or actions does not update active channel deployments. Each Embedded Service deployment caches the agent configuration at publish time. Changes only reach users after the deployment is explicitly republished.
+2. **Embedded Service deployment must be republished after every agent change** — modifying agent instructions, subagents, or actions does not update active channel deployments. Each Embedded Service deployment caches the agent configuration at publish time. Changes only reach users after the deployment is explicitly republished.
 3. **CORS and CSP must cover every domain origin where the widget runs** — a missing CORS entry for even a single domain causes the Embedded Service widget to silently fail on that domain. There is no Salesforce-side error log for CORS failures; the error appears only in the browser developer console as a blocked cross-origin request.
 4. **Slack deployment requires the Salesforce-managed Slack app, not a custom app** — creating a custom Slack app and attempting to wire it to Agentforce is unsupported and will not work. The managed app handles session lifecycle and Trust Layer enforcement. The Slack workspace admin must approve the managed app installation; this cannot be pre-approved by the Salesforce admin alone.
 5. **Agent API authentication uses `chatbot_api` OAuth scope, not standard `api` scope alone** — Connected Apps configured with only the `api` scope cannot open Agent API sessions. The `chatbot_api` scope must be explicitly added. This is a common omission that produces HTTP 403 responses when trying to create a session.
@@ -213,7 +218,7 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `agentforce/agentforce-agent-creation` — use when the agent itself has not yet been created or activated; channel deployment is a post-creation step.
-- `agentforce/agent-topic-design` — use when the problem is topic boundary design or classification logic, not channel surface configuration.
-- `agentforce/agent-actions` — use when the problem is action contract quality or action availability within topics.
+- `agentforce/agent-topic-design` — use when the problem is subagent boundary design or classification logic, not channel surface configuration.
+- `agentforce/agent-actions` — use when the problem is action contract quality or action availability within subagents.
 - `agentforce/einstein-trust-layer` — use alongside this skill to review ZDR, data masking, and grounding policies before opening a channel to external users.
 - `security/csp-and-trusted-urls` — use for detailed CSP Trusted Sites configuration if the Embedded Service deployment is on an external site with a strict Content Security Policy.

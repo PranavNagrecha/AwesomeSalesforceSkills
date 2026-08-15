@@ -80,7 +80,7 @@
     "fe49271f4802ad199abf",
     "fff8e087f2fa7bac2943"
   ],
-  "content_hash": "25c09ac44aa44694befbf94a323de77aea1a344fe31454ee612063d4c6107c5b",
+  "content_hash": "c4306c17086991c34449da256ebfa88964e294a150fa772f8810adbf6d403d38",
   "dependencies": [],
   "description": "Use this skill when writing or debugging SOQL relationship queries in Apex \u2014 child-to-parent dot notation traversal, parent-to-child subqueries, polymorphic TYPEOF projection and `.Type` type filtering, and FROM-clause alias notation for implicit-join filtering. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, What.Type filter, WhatId, WhoId, alias notation. NOT for aggregate queries \u2014 use apex/apex-aggregate-queries. NOT for SOSL text search \u2014 use data/sosl-search-patterns.",
   "file_location": "skills/apex/apex-soql-relationship-queries",
@@ -134,7 +134,7 @@
   "templates": [
     "skills/apex/apex-soql-relationship-queries/templates/apex-soql-relationship-queries-template.md"
   ],
-  "updated": "2026-07-08",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.2.1"
+  "version": "1.2.2"
 }

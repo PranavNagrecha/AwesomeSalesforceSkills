@@ -51,7 +51,7 @@
     "f681b772f4f04f8eb5fc",
     "f6eb62b6ff862d108f2d"
   ],
-  "content_hash": "bcccb9bea6bd93fb8f349b3c07ec111c19ad5d013224d41d31c93b6476c7686b",
+  "content_hash": "0ff32df37e3cf2bf4188b81a21e97ff6435aff22d540f64fec04e2073ff68811",
   "dependencies": [],
   "description": "Use this skill to define, document, and validate KPI metrics for CRM Analytics \u2014 covering metric formula design, dimension selection, target-dataset modeling, benchmark setting, and the KPI register that must exist before any dashboard or lens is built. Trigger keywords: KPI definition CRM Analytics, analytics metric design, analytics target attainment, CRM Analytics measures vs dimensions, analytics benchmark. NOT for laying out the dashboard or lens itself \u2014 use admin/analytics-dashboard-design. NOT for scoping data sources, audiences, and drill-down paths \u2014 use admin/analytics-requirements-gathering.",
   "file_location": "skills/admin/analytics-kpi-definition",

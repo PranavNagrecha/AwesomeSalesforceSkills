@@ -4,7 +4,7 @@
 
 **Context:** A telco has deployed an Agentforce agent on their customer portal (Experience Cloud) to handle plan upgrades, billing inquiries, and tech support. After launch, conversation logs show the agent occasionally discussing competitor plans and engaging with off-topic requests (e.g., general technology advice). No restricted topics have been configured and the agent-level system instruction is minimal ("You are a helpful customer service agent.").
 
-**Problem:** Without restricted topics or a fallback system instruction, the agent uses its base LLM knowledge to answer any question that does not match a configured topic, including competitor comparisons and out-of-scope advice. This creates regulatory and brand risk.
+**Problem:** Without restricted topics or a fallback system instruction, the agent uses its base LLM knowledge to answer any question that does not match a configured subagent (called a *topic* before April 2026), including competitor comparisons and out-of-scope advice. This creates regulatory and brand risk.
 
 **Solution:**
 
@@ -28,15 +28,15 @@ Subject: "General technology advice unrelated to TelcoX products"
 Refusal response: "I can only assist with questions about TelcoX services. For general tech support, please consult a specialist."
 ```
 
-**Why it works:** The fallback system instruction handles all post-classification gaps — requests that do not match any topic. The restricted topic entries operate pre-classification and block prohibited subjects before the LLM even attempts topic routing. Together, the two layers provide defense-in-depth: pre-classification blocking plus post-classification fallback.
+**Why it works:** The fallback system instruction handles all post-classification gaps — requests that do not match any subagent. The restricted topic entries operate pre-classification and block prohibited subjects before the LLM even attempts subagent routing. Together, the two layers provide defense-in-depth: pre-classification blocking plus post-classification fallback.
 
 ---
 
-## Example 2: Internal IT Helpdesk Agent — Escalation Topic With Omni-Channel Routing
+## Example 2: Internal IT Helpdesk Agent — Escalation Subagent With Omni-Channel Routing
 
-**Context:** An IT helpdesk agent is deployed on an internal Salesforce org. It handles password resets, VPN issues, and hardware requests via configured topics. The agent is expected to escalate to a human IT specialist when issues are complex or when the user explicitly requests human help. The project team configured the Escalation topic and set a pre-handoff message but did not complete the Omni-Channel queue setup. In testing, users see "Connecting you to a specialist..." but no conversation ever arrives in the Omni-Channel queue.
+**Context:** An IT helpdesk agent is deployed on an internal Salesforce org. It handles password resets, VPN issues, and hardware requests via configured subagents. The agent is expected to escalate to a human IT specialist when issues are complex or when the user explicitly requests human help. The project team configured the Escalation subagent and set a pre-handoff message but did not complete the Omni-Channel queue setup. In testing, users see "Connecting you to a specialist..." but no conversation ever arrives in the Omni-Channel queue.
 
-**Problem:** The Escalation topic requires a live Omni-Channel routing destination. Without a valid queue or flow assignment, the topic technically fires and shows the pre-handoff message, but the handoff call silently fails. No error is surfaced.
+**Problem:** The Escalation subagent requires a live Omni-Channel routing destination. Without a valid queue or flow assignment, the subagent technically fires and shows the pre-handoff message, but the handoff call silently fails. No error is surfaced.
 
 **Solution:**
 
@@ -60,15 +60,15 @@ Password reset and hardware request actions are restricted to their respective t
 preventing the agent from invoking them mid-escalation.
 ```
 
-**Why it works:** Completing the Omni-Channel configuration end-to-end (queue creation, routing config, and Escalation topic assignment) is the only way to make handoffs work. The topic filter ensures no automated actions fire during the escalation flow, which could create data issues if the user's session is being handed to a human.
+**Why it works:** Completing the Omni-Channel configuration end-to-end (queue creation, routing config, and Escalation subagent assignment) is the only way to make handoffs work. The subagent filter ensures no automated actions fire during the escalation flow, which could create data issues if the user's session is being handed to a human.
 
 ---
 
-## Example 3: Scope Field vs. Classification Description — Fixing Misrouted Topics
+## Example 3: Scope Field vs. Classification Description — Fixing Misrouted Subagents
 
-**Context:** An agent has two topics: "Returns and Refunds" and "General Inquiry". The General Inquiry topic Scope field contains the line: "Do not help with returns or refunds." Despite this, users asking about returns are sometimes routed to General Inquiry instead of Returns and Refunds, and the agent then provides refund-related information (because the base LLM knows about refunds even when the Scope says not to).
+**Context:** An agent has two subagents: "Returns and Refunds" and "General Inquiry". The General Inquiry subagent Scope field contains the line: "Do not help with returns or refunds." Despite this, users asking about returns are sometimes routed to General Inquiry instead of Returns and Refunds, and the agent then provides refund-related information (because the base LLM knows about refunds even when the Scope says not to).
 
-**Problem:** The practitioner added the restriction to the wrong field. Scope is read after topic selection. It cannot prevent a topic from being selected — only the Classification Description controls that. Because the Returns and Refunds topic's Classification Description is too vague, some return-related phrasings fall through to General Inquiry.
+**Problem:** The practitioner added the restriction to the wrong field. Scope is read after subagent selection. It cannot prevent a subagent from being selected — only the Classification Description controls that. Because the Returns and Refunds subagent's Classification Description is too vague, some return-related phrasings fall through to General Inquiry.
 
 **Solution:**
 
@@ -98,10 +98,10 @@ process refunds, or provide order-specific information."
 
 ---
 
-## Anti-Pattern: Over-Relying on Topic Scope to Block Prohibited Subjects
+## Anti-Pattern: Over-Relying on Subagent Scope to Block Prohibited Subjects
 
-**What practitioners do:** Write long Scope fields with prohibitions like "Do not discuss politics, religion, competitor products, medical advice, or legal advice" on every topic, expecting this to block those subjects.
+**What practitioners do:** Write long Scope fields with prohibitions like "Do not discuss politics, religion, competitor products, medical advice, or legal advice" on every subagent, expecting this to block those subjects.
 
-**What goes wrong:** Scope fields are post-selection constraints. A user who asks about a prohibited subject may still be routed to a topic (because the Classification Description matched some part of their query), and the LLM may partially comply with the Scope prohibition or partially answer before the constraint activates. Scope-based prohibitions are unreliable because they depend on the LLM respecting them during action planning, not on a platform-level pre-classification block.
+**What goes wrong:** Scope fields are post-selection constraints. A user who asks about a prohibited subject may still be routed to a subagent (because the Classification Description matched some part of their query), and the LLM may partially comply with the Scope prohibition or partially answer before the constraint activates. Scope-based prohibitions are unreliable because they depend on the LLM respecting them during action planning, not on a platform-level pre-classification block.
 
-**Correct approach:** Add Restricted Topic entries for subjects that must never be discussed. Restricted topics operate as a pre-classification filter — the user's input is checked against restricted topic definitions before any topic is selected. Use the Scope field only for in-topic behavioral boundaries (what actions this topic will or will not take), not for cross-topic subject blocking.
+**Correct approach:** Add Restricted Topic entries for subjects that must never be discussed. Restricted topics operate as a pre-classification filter — the user's input is checked against restricted topic definitions before any subagent is selected. Use the Scope field only for in-subagent behavioral boundaries (what actions this subagent will or will not take), not for cross-subagent subject blocking.

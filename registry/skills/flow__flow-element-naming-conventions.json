@@ -76,9 +76,9 @@
     "f9b315135b999a6df0e9",
     "ff96fca58e76d52ba180"
   ],
-  "content_hash": "0cf2ea724a847d5cb822ee366d298d414be005dbc0b0efa30217d0f9ecdb40d9",
+  "content_hash": "cc4b33b66d0ff4c9148e764be6fec6804604ed4e1034774c56f4c6ae14e2d2c9",
   "dependencies": [],
-  "description": "Canonical naming conventions for Flow elements (Get_/Update_/Decision_/Loop_/Assignment_), resource variables (var/coll/map/formula/choice/constant/stage/screen), Decision branch outcomes, Stage/Step labels in Orchestrations, Subflow input/output contracts, and fault-path target names. NOT for object/field naming \u2014 \u2014 use flow/flow-governance.",
+  "description": "Canonical naming conventions for Flow elements (Get_/Update_/Decision_/Loop_/Assignment_), resource variables (var/coll/map/formula/choice/constant/stage/screen), Decision branch outcomes, Stage/Step labels in Orchestrations, Subflow input/output contracts, and fault-path target names. NOT for object or field API naming (use admin/object-creation-and-design) or flow portfolio retirement \u2014 use flow/flow-governance.",
   "file_location": "skills/flow/flow-element-naming-conventions",
   "id": "flow/flow-element-naming-conventions",
   "inputs": [
@@ -122,7 +122,7 @@
   "templates": [
     "skills/flow/flow-element-naming-conventions/templates/flow-element-naming-conventions-template.md"
   ],
-  "updated": "2026-04-27",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

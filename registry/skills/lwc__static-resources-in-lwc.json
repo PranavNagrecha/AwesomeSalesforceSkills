@@ -53,9 +53,9 @@
     "f8a250876d669b046fe3",
     "fad266ce605ab9d0fe21"
   ],
-  "content_hash": "1526b213bb43e4351f614cc5b96c79de265a8be8fe431fa4fbfdbd985c1b404f",
+  "content_hash": "63ef7a76485a0fea65189b746a38c1e6f0f5ada2f46d878e72085d645bb07097",
   "dependencies": [],
-  "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and. NOT for npm-bundled code that should ship through the build pipeline or server-side inte \u2014 use security/csp-and-trusted-urls.",
+  "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. NOT for npm-bundled code that ships through the build pipeline or server-side integration assets \u2014 use security/csp-and-trusted-urls.",
   "file_location": "skills/lwc/static-resources-in-lwc",
   "id": "lwc/static-resources-in-lwc",
   "inputs": [
@@ -94,7 +94,7 @@
   "templates": [
     "skills/lwc/static-resources-in-lwc/templates/static-resources-in-lwc-template.md"
   ],
-  "updated": "2026-03-15",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

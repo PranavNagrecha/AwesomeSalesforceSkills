@@ -67,9 +67,9 @@
     "f855fe0cf5e910f243f4",
     "fd4fb384f334ad4b7fd7"
   ],
-  "content_hash": "8edf51e035912866b3763170b05d2e66c05bd095231960ac9907ea205168920d",
+  "content_hash": "d91a39e9efd98cfde16cbc7fa5cff4c5cd942a33a8f887997259abcf9d2638bd",
   "dependencies": [],
-  "description": "Tableau \u2194 Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract. NOT for CRM Analytics Studio (use crm-analytics-foundation) \u2014 use architect/crm-analytics-vs-tableau-decision.",
+  "description": "Tableau \u2194 Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract, Data Cloud). NOT for CRM Analytics Studio app build-out (use admin/crm-analytics-app-creation) \u2014 use architect/crm-analytics-vs-tableau-decision.",
   "file_location": "skills/integration/tableau-salesforce-connector",
   "id": "integration/tableau-salesforce-connector",
   "inputs": [
@@ -115,7 +115,7 @@
   "templates": [
     "skills/integration/tableau-salesforce-connector/templates/tableau-salesforce-connector-template.md"
   ],
-  "updated": "2026-04-21",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

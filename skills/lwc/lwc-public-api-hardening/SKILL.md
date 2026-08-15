@@ -1,6 +1,6 @@
 ---
 name: lwc-public-api-hardening
-description: "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT. NOT for component-to-component messaging design (see `component-communication`), NOT for — use lwc/lwc-reactive-state-patterns."
+description: "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT validate types), required-prop checks, and design attributes. NOT for component-to-component messaging (use lwc/component-communication) or reactive state — use lwc/lwc-reactive-state-patterns."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,9 +36,9 @@ outputs:
   - "a documented public-API contract using `templates/lwc-public-api-hardening-template.md`"
   - "a clean run of `scripts/check_lwc_public_api_hardening.py <bundle-path>`"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # LWC Public API Hardening

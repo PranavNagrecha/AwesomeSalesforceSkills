@@ -29,9 +29,9 @@ outputs:
   - "FLS enforcement at the async-job boundary (USER_MODE / stripInaccessible scoped to that user)"
   - "tests that exercise the async job under multiple FLS profiles"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-30
+updated: 2026-08-14
 ---
 
 # Field-Level Security in Async Contexts
@@ -63,7 +63,9 @@ The user that an async job runs as is determined at *enqueue* time, not at *exec
 | `System.schedule()` / scheduled Apex | The user who scheduled the job (often a long-departed sysadmin) — most common source of FLS surprises |
 | Platform-Event-triggered Apex (`after insert` on `__e`) | The **Automated Process** user, which bypasses FLS and CRUD entirely — documented but routinely missed |
 
-`WITH USER_MODE`, `WITH SECURITY_ENFORCED`, and `Security.stripInaccessible()` all evaluate against `UserInfo.getUserId()` *at the moment the call executes*. They don't know which user originally requested the work. If the requesting user and the running user differ, the security check answers a different question than the practitioner expected.
+`WITH USER_MODE`, `Security.stripInaccessible()`, and the default user mode that database operations get at `apiVersion` 67.0+ all evaluate against `UserInfo.getUserId()` *at the moment the call executes*. They don't know which user originally requested the work. If the requesting user and the running user differ, the security check answers a different question than the practitioner expected. (The older `WITH SECURITY_ENFORCED` had the same running-user blind spot, but it was removed in API 67.0 and does not compile on a class pinned at 67.0 or above — write `WITH USER_MODE`. Per-version detail: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.)
+
+The 67.0 default matters here specifically: a Queueable or Batch class bumped to 67.0 now enforces the running user's FLS on queries that carried no clause at all, and in async that running user is the enqueuer or the scheduler — not the person who asked for the work. Raising `apiVersion` therefore changes async behavior silently in both directions: previously-unenforced queries start enforcing, against the wrong identity.
 
 ### `WITH USER_MODE` in async ≠ "the user who pressed the button"
 

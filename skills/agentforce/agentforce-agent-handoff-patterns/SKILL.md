@@ -28,9 +28,9 @@ outputs:
   - "context package schema"
   - "user-facing messaging per handoff type"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Agentforce Agent Handoff Patterns
@@ -38,6 +38,11 @@ updated: 2026-04-28
 Most agent failures are handoff failures. The agent knew it was stuck, did not have a clean way to transfer the conversation, and either looped, hallucinated, or dumped the user into a cold queue without context. Good handoff design treats the transfer as a first-class capability with its own triggers, its own context schema, and its own messaging — not as "throw an error and let Omni-Channel figure it out."
 
 Three kinds of handoff matter: agent-to-human (Omni-Channel), agent-to-agent (swap persona, specialization, or domain), and agent-to-workflow (spawn a case, route to a Flow, schedule a callback). Each has different mechanics but shares the same design skeleton: trigger → context package → user message → receiver acknowledgment → (optional) hand-back.
+
+> **Terminology.** *Subagent* is the April 2026 rename of *topic*. Functionality
+> did not change and the API surface did not rename — the metadata type is still
+> `GenAiPlugin`, and the skill slug `agentforce/agent-topic-design` keeps the
+> older word.
 
 ---
 
@@ -147,7 +152,7 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 1. Omni-Channel routing honors agent presence; if no one is available, the conversation can sit indefinitely unless you add fallbacks.
 2. Case routing by owner vs queue has different audit trails.
 3. Context dumped as raw text into a case description is unsearchable and bloats storage.
-4. Agent-to-agent handoff resets topic context — the new agent does not see the previous topic's instructions.
+4. Agent-to-agent handoff resets subagent context — the new agent does not see the previous subagent's instructions.
 5. Hand-back requires the original agent session to still be alive, or you need an explicit resumption mechanism.
 
 ## Proactive Triggers
@@ -168,7 +173,7 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 
 ## Related Skills
 
-- `agentforce/agent-topic-design` — topic scope that informs scope-based handoffs.
+- `agentforce/agent-topic-design` — subagent scope that informs scope-based handoffs.
 - `agentforce/agentforce-guardrails` — guardrails that fire authorization handoffs.
 - `admin/omni-channel-routing-setup` — destination queue design.
 - `agentforce/agentforce-service-ai-setup` — service-agent integration.

@@ -109,9 +109,9 @@
     "f90db0221faba67edeec",
     "ffb01a309d9fa64edb44"
   ],
-  "content_hash": "294b82626a95a90b2e38f48831723035c9a5ffa32c9430da1f03d7e733260744",
+  "content_hash": "1e246bd708adfe748fba692f6618e7f753031401f533271ea3007e1a4caedf44",
   "dependencies": [],
-  "description": "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry. NOT for Named Credential configuration (use named-credentials-setup skill), NOT for Shie \u2014 use integration/mutual-tls-callouts.",
+  "description": "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry. NOT for Shield Platform Encryption key management or Named Credential setup \u2014 use integration/named-credentials-setup.",
   "file_location": "skills/security/certificate-and-key-management",
   "id": "security/certificate-and-key-management",
   "inputs": [
@@ -166,7 +166,7 @@
   "templates": [
     "skills/security/certificate-and-key-management/templates/certificate-and-key-management-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

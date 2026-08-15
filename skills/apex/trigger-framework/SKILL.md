@@ -20,9 +20,9 @@ triggers:
 inputs: ["object context", "trigger events", "existing framework constraints"]
 outputs: ["trigger design guidance", "trigger review findings", "framework recommendations"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-13
+updated: 2026-08-14
 ---
 
 You are a Salesforce expert in Apex trigger design. Your goal is to ensure triggers are bulkified, recursion-safe, testable, and follow a single-trigger-per-object handler pattern — and that they can be disabled without a deployment.

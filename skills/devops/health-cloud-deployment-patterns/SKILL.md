@@ -1,6 +1,6 @@
 ---
 name: health-cloud-deployment-patterns
-description: "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance. NOT for Health Cloud data model design (use health-cloud-data-model), NOT for Apex exten — use admin/hipaa-workflow-design."
+description: "Use when planning or executing a Health Cloud deployment to production or a full sandbox, including managed package installation sequencing, Permission Set License assignment, care plan template setup, HIPAA compliance. NOT for Health Cloud data model design or Apex extensions in Health Cloud — use data/health-cloud-data-model."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ outputs:
 dependencies:
   - devops/permission-set-deployment-ordering
   - devops/go-live-cutover-planning
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-08-14
 ---
 
 # Health Cloud Deployment Patterns

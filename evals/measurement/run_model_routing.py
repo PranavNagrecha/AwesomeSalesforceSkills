@@ -14,9 +14,13 @@ routing runs, validates benchmark labels, and applies documented relabels.
 Usage:
   python3 evals/measurement/run_model_routing.py --check
   python3 evals/measurement/run_model_routing.py \\
-      --results .overhaul-2026-08/research/routing-benchmark-routed.json
+      --results evals/measurement/model-routing/baseline-2026-08-14.json
   python3 evals/measurement/run_model_routing.py --apply-relabels --dry-run
   python3 evals/measurement/run_model_routing.py --apply-relabels
+
+Saved runs live in ``evals/measurement/model-routing/``. ``--results`` accepts
+either a bare list of routed rows or the ``{"routed": [...], "defects": [...]}``
+envelope the benchmark workflow writes.
 """
 
 from __future__ import annotations
@@ -29,9 +33,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_QUERIES = ROOT / "evals/measurement/heldout-queries.json"
-DEFAULT_RESULTS = ROOT / ".overhaul-2026-08/research/routing-benchmark-routed.json"
-DEFAULT_RELABELS = ROOT / ".overhaul-2026-08/research/routing-relabels.json"
-DEFAULT_DEFECTS = ROOT / ".overhaul-2026-08/research/routing-benchmark-defects.json"
+DEFAULT_RESULTS = ROOT / "evals/measurement/model-routing/after-2026-08-14.json"
 
 # Query -> new expected_skill extracted from routing-relabels.json concrete_fix
 # (only rows where label_is_wrong and a relabel is the primary fix).
@@ -115,6 +117,19 @@ def score_results(results: list[dict]) -> dict:
     }
 
 
+def load_routed(path: Path) -> list[dict]:
+    """Read a saved run as a list of routed rows.
+
+    The benchmark workflow writes ``{"routed": [...], "defects": [...]}``;
+    earlier runs were a bare list. Accept both so old result files keep
+    scoring.
+    """
+    data = load_json(path)
+    if isinstance(data, dict):
+        return data["routed"]
+    return data
+
+
 def check_relabels_applied(queries: list[dict]) -> list[str]:
     """Return queries where heldout label still differs from RELABEL_MAP."""
     by_query = {e["query"]: e for e in queries}
@@ -185,8 +200,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--queries", default=str(DEFAULT_QUERIES))
     parser.add_argument("--results", default=str(DEFAULT_RESULTS))
-    parser.add_argument("--relabels", default=str(DEFAULT_RELABELS))
-    parser.add_argument("--defects", default=str(DEFAULT_DEFECTS))
     parser.add_argument("--check", action="store_true", help="Validate files and relabel status only")
     parser.add_argument("--apply-relabels", action="store_true", help="Write RELABEL_MAP into heldout-queries.json")
     parser.add_argument("--dry-run", action="store_true", help="With --apply-relabels, print changes only")
@@ -235,7 +248,7 @@ def main() -> int:
         if not results_path.exists():
             problems.append(f"no saved routing results at {results_path}")
         else:
-            results = load_json(results_path)
+            results = load_routed(results_path)
             if len(results) != len(queries):
                 problems.append(
                     f"results count {len(results)} != queries count {len(queries)}"
@@ -263,7 +276,7 @@ def main() -> int:
         print("Run the sfskills-model-routing-benchmark workflow to produce one.", file=sys.stderr)
         return 1
 
-    results = load_json(results_path)
+    results = load_routed(results_path)
     if args.rescore_relabels:
         result = rescore_with_relabels(results)
     else:

@@ -80,11 +80,11 @@ that shapes how the agent should interact with users.)
 
 ---
 
-## Topic Inventory
+## Subagent Inventory
 
-*(List topics here at a high level. Each topic is designed in detail using the agent-topic-design skill.)*
+*(List subagents — called topics before April 2026 — here at a high level. Each subagent is designed in detail using the agent-topic-design skill.)*
 
-| Topic Label | Classification Description (one sentence) | Primary Actions |
+| Subagent Label | Classification Description (one sentence) | Primary Actions |
 |---|---|---|
 | | | |
 | | | |
@@ -132,7 +132,7 @@ that shapes how the agent should interact with users.)
 
 | Test Type | Tool | Pass Criteria |
 |---|---|---|
-| Conversation Preview | Agentforce Builder preview panel | Agent completes each topic's happy path |
+| Conversation Preview | Agentforce Builder preview panel | Agent completes each subagent's happy path |
 | Edge case / out-of-scope | Conversation Preview | Agent falls back or escalates cleanly |
 | Permission verification | Agent user login / data access test | Agent retrieves only scoped records |
 | Channel smoke test | Live channel (post-activation) | Widget appears, agent responds within SLA |

@@ -31,9 +31,9 @@ outputs:
   - "Domain, Selector, and Service class scaffolds following fflib conventions"
 dependencies:
   - apex-design-patterns
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-14
 ---
 
 # fflib Enterprise Patterns

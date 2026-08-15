@@ -12,7 +12,7 @@ RAG adds latency to every agent response that triggers retrieval. The retrieval 
 
 ### Reliability
 
-The retriever is a dependency in the agent's critical path. If the Data Cloud vector index is unavailable (e.g., during a Data Cloud maintenance window or index rebuild), the Grounding call fails and the agent must either fall back to an ungrounded response or surface an error. Design agent topics with explicit fallback behavior when zero chunks are retrieved — the agent should acknowledge the knowledge base is unavailable rather than hallucinate. Data Stream refresh cadence also affects reliability: a stale index means agents answer based on outdated information, which is a reliability failure for knowledge-dependent use cases.
+The retriever is a dependency in the agent's critical path. If the Data Cloud vector index is unavailable (e.g., during a Data Cloud maintenance window or index rebuild), the Grounding call fails and the agent must either fall back to an ungrounded response or surface an error. Design subagents (called topics before April 2026) with explicit fallback behavior when zero chunks are retrieved — the agent should acknowledge the knowledge base is unavailable rather than hallucinate. Data Stream refresh cadence also affects reliability: a stale index means agents answer based on outdated information, which is a reliability failure for knowledge-dependent use cases.
 
 ### Operational Excellence
 

@@ -23,7 +23,7 @@ Before recommending the migration tool, confirm the bot type.
 
 ## Anti-Pattern 2: Treating Utterance Volume as a Routing Quality Signal
 
-**What the LLM generates:** Advice to add more utterances to Topic instructions when routing mismatches occur after migration, replicating the NLU training loop pattern from legacy bots.
+**What the LLM generates:** Advice to add more utterances to Subagent instructions (subagents were called topics before April 2026) when routing mismatches occur after migration, replicating the NLU training loop pattern from legacy bots.
 
 **Why it happens:** The NLU utterance-training model is deeply represented in training data. LLMs default to it when they encounter routing failure patterns, even when the underlying platform has changed.
 
@@ -32,10 +32,10 @@ Before recommending the migration tool, confirm the bot type.
 ```
 Agentforce uses LLM semantic routing — utterances are not a training input.
 When routing is incorrect:
-1. Open the failing Topic in Agentforce Builder.
-2. Rewrite the Topic description as a clear scope statement: what it covers,
+1. Open the failing Subagent in Agentforce Builder.
+2. Rewrite the Subagent description as a clear scope statement: what it covers,
    what it does not cover, and example intents in sentence form.
-3. Add negative scope boundaries between Topics with overlapping vocabulary.
+3. Add negative scope boundaries between Subagents with overlapping vocabulary.
 4. Test in Conversation Preview after each description change.
 Do NOT add utterance lists. They do not affect LLM routing accuracy.
 ```
@@ -139,11 +139,11 @@ Always surface the Legacy Chat retirement deadline when advising on bot migratio
 
 ```
 The "Create AI Agent from Bot" tool output is a DRAFT that requires:
-1. Topic description rewrites — generated descriptions are dialog names, not
-   LLM-routing instructions. Rewrite every Topic before testing.
+1. Subagent description rewrites — generated descriptions are dialog names, not
+   LLM-routing instructions. Rewrite every Subagent before testing.
 2. Action implementation — generated Actions are placeholders with no logic.
    Every Action must be backed by a Flow, Apex, or service connection.
-3. Routing validation — test every Topic boundary in Conversation Preview
+3. Routing validation — test every Subagent boundary in Conversation Preview
    with real user input samples before activating.
 4. Latency validation — measure LLM planning response time against the
    experience SLA before committing to a go-live date.

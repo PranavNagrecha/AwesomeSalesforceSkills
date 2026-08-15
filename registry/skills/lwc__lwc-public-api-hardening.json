@@ -119,9 +119,9 @@
     "f9b56849eea28be88422",
     "fe7aa2245eb511af783f"
   ],
-  "content_hash": "1c141f7161674c131a580070652bf51f712b963efe5f980c30482441a4ef16a2",
+  "content_hash": "011b4e545bb3185db7c8d1db0b89a2eacc1dcff5beabd7cc846c01dfbb8a7d4f",
   "dependencies": [],
-  "description": "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT. NOT for component-to-component messaging design (see `component-communication`), NOT for \u2014 use lwc/lwc-reactive-state-patterns.",
+  "description": "Use when an LWC exposes `@api` properties, `@api` methods, or design attributes in `<targetConfig>` and you need a defensive, predictable public contract. Covers runtime type coercion (the `@api` decorator does NOT validate types), required-prop checks, and design attributes. NOT for component-to-component messaging (use lwc/component-communication) or reactive state \u2014 use lwc/lwc-reactive-state-patterns.",
   "file_location": "skills/lwc/lwc-public-api-hardening",
   "id": "lwc/lwc-public-api-hardening",
   "inputs": [
@@ -171,7 +171,7 @@
   "templates": [
     "skills/lwc/lwc-public-api-hardening/templates/lwc-public-api-hardening-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -48,9 +48,9 @@ Designs or audits the taxonomy behind a Salesforce Knowledge implementation — 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/knowledge-base-administration` — via `get_skill`
-4. `skills/architect/knowledge-taxonomy-design`
-5. `skills/architect/knowledge-vs-external-cms`
-6. `skills/data/knowledge-article-import`
+4. `skills/architect/knowledge-taxonomy-design` — the taxonomy this agent emits is hard-capped (5 Data Category Groups per org with 3 active by default, 5 hierarchy levels, 100 categories per group); without it the agent designs a group-per-product structure the org cannot activate and the plan has to be flattened after it has already been agreed
+5. `skills/architect/knowledge-vs-external-cms` — the per-body-of-content Knowledge-vs-CMS call is in this agent's declared scope and is decided here; without it the agent routes everything into Knowledge and produces a taxonomy carrying marketing and policy content that never needed article records, versioning, or a publish workflow
+6. `skills/data/knowledge-article-import` — the remediation queue is executed by the ZIP import, whose CSV carries the `channels` column and whose data categories must already exist in the org; without it the agent proposes categories the import cannot create on the fly, and forgets that imported articles land in Draft and need an explicit bulk publish before any of the visibility design takes effect
 7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 8. `skills/admin/knowledge-classic-to-lightning` — a taxonomy designed on a Classic Knowledge org must survive the Lightning migration — article types become record types and the taxonomy moves with them
 

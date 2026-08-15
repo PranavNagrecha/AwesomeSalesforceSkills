@@ -1,9 +1,0 @@
-{
-  "measured": "2026-08-14",
-  "n": 154,
-  "hit_at_1": 0.987012987012987,
-  "hit_at_3": 1.0,
-  "router_correct_rate": 0.8831168831168831,
-  "misses_count": 2,
-  "note": "Live 154-query re-route, then three post-fix edits: CI gold relabel to github-actions-for-salesforce; governor-limits 100-callout NOT-for first in gloss; agentforce eval/hallucination split. Remaining misses are both SSO setup (coverage gap, not a gloss bug)."
-}

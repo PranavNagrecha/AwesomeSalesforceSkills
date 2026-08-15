@@ -10,7 +10,7 @@ Use this template when implementing or auditing a RAG grounding configuration fo
 
 **Request summary:** (fill in what the practitioner or stakeholder asked for)
 
-**Agent / topic name:**
+**Agent / subagent name:** (subagents were called topics before April 2026)
 
 **Org type:** Production / Sandbox / Scratch
 
@@ -54,7 +54,7 @@ Answer these before taking action:
 |---|---|---|
 | Top-K | | |
 | Metadata filter expression | | |
-| Agent topic / prompt template attached to | | |
+| Subagent / prompt template attached to | | |
 | Fallback behavior if zero chunks returned | | |
 
 ---
@@ -79,7 +79,7 @@ Custom pattern notes:
 - [ ] HTML / markup stripped from source text field before indexing (if applicable)
 - [ ] Metadata filter fields populated with consistent casing during ingest
 - [ ] Vector search index created with documented chunk size, overlap, embedding model
-- [ ] Grounding configuration record created and linked to agent topic or prompt template
+- [ ] Grounding configuration record created and linked to subagent or prompt template
 - [ ] Top-K set to documented value with rationale
 - [ ] Metadata pre-filter tested with at least one known-matching and one known-non-matching value
 - [ ] Agent Preview Grounding tab reviewed — chunks visible and relevant for 5+ test queries
@@ -128,6 +128,6 @@ Record any deviations from the standard patterns documented in SKILL.md and the 
 
 - [ ] `prompt-builder-templates` — prompt template construction and merge field placement
 - [ ] `einstein-trust-layer` — masking policy review and audit log analysis
-- [ ] `agentforce-agent-creation` — prerequisite agent and topic setup
+- [ ] `agentforce-agent-creation` — prerequisite agent and subagent setup
 - [ ] `model-builder-and-byollm` — custom embedding model registration
 - [ ] `agent-topic-design` — context variable design for metadata filter merge fields

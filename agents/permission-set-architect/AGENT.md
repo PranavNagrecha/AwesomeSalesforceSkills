@@ -63,12 +63,12 @@ Two modes, selectable via input:
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/permission-set-architecture` — canonical model
-4. `skills/admin/permission-sets-vs-profiles`
+4. `skills/admin/permission-sets-vs-profiles` — names what still has no permission-set equivalent (login hours, login IP ranges, default record type, default app, page-layout assignment); without it the agent composes a PSG for a persona and reports the profile as fully decomposed while those settings are still doing the work
 5. `skills/security/permission-set-groups-and-muting` — PSG + muting mechanics
 6. `skills/admin/custom-permissions` — when Custom Permissions are the right surface
-7. `skills/admin/delegated-administration`
-8. `skills/admin/user-access-policies`
-9. `skills/admin/user-management`
+7. `skills/admin/delegated-administration` — delegated admin groups grant user-management and permission-set-assignment rights entirely outside the PS/PSG model; without it the agent's audit reports a persona as least-privilege while a delegated group lets those same users hand permissions to others
+8. `skills/admin/user-access-policies` — a PSG assignment can arrive from a policy rather than a person; without it the agent's audit calls a policy-granted assignment manual drift and recommends a revocation the policy re-applies on the next user update
+9. `skills/admin/user-management` — a permission set carries a license type and cannot grant what the user's license does not include; without it the agent composes a PSG that silently fails assignment for the half of the persona sitting on a different license
 10. `skills/admin/integration-user-management` — for integration personas
 11. `skills/devops/permission-set-deployment-ordering` — the deploy order is a first-class concern
 12. `templates/admin/permission-set-patterns.md` — the template the agent conforms to

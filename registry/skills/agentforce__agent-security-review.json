@@ -40,7 +40,7 @@
     "f4cddb9bff8000403595",
     "facac88269e22271aa18"
   ],
-  "content_hash": "ce51f1101231b4a47d39859b3cfb7236d411abffe9137cb89de5c58a2b823931",
+  "content_hash": "5ba77c6ea22d106b2352f1031da21e9ac1d97a67e4294cdba7f94538a7a847ab",
   "dependencies": [],
   "description": "Pre-production security checklist for Agentforce deployments: agent run-as permission scope, grounding-source data classification, action write-scope, audit trail. NOT for the full go-live readiness gate covering cost telemetry, rate limits, rollout and rollback \u2014 use agentforce/agentforce-production-readiness-checklist. NOT for a general org security review \u2014 use security/security-health-check.",
   "file_location": "skills/agentforce/agent-security-review",
@@ -81,7 +81,7 @@
   "templates": [
     "skills/agentforce/agent-security-review/templates/agent-security-review-template.md"
   ],
-  "updated": "2026-08-01",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

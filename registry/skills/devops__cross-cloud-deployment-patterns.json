@@ -89,9 +89,9 @@
     "fe8bb22a1e04d0a03504",
     "fed8e7398561c30fe065"
   ],
-  "content_hash": "56c2af345ab080964110b4ae99c39dc177b12101c6fa5c899fb400799d29f1ef",
+  "content_hash": "07120d59004e64e7f7c74f0a2f4736b52ef5024fa4252ad5ffb87e1b9fe69897",
   "dependencies": [],
-  "description": "Use when sequencing a deployment that spans multiple Salesforce clouds \u2014 Sales Cloud, Service Cloud, and Experience Cloud \u2014 and encountering reference errors, cascading metadata failures, or. NOT for single-cloud deployments (use pre-deployment-checklist), NOT for OmniStudio or H \u2014 use devops/experience-cloud-deployment-admin.",
+  "description": "Use when sequencing a deployment that spans multiple Salesforce clouds \u2014 Sales Cloud, Service Cloud, and Experience Cloud \u2014 and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. NOT for single-cloud deploys (use devops/pre-deployment-checklist) or Health Cloud specifics \u2014 use devops/health-cloud-deployment-patterns.",
   "file_location": "skills/devops/cross-cloud-deployment-patterns",
   "id": "devops/cross-cloud-deployment-patterns",
   "inputs": [
@@ -138,7 +138,7 @@
   "templates": [
     "skills/devops/cross-cloud-deployment-patterns/templates/cross-cloud-deployment-patterns-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

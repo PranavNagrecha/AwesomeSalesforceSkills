@@ -10,7 +10,7 @@
 | Adversarial |  | nightly |  |
 | Prod replay |  | weekly |  |
 
-## Golden Prompt (Per Topic)
+## Golden Prompt (Per Subagent)
 
 - 3-5 cases each covering:
   - happy path

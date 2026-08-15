@@ -1,6 +1,6 @@
 ---
 name: tableau-salesforce-connector
-description: "Tableau ↔ Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract. NOT for CRM Analytics Studio (use crm-analytics-foundation) — use architect/crm-analytics-vs-tableau-decision."
+description: "Tableau ↔ Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract, Data Cloud). NOT for CRM Analytics Studio app build-out (use admin/crm-analytics-app-creation) — use architect/crm-analytics-vs-tableau-decision."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ outputs:
   - Embedding architecture (Tableau Viz / iframe / Tableau for Salesforce)
   - Refresh and governance plan
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-21
+updated: 2026-08-14
 status: stub
 ---
 

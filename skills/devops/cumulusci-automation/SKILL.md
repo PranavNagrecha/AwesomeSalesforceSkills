@@ -1,6 +1,6 @@
 ---
 name: cumulusci-automation
-description: "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance. NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use sc — use devops/bitbucket-pipelines-for-salesforce."
+description: "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests. NOT for raw sf CLI workflows without CumulusCI (use apex/sf-cli-and-sfdx-essentials) or scratch org pooling — use devops/scratch-org-pools. NOT for Bitbucket pipeline setup — use devops/bitbucket-pipelines-for-salesforce."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -36,9 +36,9 @@ outputs:
   - "Robot Framework task configuration in cumulusci.yml"
   - "Cross-project source declaration for reusing tasks or flows from another repo"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # CumulusCI Automation

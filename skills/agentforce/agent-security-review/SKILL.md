@@ -24,9 +24,9 @@ outputs:
   - "Signed-off review doc"
   - "remediation ticket list"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-01
+updated: 2026-08-14
 ---
 
 # Agent Security Review
@@ -35,7 +35,7 @@ Agentforce agents touch user PII, internal data, and external APIs with the perm
 
 ## Recommended Workflow
 
-1. Export the agent: topic instructions, Invocable actions, grounding DMOs/sObjects, channel configs. Checksum and archive.
+1. Export the agent: subagent instructions (subagents were called topics before April 2026), Invocable actions, grounding DMOs/sObjects, channel configs. Checksum and archive.
 2. Map the agent's run-as user to a dedicated permission set; verify no profile-level permissions leak through.
 3. Classify every grounding source: public, internal, confidential, regulated. Redact/mask confidential+regulated fields at the Trust Layer.
 4. Enumerate Invocable write scope: which sObjects/fields can be created/updated/deleted. Apply FLS + CRUD checks in Apex; tighten or split the user.

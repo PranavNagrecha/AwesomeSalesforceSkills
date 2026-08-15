@@ -25,9 +25,9 @@ Blocking issues (if any):
 
 ---
 
-## General Slack Actions Topic Setup
+## General Slack Actions Subagent Setup
 
-The General Slack Actions topic must be explicitly added to the agent in Agent Builder after Slack deployment. It is never added automatically. This single step unlocks all four Slack-native actions.
+The General Slack Actions subagent (called a topic before April 2026; the Agent Builder navigation labels below still read "Topic") must be explicitly added to the agent in Agent Builder after Slack deployment. It is never added automatically. This single step unlocks all four Slack-native actions.
 
 ### Step-By-Step
 
@@ -36,21 +36,21 @@ The General Slack Actions topic must be explicitly added to the agent in Agent B
 | 1 | Open Setup > Agentforce Agents > [AGENT NAME] > Agent Builder | [ ] Done |
 | 2 | Navigate to Topics tab | [ ] Done |
 | 3 | Click Add Topic | [ ] Done |
-| 4 | Search for "General Slack Actions" in the topic picker (standard/managed topic, not custom) | [ ] Done |
+| 4 | Search for "General Slack Actions" in the topic picker (standard/managed subagent, not custom) | [ ] Done |
 | 5 | Select "General Slack Actions" and click Add | [ ] Done |
 | 6 | Save the agent | [ ] Done |
 | 7 | If agent transitions out of Active state, click Activate | [ ] Done |
 
-### Actions Unlocked By General Slack Actions Topic
+### Actions Unlocked By General Slack Actions Subagent
 
-| Action Name | Available After Topic Added | Requires Paid Plan |
+| Action Name | Available After Subagent Added | Requires Paid Plan |
 |---|---|---|
 | Create Canvas | Yes | YES — unavailable on Free plan |
 | Search Message History | Yes | No |
 | Send DM | Yes | No |
 | Look Up User | Yes | No |
 
-**Post-topic verification:** Test at least one action in Slack. Suggested test:
+**Post-subagent verification:** Test at least one action in Slack. Suggested test:
 
 ```
 User message to agent: Look up [TEST_SLACK_USERNAME] in Slack.
@@ -59,7 +59,7 @@ Expected: Agent returns the user's Slack profile details.
 
 Result: [ ] Pass / [ ] Fail
 
-If Look Up User fails, check: (a) General Slack Actions topic is shown in Active Topics list for the agent, and (b) agent is in Active state.
+If Look Up User fails, check: (a) General Slack Actions subagent is shown in the Active Topics list for the agent, and (b) agent is in Active state.
 
 ---
 
@@ -155,7 +155,7 @@ Identity mappings are data records, not metadata. They WILL NOT be transferred b
 
 ## Canvas Plan Validation And Fallback Design
 
-Complete this section only if Create Canvas is used in agent topics or instructions.
+Complete this section only if Create Canvas is used in agent subagents or instructions.
 
 | Field | Value |
 |---|---|
@@ -163,9 +163,9 @@ Complete this section only if Create Canvas is used in agent topics or instructi
 | Canvas creation supported | [ ] Yes / [ ] No (Free plan) |
 | Fallback designed for canvas failure | [ ] Yes / [ ] Not needed |
 
-### Fallback Topic Instruction (if canvas creation is unavailable or may fail)
+### Fallback Subagent Instruction (if canvas creation is unavailable or may fail)
 
-Add this instruction to any topic that uses Create Canvas. Adjust the wording to match the agent's persona and tone:
+Add this instruction to any subagent that uses Create Canvas. Adjust the wording to match the agent's persona and tone:
 
 ```
 If canvas creation is unavailable or returns an error, respond with a formatted
@@ -182,7 +182,7 @@ message to the user.
 
 Complete all test scenarios in sandbox before enabling the configuration for production users.
 
-### Test Scenario 1: General Slack Actions Topic — Look Up User
+### Test Scenario 1: General Slack Actions Subagent — Look Up User
 
 | Field | Value |
 |---|---|
@@ -241,7 +241,7 @@ Skip if workspace is on Free plan.
 
 | Item | Verified By | Date |
 |---|---|---|
-| General Slack Actions topic added and agent is Active | [NAME] | [DATE] |
+| General Slack Actions subagent added and agent is Active | [NAME] | [DATE] |
 | Public/private scope confirmed for all actions | [NAME] | [DATE] |
 | Identity mappings provisioned for all private-action users | [NAME] | [DATE] |
 | Canvas plan validation complete (or not applicable) | [NAME] | [DATE] |

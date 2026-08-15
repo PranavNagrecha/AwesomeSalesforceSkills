@@ -1,6 +1,6 @@
 ---
 name: lwc-locker-to-lws-migration
-description: "Migrating LWCs from Lightning Locker Service to Lightning Web Security (LWS) — flipping the org switch safely, identifying components likely to break, removing Locker workarounds that are now. NOT for Aura → LWC migration — — use lwc/aura-to-lwc-migration. NOT for general LWC security review (XSS, public-API hardening) — — use lwc/lwc-security."
+description: "Migrating LWCs from Lightning Locker Service to Lightning Web Security (LWS) — flipping the org switch safely, identifying components likely to break, removing Locker workarounds that are now unnecessary. NOT for Aura → LWC migration — use lwc/aura-to-lwc-migration. NOT for general LWC security review — use lwc/lwc-security."
 category: lwc
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ outputs:
   - "Runbook for the org switch covering who flips it, in which sandbox first, rollback steps, and comms"
   - "Updated Jest configuration (canvas / DOM polyfills no longer required under LWS — what to remove vs keep)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # LWC Locker → Lightning Web Security (LWS) Migration

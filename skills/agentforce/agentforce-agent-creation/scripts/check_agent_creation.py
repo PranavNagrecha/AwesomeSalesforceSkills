@@ -3,7 +3,7 @@
 
 Inspects a Salesforce metadata directory and reports issues related to
 Agentforce agent configuration: missing required metadata layers, inactive
-agent states, missing agent user references, incomplete topic/action sets,
+agent states, missing agent user references, incomplete topic/subagent and action sets,
 and unsafe permission patterns.
 
 Uses stdlib only — no pip dependencies.
@@ -121,14 +121,14 @@ def check_planner_bundle_exists(manifest_dir: Path) -> list[str]:
 
 
 def check_topics_exist(manifest_dir: Path) -> list[str]:
-    """An agent should have at least one GenAiPlugin (topic)."""
+    """An agent should have at least one GenAiPlugin (topic / subagent)."""
     issues: list[str] = []
     plugin_files = find_files(manifest_dir, "*.genAiPlugin-meta.xml")
     if not plugin_files:
         issues.append(
-            "No GenAiPlugin (topic) metadata found. "
-            "An agent with no topics cannot route or execute tasks. "
-            "Add at least one topic before activation."
+            "No GenAiPlugin (topic, renamed subagent in April 2026) metadata found. "
+            "An agent with no subagents cannot route or execute tasks. "
+            "Add at least one subagent before activation."
         )
     return issues
 
@@ -140,7 +140,7 @@ def check_actions_exist(manifest_dir: Path) -> list[str]:
     if not function_files:
         issues.append(
             "No GenAiFunction (action) metadata found. "
-            "Topics without actions cannot complete tasks. "
+            "Subagents (topics) without actions cannot complete tasks. "
             "Add at least one action before activation."
         )
     return issues
@@ -210,8 +210,8 @@ def check_topic_has_classification_description(manifest_dir: Path) -> list[str]:
         if not desc:
             issues.append(
                 f"{plugin_file.name}: GenAiPlugin (topic) has no description. "
-                "Topics without classification descriptions will produce unreliable routing. "
-                "Add a clear scope statement describing when this topic activates and what it does not cover."
+                "Subagents without classification descriptions will produce unreliable routing. "
+                "Add a clear scope statement describing when this subagent activates and what it does not cover."
             )
     return issues
 

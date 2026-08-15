@@ -30,9 +30,9 @@ outputs:
 dependencies:
   - lwc/lwc-performance
   - devops/pipeline-secrets-management
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-08-14
 ---
 
 # LWC Performance Budgets
@@ -51,40 +51,78 @@ updated: 2026-04-23
   lower-priority).
 - Components built into a managed package where you cannot change CI.
 
-## The Four Budget Types
+## Budget What You Can Actually Measure
 
-1. **Bundle size.** Raw JS + template size per component, pre- and
-   post-minification, with a hard cap. Typical starting cap: 50 KB
-   minified per top-level LWC, 10 KB per shared helper module.
-2. **Wire adapter count.** Each wire adapter is a network round-trip
-   and a reactive dependency. Target: ≤ 3 wires per top-level
-   component, ≤ 1 imperative Apex round-trip per user action.
-3. **LCP (Largest Contentful Paint).** p75 field-data budget per page
-   template. Typical: ≤ 2.5 s on record pages, ≤ 1.8 s on
-   Experience Cloud landing pages.
-4. **INP (Interaction to Next Paint).** p75 budget per page. Typical:
-   ≤ 200 ms.
+Half the work here is deleting rows that look right and can never fail. Two
+metrics that appear in almost every generated budget do not exist in a Salesforce
+context:
+
+- **Minified bundle size.** The platform compiles and serves LWC. `sf project
+  deploy` sends source; there is no local build emitting a minified artefact to
+  weigh. Budget **source bytes** plus **transitive import bytes** instead — both
+  are stdlib-checkable in CI and stable across releases.
+- **CrUX field data for an internal org.** The Chrome UX Report covers public
+  origins. An authenticated Lightning org is not in it. Public Experience Cloud
+  sites are the exception where CrUX genuinely applies.
+
+## The Five Budget Types
+
+1. **Source + transitive bytes.** Per bundle, including everything reachable
+   through `from 'c/moduleName'`. Measuring only the leaf file misses the 2 KB
+   component that imports 60 KB of shared utilities — the common case. Exclude
+   `@salesforce/*` and `lightning/*`; they are platform-provided.
+2. **Round trips.** `@wire` count is a cheap static check (≤ 3 on a top-level
+   component). Calls-per-user-action needs a Jest assertion with mocked Apex and
+   advanced timers — that is what catches a removed debounce; a decorator count
+   never will.
+3. **Rendered volume.** The published datatable guidance is **1,000 rows and
+   5 columns**, fewer than 20 columns past 250 rows, and 50 rows per request.
+   Make those manifest rows.
+4. **Client-side collection size.** Lightning Web Security mediates
+   cross-namespace access with proxies; the cost is *"negligible when there are a
+   few thousand proxies"* and *"observable"* in the tens of thousands. Set a
+   ceiling and enforce it as a guard that throws rather than degrades.
+5. **Core Web Vitals** — LCP, INP, CLS — as a **field alert on public sites** and
+   a **lab pre-release check** elsewhere. Label every number `lab_` or `field_`
+   and never compare them; they are different quantities.
 
 ## Recommended Workflow
 
-1. Inventory the components shipping and their hosting pages.
-2. Capture baseline: bundle size from build output; field data from
-   CrUX for LCP/INP.
-3. Write the budget manifest (see template). One row per component
-   and one row per hosting page.
-4. Wire CI: block the deploy when a component bundle exceeds cap or
-   the wire-adapter count increases.
-5. Wire a monitoring alert: page LCP/INP p75 crosses the budget for N
-   consecutive days.
-6. Document the escalation path: who owns raising a cap, who signs off,
-   how often budgets are reviewed.
-7. Review the manifest quarterly. Budgets should tighten over time as
-   the team gets used to them.
+1. Inventory components and the pages hosting them, and record whether each page
+   is one you fully control (LWR site, custom app page) or platform-composed. On
+   platform-composed pages, budget the **component-attributable delta**, not the
+   page total — most of that timeline is not yours.
+2. **Measure the current distribution first.** Set initial defaults near the
+   observed 75th percentile so the outliers are the failures. A default that
+   forty components violate on day one gets the gate disabled, and disabled gates
+   do not come back.
+3. Write the manifest with an owning team on every entry, an explicit `gate`
+   (`ci-blocking` / `monitor-alert` / `manual-pre-release` / `warn-only`), and a
+   stated measurement method per row. A row with no gate is documentation — say
+   so.
+4. Wire CI to report **every** violation before exiting non-zero. Fail-fast turns
+   one bad PR into five build cycles and pushes people to run the check in a
+   local loop instead of reading the manifest.
+5. Add expiring waivers with an id, reason, approver, and expiry — **plus a check
+   that fails the build on an expired waiver.** Without it "expires" is
+   decorative and every waiver is a permanent, unapproved budget increase.
+6. Write the regression playbook in this order: *is it us* (compare a page with
+   none of your components), then *did data volume grow*, then *did code change*.
+   The first two are cheap and are usually where the answer is.
+7. Put `reviewed` and `next_review` in the manifest with a check that warns once
+   the date passes, and a completeness check warning on any bundle with no entry.
+   Ratchet quarterly toward the observed 90th percentile.
 
 ## Official Sources Used
 
-- LWC Performance Best Practices —
-  https://developer.salesforce.com/docs/platform/lwc/guide/performance.html
+- Improve Performance (LWC Developer Guide) —
+  https://developer.salesforce.com/docs/platform/lwc/guide/perf-intro.html
+- Best Practices for Development with Lightning Web Components —
+  https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
+- Improve Datatable Performance —
+  https://developer.salesforce.com/docs/platform/lwc/guide/data-table-performance.html
+- How LWS Architecture Affects Component Performance —
+  https://developer.salesforce.com/docs/platform/lightning-components-security/guide/lws-performance.html
 - Core Web Vitals —
   https://web.dev/vitals/
 - Lighthouse CI —

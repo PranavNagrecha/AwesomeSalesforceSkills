@@ -190,3 +190,8 @@ mcp/sfskills-mcp/dist/
 
 # Session-local intake reports from scripts/onboard_source.py — never committed.
 .intake-reports/
+
+# Session working directories — research dumps, per-wave workflows and resume
+# notes. Useful locally, but they are session artifacts, not product: they carry
+# absolute developer paths and go stale the moment the session ends.
+.overhaul-*/

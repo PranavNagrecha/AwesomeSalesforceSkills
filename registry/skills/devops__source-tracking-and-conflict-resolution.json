@@ -137,9 +137,9 @@
     "fd1d2ba8c3dc3437ab12",
     "fe7157c7b70f683befef"
   ],
-  "content_hash": "7a187c4e036126ab749849932cd7e0b156e653a5301d2927ef4e2fa7ff60e89f",
+  "content_hash": "be7d421b07343535e72c37d4e4a89b74682cde30b9592cf141ae4a54748e198d",
   "dependencies": [],
-  "description": "Use when diagnosing and resolving SFDX source-tracking conflicts between a. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments \u2014 use devops/metadata-api-retrieve-deploy.",
+  "description": "Use when diagnosing and resolving SFDX source-tracking conflicts between a local project and a Salesforce org. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments \u2014 use devops/metadata-api-retrieve-deploy.",
   "file_location": "skills/devops/source-tracking-and-conflict-resolution",
   "id": "devops/source-tracking-and-conflict-resolution",
   "inputs": [
@@ -185,7 +185,7 @@
   "templates": [
     "skills/devops/source-tracking-and-conflict-resolution/templates/source-tracking-and-conflict-resolution-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

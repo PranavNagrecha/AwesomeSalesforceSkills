@@ -2,13 +2,13 @@
 
 Non-obvious platform behaviors that cause production problems.
 
-## Gotcha 1: Label changes break existing topics
+## Gotcha 1: Label changes break existing subagents
 
-**What happens:** Renaming an action's `label` in the `@InvocableMethod` annotation can silently break topics that reference the action by label.
+**What happens:** Renaming an action's `label` in the `@InvocableMethod` annotation can silently break subagents (called topics before April 2026) that reference the action by label.
 
-**When it occurs:** Refactoring Apex without checking which topics reference the action.
+**When it occurs:** Refactoring Apex without checking which subagents reference the action.
 
-**How to avoid:** Topics should reference actions by API name, not label. Audit topic metadata for label references before renaming.
+**How to avoid:** Subagents should reference actions by API name, not label. Audit subagent metadata for label references before renaming.
 
 ---
 
@@ -78,7 +78,7 @@ Non-obvious platform behaviors that cause production problems.
 
 **When it occurs:** Flow fault path not wired, or fault message isn't user-safe.
 
-**How to avoid:** Every Flow action must have a fault path that returns a structured error message. The agent's topic prompt should handle the error field: "If error is set, apologize and offer alternatives."
+**How to avoid:** Every Flow action must have a fault path that returns a structured error message. The agent's subagent prompt should handle the error field: "If error is set, apologize and offer alternatives."
 
 ---
 

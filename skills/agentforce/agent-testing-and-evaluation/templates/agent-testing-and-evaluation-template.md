@@ -12,18 +12,18 @@ Use this fill-in-the-blank template to plan and document an agent test suite, or
 
 **Testing purpose:**
 [ ] Pre-launch validation before first activation
-[ ] Regression check after topic/action change
+[ ] Regression check after subagent/action change
 [ ] CI/CD pipeline test suite authoring
 [ ] Post-deploy monitoring setup
 [ ] Other: ___________________________
 
 ---
 
-## Topic Inventory
+## Subagent Inventory
 
-List each topic and its classification description. This is required before writing test cases.
+List each subagent (called a topic before April 2026) and its classification description. This is required before writing test cases.
 
-| Topic API Name | Classification Description Summary | Adjacent Topics (potential boundary conflicts) |
+| Subagent API Name | Classification Description Summary | Adjacent Subagents (potential boundary conflicts) |
 |---|---|---|
 | | | |
 | | | |
@@ -33,11 +33,11 @@ List each topic and its classification description. This is required before writ
 
 ## Coverage Matrix
 
-For each topic, document the utterances you will test. Minimum: 2 happy path, 2 edge case, 1 boundary, 1 out-of-scope.
+For each subagent, document the utterances you will test. Minimum: 2 happy path, 2 edge case, 1 boundary, 1 out-of-scope.
 
-### Topic: ___________________________
+### Subagent: ___________________________
 
-| Utterance | Type | Expected Topic | Notes |
+| Utterance | Type | Expected Subagent | Notes |
 |---|---|---|---|
 | | Happy path | | |
 | | Happy path | | |
@@ -46,7 +46,7 @@ For each topic, document the utterances you will test. Minimum: 2 happy path, 2 
 | | Boundary (near: ___________) | | |
 | | Out-of-scope | Escalation / decline | |
 
-*(Copy this section for each topic.)*
+*(Copy this section for each subagent.)*
 
 ---
 
@@ -58,7 +58,7 @@ For each topic, document the utterances you will test. Minimum: 2 happy path, 2 
 
 **Test expectations per case:**
 
-| Test Case # | Utterance | Expect Topic | Expect Action(s) | Instruction Adherence? |
+| Test Case # | Utterance | Expect Subagent | Expect Action(s) | Instruction Adherence? |
 |---|---|---|---|---|
 | 1 | | | | [ ] Yes  [ ] No |
 | 2 | | | | [ ] Yes  [ ] No |
@@ -126,10 +126,10 @@ curl -X POST \
 | | | | | |
 
 **Root cause of failures:**
-- [ ] Topic classification description needs refinement — topic: ___________________________
-- [ ] Competing topic classification description is too broad — topic: ___________________________
+- [ ] Subagent classification description needs refinement — subagent: ___________________________
+- [ ] Competing subagent classification description is too broad — subagent: ___________________________
 - [ ] Action configuration issue — action: ___________________________
-- [ ] Topic instruction not followed — topic: ___________________________
+- [ ] Subagent instruction not followed — subagent: ___________________________
 - [ ] Utterance is a genuine boundary case — move to Tier 2 distribution testing
 
 ---
@@ -154,7 +154,7 @@ curl -X POST \
 
 ## Sign-Off Checklist
 
-- [ ] Coverage matrix complete: happy path, edge case, boundary, out-of-scope for every topic
+- [ ] Coverage matrix complete: happy path, edge case, boundary, out-of-scope for every subagent
 - [ ] AiEvaluationDefinition metadata authored and version-controlled
 - [ ] All topic tests passing (100%)
 - [ ] Action sequence tests passing for all primary flows

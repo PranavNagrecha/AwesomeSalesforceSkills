@@ -66,15 +66,18 @@ what *not* to write.
 
 These are the reasons to pick something else. All measured 2026-07-31.
 
-- **Not listed in any plugin directory, and the first run is not one command.**
-  The `.claude-plugin/` manifests now exist in-tree — `plugin.json` and
-  `marketplace.json`, both declaring the tiered router-skill layout — but
-  nothing has been submitted to or accepted by a directory
-  (<https://code.claude.com/docs/en/plugin-marketplaces>), so installing today
-  still means `git clone`, a `pip install`, and a one-time retrieval-index
-  build that takes minutes and fails silently if skipped.
-  `npx skills add forcedotcom/sf-skills` is a materially better first-run
-  experience.
+- **Not listed in any third-party plugin directory.** Nothing has been
+  submitted to or accepted by one
+  (<https://code.claude.com/docs/en/plugin-marketplaces>), so a stranger will
+  not discover this by browsing. Corrected 2026-08-14: it does *not* follow
+  that install requires clone + pip + index build. The repository is its own
+  marketplace and the manifests are on the default branch — verify with
+  `git ls-tree origin/main .claude-plugin/` — so
+  `/plugin marketplace add PranavNagrecha/AwesomeSalesforceSkills` followed by
+  `/plugin install sfskills@sfskills` works today, with no Python and no index.
+  `pip install` and `build_index.py` are needed only for the CLI and MCP search
+  surfaces, not to reach a skill. Discovery is the real gap;
+  `npx skills add forcedotcom/sf-skills` is still a shorter first line to type.
 - **It cannot ship as a flat skill set.** The 1,027 skill descriptions alone
   total 509,800 characters on 2026-07-31 — roughly 127,000 tokens
   (`python3 -c "import json;d=json.load(open('registry/skills.json'));print(sum(len(s.get('description','')) for s in d['skills']))"`).
@@ -87,22 +90,26 @@ These are the reasons to pick something else. All measured 2026-07-31.
   Salesforce release-train guarantee. When Salesforce ships something in a
   seasonal release, `forcedotcom/sf-skills` can be right on day one and this
   repo cannot.
-- **The clone is heavy.** `.git` is 524 MB (`du -sh .git`) because generated
+- **The clone is heavy.** `.git` is 479 MB (`du -sh .git`) because generated
   retrieval artefacts are versioned. A shallow clone helps; a plain
   `git clone` does not.
-- **Depth is uneven, and thin where it matters most.** Measured by markdown
-  bytes per package, 112 of 1,027 packages hold under 15 KB and 152 hold under
-  20 KB. Security is the thinnest domain — 18 of its 48 packages (37%) are
-  under 15 KB, the worst possible place for it — followed by OmniStudio at 12
-  of 34 (35%). A reader who needs Shield or event-monitoring depth may not
-  find it.
+- **Depth is uneven, and thinnest where it matters most.** Measured by markdown
+  bytes per package on 2026-08-14, **7 of 1,027** packages hold under 15 KB and
+  **50** hold under 20 KB. Security is the thinnest domain — 4 of its 48
+  packages (8%) are under 15 KB, the worst possible place for it — followed by
+  Agentforce at 3 of 53 (6%). OmniStudio no longer has any package under 15 KB.
+  A reader who needs Shield or event-monitoring depth may still find a thin
+  package. (Two earlier revisions of this page were wrong in the same direction:
+  one said 112 and 152 with security at 37%, the other 12 and 55. Both predate a
+  depth pass and both were refuted by the command below — re-run it rather than
+  trusting the prose.)
 
   ```bash
   python3 -c "import pathlib,collections; \
   s=[(d.parts[1], sum(f.stat().st_size for f in d.rglob('*.md'))) \
   for d in (p.parent for p in pathlib.Path('skills').glob('*/*/SKILL.md'))]; \
   print(sum(v < 15*1024 for _,v in s), 'of', len(s))"
-  # -> 112 of 1027
+  # -> 7 of 1027
   ```
 - **OmniStudio is one agent deep.** A single `omnistudio-designer` is the
   entire accelerator surface for OmniScript, FlexCards, DataRaptors,

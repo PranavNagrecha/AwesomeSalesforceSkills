@@ -115,7 +115,7 @@
     "f99393b69bba9283cfb4",
     "fb48ee44652a37b66c37"
   ],
-  "content_hash": "d287b4029dd85cbfaa6aee232214f1ec8d9cc7599ae59125088059fa4932598e",
+  "content_hash": "124cab749ca24bb2680a26b950b928b7ce80885ba5dd7f795d4d6e2b775c5409",
   "dependencies": [],
   "description": "Use this skill when driving adoption of CRM Analytics (Einstein Analytics) across an org \u2014 the Analytics Adoption App for measuring who uses which dashboards, embedding analytics into Lightning pages, pinning dashboards to the Analytics home page, self-service personas, and analytics success metrics. Triggers: analytics adoption, dashboard usage tracking, embedded analytics strategy, self-service analytics enablement, CRM Analytics rollout. NOT for building the dashboards \u2014 use admin/analytics-dashboard-design. NOT for the app, datasets and lenses \u2014 use admin/crm-analytics-app-creation. NOT for non-analytics rollout training \u2014 use admin/change-management-and-training.",
   "file_location": "skills/admin/analytics-adoption-strategy",

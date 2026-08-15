@@ -3,6 +3,7 @@
   "chunk_ids": [
     "0e537dbf802770fa133b",
     "127eb843137c931685d9",
+    "129088bab8f1c7f1a438",
     "1497809600505df0c8db",
     "14e57b920f93691f44cd",
     "15fa9b765750b2137de2",
@@ -17,10 +18,12 @@
     "2ef66d1d1129c9793766",
     "2f86a5c17cb229822863",
     "362335cda7e82095b223",
+    "37c27150254b22744504",
     "3994d9f15876edec68cc",
     "3ae532cbe3683d8ead3d",
     "3c012a1cbc4f6bf5e29e",
     "4744f94034f33fa4f69e",
+    "47d6ab137c660be37be5",
     "503a8dc3a3a9cbeedc1c",
     "5105523e287e751afc0f",
     "5230d0cde82f6f296485",
@@ -58,6 +61,7 @@
     "cdc41fbd92e54e8af317",
     "ced0571dccba37b79def",
     "d79c220785bd6a7d54e5",
+    "d7b4a60c12bed4333898",
     "d9f2274c9facb03ced17",
     "e234740414a3edf1dfda",
     "e82389edbb46543000c2",
@@ -70,7 +74,7 @@
     "fbe7c85145229c614b40",
     "fd2c28089de54f78b143"
   ],
-  "content_hash": "7674cd2c6cadfa3370adce8a214b350070b2c906f94fb55b8b25700c57aab800",
+  "content_hash": "32d67612f1d76a757b7e6bd9401bd302f2decfbcc8548c5a124177e280e74982",
   "dependencies": [],
   "description": "Use when async Apex (Queueable, Batch, Schedulable, @future) needs to honor the originating user's field-level security but the job runs in a different security context than the user who initiated it. Triggers: 'fls bypassed in batch apex', 'queueable runs as wrong user', 'stripInaccessible in async returns full record', 'WITH USER_MODE evaluating against system user', 'scheduled apex sees fields the original user could not'. NOT for synchronous FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for the with/without sharing keyword decision \u2014 use apex/apex-with-without-sharing-decision.",
   "file_location": "skills/apex/field-level-security-in-async-contexts",
@@ -116,7 +120,7 @@
   "templates": [
     "skills/apex/field-level-security-in-async-contexts/templates/field-level-security-in-async-contexts-template.md"
   ],
-  "updated": "2026-04-30",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

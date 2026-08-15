@@ -101,9 +101,9 @@
     "f75752a86a53800c3c0c",
     "f85eb60c1454f3ef237e"
   ],
-  "content_hash": "d4e2cbf7bc4facff68ca6cdc793e72358d921fc6b5505566dcd148ce0c7abd8b",
+  "content_hash": "13a900d3abf62b23a4aa2c05b02877f3d780d472fa2a411d0bfd54819cb8c4c1",
   "dependencies": [],
-  "description": "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness \u2014 covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing, Shield Platform Encryption key management, or \u2014 use apex/soql-security.",
+  "description": "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness \u2014 covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing or Shield Platform Encryption key management \u2014 use security/platform-encryption. NOT for fixing a single query's injection or FLS gap \u2014 use apex/soql-security.",
   "file_location": "skills/security/secure-coding-review-checklist",
   "id": "security/secure-coding-review-checklist",
   "inputs": [
@@ -149,7 +149,7 @@
   "templates": [
     "skills/security/secure-coding-review-checklist/templates/secure-coding-review-checklist-template.md"
   ],
-  "updated": "2026-08-13",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

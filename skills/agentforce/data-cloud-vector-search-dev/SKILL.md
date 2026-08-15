@@ -38,9 +38,9 @@ outputs:
 dependencies:
   - rag-patterns-in-salesforce
   - einstein-trust-layer
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-14
 ---
 
 # Data Cloud Vector Search Dev
@@ -106,7 +106,14 @@ Source: [Search Index Reference — Data Cloud (Salesforce Help)](https://help.s
 
 ### 4. Grounding Configuration and Einstein Trust Layer
 
-Retrieved chunks flow from the vector search index to the LLM through a **Grounding configuration** record attached to an agent topic or Prompt Template. At inference time:
+Retrieved chunks flow from the vector search index to the LLM through a **Grounding configuration** record attached to a subagent or Prompt Template. At inference time:
+
+> **Terminology.** Agent *topics* were renamed *subagents* in April 2026, with no
+> change to functionality. This skill leads with *subagent* where it means the
+> Agentforce entity, and keeps *topic* in metadata names, merge fields such as
+> `{!topic.…}`, and in its ordinary retrieval sense (a chunk's subject matter),
+> because none of those changed.
+
 
 1. The Agentforce framework extracts a semantic query from the user turn.
 2. The platform calls the configured vector index via the Grounding configuration, specifying top-K and any metadata filters.
@@ -174,12 +181,12 @@ Content-Type: application/json
 
 ### Pattern 3: Grounding Configuration with Metadata Filter
 
-**When to use:** A single vector index contains documents spanning multiple product lines, departments, or languages. An agent topic should retrieve only chunks relevant to the current user's context (e.g., only documents for the product in the active CRM record).
+**When to use:** A single vector index contains documents spanning multiple product lines, departments, or languages. A subagent should retrieve only chunks relevant to the current user's context (e.g., only documents for the product in the active CRM record).
 
 **How it works:**
 1. Ensure the source DMO includes a low-cardinality categorical field that can serve as the filter dimension (e.g., `Product_Line__c`, `Language__c`, `Department__c`).
-2. In Agentforce Setup, open the agent topic and navigate to the Grounding configuration.
-3. Add a **metadata filter** expression referencing the field: `Product_Line__c = '{!topic.productLine}'` where the merge field resolves from the agent topic context at runtime.
+2. In Agentforce Setup, open the subagent and navigate to the Grounding configuration.
+3. Add a **metadata filter** expression referencing the field: `Product_Line__c = '{!topic.productLine}'` where the merge field resolves from the subagent context at runtime.
 4. Validate the merge field resolution by checking the Agent Preview Grounding tab — if the filter produces zero results, the merge field may be resolving to null or the field value casing may not match the DMO field values exactly.
 
 **Why not the alternative:** Semantic similarity alone does not reliably separate multi-product content when products share overlapping vocabulary. A product knowledge base spanning Commerce Cloud and Service Cloud will produce cross-product contamination without an explicit metadata filter.
@@ -208,7 +215,7 @@ Step-by-step instructions for an AI agent or practitioner working on Data Cloud 
 1. **Confirm prerequisites** — verify that Data Cloud Vector Search is enabled, the source DMO or Unstructured Data Lake Object is populated, and a Data Cloud Connected App with the `cdp_query_api` scope exists if the Query API will be used.
 2. **Decide on setup path** — determine whether Easy Setup or Advanced Setup is appropriate. If retrieval precision matters or content structure warrants a specific chunking strategy, choose Advanced Setup from the start to avoid a costly rebuild later.
 3. **Create and configure the vector search index** — in Data Cloud Setup → Vector Search, create the index against the target text field. In Advanced Setup, explicitly set the chunking strategy, chunk size, and overlap. Document these choices and their rationale in the decision record.
-4. **Configure the Grounding record** — in Agentforce Setup, attach a Grounding configuration to the agent topic or Prompt Template referencing the new index. Set top-K to 3–7 (start at 5) and add metadata filters if multi-dimensional content is indexed.
+4. **Configure the Grounding record** — in Agentforce Setup, attach a Grounding configuration to the subagent or Prompt Template referencing the new index. Set top-K to 3–7 (start at 5) and add metadata filters if multi-dimensional content is indexed.
 5. **Obtain a Data Cloud access token and validate Query API access** (if applicable) — test the token endpoint with the Data Cloud Connected App credentials and execute a test query against the index before integrating into application code.
 6. **Run end-to-end retrieval tests** — in the Agent Preview panel, submit at least five representative queries and review the Grounding tab to confirm chunk retrieval. Then check for unexpected masking by querying the Einstein Trust Layer audit trail in the **Data Cloud Query Editor** (ANSI SQL over `GenAIGatewayRequest__dlm` / `GenAIGatewayResponse__dlm`) — turn on generative AI audit and feedback data collection in Einstein Setup first, or the DMOs will be empty and the test will pass vacuously.
 7. **Review the checklist below** and confirm generated artifacts match the packaging and data residency requirements before marking the work complete.
@@ -253,7 +260,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Data Cloud vector search index | Configured index with embedding model, chunking strategy (strategy type, chunk size, overlap), and refresh settings — packageable via Data Kit |
-| Grounding configuration record | Retriever definition linking the agent topic or prompt template to the vector index, including top-K and metadata filter expressions |
+| Grounding configuration record | Retriever definition linking the subagent or prompt template to the vector index, including top-K and metadata filter expressions |
 | Data Cloud access token generation pattern | Documented two-step OAuth flow: Salesforce token from a `cdp_query_api`-scoped Connected App, exchanged at `/services/a360/token` (`grant_type=urn:salesforce:grant-type:external:cdp`) |
 | Decision record | Chunking strategy rationale, chunk size/overlap values, embedding model choice, top-K selection, and data residency notes |
 | Einstein Trust Layer audit query results | QA evidence from the Data Cloud Query Editor over the generative AI audit DMOs (`GenAIGatewayRequest__dlm`, `GenAIGatewayResponse__dlm`, `GenAIGeneration__dlm`) confirming retrieval turns are recorded and masking behavior is deliberate |
@@ -264,5 +271,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `rag-patterns-in-salesforce` — Covers the broader RAG architecture and pattern library; use this skill first for a high-level view, then this skill for vector search developer specifics
 - `einstein-trust-layer` — Governs masking, zero-retention, and audit logging policies that apply to grounded chunks
-- `agentforce-agent-creation` — Prerequisite for creating the agent topic to which a Grounding configuration is attached
+- `agentforce-agent-creation` — Prerequisite for creating the subagent to which a Grounding configuration is attached
 - `model-builder-and-byollm` — Use when a custom embedding model must be registered to replace the Salesforce-managed model in Advanced Setup

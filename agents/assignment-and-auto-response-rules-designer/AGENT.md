@@ -57,13 +57,13 @@ Two modes:
 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
-3. `skills/admin/assignment-rules`
-4. `skills/admin/escalation-rules`
-5. `skills/admin/queues-and-public-groups`
-6. `skills/admin/lead-management-and-conversion`
-7. `skills/admin/case-management-setup`
-8. `skills/admin/email-to-case-configuration`
-9. `skills/admin/email-templates-and-alerts`
+3. `skills/admin/assignment-rules` — one rule per object is active at a time and its entries evaluate top-down to first match; without it the agent emits the rule-entry table as an unordered set, and the overlapping entries its own audit mode flags are the ones it just designed
+4. `skills/admin/escalation-rules` — escalation re-owns a case hours after assignment, so a design that ignores it proposes an owner the escalation rule silently replaces; the cutover plan has to sequence against the escalation entries already active
+5. `skills/admin/queues-and-public-groups` — a rule entry can only route to a queue that exists with active members, and the queue's email setting decides whether anyone is told; without it the agent produces entries that route into queues nobody is watching
+6. `skills/admin/lead-management-and-conversion` — Web-to-Lead and API creates do not run the assignment rule unless it is explicitly invoked; without it the agent designs a Lead routing map that never fires for the org's highest-volume creation path, which is the "bypassed by API create paths" finding in its own audit mode
+7. `skills/admin/case-management-setup` — assignment, auto-response, escalation and entitlement all evaluate off the same case create, and case teams add access the assignment rule never sets; without it the agent designs the routing layer in isolation and its ownership map is incomplete for every case that arrives with a team
+8. `skills/admin/email-to-case-configuration` — each routing address applies its own Case Origin / Status / Priority / owner defaults *before* assignment rules run; without it the agent writes rule criteria against fields that are still blank at the moment the rule evaluates
+9. `skills/admin/email-templates-and-alerts` — the auto-response template is where the merge fields the audit mode calls "retired" actually live, and the org-wide address decides the From; without it the agent maps a template to a rule entry without checking that its merge fields resolve on the object the entry fires for
 10. `skills/admin/omni-channel-routing-setup` — when Omni replaces Assignment Rule ownership
 11. `standards/decision-trees/automation-selection.md`
 12. `templates/admin/naming-conventions.md`

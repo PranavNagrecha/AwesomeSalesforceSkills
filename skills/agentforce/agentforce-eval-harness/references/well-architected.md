@@ -19,10 +19,10 @@ Recommended hybrid: rule-based for tool-call correctness, LLM-as-judge for respo
 
 ### Fixture coverage breadth vs depth
 
-Breadth: many fixtures covering many topics.
+Breadth: many fixtures covering many subagents (called topics before April 2026).
 Depth: fewer fixtures with richer multi-turn transcripts.
 
-Rule: start broad (1-2 P0 fixtures per topic) for launch coverage; deepen over time as production transcripts reveal ambiguity patterns.
+Rule: start broad (1-2 P0 fixtures per subagent) for launch coverage; deepen over time as production transcripts reveal ambiguity patterns.
 
 ### Baseline stability vs model refreshes
 

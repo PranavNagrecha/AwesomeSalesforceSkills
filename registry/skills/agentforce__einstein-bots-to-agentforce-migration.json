@@ -13,6 +13,7 @@
     "223341537853027f0c35",
     "24303962aaa7f683b92d",
     "2639084b160b745cbba4",
+    "278477357c3c12c3e469",
     "2c05ff76a8607c2b8ce3",
     "362b3c21161908b8d7c7",
     "3647985935c41e0e9c41",
@@ -26,6 +27,7 @@
     "4d1b1f5e42d994447be1",
     "4dc361f83618f1b024dc",
     "5191fe97f7f91e511826",
+    "56c1ed5636cbad8a5099",
     "56d5416ec058b73c5c8b",
     "5969d8f1cbb58d1c7971",
     "5e80917c4900291ba5e6",
@@ -39,6 +41,7 @@
     "7502587689fe6e47e72f",
     "782c746953e0d427cfa8",
     "782eb633f74240e676a9",
+    "7ca478fd8dbe6f634e19",
     "7ca7d3be3946fdc6e817",
     "7f2ce199e7e642d7633f",
     "85a0c4547a0cfa00f83d",
@@ -64,7 +67,6 @@
     "b9ad32976540111a2a43",
     "c114c215e284c6e8ca85",
     "c17f0329cdf6d5efdbe1",
-    "c36110aa4786492651a0",
     "c89ade13cbfdfa5d9685",
     "caa22dc01cfe009e2d6e",
     "cbf518cb9acb48cd744b",
@@ -75,7 +77,6 @@
     "d4abe46a808b15f55bdb",
     "da3d69feebe790e467e0",
     "db3f232d9df7e02db405",
-    "db95451de9eb36d4aaf3",
     "df654e8c819a9bfc6db9",
     "e551c78ffe5a205dd650",
     "e6694fd9bdb5a7ec68f9",
@@ -91,7 +92,7 @@
     "fe389952e9baee4fef39",
     "fee3ee571c585b8bdae1"
   ],
-  "content_hash": "6be32dbbff489f25d1b863c044d5a7ef7f089433d288e9ce1760f2b72e5d8926",
+  "content_hash": "17abe06780cc4840848c87a07ef623c4ba367a36590b0d5586f9da169098e175",
   "dependencies": [],
   "description": "Use when migrating an existing Einstein Bot (legacy or Enhanced) to Agentforce: feature mapping, conversation design translation, cutover planning, hybrid bot/agent architecture, and context handoff. Triggers: 'migrate einstein bot to agentforce', 'convert legacy bot to agentforce', 'einstein bot retiring deadline', 'hybrid bot agentforce pattern', 'bot dialog to topic migration'. NOT for new Agentforce setup with no existing bot \u2014 use agentforce/agentforce-agent-creation instead.",
   "file_location": "skills/agentforce/einstein-bots-to-agentforce-migration",
@@ -139,7 +140,7 @@
   "templates": [
     "skills/agentforce/einstein-bots-to-agentforce-migration/templates/einstein-bots-to-agentforce-migration-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

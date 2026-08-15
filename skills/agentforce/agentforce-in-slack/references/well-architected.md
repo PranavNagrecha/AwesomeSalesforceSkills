@@ -8,7 +8,7 @@
 
 - **Trust** — The identity mapping layer between Slack and Salesforce is foundational to user trust. Users must be confident that the agent only shows them their own data, not data belonging to other users. The private action / identity proxy design achieves this. Trust Layer logs provide the audit trail that confirms each action was executed under the correct identity.
 
-- **Reliability** — The General Slack Actions topic dependency means that if the topic is accidentally removed from an agent during a configuration change, all Slack-native actions fail silently. Reliability considerations include: ensuring the topic is present in post-deployment validation, monitoring for private action authorization failure rates, and designing graceful degradation for unmapped users.
+- **Reliability** — The General Slack Actions subagent (called a topic before April 2026) dependency means that if the subagent is accidentally removed from an agent during a configuration change, all Slack-native actions fail silently. Reliability considerations include: ensuring the subagent is present in post-deployment validation, monitoring for private action authorization failure rates, and designing graceful degradation for unmapped users.
 
 - **Operational Excellence** — Identity mapping requires ongoing maintenance: new users must be mapped at hire, offboarded users' mappings should be reviewed, and production deployments must explicitly re-provision mappings. Building these as checklist items in onboarding and deployment processes prevents silent failures from mapping gaps.
 
@@ -18,14 +18,14 @@
 Private actions are more secure but require identity mapping overhead and introduce a "first-use friction" where users must complete an OAuth flow. Public actions are simpler but execute under the integration user's broad permissions, which is inappropriate for user-specific or sensitive data. The tradeoff is between security posture and deployment complexity. For internal employee-facing agents where Salesforce data is sensitive (pipeline, HR, cases), private actions are required. For FAQ-style agents that only surface non-sensitive shared content, public actions are acceptable.
 
 **Managed Slack actions vs. custom Slack API integrations:**
-The General Slack Actions topic provides four managed actions with built-in Trust Layer coverage, no OAuth token management, and Salesforce-supported maintenance. Custom Slack API integrations give more flexibility (e.g., custom message formatting with Block Kit, webhook-driven workflows) but at the cost of Trust Layer bypass, manual token management, and maintenance ownership. The tradeoff is flexibility vs. compliance posture. For regulated orgs or orgs with strict data governance, the managed path is strongly preferred.
+The General Slack Actions subagent provides four managed actions with built-in Trust Layer coverage, no OAuth token management, and Salesforce-supported maintenance. Custom Slack API integrations give more flexibility (e.g., custom message formatting with Block Kit, webhook-driven workflows) but at the cost of Trust Layer bypass, manual token management, and maintenance ownership. The tradeoff is flexibility vs. compliance posture. For regulated orgs or orgs with strict data governance, the managed path is strongly preferred.
 
 **Canvas vs. plain text agent responses:**
 Canvases provide rich, structured, persistent content that users can share and edit. Plain text responses are immediate but ephemeral and unformatted. Canvases require a Slack paid plan. The tradeoff is richness vs. accessibility. Design canvas-based workflows only when the richer format is essential to the use case (e.g., meeting summaries, project briefs) and always provide a graceful fallback for Free-plan workspaces.
 
 ## Anti-Patterns
 
-1. **Assuming Slack-native actions are available after Slack deployment without explicitly adding the General Slack Actions topic** — the deployment flow does not add the topic automatically. This is the most common configuration mistake. Every Slack deployment checklist must include "Add General Slack Actions topic in Agent Builder" as an explicit post-deployment step.
+1. **Assuming Slack-native actions are available after Slack deployment without explicitly adding the General Slack Actions subagent** — the deployment flow does not add the subagent automatically. This is the most common configuration mistake. Every Slack deployment checklist must include "Add General Slack Actions subagent in Agent Builder" as an explicit post-deployment step.
 
 2. **Using public action scope for user-specific Salesforce data** — configuring an action as public when it queries records specific to the requesting user (e.g., "my open cases", "my quota attainment") means all users see the same data (the integration user's view) or the action must implement its own identity filtering, which is fragile and bypasses Salesforce's native permission model. Always use private action scope for user-specific Salesforce data queries.
 

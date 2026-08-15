@@ -17,6 +17,8 @@
     "35e5ae97a9e92b4cc8d5",
     "396af83cd4b174a4c124",
     "3b6b0ac338be1c6fa454",
+    "3e3d26fdf11e1de0e7c7",
+    "3fd21c422b2037eaf6c6",
     "43e036de43a0b8eb050b",
     "4447774b530de0c68b12",
     "4d8e7f22ca64c36007cb",
@@ -36,6 +38,7 @@
     "9380d2e100717ac9091e",
     "995d3db982489b546863",
     "9b561e374dbd6ee3782f",
+    "a2a751bac91e56d5bb5c",
     "a8efa4f46ee5b8916b2c",
     "ade36156adffb0dbb8e0",
     "b6ba0ee6c32ce2c0878e",
@@ -50,6 +53,7 @@
     "cc951d8cc9073f60ab84",
     "d0096a13767de0759311",
     "d4a7f3556fd1223b5bae",
+    "d4f5626c51251b65f0a9",
     "dd08843337cfaaf585dd",
     "dfae472513750e0bec06",
     "e2f16af0913102dab1a0",
@@ -59,9 +63,9 @@
     "f5650e05be874c05f081",
     "ff8e5b1c05c9cb31bc56"
   ],
-  "content_hash": "be1fe51545d26caccef26766a464127923daa15ea7b6b7f3011fc18b03932e54",
+  "content_hash": "b13ffd426ce694b912312153df934aa6d19112ce325bb323815303c8152c9591",
   "dependencies": [],
-  "description": "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment \u2014 governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives (use the security secure-coding chec \u2014 use security/secure-coding-review-checklist.",
+  "description": "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment \u2014 governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives \u2014 use security/secure-coding-review-checklist.",
   "file_location": "skills/devops/code-review-checklist-salesforce",
   "id": "devops/code-review-checklist-salesforce",
   "inputs": [
@@ -106,7 +110,7 @@
   "templates": [
     "skills/devops/code-review-checklist-salesforce/templates/code-review-checklist-salesforce-template.md"
   ],
-  "updated": "2026-04-16",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -70,9 +70,9 @@
     "fc808d96dd9d77d18272",
     "fece304814c7d04d6d49"
   ],
-  "content_hash": "34fd0bce792a42f4539e4eb810388edf678c346400b2230a3e7e3bf461558f9a",
+  "content_hash": "bd9c80950aca37b84a57d52cfc28cec3e7f0538efd0fb47267d5e45848e4a85c",
   "dependencies": [],
-  "description": "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup. NOT for Salesforce-to-Salesforce integration, Salesforce for Slack app setup, or interna \u2014 use integration/slack-salesforce-integration-setup.",
+  "description": "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup. NOT for Salesforce for Slack app setup or internal single-workspace channels \u2014 use integration/slack-salesforce-integration-setup.",
   "file_location": "skills/integration/slack-connect-patterns",
   "id": "integration/slack-connect-patterns",
   "inputs": [
@@ -118,7 +118,7 @@
   "templates": [
     "skills/integration/slack-connect-patterns/templates/slack-connect-patterns-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

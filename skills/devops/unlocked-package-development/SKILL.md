@@ -1,6 +1,6 @@
 ---
 name: unlocked-package-development
-description: "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta. NOT for 2GP managed packages (ISV packaging with namespaces, push upgrades, or AppExchan — use devops/second-generation-managed-packages."
+description: "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta to released), and subscriber installation. NOT for 2GP managed packages (ISV namespaces, push upgrades, AppExchange distribution) — use devops/second-generation-managed-packages."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,9 +37,9 @@ outputs:
   - "Diagnosis and remediation steps for version create failures, dependency conflicts, and install errors"
   - "Decision guidance on namespace strategy, ancestor versioning, and installation key usage"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-14
 ---
 
 # Unlocked Package Development

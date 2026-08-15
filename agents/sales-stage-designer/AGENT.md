@@ -51,9 +51,9 @@ Designs or audits the Opportunity sales process: stages, probabilities, forecast
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
 3. `skills/admin/opportunity-management` — via `get_skill`
-4. `skills/admin/sales-process-mapping`
-5. `skills/admin/pipeline-review-design`
-6. `skills/admin/collaborative-forecasts`
+4. `skills/admin/sales-process-mapping` — supplies the entry / exit criteria per stage that the stage-gate validation rules are generated from; without it the agent emits a ladder of stage names and probabilities with no testable exit condition, so there is nothing for the gate to enforce
+5. `skills/admin/pipeline-review-design` — Pipeline Inspection's Days in Stage and deal-change metrics read from stage history, so history tracking on the stage field has to be turned on when the ladder ships; without it the agent hands over a process whose movement cannot be reviewed until months of history accumulate, and history cannot be backfilled
+6. `skills/admin/collaborative-forecasts` — forecast category is a per-stage attribute and forecasts roll up by category, not by stage; without it the agent maps two stages onto the same category and the forecast collapses the distinction the ladder was designed to create
 7. `templates/admin/validation-rule-patterns.md`
 8. `templates/admin/naming-conventions.md`
 9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)

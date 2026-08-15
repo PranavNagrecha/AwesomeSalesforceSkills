@@ -42,10 +42,31 @@ embeddings:
   #     obsolete, not merely improved.
   #
   # Quality, on the 154-query held-out set (the honest benchmark — none of its
-  # queries appear in the index):
+  # queries appear in the index).
+  #
+  # Measured 2026-08-13:
   #     off -> Hit@1 36.4%, Hit@3 44.2%
   #     on  -> Hit@1 37.0%, Hit@3 48.7%
-  # +4.5pp Hit@3 is the reason this is on. NONE rate is 0.0% either way.
+  #
+  # RE-MEASURED 2026-08-14 after the description/trigger wave:
+  #     off -> Hit@1 39.6%, Hit@3 48.1%
+  #     on  -> Hit@1 40.9%, Hit@3 53.9%
+  #
+  # +1.3pp Hit@1 / +5.8pp Hit@3 is the reason this is on. NONE rate is 0.0%
+  # either way, at both corpus states.
+  #
+  # The two rows differ because the CORPUS changed between them, not the
+  # ranker. Twenty benchmark labels were also relabelled on 2026-08-14; that
+  # accounts for none of the Hit@1 movement — scored against the pre-relabel
+  # label set the same run gives an identical 40.9% / 39.6% Hit@1, and only
+  # Hit@3 shifts (50.6% -> 53.9% on, 46.8% -> 48.1% off). Re-run rather than
+  # trusting either row if the corpus has moved again:
+  #     python3 evals/measurement/run_heldout.py --json
+  #     python3 evals/measurement/run_heldout.py --no-embeddings --json
+  #
+  # NOTE: this measures mechanism 3 (`search_knowledge.py`), which requires a
+  # local build_index.py run and therefore does NOT ship. The path that ships
+  # is the model-driven roster scan — see evals/measurement/README-model-routing.md.
   #
   # SAFE FOR A FRESH CLONE, and that is a code guarantee rather than a hope.
   # Both vector files are gitignored (over GitHub's file limit; rebuilt

@@ -24,7 +24,7 @@ Complete all items before starting channel configuration.
 ### Agent Readiness
 - [ ] Agent name and API name confirmed:
 - [ ] Agent is in **Active** state (Setup > Agentforce Agents):
-- [ ] Agent has at least one topic with at least one action:
+- [ ] Agent has at least one subagent (called a topic before April 2026) with at least one action:
 - [ ] Agent instructions and role description finalized:
 - [ ] Einstein Trust Layer reviewed for this channel's audience (internal / external):
 

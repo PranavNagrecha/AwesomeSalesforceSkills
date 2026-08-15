@@ -12,9 +12,9 @@ Routing via owner assignment bypasses queue capacity rules; routing via queue ho
 
 Human agents skim; they do not read 30-turn transcripts. Send a link + structured summary.
 
-## 4. Agent-To-Agent Resets Topic Context
+## 4. Agent-To-Agent Resets Subagent Context
 
-The receiving agent starts with its own topic set; previous topic instructions do not carry over.
+The receiving agent starts with its own subagent set (subagents were called topics before April 2026); previous subagent instructions do not carry over.
 
 ## 5. Hand-Back Needs Explicit Resumption
 

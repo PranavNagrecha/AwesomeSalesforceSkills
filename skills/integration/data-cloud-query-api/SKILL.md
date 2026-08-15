@@ -1,6 +1,6 @@
 ---
 name: data-cloud-query-api
-description: "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying. NOT for SOQL queries against standard Salesforce objects, not for Data Cloud segment fil — use data/data-cloud-data-streams."
+description: "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying. NOT for SOQL against standard objects, Data Cloud segment filtering in the UI, or vector search — use data/data-cloud-data-streams."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -33,9 +33,9 @@ triggers:
   - "migrate Data Cloud query from V2 to Query Connect API"
   - "export unlimited rows from Data 360 with query-sql"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-08-14
 ---
 
 # Data Cloud Query API

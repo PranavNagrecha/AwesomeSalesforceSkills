@@ -1,6 +1,6 @@
 ---
 name: cross-cloud-deployment-patterns
-description: "Use when sequencing a deployment that spans multiple Salesforce clouds — Sales Cloud, Service Cloud, and Experience Cloud — and encountering reference errors, cascading metadata failures, or. NOT for single-cloud deployments (use pre-deployment-checklist), NOT for OmniStudio or H — use devops/experience-cloud-deployment-admin."
+description: "Use when sequencing a deployment that spans multiple Salesforce clouds — Sales Cloud, Service Cloud, and Experience Cloud — and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. NOT for single-cloud deploys (use devops/pre-deployment-checklist) or Health Cloud specifics — use devops/health-cloud-deployment-patterns."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -34,9 +34,9 @@ outputs:
   - "List of metadata types that must be excluded from the Experience layer package"
   - "Decision table mapping deployment scenarios to correct packaging strategy"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-08-14
 ---
 
 # Cross-Cloud Deployment Patterns

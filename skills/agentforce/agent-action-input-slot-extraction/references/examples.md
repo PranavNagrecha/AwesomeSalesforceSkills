@@ -66,7 +66,7 @@ public class ScheduleAppointment {
 
 **Problem:** Generic re-prompt confuses the user; they don't know which slot is missing.
 
-**Solution:** Configure per-slot re-prompt in the agent topic configuration:
+**Solution:** Configure per-slot re-prompt in the subagent (called a topic before April 2026) configuration:
 
 ```yaml
 topic: schedule_appointment
@@ -105,4 +105,4 @@ if (matches.size() > 1) throw new AmbiguousAccount(matches);
 Id accountId = matches[0].Id;
 ```
 
-`AmbiguousAccount` is a custom exception type the agent topic handles by asking the user to clarify.
+`AmbiguousAccount` is a custom exception type the subagent handles by asking the user to clarify.

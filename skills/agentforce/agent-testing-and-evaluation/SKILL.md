@@ -1,6 +1,6 @@
 ---
 name: agent-testing-and-evaluation
-description: "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design — use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively."
+description: "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic (now subagent) coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design — use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -37,16 +37,24 @@ outputs:
   - "regression delta report identifying newly failing tests after a topic or action change"
   - "post-deploy monitoring recommendations using Enhanced Event Logs"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-07-06
+updated: 2026-08-14
 ---
 
 # Agent Testing and Evaluation
 
-Use this skill when the work is validating that an Agentforce agent routes correctly, produces quality responses, and continues to behave as expected after configuration changes. This skill covers the full testing lifecycle: interactive conversation testing in Agent Builder, structured utterance and topic tests defined in `AiEvaluationDefinition` metadata, programmatic test execution via the Testing API (Connect API), evaluation metrics interpretation, and regression testing patterns across the DevOps lifecycle. It does not cover how to create an agent, design topics, or build actions — those are covered by the sibling skills listed in Related Skills.
+Use this skill when the work is validating that an Agentforce agent routes correctly, produces quality responses, and continues to behave as expected after configuration changes. This skill covers the full testing lifecycle: interactive conversation testing in Agent Builder, structured utterance and topic tests defined in `AiEvaluationDefinition` metadata, programmatic test execution via the Testing API (Connect API), evaluation metrics interpretation, and regression testing patterns across the DevOps lifecycle. It does not cover how to create an agent, design subagents, or build actions — those are covered by the sibling skills listed in Related Skills.
 
 Agentforce testing sits at the intersection of deterministic validation (did the agent fire the right action?) and probabilistic quality assessment (did the response satisfy the customer?). Both dimensions matter. Ignoring either produces false confidence.
+
+> **Terminology.** Agent *topics* were renamed *subagents* in April 2026. The
+> change is vocabulary only — there are no changes to functionality, and the API
+> surface did not rename. This skill therefore leads with *subagent* in prose but
+> deliberately keeps *topic* everywhere the platform kept it: the
+> `expectTopicName` and `actualTopicName` fields, the `topic_sequence_match`
+> expectation, the "topic test" assertion category, the "topic activation
+> accuracy" metric, and the search keywords readers still arrive with.
 
 ---
 
@@ -56,9 +64,9 @@ Gather this context before working on anything in this domain:
 
 - Is the agent in **Active** state? Testing API can test an Active agent in any org. The Conversation Preview panel in Agentforce Builder works on Draft agents too — use it during development.
 - Which environment is being tested? Sandbox is the correct place for pre-production automated test suites. Data Cloud is generally not available in Developer Edition orgs by default; confirm Einstein is enabled and any Data Cloud grounding sources are seeded if tests depend on knowledge retrieval.
-- What topics exist and what are their classification descriptions? Utterance test design requires knowing the intended scope boundaries between topics — ambiguous boundaries are the #1 source of routing failures.
-- Do test cases need to invoke real external actions (callouts, record operations)? By default, test runs via the Testing API execute the agent's reasoning engine and topic/action routing but do not submit DML or callouts to external systems. Plan mock data accordingly.
-- Has a baseline evaluation run been captured? Regression testing requires a saved baseline. Capture one before any topic, instruction, or action change.
+- What subagents exist and what are their classification descriptions? Utterance test design requires knowing the intended scope boundaries between subagents — ambiguous boundaries are the #1 source of routing failures.
+- Do test cases need to invoke real external actions (callouts, record operations)? By default, test runs via the Testing API execute the agent's reasoning engine and subagent/action routing but do not submit DML or callouts to external systems. Plan mock data accordingly.
+- Has a baseline evaluation run been captured? Regression testing requires a saved baseline. Capture one before any subagent, instruction, or action change.
 
 ---
 
@@ -78,7 +86,7 @@ Agentforce provides two testing surfaces that share the same underlying evaluati
 | utterance | The user message sent to the agent |
 | context variables | Optional session context (e.g., authenticated user, case ID) to simulate realistic scenarios |
 | conversation history | Optional prior turns for multi-turn conversation tests |
-| expectations | One or more assertions: expected topic classification, expected action(s) invoked, instruction adherence score threshold, or response content criteria |
+| expectations | One or more assertions: expected subagent classification, expected action(s) invoked, instruction adherence score threshold, or response content criteria |
 
 Test definitions deploy alongside the agent metadata, so test suites are version-controlled and environment-promotable.
 
@@ -106,24 +114,24 @@ Deploying the `AiEvaluationDefinition` metadata itself remains a separate step v
 
 The platform evaluates three distinct properties per test case:
 
-1. **Topic test** — did the agent classify the utterance to the expected topic? This is a deterministic pass/fail. A failing topic test means the classification descriptions need refinement or the utterance is ambiguous.
+1. **Topic test** — did the agent classify the utterance to the expected subagent? This is a deterministic pass/fail. A failing topic test means the classification descriptions need refinement or the utterance is ambiguous.
 2. **Action test** — did the agent invoke the expected action or action sequence? Validates that the reasoning engine's plan matches design intent. Multi-step action sequences can be tested by specifying an ordered list.
-3. **Instruction adherence test** — how well did the generated response follow the topic's instructions? Evaluated by a secondary LLM judge on a pass/fail basis with configurable criteria. Useful for tone, constraint, and persona compliance checks.
+3. **Instruction adherence test** — how well did the generated response follow the subagent's instructions? Evaluated by a secondary LLM judge on a pass/fail basis with configurable criteria. Useful for tone, constraint, and persona compliance checks.
 
 You can combine all three expectations on a single test case or use them independently.
 
 ### Utterance Coverage
 
-A topic is not proven to work from a single utterance. Adequate coverage requires:
+A subagent is not proven to work from a single utterance. Adequate coverage requires:
 
 | Utterance class | Purpose |
 |---|---|
-| Happy path | Canonical utterances that clearly belong to the topic |
+| Happy path | Canonical utterances that clearly belong to the subagent |
 | Edge-case utterances | Paraphrases, non-native English, abbreviations, typos |
-| Boundary utterances | Phrasings near the edge of an adjacent topic's scope; verify the agent picks the right topic and not a neighbor |
-| Out-of-scope utterances | Deliberately off-topic statements; verify the agent escalates or declines gracefully rather than hallucinating a topic match |
+| Boundary utterances | Phrasings near the edge of an adjacent subagent's scope; verify the agent picks the right subagent and not a neighbor |
+| Out-of-scope utterances | Deliberately off-topic statements; verify the agent escalates or declines gracefully rather than hallucinating a subagent match |
 
-A coverage matrix (topic × utterance type) makes gaps visible. Without this, teams discover routing failures in production from real customer sessions.
+A coverage matrix (subagent × utterance type) makes gaps visible. Without this, teams discover routing failures in production from real customer sessions.
 
 ### Evaluation Metrics
 
@@ -131,8 +139,8 @@ Post-deploy and ongoing quality measurement uses a set of standard operational m
 
 | Metric | What It Measures | Target Signal |
 |---|---|---|
-| **Topic activation accuracy** | % of test utterances routed to the correct topic | > 90% for each topic before go-live |
-| **Containment rate** | % of sessions resolved by the agent without human escalation | Baseline varies by use case; declining rate signals topic/action gaps |
+| **Topic activation accuracy** | % of test utterances routed to the correct subagent | > 90% for each subagent before go-live |
+| **Containment rate** | % of sessions resolved by the agent without human escalation | Baseline varies by use case; declining rate signals subagent/action gaps |
 | **Escalation rate** | % of sessions transferred to a human agent | Complement of containment; spikes indicate unexpected out-of-scope requests or agent failures |
 | **Resolution rate** | % of sessions where the customer's issue was fully resolved | Higher bar than containment; a session can be contained but unresolved |
 | **CSAT / satisfaction score** | Customer satisfaction collected at session end | Tracks perceived quality; lagging indicator but the ultimate measure |
@@ -144,14 +152,14 @@ No single metric is sufficient. Containment without CSAT can mask an agent that 
 
 ## Common Patterns
 
-### Pattern 1: Pre-Launch Topic Coverage Validation
+### Pattern 1: Pre-Launch Subagent Coverage Validation
 
-**When to use:** Before activating a new agent or a significantly revised topic set.
+**When to use:** Before activating a new agent or a significantly revised subagent set.
 
 **How it works:**
 
-1. Build a coverage matrix: list every topic and define at least 5 utterances per topic — 2 happy-path, 2 edge-case, 1 boundary utterance near an adjacent topic.
-2. Create one `AiEvaluationDefinition` file per topic group (or one combined file). Each test case sets `expectTopicName` to the intended topic.
+1. Build a coverage matrix: list every subagent and define at least 5 utterances per subagent — 2 happy-path, 2 edge-case, 1 boundary utterance near an adjacent subagent.
+2. Create one `AiEvaluationDefinition` file per subagent group (or one combined file). Each test case sets `expectTopicName` to the intended subagent.
 3. Deploy the `AiEvaluationDefinition` to the sandbox via `sf project deploy start`.
 4. Execute via the Testing API. Note the shape of these paths: the resource sits
    **directly** under `/services/data/vXX.0/einstein/` — there is no `connect/`
@@ -224,21 +232,21 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v63.0/einstein/ai-evalua
   -H "Authorization: Bearer ACCESS_TOKEN"
 ```
 
-6. Review results: any `FAIL` on a topic test means the utterance routed elsewhere. Inspect the `actualTopicName` in the result payload and tune the classification description of either the intended or the competing topic.
+6. Review results: any `FAIL` on a topic test means the utterance routed elsewhere. Inspect the `actualTopicName` in the result payload and tune the classification description of either the intended or the competing subagent.
 7. Re-run until all topic tests pass. Document the final pass results as the baseline.
 
 **Why not just use Conversation Preview manually:** Manual preview is valuable for exploratory testing but does not produce repeatable, trackable results. It cannot catch regressions after a future change.
 
 **CLI alternative:** steps 4–5 (execute + poll) collapse into a single `sf agent test run --api-name OrderAgentTopicTests --wait 10` — see Pattern 4. The raw Connect API calls above remain useful when the calling system is not a Salesforce CLI environment.
 
-### Pattern 2: Regression Suite After Topic or Action Changes
+### Pattern 2: Regression Suite After Subagent or Action Changes
 
-**When to use:** Any time a topic's classification description, instructions, or action set is modified.
+**When to use:** Any time a subagent's classification description, instructions, or action set is modified.
 
 **How it works:**
 
 1. Before making changes, capture the current test run results as a baseline (save the JSON result payload from the Connect API or export from Testing Center).
-2. Apply the topic or action change in the sandbox.
+2. Apply the subagent or action change in the sandbox.
 3. Re-run the existing `AiEvaluationDefinition` test suite against the modified agent.
 4. Diff the new results against the baseline: look for test cases that were previously `PASS` and are now `FAIL` (newly broken) and test cases that were previously `FAIL` and are now `PASS` (intentional improvements or coincidental fixes).
 5. Investigate and resolve all newly broken cases before promoting the change.
@@ -295,7 +303,7 @@ sf agent test run --api-name Order_Agent_Tests --target-org ci-sandbox \
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Rapid iterative topic tuning during development | Conversation Preview in Agentforce Builder | Fastest feedback loop; no deploy required for instruction changes |
+| Rapid iterative subagent tuning during development | Conversation Preview in Agentforce Builder | Fastest feedback loop; no deploy required for instruction changes |
 | Pre-launch sign-off for a new agent | AiEvaluationDefinition + Testing API in sandbox | Produces structured pass/fail results and a saved baseline |
 | Post-change regression check | Re-run existing test suite; diff against baseline | Catches regressions introduced by the change without manual re-testing |
 | CI/CD pipeline gate | `sf agent test run --wait <min> --result-format junit --output-dir <dir>` | Synchronous exit status + JUnit files CI runners parse natively; raw Connect API curl is the fallback when the CLI is unavailable |
@@ -310,10 +318,10 @@ sf agent test run --api-name Order_Agent_Tests --target-org ci-sandbox \
 
 Step-by-step instructions for an AI agent or practitioner working on agent testing:
 
-1. **Map topic coverage** — list all topics, identify utterance gaps, and produce a coverage matrix before writing any test cases. Prioritize boundary utterances between adjacent topics.
-2. **Author test cases** — either scaffold a test spec YAML with `sf agent generate test-spec` and create the org test (plus auto-synced metadata) with `sf agent test create`, or hand-author `AiEvaluationDefinition` metadata directly. Either way: structured test cases with utterances, expected topic names, expected action sequences, and instruction adherence expectations. Include multi-turn conversation history for context-dependent flows.
+1. **Map subagent coverage** — list all subagents, identify utterance gaps, and produce a coverage matrix before writing any test cases. Prioritize boundary utterances between adjacent subagents.
+2. **Author test cases** — either scaffold a test spec YAML with `sf agent generate test-spec` and create the org test (plus auto-synced metadata) with `sf agent test create`, or hand-author `AiEvaluationDefinition` metadata directly. Either way: structured test cases with utterances, expected subagent names, expected action sequences, and instruction adherence expectations. Include multi-turn conversation history for context-dependent flows.
 3. **Deploy and execute in sandbox** — deploy the test definition via `sf project deploy start`, then execute with `sf agent test run --api-name <name> --wait <minutes>` (or the Testing API Connect endpoint `POST /connect/einstein/ai-evaluations` with manual polling when the CLI is not available).
-4. **Review and iterate** — inspect `FAIL` results, identify whether the failure is in topic routing (tune classification descriptions), action sequencing (revise topic instructions or action order), or instruction adherence (tighten topic instructions). Re-run until all cases pass.
+4. **Review and iterate** — inspect `FAIL` results, identify whether the failure is in subagent routing (tune classification descriptions), action sequencing (revise subagent instructions or action order), or instruction adherence (tighten subagent instructions). Re-run until all cases pass.
 5. **Capture baseline** — save the passing test run results as the regression baseline before any further changes.
 6. **Integrate into DevOps pipeline** — add an `sf agent test run --wait <minutes> --result-format junit --output-dir <dir>` step to the promotion pipeline from sandbox to production and let the CI runner's JUnit parsing block promotion on test failures. Use `sf agent test list` in scripts that need to discover or validate test API names in the target org first.
 7. **Monitor post-deploy** — track containment rate, escalation rate, and CSAT via Enhanced Event Logs reports. Treat anomalies as signals to add new test cases for the conversation patterns causing failures.
@@ -324,13 +332,13 @@ Step-by-step instructions for an AI agent or practitioner working on agent testi
 
 Run through these before marking testing work complete:
 
-- [ ] Coverage matrix created: at least 5 utterances per topic (happy path, edge case, boundary, out-of-scope).
+- [ ] Coverage matrix created: at least 5 utterances per subagent (happy path, edge case, boundary, out-of-scope).
 - [ ] AiEvaluationDefinition metadata authored and version-controlled alongside agent metadata.
 - [ ] All topic tests passing (100% correct topic activation across the test suite).
 - [ ] Action sequence tests passing for all primary action flows.
-- [ ] Instruction adherence tests included for topics with strict tone or constraint requirements.
+- [ ] Instruction adherence tests included for subagents with strict tone or constraint requirements.
 - [ ] Multi-turn conversation tests cover all context-dependent flows.
-- [ ] Baseline test results saved before any topic or action change.
+- [ ] Baseline test results saved before any subagent or action change.
 - [ ] Regression diff reviewed after each change — no newly broken cases remain.
 - [ ] Test execution integrated into the sandbox-to-production promotion pipeline (`sf agent test run --wait --result-format junit`, or Connect API when the CLI is unavailable).
 - [ ] Enhanced Event Logs enabled on the production agent for post-deploy monitoring.
@@ -344,7 +352,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Test conversations do not invoke real DML or callouts** — Testing API evaluates the agent's reasoning and routing but action execution is simulated. Tests can pass 100% while a misconfigured action (wrong API endpoint, missing field mapping) fails only in a live session. Always run at least one live conversation test in sandbox with real data before promoting to production.
 2. **AiEvaluationDefinition deploys but Testing API requires a separate execute call** — deploying the metadata does not run the tests. Teams sometimes deploy the definition and assume tests passed. You must explicitly `POST` to the Connect API execute endpoint and wait for the job to complete before checking results.
-3. **Topic classification is probabilistic — the same utterance can route differently on repeated runs** — the reasoning engine has inherent non-determinism. An utterance that sits on a topic boundary may alternate between two topics across test runs. Test suites with too many boundary utterances in the happy-path tier will produce flaky results. Move genuinely ambiguous utterances to a dedicated "boundary" tier and evaluate the routing distribution rather than expecting 100% consistency on them.
+3. **Subagent classification is probabilistic — the same utterance can route differently on repeated runs** — the reasoning engine has inherent non-determinism. An utterance that sits on a subagent boundary may alternate between two subagents across test runs. Test suites with too many boundary utterances in the happy-path tier will produce flaky results. Move genuinely ambiguous utterances to a dedicated "boundary" tier and evaluate the routing distribution rather than expecting 100% consistency on them.
 4. **Enhanced Event Logs only capture production conversations, not Testing API runs** — test results are returned in the Testing API response payload, not in Enhanced Event Logs. Teams expecting to find test run failures in the Event Log will find nothing. Use Event Logs only for post-deploy monitoring of real user sessions.
 5. **Instruction adherence evaluation uses a secondary LLM judge and can be inconsistent at low test volumes** — the instruction adherence score is produced by a separate model evaluation, not a rule-based check. On very short or edge-case responses it can produce inconsistent pass/fail results across repeated runs of the same test. Use it as a trend signal, not a binary gate, until you have sufficient test volume to trust the distribution.
 6. **`sf agent test run` is asynchronous by default — a CI step that omits `--wait` exits before any results exist** — without `--wait`, the command only prints the `sf agent test resume` command and returns immediately. A pipeline that greps that step's output for pass/fail will gate on nothing. Add `--wait <minutes>` for synchronous gating, or split into an async run stage plus a later `sf agent test results --job-id` stage.
@@ -358,7 +366,7 @@ Non-obvious platform behaviors that cause real production problems:
 |---|---|
 | `AiEvaluationDefinition` metadata file | Structured XML/JSON test definition for deployment and version control alongside agent metadata |
 | Test spec YAML | CLI-authored list of test cases scaffolded with `sf agent generate test-spec`; input to `sf agent test create`, which builds the org test and syncs the metadata back to the DX project |
-| Topic coverage matrix | Spreadsheet or table mapping each topic to its tested utterance types (happy path, edge case, boundary, out-of-scope) |
+| Subagent coverage matrix | Spreadsheet or table mapping each subagent to its tested utterance types (happy path, edge case, boundary, out-of-scope) |
 | Baseline test results | Saved Testing API result payload representing the last known-good agent state |
 | Regression delta report | Diff between baseline and current test run identifying newly failing and newly passing cases |
 | Post-deploy monitoring dashboard | Enhanced Event Logs–based report tracking containment rate, escalation rate, and CSAT over time |
@@ -368,6 +376,6 @@ Non-obvious platform behaviors that cause real production problems:
 ## Related Skills
 
 - `agentforce/agentforce-agent-creation` — use for standing up a new agent, channel assignment, and activation. Testing assumes the agent already exists.
-- `agentforce/agent-topic-design` — use when topic classification failures in tests indicate topic boundary or description problems.
+- `agentforce/agent-topic-design` — use when subagent classification failures in tests indicate subagent boundary or description problems.
 - `agentforce/agent-actions` — use when action sequence test failures indicate action configuration or contract issues.
 - `devops/scratch-org-management` — use when the agent testing pipeline is part of a scratch org–based CI workflow.

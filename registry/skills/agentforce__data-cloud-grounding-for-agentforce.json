@@ -31,24 +31,24 @@
     "8da3551a470f68bd4cee",
     "8f830ee5a46d58cf4dd6",
     "90db21aa4f87267b22c7",
+    "916965ae114971eb84a1",
     "9e7e7002ed2e19d313b3",
     "9ffb8e087515a6e05729",
     "a3165f56f7c5081ec5da",
     "a40f8c0a91d0256aa657",
-    "a5b8aa18999ef3ac6103",
     "a646197ec5382a834dad",
     "b27d702d885bd062e160",
     "b7b904688bed249355da",
     "b8f8343ea8194c1131a4",
     "b9fc4b5b8876b3022880",
     "bf717fb4664373c2df96",
-    "e1923a6871f51101e665",
+    "d6a971093d42c4ee8f7b",
     "e6bdddc34840762657e4",
+    "eb7ec48884b57078d0b7",
     "ef203d2c91883c154125",
-    "f04891c2c4ab431d400b",
-    "ff4e2d3da278d1892af8"
+    "fb7eba7eae7a8ddc66c5"
   ],
-  "content_hash": "1dfbc239b444512780c92a86fe8ebdbeba698855da474e9ddd1983b2942e6917",
+  "content_hash": "634d38011d9f4b176de1b2ba2e918a39105355e41602bc92a8b85e16c23f3b78",
   "dependencies": [],
   "description": "Grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. NOT for building or tuning the vector index itself \u2014 chunk size, embedding model, Query API \u2014 use agentforce/data-cloud-vector-search-dev. NOT for the end-to-end Knowledge-article RAG build \u2014 use agentforce/rag-patterns-in-salesforce. NOT for Data Cloud ingestion pipelines \u2014 use data/data-cloud-data-streams. NOT for identity resolution ruleset tuning \u2014 use admin/data-cloud-identity-resolution.",
   "file_location": "skills/agentforce/data-cloud-grounding-for-agentforce",
@@ -90,7 +90,7 @@
   "templates": [
     "skills/agentforce/data-cloud-grounding-for-agentforce/templates/retriever-design.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-08-14",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

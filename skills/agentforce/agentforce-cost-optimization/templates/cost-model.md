@@ -11,7 +11,7 @@
 | Contributor | Tokens | % of total |
 |---|---|---|
 | System prompt |   |   |
-| Topic instructions |   |   |
+| Subagent instructions |   |   |
 | Prompt templates |   |   |
 | Grounding |   |   |
 | Conversation history |   |   |
