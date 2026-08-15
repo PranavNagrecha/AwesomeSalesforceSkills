@@ -14,8 +14,8 @@ classifies, it does not teach. Tutorials live in
 | `Contributor` | You are CHANGING the library — adding or revising a skill, an agent, a template, or the tooling. You run the sync and validation gates. |
 | `Both` | Useful either way. |
 
-That split is the single most confusing thing about this repo's docs. Of the 44
-rows below, 14 are consumer-facing, 15 are maintainer contracts and 15 serve
+That split is the single most confusing thing about this repo's docs. Of the 36
+rows below, 13 are consumer-facing, 12 are maintainer contracts and 11 serve
 both — so a third of this index is written for people who maintain the library,
 and reading those as a user is a waste of an afternoon.
 
@@ -42,15 +42,12 @@ and reading those as a user is a waste of an afternoon.
 | [installing-the-plugin.md](installing-the-plugin.md) | Consumer | Install the library as a Claude Code plugin from the marketplace. |
 | [installing-single-agents.md](installing-single-agents.md) | Consumer | Ship one agent into another project without dropping its skill and probe dependencies. |
 | [agent-invocation-modes.md](agent-invocation-modes.md) | Consumer | The canonical short list of ways to invoke an agent. Start with this one. |
-| [agent-informal-invocation-analysis.md](agent-informal-invocation-analysis.md) | Consumer | Deep background on the same subject, plus per-agent notes. 1,169 lines — reference, not reading. |
 | [consumer-responsibilities.md](consumer-responsibilities.md) | Consumer | What a consuming tool MUST do when it runs a runtime agent (persist reports, honour the JSON envelope). |
 | [multi-ai-parity.md](multi-ai-parity.md) | Consumer | Which export targets are first-class and what each one loses. |
 | [../agents/_shared/RUNTIME_VS_BUILD.md](../agents/_shared/RUNTIME_VS_BUILD.md) | Consumer | The agent roster: which agents do Salesforce work vs maintain the library. |
 | [../agents/_shared/SKILL_MAP.md](../agents/_shared/SKILL_MAP.md) | Consumer | Which agent cites which skills. |
 | [../standards/decision-trees/README.md](../standards/decision-trees/README.md) | Consumer | Routing before technology choice, across seven trees: Flow vs Apex, flow pattern, Agentforce capability, async tier, integration pattern, sharing mechanism, performance tuning. |
 | [../templates/README.md](../templates/README.md) | Consumer | The canonical Apex / LWC / Flow / Agentforce building blocks skills point at — 73 files. |
-| [positioning.md](positioning.md) | Both | What this project claims, and what it refuses to claim. |
-| [comparison.md](comparison.md) | Both | How this compares to the alternatives, including where it loses. |
 
 ## 3. Understand it
 
@@ -73,8 +70,6 @@ and reading those as a user is a waste of an afternoon.
 | [../AGENTS.md](../AGENTS.md) | Contributor | The agent-facing entry point (the `AGENTS.md` convention). |
 | [../standards/validation-gates.md](../standards/validation-gates.md) | Contributor | Every gate `validate_repo.py` enforces, with file and line citations. Generated. |
 | [MIGRATION.md](MIGRATION.md) | Contributor | Which agents were deprecated in the Wave 3 consolidation and what replaced them. |
-| [release-plans/v0.4.4-post-launch.md](release-plans/v0.4.4-post-launch.md) | Contributor | The MCP 0.4.4 release checklist. Historical — the server is at 0.4.7. |
-| [go-to-market.md](go-to-market.md) | Contributor | The ranked launch sequence for the project itself. |
 | [../CHANGELOG.md](../CHANGELOG.md) | Both | What changed, when. |
 
 ## 5. Reference
@@ -106,17 +101,7 @@ of them.
 | Doc | Audience | What it answers |
 |---|---|---|
 | [../BACKLOG.yaml](../BACKLOG.yaml) | Contributor | The machine-readable queue of pending / researched / blocked / duplicate skill entries. Edit this, then regenerate the dashboard. |
-| [../BACKLOG.md](../BACKLOG.md) | Contributor | Human-readable notes alongside the queue. |
-| [../MASTER_QUEUE.md](../MASTER_QUEUE.md) | Contributor | The narrative queue document that `BACKLOG.yaml` superseded for row data. |
-
-## 6. Historical
-
-Kept for provenance. None of it describes current behaviour.
-
-| Doc | Audience | What it answers |
-|---|---|---|
-| [archive/README.md](archive/README.md) | Contributor | Index of one-off documents kept for reference and wired into nothing. |
-| [QUEUE_FORMAT_PROPOSAL.md](QUEUE_FORMAT_PROPOSAL.md) | Contributor | An April 2026 proposal to move the queue out of Markdown. Superseded — `BACKLOG.yaml` and `queue-progress.md` now exist exactly as proposed. |
+| [../MASTER_QUEUE.md](../MASTER_QUEUE.md) | Contributor | The queue workflow contract: how to claim an entry, the status key, and the `queue_reader.py` CLI. Row data lives in `BACKLOG.yaml`. |
 
 ---
 

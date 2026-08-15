@@ -53,7 +53,7 @@ External reviewers (including AI assistants in other IDEs) should include the wh
 
 ## What this is NOT
 
-- Not a roadmap. (See `MASTER_QUEUE.md` + `.planning/` for that.)
+- Not a roadmap. (See `MASTER_QUEUE.md` + `BACKLOG.yaml` for that.)
 - Not a changelog. (See git history for that.)
 - Not a way to punt hard decisions indefinitely — the quarterly cadence forces us to re-confront every DEFER.
 

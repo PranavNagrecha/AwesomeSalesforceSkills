@@ -760,7 +760,7 @@ gone stale before:
 The honest caveat, stated at its real size: golden eval **structure** is
 enforced, but nothing in CI scores eval **output quality** against its rubric.
 The fixture gate runs, but neither the held-out retrieval thresholds nor the
-model-routing benchmark does. See [positioning.md](positioning.md).
+model-routing benchmark does.
 
 Coverage shape matters as much as the gate list. There are golden evals for 10 of
 1,027 packages — 1.0%, spread across 4 of 11 domains (apex 4, integration 3, lwc

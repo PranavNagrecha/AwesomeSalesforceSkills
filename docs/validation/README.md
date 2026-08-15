@@ -4,6 +4,11 @@
 
 Every skill, agent, and probe in this repo is verified against a live Salesforce org via three automated harnesses. Unlike the structural validators (which check "does the AGENT.md have 8 sections?"), these harnesses check **behavior** — does the SOQL actually execute, does the field actually exist, does the agent's declared dependencies actually resolve.
 
+> **The harnesses ship; the reports do not.** Run output is org-specific and goes
+> stale the moment the corpus grows, so `docs/validation/` is gitignored apart
+> from this page. The April 2026 reports are recoverable from git history if you
+> need the provenance. Everything below describes how to produce your own.
+
 ---
 
 ## The three validation layers
@@ -108,10 +113,14 @@ Per-run files:
 
 | File | Meaning |
 |---|---|
-| `*.raw.md` | Full model response (committed) |
-| `*.envelope.json` | JSON envelope extracted from the response; what the grader scored (committed) |
-| `*.grade.txt` | Grader stdout/stderr + exit code (committed). `exit_code: 0` = fixture passed |
-| `*.prompt.txt` | Assembled prompt sent to the model (~37 KB) — reproducible, gitignored |
+| `*.raw.md` | Full model response |
+| `*.envelope.json` | JSON envelope extracted from the response; what the grader scored |
+| `*.grade.txt` | Grader stdout/stderr + exit code. `exit_code: 0` = fixture passed |
+| `*.prompt.txt` | Assembled prompt sent to the model (~37 KB) — reproducible |
+
+All four are local artifacts, not committed. The durable record of a graded run
+is its baseline under `evals/agents/baselines/<agent>/<case>.baseline.json`,
+which carries the fingerprint the next run is compared against.
 
 **What the baseline run caught (2026-04-21, apex-refactorer happy path):** Agent correctly declined to claim `confidence: HIGH` when no org access was provided — lowered to `MEDIUM` with rationale "library-only grounding, no `target_org_alias`". The draft fixture had asserted `HIGH`; grader failed; fixture was corrected. This is exactly the signal Layer 4 is for — the agent's restraint is load-bearing and this layer verifies it.
 
@@ -154,7 +163,7 @@ python3 scripts/smoke_test_agents.py --target-org <alias>
 python3 scripts/validate_skill_factuality.py --target-org <alias> --sample 200
 ```
 
-Each writes a dated report to `docs/validation/`. Commit the reports with the change that prompted them — the reports become part of the audit trail.
+Each writes a dated report to `docs/validation/`, which is gitignored. Keep the reports with your own change record; what belongs in this repo is the fix they prompted, not the run output.
 
 ---
 

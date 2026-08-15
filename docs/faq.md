@@ -424,13 +424,12 @@ retrieval benchmark run in CI. Coverage shape matters too: golden cases exist
 for 10 of 1,027 packages (1.0%), across 4 of 11 domains — apex 4, integration
 3, lwc 2, flow 1. `admin` is the largest domain at 253 skills and has none, as
 do `data`, `security`, `devops`, `architect`, `agentforce` and `omnistudio`.
-See [positioning.md](positioning.md).
 
 Separately, three harnesses check the library against a live org
 (`scripts/validate_probes_against_org.py`, `scripts/smoke_test_agents.py`,
-`scripts/validate_skill_factuality.py`). They are re-runnable, but the newest
-report committed under `docs/validation/` is dated 2026-04-28, so read those
-results as a snapshot of an earlier and smaller corpus rather than of HEAD.
+`scripts/validate_skill_factuality.py`). They are re-runnable, but no results
+are committed — the last run was April 2026 against a smaller corpus. Run them
+against your own org rather than reading a number off this repo.
 
 ## Where do I report a skill that is wrong or missing?
 

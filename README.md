@@ -273,9 +273,9 @@ step 2.
   `scripts/smoke_test_agents.py` (structural + dependency checks on the runtime
   agents), and `scripts/validate_skill_factuality.py` (samples skills and
   checks the field/object references actually exist). Say the date out loud:
-  the newest report in `docs/validation/` is `agent_executions_2026-04-28`, and
-  the factuality run sampled 100 skills when the corpus was smaller than it is
-  now. The harnesses are current; the reports are not. Index:
+  the last run was April 2026, and the factuality run sampled 100 skills when
+  the corpus was smaller than it is now. The harnesses are current; re-run them
+  against your own org rather than trusting a stale number. Index:
   [`docs/validation/README.md`](./docs/validation/README.md).
 - **Output quality has golden cases — for a thin slice.** P0 cases with
   assertions, rubrics and reference answers live in `evals/golden/`; lint them
@@ -304,8 +304,7 @@ are not referenced by any workflow and the model-routing benchmark needs live
 agents to run at all. Nor is plugin drift gated: `build_plugin.py --check`
 exists and passes (`OK: 121 plugin artifact(s) match a fresh build`), but
 `grep -rn "build_plugin" .github/ .githooks/` returns nothing, so you have to
-run it yourself. See [`docs/comparison.md`](./docs/comparison.md) for the full
-list of weak spots.
+run it yourself.
 
 ---
 
@@ -389,9 +388,6 @@ Tool schemas and design notes: [`mcp/sfskills-mcp/README.md`](./mcp/sfskills-mcp
 - [`docs/getting-started.md`](./docs/getting-started.md) — the three entry points, each with a verification step
 - [`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md) — install the library as a Claude Code plugin
 - [`docs/README.md`](./docs/README.md) — documentation hub: getting started, architecture, FAQ, troubleshooting
-- [`docs/positioning.md`](./docs/positioning.md) — what this project claims, and what it refuses to claim
-- [`docs/comparison.md`](./docs/comparison.md) — how it compares to the alternatives, including where it loses
-- [`docs/go-to-market.md`](./docs/go-to-market.md) — the launch plan
 - [`docs/installing-single-agents.md`](./docs/installing-single-agents.md) — ship one agent into another project
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — add a skill, fix a skill, report a gap, flag stale content
 

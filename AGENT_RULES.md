@@ -404,9 +404,8 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > 2026-05-08 in commit `014a069b3` ("infra: P0 FTS5 sanitizer fix + remove 6
    > deprecated commands"). `agents/_shared/AGENT_CONTRACT.md`,
    > `agents/_shared/RUNTIME_VS_BUILD.md`, and `agents/orchestrator/AGENT.md`
-   > still name it as an entry point, and `BACKLOG.md` claims it "was never
-   > created" — both are wrong. Invoke build agents by reading their `AGENT.md`
-   > directly, or via `/new-skill` and `/add-skill`.
+   > still name it as an entry point — that is wrong. Invoke build agents by
+   > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
 2. **Run-time (48)** — four tiers:
    - **Developer + architecture (16):** `apex-refactorer`,
