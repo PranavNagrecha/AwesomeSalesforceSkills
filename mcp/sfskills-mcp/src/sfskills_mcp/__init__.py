@@ -89,4 +89,17 @@
 #             skill-count fallback string retired from
 #             SERVER_INSTRUCTIONS — registry/skills.json is the only source
 #             of truth, pinned in _STALE_LITERALS to prevent regression.
-__version__ = "0.4.6"
+#   0.4.5 / 0.4.6 — no history entry was written at the time; see the git log
+#           for tags mcp-v0.4.4..mcp-v0.4.6. Only 0.4.6 ever reached PyPI.
+#   0.4.7 — Data-bundle release. Server code is unchanged; what ships is a
+#           refreshed corpus. (a) Depth pass on 50 skill packages (~10 KB ->
+#           55-90 KB each). (b) Agentforce topics->subagents rename landed on
+#           the routing surface: the term reached 39 package bodies but 0
+#           shipped glosses, because build_gloss() ranks lead last and glosses
+#           run at the 220-char cap. Four trigger substitutions fixed it;
+#           scripts/check_gloss_coverage.py now makes the failure checkable.
+#           (c) Documentation rewritten and re-verified against the repo.
+#           (d) Retracted the "79.2% -> 92.2% Hit@1" routing headline — it did
+#           not survive re-scoring; router accuracy 88.3% -> 96.1% stands.
+
+__version__ = "0.4.7"

@@ -53,4 +53,7 @@ real defect, assert the CORRECT behaviour and mark it
 `@unittest.expectedFailure` with a comment naming the file and line. The suite
 stays green today, and `unittest` reports an *unexpected success* — a failing
 run — the moment the bug is fixed, which is the prompt to delete the decorator.
-`UnsanitisedQueryCrashTest` in `test_lexical_index.py` is the worked example.
+There is no live example today: `UnsanitisedQueryCrashTest` in
+`test_lexical_index.py` was the worked example until the FTS5 sanitiser
+defect it documented was fixed in `pipelines/lexical_index.py`, at which
+point the decorator was deleted exactly as this rule prescribes.

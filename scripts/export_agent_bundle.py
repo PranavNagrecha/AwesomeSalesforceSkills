@@ -350,13 +350,21 @@ def export_bundle(agent_id: str, output_root: Path, rewrite_paths: bool) -> Path
         shutil.rmtree(bundle_root)
     bundle_root.mkdir(parents=True)
 
-    # Copy every dependency file.
+    # Copy every dependency. A declared dependency may be a DIRECTORY —
+    # `templates/apex` is the common case — and shutil.copy2 raises
+    # IsADirectoryError on those, which failed the export outright for 9 of the
+    # 76 agents. Recurse into directories and count the files actually written,
+    # so `file_count` still reports files rather than dependency entries.
     file_count = 0
     for src, rel in bundle_paths_for(agent_id, deps):
         dst = bundle_root / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-        file_count += 1
+        if src.is_dir():
+            shutil.copytree(src, dst, dirs_exist_ok=True)
+            file_count += sum(1 for p in dst.rglob("*") if p.is_file())
+        else:
+            shutil.copy2(src, dst)
+            file_count += 1
 
     # Rewrite AGENT.md paths if requested.
     if rewrite_paths:

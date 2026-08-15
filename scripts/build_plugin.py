@@ -80,7 +80,7 @@ PLUGIN_AGENT_SCAN_DIR = Path("agents")
 
 PLUGIN_NAME = "sfskills"
 MARKETPLACE_NAME = "sfskills"
-PLUGIN_VERSION = "1.0.0"
+PLUGIN_VERSION = "1.0.1"
 AUTHOR_NAME = "Pranav Nagrecha"
 REPO_URL = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
 

@@ -1,9 +1,10 @@
 # SfSkills documentation
 
-Every document in this repository, ordered by the journey a reader actually
-takes. This page is an index only — it links and classifies, it does not
-teach. Tutorials live in [getting-started.md](getting-started.md);
-explanation lives in [architecture.md](architecture.md).
+Every markdown document this repository ships as documentation, ordered by the
+journey a reader actually takes. This page is an index only — it links and
+classifies, it does not teach. Tutorials live in
+[getting-started.md](getting-started.md); explanation lives in
+[architecture.md](architecture.md).
 
 ## Audience legend
 
@@ -13,9 +14,10 @@ explanation lives in [architecture.md](architecture.md).
 | `Contributor` | You are CHANGING the library — adding or revising a skill, an agent, a template, or the tooling. You run the sync and validation gates. |
 | `Both` | Useful either way. |
 
-That split is the single most confusing thing about this repo's docs: roughly
-half of them are contracts for people who maintain the library, and reading
-them as a user is a waste of an afternoon.
+That split is the single most confusing thing about this repo's docs. Of the 44
+rows below, 14 are consumer-facing, 15 are maintainer contracts and 15 serve
+both — so a third of this index is written for people who maintain the library,
+and reading those as a user is a waste of an afternoon.
 
 ---
 
@@ -25,6 +27,7 @@ them as a user is a waste of an afternoon.
 |---|---|---|
 | [../README.md](../README.md) | Both | What is this and why would I want it? |
 | [getting-started.md](getting-started.md) | Consumer | Install to first useful output, for the three real entry points. |
+| [installing.md](installing.md) | Both | The canonical setup reference: one bootstrap command, every flag, what a clone does and does not contain, embeddings cost, MCP install paths, and the maintainer runbook for cutting a release. |
 | [worked-example-trigger-consolidation.md](worked-example-trigger-consolidation.md) | Consumer | One complete Salesforce task, start to finish, with the real command output. |
 | [glossary.md](glossary.md) | Both | What is a "skill", a "chunk", a "coverage gate", a "probe"? |
 | [faq.md](faq.md) | Both | Do I need an org? Why is search slow? Why do the CLI and MCP disagree? |
@@ -44,8 +47,8 @@ them as a user is a waste of an afternoon.
 | [multi-ai-parity.md](multi-ai-parity.md) | Consumer | Which export targets are first-class and what each one loses. |
 | [../agents/_shared/RUNTIME_VS_BUILD.md](../agents/_shared/RUNTIME_VS_BUILD.md) | Consumer | The agent roster: which agents do Salesforce work vs maintain the library. |
 | [../agents/_shared/SKILL_MAP.md](../agents/_shared/SKILL_MAP.md) | Consumer | Which agent cites which skills. |
-| [../standards/decision-trees/README.md](../standards/decision-trees/README.md) | Consumer | Routing before technology choice: Flow vs Apex, async tier, integration pattern, sharing mechanism. |
-| [../templates/README.md](../templates/README.md) | Consumer | The canonical Apex / LWC / Flow / Agentforce building blocks skills point at. |
+| [../standards/decision-trees/README.md](../standards/decision-trees/README.md) | Consumer | Routing before technology choice, across seven trees: Flow vs Apex, flow pattern, Agentforce capability, async tier, integration pattern, sharing mechanism, performance tuning. |
+| [../templates/README.md](../templates/README.md) | Consumer | The canonical Apex / LWC / Flow / Agentforce building blocks skills point at — 73 files. |
 | [positioning.md](positioning.md) | Both | What this project claims, and what it refuses to claim. |
 | [comparison.md](comparison.md) | Both | How this compares to the alternatives, including where it loses. |
 
@@ -53,8 +56,9 @@ them as a user is a waste of an afternoon.
 
 | Doc | Audience | What it answers |
 |---|---|---|
-| [architecture.md](architecture.md) | Both | How skills, agents, commands, templates, decision trees, registry, index, evals and the MCP server fit together. |
-| [validation/README.md](validation/README.md) | Both | How the library verifies itself against a live org (three re-runnable harnesses). |
+| [architecture.md](architecture.md) | Both | How skills, agents, commands, templates, decision trees, registry, index, evals and the MCP server fit together — and which of the three retrieval mechanisms each accuracy figure describes. |
+| [validation/README.md](validation/README.md) | Both | How the library verifies itself against a live org (three re-runnable harnesses). The committed reports are dated April 2026; the harnesses are current. |
+| [../evals/measurement/README-model-routing.md](../evals/measurement/README-model-routing.md) | Both | How the shipped routing path is benchmarked, and the retraction of the "79.2% → 92.2% Hit@1" headline. Read before citing any routing number. |
 | [../agents/_shared/AGENT_CONTRACT.md](../agents/_shared/AGENT_CONTRACT.md) | Both | The 8-section shape every AGENT.md must have. |
 | [../evals/README.md](../evals/README.md) | Both | Golden P0 output-quality cases for the flagship skills. |
 | [../SECURITY.md](../SECURITY.md) | Both | Threat model, secret handling, and how to report a vulnerability. |
@@ -69,7 +73,7 @@ them as a user is a waste of an afternoon.
 | [../AGENTS.md](../AGENTS.md) | Contributor | The agent-facing entry point (the `AGENTS.md` convention). |
 | [../standards/validation-gates.md](../standards/validation-gates.md) | Contributor | Every gate `validate_repo.py` enforces, with file and line citations. Generated. |
 | [MIGRATION.md](MIGRATION.md) | Contributor | Which agents were deprecated in the Wave 3 consolidation and what replaced them. |
-| [release-plans/v0.4.4-post-launch.md](release-plans/v0.4.4-post-launch.md) | Contributor | The MCP 0.4.4 release checklist. |
+| [release-plans/v0.4.4-post-launch.md](release-plans/v0.4.4-post-launch.md) | Contributor | The MCP 0.4.4 release checklist. Historical — the server is at 0.4.7. |
 | [go-to-market.md](go-to-market.md) | Contributor | The ranked launch sequence for the project itself. |
 | [../CHANGELOG.md](../CHANGELOG.md) | Both | What changed, when. |
 
@@ -77,16 +81,22 @@ them as a user is a waste of an afternoon.
 
 ### 5a. Generated artifacts — never hand-edit
 
-A drift check in `scripts/validate_repo.py` recomputes these from their
-sources and errors if the committed copy differs, so a hand-edit fails the
-gate on the next commit. Regenerate instead, with the command named in the
-last column.
+Regenerate instead, with the command named in the last column. Note the second
+column of teeth: only some of these are actually gated.
 
-| Doc | Audience | What it answers | Regenerate with |
-|---|---|---|---|
-| [SKILLS.md](SKILLS.md) | Both | The full skill catalog. | `scripts/skill_sync.py --all` (via `scripts/generate_docs.py`) |
-| [queue-progress.md](queue-progress.md) | Contributor | Backlog dashboard: status counts, drift, next pick. | `scripts/generate_queue_dashboard.py` |
-| [reports/duplicate-candidates.md](reports/duplicate-candidates.md) | Contributor | Near-duplicate skill pairs above the similarity threshold. | `scripts/audit_duplicates.py` |
+| Doc | Audience | What it answers | Regenerate with | Drift gated? |
+|---|---|---|---|---|
+| [SKILLS.md](SKILLS.md) | Both | The full skill catalog. | `scripts/skill_sync.py --all` (via `scripts/generate_docs.py`) | Yes — `validate_repo.py` recomputes it (`pipelines/sync_engine.py`, `diff_state`) and errors on any difference. |
+| [queue-progress.md](queue-progress.md) | Contributor | Backlog dashboard: status counts, drift, next pick. | `scripts/generate_queue_dashboard.py` | Yes, when `BACKLOG.yaml` produces a dashboard. |
+| [reports/duplicate-candidates.md](reports/duplicate-candidates.md) | Contributor | Near-duplicate skill pairs above the similarity threshold. | `scripts/audit_duplicates.py` | **No.** It is absent from `diff_state` and from every workflow, so a stale copy passes CI. |
+
+The same distinction applies outside `docs/`. `registry/`,
+`vector_index/chunks.jsonl`, `vector_index/manifest.json` and
+`standards/validation-gates.md` are drift-gated by `validate_repo.py`. The 121
+plugin artifacts under `.claude/` (the 12 routers, 11 rosters and 48 agent
+loaders) are generated by `scripts/build_plugin.py` and checked by
+`scripts/build_plugin.py --check`, which no workflow or hook invokes — run it
+yourself before committing a router change.
 
 ### 5b. Hand-authored queue sources
 
@@ -118,8 +128,15 @@ Kept for provenance. None of it describes current behaviour.
 - Not org-dependent for skills. Search, agents, templates and decision trees
   work with no Salesforce org at all.
 
-## Documents this index does not cover
+## Files this index does not cover
 
-`docs/reports/` also holds per-agent output directories written by runtime
-agents at execution time. They are working artifacts, not documentation, and
-are not indexed here.
+`docs/reports/` holds working artifacts, not documentation, and only
+`duplicate-candidates.md` above is indexed from it. The rest is two kinds of
+output: per-agent directories written by runtime agents at execution time (the
+`emit_envelope` convention, `docs/reports/<agent>/<run_id>.{json,md}`), and a
+few dated one-off analyses — `checker-findings.md` (2026-05-05),
+`parallel-prose-candidates.md`, `user-permission-comparison-jones-prior.md`.
+All of them describe a tree that has since moved on.
+
+`docs/SKILLS.md` is indexed in 5a but is not prose — it is the generated
+catalog of all 1,027 packages.

@@ -24,7 +24,7 @@
 
 set -eu
 
-echo "pre-push: running full skill validation (4 shards, ~10–20s)..."
+echo "pre-push: running full skill validation (4 shards, ~2 min each, ~8 min total)..."
 
 FAILED=0
 for shard in 0 1 2 3; do

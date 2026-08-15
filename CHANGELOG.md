@@ -4,6 +4,87 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.4.7] — 2026-08-15 — sfskills-mcp (routing surface, documentation rewrite, release plumbing)
+
+### Fixed — the surface that actually routes
+
+- **The Agentforce topics→subagents rename never reached the shipped roster.**
+  It landed in 39 of 53 package bodies and **0 of 53 glosses**. Bodies do not
+  route: only `.claude/skills/salesforce-<domain>/references/skill-index.md`
+  ships, because `vector_index/` is gitignored and a GitHub-sourced install has
+  no FTS5 index. The term *was* in 8 descriptions, but always in the lead, and
+  `build_gloss()` ranks triggers > NOT-for > lead against a 220-char cap that
+  every Agentforce gloss already sat at (mean 217). The lead is exactly what
+  gets clipped, so the rename reached zero users and nothing errored.
+  Fixed with four substitutions inside existing `Triggers:` clauses — no
+  appends, because there is no headroom. Both vocabularies survive:
+  `agentforce-guardrails` carries `topic scope` *and* `subagent scope`. Every
+  API literal is untouched (`GenAiPlugin`, `topic_sequence_match`).
+- **New: `scripts/check_gloss_coverage.py`.** Answers "did this content wave
+  reach the routing surface?" as a command. Exits 1 only when a term is
+  declared in the `Triggers:` clause and eaten by the clip; lead-prose and
+  body-only mentions are informational and must **not** be promoted — chasing
+  them is the vocabulary-append that already cost 5pp of retrieval accuracy.
+- **`build_plugin.py --check` now runs in CI** (`validate.yml` → `agents`).
+  It previously appeared in no workflow and no hook, so a skill description
+  could change while its shipped gloss silently did not.
+
+### Fixed — documentation
+
+- Every root and `docs/` file re-read and rewritten against the repo, with each
+  factual claim re-derived by a command rather than recalled. Corrections
+  include: flat-export tokens 138,334 → 138,694; index chunk count 132,743 →
+  135,409; held-out re-measured to 39.0/48.7 lexical and 40.3/53.9 with
+  embeddings; `vector_index/` sizes; the claim that MCP raises
+  `sqlite3.OperationalError` on `100% test coverage` (fixed, and the CLI is now
+  the lossy surface); "38 read-only tools" (37 are — `emit_envelope` writes);
+  `AGENT_RULES` describing the uncited-skill gate as an ERROR (it is a WARN);
+  `SECURITY.md` citing `stripInaccessibleFields`, which is not a real Apex API.
+- Competitive claims in `docs/comparison.md` were re-sourced or cut. One was
+  simply false: forcedotcom/sf-skills was described as having "no live-org
+  access", while it ships three stdio MCP servers.
+- The retracted "79.2% → 92.2% Hit@1" headline appears nowhere except inside
+  explicit retraction framing. Router accuracy 88.3% → 96.1% stands.
+
+### Fixed — tooling
+
+- `scripts/new_skill.py` accepted `experience` and `servicecloud`, which the
+  validator rejects, so scaffolding either produced a package that then failed
+  `validate_repo.py`. It now imports `ALLOWED_CATEGORIES` from the validator.
+- `check_doc_counts.py` required README to state that all 38 MCP tools are
+  read-only. Since `emit_envelope` carries `readOnlyHint=False`, no truthful
+  sentence could satisfy the gate. Pattern relaxed; the count stays gated.
+- `registry/export_manifest.json` was 20 skills behind the tree, so
+  `export_skills.py --check` failed. Regenerated.
+- `publish-mcp.yml` built a data bundle advertised as containing the lexical
+  index while copying a gitignored directory, so `sfskills-mcp-init` produced
+  an install that answered `Coverage: NONE` for every query. It now builds the
+  index before bundling.
+- `.githooks/pre-push` advertised "~10–20s" for a run measured at ~8 minutes.
+- Stale comments corrected in `tests.yml` (233 tests and a test class that no
+  longer exists), `search_knowledge.py` (an obsolete 2 GB memory warning and a
+  config flag described as temporarily disabled since 2026-08-13),
+  `.gitignore`, `pr-lint.yml`, and `validate.yml`.
+
+### Known issues
+
+- **License declarations disagree.** Root `LICENSE` and
+  `.claude-plugin/plugin.json` say Apache-2.0; `mcp/sfskills-mcp/pyproject.toml`
+  declares MIT in both the `license` field and the trove classifier, and the
+  package ships no LICENSE file. This predates 0.4.7 — 0.4.6 shipped the same
+  way — and is left for the owner to resolve rather than changed silently.
+- **CLI and MCP retrieval diverge** on queries containing `_` or non-ASCII:
+  `_sanitize_query_for_fts5` strips them before the shared tokenizer, so
+  `with_sharing keyword` returns 2 skills on the CLI and 3 via MCP.
+  `check_cli_mcp_parity.py` passes 154/154 because no held-out query contains
+  either character. Documented in `docs/architecture.md`; the fix deserves its
+  own change with a full fixture and held-out re-run.
+- **No PyPI publish.** `PYPI_API_TOKEN` is not configured, so `publish-pypi`
+  fails on tag push. The GitHub Release still publishes.
+- The scheduled `org-validation` workflow has failed since 2026-08-10 with
+  `INVALID_SFDX_AUTH_URL`; the org credential secret is absent.
+
+
 ### Retracted
 
 - **The "79.2% → 92.2% Hit@1" routing result published on 2026-08-14 does not

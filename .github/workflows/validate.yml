@@ -69,7 +69,7 @@ jobs:
         run: python3 scripts/validate_repo.py --skills-only --shard ${{ matrix.shard }}/4
 
   # -----------------------------------------------------------------------
-  # Agent validation — 72 agents validate in ~1 second; not worth sharding.
+  # Agent validation — 76 agents validate in ~1 second; not worth sharding.
   # Wave 6: matrixed on ubuntu + macos so cross-OS hash drift in the
   # frontmatter round-trip or export parity tests surfaces here before it
   # poisons the manifest baseline downstream.
@@ -94,6 +94,17 @@ jobs:
 
       - name: validate agents
         run: python3 scripts/validate_repo.py --agents
+
+      # The plugin artifacts under .claude/skills/ and .claude/agents/ are
+      # GENERATED from registry/skills.json, and they are the surface that
+      # actually routes on a fresh install — vector_index/ is gitignored, so
+      # most installs have no search index and the roster glosses are the
+      # whole lookup path. Until now nothing checked them: `build_plugin.py
+      # --check` appeared in no workflow and no hook, so a skill description
+      # could change while its shipped gloss silently did not. Cheap (no index
+      # build, no network) and it fails on any drift.
+      - name: plugin roster drift (build_plugin.py --check)
+        run: python3 scripts/build_plugin.py --check
 
       - name: frontmatter round-trip test
         working-directory: mcp/sfskills-mcp

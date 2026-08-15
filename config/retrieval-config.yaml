@@ -52,7 +52,11 @@ embeddings:
   #     off -> Hit@1 39.6%, Hit@3 48.1%
   #     on  -> Hit@1 40.9%, Hit@3 53.9%
   #
-  # +1.3pp Hit@1 / +5.8pp Hit@3 is the reason this is on. NONE rate is 0.0%
+  # RE-MEASURED 2026-08-15 (current; supersedes both rows above):
+  #     off -> Hit@1 39.0%, Hit@3 48.7%
+  #     on  -> Hit@1 40.3%, Hit@3 53.9%
+  #
+  # +1.3pp Hit@1 / +5.2pp Hit@3 is the reason this is on. NONE rate is 0.0%
   # either way, at both corpus states.
   #
   # The two rows differ because the CORPUS changed between them, not the

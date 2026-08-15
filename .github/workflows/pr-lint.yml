@@ -53,7 +53,7 @@ jobs:
       # Wave 2: rebuild every export target in a scratch dir, hash, and
       # diff against the committed registry/export_manifest.json. Exits
       # non-zero on any drift — the PR must update the manifest in the
-      # same commit. Runs in ~20-30 s for 684 skills * 6 targets.
+      # same commit. Runs in ~20-30 s for 1,027 skills * 8 targets.
       #
       # Wave 6: this exit-non-zero-on-drift contract is the enforcement
       # mechanism for docs/multi-ai-parity.md. Do not remove without

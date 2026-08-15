@@ -6,14 +6,14 @@ all three.
 Before you pick, one fact that reorders the whole page: **the main path needs no
 build step.** A clone carries `CLAUDE.md`, the 12 router skills under
 `.claude/skills/`, their 11 rosters and the 48 run-time agent loaders under
-`.claude/agents/` — all tracked in git. Open the directory in Claude Code and
-ask a Salesforce question and it works immediately. What a build adds is the
-keyword-search layer and the slash commands, and both are optional.
+`.claude/agents/` — all tracked in git on `origin/main`. Open the directory in
+Claude Code, ask a Salesforce question, and it works immediately. What a build
+adds is the keyword-search layer and the slash commands, and both are optional.
 
 Commands and outputs on this page were executed on an Apple-silicon macOS
-machine with Python 3.14.4, dated where the figure matters. Where a command
-could not be run in the session it carries an explicit
-`> Not measured in this session:` marker naming where the figure came from.
+machine with Python 3.14.4 on 2026-08-15, unless a line says otherwise. Where a
+figure comes from somewhere other than a command run for this page, the source
+is named inline.
 
 ---
 
@@ -23,19 +23,24 @@ could not be run in the session it carries an explicit
 |---|---|---|
 | `python3` 3.10 or newer | All repo tooling is Python. Not needed at all if you only use the router path. | `python3 --version` returned `Python 3.14.4` |
 | `git` | The library is distributed as a repository. | `git --version` |
-| ~1 GB free disk | A `git clone --depth 1` is about 130 MB of working tree. The optional retrieval index adds **295 MB** on top (`du -sh vector_index/`). A full-history clone carries a larger `.git` — 479 MB on this checkout. | `df -h .` |
+| ~1 GB free disk | `git clone --depth 1` measured **128 MB** (100 MB checkout + 28 MB `.git`). The optional retrieval index adds **312 MB** on top (`du -sh vector_index/`). A full-history clone carries a much larger `.git` — 489 MB on this checkout. | `df -h .` |
 | Salesforce CLI (`sf`) | Optional. Only the org-reading MCP tools need it. Nothing else does. | `sf --version` |
 
 Python dependencies are small — `requirements.txt` is PyYAML and jsonschema
-only. Installing them into a clean virtualenv took **1.60 s**:
+only, and everything else in the list below is a transitive dependency of
+jsonschema. Installing into a fresh `python3 -m venv` took **0.70 s** with
+wheels already in the pip cache:
 
 ```text
-$ python3 -m pip install -r requirements.txt
-$ python3 -m pip list
+$ python3 -m venv venvtest
+$ ./venvtest/bin/python -m pip install -r requirements.txt
+$ ./venvtest/bin/python -m pip list
 Package                   Version
 ------------------------- --------
 attrs                     26.1.0
 jsonschema                4.26.0
+jsonschema-specifications 2025.9.1
+pip                       26.0.1
 PyYAML                    6.0.3
 referencing               0.37.0
 rpds-py                   2026.6.3
@@ -46,24 +51,26 @@ rpds-py                   2026.6.3
 | Entry point | First useful output | Measured |
 |---|---|---|
 | A — Claude Code, no build | Claude opens the right skill package | **immediate** after clone; nothing to build |
-| C — plain export | A tool-native skill tree on disk | **1.2 s** after clone + deps |
-| B — MCP server, repo checkout | `search_skill` answering a question | **0.01–0.28 s** per query once warm, once configured |
-| A — Claude Code, with local search | `search_knowledge.py` answering a question | **0.5–0.7 s** per query, after a one-time **9 s** index build |
+| C — plain export | A tool-native skill tree on disk | **1.1 s** after clone + deps |
+| B — MCP server, repo checkout | `search_skill` answering a question | **15–61 ms** per query once warm (408 ms on the first call, which pays the model load) |
+| A — Claude Code, with local search | `search_knowledge.py` answering a question | **0.48–0.80 s** per query, after a one-time **~9 s** index build |
 
 That last row used to read **13–29 s per query**, and this page used to warn
 that entry point A was the slowest to reach. Both are obsolete. Commit
-`d8c95d5de` removed two loads that dominated the old figure — an unconditional
-`load_embeddings()` call worth roughly 2 GB that was never read, and a full
-materialisation of `chunks.jsonl` to serve about 30 rows. Re-measured on
-2026-08-14:
+`d8c95d5de` ("perf(retrieval): 3,190 MB -> 76 MB per query, byte-identical
+results") removed two loads that dominated the old figure — an unconditional
+`load_embeddings()` call that was never read, and a full materialisation of
+`chunks.jsonl` to serve about 30 rows. Re-measured 2026-08-15:
 
 ```text
 $ /usr/bin/time -p python3 scripts/search_knowledge.py "trigger recursion"
-real 0.49
+real 0.56
+real 0.48
 ```
 
-Five runs across three queries landed between **0.49 s and 0.72 s**, at a peak
-resident set of 392 MB.
+Six runs across three queries landed between **0.48 s and 0.80 s**, at a peak
+resident set of 391 MB (`/usr/bin/time -l`, `maximum resident set size
+391020544`).
 
 ### The two things a fresh clone does not give you
 
@@ -71,22 +78,30 @@ Neither of them stops Claude from finding and reading a skill package.
 
 **1. There is no search index.** `git ls-files vector_index` returns exactly
 three files — `manifest.json`, `query-fixtures.json` and `query-variants.json`.
-Everything else is gitignored because it totals 295 MB: `chunks.jsonl` at
-~124 MB and `lexical.sqlite` at ~165 MB. Until you build them, `scripts/
-search_knowledge.py` finds nothing, and it fails *silently*: `search_index` in
-`pipelines/lexical_index.py` returns an empty list when the SQLite file is
-absent (verified directly —
-`search_index(Path('/tmp/no-such-index.sqlite'), 'trigger recursion', None, 30)`
-returns `[]`), so the CLI prints `Coverage: NONE` with no chunks and still exits
-0. It looks like an empty library. It is not, and mechanism 1 is unaffected.
+The index itself is gitignored: `chunks.jsonl` is 127 MB and `lexical.sqlite`
+is 179 MB on this checkout. Until you build them, `scripts/search_knowledge.py`
+finds nothing, and it fails *silently*. `search_index` in
+`pipelines/lexical_index.py:155-156` returns an empty list when the SQLite file
+is absent — verified directly:
 
-**2. There are no slash commands.** `.gitignore:131` contains `.claude/*`,
-negated for `.claude/agents/`, `.claude/skills/` and `.claude/workflows/` but
-not `.claude/commands/`. The tracked command specs live in `commands/`, one file
-per command — **67** on this checkout, and `ls commands/*.md | wc -l` is the
-live count. Tracking a second copy would create a permanent drift surface
-between two copies of the same file, which is why the generated copy is not
-committed. `python3 scripts/bootstrap.py` puts them where Claude Code looks.
+```text
+$ python3 -c "from pipelines.lexical_index import search_index; from pathlib import Path;
+  print(repr(search_index(Path('/tmp/no-such-index.sqlite'), 'trigger recursion', None, 30)))"
+[]
+```
+
+`main()` in `search_knowledge.py` has no non-zero return path, so the CLI prints
+`Coverage: NONE`, lists no chunks, and exits 0. It looks like an empty library.
+It is not, and mechanism 1 is unaffected.
+
+**2. There are no slash commands.** `.gitignore:131` is `.claude/*`, negated on
+the next three lines for `.claude/agents/`, `.claude/skills/` and
+`.claude/workflows/` but not for `.claude/commands/`. The tracked command specs
+live in `commands/`, one file per command — **67** on this checkout, and `ls
+commands/*.md | wc -l` is the live count. Tracking a second copy would create a
+permanent drift surface between two copies of the same file, which is why the
+generated copy is not committed. `python3 scripts/bootstrap.py` puts them where
+Claude Code looks.
 
 Both are fixed below.
 
@@ -107,16 +122,18 @@ whole setup.
 What happens next is a model-driven roster scan, not a search. Claude reads the
 `description:` frontmatter of the 12 routers under `.claude/skills/`, hands off
 to one domain router, opens that router's `references/skill-index.md` — a roster
-of that domain's packages with one 220-character gloss each — and opens the
-package it picks. Eleven rosters carry 1,027 glosses between them; Claude reads
-one. No index is consulted and nothing is built.
+of that domain's packages, one gloss each, budgeted at 220 characters
+(`scripts/build_plugin.py:281`) — and opens the package it picks. Eleven rosters
+carry 1,027 glosses between them; Claude reads one. No index is consulted and
+nothing is built.
 
 That indirection is the design, not a workaround. A flat export of all 1,027
-skill descriptions would cost **138,334 tokens** at session start before you
+skill descriptions would cost **138,694 tokens** at session start before you
 type anything. Everything loaded up front here — 12 routers, 67 commands and 48
 agent loaders — costs **5,490**, or **4.0%** of that
-(`python3 scripts/build_plugin.py --measure`). The token model is an estimate
-calibrated against a real Claude Code install; the method and its caveat are in
+(`python3 scripts/build_plugin.py --measure`, keys `flat_export_tokens`,
+`tier1_tokens`, `ratio`). The token model is an estimate calibrated against a
+real Claude Code install; the method and its caveat are in
 [architecture.md](architecture.md#why-the-library-is-tiered).
 
 **Verify it worked.** Ask something with an unambiguous home — "how do I stop a
@@ -134,8 +151,9 @@ python3 -m pip install -r requirements.txt
 python3 scripts/bootstrap.py
 ```
 
-About **9 s** on the reference machine. It builds `vector_index/chunks.jsonl`
-and `vector_index/lexical.sqlite`, installs the 67 slash commands into
+About **9 s** on a fresh clone, per the measurement in the script's own header
+(`scripts/bootstrap.py:20`). It builds `vector_index/chunks.jsonl` and
+`vector_index/lexical.sqlite`, installs the 67 slash commands into
 `.claude/commands/`, and writes nothing tracked — `git status` is clean when it
 finishes. The full transcript, every flag, and the phase-by-phase breakdown are
 in [installing.md §1](installing.md#1-one-command).
@@ -144,9 +162,9 @@ in [installing.md §1](installing.md#1-one-command).
 > `scripts/build_index.py`. The other two rewrite generated artifacts —
 > `build_index.py` nulls `vector_embedding` across all 1,027 registry records on
 > a fresh clone with no embedding backend, leaving about **1,029 modified
-> tracked files** you then have to recognise as noise. `skill_sync.py` is the
-> contributor's command, run after editing a skill; `bootstrap.py` is the
-> consumer's.
+> tracked files** you then have to recognise as noise
+> (`scripts/bootstrap.py:33-36`). `skill_sync.py` is the contributor's command,
+> run after editing a skill; `bootstrap.py` is the consumer's.
 
 Restart the CLI afterwards. Claude Code loads slash commands at session start,
 so `/consolidate-triggers` and the other 66 will not appear until you do.
@@ -154,17 +172,25 @@ so `/consolidate-triggers` and the other 66 will not appear until you do.
 [worked-example-trigger-consolidation.md](worked-example-trigger-consolidation.md).
 
 What the build leaves on disk, measured on this checkout with
-`ls -la vector_index/`:
+`du -h vector_index/*`:
 
-| File | Size | Notes |
-|---|---:|---|
-| `vector_index/lexical.sqlite` | 165 MB | FTS5 index over 132,743 chunks |
-| `vector_index/chunks.jsonl` | 124 MB | chunk text |
-| `vector_index/skill_embeddings.jsonl` | 5 MB | one vector per skill, 1,027 of them — only present if `fastembed` is installed |
+| File | Size | Built by | Notes |
+|---|---:|---|---|
+| `vector_index/lexical.sqlite` | 179 MB | `bootstrap.py` | FTS5 index over 135,409 chunks (`vector_index/manifest.json`, key `chunk_count`) |
+| `vector_index/chunks.jsonl` | 127 MB | `bootstrap.py` | chunk text |
+| `vector_index/skill_embeddings.jsonl` | 5.0 MB | `scripts/build_skill_embeddings.py` | one vector per skill, 1,027 of them; needs `fastembed` |
 
-`vector_index/embeddings.jsonl`, the chunk-level vector file that older versions
-of this page listed at 535 MB, is **not built by the current pipeline** and is
-absent here. See [installing.md §4](installing.md#4-embeddings-configured-on-inert-until-you-install-fastembed).
+Two things about that third row, because this page got both wrong before.
+`bootstrap.py` does **not** build it — `grep -n "skill_embeddings"
+scripts/bootstrap.py` returns nothing, and `scripts/build_skill_embeddings.py`
+is its only producer. And installing `fastembed` alone is not enough; you have
+to run that script too.
+
+A fourth file, the chunk-level `vector_index/embeddings.jsonl`, is what
+`bootstrap.py --with-embeddings` writes. Its own `--help` describes the cost as
+"+535 MB, HOURS of encode time". It is absent from this checkout, retrieval does
+not need it, and nothing on this page measures it. See
+[installing.md §4](installing.md#4-embeddings-configured-on-inert-until-you-install-fastembed).
 
 **Verify it worked.**
 
@@ -184,13 +210,19 @@ Top skills:
 ```
 
 Assert the skill id, not the number. Scores are a tuning output: that same line
-printed `6.901` earlier on 2026-07-31 and moved to `2.505` when the displayed
-figure became `rank_score` the same afternoon. A different number with the right
-skill id means the ranker changed, not that your install is broken. No skills
-listed at all, or no chunks, is the real failure — see
+printed `6.901` on 2026-07-31 and moved to `2.505` when the displayed figure
+became `rank_score` the same afternoon. A different number with the right skill
+id means the ranker changed, not that your install is broken. No skills listed
+at all, or no chunks, is the real failure — see
 [troubleshooting.md](troubleshooting.md), or run `python3 scripts/bootstrap.py
---verify-only`, which unlike `search_knowledge.py` exits non-zero when the index
-is missing.
+--verify-only`, which unlike `search_knowledge.py` returns 1 when
+`lexical.sqlite` or `chunks.jsonl` is missing (`scripts/bootstrap.py:364-368`).
+On a healthy checkout it prints:
+
+```text
+[   0.5s]           OK  'trigger recursion' -> apex/recursive-trigger-prevention
+[   0.5s]           OK  67 slash commands installed in .claude/commands/
+```
 
 ---
 
@@ -200,25 +232,24 @@ Time budget: a couple of minutes once you have a checkout. This is the fastest
 search surface at query time and the only way to ask questions about your actual
 org.
 
-The package is on PyPI and installs cleanly:
-
-```text
-$ python3 -m pip install sfskills-mcp
-$ python3 -m pip show sfskills-mcp
-Name: sfskills-mcp
-Version: 0.4.6
-```
+The package is published on PyPI as `sfskills-mcp`. Two version facts, both
+checked on 2026-08-15: this repository declares **0.4.7**
+(`mcp/sfskills-mcp/pyproject.toml:8` and `meta.health()`), and the newest
+release on PyPI is **0.4.6**. A `pip install` can therefore trail the checkout;
+`python3 -m pip show sfskills-mcp` tells you which one you have.
 
 The wheel ships small on purpose and does not bundle the corpus. Its documented
 bootstrap, `sfskills-mcp-init`, is supposed to download a data bundle from a
 GitHub Release. **That path does not work today** — the project has published no
-GitHub release carrying `sfskills-data.tar.gz`, re-checked 2026-08-14:
+GitHub release carrying `sfskills-data.tar.gz`, re-checked 2026-08-15:
 
 ```text
 $ gh api repos/PranavNagrecha/AwesomeSalesforceSkills/releases --jq 'length'
 0
 $ sfskills-mcp-init --cache-dir /tmp/clean-cache
+sfskills-mcp-init: downloading https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz
 sfskills-mcp-init: HTTP 404 fetching https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz
+  Verify the release tag exists: https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases
 $ echo $?
 1
 ```
@@ -261,16 +292,21 @@ print(json.dumps(meta.health(), indent=2))
 "
 ```
 
-Expected shape, with the values this checkout returned:
+The values this checkout returned, abridged only where a path is machine-specific:
 
 ```json
 {
-  "server_version": "0.4.6",
+  "server_version": "0.4.7",
   "mcp_sdk_version": "1.27.0",
   "repo_root": "/Users/.../AwesomeSalesforceSkills",
-  "registry": { "path": "registry/skills.json", "skill_count": 1027 },
-  "lexical_index": { "path": "vector_index/lexical.sqlite", "byte_size": 173297664 },
-  "sf_cli": { "present": true }
+  "registry": { "path": "registry/skills.json", "skill_count": 1027,
+                "built_at": "2026-08-15T04:06:04+00:00" },
+  "lexical_index": { "path": "vector_index/lexical.sqlite",
+                     "built_at": "2026-08-14T23:56:23+00:00",
+                     "byte_size": 176865280 },
+  "agents": { "runtime": 48, "build": 14, "deprecated": 14,
+              "unknown": 0, "total": 76 },
+  "sf_cli": { "binary": "/usr/local/bin/sf", "present": true }
 }
 ```
 
@@ -283,33 +319,45 @@ One honest caveat before you rely on it: the MCP retrieval path and the CLI
 retrieval path are still different code.
 `mcp/sfskills-mcp/src/sfskills_mcp/skills.py` never calls
 `scripts/search_knowledge.py` — it imports the same ranking helpers from
-`pipelines` and runs its own shorter pipeline. They agreed on every query tried
-on 2026-07-31, because both apply the identical
+`pipelines` and runs its own shorter pipeline. On a checkout they nonetheless
+agree, because both apply the identical
 `max_score >= min_skill_max_score or score >= min_skill_score` gate from
-`config/retrieval-config.yaml`, and both embed the query when
-`vector_index/skill_embeddings.jsonl` is present (it is on a checkout with
-`fastembed` installed — **1,027 vectors**, one per skill):
+`config/retrieval-config.yaml`, both reach FTS5 through the same
+`pipelines.lexical_index.tokenize_query`, and both embed the query when
+`vector_index/skill_embeddings.jsonl` is present (**1,027 vectors**, one per
+skill). Measured 2026-08-15:
 
 ```text
-CLI  "why is my LWC slow" -> lwc/lwc-performance (2.507), coverage granted
-MCP  "why is my LWC slow" -> lwc/lwc-performance (2.507), has_coverage true, 0.18 s
+CLI  "why is my LWC slow" -> lwc/lwc-performance (2.508)
+MCP  "why is my LWC slow" -> lwc/lwc-performance (2.508), has_coverage true, 59 ms
 
 CLI  "trigger recursion"  -> apex/recursive-trigger-prevention (2.505)
-MCP  "trigger recursion"  -> apex/recursive-trigger-prevention (2.505), 0.14 s
+MCP  "trigger recursion"  -> apex/recursive-trigger-prevention (2.505), 15 ms warm
 
+CLI  "permission sets"    -> admin/permission-sets-vs-profiles (2.742)
+MCP  "permission sets"    -> admin/permission-sets-vs-profiles (2.742), 31 ms
+
+CLI  "xylophone"          -> Coverage: NONE, 0 skills
 MCP  "xylophone"          -> has_coverage false, 0 skills
 ```
 
-That agreement is now gated rather than assumed:
+That agreement is gated rather than assumed:
 `evals/measurement/check_cli_mcp_parity.py --heldout` runs both surfaces over
-all 154 held-out queries in CI and fails on any difference.
+all 154 held-out queries in CI (`.github/workflows/tests.yml`) and fails on any
+difference. Run today it reports `CLI/MCP retrieval parity: 154/154 queries
+agree`.
 
-Two differences survive and can bite you. A PyPI-only install has no vector
-files at all, so it scores lexical-only and *will* diverge from a checkout. And
-the MCP path does not sanitise the query — `search_skill("100% test coverage")`
-raises `sqlite3.OperationalError: fts5: syntax error near "%"` where the CLI
-answers. Treat scoring numbers on this page as dated measurements, not as
-guarantees. The mechanism is explained in [architecture.md](architecture.md).
+One difference survives and can bite you: **a PyPI-only install has no vector
+files at all**, so it scores lexical-only and will diverge from a checkout. An
+older warning on this page — that `search_skill("100% test coverage")` raises
+`sqlite3.OperationalError: fts5: syntax error near "%"` while the CLI answers —
+is **no longer true**. Both surfaces reach FTS5 through
+`pipelines.lexical_index.tokenize_query`, which replaces every non-bareword
+character with a space (`lexical_index.py:52`), so `%` never arrives as an
+operator — the query now returns `agentforce/agent-testing-and-evaluation` on
+both. Treat the scoring numbers on
+this page as dated measurements, not guarantees. The mechanism is explained in
+[architecture.md](architecture.md).
 
 ---
 
@@ -324,12 +372,11 @@ python3 -m pip install -r requirements.txt
 python3 scripts/export_skills.py --target cursor
 ```
 
-Measured 1.21 s on the first run and 1.51 s on a second, clean run. The tail of
-the output:
+Measured **1.08 s**. The tail of the output:
 
 ```text
   + 67 slash command(s) → .cursor/commands/
-  1027 skills exported → .../cursor
+  1027 skills exported → .../exports/cursor
 
 ==================================================
 EXPORT COMPLETE
@@ -344,8 +391,10 @@ copying `exports/` wholesale puts the rules in the wrong place, because the
 export writes one subdirectory per target.
 
 Other targets — `claude`, `windsurf`, `aider`, `augment`, `codex`, `agents`,
-`mcp` — take the same `--target` flag, and `--all` writes every one. What each
-target gains and loses is tabulated in [multi-ai-parity.md](multi-ai-parity.md).
+`mcp` — take the same `--target` flag, and `--all` writes every one. The
+`agents` target is the cross-tool one the script's own closing note points
+Codex, Gemini and Cursor ≥ 2.4 at. What each target gains and loses is
+tabulated in [multi-ai-parity.md](multi-ai-parity.md).
 
 `--domain` and `--skill` narrow the export if 1,027 skills is more than your
 tool's context can carry, which it usually is.
@@ -363,10 +412,11 @@ echo "$(ls exports/cursor/.cursor/rules | wc -l) rules vs $(( $(ls skills/*/*/SK
 echo "$(ls exports/cursor/.cursor/commands | wc -l) commands vs $(ls commands/*.md | wc -l) expected"
 ```
 
-Both lines must report two equal numbers. On this checkout the rules line reads
-`1028 rules vs 1028 expected`. The commands line reads `66 vs 67` against a
-stale export directory and becomes `67 vs 67` after a re-run — which is exactly
-the drift this check exists to catch.
+Both lines must report two equal numbers. On this checkout, immediately after
+the export above, they read `1028 rules vs 1028 expected` and `67 commands vs
+67 expected`. Against a *stale* export directory the second line drifts — it
+read `66 vs 67` before the re-run — which is exactly what this check exists to
+catch.
 
 ---
 

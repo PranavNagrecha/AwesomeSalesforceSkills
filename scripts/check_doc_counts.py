@@ -103,7 +103,12 @@ GLOBAL_CHECKS: list[tuple[str, str, list[str]]] = [
     ("README.md", r"(\d+) tools across skill", ["mcp_tools"]),
     ("README.md", r"\*\*Build-time \((\d+)\)\*\*", ["build"]),
     ("README.md", r"\*\*Run-time \((\d+)\)\*\*", ["active_runtime"]),
-    ("README.md", r"(\d+) read-only tools — the fifteen", ["mcp_tools"]),
+    # Was `(\d+) read-only tools — the fifteen`, which pinned the number to the
+    # TOTAL tool count while asserting every tool is read-only. `emit_envelope`
+    # carries readOnlyHint=False (server.py) because it writes report files, so
+    # no truthful sentence could satisfy the old pattern. Keep the count gated;
+    # let the prose qualify it.
+    ("README.md", r"(\d+)[^—]*tools[^—]*— the fifteen", ["mcp_tools"]),
     ("README.md", r"([\d,]+)-skill SfSkills corpus", ["skills_total"]),
     ("README.md", r"\[x\] ([\d,]+) skills across", ["skills_total"]),
     ("README.md", r"Golden evals for (\d+) flagship", ["evals_flagship"]),

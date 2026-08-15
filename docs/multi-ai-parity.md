@@ -1,77 +1,154 @@
 # Multi-AI Parity Contract
 
-**Status:** Wave 6 contract (partially ratified in Wave 2's manifest work; this doc declares the full parity guarantee).
-**Enforced by:** [`mcp/sfskills-mcp/tests/test_export_parity.py`](../mcp/sfskills-mcp/tests/test_export_parity.py) + [`.github/workflows/pr-lint.yml`](../.github/workflows/pr-lint.yml) + [`scripts/export_skills.py --check`](../scripts/export_skills.py).
+**What this guarantees:** the same set of skills reaches Claude Code, Cursor and
+any MCP client, with byte-identical `SKILL.md` bodies; five more targets get a
+best-effort subset.
+
+**Enforced by:**
+[`mcp/sfskills-mcp/tests/test_export_parity.py`](../mcp/sfskills-mcp/tests/test_export_parity.py)
+(4 assertions) +
+[`scripts/export_skills.py --check`](../scripts/export_skills.py), run in
+[`.github/workflows/pr-lint.yml`](../.github/workflows/pr-lint.yml) (job
+`export-manifest-check`) and
+[`.github/workflows/validate.yml`](../.github/workflows/validate.yml) (job
+`export-parity-matrix`, Linux **and** macOS).
+
+Verified against this checkout on 2026-08-15.
+
+> **Known drift at time of writing.** `registry/export_manifest.json` records
+> 1,007 skills per target while the corpus holds 1,027, and
+> `python3 scripts/export_skills.py --check` currently exits non-zero with
+> `+20 new skill(s)` on every target. The baseline needs regenerating with
+> `python3 scripts/export_skills.py --all --manifest`. Nothing below is wrong
+> about the *contract*; the committed baseline is simply behind the tree.
 
 ## Tier structure
 
-SfSkills supports eight AI-coding-assistant + AI-agent export targets. They are not all equal.
+SfSkills supports **eight** export targets, listed in `PLATFORMS`
+(`scripts/export_skills.py:60`). They are not all equal.
 
 ### First-class targets
 
-Three platforms get a **strong parity guarantee**: the SET of skills available is identical across them; content is equivalent modulo wrapper format; every skill available in one is available in the other two.
+Three platforms get a **strong parity guarantee** — `FIRST_CLASS_TARGETS`
+(`scripts/export_skills.py:61`). The SET of skills available is identical across
+them; content is equivalent modulo wrapper format; every skill available in one
+is available in the other two.
 
-- **Claude Code** (`--target claude`) — canonical SfSkills skill tree. Consumed by Claude natively via the `skills/` directory OR via the SfSkills MCP server.
-- **Cursor** (`--target cursor`) — `.cursor/rules/*.mdc` format. Consumed by Cursor's rules engine.
-- **MCP** (`--target mcp`) — same as Claude's skill tree + `registry/skills.json`. Consumed by any MCP-capable client (Claude Desktop, Cline, Continue, etc.) via the SfSkills MCP server.
+- **Claude Code** (`--target claude`) — canonical SfSkills skill tree. Consumed
+  by Claude natively via the `skills/` directory OR via the SfSkills MCP server.
+- **Cursor** (`--target cursor`) — `.cursor/rules/*.mdc` format. Consumed by
+  Cursor's rules engine.
+- **MCP** (`--target mcp`) — same as Claude's skill tree plus
+  `registry/skills.json`. Consumed by any MCP-capable client (Claude Desktop,
+  Cline, Continue, etc.) via the SfSkills MCP server.
 
 ### Second-class targets
 
-Five platforms get a **best-effort subset guarantee**: every skill available in the first-class targets SHOULD be available here, but format-specific limitations may cause subset behavior.
+Five platforms get a **best-effort subset guarantee**: every skill available in
+the first-class targets SHOULD be available here, but format-specific limitations
+may cause subset behavior.
 
-- **Agents / cross-tool** (`--target agents`) — vendor-neutral `.agents/skills/<slug>/`
-  flat tree per the emerging Agent Skills convention (Codex CLI reads it as its
-  primary project path; Gemini CLI gives it precedence over `.gemini/skills/`;
-  Cursor ≥2.4 discovers it). Content is the unmodified canonical SKILL.md package;
-  slugs are globally unique so the flat layout is lossless. Companion installer:
-  `python3 scripts/export_skills.py --install <project-dir>` writes this tree into
-  a consuming project and symlinks each skill into `.claude/skills/` (copy fallback
-  where symlinks are unsupported). Pattern adapted, with attribution, from
+- **Agents / cross-tool** (`--target agents`) — vendor-neutral
+  `.agents/skills/<slug>/` flat tree per the emerging Agent Skills convention
+  (Codex CLI reads it as its primary project path; Gemini CLI gives it
+  precedence over `.gemini/skills/`; Cursor ≥2.4 discovers it). Content is the
+  unmodified canonical SKILL.md package; slugs are globally unique so the flat
+  layout is lossless. Companion installer:
+  `python3 scripts/export_skills.py --install <project-dir>` writes this tree
+  into a consuming project and symlinks each skill into `.claude/skills/`
+  (`--copy` forces copies; `--force` replaces pre-existing directories this tool
+  did not create). Pattern adapted, with attribution, from
   Clientell-Ai/salesforce-skills (Apache-2.0).
-- **Windsurf** (`--target windsurf`) — `.windsurf/rules/*.md` format + `.windsurf/workflows/*.md` for slash-commands. Workflows capped at 12 KB per file; oversized commands are documented-skip.
-- **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot represent per-skill routing; skills compressed into one file. No custom slash-command surface, so `commands/*.md` are indexed inside CONVENTIONS.md as prose references.
-- **Augment** (`--target augment`) — `.augment/rules/*.md` + `.augment/commands/*.md`. Also reads `.claude/commands/` for compatibility.
-- **Codex CLI** (`--target codex`) — OpenAI Codex CLI. Flat prompt files staged for `~/.codex/prompts/` (user-scope only; Codex has no project-scope slash surface). Exporter produces an `INSTALL.md` with the `cp` command.
+- **Windsurf** (`--target windsurf`) — `.windsurf/rules/*.md` plus
+  `.windsurf/workflows/*.md` for slash commands. Workflows are capped at
+  **12,000 characters** (`WINDSURF_WORKFLOW_MAX_CHARS`,
+  `scripts/export_skills.py:85`); oversized commands are **skipped with a printed
+  warning**, not truncated. Two of the 67 commands currently exceed it —
+  `build-skills.md` (13,661 chars) and `onboard-source.md` (13,864).
+- **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot
+  represent per-skill routing; skills are compressed into one file. Aider has no
+  user-extensible slash surface (`SLASH_COMMAND_DEST["aider"] is None`), so
+  `commands/*.md` land as a navigation index inside `CONVENTIONS.md` instead.
+- **Augment** (`--target augment`) — `.augment/rules/*.md` +
+  `.augment/commands/*.md`.
+- **Codex CLI** (`--target codex`) — OpenAI Codex CLI. Codex scans only
+  top-level Markdown in `~/.codex/prompts/`, at **user scope only** — it has no
+  project-scope slash surface. The exporter therefore produces a staging tree
+  (`codex-prompts/`, `codex-skills/`) plus an `INSTALL.md` carrying the `cp`
+  commands.
 
 ### What parity means exactly
 
 For first-class targets (claude + cursor + mcp):
 
-1. **Set parity.** `registry/export_manifest.json` → `targets.claude.skills` has the same KEYS (skill IDs) as `targets.cursor.skills` and `targets.mcp.skills`. Enforced by `assert_first_class_parity()` in `scripts/export_skills.py`.
-2. **Content fidelity.** Each skill's content is the same, modulo the per-target wrapper (Cursor adds `.mdc` frontmatter; MCP adds the registry JSON reference). The BODY of SKILL.md is byte-identical.
-3. **Determinism.** Three consecutive exports produce byte-identical `registry/export_manifest.json` (ignoring `generated_at` timestamp). Enforced by `test_export_is_deterministic_across_three_runs`.
+1. **Set parity.** `registry/export_manifest.json` → `targets.claude.skills` has
+   the same KEYS (skill IDs) as `targets.cursor.skills` and
+   `targets.mcp.skills`. Enforced by `assert_first_class_parity()`
+   (`scripts/export_skills.py:910`), called from both the `--manifest` and
+   `--check` paths.
+2. **Content fidelity.** Each skill's content is the same, modulo the per-target
+   wrapper (Cursor adds `.mdc` frontmatter; MCP adds the registry JSON
+   reference). The BODY of SKILL.md is byte-identical.
+3. **Determinism.** Three consecutive exports produce byte-identical
+   `registry/export_manifest.json` (ignoring the `generated_at` timestamp).
+   Enforced by `test_export_is_deterministic_across_three_runs`.
 
 For second-class targets:
 
-1. **Coverage-best-effort.** A skill that exists in first-class targets SHOULD be present in second-class targets. If format constraints (e.g. Aider's single-file model) force omission, the skill is still conceptually covered via the concatenated content — but the skill-id-key may not appear.
-2. **No determinism guarantee on cross-target ordering.** Aider's CONVENTIONS.md section order is deterministic per-run but not semantically meaningful.
+1. **Coverage-best-effort.** A skill that exists in first-class targets SHOULD be
+   present in second-class targets. If format constraints (e.g. Aider's
+   single-file model) force omission, the skill is still conceptually covered via
+   the concatenated content — but the skill-id key may not appear. The manifest
+   makes this visible: `aider` records a `skill_count` of 1, because its only
+   artifact is `CONVENTIONS.md`.
+2. **No determinism guarantee on cross-target ordering.** Aider's
+   `CONVENTIONS.md` section order is deterministic per-run but not semantically
+   meaningful.
 
 ## How the contract is enforced
 
 ### At author time
 
-Authors of new skills and agents don't have to think about multi-AI parity. The export pipeline handles it mechanically:
+Authors of new skills and agents don't have to think about multi-AI parity. The
+export pipeline handles it mechanically:
 
 ```bash
-python3 scripts/skill_sync.py --all         # Rebuild registry + index
-python3 scripts/export_skills.py --all --manifest   # Rebuild exports + manifest
-python3 scripts/export_skills.py --check    # Assert tree matches committed manifest
+python3 scripts/skill_sync.py --all                  # rebuild registry + index
+python3 scripts/export_skills.py --all --manifest    # rebuild exports + manifest
+python3 scripts/export_skills.py --check             # assert tree matches committed manifest
 ```
 
-The pre-commit hook runs `validate_repo.py --changed-only` which covers per-skill structure + drift. Manifest check is NOT in pre-commit (too slow); it's in PR CI instead.
+The pre-commit hook runs `validate_repo.py --changed-only`, which covers
+per-skill structure and drift. The manifest check is NOT in pre-commit (too
+slow); it runs in PR CI instead.
 
 ### At PR time
 
-[`.github/workflows/pr-lint.yml`](../.github/workflows/pr-lint.yml) runs:
+Two workflows gate it, and both must pass:
 
-1. `python3 scripts/export_skills.py --check` — fails if the PR's tree would produce a different manifest than what's committed.
-2. `python3 -m unittest tests.test_export_parity` — runs the 4 parity assertions.
+| workflow | job | steps |
+|---|---|---|
+| `pr-lint.yml` | `export-manifest-check` | `build_index.py` → `export_skills.py --check` → `unittest tests.test_export_parity` |
+| `validate.yml` | `export-parity-matrix` (`ubuntu-latest` **and** `macos-latest`) | `build_index.py` → `export_skills.py --check` (cross-OS determinism) → `unittest tests.test_export_parity` |
 
-If either fails, the PR is blocked.
+Both invoke the tests with `working-directory: mcp/sfskills-mcp`, which is where
+`test_export_parity.py` actually lives — there is no `tests/test_export_parity.py`
+at the repo root. The four assertions are:
+
+| test | asserts |
+|---|---|
+| `test_export_is_deterministic_across_three_runs` | three runs produce identical manifests |
+| `test_first_class_targets_have_identical_skill_sets` | claude ≡ cursor ≡ mcp, by skill id |
+| `test_manifest_has_expected_shape` | the manifest schema holds |
+| `test_cli_check_mode_against_committed_manifest` | `--check` agrees with what is committed |
+
+If either workflow fails, the PR is blocked.
 
 ### At release time
 
-Release tags (`v1.x`, `v2.x`) are cut from main. Each release's manifest is captured in `registry/export_manifest.json` at that tag. Consumers can pin to a tag for stable skill IDs.
+Release tags (`v1.x`, `v2.x`) are cut from main. Each release's manifest is
+captured in `registry/export_manifest.json` at that tag. Consumers can pin to a
+tag for stable skill IDs.
 
 ## Format-specific details
 
@@ -97,6 +174,7 @@ exports/claude/
       trigger-framework/
         SKILL.md
         ...
+  .claude/commands/          # all 67 slash commands, mirrored
 ```
 
 Claude Code and MCP clients read SKILL.md directly. No wrapper transformation.
@@ -113,11 +191,16 @@ exports/cursor/
       apex-trigger-framework.mdc
       flow-fault-handling.mdc
       ...
+    commands/                # the 67 slash commands, so they appear in Cursor's / menu
 ```
 
-Each `.mdc` file has YAML frontmatter (`description:` + `alwaysApply: false`) and the SKILL.md body + references concatenated.
+Each `.mdc` file has YAML frontmatter — `description:` (the skill description's
+first sentence, hard-capped at 120 characters) and `alwaysApply: false` — over
+the SKILL.md body with `gotchas.md` and `examples.md` appended.
 
-Cursor's rules engine auto-activates relevant rules based on the description + file context. The format does NOT carry skill metadata (version, pillars, tags) beyond the description.
+Cursor's rules engine auto-activates relevant rules based on the description plus
+file context. The format does NOT carry skill metadata (version, pillars, tags)
+beyond the description.
 
 ### MCP (`exports/mcp/`)
 
@@ -132,23 +215,38 @@ exports/mcp/
     skills.json
 ```
 
-The extra `registry/skills.json` lets an MCP server serve `search_skill` and `get_skill` tools against this bundle without rebuilding state from the raw tree. Use this target when distributing SfSkills as a standalone MCP-accessible knowledge base.
+The extra `registry/skills.json` lets an MCP server serve `search_skill` and
+`get_skill` against this bundle without rebuilding state from the raw tree. Use
+this target when distributing SfSkills as a standalone MCP-accessible knowledge
+base. Note that the bundle carries no `vector_index/` — that is gitignored and
+built locally, so a bundle-only install is lexical-search-less until an index is
+built. See [architecture.md](architecture.md).
 
 ### Per-agent bundles (`exports/agent-bundles/<agent-id>/`)
 
-Wave 8 added a separate exporter for installing one agent into another project. Unlike the target-wide exports above (which ship the whole skill library in a platform's format), a per-agent bundle ships one `AGENT.md` plus only the files it declares in its frontmatter `dependencies` block.
+A separate exporter installs one agent into another project. Unlike the
+target-wide exports above (which ship the whole skill library in a platform's
+format), a per-agent bundle ships one `AGENT.md` plus only the files it declares
+in its frontmatter `dependencies` block.
 
 ```bash
 python3 scripts/export_agent_bundle.py --agent user-access-diff --rewrite-paths
+python3 scripts/export_agent_bundle.py --all-runtime          # every active agent
 ```
 
-See [`docs/installing-single-agents.md`](./installing-single-agents.md) for the three supported install paths (MCP server, bundle drop-in, git subtree) and when each applies.
+See [`docs/installing-single-agents.md`](./installing-single-agents.md) for the
+three supported install paths (MCP server, bundle drop-in, git subtree) and when
+each applies.
 
-**Why both exist:** the six-platform exports under `exports/<target>/` are for library-wide distribution. Per-agent bundles are for single-agent install — the use case where a team wants `user-access-diff` in their project without the other 75 agents (76 total: 48 active run-time, 14 build-time, 14 deprecated). The parity contract applies to both surfaces: first-class targets get identical skill content; agent bundles carry their declared dependencies with byte-for-byte fidelity.
+**Why both exist:** the eight-platform exports under `exports/<target>/` are for
+library-wide distribution. Per-agent bundles are for single-agent install — the
+case where a team wants `user-access-diff` in their project without the other 75
+agents (76 total: 48 active run-time, 14 build-time, 14 deprecated). The parity
+contract applies to both surfaces: first-class targets get identical skill
+content; agent bundles carry their declared dependencies with byte-for-byte
+fidelity.
 
 ### Windsurf (`exports/windsurf/`)
-
-Similar to Cursor but in Windsurf's `.windsurf/rules/*.md` format:
 
 ```
 exports/windsurf/
@@ -156,9 +254,11 @@ exports/windsurf/
     rules/
       apex-trigger-framework.md
       ...
+    workflows/               # slash commands, 12,000-char cap
 ```
 
-Frontmatter: `description`, `triggers` (array).
+Rule frontmatter: `description` (truncated at 200 characters) and `triggers` (up
+to the skill's first three).
 
 ### Aider (`exports/aider/`)
 
@@ -166,14 +266,19 @@ Single-file concatenation:
 
 ```
 exports/aider/
-  CONVENTIONS.md   # ~10 MB of all skills concatenated by domain
+  CONVENTIONS.md   # every skill concatenated by domain, plus a command index
 ```
 
-Aider's model treats conventions as one large context. No per-skill activation; the whole file is provided on every Aider invocation. This works for small skill libraries but produces context-pressure on a 700+-skill library. Use with a narrow `--domain` filter when invoking export for Aider in a specific project.
+Aider's model treats conventions as one large context. There is no per-skill
+activation; the whole file is provided on every Aider invocation. On the last
+full local build `CONVENTIONS.md` measured **17 MB** — at 1,027 skills this is
+context pressure, not a working configuration. Use a narrow `--domain` or
+`--skill` filter when exporting for Aider in a specific project.
 
 ### Augment (`exports/augment/`)
 
-Similar to Cursor in layout; Augment's `.augment/rules/*.md` format.
+`.augment/rules/*.md` for skills, `.augment/commands/*.md` for the 67 slash
+commands.
 
 ## Regenerating exports locally
 
@@ -185,28 +290,39 @@ python3 scripts/export_skills.py --target cursor   # or whichever target
 # Copy the generated exports/<target>/ into your project
 ```
 
-`exports/` is gitignored (~130 MB for all six targets) so each consumer builds their own. The committed `registry/export_manifest.json` guarantees the build is reproducible.
+`exports/` is gitignored (`.gitignore:54`) so each consumer builds their own —
+the last full local build of all eight targets measured **255 MB**
+(`du -sh exports/`), and that figure scales with the corpus. The committed
+`registry/export_manifest.json` is what makes the build reproducible.
 
 ## Version-compatibility commitments
 
 ### What's guaranteed stable across minor versions
 
-- Skill IDs (`<domain>/<slug>`) — once published, never renamed within a major version.
-- Finding codes (`VR_MISSING_BYPASS`, `PICKLIST_NO_GVS`, etc.) — stable across runs within a major version.
-- MCP tool names (`search_skill`, `get_skill`, `probe_apex_references`, etc.) — stable across minor versions.
-- Agent IDs in `list_agents()` — stable, except for the documented deprecation window.
+- Skill IDs (`<domain>/<slug>`) — once published, never renamed within a major
+  version.
+- Finding codes (`VR_MISSING_BYPASS`, `PICKLIST_NO_GVS`, etc.) — stable across
+  runs within a major version.
+- MCP tool names (`search_skill`, `get_skill`, `probe_apex_references`, etc.) —
+  stable across minor versions.
+- Agent IDs in `list_agents()` — stable, except for the documented deprecation
+  window.
 
 ### What changes between minor versions
 
-- Skill CONTENT may evolve (new examples, updated gotchas, tightened rules). Content hashes in the manifest will change.
+- Skill CONTENT may evolve (new examples, updated gotchas, tightened rules).
+  Content hashes in the manifest will change.
 - New skills added; new agents added.
-- Skills may move to `status: beta` or `status: deprecated` with documented replacement.
-- Finding codes may be added (never removed within a major version except via the `_V2` suffix + deprecation pattern).
+- Skills may move to `status: beta` or `status: deprecated` with a documented
+  replacement.
+- Finding codes may be added (never removed within a major version except via the
+  `_V2` suffix + deprecation pattern).
 
 ### What changes between major versions
 
 - Deprecated agents removed (per [`docs/MIGRATION.md`](./MIGRATION.md) timeline).
-- Schema breaking changes possible (flagged in CHANGELOG.md with explicit migration steps).
+- Schema breaking changes possible (flagged in CHANGELOG.md with explicit
+  migration steps).
 - Finding codes with `_V2` suffixes become canonical; pre-V2 codes removed.
 
 ## For second-class platforms: how to get first-class treatment
@@ -214,59 +330,83 @@ python3 scripts/export_skills.py --target cursor   # or whichever target
 If a currently-second-class platform wants to become first-class:
 
 1. Propose a `.mdc`-style wrapper format that preserves skill metadata.
-2. Demonstrate deterministic export (3-run test passes).
-3. Demonstrate set-parity test feasibility (can be added to the export_parity test).
+2. Demonstrate deterministic export (the 3-run test passes).
+3. Demonstrate set-parity test feasibility (can be added to `test_export_parity`).
 4. Submit a PR with:
    - New exporter function in `scripts/export_skills.py`.
    - Extension of `FIRST_CLASS_TARGETS` in the same file.
    - Updated tests asserting set parity for the new target.
-   - Doc update in this file.
+   - A doc update here.
 
 Reviewer gate: maintainer sign-off + green CI.
 
-## CI matrix (Wave 6)
+## CI matrix
 
-The PR-lint workflow runs on:
-- Ubuntu 24.04 (primary target for Python validation)
-- (Matrix expansion candidate: macOS latest — adds coverage for dev-machine parity)
+Every workflow in this repo runs on `ubuntu-latest`; no job pins a specific
+Ubuntu release. The only OS matrices are in `validate.yml`, on
+`[ubuntu-latest, macos-latest]`:
 
-Export determinism is verified on Ubuntu. If macOS produces different hashes, that's a bug — the `stable_hash_for_files` fix (Wave 1.1 hotfix commit `09ef622`) made the hash path-independent, so cross-OS drift should not recur.
+- `validate-agents` — `validate_repo.py --agents` on both OSes.
+- `export-parity-matrix` — `export_skills.py --check` on both OSes, which is the
+  cross-OS determinism gate. `pr-lint.yml`'s `export-manifest-check` runs the
+  same check on Linux only.
+
+macOS-vs-Linux hash drift was a real failure once. The fix was
+`pipelines/frontmatter.py::stable_hash_for_files` (`:56`), which since commit
+`09ef62239` ("Wave 1.1 hotfix 3: make content_hash machine-independent") takes a
+`root` and digests POSIX paths relative to it, instead of absolute paths that
+differed between `/Users/…` and `/home/runner/…`.
 
 ## FAQ
 
-### Why Apache 2.0 license instead of MIT?
+### Why Apache 2.0 instead of MIT?
 
-Apache 2.0 grants a patent license alongside the copyright grant, which protects corporate consumers from patent-assertion attacks. MIT doesn't. Given SfSkills is consumed inside enterprise Salesforce work, Apache 2.0 is the more defensive choice.
+Apache 2.0 grants a patent license alongside the copyright grant, which protects
+corporate consumers from patent-assertion attacks. MIT doesn't. Given SfSkills is
+consumed inside enterprise Salesforce work, Apache 2.0 is the more defensive
+choice.
 
-### What if I want to ship SfSkills as part of a commercial product?
+### Can I ship SfSkills as part of a commercial product?
 
-Apache 2.0 allows that. Include the license, attribution, and any changes you made — details in [LICENSE](../LICENSE).
+Apache 2.0 allows that. Include the license, attribution, and any changes you
+made — details in [LICENSE](../LICENSE).
 
 ### Can I rename skills in my fork?
 
 Yes, but understand that:
+
 - Finding codes are tied to skill IDs in some cases.
 - Upstream consumers of your fork lose the ability to point at upstream docs.
 - Merging upstream changes becomes hard.
 
-Prefer namespacing (`mycompany_<domain>/<slug>`) to renaming. Better yet: propose the rename upstream.
+Prefer namespacing (`mycompany_<domain>/<slug>`) to renaming. Better yet: propose
+the rename upstream.
 
-### Does parity work if I have network-restricted Salesforce org?
+### Does parity work with a network-restricted Salesforce org?
 
-Yes. SfSkills' MCP tools use `sf` CLI, not direct API calls. If your `sf` CLI works, the MCP tools work. Skills themselves are offline content.
+Yes. SfSkills' MCP org tools shell out to the `sf` CLI rather than calling the
+API directly. If your `sf` CLI works, the MCP tools work. Skills themselves are
+offline content.
 
-### What happens if a test fails in CI after a manifest commit?
+### A parity test failed in CI after I committed. Now what?
 
 The PR that caused the failure is blocked. Three typical resolutions:
-1. The manifest is stale — run `python3 scripts/export_skills.py --all --manifest` locally + commit the regenerated manifest.
-2. The change broke determinism — investigate `scripts/export_skills.py` for non-deterministic ordering or timestamp leaks.
-3. The change broke set parity (a skill exists in claude but not cursor) — debug the specific exporter.
+
+1. **The manifest is stale** — run
+   `python3 scripts/export_skills.py --all --manifest` locally and commit the
+   regenerated manifest. This is the common case, and it is the state the tree
+   is in as of this writing.
+2. **The change broke determinism** — investigate `scripts/export_skills.py` for
+   non-deterministic ordering or timestamp leaks.
+3. **The change broke set parity** (a skill exists in claude but not cursor) —
+   debug the specific exporter.
 
 ## See also
 
 - [LICENSE](../LICENSE) — Apache 2.0.
+- [architecture.md](architecture.md) — what ships versus what has to be built locally.
 - [MIGRATION.md](./MIGRATION.md) — deprecation timeline + retired-agent mapping.
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — how to contribute skills + agents.
 - [SECURITY.md](../SECURITY.md) — disclosure process.
 - [CHANGELOG.md](../CHANGELOG.md) — release notes.
-- [`registry/export_manifest.json`](../registry/export_manifest.json) — the canonical baseline this doc's contract diff against.
+- [`registry/export_manifest.json`](../registry/export_manifest.json) — the baseline this contract diffs against.

@@ -25,11 +25,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-ALLOWED_CATEGORIES = {
-    "admin", "apex", "lwc", "flow", "omnistudio",
-    "agentforce", "security", "integration", "data", "devops",
-    "experience", "servicecloud", "architect",
-}
+# Single source of truth. This list used to be maintained separately and had
+# drifted to include "experience" and "servicecloud", which the validator does
+# not accept — so `new_skill.py <domain>` scaffolded a package that then failed
+# `validate_repo.py` with `invalid category`. Import instead of duplicating.
+from pipelines.validators import ALLOWED_CATEGORIES  # noqa: E402
 
 # Pre-seeded official sources by domain — injected into well-architected.md on scaffold.
 # Codex starts with real URLs, not a blank section.

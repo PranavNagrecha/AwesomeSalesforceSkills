@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sfskills",
   "displayName": "SfSkills — Salesforce AI Skill Library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "1,027 grounded Salesforce skill packages, 48 run-time agents and 67 slash commands, reached through 12 lightweight router skills instead of a flat index.",
   "author": {
     "name": "Pranav Nagrecha",

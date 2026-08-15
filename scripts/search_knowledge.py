@@ -239,14 +239,16 @@ def build_search_context(root: Path) -> SearchContext:
     # This does NOT change behaviour in either branch: enabled -> identical
     # load, disabled -> a mapping that provably nothing reads.
     #
-    # NOTE the asymmetry this leaves behind. config/retrieval-config.yaml sets
-    # `enabled: false` "TEMPORARILY ... for build-agent memory safety" and says
-    # to restore it before release. Flipping that flag back to true silently
-    # restores ~2 GB of resident memory per search process, with no code review
-    # and no other change. The real fix is the one that config file names —
-    # fetch the ~30 candidate vectors by key after the lexical pass instead of
-    # loading the whole file — which needs a keyed vector store that does not
-    # exist yet. Until then, treat the flag as memory-affecting.
+    # HISTORICAL NOTE, kept because the reasoning still applies. This comment
+    # used to warn that config/retrieval-config.yaml set `enabled: false`
+    # "TEMPORARILY ... for build-agent memory safety" and that flipping it back
+    # would silently restore ~2 GB of resident memory per search process. Both
+    # halves are now obsolete: the config has said `enabled: true` since
+    # 2026-08-13, and the memory figure was re-measured at 472 MB peak RSS —
+    # embeddings.jsonl is gitignored and not built, so only the ~5 MB
+    # skill_embeddings.jsonl is read. The load is still whole-file, so the
+    # keyed-vector-store fix that config file names remains the right one if
+    # chunk-level embeddings are ever rebuilt locally.
     embeddings = (
         load_embeddings(root / "vector_index" / "embeddings.jsonl")
         if embedding_config.enabled
