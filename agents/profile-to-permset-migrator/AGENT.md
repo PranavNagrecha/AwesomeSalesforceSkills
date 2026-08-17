@@ -27,6 +27,7 @@ dependencies:
     - admin/integration-user-management
     - admin/mass-transfer-ownership
     - admin/permission-set-architecture
+    - admin/permission-set-expiration
     - admin/permission-set-group-composition
     - admin/permission-sets-vs-profiles
     - admin/sharing-and-visibility
@@ -73,51 +74,53 @@ Given one profile (or a set of profiles scoped by name filter) in the target org
 
 ## Mandatory Reads Before Starting
 
+2. `skills/admin/permission-set-expiration` — time-bounded assignment is the correct target for temporary profile access, and without it the decomposition turns a temporary elevation into a permanent permission set
+
 ### Contract
-1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
-3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `agents/_shared/AGENT_CONTRACT.md`
+3. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
+4. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+5. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Architecture model (canonical)
-5. `skills/admin/permission-set-architecture` — canonical model
-6. `skills/admin/permission-sets-vs-profiles` — the decision matrix that fixes what cannot move: login hours, login IP ranges, default record type, default app and page-layout assignment have no permission-set equivalent, and Step 5's residual profile is exactly that list
-7. `skills/admin/permission-set-group-composition` — PSG layering, mute, deletion order
-8. `skills/security/permission-set-groups-and-muting` — a Muting Permission Set subtracts only inside the group, never from a permission set the user also holds directly; without it Step 4 proposes muting a permission the persona keeps by direct assignment and the mute does nothing at all
-9. `templates/admin/permission-set-patterns.md`
-10. `templates/admin/naming-conventions.md`
+6. `skills/admin/permission-set-architecture` — canonical model
+7. `skills/admin/permission-sets-vs-profiles` — the decision matrix that fixes what cannot move: login hours, login IP ranges, default record type, default app and page-layout assignment have no permission-set equivalent, and Step 5's residual profile is exactly that list
+8. `skills/admin/permission-set-group-composition` — PSG layering, mute, deletion order
+9. `skills/security/permission-set-groups-and-muting` — a Muting Permission Set subtracts only inside the group, never from a permission set the user also holds directly; without it Step 4 proposes muting a permission the persona keeps by direct assignment and the mute does nothing at all
+10. `templates/admin/permission-set-patterns.md`
+11. `templates/admin/naming-conventions.md`
 
 ### Permission categories
-11. `skills/admin/custom-permissions` — feature gates the profile carried as system permissions belong in a Custom Permission checked through `$Permission`, not in a permission set per toggle; without it Step 2's Feature bucket grows one PS per feature flag and the PSG carries composition it never needed
-12. `skills/admin/delegated-administration` — a delegated admin group names the profile it may assign, and stripping the profile does not update that reference; without it the cutover leaves delegated admins still handing out a profile that now grants nothing
-13. `skills/admin/user-access-policies` — the supported mechanism for assigning the new PSG to the migrated population on user create/update; without it Step 7's "parallel assign" phase has no instrument and the plan implies manual assignment for every holder of the profile
-14. `skills/admin/user-management` — a permission set carries a license type and cannot grant what a user's license excludes, which is exactly why `REFUSAL_INPUT_AMBIGUOUS` fires on a mixed-license profile; without it the agent emits one PSG for a population it was required to split first
-15. `skills/admin/integration-user-management` — integration profiles migrate differently
-16. `skills/admin/mass-transfer-ownership` — transfer ownership before deactivating profile-bound user
+12. `skills/admin/custom-permissions` — feature gates the profile carried as system permissions belong in a Custom Permission checked through `$Permission`, not in a permission set per toggle; without it Step 2's Feature bucket grows one PS per feature flag and the PSG carries composition it never needed
+13. `skills/admin/delegated-administration` — a delegated admin group names the profile it may assign, and stripping the profile does not update that reference; without it the cutover leaves delegated admins still handing out a profile that now grants nothing
+14. `skills/admin/user-access-policies` — the supported mechanism for assigning the new PSG to the migrated population on user create/update; without it Step 7's "parallel assign" phase has no instrument and the plan implies manual assignment for every holder of the profile
+15. `skills/admin/user-management` — a permission set carries a license type and cannot grant what a user's license excludes, which is exactly why `REFUSAL_INPUT_AMBIGUOUS` fires on a mixed-license profile; without it the agent emits one PSG for a population it was required to split first
+16. `skills/admin/integration-user-management` — integration profiles migrate differently
+17. `skills/admin/mass-transfer-ownership` — transfer ownership before deactivating profile-bound user
 
 ### Sharing + visibility (decisions surfaced when residual policy touches OWD/role hierarchy)
-17. `skills/admin/sharing-and-visibility` — `View All` and `Modify All` on the profile are record-access grants, not object permissions; without it the agent files them into a Feature PS as ordinary CRUD and carries forward an access path the OWD was written to prevent, with nothing in the residue review to catch it
-18. `skills/admin/compliant-data-sharing-setup` — narrow, FSC-only: on an org running Compliant Data Sharing, participant roles grant record access that lives in neither the profile nor any permission set; without it the `user-access-comparison` residue diff cannot attribute that access to anything and reports a phantom regression against the migration
-19. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
+18. `skills/admin/sharing-and-visibility` — `View All` and `Modify All` on the profile are record-access grants, not object permissions; without it the agent files them into a Feature PS as ordinary CRUD and carries forward an access path the OWD was written to prevent, with nothing in the residue review to catch it
+19. `skills/admin/compliant-data-sharing-setup` — narrow, FSC-only: on an org running Compliant Data Sharing, participant roles grant record access that lives in neither the profile nor any permission set; without it the `user-access-comparison` residue diff cannot attribute that access to anything and reports a phantom regression against the migration
+20. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
 
 ### Security posture (residual session/IP/MFA must match license + license tier)
-20. `skills/security/session-management-and-timeout` — session timeout and session-IP locking are profile-level overrides of an org-wide setting and have no permission-set home; without it the agent strips them in Step 5 and the persona silently inherits the org default instead
-21. `skills/security/session-high-assurance-policies` — a session-based permission set only activates once the session reaches High Assurance, which takes a login flow or policy to raise; without it Step 2 files permissions into the session-based bucket and they are never active for anyone
-22. `skills/security/ip-range-and-login-flow-strategy` — profile login IP ranges block the login outright, while org-wide trusted ranges only suppress the identity challenge; without it the agent reads the profile's ranges as redundant with the org list and drops a real restriction during the Step 5 strip
-23. `skills/security/mfa-enforcement-patterns` — MFA for UI logins is a system permission that does migrate into a permission set, and the API-only exception is the documented carve-out; without it the agent either strips MFA from the persona or leaves it on the `integration_mode` identity it locks out
-24. `skills/security/api-only-user-hardening` — integration_mode=true path
-25. `skills/security/privileged-access-management` — Setup_* PS posture
-26. `skills/security/guest-user-security` — guest profile residue rules
-27. `skills/security/record-access-troubleshooting` — diff residue vs current
+21. `skills/security/session-management-and-timeout` — session timeout and session-IP locking are profile-level overrides of an org-wide setting and have no permission-set home; without it the agent strips them in Step 5 and the persona silently inherits the org default instead
+22. `skills/security/session-high-assurance-policies` — a session-based permission set only activates once the session reaches High Assurance, which takes a login flow or policy to raise; without it Step 2 files permissions into the session-based bucket and they are never active for anyone
+23. `skills/security/ip-range-and-login-flow-strategy` — profile login IP ranges block the login outright, while org-wide trusted ranges only suppress the identity challenge; without it the agent reads the profile's ranges as redundant with the org list and drops a real restriction during the Step 5 strip
+24. `skills/security/mfa-enforcement-patterns` — MFA for UI logins is a system permission that does migrate into a permission set, and the API-only exception is the documented carve-out; without it the agent either strips MFA from the persona or leaves it on the `integration_mode` identity it locks out
+25. `skills/security/api-only-user-hardening` — integration_mode=true path
+26. `skills/security/privileged-access-management` — Setup_* PS posture
+27. `skills/security/guest-user-security` — guest profile residue rules
+28. `skills/security/record-access-troubleshooting` — diff residue vs current
 
 ### Deployment ordering
-28. `skills/devops/permission-set-deployment-ordering` — a permission set deployed ahead of the objects, fields and classes it references drops those entries instead of failing; without it Step 7's "build" phase reports a clean deploy while the PSes it just shipped are missing their FLS
-29. `skills/devops/pre-deployment-checklist` — the Step 7 profile strip is the destructive phase and needs a validation-only run plus a captured copy of the profile before it; without it the rollback plan's "restore profile from version control" has nothing behind it
-30. `skills/devops/post-deployment-validation` — supplies the smoke test and Apex-test reading that turn phase 2's "can pilot users still do everything they could before?" into a pass/fail; without it the pilot has a duration but no exit criterion
+29. `skills/devops/permission-set-deployment-ordering` — a permission set deployed ahead of the objects, fields and classes it references drops those entries instead of failing; without it Step 7's "build" phase reports a clean deploy while the PSes it just shipped are missing their FLS
+30. `skills/devops/pre-deployment-checklist` — the Step 7 profile strip is the destructive phase and needs a validation-only run plus a captured copy of the profile before it; without it the rollback plan's "restore profile from version control" has nothing behind it
+31. `skills/devops/post-deployment-validation` — supplies the smoke test and Apex-test reading that turn phase 2's "can pilot users still do everything they could before?" into a pass/fail; without it the pilot has a duration but no exit criterion
 
 ### Probes
-31. `agents/_shared/probes/permission-set-assignment-shape.md`
-32. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
+32. `agents/_shared/probes/permission-set-assignment-shape.md`
+33. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
 
 ---
 

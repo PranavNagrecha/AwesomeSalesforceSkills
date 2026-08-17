@@ -166,8 +166,7 @@ The Loyalty Member Portal uses the **Loyalty Member Portal Experience Cloud temp
 4. Configure Promotion Rules for earning points.
 5. Activate and schedule DPE batch jobs: Reset Qualifying Points and Aggregate/Expire Fixed Non-Qualifying Points.
 6. For partner loyalty: create LoyaltyProgramPartner records and activate Create Partner Ledgers and Update Partner Balance DPE definitions.
-7. Set up the Loyalty Member Portal Experience Cloud site using the Loyalty Member Portal template and associate it with the program.
-8. Test end-to-end: earn points, verify tier advancement after DPE run, test partner balance tracking.
+7. Set up the Loyalty Member Portal Experience Cloud site using the Loyalty Member Portal template, associate it with the program, and test end-to-end: earn points, verify tier advancement after the DPE run, and check partner balance tracking.
 
 ---
 

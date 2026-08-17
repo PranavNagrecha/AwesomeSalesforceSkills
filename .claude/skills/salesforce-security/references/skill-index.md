@@ -1,4 +1,4 @@
-# SfSkills — `security` skill roster (48 packages)
+# SfSkills — `security` skill roster (49 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -62,7 +62,8 @@ If your question is X, stop and open Y instead of this package.
 - `skills/security/session-management-and-timeout/SKILL.md` — configuring session timeout values, concurrent session limits, session IP locking, or …. NOT for OAuth token refresh flows, login IP ranges, or MFA/identity-provider configuration — use security/oauth-token-management.
 - `skills/security/shield-event-log-retention-strategy/SKILL.md` — designing Salesforce Shield Event Monitoring retention, SIEM routing, and …. Triggers: 'shield event log retention'. NOT for enabling Shield (see salesforce-shield-deployment) — use security/event-monitoring.
 - `skills/security/shield-kms-byok-setup/SKILL.md` — Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate …. NOT for Classic Encryption or field masking — use security/platform-encryption.
-- `skills/security/sso-saml-troubleshooting/SKILL.md` — Troubleshoot SAML SSO failures — assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration — use admin/connected-apps-and-auth.
+- `skills/security/sso-configuration/SKILL.md` — Triggers: SAML SSO setup, configure single sign-on, identity provider metadata, Just-in-Time provisioning, My Domain SSO, OpenID Connect, SSO-only login, …. NOT for SSO failures - use security/sso-saml-troubleshooting.
+- `skills/security/sso-saml-troubleshooting/SKILL.md` — Troubleshoot SAML SSO failures — assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration - use security/sso-configuration.
 - `skills/security/transaction-security-policies/SKILL.md` — Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement …. NOT for Event Monitoring log analysis or Shield Event Monitoring setup — use security/event-monitoring.
 - `skills/security/visualforce-security-and-modernization/SKILL.md` — Triggers: 'should I rewrite this Visualforce page in LWC', 'CSRF protection disabled on Visualforce page is that safe', …. NOT for greenfield Visualforce architecture (use … use apex/visualforce-fundamentals
 - `skills/security/xss-and-injection-prevention/SKILL.md` — writing or reviewing Visualforce pages …. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability'. NOT for Apex CRUD/FLS enforcement, Shield encryption, or AppExchange security review — use apex/soql-security.

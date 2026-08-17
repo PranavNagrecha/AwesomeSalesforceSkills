@@ -124,4 +124,4 @@ few dated one-off analyses — `checker-findings.md` (2026-05-05),
 All of them describe a tree that has since moved on.
 
 `docs/SKILLS.md` is indexed in 5a but is not prose — it is the generated
-catalog of all 1,027 packages.
+catalog of all 1,034 packages.

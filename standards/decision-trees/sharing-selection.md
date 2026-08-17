@@ -218,22 +218,25 @@ Rules:
 | What it does | Filters, at query time, the records the user could otherwise reach through sharing | Sets the default record set a user sees; does not change access |
 | Sharing rows | Leaves `__Share` rows untouched — evaluated as an access policy at run time, never materialised into the sharing tables | Leaves `__Share` rows untouched |
 | Enforced on | Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL | List views and reports |
-| Bypassed by | Code executed in **System Mode**; users with View All / Modify All Records or Data; Calendar "Show Details" | Anything that changes the filter — plus the user's underlying access is unchanged |
+| Bypassed by | Eight documented gaps, not three: code executed in **System Mode**; View All Records / View All Data; Modify All Records / Modify All Data; calendar "Show Details"; subordinates' events in calendars; records retained in global search box shortcuts; Event/Task record names in the related Chatter post; and `UserRecordAccess` reporting pre-restriction access. Full quotes: `skills/admin/restriction-rules/references/gotchas.md` Gotcha 1 | Anything that changes the filter — plus the user's underlying access is unchanged |
 | `UserRecordAccess` | **Still reports access.** "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule." | Not applicable |
 | Available on | Custom objects, external objects, contracts, events, quotes, tasks, time sheets, time sheet entries — **not** Account / Opportunity / Case / Lead | Custom objects plus account, case, contact, event, lead, opportunity, task |
-| Active rules per object | 2 (Enterprise, Developer) · 5 (Performance, Unlimited) | 2 (Developer) · 5 (Performance, Unlimited) |
+| Active rules per object | 2 (Enterprise, Developer) · 5 (Performance, Unlimited) | 2 (Developer) · 5 (Performance, Unlimited) — a **separate** ceiling; the two kinds do not share a budget |
 | Use case | "Compliance: sales users may not see Legal's contracts" | "Declutter: default list view hides inactive records" |
 
-Choose Restriction Rules for compliance and data segregation. Choose Scoping
-Rules for usability only — Salesforce is explicit that "scoping rules don't
-restrict the record access that your users already have."
+Choose Restriction Rules for data segregation where a defence-in-depth filter
+is sufficient; where an auditor will test the control, change the OWD instead.
+Choose Scoping Rules for usability only — Salesforce is explicit that "scoping
+rules don't restrict the record access that your users already have."
 
 **Do not call a restriction rule an absolute security boundary.** It is a
-run-time filter with three documented ways around it: system-mode code, the
-View All / Modify All permissions, and the fact that `UserRecordAccess` will
-still say the user has access. If you need an answer that survives an
-`without sharing` class or an integration user with Modify All Data, the
-restriction rule is not it — fix OWD and the sharing layers underneath.
+run-time filter with eight documented ways around it (see the Bypassed-by row
+above, and `skills/admin/restriction-rules/references/gotchas.md` Gotcha 1 for
+the verbatim quotes). Two of the eight — system-mode code and the Modify All
+permissions — describe the average nightly integration rather than an edge
+case. If you need an answer that survives a `without sharing` class or an
+integration user with Modify All Data, the restriction rule is not it — fix
+OWD and the sharing layers underneath.
 And check the object list first: on Account, Opportunity, Case, or Lead there
 is no restriction rule to reach for at all.
 
@@ -299,7 +302,7 @@ If you can't answer each of these in 30 seconds, the model is too complex.
 
 ## Official Sources Used
 
-- Restriction Rules Developer Guide — Considerations (supported objects; enforced on Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL; "Restriction rules aren't applied for code executed in System Mode"; "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule"; 2 active per object in EE/DE, 5 in PE/UE): https://developer.salesforce.com/docs/atlas.en-us.restriction_rules.meta/restriction_rules/restriction_rules_considerations.htm
+- Restriction Rules Developer Guide — Considerations (supported objects; enforced on Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL; "Restriction rules aren't applied for code executed in System Mode"; "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule"; calendar "Show Details"; subordinates' events; global search box shortcuts; Chatter publisher; 2 active per object in EE/DE, 5 in PE/UE): https://developer.salesforce.com/docs/atlas.en-us.restriction_rules.meta/restriction_rules/restriction_rules_considerations.htm
 - Salesforce Engineering — "Restriction Rules: Complementing Salesforce's Record Access Control Mechanism" (evaluated as a run-time access-control policy rather than stored in the sharing tables): https://engineering.salesforce.com/restriction-rules-820f2218a51b/
 - Scoping Rules Developer Guide — Introduction ("Scoping rules don't restrict the record access that your users already have"; supported objects): https://developer.salesforce.com/docs/atlas.en-us.scoping_rules.meta/scoping_rules/scoping_rules_intro.htm
 - Scoping Rules Developer Guide — Considerations (applies to list views and reports; active-rule limits per edition): https://developer.salesforce.com/docs/atlas.en-us.scoping_rules.meta/scoping_rules/scoping_rules_considerations.htm

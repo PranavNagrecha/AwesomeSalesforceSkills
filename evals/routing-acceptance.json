@@ -1,0 +1,121 @@
+{
+  "_comment": [
+    "Acceptance probes for scripts/check_routing_acceptance.py.",
+    "",
+    "Each case asserts a package is reachable on BOTH retrieval surfaces:",
+    "  must_carry -> terms that must survive the 220-char gloss clip (surface 1, ships)",
+    "  probes     -> phrasings that must rank it in top_n (surface 2, local index)",
+    "",
+    "These are acceptance tests for specific packages, NOT a benchmark. They do not",
+    "belong in evals/measurement/heldout-queries.json: those 154 queries are a fixed,",
+    "hand-written measurement set, and adding queries whose answers were authored in",
+    "the same wave would inflate the number it reports.",
+    "",
+    "WHY THESE PACKAGES. Before the 2026-08-15 record-access wave the corpus had no",
+    "package for restriction rules, scoping rules, sharing rules, the role hierarchy,",
+    "or permission-set expiration, and these queries misrouted:",
+    "  'create a scoping rule'             -> apex/soql-using-scope-clause (the SOQL",
+    "                                         clause: a different feature sharing a word)",
+    "  'criteria based sharing rule'       -> data/sharing-recalculation-performance",
+    "  'design the role hierarchy'         -> admin/territory-design-requirements",
+    "  'configure a lightning record page' -> agentforce/einstein-prediction-builder",
+    "  'set up single sign on with saml'   -> security/sso-saml-troubleshooting, i.e.",
+    "                                         troubleshooting, with no setup package",
+    "",
+    "KNOWN LIMITATION, deliberately not papered over. Probes here are specific",
+    "phrasings. Abstract paraphrases still miss on the lexical surface -- e.g.",
+    "'default record scope without removing access' returns admin/user-management, and",
+    "'which lightning record page does a user see' returns admin/dynamic-forms-migration,",
+    "even though both packages own those topics and carry near-identical trigger",
+    "sentences. That is the corpus-wide natural-language weakness the held-out",
+    "benchmark reports (Hit@1 ~40%), not a defect in these packages. Do NOT 'fix' it by",
+    "pasting probe strings verbatim into the triggers: array -- that makes this file",
+    "measure its own echo. Probes and triggers are kept as paraphrases on purpose."
+  ],
+  "cases": [
+    {
+      "skill": "admin/restriction-rules",
+      "must_carry": [
+        "restriction rule"
+      ],
+      "top_n": 3,
+      "probes": [
+        "stop one team seeing another team's contracts",
+        "restrict tasks so reps only see the ones they own",
+        "how many active restriction rules per object"
+      ]
+    },
+    {
+      "skill": "admin/scoping-rules",
+      "must_carry": [
+        "scoping rule"
+      ],
+      "top_n": 3,
+      "probes": [
+        "create a scoping rule",
+        "make reps see only their branch accounts by default",
+        "filter by scope on a list view"
+      ]
+    },
+    {
+      "skill": "admin/sharing-rules",
+      "must_carry": [
+        "sharing rule"
+      ],
+      "top_n": 3,
+      "probes": [
+        "criteria based sharing rule",
+        "owner based sharing rule",
+        "sharing rule recalculation"
+      ]
+    },
+    {
+      "skill": "admin/role-hierarchy-design",
+      "must_carry": [
+        "role hierarchy"
+      ],
+      "top_n": 3,
+      "probes": [
+        "why can't my sales manager see their rep's opportunities",
+        "grant access using hierarchies",
+        "how many roles can I create"
+      ]
+    },
+    {
+      "skill": "admin/permission-set-expiration",
+      "must_carry": [
+        "expiration"
+      ],
+      "top_n": 3,
+      "probes": [
+        "permission set assignment expiration date",
+        "grant temporary access that expires",
+        "time bound permission set assignment"
+      ]
+    },
+    {
+      "skill": "security/sso-configuration",
+      "must_carry": [
+        "sso"
+      ],
+      "top_n": 3,
+      "probes": [
+        "set up single sign on with saml",
+        "configure an identity provider for sso",
+        "just in time provisioning salesforce sso"
+      ]
+    },
+    {
+      "skill": "admin/lightning-record-page-configuration",
+      "must_carry": [
+        "record page"
+      ],
+      "top_n": 3,
+      "probes": [
+        "configure a lightning record page",
+        "assign a lightning page to a record type and profile",
+        "lightning app builder record page assignment"
+      ]
+    }
+  ]
+}

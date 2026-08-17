@@ -48,6 +48,7 @@ None. LRP mechanical patching requires FlexiPage metadata round-tripping that's 
 - `skills/admin/lightning-page-performance-tuning`
 - `skills/admin/record-types-and-page-layouts`
 - `skills/admin/path-and-guidance`
+- `skills/admin/lightning-record-page-configuration`
 - `skills/lwc/lwc-performance`
 
 ## Escalation / Refusal Rules

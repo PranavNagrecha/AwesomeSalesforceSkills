@@ -1,6 +1,6 @@
 ---
 name: scratch-org-management
-description: "Use this skill when designing, configuring, or troubleshooting scratch orgs: definition file structure, edition selection, allocation limits, Org Shape, CI automation via ScratchOrgInfo, and lifecycle management from the Dev Hub. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials), sandbox management, or production org administration."
+description: "Use this skill when designing, configuring, or troubleshooting scratch orgs: definition file structure, edition selection, allocation limits, Org Shape, CI automation via ScratchOrgInfo, and lifecycle management from the Dev Hub. NOT for SFDX CLI basics (use apex/sf-cli-and-sfdx-essentials), sandbox management, or production org administration."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

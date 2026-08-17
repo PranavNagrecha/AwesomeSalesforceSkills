@@ -2,7 +2,96 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
-## [Unreleased]
+## [Plugin 1.1.0] — 2026-08-15 — record-access layer, licence change, routing repairs
+
+### Added — the record-access layer (7 packages, 1,027 → 1,034)
+
+`standards/decision-trees/sharing-selection.md` opens by naming the thirteen
+mechanisms it routes between. Before this wave **three of them had a package**.
+The rest existed only as paragraphs inside `admin/sharing-and-visibility`, a
+single umbrella carrying the whole access model — and that umbrella declared
+`'sharing rule'` as one of its own trigger keywords while **not appearing at all**
+in the results for the query `sharing rules`.
+
+- `admin/restriction-rules` — narrowing access that sharing already granted
+- `admin/scoping-rules` — the default filtered view, which is `RestrictionRule`
+  with `enforcementType: Scoping`; there is no `ScopingRule` metadata type
+- `admin/sharing-rules` — owner-based and criteria-based rules, recalculation
+- `admin/role-hierarchy-design` — hierarchy as an access mechanism
+- `admin/permission-set-expiration` — time-bounded assignment
+- `security/sso-configuration` — configuring SSO, as opposed to debugging it
+- `admin/lightning-record-page-configuration` — App Builder pages and the
+  org / app / app + record type + profile assignment ladder
+
+Measured misroutes these close, all reproducible before the wave:
+
+| query | went to | now |
+|---|---|---|
+| `create a scoping rule` | `apex/soql-using-scope-clause` (the SOQL clause) | `admin/scoping-rules` |
+| `criteria based sharing rule` | `data/sharing-recalculation-performance` | `admin/sharing-rules` |
+| `design the role hierarchy` | `admin/territory-design-requirements` | `admin/role-hierarchy-design` |
+| `configure a lightning record page` | `agentforce/einstein-prediction-builder` | `admin/lightning-record-page-configuration` |
+| `set up single sign on with saml` | `security/sso-saml-troubleshooting` | `security/sso-configuration` |
+
+Every package was authored against fetched official docs and then
+adversarially fact-checked by a second pass whose default position was that it
+contained a fabrication. It did, in six of seven cases — an invented
+`LastDeletedByChange.Source` relationship (the guide prints
+`LastCreatedByChange`), an invented quoted sentence attributed to the
+Considerations page, a fabricated operator capability (scoping rules were said
+to support comparison operators; the doc says EQUALS-only unless SOQL is used),
+restriction rules recommended for Opportunity (not an eligible object) *inside
+the anti-pattern block written to prevent that class of error*, an `errorUrl`
+rule that contradicted the doc **and was enforced by the package's own checker**,
+and number-relabelling that merged two separately-documented per-object limits
+into one imaginary shared ceiling. All corrected against source.
+
+### Added — `scripts/check_routing_acceptance.py` + `evals/routing-acceptance.json`
+
+A package is reachable by two different fields and it is possible to fill in
+only one. The shipped gloss roster is built from `description`; the optional
+local index is fed by the `triggers:` array. This asserts both, and **skips the
+index surface rather than failing when `vector_index/` is absent**, because an
+install without one is a supported state. 7/7 passing.
+
+It is deliberately not part of `heldout-queries.json`: those 154 queries are a
+fixed measurement set, and adding queries whose answers were authored in the
+same wave would inflate the number it reports.
+
+### Fixed — routing repairs across the existing corpus
+
+- **16 `NOT for …` clauses named no resolvable package.** Every target existed;
+  the clauses said `see domain/slug` where the check reads `use`, omitted the
+  `domain/` prefix, or named no destination at all. Every authored package now
+  carries a resolvable redirect (was 1,010 of 1,027).
+- **7 packages had an 8-step `## Recommended Workflow`** against the 3–7
+  standard — a hard validator ERROR. Merged adjacent steps; no instruction lost.
+- **`security/sso-saml-troubleshooting`** pointed initial-SSO-configuration
+  traffic at `admin/connected-apps-and-auth`, which is OAuth and connected apps
+  for integrations. A redirect that resolves and still misroutes; no gate can
+  catch that shape, and `skill_doctor.py`'s docstring now says so.
+- **`admin/sharing-and-visibility`** cedes `sharing rule` and `role hierarchy`
+  to the new packages and redirects to them, so it stops competing with its own
+  children for its own vocabulary.
+- **`scripts/skill_doctor.py`** claimed 181 of 1,027 descriptions named a
+  resolvable destination. That wave had already landed; the docstring was
+  sending the next reader at a solved problem.
+
+### Known limitation, stated rather than papered over
+
+Abstract paraphrases still miss on the lexical surface — `default record scope
+without removing access` returns `admin/user-management` despite
+`admin/scoping-rules` carrying a near-identical trigger sentence. That is the
+corpus-wide natural-language weakness the held-out benchmark reports
+(Hit@1 ~40%), not a defect in these packages. Do not close it by pasting probe
+strings into `triggers:`; that makes the acceptance file measure its own echo.
+
+Separately: `scripts/skill_sync.py --all` **must** be run with
+`--skip-embeddings`. Chunk-level embeddings are never persisted
+(`embeddings.jsonl` is gitignored), so every run re-encodes all 136,536 chunks
+from cold — one attempt here reported `eta 3441m24s` and wrote nothing in 72
+minutes. Per-skill embeddings rebuild separately in ~7 s.
+
 
 ### Changed — licence: Apache-2.0 / MIT → PolyForm Small Business 1.0.0
 

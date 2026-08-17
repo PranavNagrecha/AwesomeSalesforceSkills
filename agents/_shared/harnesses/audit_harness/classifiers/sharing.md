@@ -57,6 +57,10 @@ None. OWD + Sharing Rule + Apex Managed Sharing changes are governance-sensitive
 - `skills/data/sharing-recalculation-performance`
 - `skills/admin/experience-cloud-guest-access`
 - `skills/admin/experience-cloud-member-management`
+- `skills/admin/sharing-rules`
+- `skills/admin/role-hierarchy-design`
+- `skills/admin/restriction-rules`
+- `skills/admin/scoping-rules`
 - `standards/decision-trees/sharing-selection.md`
 
 ## Escalation / Refusal Rules

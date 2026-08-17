@@ -1,6 +1,6 @@
 ---
 name: sharing-and-visibility
-description: "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for tracing one named user's access to one specific record — use security/record-access-troubleshooting. NOT for object or field permissions — use admin/permission-sets-vs-profiles."
+description: "Use when choosing between Salesforce record-access mechanisms or reviewing the access model end to end. Trigger keywords: OWD, org-wide defaults, record access model, sharing architecture, why can user see too much. NOT for sharing rules - use admin/sharing-rules. NOT for role hierarchy - use admin/role-hierarchy-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -241,8 +241,7 @@ Every flow returned should be classified:
 4. **Choose the overall run mode.** Use the Decision Guidance table. Default to User Context for screen flows; default to System Context With Sharing for record-triggered flows that don't need to bypass sharing; only choose Without Sharing with a justification block in the flow description.
 5. **Identify per-element overrides.** If the flow is User Context but needs to read one specific record the user can't see, add `runInMode=SystemModeWithSharing` (or `Without Sharing` if necessary) on that single Get Records and document why.
 6. **Add an audit-log step for any without-sharing path.** Every System Context Without Sharing write should record source flow + record Id + running user to an audit table. This is the compensating control auditors require.
-7. **Test with a low-privileged persona.** Run the flow as a user with the minimum profile — confirm User Context paths fail closed (record not found / insufficient access) and System Context paths succeed for the documented reason.
-8. **Pin the API version.** Set `<apiVersion>` explicitly in the flow XML so a later "Save" in Flow Builder does not silently flip the default.
+7. **Test with a low-privileged persona, then pin the API version.** Run the flow as a user with the minimum profile — confirm User Context paths fail closed (record not found / insufficient access) and System Context paths succeed for the documented reason. Then set `<apiVersion>` explicitly in the flow XML so a later "Save" in Flow Builder does not silently flip the default.
 
 ---
 

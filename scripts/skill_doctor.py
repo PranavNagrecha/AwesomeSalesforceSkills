@@ -25,10 +25,22 @@ the description carries a `NOT for X - use Y` clause naming a REAL package.
 That clause is the highest-value token in the shipped roster gloss
 (`.claude/skills/salesforce-<domain>/references/skill-index.md`), because on a
 fresh install skill selection is Claude reading those glosses — `vector_index/`
-is gitignored and never ships. Measured 2026-08-14: only 181 of 1,027
-descriptions name a resolvable destination, so 82% of the corpus gives a
-misrouted reader nowhere to go. It is a WARN here rather than an ERROR because
+is gitignored and never ships. It is a WARN here rather than an ERROR because
 a genuinely unambiguous skill does not need one.
+
+This check has been run to completion. Measured 2026-08-14 it was 181 of 1,027;
+a description wave took that to 1,010, and the last 17 (16 whose clause named a
+real package but omitted its `domain/` prefix, plus one that said "Does NOT
+cover" — which this file's own NOTFOR_RE does not match) were repaired on
+2026-08-15. Every authored package now names a resolvable destination.
+
+So a non-zero count here is now a REGRESSION signal rather than a backlog:
+something new landed without a redirect, or a rename orphaned an existing one.
+Treat it that way. The one shape this check still cannot see is a redirect that
+resolves and is nevertheless wrong — `security/sso-saml-troubleshooting` pointed
+at `admin/connected-apps-and-auth`, a real package about OAuth for integrations
+rather than about configuring SSO. Resolving is a syntax gate, not a routing
+guarantee.
 """
 
 from __future__ import annotations

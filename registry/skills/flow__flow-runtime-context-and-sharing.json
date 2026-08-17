@@ -113,7 +113,7 @@
     "f45a7b8d6d1e02b03ad0",
     "f993ab5ec5ef21fadc5d"
   ],
-  "content_hash": "c13b7454e5f17d2dfa52c1dff096b65eb291760b358973ab8ea2799c86e758b3",
+  "content_hash": "f718f0439c36581a5a8007f69cc4423fb28905b07c48f92f8052321b8b2a91f8",
   "dependencies": [],
   "description": "Flow runtime sharing context \u2014 run in user vs system mode, record access in Flow. Triggers: Flow sharing, run in system mode, Flow user context. NOT for Apex sharing declarations \u2014 use apex/apex-with-without-sharing-decision.",
   "file_location": "skills/flow/flow-runtime-context-and-sharing",

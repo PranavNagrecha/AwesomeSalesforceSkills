@@ -115,6 +115,7 @@ None. Identity-and-session configuration is audit-sensitive and mostly Setup-bou
 - `skills/admin/user-access-policies`
 - `skills/admin/user-management`
 - `skills/security/connected-app-security-policies`
+- `skills/security/sso-configuration`
 
 ## Escalation / Refusal Rules
 

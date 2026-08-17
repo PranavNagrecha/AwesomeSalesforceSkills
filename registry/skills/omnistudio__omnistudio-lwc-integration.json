@@ -88,12 +88,12 @@
     "fc1fde010d6cb007ddcb",
     "fcdf0dd67111e4c60a9e"
   ],
-  "content_hash": "9b0f0a0842b4d4a0a108cf5b7178e88a45743a0d8e25b52dcfcaa8cb511bac4f",
+  "content_hash": "25fbf53970a3f4360d2d3fd85717de53e2bbcb36ecb79ba15677fba12a3a6978",
   "dependencies": [
     "omnistudio/omniscript-design-patterns",
     "omnistudio/integration-procedures"
   ],
-  "description": "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag. NOT for standalone LWC development, standard Flow embedding, or OmniScript-to-OmniScript embedding.",
+  "description": "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag. NOT for standalone LWC development when OmniStudio is not involved - use lwc/component-communication.",
   "file_location": "skills/omnistudio/omnistudio-lwc-integration",
   "id": "omnistudio/omnistudio-lwc-integration",
   "inputs": [

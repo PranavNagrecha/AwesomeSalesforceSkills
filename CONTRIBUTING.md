@@ -37,7 +37,7 @@ python3 scripts/install_hooks.py
 
 Installs a fast `pre-commit` (changed-only sync + validate) and a `pre-push`
 that runs the full four-shard skill sweep. **The pre-push hook takes several
-minutes** on the current 1,027-skill corpus — a single shard measured at
+minutes** on the 1,027-skill corpus as measured — a single shard measured at
 1 m 58 s, and the hook runs four sequentially. Use `git push --no-verify` on WIP
 branches; CI still gates merge.
 

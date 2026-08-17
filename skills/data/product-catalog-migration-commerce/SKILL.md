@@ -131,9 +131,8 @@ Variants in B2B Commerce are Product2 records with a `ProductClass = Variation` 
 3. **Load ProductCatalog and ProductCategory first** — Use Commerce Import API. Validate category hierarchy is correct before proceeding.
 4. **Load Product2 records** — Ensure ProductClass is set correctly: VariationParent for parent products, Variation for variants.
 5. **Load ProductCategoryProduct junction records** — Associates each product to its category. Both foreign keys must be valid.
-6. **Load WebStoreCatalog** — Associates catalog to the store. Required for store visibility.
-7. **Load Pricebook2 and PricebookEntry** — Pricing data. Validate currency and quantity schedules.
-8. **Validate and reindex** — Run validation SOQL for counts. If search results are stale, trigger catalog reindex via Commerce Setup.
+6. **Load WebStoreCatalog, then Pricebook2 and PricebookEntry** — WebStoreCatalog associates the catalog to the store and is required for store visibility. Load pricing last, validating currency and quantity schedules.
+7. **Validate and reindex** — Run validation SOQL for counts. If search results are stale, trigger catalog reindex via Commerce Setup.
 
 ---
 

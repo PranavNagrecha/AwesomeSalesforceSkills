@@ -55,7 +55,7 @@
     "fcf7013ec43a7e7e257f",
     "fdff5b2be31c66bfe588"
   ],
-  "content_hash": "234d5d0a00d71d84b12a495ddd0774fcf91f0e7748d5d71b3586847794e2fdd0",
+  "content_hash": "150910a5b69adf503779e63a5c81b00724f11f913553ebb118ac37a5bb817c95",
   "dependencies": [],
   "description": "Use when migrating product catalog data into Salesforce B2B Commerce \u2014 covers category hierarchy, product attributes, images, pricing, and variant structure using the Commerce Import API. NOT for configuring categories, entitlement policies and variants after the load \u2014 use admin/commerce-product-catalog. NOT for migrating the CPQ (SBQQ) catalog \u2014 use data/product-catalog-migration-cpq.",
   "file_location": "skills/data/product-catalog-migration-commerce",

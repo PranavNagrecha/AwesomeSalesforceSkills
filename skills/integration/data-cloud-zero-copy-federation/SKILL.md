@@ -163,8 +163,7 @@ External warehouse access controls — Snowflake Row Access Policies, Databricks
 4. Create the lakehouse connector in Data Cloud Setup. Authenticate, mount the catalog, and create external DLOs for the chosen tables.
 5. Map external DLOs to DMOs. For identity-resolution participants, plan whether to use a query-acceleration cache on the resolution keys.
 6. Run a test segment that filters on the federated DLO. Verify query latency, confirm the source-warehouse query log shows pushdown happened, and capture the per-query cost on the source.
-7. Configure cache refresh schedules and monitoring (cost dashboards on the source warehouse, federated-query SLA alerts in Data Cloud).
-8. Document the operational runbook: how to revoke the share, how to rotate auth, what to do when source schema changes.
+7. Configure cache refresh schedules and monitoring (cost dashboards on the source warehouse, federated-query SLA alerts in Data Cloud), and document the operational runbook alongside them: how to revoke the share, how to rotate auth, and what to do when the source schema changes.
 
 ---
 

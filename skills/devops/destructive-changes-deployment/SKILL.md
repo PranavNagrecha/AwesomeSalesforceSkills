@@ -1,6 +1,6 @@
 ---
 name: destructive-changes-deployment
-description: "Managing destructiveChanges.xml manifests for safe metadata deletion in Salesforce deployments. Use when deleting metadata components via Metadata API or sf CLI. Covers pre vs post destructive manifests, safe deletion sequencing, dependency handling. NOT for package.xml basics (use metadata-api-and-package-xml). NOT for basic deployment setup (use change-set-deployment)."
+description: "Managing destructiveChanges.xml manifests for safe metadata deletion in Salesforce deployments. Use when deleting metadata components via Metadata API or sf CLI. Covers pre vs post destructive manifests, safe deletion sequencing, dependency handling. NOT for package.xml basics (use apex/metadata-api-and-package-xml). NOT for basic deployment setup (use devops/change-set-deployment)."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

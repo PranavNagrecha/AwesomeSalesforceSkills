@@ -8135,6 +8135,48 @@
       "domain": "flow",
       "expected_skill": "flow/flow-open-a-page-action",
       "top_k": 3
+    },
+    {
+      "query": "configure a lightning record page and assign it org default vs app default",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-record-page-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "permission set assignment expiration date time-boxed contractor access",
+      "domain": "admin",
+      "expected_skill": "admin/permission-set-expiration",
+      "top_k": 3
+    },
+    {
+      "query": "restriction rule recordFilter userCriteria narrow record access",
+      "domain": "admin",
+      "expected_skill": "admin/restriction-rules",
+      "top_k": 3
+    },
+    {
+      "query": "design the role hierarchy depth grant access using hierarchies",
+      "domain": "admin",
+      "expected_skill": "admin/role-hierarchy-design",
+      "top_k": 3
+    },
+    {
+      "query": "scoping rule filter by scope default record scope for list views",
+      "domain": "admin",
+      "expected_skill": "admin/scoping-rules",
+      "top_k": 3
+    },
+    {
+      "query": "criteria-based sharing rule owner-based sharing rule recalculation",
+      "domain": "admin",
+      "expected_skill": "admin/sharing-rules",
+      "top_k": 3
+    },
+    {
+      "query": "configure SAML single sign-on identity provider Just-in-Time provisioning",
+      "domain": "security",
+      "expected_skill": "security/sso-configuration",
+      "top_k": 3
     }
   ]
 }

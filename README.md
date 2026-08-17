@@ -72,7 +72,7 @@ Operations](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apex
 
 Both snippets above are lifted verbatim from
 [`skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md`](./skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md).
-All 1,027 skill packages ship a `references/llm-anti-patterns.md` in that same
+All 1,034 skill packages ship a `references/llm-anti-patterns.md` in that same
 shape: the wrong output, why the model produces it, the correct pattern, and a
 detection hint.
 
@@ -103,10 +103,10 @@ Selection is model-driven, not search-driven. Claude reads the router
 descriptions, hands off to one domain router, opens that router's
 `references/skill-index.md` — a roster of that domain's packages, one gloss
 each, budgeted at 220 characters (`scripts/build_plugin.py:281`) — and opens
-the package it picks. Eleven rosters, 1,027 glosses between them; Claude reads
+the package it picks. Eleven rosters, 1,034 glosses between them; Claude reads
 one. No index is consulted and nothing is built.
 
-That indirection is the whole design. Exporting all 1,027 skill descriptions
+That indirection is the whole design. Exporting all 1,034 skill descriptions
 flat would cost about **138,694 tokens** at session start, before you type
 anything. Everything actually loaded up front — 12 routers, 67 commands and 48
 agent loaders — costs **5,490**, or **4.0%** of that
@@ -234,7 +234,7 @@ sf org login web --alias my-dev              # auth stays in the sf CLI
 
 ### What to expect
 
-All **1,027 of 1,027** skill packages are structurally complete — `SKILL.md`
+All **1,034 of 1,034** skill packages are structurally complete — `SKILL.md`
 plus all four `references/` files, re-verified 2026-08-15 by walking
 `skills/*/*/`. Zero incomplete.
 
@@ -310,9 +310,9 @@ run it yourself.
 
 ## What's in it
 
-**1027 skills · 76 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,034 skills · 76 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
-- **Skills** (`skills/`) — 1027 structured guides across 11 domains: admin 253,
+- **Skills** (`skills/`) — 1,034 structured guides across 11 domains: admin 253,
   apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
   61, agentforce 53, security 48, omnistudio 34. Each carries SKILL.md
   instructions, worked examples, gotchas, Well-Architected mapping, and the
@@ -341,7 +341,7 @@ run it yourself.
 
 Shipped in v1:
 
-- [x] 1027 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 1,034 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] MCP server on PyPI exposing the library plus live-org lookups
@@ -355,7 +355,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 38 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
-over the 1027-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
+over the 1,034-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,
 `list_validation_rules`, `list_permission_sets`, `describe_permission_set`,
 `list_record_types`, `list_named_credentials`, `list_approval_processes`,

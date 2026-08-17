@@ -1,6 +1,6 @@
 ---
 name: data-loader-batch-window-sizing
-description: "Choose the right batch size, parallel/serial mode, and load window for Data Loader, Bulk API V1/V2, and custom Database.executeBatch jobs against a given object volume and complexity profile. Covers tradeoffs between batch size, trigger CPU cost, sharing recalculation cost, and row-skew lock contention. NOT for CSV column mapping (see data/data-loader-csv-column-mapping). NOT for picklist validation pre-load (see data/data-loader-picklist-validation-pre-load). NOT for sharing-recalc tuning after the load lands (see data/sharing-recalculation-performance)."
+description: "Choose the right batch size, parallel/serial mode, and load window for Data Loader, Bulk API V1/V2, and custom Database.executeBatch jobs against a given object volume and complexity profile. Covers tradeoffs between batch size, trigger CPU cost, sharing recalculation cost, and row-skew lock contention. NOT for CSV column mapping (use data/data-loader-csv-column-mapping). NOT for picklist validation pre-load (use data/data-loader-picklist-validation-pre-load). NOT for sharing-recalc tuning after the load lands (use data/sharing-recalculation-performance)."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
