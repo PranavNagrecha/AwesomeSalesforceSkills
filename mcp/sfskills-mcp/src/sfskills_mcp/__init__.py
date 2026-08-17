@@ -102,4 +102,23 @@
 #           (d) Retracted the "79.2% -> 92.2% Hit@1" routing headline — it did
 #           not survive re-scoring; router accuracy 88.3% -> 96.1% stands.
 
-__version__ = "0.4.7"
+#   0.4.8 — Data-bundle release, and the first release under PolyForm Small
+#           Business 1.0.0 (0.4.6 and 0.4.7 shipped to PyPI declaring MIT;
+#           those grants stand for the copies already distributed). Server
+#           code is unchanged. What ships is a refreshed corpus:
+#           (a) the record-access layer — 7 new packages closing the gap where
+#           sharing-selection.md routed between 13 mechanisms and only 3 had a
+#           package (restriction-rules, scoping-rules, sharing-rules,
+#           role-hierarchy-design, permission-set-expiration,
+#           lightning-record-page-configuration, sso-configuration);
+#           corpus 1,027 -> 1,034.
+#           (b) 16 NOT-for clauses that named no resolvable package repaired —
+#           every authored package now resolves, was 1,010 of 1,027.
+#           (c) 7 packages had an 8-step Recommended Workflow against the 3-7
+#           standard, a hard validator ERROR; adjacent steps merged.
+#           (d) scripts/check_routing_acceptance.py — asserts a package is
+#           reachable on BOTH surfaces (shipped gloss from `description`, local
+#           index from `triggers:`), skipping the index surface rather than
+#           failing when vector_index/ is absent.
+
+__version__ = "0.4.8"

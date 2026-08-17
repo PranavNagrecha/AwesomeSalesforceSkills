@@ -2,6 +2,54 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [0.4.8] — 2026-08-17 — sfskills-mcp (record-access corpus, first PolyForm release)
+
+**Server code is unchanged.** What ships is a refreshed data bundle and the
+licence metadata that landed after `0.4.7` was tagged.
+
+### First release under PolyForm Small Business 1.0.0
+
+`0.4.6` and `0.4.7` are on PyPI declaring MIT. Those grants stand for the copies
+already distributed — this is forward-only. From `0.4.8`, the wheel carries a
+PEP 639 SPDX expression (`PolyForm-Small-Business-1.0.0`) and ships a `LICENSE`
+file, which no earlier wheel did. See [`LICENSING.md`](./LICENSING.md).
+
+### Data bundle — the record-access layer (1,027 → 1,034 skills)
+
+`standards/decision-trees/sharing-selection.md` routes between thirteen
+record-access mechanisms. Three had a package. Added
+`admin/restriction-rules`, `admin/scoping-rules`, `admin/sharing-rules`,
+`admin/role-hierarchy-design`, `admin/permission-set-expiration`,
+`admin/lightning-record-page-configuration`, `security/sso-configuration`.
+
+Misroutes this closes, each reproducible before the wave: `create a scoping
+rule` returned the SOQL `USING SCOPE` clause; `criteria based sharing rule`
+returned a recalculation-performance package; `design the role hierarchy`
+returned territory design; `configure a lightning record page` returned
+`agentforce/einstein-prediction-builder`.
+
+Every package was authored against fetched official docs and then adversarially
+fact-checked. **Six of seven carried a fabrication**, all corrected against
+source — including an `errorUrl` rule that contradicted the doc *and was
+enforced by the package's own checker*, and restriction rules recommended for
+Opportunity (not an eligible object) inside the anti-pattern block written to
+prevent that class of error.
+
+### Routing repairs in the bundle
+
+- 16 `NOT for …` clauses named no resolvable package; every authored package
+  now resolves (was 1,010 of 1,027).
+- 7 packages had an 8-step `## Recommended Workflow` against the 3–7 standard,
+  a hard validator ERROR. Adjacent steps merged; no instruction lost.
+- `security/sso-saml-troubleshooting` sent initial-configuration traffic to
+  `admin/connected-apps-and-auth`, which is OAuth for integrations — a redirect
+  that resolves and still misroutes.
+
+### Verification
+
+1,034 skills + 76 agents, **0 errors**. 272 repo tests + 248 MCP tests passing.
+`build_plugin --check` and `export_skills --check` clean. All 14 PR checks green.
+
 ## [Plugin 1.1.0] — 2026-08-15 — record-access layer, licence change, routing repairs
 
 ### Added — the record-access layer (7 packages, 1,027 → 1,034)

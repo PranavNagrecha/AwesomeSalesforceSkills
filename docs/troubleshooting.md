@@ -325,7 +325,7 @@ import OK
 ```
 
 That wheel is also stale: it installs as 0.4.6 and reports
-`sfskills_mcp.__version__ == 0.4.4`. In-tree the package is at 0.4.7, so the fix
+`sfskills_mcp.__version__ == 0.4.4`. In-tree the package is at 0.4.8, so the fix
 is published-side.
 
 **Fix.** Use a repository checkout as the data root instead.
@@ -423,10 +423,10 @@ A healthy response, measured on a clone that had been bootstrapped:
 
 ```json
 {
-  "server_version": "0.4.7",
+  "server_version": "0.4.8",
   "mcp_sdk_version": "1.29.0",
   "repo_root": "/abs/path/to/AwesomeSalesforceSkills",
-  "registry": { "path": "registry/skills.json", "skill_count": 1027, "built_at": "…" },
+  "registry": { "path": "registry/skills.json", "skill_count": 1034, "built_at": "…" },
   "lexical_index": { "path": "vector_index/lexical.sqlite", "byte_size": 176865280, "built_at": "…" },
   "agents": { "runtime": 48, "build": 14, "deprecated": 14, "unknown": 0, "total": 76 }
 }

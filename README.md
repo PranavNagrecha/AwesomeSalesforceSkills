@@ -371,8 +371,8 @@ under any tool. And "no secrets in output" is enforced rather than assumed —
 both the success and the error path, with 20 tests behind it
 (`tests/test_sf_cli_redaction.py`).
 
-The server reports version **0.4.7** (`meta.health()` on this checkout).
-The latest release on PyPI is 0.4.6 as of 2026-08-15, so a `pip install`
+The server reports version **0.4.8** (`meta.health()` on this checkout).
+The latest release on PyPI is 0.4.7 as of 2026-08-17, so a `pip install`
 may trail the repo; `python3 -m pip show sfskills-mcp` tells you what you got.
 
 Setup for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Cline,

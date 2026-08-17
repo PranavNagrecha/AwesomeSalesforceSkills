@@ -233,9 +233,9 @@ search surface at query time and the only way to ask questions about your actual
 org.
 
 The package is published on PyPI as `sfskills-mcp`. Two version facts, both
-checked on 2026-08-15: this repository declares **0.4.7**
-(`mcp/sfskills-mcp/pyproject.toml:8` and `meta.health()`), and the newest
-release on PyPI is **0.4.6**. A `pip install` can therefore trail the checkout;
+checked on 2026-08-17: this repository declares **0.4.8**
+(`mcp/sfskills-mcp/pyproject.toml:11` and `meta.health()`), and the newest
+release on PyPI is **0.4.7**. A `pip install` can therefore trail the checkout;
 `python3 -m pip show sfskills-mcp` tells you which one you have.
 
 The wheel ships small on purpose and does not bundle the corpus. Its documented
@@ -296,10 +296,10 @@ The values this checkout returned, abridged only where a path is machine-specifi
 
 ```json
 {
-  "server_version": "0.4.7",
+  "server_version": "0.4.8",
   "mcp_sdk_version": "1.27.0",
   "repo_root": "/Users/.../AwesomeSalesforceSkills",
-  "registry": { "path": "registry/skills.json", "skill_count": 1027,
+  "registry": { "path": "registry/skills.json", "skill_count": 1034,
                 "built_at": "2026-08-15T04:06:04+00:00" },
   "lexical_index": { "path": "vector_index/lexical.sqlite",
                      "built_at": "2026-08-14T23:56:23+00:00",

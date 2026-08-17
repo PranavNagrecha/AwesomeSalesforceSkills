@@ -586,7 +586,7 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    ```
 
 Until a release is cut ([section 6](#6-cutting-a-github-release-maintainer-only)),
-use the clone path above. In-tree the package is already at **0.4.7**
+use the clone path above. In-tree the package is already at **0.4.8**
 (`mcp/sfskills-mcp/pyproject.toml` and `src/sfskills_mcp/__init__.py` agree), so
 the version skew is fixed at source and waiting on a publish.
 
@@ -653,53 +653,47 @@ tarball is gated on `if: startsWith(github.ref, 'refs/tags/mcp-v')`
 (`publish-mcp.yml:80`), so a manual dispatch from a branch builds the bundle and
 then skips the upload. Only a fresh tag push cuts a release.
 
-### Blocker to fix first
+### The bundle-without-an-index blocker — fixed
 
-`.github/workflows/publish-mcp.yml:60` builds the data bundle with:
+`publish-mcp.yml` used to build the data bundle with `cp -r vector_index
+_bundle/sfskills-data/` against a bare CI checkout, where `vector_index/` holds
+only `manifest.json` and the two fixture files — `lexical.sqlite` and
+`chunks.jsonl` are gitignored. A release cut that way published a tarball with
+**no retrieval index**, and `sfskills-mcp-init` succeeded into a cache that
+answered nothing.
 
-```yaml
-cp -r vector_index _bundle/sfskills-data/
+Fixed before the `mcp-v0.4.7` release: the workflow now runs
+`python -m pip install -r requirements.txt` and `python3 scripts/build_index.py`
+before the bundle step (`publish-mcp.yml`, *Build lexical retrieval index*).
+That adds ~300 MB to the release asset — `chunks.jsonl` ~127 MB plus
+`lexical.sqlite` ~169 MB. Embeddings are deliberately not built and stay
+excluded.
+
+Verify it stayed fixed before any release:
+
+```bash
+grep -n 'build_index' .github/workflows/publish-mcp.yml   # must match
 ```
-
-against a bare CI checkout, where `vector_index/` holds only `manifest.json` and
-the two fixture files — `lexical.sqlite` and `chunks.jsonl` are gitignored and
-the workflow never builds them (`grep -n 'build_index\|skill_sync\|bootstrap'
-.github/workflows/publish-mcp.yml` returns nothing). A release cut today would
-publish a tarball with **no retrieval index**, and `sfskills-mcp-init` would
-succeed into a cache that answers nothing — a worse failure than the current
-honest 404.
-
-Add a step before `Build data bundle`:
-
-```yaml
-      - name: Build retrieval index
-        run: |
-          python -m pip install -r requirements.txt
-          python scripts/bootstrap.py --skip-commands
-```
-
-(`python scripts/build_index.py` also works; `bootstrap.py --skip-commands` is
-faster and writes nothing tracked.)
 
 ### Steps
 
-1. **Fix the blocker above** in `.github/workflows/publish-mcp.yml`. Without it
-   the release ships an unusable bundle.
+1. Confirm the index step is still present (see above) — without it the release
+   ships an unusable bundle.
 2. Confirm the versions still agree. `mcp/sfskills-mcp/pyproject.toml` `version`
    and `src/sfskills_mcp/__init__.py` `__version__` must match; both read
-   **0.4.7** in-tree today, which is the bump that supersedes the stale 0.4.6
-   wheel on PyPI.
+   **0.4.8** in-tree today, which is the bump that carries the record-access
+   corpus and the first PolyForm-licensed wheel.
 3. Commit and push to `main`.
 4. Tag and push — **one tag per push**, which is what the >3-tags rule above
    requires:
    ```bash
-   git tag mcp-v0.4.7
-   git push origin mcp-v0.4.7
+   git tag mcp-v0.4.8
+   git push origin mcp-v0.4.8
    ```
 5. Watch it: `gh run watch`.
 6. Confirm the asset attached:
    ```bash
-   gh release view mcp-v0.4.7 --json assets --jq '.assets[].name'
+   gh release view mcp-v0.4.8 --json assets --jq '.assets[].name'
    ```
    `sfskills-data.tar.gz` must be listed.
 7. Confirm the URL the client actually requests now resolves:

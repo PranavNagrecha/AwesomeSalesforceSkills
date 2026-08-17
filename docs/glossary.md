@@ -432,7 +432,7 @@ whether a *term* reaches the shipped roster, which no other gate checks.
 **MCP server** — `mcp/sfskills-mcp`, a Model Context Protocol server exposing
 **38** read-only tools: skill, agent, template and decision-tree retrieval, plus
 live Salesforce org metadata and read-only SOQL. Published to PyPI as
-`sfskills-mcp`, currently **0.4.7**. It runs over stdio and resolves its data root
+`sfskills-mcp`, currently **0.4.8**. It runs over stdio and resolves its data root
 from `SFSKILLS_REPO_ROOT`. It is the fastest way to query the library and the only
 way to ask questions about your actual org — but it is not wired up by installing
 the plugin, so a user has to connect it themselves.

@@ -386,7 +386,7 @@ generated and must never be hand-edited.
 | `registry/` | Normalised machine-readable records: `registry/skills.json` (the whole corpus as one document, `skill_count: 1027`), `registry/skills/` (one JSON per skill), `registry/knowledge-map.json`, `registry/export_manifest.json`. Source of truth for the rosters and the count lint. | **Generated** | The MCP server, export targets, `build_plugin.py`, the count lint |
 | `vector_index/` | Mechanism 2/3 artifacts: `chunks.jsonl` (chunk text), `lexical.sqlite` (FTS5), `skill_embeddings.jsonl` (one vector per skill), plus `manifest.json` and the query fixtures. **Everything except the manifest and the two fixture files is gitignored** — nothing large here ships. | **Generated** | The two search surfaces only |
 | `evals/` | Output-quality tests. Golden P0 cases with assertions, rubrics and reference answers under `evals/golden/`; the retrieval and routing harnesses under `evals/measurement/`. | Human | Structure lints in CI; the scoring is manual |
-| `mcp/sfskills-mcp` | The MCP server: 38 read-only tools over the corpus plus live-org metadata and read-only SOQL. Version 0.4.7; published to PyPI. | Human | MCP clients |
+| `mcp/sfskills-mcp` | The MCP server: 38 read-only tools over the corpus plus live-org metadata and read-only SOQL. Version 0.4.8; published to PyPI. | Human | MCP clients |
 
 Two more directories are pure code: `pipelines/` holds the libraries (chunking,
 lexical index, ranking, validators, sync engine) and `scripts/` holds the CLI
