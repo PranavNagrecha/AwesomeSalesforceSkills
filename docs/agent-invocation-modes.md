@@ -175,7 +175,6 @@ freestyling when the MCP server is not connected.
 
 The 15-channel catalog, the Quick Picker framing, and the informal-vs-happy-path
 distinction in this doc were adopted from an external Cursor-authored review
-([`docs/agent-informal-invocation-analysis.md`](agent-informal-invocation-analysis.md),
-2026-04-19, written when the roster stood at 75 agents). Triage, MCP-first
+(2026-04-19, written when the roster stood at 75 agents). Triage, MCP-first
 framing, and the list of what MCP is missing are this repo's own. See
 `feedback/FEEDBACK_LOG.md`, anchor `2026-04-19-cursor-invocation-review`.

@@ -8,7 +8,7 @@ asking your actual org whether the thing already exists.
 
 [![Validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
 [![PR Lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![License: PolyForm Small Business](https://img.shields.io/badge/License-PolyForm_Small_Business_1.0.0-orange.svg)](./LICENSE)
 
 ---
 
@@ -72,7 +72,7 @@ Operations](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apex
 
 Both snippets above are lifted verbatim from
 [`skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md`](./skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md).
-All 1,027 skill packages ship a `references/llm-anti-patterns.md` in that same
+All 1,034 skill packages ship a `references/llm-anti-patterns.md` in that same
 shape: the wrong output, why the model produces it, the correct pattern, and a
 detection hint.
 
@@ -103,10 +103,10 @@ Selection is model-driven, not search-driven. Claude reads the router
 descriptions, hands off to one domain router, opens that router's
 `references/skill-index.md` — a roster of that domain's packages, one gloss
 each, budgeted at 220 characters (`scripts/build_plugin.py:281`) — and opens
-the package it picks. Eleven rosters, 1,027 glosses between them; Claude reads
+the package it picks. Eleven rosters, 1,034 glosses between them; Claude reads
 one. No index is consulted and nothing is built.
 
-That indirection is the whole design. Exporting all 1,027 skill descriptions
+That indirection is the whole design. Exporting all 1,034 skill descriptions
 flat would cost about **138,694 tokens** at session start, before you type
 anything. Everything actually loaded up front — 12 routers, 67 commands and 48
 agent loaders — costs **5,490**, or **4.0%** of that
@@ -234,7 +234,7 @@ sf org login web --alias my-dev              # auth stays in the sf CLI
 
 ### What to expect
 
-All **1,027 of 1,027** skill packages are structurally complete — `SKILL.md`
+All **1,034 of 1,034** skill packages are structurally complete — `SKILL.md`
 plus all four `references/` files, re-verified 2026-08-15 by walking
 `skills/*/*/`. Zero incomplete.
 
@@ -273,9 +273,9 @@ step 2.
   `scripts/smoke_test_agents.py` (structural + dependency checks on the runtime
   agents), and `scripts/validate_skill_factuality.py` (samples skills and
   checks the field/object references actually exist). Say the date out loud:
-  the newest report in `docs/validation/` is `agent_executions_2026-04-28`, and
-  the factuality run sampled 100 skills when the corpus was smaller than it is
-  now. The harnesses are current; the reports are not. Index:
+  the last run was April 2026, and the factuality run sampled 100 skills when
+  the corpus was smaller than it is now. The harnesses are current; re-run them
+  against your own org rather than trusting a stale number. Index:
   [`docs/validation/README.md`](./docs/validation/README.md).
 - **Output quality has golden cases — for a thin slice.** P0 cases with
   assertions, rubrics and reference answers live in `evals/golden/`; lint them
@@ -304,16 +304,15 @@ are not referenced by any workflow and the model-routing benchmark needs live
 agents to run at all. Nor is plugin drift gated: `build_plugin.py --check`
 exists and passes (`OK: 121 plugin artifact(s) match a fresh build`), but
 `grep -rn "build_plugin" .github/ .githooks/` returns nothing, so you have to
-run it yourself. See [`docs/comparison.md`](./docs/comparison.md) for the full
-list of weak spots.
+run it yourself.
 
 ---
 
 ## What's in it
 
-**1027 skills · 76 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,034 skills · 76 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
-- **Skills** (`skills/`) — 1027 structured guides across 11 domains: admin 253,
+- **Skills** (`skills/`) — 1,034 structured guides across 11 domains: admin 253,
   apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
   61, agentforce 53, security 48, omnistudio 34. Each carries SKILL.md
   instructions, worked examples, gotchas, Well-Architected mapping, and the
@@ -342,7 +341,7 @@ list of weak spots.
 
 Shipped in v1:
 
-- [x] 1027 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 1,034 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] MCP server on PyPI exposing the library plus live-org lookups
@@ -356,7 +355,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 38 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
-over the 1027-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
+over the 1,034-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,
 `list_validation_rules`, `list_permission_sets`, `describe_permission_set`,
 `list_record_types`, `list_named_credentials`, `list_approval_processes`,
@@ -389,14 +388,28 @@ Tool schemas and design notes: [`mcp/sfskills-mcp/README.md`](./mcp/sfskills-mcp
 - [`docs/getting-started.md`](./docs/getting-started.md) — the three entry points, each with a verification step
 - [`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md) — install the library as a Claude Code plugin
 - [`docs/README.md`](./docs/README.md) — documentation hub: getting started, architecture, FAQ, troubleshooting
-- [`docs/positioning.md`](./docs/positioning.md) — what this project claims, and what it refuses to claim
-- [`docs/comparison.md`](./docs/comparison.md) — how it compares to the alternatives, including where it loses
-- [`docs/go-to-market.md`](./docs/go-to-market.md) — the launch plan
 - [`docs/installing-single-agents.md`](./docs/installing-single-agents.md) — ship one agent into another project
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — add a skill, fix a skill, report a gap, flag stale content
 
 ---
 
+## License
+
+SfSkills is **source-available**, not open source. Read it freely; whether you
+may *use* it for free depends on how big your organisation is.
+
+- **Free** — individuals, freelancers and consultants (including on billable
+  client work), and any company with **fewer than 100 people and under USD 1M
+  in prior-year revenue**.
+- **Needs a commercial license** — everyone above either threshold, internal
+  enterprise use included.
+
+Governed by the [PolyForm Small Business License 1.0.0](./LICENSE)
+(`PolyForm-Small-Business-1.0.0`). [`LICENSING.md`](./LICENSING.md) explains the
+thresholds in plain English and how to buy a commercial license.
+
+---
+
 **Pranav Nagrecha** — Salesforce Technical Architect ·
 [Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues) ·
-Apache-2.0 ([LICENSE](./LICENSE))
+[License](./LICENSE) · [Commercial use](./LICENSING.md)

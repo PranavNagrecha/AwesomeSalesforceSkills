@@ -1,6 +1,6 @@
 ---
 name: org-shape-and-scratch-definition
-description: "Use this skill when authoring, debugging, or optimizing a scratch org definition file (project-scratch-def.json): schema structure, features array, settings hierarchy, Org Shape sourcing, edition selection, orgPreferences-to-settings migration, and release pinning. NOT for scratch org lifecycle management (use scratch-org-management), CI pipeline design, or sandbox configuration."
+description: "Use this skill when authoring, debugging, or optimizing a scratch org definition file (project-scratch-def.json): schema structure, features array, settings hierarchy, Org Shape sourcing, edition selection, orgPreferences-to-settings migration, and release pinning. NOT for scratch org lifecycle management (use devops/scratch-org-management), CI pipeline design, or sandbox configuration."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

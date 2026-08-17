@@ -162,6 +162,7 @@
       "admin/lightning-bolt-template-authoring",
       "admin/lightning-experience-transition",
       "admin/lightning-page-performance-tuning",
+      "admin/lightning-record-page-configuration",
       "admin/list-views-and-compact-layouts",
       "admin/lookup-and-relationship-design",
       "admin/lookup-filter-cross-object-patterns",
@@ -193,6 +194,7 @@
       "admin/path-and-guidance",
       "admin/patient-engagement-requirements",
       "admin/permission-set-architecture",
+      "admin/permission-set-expiration",
       "admin/permission-set-group-composition",
       "admin/permission-sets-vs-profiles",
       "admin/persona-and-journey-mapping-sf",
@@ -224,8 +226,10 @@
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
       "admin/requirements-traceability-matrix",
+      "admin/restriction-rules",
       "admin/revenue-intelligence-setup",
       "admin/revenue-recognition-requirements",
+      "admin/role-hierarchy-design",
       "admin/sales-engagement-cadences",
       "admin/sales-process-mapping",
       "admin/salesforce-object-queryability",
@@ -236,10 +240,12 @@
       "admin/sandbox-strategy",
       "admin/saql-query-development",
       "admin/scheduled-path-patterns",
+      "admin/scoping-rules",
       "admin/self-service-design",
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
       "admin/sharing-and-visibility",
+      "admin/sharing-rules",
       "admin/soft-credits-and-matching",
       "admin/stakeholder-raci-for-sf-projects",
       "admin/standard-object-quirks",
@@ -1045,6 +1051,7 @@
       "security/session-management-and-timeout",
       "security/shield-event-log-retention-strategy",
       "security/shield-kms-byok-setup",
+      "security/sso-configuration",
       "security/sso-saml-troubleshooting",
       "security/transaction-security-policies",
       "security/visualforce-security-and-modernization",
@@ -1429,12 +1436,16 @@
       "admin/hipaa-workflow-design",
       "admin/permission-sets-vs-profiles",
       "admin/queues-and-public-groups",
+      "admin/role-hierarchy-design",
       "security/guest-user-security-audit",
       "security/ip-relaxation-and-restriction"
     ],
     "access-governance": [
       "admin/permission-set-architecture",
       "admin/permission-set-group-composition"
+    ],
+    "access-review": [
+      "admin/permission-set-expiration"
     ],
     "accessibility": [
       "admin/digital-storefront-requirements",
@@ -2541,7 +2552,8 @@
     ],
     "auth-provider": [
       "lwc/experience-cloud-authentication",
-      "lwc/experience-cloud-multi-idp-sso"
+      "lwc/experience-cloud-multi-idp-sso",
+      "security/sso-configuration"
     ],
     "authentication": [
       "apex/apex-jwt-bearer-flow",
@@ -3916,6 +3928,9 @@
     "component-selection": [
       "flow/screen-flow-choice-component-selection"
     ],
+    "component-visibility": [
+      "admin/lightning-record-page-configuration"
+    ],
     "composable-commerce": [
       "architect/composable-commerce-architecture"
     ],
@@ -4368,6 +4383,9 @@
     ],
     "crew": [
       "admin/fsl-shifts-and-crew"
+    ],
+    "criteria-based-sharing": [
+      "admin/sharing-rules"
     ],
     "crlp": [
       "apex/npsp-custom-rollups",
@@ -5040,6 +5058,7 @@
       "devops/data-seeding-for-testing"
     ],
     "data-segregation": [
+      "admin/restriction-rules",
       "architect/multi-bu-marketing-architecture"
     ],
     "data-skew": [
@@ -5807,7 +5826,8 @@
     ],
     "dynamic-actions": [
       "admin/dynamic-forms-and-actions",
-      "admin/lightning-app-builder-advanced"
+      "admin/lightning-app-builder-advanced",
+      "admin/lightning-record-page-configuration"
     ],
     "dynamic-apex": [
       "apex/apex-schema-describe"
@@ -5825,6 +5845,7 @@
       "admin/dynamic-forms-and-actions",
       "admin/dynamic-forms-migration",
       "admin/lightning-app-builder-advanced",
+      "admin/lightning-record-page-configuration",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
     ],
@@ -6651,6 +6672,9 @@
     "featuremanagement": [
       "apex/apex-custom-permissions-check"
     ],
+    "federated-authentication": [
+      "security/sso-configuration"
+    ],
     "federated-search": [
       "lwc/experience-cloud-search-customization"
     ],
@@ -6789,6 +6813,9 @@
       "data/salesforce-files-architecture",
       "integration/file-and-document-integration"
     ],
+    "filter-by-scope": [
+      "admin/scoping-rules"
+    ],
     "filter-groups": [
       "apex/npsp-custom-rollups"
     ],
@@ -6914,7 +6941,8 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "flexipage": [
-      "admin/lightning-app-builder-advanced"
+      "admin/lightning-app-builder-advanced",
+      "admin/lightning-record-page-configuration"
     ],
     "flip-flop": [
       "apex/salesforce-debug-log-analysis"
@@ -7512,6 +7540,9 @@
     "gps": [
       "architect/fsl-integration-patterns"
     ],
+    "grant-access-using-hierarchies": [
+      "admin/role-hierarchy-design"
+    ],
     "grant-compliance": [
       "admin/program-outcome-tracking-design"
     ],
@@ -7575,6 +7606,9 @@
       "security/experience-cloud-security",
       "security/guest-user-security",
       "security/guest-user-security-audit"
+    ],
+    "guest-user-sharing": [
+      "admin/sharing-rules"
     ],
     "guest-users": [
       "omnistudio/omnistudio-security"
@@ -7902,6 +7936,9 @@
     ],
     "identity-mapping": [
       "agentforce/agentforce-in-slack"
+    ],
+    "identity-provider": [
+      "security/sso-configuration"
     ],
     "identity-resolution": [
       "admin/data-cloud-identity-resolution",
@@ -8438,6 +8475,9 @@
     "junction-object": [
       "data/data-model-design-patterns"
     ],
+    "just-in-time-provisioning": [
+      "security/sso-configuration"
+    ],
     "jwt": [
       "apex/apex-jwt-bearer-flow",
       "devops/pipeline-secrets-management",
@@ -8753,6 +8793,7 @@
       "admin/dynamic-forms-migration",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
+      "admin/lightning-record-page-configuration",
       "admin/related-list-configuration"
     ],
     "lightning-base-components": [
@@ -8846,6 +8887,9 @@
     "lightning-record-form": [
       "lwc/lwc-base-component-recipes"
     ],
+    "lightning-record-page": [
+      "admin/lightning-record-page-configuration"
+    ],
     "lightning-security": [
       "security/network-security-and-trusted-ips"
     ],
@@ -8902,7 +8946,8 @@
       "data/sosl-search-patterns"
     ],
     "list-views": [
-      "admin/list-views-and-compact-layouts"
+      "admin/list-views-and-compact-layouts",
+      "admin/scoping-rules"
     ],
     "listing-builder": [
       "agentforce/agentexchange-publishing"
@@ -9433,6 +9478,7 @@
       "omnistudio/omnistudio-field-mapping-governance"
     ],
     "metadata-api": [
+      "admin/restriction-rules",
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
       "devops/cross-cloud-deployment-patterns",
@@ -9796,6 +9842,7 @@
     "my-domain": [
       "admin/org-setup-and-configuration",
       "security/oauth-redirect-and-domain-strategy",
+      "security/sso-configuration",
       "security/sso-saml-troubleshooting"
     ],
     "name": [
@@ -10247,6 +10294,9 @@
       "admin/api-contract-documentation",
       "flow/flow-external-services"
     ],
+    "openid-connect": [
+      "security/sso-configuration"
+    ],
     "operating-hours": [
       "admin/fsl-service-territory-setup",
       "admin/fsl-shifts-and-crew",
@@ -10480,11 +10530,15 @@
       "security/guest-user-security-audit"
     ],
     "owd": [
+      "admin/role-hierarchy-design",
       "admin/sharing-and-visibility",
       "security/record-access-troubleshooting"
     ],
     "owd-change": [
       "data/sharing-recalculation-performance"
+    ],
+    "owner-based-sharing": [
+      "admin/sharing-rules"
     ],
     "ownership": [
       "admin/mass-transfer-ownership",
@@ -10526,6 +10580,9 @@
     ],
     "packaging-org": [
       "devops/managed-package-development"
+    ],
+    "page-assignment": [
+      "admin/lightning-record-page-configuration"
     ],
     "page-layout": [
       "admin/custom-field-creation"
@@ -10802,6 +10859,12 @@
     "permission-set-architecture": [
       "admin/permission-set-architecture"
     ],
+    "permission-set-assignment": [
+      "admin/permission-set-expiration"
+    ],
+    "permission-set-expiration": [
+      "admin/permission-set-expiration"
+    ],
     "permission-set-group": [
       "admin/persona-and-journey-mapping-sf"
     ],
@@ -11043,6 +11106,9 @@
       "admin/portal-requirements-gathering",
       "data/external-user-data-sharing"
     ],
+    "portal-roles": [
+      "admin/role-hierarchy-design"
+    ],
     "portal-security": [
       "security/experience-cloud-security"
     ],
@@ -11203,6 +11269,9 @@
     ],
     "privatelink": [
       "integration/private-connect-setup"
+    ],
+    "privileged-access": [
+      "admin/permission-set-expiration"
     ],
     "privileged-script-tag": [
       "architect/experience-cloud-integration-patterns"
@@ -11756,12 +11825,18 @@
       "admin/data-cloud-identity-resolution"
     ],
     "record-access": [
+      "admin/restriction-rules",
+      "admin/role-hierarchy-design",
       "admin/sharing-and-visibility",
+      "admin/sharing-rules",
       "apex/apex-with-without-sharing-decision",
       "security/record-access-troubleshooting"
     ],
     "record-action": [
       "lwc/lwc-quick-actions"
+    ],
+    "record-filter": [
+      "admin/scoping-rules"
     ],
     "record-forms": [
       "lwc/lwc-lightning-record-forms"
@@ -11775,6 +11850,9 @@
     "record-page": [
       "admin/dynamic-forms-and-actions",
       "lwc/lwc-app-builder-config"
+    ],
+    "record-page-deployment": [
+      "admin/lightning-record-page-configuration"
     ],
     "record-pages": [
       "admin/dynamic-forms-migration"
@@ -11818,6 +11896,9 @@
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "data/deployment-data-dependencies"
+    ],
+    "record-visibility": [
+      "admin/scoping-rules"
     ],
     "recurring-automation": [
       "flow/scheduled-flows"
@@ -12135,6 +12216,12 @@
     "restricted-topics": [
       "agentforce/agentforce-guardrails"
     ],
+    "restriction-rule": [
+      "admin/scoping-rules"
+    ],
+    "restriction-rules": [
+      "admin/restriction-rules"
+    ],
     "resume": [
       "omnistudio/omniscript-session-state"
     ],
@@ -12252,6 +12339,7 @@
     ],
     "role-hierarchy": [
       "admin/delegated-administration",
+      "admin/role-hierarchy-design",
       "admin/sharing-and-visibility"
     ],
     "role-play": [
@@ -12535,6 +12623,7 @@
     "saml": [
       "architect/experience-cloud-integration-patterns",
       "lwc/experience-cloud-multi-idp-sso",
+      "security/sso-configuration",
       "security/sso-saml-troubleshooting"
     ],
     "sanctions-screening": [
@@ -12731,6 +12820,7 @@
       "integration/net-zero-cloud-setup"
     ],
     "scoping-rules": [
+      "admin/scoping-rules",
       "apex/soql-using-scope-clause"
     ],
     "score-decay": [
@@ -12871,6 +12961,7 @@
     ],
     "security": [
       "admin/delegated-administration",
+      "admin/restriction-rules",
       "agentforce/agent-security-review",
       "agentforce/agentforce-pii-redaction",
       "agentforce/prompt-injection-defense",
@@ -13259,6 +13350,8 @@
       "admin/crm-analytics-app-creation",
       "admin/lookup-and-relationship-design",
       "admin/queues-and-public-groups",
+      "admin/restriction-rules",
+      "admin/role-hierarchy-design",
       "admin/sharing-and-visibility",
       "apex/apex-system-runas",
       "apex/apex-with-without-sharing-decision",
@@ -13290,12 +13383,15 @@
     ],
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
+      "admin/role-hierarchy-design",
+      "admin/sharing-rules",
       "apex/apex-managed-sharing",
       "architect/limits-and-scalability-planning",
       "data/sharing-recalculation-performance"
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility",
+      "admin/sharing-rules",
       "data/partner-data-access-patterns",
       "data/sharing-recalculation-performance"
     ],
@@ -13667,6 +13763,7 @@
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-multi-idp-sso",
       "security/mfa-enforcement-patterns",
+      "security/sso-configuration",
       "security/sso-saml-troubleshooting"
     ],
     "sso-mfa": [
@@ -14038,6 +14135,9 @@
       "admin/email-templates-and-alerts",
       "admin/npsp-engagement-plans",
       "apex/apex-outbound-email-patterns"
+    ],
+    "temporary-access": [
+      "admin/permission-set-expiration"
     ],
     "tenant-isolation": [
       "architect/tenant-isolation-patterns"
@@ -14564,6 +14664,9 @@
       "apex/apex-user-and-permission-checks",
       "data/crm-analytics-security-predicates"
     ],
+    "user-criteria": [
+      "admin/scoping-rules"
+    ],
     "user-experience": [
       "admin/path-and-guidance",
       "admin/persona-and-journey-mapping-sf"
@@ -14573,6 +14676,7 @@
     ],
     "user-management": [
       "admin/delegated-administration",
+      "admin/permission-set-expiration",
       "admin/user-management",
       "architect/license-optimization-strategy"
     ],

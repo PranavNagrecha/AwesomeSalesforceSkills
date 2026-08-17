@@ -2,15 +2,15 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sfskills",
   "displayName": "SfSkills — Salesforce AI Skill Library",
-  "version": "1.0.1",
-  "description": "1,027 grounded Salesforce skill packages, 48 run-time agents and 67 slash commands, reached through 12 lightweight router skills instead of a flat index.",
+  "version": "1.1.0",
+  "description": "1,034 grounded Salesforce skill packages, 48 run-time agents and 67 slash commands, reached through 12 lightweight router skills instead of a flat index.",
   "author": {
     "name": "Pranav Nagrecha",
     "url": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
   },
   "homepage": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills#readme",
   "repository": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills",
-  "license": "Apache-2.0",
+  "license": "PolyForm-Small-Business-1.0.0",
   "keywords": [
     "salesforce",
     "apex",

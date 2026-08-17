@@ -61,7 +61,7 @@
     "eae70a9de2e11ee2f6a0",
     "ebc42c7ca6ab4d891dcd"
   ],
-  "content_hash": "86410ce1cb9451cebaf2ddb0e5e6191d7c3f2fa9314bebf368cf0442c2ae8780",
+  "content_hash": "46c99c78b60ecfb45f2e970786b1808fcb451594369dad8303695ecb07da0d0f",
   "dependencies": [],
   "description": "Use this skill when setting up or extending Salesforce Automotive Cloud \u2014 including the Vehicle / VehicleDefinition data model, dealer-OEM relationship modeling via AccountAccountRelation, ActionableEvent orchestration. NOT for general Sales Cloud opportunity work on a vehicle product (use admin/opportunity-management) \u2014 use architect/industries-data-model.",
   "file_location": "skills/integration/automotive-cloud-setup",

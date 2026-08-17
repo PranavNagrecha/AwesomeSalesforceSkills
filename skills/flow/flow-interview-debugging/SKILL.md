@@ -1,6 +1,6 @@
 ---
 name: flow-interview-debugging
-description: "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging."
+description: "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging - use apex/salesforce-debug-log-analysis."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:

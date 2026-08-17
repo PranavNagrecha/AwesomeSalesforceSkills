@@ -1,6 +1,6 @@
 ---
 name: vector-database-management
-description: "Use this skill to design, configure, and maintain vector indexes in Salesforce Data Cloud via the Setup UI. Covers chunking strategy selection, index refresh mode, PII field exclusion, and index rebuild workflows. Does NOT cover developer-facing retrieval APIs, Apex vector search queries, or SOQL-based retrieval — see skills/agentforce/data-cloud-vector-search-dev for those."
+description: "Use this skill to design, configure, and maintain vector indexes in Salesforce Data Cloud via the Setup UI. Covers chunking strategy selection, index refresh mode, PII field exclusion, and index rebuild workflows. Trigger keywords: vector index, Data Cloud vector database, chunking strategy, index refresh mode, search index rebuild, embedding model selection. NOT for developer-facing retrieval APIs, Apex vector search queries, or SOQL-based retrieval - use agentforce/data-cloud-vector-search-dev."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:

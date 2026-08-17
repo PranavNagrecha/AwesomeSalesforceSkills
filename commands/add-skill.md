@@ -32,7 +32,7 @@ Review   -> adversarial fact-check; revert anything the sheet does not support
 Land     -> fixture, agent wiring, sync, retrieval check, validate, doctor
 ```
 
-**It will usually tell you not to build.** This library has 1,027 packages and is
+**It will usually tell you not to build.** This library has 1,034 packages and is
 saturated at topic level: three independent screens in August 2026 found that of
 94 research-claimed gaps only 12 were real, of 31 hand-picked topics 1, and of 88
 verified platform changes 0. A "gap" here is almost never a missing package — it

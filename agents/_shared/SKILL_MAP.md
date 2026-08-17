@@ -39,6 +39,8 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 - `admin/custom-permissions`, `admin/delegated-administration`, `admin/user-access-policies`
 - `admin/user-management`, `admin/integration-user-management`
 - `devops/permission-set-deployment-ordering`
+- `admin/permission-set-expiration` (Wave 2026-08-15 — time-bounded assignment)
+- `admin/sharing-rules`, `admin/role-hierarchy-design`, `admin/restriction-rules` (Wave 2026-08-15 — record access can arrive from, or be removed by, a mechanism no permission set shows)
 - `templates/admin/permission-set-patterns.md`
 
 ### `flow-builder`
@@ -80,6 +82,9 @@ under the classifier's `Mandatory Reads` section.
 - `flow/orchestration-flows`
 - `data/data-quality-and-governance`
 - `devops/metadata-diff-between-sandboxes` (org_drift classifier)
+- `admin/sharing-rules`, `admin/restriction-rules`, `admin/scoping-rules`, `admin/role-hierarchy-design` (Wave 2026-08-15 — sharing classifier)
+- `admin/lightning-record-page-configuration` (Wave 2026-08-15 — lightning_record_page classifier)
+- `security/sso-configuration` (Wave 2026-08-15 — my_domain_session_security classifier)
 - `standards/decision-trees/automation-selection.md`
 - `templates/admin/validation-rule-patterns.md`, `templates/admin/naming-conventions.md`
 

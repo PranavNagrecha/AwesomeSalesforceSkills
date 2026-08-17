@@ -1,6 +1,6 @@
 ---
 name: sso-saml-troubleshooting
-description: "Troubleshoot SAML SSO failures — assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration — use admin/connected-apps-and-auth."
+description: "Troubleshoot SAML SSO failures — assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration - use security/sso-configuration."
 category: security
 salesforce-version: "Spring '25+"
 well-architected-pillars:

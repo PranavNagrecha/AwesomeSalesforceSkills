@@ -57,6 +57,7 @@ from pipelines.agent_validators import validate_agents
 from pipelines.frontmatter import parse_markdown_with_frontmatter
 from scripts.search_knowledge import build_search_context, run_search
 from scripts.check_doc_counts import collect_doc_count_issues
+from scripts.check_license import collect_license_issues
 from scripts.check_decision_trees import collect_decision_tree_issues
 from scripts.check_agent_citation_parity import collect_citation_parity_issues
 # Single source of truth for "this description restates the slug". Imported,
@@ -747,6 +748,16 @@ def main() -> int:
     issues.extend(
         ValidationIssue(level, path, message)
         for level, path, message in collect_doc_count_issues(ROOT)
+    )
+
+    # Repo-level license-consistency gate. The repo once shipped three
+    # disagreeing answers to "what license is this?" (root LICENSE and the
+    # plugin manifests said Apache-2.0, pyproject said MIT, the wheel shipped
+    # no license file at all) and nothing caught it, because no gate compared
+    # the surfaces to each other. Six small file reads; runs every invocation.
+    issues.extend(
+        ValidationIssue("ERROR", "LICENSE", message)
+        for message in collect_license_issues(ROOT)
     )
 
     # Repo-level agent citation-QUALITY gate (echo stubs, undescribed reads,

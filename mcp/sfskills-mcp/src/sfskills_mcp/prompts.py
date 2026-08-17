@@ -7,8 +7,8 @@ Today these only flow into Claude Code (because the file lives in the
 Prompts gives every MCP-capable client a native picker — type ``/refactor-apex``
 in Cursor, Cline, Claude Desktop, etc. and the wrapper loads.
 
-This is the **B2a** scope from ``.planning/mcp-v0.2-plan.md``: register each
-command as an argument-less prompt that returns the full wrapper body. The
+Scope: register each command as an argument-less prompt that returns the full
+wrapper body. The
 client's model then asks the user for the inputs the wrapper itself prompts
 for. A later iteration (B2b) will parse the wrapper's "Step 1 — Collect
 inputs" section into typed prompt arguments; that requires a one-time rewrite

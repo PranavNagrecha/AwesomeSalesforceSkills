@@ -161,8 +161,7 @@ This is how a recall campaign reaches every affected VIN, opens a Case at the re
 4. Implement `Vehicle` ingestion using the definition lookup, with a delta-feed pattern (Platform Event or Bulk API 2.0).
 5. Configure `AccountAccountRelation` records and rebuild sharing rules to reference them.
 6. For each lifecycle program (recall, service campaign, warranty notification), define `ActionableEventType` and `ActionableEventTypeDef` versions before generating orchestrations.
-7. If retail financing is in scope, configure `FinancialAccount` lifecycle and link to Vehicle + Opportunity.
-8. Test the end-to-end flow with a representative VIN: dealer assignment, recall orchestration, financial account creation.
+7. If retail financing is in scope, configure the `FinancialAccount` lifecycle and link it to Vehicle + Opportunity. Then test end-to-end with a representative VIN: dealer assignment, recall orchestration, financial account creation.
 
 ---
 

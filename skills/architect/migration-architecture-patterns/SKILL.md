@@ -1,6 +1,6 @@
 ---
 name: migration-architecture-patterns
-description: "Architectural patterns for org migration — org merge (consolidate two orgs into one), org split (separate one org into two), and coexistence (run both for a transition period with identity / data / metadata bridges). Covers the pre-migration metadata audit (the most-skipped step), the why-vs-how decision separation for splits, record-Id remapping for external systems that hardcoded 15/18-digit IDs, and rollback-safe deployment windows. NOT for the go-live cutover sequencing itself (see devops/go-live-cutover-planning), NOT for the upstream multi-org-strategy decision (see architect/multi-org-strategy)."
+description: "Architectural patterns for org migration — org merge (consolidate two orgs into one), org split (separate one org into two), and coexistence (run both for a transition period with identity / data / metadata bridges). Covers the pre-migration metadata audit (the most-skipped step), the why-vs-how decision separation for splits, record-Id remapping for external systems that hardcoded 15/18-digit IDs, and rollback-safe deployment windows. NOT for the go-live cutover sequencing itself (use devops/go-live-cutover-planning), NOT for the upstream multi-org-strategy decision (use architect/multi-org-strategy)."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:

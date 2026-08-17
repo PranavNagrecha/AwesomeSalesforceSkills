@@ -78,9 +78,9 @@
     "f8f5673ce83901fbc0fb",
     "fac929ceeec7e9223695"
   ],
-  "content_hash": "2d96a8b580e479bc4970b8bdcf7f209f1d7caa79a6d9d5e1284eb3cd1daada6e",
+  "content_hash": "0b96f38ba72383e8000fc2adbb257472ef90ff076751206977eee7118c1ced4a",
   "dependencies": [],
-  "description": "Architectural patterns for org migration \u2014 org merge (consolidate two orgs into one), org split (separate one org into two), and coexistence (run both for a transition period with identity / data / metadata bridges). Covers the pre-migration metadata audit (the most-skipped step), the why-vs-how decision separation for splits, record-Id remapping for external systems that hardcoded 15/18-digit IDs, and rollback-safe deployment windows. NOT for the go-live cutover sequencing itself (see devops/go-live-cutover-planning), NOT for the upstream multi-org-strategy decision (see architect/multi-org-strategy).",
+  "description": "Architectural patterns for org migration \u2014 org merge (consolidate two orgs into one), org split (separate one org into two), and coexistence (run both for a transition period with identity / data / metadata bridges). Covers the pre-migration metadata audit (the most-skipped step), the why-vs-how decision separation for splits, record-Id remapping for external systems that hardcoded 15/18-digit IDs, and rollback-safe deployment windows. NOT for the go-live cutover sequencing itself (use devops/go-live-cutover-planning), NOT for the upstream multi-org-strategy decision (use architect/multi-org-strategy).",
   "file_location": "skills/architect/migration-architecture-patterns",
   "id": "architect/migration-architecture-patterns",
   "inputs": [

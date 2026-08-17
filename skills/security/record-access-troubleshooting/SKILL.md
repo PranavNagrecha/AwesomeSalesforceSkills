@@ -35,12 +35,12 @@ updated: 2026-08-01
 
 # Record Access Troubleshooting
 
-Activate when a user reports "I can't see this record" or "Why can this user edit this record?" Deterministic diagnostic flow using `UserRecordAccess` SOQL and the Sharing debug tool to trace the full sharing chain.
+Reach for this the moment someone says "this record won't show up for me" — or the inverse, "why on earth can this user edit that?" It walks the sharing chain in a fixed order using a `UserRecordAccess` query plus the Sharing debug tool, so the answer comes from evidence rather than from guessing which grant fired.
 
 ## Before Starting
 
-- Collect: User Id, Record Id, expected access level, object OWD (Setup → Sharing Settings).
-- Check profile/permset for "Modify All Data" / "View All Data" — these bypass sharing entirely.
+- Have four things in hand: the User Id, the Record Id, the access level the user expected, and the object's org-wide default (Setup → Sharing Settings).
+- Rule out the blunt instruments first. "Modify All Data" and "View All Data" on the profile or a permission set skip the sharing model altogether, and no amount of tracing rules will explain access that came from one of them.
 
 ## Core Concepts
 
@@ -53,23 +53,25 @@ FROM UserRecordAccess
 WHERE UserId = '005...' AND RecordId = '001...'
 ```
 
-Returns effective access but not the reason. Run this first.
+Start here. It tells you what access the user effectively has, though not where that access came from.
 
-### Explain Access
+### Finding out *why* access was granted
 
-Record Sharing detail → "Why can this user access this record?" — surfaces the grant reason. Classic UI has explicit button; Lightning uses "Sharing Hierarchy."
+For the *why*, open the record's Sharing detail and use "Why can this user access this record?", which names the grant responsible. Classic exposes it as a dedicated button; in Lightning the equivalent lives under "Sharing Hierarchy."
 
-### Sharing evaluation order
+### The order access is evaluated in
 
-1. Admin bypass (View/Modify All Data, object-level View/Modify All)
-2. Ownership
-3. Role hierarchy (if "Grant Access Using Hierarchies" enabled on object)
-4. Sharing rules (ownership- and criteria-based)
-5. Teams (Account, Opportunity, Case)
-6. Manual shares
-7. Apex managed shares (`__Share` rows with RowCause)
-8. Implicit parent share (master-detail)
-9. Restriction rules (filter DOWN — may deny despite grants above)
+Access accumulates down this list, so trace it in order and stop at the first thing that accounts for what you observed:
+
+1. Administrative bypass — View All Data / Modify All Data, or their object-level counterparts
+2. Record ownership
+3. The role hierarchy, but only where "Grant Access Using Hierarchies" is switched on for the object
+4. Sharing rules, both ownership-based and criteria-based
+5. Team membership — Account, Opportunity, and Case teams
+6. Shares granted by hand
+7. Apex managed shares, visible as `__Share` rows carrying a RowCause
+8. Implicit shares inherited from a master-detail parent
+9. Restriction rules, which run the other way: they subtract, and can deny access that everything above just granted
 
 ### __Share objects
 

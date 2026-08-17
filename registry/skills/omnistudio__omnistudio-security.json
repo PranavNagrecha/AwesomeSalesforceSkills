@@ -78,9 +78,9 @@
     "f3ed00979f4414e1e6d6",
     "f7763591cb145ade3580"
   ],
-  "content_hash": "0cc317a94c4ccb96f47ff9b0fc306aaf557db7f8da4801e20932082afa61defa",
+  "content_hash": "52030274569b6773fe83ff33d116b1d94e18953789d395e4555f7b58e07030f3",
   "dependencies": [],
-  "description": "Use when designing or reviewing OmniStudio security across OmniScripts, Integration Procedures, DataRaptors, custom LWCs, Apex actions, guest-user exposure, and outbound HTTP actions. Triggers: 'OmniStudio security', 'guest user omniscript', 'DataRaptor CRUD FLS', 'OmniStudio Apex security', 'HTTP action data exposure'. NOT for general portal identity architecture or generic Apex security reviews when OmniStudio is not the main surface.",
+  "description": "Use when designing or reviewing OmniStudio security across OmniScripts, Integration Procedures, DataRaptors, custom LWCs, Apex actions, guest-user exposure, and outbound HTTP actions. Triggers: 'OmniStudio security', 'guest user omniscript', 'DataRaptor CRUD FLS', 'OmniStudio Apex security', 'HTTP action data exposure'. NOT for generic Apex security review when OmniStudio is not the main surface - use apex/apex-security-patterns.",
   "file_location": "skills/omnistudio/omnistudio-security",
   "id": "omnistudio/omnistudio-security",
   "inputs": [

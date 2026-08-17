@@ -116,12 +116,12 @@
     "fda53a6c15051c92c441",
     "ffb3a93f5c65ebe388ad"
   ],
-  "content_hash": "780cd487a82cd9b49a6cd0a0169cdaa95b75a1071981d5bce960d7a59e641b64",
+  "content_hash": "831bcd11733f86e45e89138068daeae17b75b055fe1d1f513d5995302ee9c57e",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/scratch-org-management"
   ],
-  "description": "Use this skill to set up, review, or troubleshoot Bitbucket Pipelines CI/CD workflows for Salesforce using SFDX JWT Bearer Flow or SFDP URL authentication, Apex test gates, branch-based deployment strategies, and Bitbucket repository variables for secret management. Trigger keywords: bitbucket pipelines, bitbucket CI, atlassian pipe, salesforce-deploy pipe, bitbucket-pipelines.yml, bitbucket repository variables. NOT for GitHub Actions (use github-actions-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-Bitbucket CI platform.",
+  "description": "Use this skill to set up, review, or troubleshoot Bitbucket Pipelines CI/CD workflows for Salesforce using SFDX JWT Bearer Flow or SFDP URL authentication, Apex test gates, branch-based deployment strategies, and Bitbucket repository variables for secret management. Trigger keywords: bitbucket pipelines, bitbucket CI, atlassian pipe, salesforce-deploy pipe, bitbucket-pipelines.yml, bitbucket repository variables. NOT for GitHub Actions (use devops/github-actions-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-Bitbucket CI platform.",
   "file_location": "skills/devops/bitbucket-pipelines-for-salesforce",
   "id": "devops/bitbucket-pipelines-for-salesforce",
   "inputs": [

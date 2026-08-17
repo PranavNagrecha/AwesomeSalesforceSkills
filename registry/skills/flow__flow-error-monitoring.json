@@ -46,6 +46,7 @@
     "d73acca388f7f1f6b039",
     "daee1835c6a30775e44d",
     "dc620434881349a6e8e3",
+    "e052225ae630b25bf5ae",
     "e13049c14424b93f9130",
     "e55fbc2f76d021aba5d7",
     "e63d3d6371ad7cb62611",
@@ -54,7 +55,7 @@
     "f494cd2139bcc6f74973",
     "ff80e7ca32754f5dfc61"
   ],
-  "content_hash": "9fe7cf6f214935781fd76d883b21478cdda371da3602965b1a3faea7f94fdbcb",
+  "content_hash": "cb3001a2b5cc75657f7cb6ec18e868af4f02e808fc247e584b251765aecdcbb9",
   "dependencies": [],
   "description": "Set up monitoring + alerting for Flow runtime errors at org scale: routing fault emails, Flow runtime error reports, custom centralized logging (Integration_Log__c), escalation thresholds, and trend detection. NOT for diagnosing a specific flow error \u2014 use flow/flow-runtime-error-diagnosis. NOT for debug-mode setup \u2014 use flow/flow-debugging.",
   "file_location": "skills/flow/flow-error-monitoring",

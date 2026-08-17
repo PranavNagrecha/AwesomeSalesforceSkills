@@ -56,9 +56,9 @@
     "ec2950158a18e64422e8",
     "f3e28db3bd00ee0d0c0f"
   ],
-  "content_hash": "bde893effcbcc3f4b1c6fd58c4afdb0b65ced4a53f0cba89bbcc93537ac293d1",
+  "content_hash": "0b5df84174206a71d77f108ae6763ee04cf868e12303479eebcc350ef7bae778",
   "dependencies": [],
-  "description": "Troubleshoot SAML SSO failures \u2014 assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration \u2014 use admin/connected-apps-and-auth.",
+  "description": "Troubleshoot SAML SSO failures \u2014 assertion errors, certificate mismatch, JIT provisioning. Triggers: SAML error, SSO login failure, assertion invalid. NOT for initial SSO configuration - use security/sso-configuration.",
   "file_location": "skills/security/sso-saml-troubleshooting",
   "id": "security/sso-saml-troubleshooting",
   "inputs": [

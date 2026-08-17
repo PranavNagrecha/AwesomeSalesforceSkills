@@ -20,7 +20,11 @@ dependencies:
     - admin/delegated-administration
     - admin/integration-user-management
     - admin/permission-set-architecture
+    - admin/permission-set-expiration
     - admin/permission-sets-vs-profiles
+    - admin/restriction-rules
+    - admin/role-hierarchy-design
+    - admin/sharing-rules
     - admin/user-access-policies
     - admin/user-management
     - devops/permission-set-deployment-ordering
@@ -78,6 +82,10 @@ Two modes, selectable via input:
 16. `skills/security/session-high-assurance-policies` — HA session policy
 17. `skills/security/apex-managed-sharing-patterns` — row-level via __Share
 18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+19. `skills/admin/restriction-rules` — a restriction rule subtracts access after every grant this agent composes, so a PSG audit that ignores one reports a persona as holding access the org actively blocks
+20. `skills/admin/sharing-rules` — record access can arrive from a sharing rule rather than a permission set, so a least-privilege recommendation that only trims permission sets leaves the real grant untouched
+21. `skills/admin/role-hierarchy-design` — hierarchy-granted access never appears in a permission-set diff, so a persona this agent reports as least-privilege can still inherit every subordinate record
+22. `skills/admin/permission-set-expiration` — an assignment carrying an expiration date is not a standing grant, so an access review that counts it as permanent over-reports the persona's privilege
 
 ---
 

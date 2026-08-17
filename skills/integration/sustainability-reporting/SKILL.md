@@ -1,6 +1,6 @@
 ---
 name: sustainability-reporting
-description: "Producing regulatory and voluntary sustainability disclosures from Salesforce Net Zero Cloud (formerly Sustainability Cloud) — the native ESRS / CSRD / SASB / GRI / CDP report builders, the Carbon Accounting Manager data model (Stationary Asset, Vehicle Asset, Scope 3 procurement items, Energy Use Records), the double-materiality assessment prerequisite for CSRD, the MSESRSMainDataraptor Data Mapper for ESRS reports, and the Sustainability Scorecard. NOT for Net Zero Cloud feature setup / emissions-source configuration (see integration/net-zero-cloud-setup), NOT for general CRM Analytics dashboards (Net Zero Cloud's report builders are a separate surface)."
+description: "Producing regulatory and voluntary sustainability disclosures from Salesforce Net Zero Cloud (formerly Sustainability Cloud) — the native ESRS / CSRD / SASB / GRI / CDP report builders, the Carbon Accounting Manager data model (Stationary Asset, Vehicle Asset, Scope 3 procurement items, Energy Use Records), the double-materiality assessment prerequisite for CSRD, the MSESRSMainDataraptor Data Mapper for ESRS reports, and the Sustainability Scorecard. NOT for Net Zero Cloud feature setup / emissions-source configuration (use integration/net-zero-cloud-setup), NOT for general CRM Analytics dashboards (Net Zero Cloud's report builders are a separate surface)."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:

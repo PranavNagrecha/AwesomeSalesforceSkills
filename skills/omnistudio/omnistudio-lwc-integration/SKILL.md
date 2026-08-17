@@ -1,6 +1,6 @@
 ---
 name: omnistudio-lwc-integration
-description: "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag. NOT for standalone LWC development, standard Flow embedding, or OmniScript-to-OmniScript embedding."
+description: "Use when embedding OmniScripts in Lightning Web Components, registering custom LWC elements inside OmniScript screens, or calling OmniScript/Integration Procedures from LWC. Triggers: embed omniscript in LWC, custom LWC element in OmniScript, call OmniScript from Lightning page, omnistudio-omni-script tag. NOT for standalone LWC development when OmniStudio is not involved - use lwc/component-communication."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:

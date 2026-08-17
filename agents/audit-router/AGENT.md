@@ -24,6 +24,7 @@ dependencies:
     - admin/global-actions-and-quick-actions
     - admin/global-search-configuration
     - admin/lightning-experience-transition
+    - admin/lightning-record-page-configuration
     - admin/list-views-and-compact-layouts
     - admin/picklist-data-integrity
     - admin/record-type-id-management
@@ -32,9 +33,14 @@ dependencies:
     - admin/report-type-strategy
     - admin/reports-and-dashboards
     - admin/reports-and-dashboards-fundamentals
+    - admin/restriction-rules
+    - admin/role-hierarchy-design
+    - admin/scoping-rules
+    - admin/sharing-rules
     - devops/metadata-diff-between-sandboxes
     - security/dynamic-sharing-recalculation
     - security/guest-user-security-audit
+    - security/sso-configuration
     - security/sso-saml-troubleshooting
   shared:
     - AGENT_CONTRACT.md
@@ -91,6 +97,12 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 27. `skills/security/dynamic-sharing-recalculation` — the operational content behind `SHARE_RECALC_COST_HIGH`'s suggested fix; without it the router reports a recalculation cost with no advice on how the recalc is actually triggered or sequenced, and the finding cannot be acted on
 28. `skills/admin/global-search-configuration` — search-layout and searchable-field settings the list-view and record-page audit domains both depend on
 29. `skills/admin/related-list-configuration` — related-list scope for the record-page audit domain — a page can look clean while its related lists carry the debt
+30. `skills/admin/restriction-rules` — the sharing classifier reads OWD, roles and rules, all of which GRANT; restriction rules remove records those grants imply, so an audit without them overstates visibility
+31. `skills/admin/scoping-rules` — scoping rules change the default record set a user sees without changing what they may access, so an audit that reads a filtered default as a permission finding raises a false positive
+32. `skills/admin/sharing-rules` — owner-based and criteria-based rules are the most common source of unexpected record visibility, and no other read in this list covers rule mechanics or recalculation timing
+33. `skills/admin/lightning-record-page-configuration` — assignment precedence (org default vs app default vs app + record type + profile) decides which page a user actually opens, so a component audit run against the wrong page reports findings nobody sees
+34. `skills/security/sso-configuration` — the my_domain_session_security classifier judges login-policy hardening, and SSO enforcement (SSO-only login, delegated auth, the lockout escape hatch) decides whether a session finding is real or an artefact of federated login
+35. `skills/admin/role-hierarchy-design` — the sharing classifier judges who can see a record, and hierarchy-granted access appears in no sharing rule or permission set, so an audit without it attributes manager visibility to a rule that is not the cause
 
 ---
 

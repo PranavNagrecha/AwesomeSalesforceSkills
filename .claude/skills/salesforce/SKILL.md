@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,027 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 67 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,034 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 67 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -12,7 +12,7 @@ load. This file tells you how to reach the one page you need.
 
 ## What is in the library
 
-- **1,027 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
+- **1,034 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
   Each is a `SKILL.md` plus `references/examples.md`, `gotchas.md`,
   `well-architected.md` and `llm-anti-patterns.md`.
 - **48 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
@@ -26,7 +26,7 @@ Skill counts by domain:
 
 | Domain | Skills | Router |
 |---|---:|---|
-| `admin` | 253 | `salesforce-admin` |
+| `admin` | 259 | `salesforce-admin` |
 | `agentforce` | 53 | `salesforce-agentforce` |
 | `apex` | 158 | `salesforce-apex` |
 | `architect` | 104 | `salesforce-architect` |
@@ -36,8 +36,8 @@ Skill counts by domain:
 | `integration` | 61 | `salesforce-integration` |
 | `lwc` | 82 | `salesforce-lwc` |
 | `omnistudio` | 34 | `salesforce-omnistudio` |
-| `security` | 48 | `salesforce-security` |
-| **total** | **1,027** | |
+| `security` | 49 | `salesforce-security` |
+| **total** | **1,034** | |
 
 ## How to find the right skill
 
@@ -81,7 +81,7 @@ it is a map, not the territory.
 Hand off to the router for the domain the request lands in. Each one
 carries that domain's featured skills, decision trees and templates.
 
-- **`salesforce-admin`** (253 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
+- **`salesforce-admin`** (259 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 - **`salesforce-agentforce`** (53 skills) — Agentforce and Einstein: agents, topics, actions, prompt templates, grounding, guardrails, evaluation and production readiness.
 - **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
 - **`salesforce-architect`** (104 skills) — Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
@@ -91,7 +91,7 @@ carries that domain's featured skills, decision trees and templates.
 - **`salesforce-integration`** (61 skills) — INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead.
 - **`salesforce-lwc`** (82 skills) — Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
 - **`salesforce-omnistudio`** (34 skills) — OmniStudio: OmniScripts, FlexCards, DataRaptors, Integration Procedures, Business Rules Engine and DataPack deployment.
-- **`salesforce-security`** (48 skills) — Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin.
+- **`salesforce-security`** (49 skills) — Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin.
 
 ## Decision trees — read before choosing a technology
 

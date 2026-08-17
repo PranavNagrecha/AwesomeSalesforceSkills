@@ -37,7 +37,7 @@ python3 scripts/install_hooks.py
 
 Installs a fast `pre-commit` (changed-only sync + validate) and a `pre-push`
 that runs the full four-shard skill sweep. **The pre-push hook takes several
-minutes** on the current 1,027-skill corpus — a single shard measured at
+minutes** on the 1,027-skill corpus as measured — a single shard measured at
 1 m 58 s, and the hook runs four sequentially. Use `git push --no-verify` on WIP
 branches; CI still gates merge.
 
@@ -458,6 +458,28 @@ Agents run the same gates as manual contributions. Nothing bypasses
    '25, the limit is..." not "The limit is...".
 
 ---
+
+## Licensing of Contributions
+
+SfSkills is source-available under the
+[PolyForm Small Business License 1.0.0](./LICENSE) — free below 100 people and
+USD 1M prior-year revenue, commercially licensed above it. See
+[`LICENSING.md`](./LICENSING.md).
+
+**By opening a pull request you agree that your contribution is licensed to the
+project under those same terms**, and that you have the right to grant that
+licence — i.e. the work is yours, or your employer has cleared it.
+
+Two practical consequences:
+
+- **Write original prose.** Author from the official Salesforce documentation
+  in your own words. Do not paste text out of another repository, a blog post,
+  Stack Exchange, or vendor material, even when its licence looks permissive —
+  attribution obligations attach to it and follow the file forever.
+- **Say so if you are adapting something.** If a contribution is derived from
+  an external source, flag it in the PR description with the source and its
+  licence. Permissive sources can usually be adapted with attribution; anything
+  else needs a clean-room rewrite. `/onboard-source` handles this properly.
 
 ## Getting Help
 

@@ -1,5 +1,5 @@
 {
-  "comment": "Hand-curated task → expected-agent fixture for suggest_agent. Top-1 accuracy floor in test_routing.py is 80% (per .planning/mcp-v0.2-plan.md C3). Adjust cases when adding/renaming agents; keep at least 20 cases.",
+  "comment": "Hand-curated task → expected-agent fixture for suggest_agent. Top-1 accuracy floor in test_routing.py is 80%. Adjust cases when adding/renaming agents; keep at least 20 cases.",
   "cases": [
     {"task": "refactor a 2000-line Apex class", "expected": "apex-refactorer"},
     {"task": "audit my picklists", "expected": "audit-router"},

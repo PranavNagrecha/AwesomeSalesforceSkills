@@ -54,9 +54,9 @@
     "fcec81050d354a8d99bf",
     "fdd7afc42b46d703cd7a"
   ],
-  "content_hash": "b74c6d1e58e77fc995f04f55a7e931cde448102a08c687be33fb88a322b05711",
+  "content_hash": "d3b7810be7c73accf78a8b736862bde2883fa7bef6c5f6fdd6a60f60065e54b2",
   "dependencies": [],
-  "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for tracing one named user's access to one specific record \u2014 use security/record-access-troubleshooting. NOT for object or field permissions \u2014 use admin/permission-sets-vs-profiles.",
+  "description": "Use when choosing between Salesforce record-access mechanisms or reviewing the access model end to end. Trigger keywords: OWD, org-wide defaults, record access model, sharing architecture, why can user see too much. NOT for sharing rules - use admin/sharing-rules. NOT for role hierarchy - use admin/role-hierarchy-design.",
   "file_location": "skills/admin/sharing-and-visibility",
   "id": "admin/sharing-and-visibility",
   "inputs": [

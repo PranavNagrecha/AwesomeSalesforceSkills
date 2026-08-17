@@ -62,16 +62,16 @@ Gather if not available:
 
 ## Core Concepts
 
-| Action | Template Source | Recipient Type | License Needed | Key Limit |
+| Action | Where the body comes from | Addressed to | License | Ceiling that bites |
 |---|---|---|---|---|
-| **Send Email** | Text Template resource or inline text (NOT Classic Email Templates) | Email address string or User ID | Standard | 1,000 mass emails/day; 5 MB per message |
-| **Send Custom Notification** | Plain-text body with `{!variable}` merge fields (no HTML) | Collection of User IDs (15/18-char) | Standard | 1,000/hour per org |
-| **Send SMS** | Message body text | Phone number (E.164: `+15551234567`) | Digital Engagement add-on | Per messaging channel limits |
-| **Post Message to Slack** | Message text | Slack Channel ID or name | Salesforce for Slack integration | ~40k chars per message |
+| **Send Email** | A Flow Text Template resource, or text typed inline — *not* a Classic Email Template | An email-address string, or a User ID | Standard | 5 MB per message; mass email caps at 1,000 recipients per day |
+| **Send Custom Notification** | Plain text carrying `{!variable}` merge fields; HTML is not rendered | A collection of User IDs, 15- or 18-character | Standard | 1,000 per hour, org-wide |
+| **Send SMS** | The message body itself | An E.164 phone number, e.g. `+15551234567` | Digital Engagement add-on | Whatever the messaging channel imposes |
+| **Post Message to Slack** | The message text | A Slack channel, by ID or by name | Salesforce for Slack | roughly 40,000 characters per message |
 
-**Critical distinctions:** Send Email does NOT use Classic Email Templates from Setup — use a Flow Text Template resource instead. Email Alerts (legacy, from Workflow Rules) DO use Classic Templates but are a different action. Custom Notification `recipientIds` accepts ONLY User IDs, never email addresses or Contact IDs.
+**Three distinctions cause most of the failures here.** Send Email ignores the Classic Email Templates sitting in Setup — point it at a Flow Text Template resource instead. Email Alerts *do* read those Classic templates, but an Email Alert is a separate action inherited from Workflow Rules, and reaching for one when you meant the other is an easy slip. And `recipientIds` on a Custom Notification takes User IDs and nothing else: put an email address or a Contact ID there and it fails.
 
-> For detailed comparisons, prerequisites, and architectural tradeoffs see `references/well-architected.md`.
+> `references/well-architected.md` carries the fuller comparison, the prerequisites, and the architectural tradeoffs.
 
 ---
 
@@ -81,10 +81,13 @@ Gather if not available:
 
 **When to use:** A record-triggered or autolaunched Flow needs to alert a specific Salesforce user immediately (e.g., escalation to owner, approval request follow-up).
 
-**Prerequisite — Custom Notification Type metadata (deploy via SFDX or create in Setup):**
+**Prerequisite — a Custom Notification Type must exist first.** Build it in Setup, or deploy the metadata:
 
 ```xml
-<!-- force-app/main/default/notificationtypes/Case_Escalation_Alert.notiftype-meta.xml -->
+<!-- Path: force-app/main/default/notificationtypes/
+     File: Case_Escalation_Alert.notiftype-meta.xml
+     desktop and mobile are the delivery channels; leaving slack false keeps
+     this notification inside Salesforce. -->
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
     <customNotifTypeName>Case_Escalation_Alert</customNotifTypeName>
@@ -95,39 +98,39 @@ Gather if not available:
 </CustomNotificationType>
 ```
 
-**Flow action field mappings (Send Custom Notification):**
+**What to put in each Send Custom Notification input:**
 
-| Input Field | Value | Notes |
+| Input Field | Value | What to watch |
 |---|---|---|
-| `Custom Notification Type ID` | `{!customNotifTypeId}` | Query `CustomNotificationType` where `DeveloperName = 'Case_Escalation_Alert'` |
-| `Recipient IDs` | `{!recipientCollection}` | Text Collection of 15/18-char User IDs |
-| `Title` | `"Case Escalation — Action Required"` | Max 250 characters; desktop displays only the first ~120 before truncating with an ellipsis, so write the actionable part first |
-| `Body` | `{!notificationBody}` | Max 750 characters (desktop displays ~320); Text Template with merge fields; plain text only |
-| `Target ID` | `{!$Record.Id}` | Tapping the notification navigates to this record |
+| `Custom Notification Type ID` | `{!customNotifTypeId}` | Resolve it by querying `CustomNotificationType` for `DeveloperName = 'Case_Escalation_Alert'` |
+| `Recipient IDs` | `{!recipientCollection}` | A Text Collection holding User IDs, 15- or 18-character |
+| `Title` | `"Case Escalation — Action Required"` | 250 characters is the cap, but desktop truncates around 120 with an ellipsis — front-load the part the reader must act on |
+| `Body` | `{!notificationBody}` | 750 characters allowed, roughly 320 shown on desktop; plain-text Text Template with merge fields |
+| `Target ID` | `{!$Record.Id}` | The record the notification opens when tapped |
 
 **Why not email:** Bell notifications are synchronous with the transaction, appear immediately in the app, and do not require an email address. Email adds latency and inbox noise for internal user alerts.
 
-> Full step-by-step walkthrough: `references/examples.md` — Example 1.
+> Walked through end to end in `references/examples.md`, Example 1.
 
 ### Pattern 2: Confirmation Email to External Contact
 
 **When to use:** A Flow needs to email a non-Salesforce user (customer, partner, applicant) with dynamic content after a record creation or form submission.
 
-**Flow action field mappings (Send Email):**
+**What to put in each Send Email input:**
 
-| Input Field | Value | Notes |
+| Input Field | Value | What to watch |
 |---|---|---|
-| `Email Addresses (To)` | `{!$Record.Applicant_Email__c}` | Single email string or comma-separated list |
-| `Subject` | `"Application Received — {!jobTitle}"` | Supports merge fields via formula or text |
-| `Body` | `{!applicantEmailBody}` | Use a Text Template resource — NOT a Classic Email Template ID |
-| `Email Template ID` | *(leave blank)* | Send Email does not accept Classic Template IDs |
-| `Sender Address` | Org-Wide Email Address | Configure in Setup; do not use personal email |
+| `Email Addresses (To)` | `{!$Record.Applicant_Email__c}` | One address, or several separated by commas |
+| `Subject` | `"Application Received — {!jobTitle}"` | Merge fields work, whether via formula or plain text |
+| `Body` | `{!applicantEmailBody}` | Must be a Text Template resource; a Classic Email Template ID will not do |
+| `Email Template ID` | *(leave blank)* | Classic Template IDs are not accepted by this action |
+| `Sender Address` | Org-Wide Email Address | Set one up in Setup rather than sending from a personal address |
 
-Always add a fault connector — `SendEmailException` faults when limits are exceeded or the address is invalid.
+Wire a fault connector every time. `SendEmailException` is what you get when a limit is breached or the address is malformed.
 
-**Why not Email Alert:** Send Email is more flexible for dynamic recipients and body. Email Alerts require a template fixed at design time in Setup.
+**Why not an Email Alert:** an Email Alert binds its template at design time in Setup. Send Email lets both the recipient and the body vary at run time, which is the whole point here.
 
-> Full step-by-step walkthrough: `references/examples.md` — Example 2.
+> Walked through end to end in `references/examples.md`, Example 2.
 
 ### Pattern 3: Bulk Internal Alert With Rate-Limit Awareness
 

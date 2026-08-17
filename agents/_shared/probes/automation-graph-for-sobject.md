@@ -20,7 +20,7 @@ Consumed by `flow-builder` (Step 0 — preflight), `apex-builder` (recursion-ris
 
 ## Queries
 
-Run each query in order. **API per query is NOT uniform** — `FlowDefinitionView` is queryable via the **Standard SOQL Query Resource (REST API)**, not Tooling. Tooling rejects it with `sObject type 'FlowDefinitionView' is not supported.` (verified against API 67 sandbox 2026-05-11 — see `.planning/qa-content-report-2026-05-10.md` § 5.3 / CT-P0-2.) The remaining queries use Tooling API as before. When the agent shells through `sf data query`, use the `--use-tooling-api` flag selectively — set it for queries 2–6, leave it OFF for query 1.
+Run each query in order. **API per query is NOT uniform** — `FlowDefinitionView` is queryable via the **Standard SOQL Query Resource (REST API)**, not Tooling. Tooling rejects it with `sObject type 'FlowDefinitionView' is not supported.` (verified against an API 67 sandbox, 2026-05-11.) The remaining queries use Tooling API as before. When the agent shells through `sf data query`, use the `--use-tooling-api` flag selectively — set it for queries 2–6, leave it OFF for query 1.
 
 For automation enumeration, prefer `FlowDefinitionView` over `Flow` — it captures the latest active version without per-flow Metadata retrieval, which is lighter.
 

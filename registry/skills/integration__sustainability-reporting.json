@@ -52,9 +52,9 @@
     "fea21059b03ceadda88c",
     "fff8bc4a61ea96912903"
   ],
-  "content_hash": "02f92f2468bc1865944267db3c51bdba6c9dd96ac93d78c5f084db6a41a5871c",
+  "content_hash": "e7ce569a9b8113847931235201a46ffc6c375b6974f7d8c2f4f666a7628cf6c9",
   "dependencies": [],
-  "description": "Producing regulatory and voluntary sustainability disclosures from Salesforce Net Zero Cloud (formerly Sustainability Cloud) \u2014 the native ESRS / CSRD / SASB / GRI / CDP report builders, the Carbon Accounting Manager data model (Stationary Asset, Vehicle Asset, Scope 3 procurement items, Energy Use Records), the double-materiality assessment prerequisite for CSRD, the MSESRSMainDataraptor Data Mapper for ESRS reports, and the Sustainability Scorecard. NOT for Net Zero Cloud feature setup / emissions-source configuration (see integration/net-zero-cloud-setup), NOT for general CRM Analytics dashboards (Net Zero Cloud's report builders are a separate surface).",
+  "description": "Producing regulatory and voluntary sustainability disclosures from Salesforce Net Zero Cloud (formerly Sustainability Cloud) \u2014 the native ESRS / CSRD / SASB / GRI / CDP report builders, the Carbon Accounting Manager data model (Stationary Asset, Vehicle Asset, Scope 3 procurement items, Energy Use Records), the double-materiality assessment prerequisite for CSRD, the MSESRSMainDataraptor Data Mapper for ESRS reports, and the Sustainability Scorecard. NOT for Net Zero Cloud feature setup / emissions-source configuration (use integration/net-zero-cloud-setup), NOT for general CRM Analytics dashboards (Net Zero Cloud's report builders are a separate surface).",
   "file_location": "skills/integration/sustainability-reporting",
   "id": "integration/sustainability-reporting",
   "inputs": [

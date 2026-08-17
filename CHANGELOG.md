@@ -2,7 +2,159 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
-## [Unreleased]
+## [Plugin 1.1.0] — 2026-08-15 — record-access layer, licence change, routing repairs
+
+### Added — the record-access layer (7 packages, 1,027 → 1,034)
+
+`standards/decision-trees/sharing-selection.md` opens by naming the thirteen
+mechanisms it routes between. Before this wave **three of them had a package**.
+The rest existed only as paragraphs inside `admin/sharing-and-visibility`, a
+single umbrella carrying the whole access model — and that umbrella declared
+`'sharing rule'` as one of its own trigger keywords while **not appearing at all**
+in the results for the query `sharing rules`.
+
+- `admin/restriction-rules` — narrowing access that sharing already granted
+- `admin/scoping-rules` — the default filtered view, which is `RestrictionRule`
+  with `enforcementType: Scoping`; there is no `ScopingRule` metadata type
+- `admin/sharing-rules` — owner-based and criteria-based rules, recalculation
+- `admin/role-hierarchy-design` — hierarchy as an access mechanism
+- `admin/permission-set-expiration` — time-bounded assignment
+- `security/sso-configuration` — configuring SSO, as opposed to debugging it
+- `admin/lightning-record-page-configuration` — App Builder pages and the
+  org / app / app + record type + profile assignment ladder
+
+Measured misroutes these close, all reproducible before the wave:
+
+| query | went to | now |
+|---|---|---|
+| `create a scoping rule` | `apex/soql-using-scope-clause` (the SOQL clause) | `admin/scoping-rules` |
+| `criteria based sharing rule` | `data/sharing-recalculation-performance` | `admin/sharing-rules` |
+| `design the role hierarchy` | `admin/territory-design-requirements` | `admin/role-hierarchy-design` |
+| `configure a lightning record page` | `agentforce/einstein-prediction-builder` | `admin/lightning-record-page-configuration` |
+| `set up single sign on with saml` | `security/sso-saml-troubleshooting` | `security/sso-configuration` |
+
+Every package was authored against fetched official docs and then
+adversarially fact-checked by a second pass whose default position was that it
+contained a fabrication. It did, in six of seven cases — an invented
+`LastDeletedByChange.Source` relationship (the guide prints
+`LastCreatedByChange`), an invented quoted sentence attributed to the
+Considerations page, a fabricated operator capability (scoping rules were said
+to support comparison operators; the doc says EQUALS-only unless SOQL is used),
+restriction rules recommended for Opportunity (not an eligible object) *inside
+the anti-pattern block written to prevent that class of error*, an `errorUrl`
+rule that contradicted the doc **and was enforced by the package's own checker**,
+and number-relabelling that merged two separately-documented per-object limits
+into one imaginary shared ceiling. All corrected against source.
+
+### Added — `scripts/check_routing_acceptance.py` + `evals/routing-acceptance.json`
+
+A package is reachable by two different fields and it is possible to fill in
+only one. The shipped gloss roster is built from `description`; the optional
+local index is fed by the `triggers:` array. This asserts both, and **skips the
+index surface rather than failing when `vector_index/` is absent**, because an
+install without one is a supported state. 7/7 passing.
+
+It is deliberately not part of `heldout-queries.json`: those 154 queries are a
+fixed measurement set, and adding queries whose answers were authored in the
+same wave would inflate the number it reports.
+
+### Fixed — routing repairs across the existing corpus
+
+- **16 `NOT for …` clauses named no resolvable package.** Every target existed;
+  the clauses said `see domain/slug` where the check reads `use`, omitted the
+  `domain/` prefix, or named no destination at all. Every authored package now
+  carries a resolvable redirect (was 1,010 of 1,027).
+- **7 packages had an 8-step `## Recommended Workflow`** against the 3–7
+  standard — a hard validator ERROR. Merged adjacent steps; no instruction lost.
+- **`security/sso-saml-troubleshooting`** pointed initial-SSO-configuration
+  traffic at `admin/connected-apps-and-auth`, which is OAuth and connected apps
+  for integrations. A redirect that resolves and still misroutes; no gate can
+  catch that shape, and `skill_doctor.py`'s docstring now says so.
+- **`admin/sharing-and-visibility`** cedes `sharing rule` and `role hierarchy`
+  to the new packages and redirects to them, so it stops competing with its own
+  children for its own vocabulary.
+- **`scripts/skill_doctor.py`** claimed 181 of 1,027 descriptions named a
+  resolvable destination. That wave had already landed; the docstring was
+  sending the next reader at a solved problem.
+
+### Known limitation, stated rather than papered over
+
+Abstract paraphrases still miss on the lexical surface — `default record scope
+without removing access` returns `admin/user-management` despite
+`admin/scoping-rules` carrying a near-identical trigger sentence. That is the
+corpus-wide natural-language weakness the held-out benchmark reports
+(Hit@1 ~40%), not a defect in these packages. Do not close it by pasting probe
+strings into `triggers:`; that makes the acceptance file measure its own echo.
+
+Separately: `scripts/skill_sync.py --all` **must** be run with
+`--skip-embeddings`. Chunk-level embeddings are never persisted
+(`embeddings.jsonl` is gitignored), so every run re-encodes all 136,536 chunks
+from cold — one attempt here reported `eta 3441m24s` and wrote nothing in 72
+minutes. Per-skill embeddings rebuild separately in ~7 s.
+
+
+### Changed — licence: Apache-2.0 / MIT → PolyForm Small Business 1.0.0
+
+**SfSkills is now source-available rather than open source.** The source stays
+public and forkable; what changed is that free *use* is now conditional on the
+size of the organisation using it. Under the
+[PolyForm Small Business License 1.0.0](./LICENSE)
+(`PolyForm-Small-Business-1.0.0`), use is free for any company with fewer than
+100 employees and contractors and under USD 1M in prior-year revenue; larger
+organisations need a commercial licence. [`LICENSING.md`](./LICENSING.md) is
+the plain-English guide and carries the contact path.
+
+This also resolves the "License declarations disagree" known issue recorded
+under 0.4.7 — but by replacing all three declarations, not by reconciling them
+to a permissive one.
+
+- Root `LICENSE` replaced with the verbatim PolyForm text plus a
+  `Required Notice:` line, which the licence's Notices section obliges
+  redistributors to carry.
+- `mcp/sfskills-mcp/pyproject.toml` now declares a PEP 639 SPDX expression
+  (`license = "PolyForm-Small-Business-1.0.0"`) with `license-files`, and the
+  `License :: OSI Approved :: MIT License` trove classifier is gone — PyPI
+  rejects an upload carrying both a License-Expression and a `License ::`
+  classifier. The build-system floor rises to `setuptools>=77.0.3`, the first
+  release with PEP 639 support; older setuptools drops the metadata silently.
+- `mcp/sfskills-mcp/LICENSE` added, so the wheel and sdist finally ship one.
+  It is a copy of the root file because PEP 639 `license-files` globs cannot
+  reference parent directories.
+- `.claude-plugin/*.json` regenerated from `scripts/build_plugin.py`, where the
+  two `"license"` literals were updated. The JSON is generated — never edit it.
+- `CONTRIBUTING.md` gained inbound-licence terms. There were none before, which
+  is precisely how the repo ended up carrying Apache-2.0 contributions it could
+  not unilaterally relicense.
+
+**Two limits worth stating plainly.** First, this is forward-only: the repo was
+public under Apache-2.0 and `sfskills-mcp` 0.4.6 / 0.4.7 shipped to PyPI
+declaring MIT. Those grants are irrevocable for the copies already
+distributed. Second, the licence excludes but does not collect — it says large
+organisations need a licence without saying where to buy one, which is what
+`LICENSING.md` exists to answer.
+
+### Added
+
+- **`scripts/check_license.py`** — consistency gate across every surface that
+  declares a licence: root `LICENSE`, the packaged copy, the pyproject SPDX
+  expression and classifier list, the plugin generator, the generated plugin
+  manifests, the README badge, and the presence of `LICENSING.md`. Wired into
+  `validate_repo.py` on every invocation. `--fix` re-copies the packaged
+  LICENSE; everything else reports rather than rewrites, because a stale
+  licence string is a decision to re-make, not a typo to patch. The 0.4.7
+  known issue survived because no gate compared these surfaces to each other.
+
+### Changed — chain of title
+
+- Four `SKILL.md` files (`apex/cpq-custom-actions`,
+  `flow/flow-email-and-notifications`, `lwc/lwc-focus-management`,
+  `security/record-access-troubleshooting`) had their remaining
+  externally-contributed prose rewritten before the relicence, so no passage
+  contributed under the previous Apache-2.0 inbound terms is redistributed
+  under terms its author never agreed to. Technical facts are unchanged
+  throughout; only the expression differs. What still blames to the original
+  contributor is blank lines, table separators, code fences and one closing
+  brace — syntax-dictated scaffolding that carries no copyright.
 
 ## [0.4.7] — 2026-08-15 — sfskills-mcp (routing surface, documentation rewrite, release plumbing)
 
@@ -68,11 +220,13 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ### Known issues
 
-- **License declarations disagree.** Root `LICENSE` and
-  `.claude-plugin/plugin.json` say Apache-2.0; `mcp/sfskills-mcp/pyproject.toml`
-  declares MIT in both the `license` field and the trove classifier, and the
-  package ships no LICENSE file. This predates 0.4.7 — 0.4.6 shipped the same
-  way — and is left for the owner to resolve rather than changed silently.
+- ~~**License declarations disagree.**~~ *Resolved in [Unreleased]* — root
+  `LICENSE` and `.claude-plugin/plugin.json` said Apache-2.0 while
+  `mcp/sfskills-mcp/pyproject.toml` declared MIT in both the `license` field
+  and the trove classifier, and the package shipped no LICENSE file. This
+  predated 0.4.7 (0.4.6 shipped the same way) and was left for the owner to
+  resolve. All three surfaces now declare `PolyForm-Small-Business-1.0.0`,
+  guarded by `scripts/check_license.py`.
 - **CLI and MCP retrieval diverge** on queries containing `_` or non-ASCII:
   `_sanitize_query_for_fts5` strips them before the shared tokenizer, so
   `with_sharing keyword` returns 2 skills on the CLI and 3 via MCP.

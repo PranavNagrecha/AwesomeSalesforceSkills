@@ -1,6 +1,6 @@
 ---
 name: bitbucket-pipelines-for-salesforce
-description: "Use this skill to set up, review, or troubleshoot Bitbucket Pipelines CI/CD workflows for Salesforce using SFDX JWT Bearer Flow or SFDP URL authentication, Apex test gates, branch-based deployment strategies, and Bitbucket repository variables for secret management. Trigger keywords: bitbucket pipelines, bitbucket CI, atlassian pipe, salesforce-deploy pipe, bitbucket-pipelines.yml, bitbucket repository variables. NOT for GitHub Actions (use github-actions-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-Bitbucket CI platform."
+description: "Use this skill to set up, review, or troubleshoot Bitbucket Pipelines CI/CD workflows for Salesforce using SFDX JWT Bearer Flow or SFDP URL authentication, Apex test gates, branch-based deployment strategies, and Bitbucket repository variables for secret management. Trigger keywords: bitbucket pipelines, bitbucket CI, atlassian pipe, salesforce-deploy pipe, bitbucket-pipelines.yml, bitbucket repository variables. NOT for GitHub Actions (use devops/github-actions-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-Bitbucket CI platform."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:

@@ -93,9 +93,9 @@
     "f8aa9365abce37309f6b",
     "fe7d7d69759053c73c1d"
   ],
-  "content_hash": "85cfcfb0aa8f16dcf99d7348d310725d04cd5198208f42a0d800a962153b7471",
+  "content_hash": "45ab47188bc81dc12c5bf358070763309ddd5b7ccad3bf7f88a2854f806aac68",
   "dependencies": [],
-  "description": "Use this skill when designing, configuring, or troubleshooting scratch orgs: definition file structure, edition selection, allocation limits, Org Shape, CI automation via ScratchOrgInfo, and lifecycle management from the Dev Hub. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials), sandbox management, or production org administration.",
+  "description": "Use this skill when designing, configuring, or troubleshooting scratch orgs: definition file structure, edition selection, allocation limits, Org Shape, CI automation via ScratchOrgInfo, and lifecycle management from the Dev Hub. NOT for SFDX CLI basics (use apex/sf-cli-and-sfdx-essentials), sandbox management, or production org administration.",
   "file_location": "skills/devops/scratch-org-management",
   "id": "devops/scratch-org-management",
   "inputs": [

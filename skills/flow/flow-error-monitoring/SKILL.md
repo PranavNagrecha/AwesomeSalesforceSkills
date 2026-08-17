@@ -60,8 +60,7 @@ Fault emails are the default; they're necessary but not sufficient. A monitoring
 4. **Design the central log object.** Fields: severity, source, message, record Id context, timestamp, correlation Id.
 5. **Wire every flow's fault connectors** to write to the log AND (for P0) send a targeted alert. Existing flows: audit via a script that checks for missing fault paths.
 6. **Build the runtime error report + dashboard.** Group by flow, by day, by error type. Publish to the ops Slack channel or email.
-7. **Set alerting thresholds.** P0: 1 failure = immediate page. P1: 5/hour = email. P2: daily digest.
-8. **Schedule a quarterly review** of error trends. Declining P1 rates = flow portfolio getting healthier; growing = something's rotting.
+7. **Set alerting thresholds, then review them quarterly.** P0: 1 failure = immediate page. P1: 5/hour = email. P2: daily digest. Revisit the trend each quarter — declining P1 rates mean the flow portfolio is getting healthier; growing ones mean something is rotting.
 
 ## Key patterns
 

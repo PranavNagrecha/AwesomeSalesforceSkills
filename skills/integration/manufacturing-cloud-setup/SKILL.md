@@ -157,8 +157,7 @@ This is distinct from the base Sales Agreement / ABF flow — only configure if 
 4. Activate the **Account-Based Forecasting recalculation** DPE definition; run once manually to backfill.
 5. Wire `OrderItem.SalesAgreementId` population in the order ingest path.
 6. For rebates: configure `RebateProgram` with tier structure, enroll members, activate the Rebate Payout DPE.
-7. For channel-revenue-management: enable `ChannelProgram` only if the OEM has a true two-step distribution model.
-8. Test end-to-end: agreement activation → order placement → ABF recalc → forecast accuracy → rebate payout.
+7. For channel-revenue-management, enable `ChannelProgram` only if the OEM has a true two-step distribution model. Then test end-to-end: agreement activation → order placement → ABF recalc → forecast accuracy → rebate payout.
 
 ---
 

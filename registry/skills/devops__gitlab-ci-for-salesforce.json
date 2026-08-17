@@ -123,12 +123,12 @@
     "fbb66138f83d02956aa4",
     "ffa18f1b4eecc83e67d9"
   ],
-  "content_hash": "c52e3a4279867778b91c1fae0ed6b71e19900345823ac034f15cea6238fb482e",
+  "content_hash": "67ffc13b2318551005b91d7f4f54f4db6540ff6e56c5aa274829ff4068794ffc",
   "dependencies": [
     "devops/github-actions-for-salesforce",
     "devops/scratch-org-management"
   ],
-  "description": "Use this skill to set up, review, or troubleshoot GitLab CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Docker executor runners, Apex test gates, branch-based deployment jobs, and GitLab CI/CD variables for secret management. Trigger keywords: gitlab-ci.yml, gitlab runner, gitlab ci salesforce, gitlab ci sfdx, gitlab pipeline deploy salesforce, gitlab ci jwt auth. NOT for GitHub Actions (use github-actions-for-salesforce), Bitbucket Pipelines (use bitbucket-pipelines-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-GitLab CI platform.",
+  "description": "Use this skill to set up, review, or troubleshoot GitLab CI/CD pipelines for Salesforce using SFDX JWT Bearer Flow authentication, Docker executor runners, Apex test gates, branch-based deployment jobs, and GitLab CI/CD variables for secret management. Trigger keywords: gitlab-ci.yml, gitlab runner, gitlab ci salesforce, gitlab ci sfdx, gitlab pipeline deploy salesforce, gitlab ci jwt auth. NOT for GitHub Actions (use devops/github-actions-for-salesforce), Bitbucket Pipelines (use devops/bitbucket-pipelines-for-salesforce), Jenkins, Copado, Azure DevOps, or any non-GitLab CI platform.",
   "file_location": "skills/devops/gitlab-ci-for-salesforce",
   "id": "devops/gitlab-ci-for-salesforce",
   "inputs": [
