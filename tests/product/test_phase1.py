@@ -69,6 +69,39 @@ class DeployNormalizeTests(unittest.TestCase):
         page1 = normalize_deploy_report(payload, failure_limit=10, cursor="10")
         self.assertEqual(len(page1["component_failures"]), 10)
 
+    def test_source_tracking_warnings_are_not_groups(self):
+        from pipelines.product.deploy_result import normalize_deploy_report
+
+        payload = {
+            "status": 1,
+            "warnings": [
+                "ApexClass, SfskillsTriageProbeAlpha, returned from org, but not found in the local project"
+            ],
+            "result": {
+                "id": "0Af000000000007AAA",
+                "status": "Failed",
+                "done": True,
+                "success": False,
+                "details": {
+                    "componentFailures": [
+                        {
+                            "componentType": "ApexClass",
+                            "fullName": "SfskillsTriageProbeAlpha",
+                            "problem": "Invalid type: Ghost",
+                            "problemType": "Error",
+                            "success": False,
+                        }
+                    ]
+                },
+            },
+        }
+        out = normalize_deploy_report(payload)
+        self.assertEqual(out["source_counts"]["component_failures"], 1)
+        self.assertEqual(out["source_counts"]["warnings"], 0)
+        symptoms = [g["symptom"] for g in out["groups"]]
+        self.assertTrue(any("Invalid type" in s for s in symptoms))
+        self.assertFalse(any("not found in the local project" in s for s in symptoms))
+
     def test_bound_32kib(self):
         from pipelines.product.deploy_result import MAX_INJECT_BYTES, normalize_deploy_report
 

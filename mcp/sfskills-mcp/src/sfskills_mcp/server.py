@@ -603,7 +603,9 @@ def build_server() -> FastMCP:
         description=(
             "Read-only: retrieve an EXISTING Salesforce deployment job via "
             "`sf project deploy report --job-id --json`. job_id is required "
-            "(15/18-char 0Af…). Never starts, cancels, retries, or "
+            "(15/18-char 0Af…). Optional project_dir is a Salesforce DX "
+            "project used only as CLI cwd (the report command refuses a "
+            "non-DX workspace). Never starts, cancels, retries, or "
             "quick-deploys. Output is normalized, redacted, paginated, and "
             "capped at 32 KiB for model injection."
         ),
@@ -614,6 +616,7 @@ def build_server() -> FastMCP:
         wait_minutes: int = 0,
         failure_limit: int = 100,
         cursor: str | None = None,
+        project_dir: str | None = None,
     ) -> dict[str, Any]:
         return deploy.get_deployment_result(
             job_id=job_id,
@@ -621,6 +624,7 @@ def build_server() -> FastMCP:
             wait_minutes=wait_minutes,
             failure_limit=failure_limit,
             cursor=cursor,
+            project_dir=project_dir,
         )
 
     @mcp.tool(

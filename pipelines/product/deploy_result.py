@@ -21,6 +21,11 @@ DEFAULT_FAILURE_LIMIT = 100
 MAX_INJECT_BYTES = 32 * 1024
 
 
+def _is_source_tracking_noise(text: str) -> bool:
+    """CLI source-tracking chatter is not a deploy failure."""
+    return "returned from org, but not found in the local project" in (text or "").lower()
+
+
 def _as_list(value: Any) -> list[Any]:
     if value is None:
         return []
@@ -278,6 +283,11 @@ def normalize_deploy_report(
             _message_row(str(item.get("message") if isinstance(item, dict) else item), kind="warning")
         )
     extra_warnings.extend(coverage_warnings)
+    extra_warnings = [
+        row
+        for row in extra_warnings
+        if not _is_source_tracking_noise(str(row.get("message") or row.get("problem") or ""))
+    ]
 
     messages = []
     for key in ("errorMessage", "stateDetail", "status"):

@@ -7,7 +7,7 @@ description: Diagnose an existing Salesforce deployment failure from a job ID or
 
 Coordinate these Cursor subagents in order. Pass structured handoffs only (no transcripts):
 
-1. `sf-org-grounder` — fixture file **or** `get_deployment_result(job_id, target_org)`
+1. `sf-org-grounder` — fixture file **or** `get_deployment_result(job_id, target_org, project_dir?)`
 2. `sf-context-librarian` — select ≤8 domain skill/reference files (hard limit 12)
 3. `sf-repo-mapper` — map components to the user-supplied DX project path
 4. `deployment-failure-triager` — diagnose

@@ -9,17 +9,53 @@ from typing import Any
 from . import sf_cli
 
 
+_EMPTY_SF_PROJECT = (
+    Path(__file__).resolve().parents[2] / "resources" / "empty-sfdx-project"
+)
+
+
+def resolve_report_cwd(project_dir: str | None = None) -> Path:
+    """Directory that contains ``sfdx-project.json`` for ``sf project deploy report``.
+
+    The CLI refuses to run that command outside a DX project. Cursor often
+    hosts this MCP from a non-DX workspace (including this skill repo), so
+    we accept an explicit project, walk parents of cwd, then fall back to a
+    bundled empty project that is only a report cwd — never a deploy source.
+    """
+    candidates: list[Path] = []
+    if project_dir and str(project_dir).strip():
+        start = Path(project_dir).expanduser()
+        try:
+            start = start.resolve()
+        except OSError:
+            start = Path(project_dir).expanduser()
+        candidates.append(start)
+    candidates.append(Path.cwd())
+    seen: set[Path] = set()
+    for start in candidates:
+        current: Path | None = start
+        while current is not None and current not in seen:
+            seen.add(current)
+            if (current / "sfdx-project.json").is_file():
+                return current
+            parent = current.parent
+            current = None if parent == current else parent
+    return _EMPTY_SF_PROJECT
+
+
 def get_deployment_result(
     job_id: str,
     target_org: str | None = None,
     wait_minutes: int = 0,
     failure_limit: int = 100,
     cursor: str | None = None,
+    project_dir: str | None = None,
 ) -> dict[str, Any]:
     """Retrieve ``sf project deploy report --job-id`` and normalize it.
 
     Never starts, cancels, retries, or quick-deploys. ``job_id`` is required.
     ``wait_minutes`` may poll an in-progress job (still report-only).
+    ``project_dir`` is an optional Salesforce DX project used only as CLI cwd.
     """
     try:
         from . import paths as _paths
@@ -81,7 +117,13 @@ def get_deployment_result(
                 ),
             }
 
-    raw = sf_cli.run_sf_json(args, target_org=target_org, timeout=timeout)
+    report_cwd = resolve_report_cwd(project_dir)
+    raw = sf_cli.run_sf_json(
+        args,
+        target_org=target_org,
+        timeout=timeout,
+        cwd=str(report_cwd),
+    )
     cli_version = None
     version_payload = sf_cli.run_sf_json(["--version"], timeout=15)
     if isinstance(version_payload, dict) and not version_payload.get("error"):
@@ -103,6 +145,8 @@ def get_deployment_result(
             kind = "unauthenticated_org"
         elif "did not return valid json" in lowered:
             kind = "malformed_json"
+        elif "does not contain a valid salesforce dx project" in lowered:
+            kind = "not_a_dx_project"
         elif "malformed_id" in lowered or "malformed id" in lowered:
             kind = "malformed_job_id"
         if "access token" in lowered or "refreshtoken" in lowered:

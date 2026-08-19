@@ -78,7 +78,7 @@ If both job_id and result_path are missing, refuse with `REFUSAL_MISSING_INPUT`.
 ## Plan
 
 1. **Validate inputs.** Malformed job id → refuse. No silent defaults.
-2. **Ground evidence.** Fixture: parse via `pipelines/product/deploy_result.py`. Live: MCP `get_deployment_result` only. Honor `truncated` / `next_cursor`. Bound payloads at 32 KiB.
+2. **Ground evidence.** Fixture: parse via `pipelines/product/deploy_result.py`. Live: MCP `get_deployment_result` only. Pass `project_dir` when a DX `source_path` is known (the CLI report command requires a DX project cwd; the tool otherwise uses a bundled empty project). Honor `truncated` / `next_cursor`. Bound payloads at 32 KiB.
 3. **Select context.** Run the librarian rules (or the Python selector). Record reasons and token estimates. Skip OmniStudio/Agentforce distractors unless the result names those components.
 4. **Map local source** when `source_path` is present. Unresolved names stay unknowns.
 5. **Diagnose.** Group duplicate symptoms with counts. Separate primary vs contributing hypotheses. Every material claim gets an `evidence_id`.

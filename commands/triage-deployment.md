@@ -16,7 +16,7 @@ B. path to sf project deploy report --json
 C. CI DeployResult JSON with the same shape
 ```
 
-Optional: Salesforce DX project path for local mapping.
+Optional: Salesforce DX project path for local mapping (passed as `project_dir` to `get_deployment_result`). Use the org alias from `sf org list` (for example `Excelsior-Dev-PN`, not a spaced display name).
 
 If the user says "the last deploy" without a job id or file, STOP.
 

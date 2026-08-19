@@ -22,7 +22,7 @@ Deploy start/validate/quick/cancel/resume, DML, anonymous Apex, permission/user/
 ## Procedure
 
 1. If a local JSON fixture path is provided, do not call the org. State `source: fixture`.
-2. If job_id + alias are provided, call `get_deployment_result`. Pass `failure_limit` and `cursor` when truncated.
+2. If job_id + alias are provided, call `get_deployment_result`. Pass `failure_limit` and `cursor` when truncated. Pass `project_dir` when the caller gave a DX `source_path`. Use the org **alias as listed by `sf org list`** (hyphens, not spaces).
 3. Normalize is already done by the tool. Do not paste raw CLI JSON into the parent.
 4. Record `truncated`, `next_cursor`, `source_counts`, evidence IDs.
 

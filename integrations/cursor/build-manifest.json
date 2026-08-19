@@ -23,7 +23,7 @@
     },
     {
       "path": "agents/sf-org-grounder.md",
-      "sha256": "1e71936ee89d0202c7e2b63a5a98bb8f2143c89405fde324db3a33c511506b3d"
+      "sha256": "77e2ea8e1d60471b233da595dd37f8d6d9d9f5f4bb1281f20aaed34b17b696fe"
     },
     {
       "path": "agents/sf-repo-mapper.md",
@@ -35,7 +35,7 @@
     },
     {
       "path": "commands/triage-deployment.md",
-      "sha256": "bd07238908f9033ca084f5f6d9e5f10e423b3317e4a2b6a65928078e98ffbf8e"
+      "sha256": "7c99789fe62fe7410b7576ac4730049302d224391ae794ce5888e19777441dff"
     },
     {
       "path": "hooks/hooks.json",

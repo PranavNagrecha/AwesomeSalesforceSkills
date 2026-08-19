@@ -140,6 +140,7 @@ def run_sf_json(
     *,
     target_org: str | None = None,
     timeout: int | None = None,
+    cwd: str | None = None,
 ) -> dict[str, Any]:
     """Execute ``sf <args> --json`` and return the parsed payload.
 
@@ -172,6 +173,7 @@ def run_sf_json(
             text=True,
             timeout=timeout,
             check=False,
+            cwd=cwd or None,
         )
     except subprocess.TimeoutExpired as exc:
         return {

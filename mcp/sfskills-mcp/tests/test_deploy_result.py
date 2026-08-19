@@ -90,6 +90,49 @@ class GetDeploymentResultTests(unittest.TestCase):
             os.environ.pop("SFSKILLS_DEPLOY_CACHE", None)
             Path(tmp.name).unlink(missing_ok=True)
 
+    def test_not_a_dx_project(self):
+        fake = {
+            "status": 1,
+            "error": "/tmp/x does not contain a valid Salesforce DX project.",
+            "args": [],
+        }
+        with mock.patch("sfskills_mcp.deploy.sf_cli.run_sf_json", return_value=fake):
+            out = deploy.get_deployment_result("0Af000000000001AAA")
+        self.assertEqual(out["error"], "not_a_dx_project")
+
+    def test_report_cwd_prefers_project_dir(self):
+        captured: dict = {}
+
+        def fake_run(args, **kwargs):
+            captured.setdefault("calls", []).append((list(args), kwargs.get("cwd")))
+            if args[:1] == ["org"]:
+                return {"result": {"username": "user@example.com"}}
+            if args == ["--version"]:
+                return {"cliVersion": "2.0.0"}
+            return {
+                "status": 0,
+                "result": {
+                    "id": "0Af000000000001AAA",
+                    "status": "Failed",
+                    "success": False,
+                    "done": True,
+                    "numberComponentErrors": 0,
+                    "details": {"componentFailures": [], "runTestResult": {}},
+                },
+            }
+
+        project = FIXTURES  # no sfdx-project here; resolver should still try
+        with mock.patch("sfskills_mcp.deploy.sf_cli.run_sf_json", side_effect=fake_run):
+            deploy.get_deployment_result("0Af000000000001AAA", project_dir=str(project))
+        report_calls = [c for c in captured["calls"] if c[0][:3] == ["project", "deploy", "report"]]
+        self.assertTrue(report_calls)
+        self.assertTrue(report_calls[0][1])  # cwd set
+
+    def test_empty_report_cwd_exists(self):
+        cwd = deploy.resolve_report_cwd("/definitely/not/a/dx/project")
+        self.assertTrue((cwd / "sfdx-project.json").is_file())
+        self.assertEqual(cwd.name, "empty-sfdx-project")
+
     def test_no_use_most_recent_in_source(self):
         text = Path(deploy.__file__).read_text(encoding="utf-8")
         self.assertNotIn("use-most-recent", text)
