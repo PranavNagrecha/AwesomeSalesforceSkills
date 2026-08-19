@@ -25,6 +25,7 @@ def get_deployment_result(
         from . import paths as _paths
 
         _paths.ensure_pipelines_on_path()
+        from pipelines.product.deploy_cache import cache_target_org, usernames_match
         from pipelines.product.deploy_result import normalize_deploy_report
         from pipelines.product.job_id import is_well_formed_job_id
     except Exception as exc:  # noqa: BLE001
@@ -60,6 +61,26 @@ def get_deployment_result(
     if wait_minutes_i > 0:
         timeout = max(timeout, wait_minutes_i * 60 + 30)
 
+    requested_username = None
+    if target_org:
+        display = sf_cli.run_sf_json(["org", "display"], target_org=target_org, timeout=30)
+        requested_username = _username_from_display(display)
+        cached = cache_target_org(job_id)
+        if cached and requested_username and not usernames_match(cached, requested_username):
+            return {
+                "ok": False,
+                "error": "job_org_mismatch",
+                "job_id": job_id,
+                "requested_org": target_org,
+                "requested_username": requested_username,
+                "cache_target_org": cached,
+                "hint": (
+                    "sf CLI deploy-cache has this job for a different org. "
+                    "The product will not treat that result as belonging to "
+                    f"{target_org}."
+                ),
+            }
+
     raw = sf_cli.run_sf_json(args, target_org=target_org, timeout=timeout)
     cli_version = None
     version_payload = sf_cli.run_sf_json(["--version"], timeout=15)
@@ -82,6 +103,8 @@ def get_deployment_result(
             kind = "unauthenticated_org"
         elif "did not return valid json" in lowered:
             kind = "malformed_json"
+        elif "malformed_id" in lowered or "malformed id" in lowered:
+            kind = "malformed_job_id"
         if "access token" in lowered or "refreshtoken" in lowered:
             kind = "redacted_auth_error"
         normalized = normalize_deploy_report(
@@ -96,13 +119,28 @@ def get_deployment_result(
         normalized["error_detail"] = err
         return normalized
 
-    return normalize_deploy_report(
+    normalized = normalize_deploy_report(
         raw,
         failure_limit=failure_limit_i,
         cursor=cursor,
         source="sf_cli",
         cli_version=str(cli_version) if cli_version else None,
     )
+    if requested_username:
+        normalized["requested_org"] = target_org
+        normalized["requested_username"] = requested_username
+    cached = cache_target_org(job_id)
+    if cached:
+        normalized["cache_target_org"] = cached
+    return normalized
+
+
+def _username_from_display(payload: Any) -> str | None:
+    if not isinstance(payload, dict) or payload.get("error"):
+        return None
+    result = payload.get("result") if isinstance(payload.get("result"), dict) else payload
+    username = result.get("username")
+    return str(username) if username else None
 
 
 def get_deployment_result_from_file(

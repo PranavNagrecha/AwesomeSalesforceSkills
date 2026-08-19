@@ -35,7 +35,8 @@ python3 scripts/sfskills_doctor.py --json
 ## /triage-deployment
 
 - **Fixture:** path to `sf project deploy report --json`
-- **Live read-only:** existing job id (`0Af…`) + org alias. Does not start a deploy.
+When `target_org` is supplied, the tool compares it to the local `~/.sf/deploy-cache.json` entry for that job id. The Salesforce CLI can return a cached job from a **different** org; the product refuses that as `job_org_mismatch` rather than diagnosing the wrong sandbox.
+
 
 Local mapping needs a Salesforce DX project path.
 

@@ -65,6 +65,31 @@ class GetDeploymentResultTests(unittest.TestCase):
             out = deploy.get_deployment_result("0Af000000000001AAA")
         self.assertEqual(out["error"], "redacted_auth_error")
 
+    def test_cli_malformed_id(self):
+        fake = {"status": 1, "error": "MALFORMED_ID: malformed id 0Af000000000001AAA", "args": []}
+        with mock.patch("sfskills_mcp.deploy.sf_cli.run_sf_json", return_value=fake):
+            out = deploy.get_deployment_result("0Af000000000001AAA")
+        self.assertEqual(out["error"], "malformed_job_id")
+
+    def test_job_org_mismatch(self):
+        import os
+        import tempfile
+
+        job = "0AfVB00000IYiyj0AD"
+        tmp = tempfile.NamedTemporaryFile("w", delete=False, suffix=".json")
+        json.dump({job: {"target-org": "other@example.com", "status": "Failed"}}, tmp)
+        tmp.close()
+        display = {"result": {"username": "pnagrecha@excelsior.edu.devpn"}}
+        try:
+            os.environ["SFSKILLS_DEPLOY_CACHE"] = tmp.name
+            with mock.patch("sfskills_mcp.deploy.sf_cli.run_sf_json", return_value=display):
+                out = deploy.get_deployment_result(job, target_org="Excelsior Dev PN")
+            self.assertEqual(out["error"], "job_org_mismatch")
+            self.assertEqual(out["cache_target_org"], "other@example.com")
+        finally:
+            os.environ.pop("SFSKILLS_DEPLOY_CACHE", None)
+            Path(tmp.name).unlink(missing_ok=True)
+
     def test_no_use_most_recent_in_source(self):
         text = Path(deploy.__file__).read_text(encoding="utf-8")
         self.assertNotIn("use-most-recent", text)
