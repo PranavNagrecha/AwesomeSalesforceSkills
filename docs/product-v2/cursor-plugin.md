@@ -34,13 +34,16 @@ python3 scripts/sfskills_doctor.py --json
 
 ## /triage-deployment
 
+Two evidence sources (never both guessed):
+
 - **Fixture:** path to `sf project deploy report --json`
-When `target_org` is supplied, the tool compares it to the local `~/.sf/deploy-cache.json` entry for that job id. The Salesforce CLI can return a cached job from a **different** org; the product refuses that as `job_org_mismatch` rather than diagnosing the wrong sandbox.
+- **Live:** existing `0Af…` job id plus org alias from `sf org list` (hyphens, not spaces). Optional `project_dir` / DX `source_path` for local file mapping.
 
+When `target_org` is supplied, the tool compares it to `~/.sf/deploy-cache.json`. A cache hit for a **different** org is `job_org_mismatch`, not a diagnosis of the wrong sandbox.
 
-Local mapping needs a Salesforce DX project path.
+If the user asks for “the latest deploy” without a job id or file, refuse. Do not use `--use-most-recent`.
 
-Telemetry (redacted) is written under `.sfskills/runs/` (gitignored).
+Telemetry (redacted) is written under `.sfskills/runs/` (gitignored). Canonical reports also go to `docs/reports/deployment-failure-triager/`.
 
 ## Safety
 

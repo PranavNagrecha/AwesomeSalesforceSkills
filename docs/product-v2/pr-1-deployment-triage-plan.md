@@ -1,6 +1,6 @@
 # PR 1 plan — Native Cursor plugin and Deployment Failure Triager
 
-Status: implementing on branch `product/cursor-plugin-deployment-triage`.
+Status: **complete on branch `product/cursor-plugin-deployment-triage`** (local commits only; not pushed).
 Date: 2026-08-19.
 
 This plan is specific to Phase 1. Apex test triage, scratch-org QA lab, and
@@ -102,8 +102,9 @@ Pilot pack (`integrations/cursor/context-packs/deployment-failure.yaml`):
 ## Acceptance mapping
 
 The 21 criteria in the Phase 1 prompt are the exit gate. Live-org retrieve
-runs only after the user provides: authenticated `sf` alias, existing `0Af`
-job ID, and DX project path. Until then: `Live-org verification not run`.
+**ran** on `Excelsior-Dev-PN` with job `0AfVB00000IYow50AD` and DX project
+`/Users/pranavnagrecha/VS Code/Excelsior/DevPN/DevPN`. See
+`docs/product-v2/pr-1-final-report.md`.
 
 ## Risks
 

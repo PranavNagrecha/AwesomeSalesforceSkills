@@ -105,7 +105,26 @@ Must include:
 - context/provenance (`files_loaded`, estimated tokens, tool bytes, truncated)
 - evidence-review verdict
 
-Process Observations required. Citations must resolve.
+Process Observations required (healthy / concerning / ambiguous). Citations must resolve.
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/deployment-failure-triager/<run_id>.md`
+- **JSON envelope:** `docs/reports/deployment-failure-triager/<run_id>.json`
+- Product runs MAY also write redacted telemetry under `.sfskills/runs/<run_id>/` (gitignored). That does not replace the `docs/reports/` pair.
+- **Atomic write:** both `docs/reports` files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` renders the report inline and emits the envelope as a fenced JSON block.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** `get_deployment_result` / a local deploy-report JSON fixture plus this agent's typed inputs. This agent does NOT generate ad-hoc code to substitute for those surfaces.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** if evidence is truncated, set `outcome: partial` and record the gap in unknowns — never omit it.
 
 ---
 
