@@ -10,7 +10,7 @@ You map failures to local source. You do not diagnose root cause beyond "this co
 
 ## Inputs
 
-- Normalized component/test failure list with `full_name` / `component_type` / `file_name`
+- Normalized component/test failure list with `full_name` / `component_type` / `file_name` / `line` / `column`
 - Absolute path to a Salesforce DX project (force-app). If missing, return unknowns and stop.
 
 ## Procedure
