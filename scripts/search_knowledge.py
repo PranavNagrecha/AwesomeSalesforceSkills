@@ -307,6 +307,21 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
     shape the CLI emits with ``--json``. Pure (no stdout/stderr, no exit)."""
     query = _sanitize_query_for_fts5(query)
     index_path = ctx.root / "vector_index" / "lexical.sqlite"
+    from pipelines.lexical_index import index_status
+
+    idx = index_status(index_path)
+    if idx.get("status") == "index_missing":
+        return {
+            "query": query,
+            "domain_filter": domain,
+            "has_coverage": False,
+            "index_status": "index_missing",
+            "error": "index_missing",
+            "skills": [],
+            "chunks": [],
+            "official_sources": [],
+            "hint": "vector_index/lexical.sqlite is absent. Run python3 scripts/bootstrap.py — a missing index is not the same as zero matches.",
+        }
     lexical_rows = search_index(index_path, query, domain, ctx.lexical_limit)
     # Embed the query only when there is something to compare it against.
     # Both vector files are gitignored (they exceed GitHub's file limit and are
@@ -454,6 +469,14 @@ def main() -> int:
     ctx = build_search_context(ROOT)
     _emit_embeddings_warning(ROOT, ctx.config)
     payload = run_search(args.query, ctx, domain=args.domain)
+
+    if payload.get("index_status") == "index_missing" or payload.get("error") == "index_missing":
+        if args.json:
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print("ERROR: index_missing — vector_index/lexical.sqlite is absent.")
+            print("Run: python3 scripts/bootstrap.py")
+        return 2
 
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))

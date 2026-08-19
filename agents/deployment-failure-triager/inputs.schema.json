@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/deployment-failure-triager/inputs.schema.json",
+  "title": "deployment-failure-triager inputs",
+  "description": "Exactly one evidence source is required: job_id or result_path. Do not guess a job id.",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^0Af[A-Za-z0-9]{12}([A-Za-z0-9]{3})?$",
+      "description": "Existing Metadata API deploy id. Required for live retrieve. Never use --use-most-recent."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias for live retrieve. Optional if result_path is set."
+    },
+    "result_path": {
+      "type": "string",
+      "description": "Path to sf project deploy report --json output (fixture or CI)."
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Salesforce DX project root for local file mapping."
+    }
+  },
+  "anyOf": [
+    { "required": ["job_id"] },
+    { "required": ["result_path"] }
+  ]
+}

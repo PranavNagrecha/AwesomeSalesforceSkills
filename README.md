@@ -310,7 +310,7 @@ run it yourself.
 
 ## What's in it
 
-**1,034 skills · 76 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,034 skills · 77 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
 - **Skills** (`skills/`) — 1,034 structured guides across 11 domains: admin 253,
   apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
@@ -326,15 +326,15 @@ run it yourself.
   pattern, Agentforce capability, async tier, integration pattern, sharing
   mechanism, performance tuning — consulted before any code gets written.
 - **Agents** (`agents/`) — instruction files any agentic AI can follow.
-  **Build-time (14)** maintain the library; **Run-time (48)** do real
+  **Build-time (14)** maintain the library; **Run-time (49)** do real
   Salesforce work in your codebase or org, across four tiers —
-  Developer + architecture tier (16), Admin accelerators — Tier 1 (14),
+  Developer + architecture tier (17), Admin accelerators — Tier 1 (14),
   Strategic — Tier 2 (7), Vertical + governance — Tier 3 (11). Fourteen more
   are deprecated redirect stubs, for 76 `AGENT.md` files in total. Contract:
   [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md);
   roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md);
   skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
-- **MCP server** (`mcp/sfskills-mcp/`) — 38 tools across skill / agent /
+- **MCP server** (`mcp/sfskills-mcp/`) — 39 tools across skill / agent /
   template / decision-tree retrieval plus live-org metadata and read-only
   SOQL, so the agent can answer "does this already exist in my org?" without
   asking you.
@@ -353,7 +353,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 ## MCP server
 
-38 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
+39 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
 over the 1,034-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,

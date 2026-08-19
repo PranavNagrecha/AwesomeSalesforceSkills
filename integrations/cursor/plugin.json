@@ -1,0 +1,12 @@
+{
+  "name": "awesome-salesforce-skills",
+  "version": "1.0.0",
+  "description": "SfSkills native Cursor plugin: bounded Salesforce routers, Deployment Failure Triager, doctor, and read-only MCP. Local install only — not a Cursor Marketplace listing.",
+  "author": {
+    "name": "Pranav Nagrecha"
+  },
+  "homepage": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills",
+  "repository": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills",
+  "license": "PolyForm-Small-Business-1.0.0",
+  "keywords": ["salesforce", "devops", "deployment", "sfskills"]
+}

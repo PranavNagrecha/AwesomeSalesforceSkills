@@ -182,8 +182,21 @@ def search_skill(
 
     paths.ensure_pipelines_on_path()
     from pipelines.embedding_backends import embed_query, parse_embedding_config  # type: ignore[import-not-found]
-    from pipelines.lexical_index import search_index  # type: ignore[import-not-found]
+    from pipelines.lexical_index import index_status, search_index  # type: ignore[import-not-found]
     from pipelines.ranking import aggregate_skill_scores, rerank_results  # type: ignore[import-not-found]
+
+    idx = index_status(paths.lexical_index_path())
+    if idx.get("status") == "index_missing":
+        return {
+            "query": query,
+            "domain_filter": domain,
+            "has_coverage": False,
+            "index_status": "index_missing",
+            "error": "index_missing",
+            "skills": [],
+            "chunks": [],
+            "hint": "vector_index/lexical.sqlite is absent. Run python3 scripts/bootstrap.py. This is not an empty result set.",
+        }
 
     lexical_window = max(bounded_limit * 3, 30)
     lexical_rows = search_index(
@@ -308,6 +321,7 @@ def search_skill(
         "query": query,
         "domain_filter": domain,
         "has_coverage": len(enriched_skills) > 0,
+        "index_status": "ok",
         "skills": enriched_skills,
         "chunks": chunks_payload,
     }

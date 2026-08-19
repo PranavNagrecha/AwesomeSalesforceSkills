@@ -177,7 +177,13 @@ mcp/sfskills-mcp/dist/
 # Per-machine, regenerated on every install — never belongs in the repo.
 *.egg-info/
 
-# Session-local intake reports from scripts/onboard_source.py — never committed.
+# Product telemetry (redacted). Never commit.
+.sfskills/
+
+# Native Cursor plugin package (regenerate with scripts/build_cursor_plugin.py)
+dist/cursor/
+!integrations/cursor/build-manifest.json
+
 .intake-reports/
 
 # Session working directories — research dumps, per-wave workflows and resume

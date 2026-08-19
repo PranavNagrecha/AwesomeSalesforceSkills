@@ -64,7 +64,7 @@ from typing import Any
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.types import ToolAnnotations
 
-from . import admin, agents, dev_org, library, meta, org, paths, probes, prompts, resources, routing, skills
+from . import admin, agents, deploy, dev_org, library, meta, org, paths, probes, prompts, resources, routing, skills
 
 
 # Reusable annotation profiles. The MCP spec lets clients (Cursor, Cline,
@@ -596,6 +596,32 @@ def build_server() -> FastMCP:
     )
     def health() -> dict[str, Any]:
         return meta.health()
+
+    @mcp.tool(
+        name="get_deployment_result",
+        annotations=_ANN_ORG_READ,
+        description=(
+            "Read-only: retrieve an EXISTING Salesforce deployment job via "
+            "`sf project deploy report --job-id --json`. job_id is required "
+            "(15/18-char 0Af…). Never starts, cancels, retries, or "
+            "quick-deploys. Output is normalized, redacted, paginated, and "
+            "capped at 32 KiB for model injection."
+        ),
+    )
+    def get_deployment_result(
+        job_id: str,
+        target_org: str | None = None,
+        wait_minutes: int = 0,
+        failure_limit: int = 100,
+        cursor: str | None = None,
+    ) -> dict[str, Any]:
+        return deploy.get_deployment_result(
+            job_id=job_id,
+            target_org=target_org,
+            wait_minutes=wait_minutes,
+            failure_limit=failure_limit,
+            cursor=cursor,
+        )
 
     @mcp.tool(
         name="list_deprecated_redirects",

@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-All 48 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
+All 49 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
@@ -367,6 +367,13 @@ Decision trees:
 - `standards/decision-trees/automation-selection.md` — cited for route-away only. This tree has no OmniStudio branch; the agent says so in plain text rather than inventing one.
 
 Templates: none. There is no `templates/omnistudio/` directory yet — a real gap, tracked as follow-up work.
+
+---
+
+### `deployment-failure-triager`
+- `devops/deployment-error-troubleshooting`, `devops/deployment-error-diagnosis`
+- `devops/metadata-api-retrieve-deploy`
+- Conditional (context pack, not always loaded): `apex/test-class-standards`, `devops/automated-regression-testing`, `devops/code-coverage-orphan-class-cleanup`, `data/deployment-data-dependencies`, `devops/api-version-management`, `devops/permission-set-deployment-ordering`, `devops/destructive-changes-deployment`
 
 ---
 

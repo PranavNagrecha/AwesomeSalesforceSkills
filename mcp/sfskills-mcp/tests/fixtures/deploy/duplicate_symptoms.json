@@ -1,0 +1,34 @@
+{
+  "status": 0,
+  "result": {
+    "id": "0Af000000000004AAA",
+    "status": "Failed",
+    "done": true,
+    "success": false,
+    "details": {
+      "componentFailures": [
+        {
+          "componentType": "ApexClass",
+          "fullName": "SharedUtil",
+          "problem": "Dependent class is invalid and needs recompilation: SharedUtil",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "componentType": "ApexClass",
+          "fullName": "AccountService",
+          "problem": "Dependent class is invalid and needs recompilation: SharedUtil",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "componentType": "ApexClass",
+          "fullName": "ContactService",
+          "problem": "Dependent class is invalid and needs recompilation: SharedUtil",
+          "problemType": "Error",
+          "success": false
+        }
+      ]
+    }
+  }
+}

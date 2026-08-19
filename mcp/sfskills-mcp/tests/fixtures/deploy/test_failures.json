@@ -1,0 +1,24 @@
+{
+  "status": 0,
+  "result": {
+    "id": "0Af000000000002AAA",
+    "status": "Failed",
+    "done": true,
+    "success": false,
+    "numberTestErrors": 1,
+    "details": {
+      "componentFailures": [],
+      "runTestResult": {
+        "numFailures": 1,
+        "failures": [
+          {
+            "name": "AccountServiceTest",
+            "methodName": "testInsert",
+            "message": "System.AssertException: Assertion Failed: Expected 1, actual 0",
+            "stackTrace": "Class.AccountServiceTest.testInsert: line 20, column 1"
+          }
+        ]
+      }
+    }
+  }
+}

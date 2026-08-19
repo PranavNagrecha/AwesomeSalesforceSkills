@@ -1,0 +1,26 @@
+{
+  "status": 0,
+  "result": {
+    "id": "0Af000000000003AAA",
+    "status": "Failed",
+    "done": true,
+    "success": false,
+    "details": {
+      "runTestResult": {
+        "codeCoverage": [
+          {
+            "name": "OrphanService",
+            "numLocations": 40,
+            "numLocationsNotCovered": 40
+          }
+        ],
+        "codeCoverageWarnings": [
+          {
+            "name": "OrphanService",
+            "message": "Test coverage of selected Apex Class is 0%, at least 75% test coverage is required"
+          }
+        ]
+      }
+    }
+  }
+}

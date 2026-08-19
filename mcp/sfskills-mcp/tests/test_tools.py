@@ -80,6 +80,7 @@ EXPECTED_TOOLS = {
     "suggest_agent",
     # Tier D — production polish (1, v0.4)
     "health",
+    "get_deployment_result",
 }
 
 
@@ -126,15 +127,14 @@ class TestProbeInputValidation(unittest.TestCase):
             self.assertIn("error", result, f"Expected error for scope={bad!r}")
 
     def test_expected_tool_count(self):
-        """v0.4.0 baseline: 38 tools (23 Wave-2 + 14 Tier-C + 1 Tier-D).
+        """Roster is 39 tools after get_deployment_result (38 + 1).
 
         Changing this number without updating ``EXPECTED_TOOLS`` is a failure
-        by design — adding a tool means a deliberate canon update, not a
-        silent test drift. Bump the floor when intentional.
+        by design — adding a tool means a deliberate canon update.
         """
         self.assertEqual(
-            len(EXPECTED_TOOLS), 38,
-            "v0.4.0 baseline is 38 tools — update EXPECTED_TOOLS if intentional",
+            len(EXPECTED_TOOLS), 39,
+            "tool roster is 39 after get_deployment_result — update EXPECTED_TOOLS if intentional",
         )
 
 

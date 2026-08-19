@@ -127,6 +127,15 @@ def read_source_hash(path: Path) -> str | None:
         connection.close()
 
 
+def index_status(path: Path) -> dict:
+    """Distinguish a missing index from an empty successful search."""
+    if not path.exists():
+        return {"status": "index_missing", "path": str(path)}
+    if not path.is_file():
+        return {"status": "index_missing", "path": str(path), "detail": "not a file"}
+    return {"status": "ok", "path": str(path)}
+
+
 def search_index(
     path: Path,
     query: str,

@@ -407,11 +407,12 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > still name it as an entry point — that is wrong. Invoke build agents by
    > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
-2. **Run-time (48)** — four tiers:
-   - **Developer + architecture (16):** `apex-refactorer`,
+2. **Run-time (49)** — four tiers:
+   - **Developer + architecture (17):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
      `lwc-builder`, `lwc-auditor`, `lwc-debugger`, `deployment-risk-scorer`,
+     `deployment-failure-triager`,
      `agentforce-builder`, `apex-builder`, `changeset-builder`,
      `flow-orchestrator-designer`, `automation-migration-router`.
    - **Admin accelerators — Tier 1 (14):** `field-impact-analyzer`,
@@ -504,7 +505,7 @@ evaluate. Citation resolution is already enforced statically at PR time by
 `_validate_citations`; prefer that as the real guarantee, and do not write new
 runtime gates that assume MCP.
 
-**Rules for the MCP server (38 tools):**
+**Rules for the MCP server (39 tools):**
 
 - The MCP server never executes an agent. Tools that expose agent context
   (`list_agents`, `get_agent`, `suggest_agent`) return instructions and the

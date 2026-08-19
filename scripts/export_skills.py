@@ -225,10 +225,12 @@ def load_all_skills(domain_filter: str = None, skill_filter: str = None) -> list
 # ── Platform exporters ────────────────────────────────────────────────────────
 
 def export_cursor(skills: list[dict], output_dir: Path) -> int:
-    """
-    Cursor format: .cursor/rules/<skill-name>.mdc
-    Frontmatter: description (for discovery), globs (optional), alwaysApply: false
-    Body: full skill content
+    """Legacy Cursor export: flattened `.mdc` rules.
+
+    Recommended path is the native plugin:
+    ``python3 scripts/build_cursor_plugin.py`` then
+    ``python3 scripts/install_cursor_plugin.py --link``.
+    This function remains for compatibility (``--target cursor``).
     """
     rules_dir = output_dir / ".cursor" / "rules"
     rules_dir.mkdir(parents=True, exist_ok=True)

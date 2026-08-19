@@ -25,11 +25,11 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (48)
+## Run-time agents (49)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Developer + architecture tier (16)
+### Developer + architecture tier (17)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -44,6 +44,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `lwc-auditor` | LWC | A11y + perf + security findings per bundle | `/audit-lwc` |
 | `lwc-debugger` | LWC | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure | `/debug-lwc` |
 | `deployment-risk-scorer` | DevOps | Risk score + breaking-change list for a change set | `/score-deployment` |
+| `deployment-failure-triager` | DevOps | Evidence-grounded diagnosis of an existing deploy job or CLI JSON fixture | `/triage-deployment` |
 | `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` || `apex-builder` | Apex | Apex class(es) built from requirements + test class | `/build-apex` |
 | `changeset-builder` | DevOps | Change set manifest + deployment checklist | `/build-changeset` |
 | `flow-orchestrator-designer` | Flow | Flow Orchestrator design + stage / step map | `/design-flow-orchestrator` |

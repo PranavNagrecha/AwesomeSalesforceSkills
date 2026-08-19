@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sfskills": {
+      "command": "python3",
+      "args": ["${PLUGIN_ROOT}/scripts/run_mcp.py"]
+    }
+  }
+}

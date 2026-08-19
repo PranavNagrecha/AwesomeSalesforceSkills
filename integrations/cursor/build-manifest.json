@@ -1,0 +1,153 @@
+{
+  "count": 37,
+  "files": [
+    {
+      "path": ".cursor-plugin/plugin.json",
+      "sha256": "fa7b9de7da8cc3d62abf8b0b9aacaf06ea3fd3619750a6dd887eba67ec618c72"
+    },
+    {
+      "path": "README.md",
+      "sha256": "e82b2b1cdb9d8107bb615fb40af4fe3db19308dca62c89440fd249199bec0e40"
+    },
+    {
+      "path": "agents/deployment-failure-triager.md",
+      "sha256": "19bd981306c8d463bcfce9ac5a6a24846c415ce51515b8301285c5202fc21702"
+    },
+    {
+      "path": "agents/sf-context-librarian.md",
+      "sha256": "5fd207489e6dbec4b2a5bf89fb797b66695877f82b8c76cd035660ac8e736d94"
+    },
+    {
+      "path": "agents/sf-evidence-reviewer.md",
+      "sha256": "8964a2fc7b9168fa479308bbf978ba52dd97d170b7a7cd78c44e95294e586ba3"
+    },
+    {
+      "path": "agents/sf-org-grounder.md",
+      "sha256": "1e71936ee89d0202c7e2b63a5a98bb8f2143c89405fde324db3a33c511506b3d"
+    },
+    {
+      "path": "agents/sf-repo-mapper.md",
+      "sha256": "a671c03f45249cce6dbe4928db34c7580da5ed74919ad4df51bc1f79d3441639"
+    },
+    {
+      "path": "commands/sfskills-doctor.md",
+      "sha256": "aa0b4bff3b69738efb9418bdd039f8161ae2519ee594100eb24cfb236bda3ac9"
+    },
+    {
+      "path": "commands/triage-deployment.md",
+      "sha256": "bd07238908f9033ca084f5f6d9e5f10e423b3317e4a2b6a65928078e98ffbf8e"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "sha256": "98b756a085c697b1814f4569e4eaa99bcf164e192cbe942abb4701f9711deabb"
+    },
+    {
+      "path": "hooks/sfskills_policy.py",
+      "sha256": "b32acc1993998b89e9edf85cc5fc9442632cbd028f2017fdeb6ff1ecb6c40c62"
+    },
+    {
+      "path": "hooks/sfskills_precompact.py",
+      "sha256": "2a5fbcf62312009ef7626e92f3849ef5fe372270d31745d280c098eb83715335"
+    },
+    {
+      "path": "mcp.json",
+      "sha256": "10b7710b5e6f5124715317079f6c44db1e52cb965724a28cf222c5c849259e42"
+    },
+    {
+      "path": "scripts/run_mcp.py",
+      "sha256": "f810dce14fa5951de2808c610f75b7f3477940aa5cd73bbdee1ca6fc8073f6a3"
+    },
+    {
+      "path": "skills/salesforce/SKILL.md",
+      "sha256": "6c673563dc8262b1194ad6f87c309dff0a7524ef0eb71d7088ffa5de5519af7a"
+    },
+    {
+      "path": "skills/salesforce-admin/SKILL.md",
+      "sha256": "e092158aba02d4af61cbbca5902d349242f8f3590a1188bedea22fd067e59424"
+    },
+    {
+      "path": "skills/salesforce-admin/references/skill-index.md",
+      "sha256": "16c97adbb26165c05ff07ec68c77d29ee29279e68e07453a9e9bf96431f1f2c6"
+    },
+    {
+      "path": "skills/salesforce-agentforce/SKILL.md",
+      "sha256": "016b0ef31e8aba5b00c893a96db2d3312b650c4a122385f9dc7f4c80de8a9f87"
+    },
+    {
+      "path": "skills/salesforce-agentforce/references/skill-index.md",
+      "sha256": "c252f53f40bf06fa8a3b70e4b0abd84da5d9e1161c22f862afcfa2b5f576a57e"
+    },
+    {
+      "path": "skills/salesforce-apex/SKILL.md",
+      "sha256": "b1468b143d36c2a906c5f6a37da8ed64ab1710675a6a4978913a7c7c2304bd6d"
+    },
+    {
+      "path": "skills/salesforce-apex/references/skill-index.md",
+      "sha256": "04219414e50048be2f0873ae8a5f6c80082993b514af60217fa7f8d14eec85cd"
+    },
+    {
+      "path": "skills/salesforce-architect/SKILL.md",
+      "sha256": "96a2933037452113aa417085f776f9f82446c6ceeeaf8caf73a519950530e3af"
+    },
+    {
+      "path": "skills/salesforce-architect/references/skill-index.md",
+      "sha256": "0ffe45a8739aad3efe396f9abe71003c8be6a0d8e29ad2bade74bea53c053ed4"
+    },
+    {
+      "path": "skills/salesforce-data/SKILL.md",
+      "sha256": "4f6826dfeac58c406bfadb6d4ec2c52365032847e3a34adc4498a5dbd00d6cdb"
+    },
+    {
+      "path": "skills/salesforce-data/references/skill-index.md",
+      "sha256": "a4af299f7a907147a9ed04b7375d1a1abf3325369923cf7fbd6dcd7b5053d213"
+    },
+    {
+      "path": "skills/salesforce-devops/SKILL.md",
+      "sha256": "bb001609307cbb791469c19c5ca578f99fefb7b2c0610351f4eecc08329355a8"
+    },
+    {
+      "path": "skills/salesforce-devops/references/skill-index.md",
+      "sha256": "f1d9c23858a2aa1e9a1d4d14f570d18857742078c8e1224b2e502b82b047ad67"
+    },
+    {
+      "path": "skills/salesforce-flow/SKILL.md",
+      "sha256": "b31c30405c7e0d3866fbc1228d592fa65f3b7f7cb9b7b17fee8abb59eaede319"
+    },
+    {
+      "path": "skills/salesforce-flow/references/skill-index.md",
+      "sha256": "11b0ecaf0f8acdfb17bb1dc16acb42a269b60d123547050f3bbdc84ed6913b52"
+    },
+    {
+      "path": "skills/salesforce-integration/SKILL.md",
+      "sha256": "40dee4dc59a9b48c31f0ffd0d98d1a00b0dfa720587de84a66696d17d9d60143"
+    },
+    {
+      "path": "skills/salesforce-integration/references/skill-index.md",
+      "sha256": "b26d02baad1c77fd32028afc56d011174e32709df1cba88d757b148e1618e03d"
+    },
+    {
+      "path": "skills/salesforce-lwc/SKILL.md",
+      "sha256": "4a2041248dcbaa84fa929cfe240fb5da99caeef2b35661a9976a2a2f47e4ad4f"
+    },
+    {
+      "path": "skills/salesforce-lwc/references/skill-index.md",
+      "sha256": "81fed8b549d1f5f44a8482b74c7c97eab8891e60ba36cf750d223d74f27d37f3"
+    },
+    {
+      "path": "skills/salesforce-omnistudio/SKILL.md",
+      "sha256": "2a92e4c5780dbd74e93a05346f2b605cd4214e33ecb615828754539948633703"
+    },
+    {
+      "path": "skills/salesforce-omnistudio/references/skill-index.md",
+      "sha256": "554ef46c09bd3d112f08fb9d788ffaef654e70e53edd5dbc044c07829799e8ad"
+    },
+    {
+      "path": "skills/salesforce-security/SKILL.md",
+      "sha256": "992784e102b0c1fdb2f6a59091ac44bd7516a58f9b817c83a9bd8c791188adc1"
+    },
+    {
+      "path": "skills/salesforce-security/references/skill-index.md",
+      "sha256": "7d2006f44522fda9089b6c54d53ca1a9fb05ce4959bc919ae0020294732d12a3"
+    }
+  ]
+}

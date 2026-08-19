@@ -59,6 +59,7 @@ _ORG_TOUCHING = frozenset(
         "list_custom_fields",
         "describe_object_full",
         "list_orgs",
+        "get_deployment_result",
     }
 )
 

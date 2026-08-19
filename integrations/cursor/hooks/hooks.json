@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "./hooks/sfskills_policy.py",
+        "failClosed": true
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "./hooks/sfskills_policy.py",
+        "failClosed": true
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "./hooks/sfskills_precompact.py"
+      }
+    ]
+  }
+}

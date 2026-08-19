@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,034 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 67 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,034 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 49 run-time agents and 69 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -15,9 +15,9 @@ load. This file tells you how to reach the one page you need.
 - **1,034 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
   Each is a `SKILL.md` plus `references/examples.md`, `gotchas.md`,
   `well-architected.md` and `llm-anti-patterns.md`.
-- **48 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
+- **49 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
   exposed as subagents (see the roster at the bottom of this file).
-- **67 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
+- **69 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
 - **Decision trees** under `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/`,
   which route between technologies *before* a skill is opened.
 - **Canonical templates** under `${CLAUDE_PLUGIN_ROOT}/templates/`.
@@ -139,7 +139,7 @@ every skill it consulted, and never deploys to an org.
 - **apex** — `apex-builder`, `apex-refactorer`, `security-scanner`, `soql-optimizer`, `test-class-generator`, `trigger-consolidator`
 - **architect** — `waf-assessor`
 - **data** — `data-loader-pre-flight`, `data-model-reviewer`, `duplicate-rule-designer`
-- **devops** — `changeset-builder`, `deployment-risk-scorer`, `release-train-planner`, `sandbox-strategy-designer`
+- **devops** — `changeset-builder`, `deployment-failure-triager`, `deployment-risk-scorer`, `release-train-planner`, `sandbox-strategy-designer`
 - **flow** — `flow-analyzer`, `flow-builder`, `flow-orchestrator-designer`
 - **integration** — `bulk-migration-planner`, `integration-catalog-builder`
 - **lwc** — `lwc-auditor`, `lwc-builder`, `lwc-debugger`

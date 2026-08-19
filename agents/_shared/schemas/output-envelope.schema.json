@@ -33,13 +33,13 @@
     },
     "report_path": {
       "type": "string",
-      "pattern": "^docs/reports/[a-z0-9-]+/.+\\.md$",
-      "description": "Wave 10: the repo-relative path where the human-readable markdown report was written. Convention: docs/reports/<agent-id>/<run_id>.md. Required for every runtime agent run \u2014 reports persisted only in chat are not a deliverable."
+      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.md|\\.sfskills/runs/[A-Za-z0-9._-]+/report\\.md)$",
+      "description": "Markdown report path. Canonical: docs/reports/<agent-id>/<run_id>.md. Product Cursor runs may persist under .sfskills/runs/<run_id>/report.md."
     },
     "envelope_path": {
       "type": "string",
-      "pattern": "^docs/reports/[a-z0-9-]+/.+\\.json$",
-      "description": "Wave 10: the repo-relative path where this JSON envelope was serialized. Convention: same stem as report_path, .json suffix. Required so downstream AI tooling and human reviewers can both consume the run."
+      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.json|\\.sfskills/runs/[A-Za-z0-9._-]+/envelope\\.json)$",
+      "description": "JSON envelope path. Same stem as report_path, .json suffix, or product path envelope.json."
     },
     "input_fixture": {
       "type": "object",
@@ -63,6 +63,16 @@
         "MEDIUM",
         "LOW"
       ]
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "partial",
+        "refused",
+        "failed"
+      ],
+      "description": "Phase 1 product extension. Optional on legacy agents. Deployment Failure Triager MUST set this."
     },
     "confidence_rationale": {
       "type": "string",

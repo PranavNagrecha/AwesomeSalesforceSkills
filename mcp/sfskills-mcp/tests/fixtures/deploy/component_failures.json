@@ -1,0 +1,36 @@
+{
+  "status": 0,
+  "result": {
+    "id": "0Af000000000001AAA",
+    "status": "Failed",
+    "done": true,
+    "success": false,
+    "checkOnly": false,
+    "numberComponentErrors": 2,
+    "numberTestErrors": 0,
+    "details": {
+      "componentFailures": [
+        {
+          "componentType": "CustomField",
+          "fullName": "Account.Missing__c",
+          "fileName": "objects/Account.object",
+          "problem": "Entity 'Account' is missing field 'Missing__c' referenced by formula",
+          "problemType": "Error",
+          "lineNumber": 12,
+          "columnNumber": 1,
+          "success": false
+        },
+        {
+          "componentType": "CustomField",
+          "fullName": "Contact.Missing__c",
+          "fileName": "objects/Contact.object",
+          "problem": "Entity 'Contact' is missing field 'Missing__c' referenced by formula",
+          "problemType": "Error",
+          "lineNumber": 8,
+          "columnNumber": 1,
+          "success": false
+        }
+      ]
+    }
+  }
+}

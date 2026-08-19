@@ -40,6 +40,7 @@ RUNTIME_CANARIES = frozenset(
         "lwc-builder",
         "apex-builder",
         "deployment-risk-scorer",
+        "deployment-failure-triager",
         "agentforce-builder",
         "audit-router",
         "field-impact-analyzer",

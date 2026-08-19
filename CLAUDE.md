@@ -198,12 +198,12 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (48)
+### Run-time agents (49)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
 The roster:
-- **Developer + architecture (16)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/build-agentforce-action`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`.
+- **Developer + architecture (17)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/triage-deployment`, `/build-agentforce-action`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`.
 - **Admin accelerators — Tier 1 (14)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/preflight-load`, `/design-duplicate-rule`, `/design-assignment-rules`, `/configure-business-hours`, `/author-config-workbook`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-path`, `/map-process-flow`.
 - **Strategic — Tier 2 (7)** — `/review-data-model`, `/catalog-integrations`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`.
 - **Vertical + governance — Tier 3 (11)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/migrate-profile-to-permset`, `/diff-users`, `/design-omnistudio`.

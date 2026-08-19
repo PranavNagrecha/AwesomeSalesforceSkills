@@ -44,6 +44,17 @@ class SearchSkillTest(unittest.TestCase):
         self.assertIn("error", result)
         self.assertEqual(result["skills"], [])
 
+    def test_missing_index_is_explicit(self) -> None:
+        from unittest import mock
+
+        missing = Path("/tmp/sfskills-no-lexical-index/lexical.sqlite")
+        with mock.patch("sfskills_mcp.skills.paths.lexical_index_path", return_value=missing):
+            result = skills.search_skill("apex trigger")
+        self.assertEqual(result.get("error"), "index_missing")
+        self.assertEqual(result.get("index_status"), "index_missing")
+        self.assertFalse(result.get("has_coverage"))
+        self.assertEqual(result.get("skills"), [])
+
 
 class GetSkillTest(unittest.TestCase):
     def test_returns_full_record_for_known_skill(self) -> None:

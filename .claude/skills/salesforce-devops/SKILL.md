@@ -77,6 +77,7 @@ Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
 - `changeset-builder` — Build or validate a deployment Change Set manifest
+- `deployment-failure-triager` — Diagnose an existing Salesforce deploy failure
 - `deployment-risk-scorer` — Risk-score a change set before deploy
 - `release-train-planner` — Plan or audit a Salesforce release train
 - `sandbox-strategy-designer` — Design or audit sandbox + scratch-org strategy
