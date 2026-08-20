@@ -9,9 +9,9 @@ Living document for branch `product/sfskills-v2-local`. Updated at M6 local RC p
 | Branch | `product/sfskills-v2-local` |
 | Original baseline SHA | `774d666d191a01682610149cb2927bcd6365fe82` |
 | Inherited product commit | `77f559923` — `chore(v2): preserve inherited pre-spec product implementation` |
-| M0 tag | `sfskills-v2-m0-spec-adopted` → `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` |
-| M1 tag | `sfskills-v2-m1-deterministic-core` → `336ab80ce3edf304ed12516a1dd2ed9540de116c` |
-| M2 tag | `sfskills-v2-m2-triage` → `0e0bc9534` |
+| M0 tag | `sfskills-v2-m0-spec-adopted` → `70637852430a5f519efe4e5e64db4a2e091ba3c4` |
+| M1 tag | `sfskills-v2-m1-deterministic-core` → `b4fcbeae948f17601677ba1b9985d2566028129f` |
+| M2 tag | `sfskills-v2-m2-triage` → `bbd9dfd0bcc621958a65bcfa6f846e9c3bdcbf07` |
 | M3 tag | `sfskills-v2-m3-behavioral-qa` |
 | M4 tag | `sfskills-v2-m4-flagship` |
 | M5 tag | `sfskills-v2-m5-beta-portfolio` |
