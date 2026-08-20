@@ -272,9 +272,8 @@ def _capture_git_evidence(stage: Path, baseline: str, head: str, milestone: str)
     git_dir.mkdir(parents=True, exist_ok=True)
 
     bundle_path = git_dir / "repo.bundle"
-    revspec = f"{baseline}..{head}"
     proc = _run_git(
-        ["bundle", "create", str(bundle_path), revspec, head, baseline],
+        ["bundle", "create", str(bundle_path), head, f"^{baseline}", baseline],
         check=False,
     )
     if proc.returncode != 0:
@@ -689,7 +688,7 @@ python3 scripts/build_cursor_plugin.py --check
 The packer prefers a bounded bundle:
 
 ```bash
-git bundle create repo.bundle {baseline}..{head} {head} {baseline}
+git bundle create repo.bundle {head} ^{baseline} {baseline}
 git bundle verify repo.bundle
 ```
 
