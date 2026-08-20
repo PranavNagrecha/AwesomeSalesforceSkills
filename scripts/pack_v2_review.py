@@ -275,12 +275,14 @@ def _capture_git_evidence(stage: Path, baseline: str, head: str, milestone: str)
     if current_head != head:
         raise PackError(f"pack head {head} != current HEAD {current_head}")
 
+    rev_proc = _run_git(["rev-list", "--reverse", f"{baseline}..{head}"], check=True)
+    commits = [line for line in rev_proc.stdout.splitlines() if line.strip()]
+    if not commits:
+        raise PackError(f"no commits between baseline {baseline} and head {head}")
+
     bundle_path = git_dir / "repo.bundle"
-    # Use HEAD (not the raw SHA) as the positive ref: some Git builds refuse
-    # `bundle create <sha> ^baseline baseline` with "empty bundle" even when
-    # the commit range is non-empty.
     proc = _run_git(
-        ["bundle", "create", str(bundle_path), "HEAD", f"^{baseline}", baseline],
+        ["bundle", "create", str(bundle_path), *commits, baseline, "HEAD"],
         check=False,
     )
     if proc.returncode != 0:
@@ -692,15 +694,16 @@ python3 scripts/build_cursor_plugin.py --check
 
 ## Bundle strategy
 
-The packer prefers a bounded bundle:
+The packer writes a self-contained bundle by enumerating every commit after
+the baseline, then appending the baseline commit and HEAD ref:
 
 ```bash
-git bundle create repo.bundle HEAD ^{baseline} {baseline}
+git rev-list --reverse {baseline}..{head}
+git bundle create repo.bundle <commits...> {baseline} HEAD
 git bundle verify repo.bundle
 ```
 
-This includes the commit range plus explicit baseline and head objects so reviewers
-can reconstruct offline without a full `git bundle create --all` history export.
+Reviewers can `git clone git/repo.bundle` without prerequisite history on disk.
 
 ## Source archive
 
@@ -716,7 +719,7 @@ python3 scripts/pack_v2_review.py --validate /path/to/review.zip
     _write_text(stage / "README.md", text)
 
 
-def _run_reconstruction_smoke(stage: Path, head: str) -> None:
+def _run_reconstruction_smoke(stage: Path, head: str, milestone: str) -> None:
     bundle = stage / "git" / "repo.bundle"
     smoke_dir = stage / "tests" / "commands" / "reconstructed-smoke"
     with tempfile.TemporaryDirectory(prefix="sfskills-v2-reconstruct-") as tmp:
@@ -996,7 +999,7 @@ def pack(
                 },
             )
 
-    _run_reconstruction_smoke(stage, head)
+    _run_reconstruction_smoke(stage, head, milestone)
 
     secret_ok = _run_security_checks(stage)
     if not secret_ok:

@@ -94,7 +94,11 @@ def main() -> int:
         ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=False
     ).stdout.strip()
     baseline = subprocess.run(
-        ["git", "rev-parse", BASELINE_TAG], cwd=ROOT, capture_output=True, text=True, check=False
+        ["git", "rev-parse", f"{BASELINE_TAG}^{{commit}}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
     ).stdout.strip()
 
     tests = [
