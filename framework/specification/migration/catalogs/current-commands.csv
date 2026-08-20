@@ -4,6 +4,7 @@ analyze-field-impact,commands/analyze-field-impact.md,field-impact-analyzer,P04,
 analyze-flow,commands/analyze-flow.md,flow-analyzer,P05,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 architect-perms,commands/architect-perms.md,permission-set-architect,P03;P07,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 assess-org,commands/assess-org.md,org-assessor,P10,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+assess-org-health,commands/assess-org-health.md,org-health-assessor-v2,P10,promote-native-product-command,true,Primary P10 entry command.
 assess-waf,commands/assess-waf.md,waf-assessor,P10,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 audit-case-escalation,commands/audit-case-escalation.md,audit-router,P05;P10,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 audit-lwc,commands/audit-lwc.md,lwc-auditor,P04;P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
@@ -22,6 +23,7 @@ build-flow,commands/build-flow.md,flow-builder,,preserve-legacy-command,false,Do
 build-lwc,commands/build-lwc.md,lwc-builder,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 build-skills,commands/build-skills.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
 catalog-integrations,commands/catalog-integrations.md,integration-catalog-builder,P08,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+compare-orgs,commands/compare-orgs.md,multi-org-drift-analyzer,P12,promote-native-product-command,true,Primary P12 entry command.
 configure-business-hours,commands/configure-business-hours.md,business-hours-and-holidays-configurator,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 consolidate-triggers,commands/consolidate-triggers.md,trigger-consolidator,P05,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 debug-lwc,commands/debug-lwc.md,lwc-debugger,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
@@ -54,18 +56,26 @@ new-skill,commands/new-skill.md,skill-builder,,preserve-maintainer-command,false
 onboard-source,commands/onboard-source.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
 optimize-soql,commands/optimize-soql.md,soql-optimizer,P04;P05;P10,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 plan-bulk-migration,commands/plan-bulk-migration.md,bulk-migration-planner,P09,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+plan-metadata-change,commands/plan-metadata-change.md,change-impact-planner,P04,promote-native-product-command,true,Primary P04 entry command.
 plan-release-train,commands/plan-release-train.md,release-train-planner,P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 preflight-load,commands/preflight-load.md,data-loader-pre-flight,P09,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+profile-automation,commands/profile-automation.md,automation-transaction-profiler,P05,promote-native-product-command,true,Primary P05 entry command.
+reconcile-data-load,commands/reconcile-data-load.md,data-migration-reconciler,P09,promote-native-product-command,true,Primary P09 entry command.
 refactor-apex,commands/refactor-apex.md,apex-refactorer,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 release-notes,commands/release-notes.md,release-planner,P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 request-skill,commands/request-skill.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
 review,commands/review.md,code-reviewer,P04;P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 review-agentforce-action,commands/review-agentforce-action.md,agentforce-action-reviewer,P11,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+review-agentforce-agent,commands/review-agentforce-agent.md,agentforce-quality-engineer,P11,promote-native-product-command,true,Primary P11 entry command.
 review-data-model,commands/review-data-model.md,data-model-reviewer,P04;P10,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
+review-release-readiness,commands/review-release-readiness.md,release-readiness-reviewer,P06,promote-native-product-command,true,Primary P06 entry command.
+review-security-posture,commands/review-security-posture.md,security-posture-reviewer,P07,promote-native-product-command,true,Primary P07 entry command.
 run-fit-gap,commands/run-fit-gap.md,fit-gap-analyzer,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 scan-security,commands/scan-security.md,security-scanner,P07,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 score-deployment,commands/score-deployment.md,deployment-risk-scorer,P01;P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 sfskills-doctor,commands/sfskills-doctor.md,,,promote-native-framework-command,true,Framework doctor/install verification; not a legacy alias.
 sync-upstream-skills,commands/sync-upstream-skills.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
-triage-deployment,commands/triage-deployment.md,deployment-failure-triager,P01,promote-native-product-command,true,Primary P01 entry command; requires independent review and read-only broker.
 triage-apex-tests,commands/triage-apex-tests.md,apex-test-failure-triager,P02,promote-native-product-command,true,Primary P02 entry command; requires independent review and read-only broker.
+triage-deployment,commands/triage-deployment.md,deployment-failure-triager,P01,promote-native-product-command,true,Primary P01 entry command; requires independent review and read-only broker.
+triage-integration,commands/triage-integration.md,integration-incident-triager,P08,promote-native-product-command,true,Primary P08 entry command.
+why-cant-user,commands/why-cant-user.md,access-path-explainer,P03,promote-native-product-command,true,Primary P03 entry command.

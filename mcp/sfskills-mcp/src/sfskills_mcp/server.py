@@ -64,7 +64,7 @@ from typing import Any
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.types import ToolAnnotations
 
-from . import admin, agents, apex_test, deploy, dev_org, library, meta, org, paths, probes, prompts, resources, routing, skills
+from . import admin, agents, apex_test, deploy, dev_org, library, meta, org, paths, probes, product_evidence, prompts, resources, routing, skills
 
 
 # Reusable annotation profiles. The MCP spec lets clients (Cursor, Cline,
@@ -653,6 +653,86 @@ def build_server() -> FastMCP:
             cursor=cursor,
             project_dir=project_dir,
         )
+
+    @mcp.tool(
+        name="get_user_access_evidence",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P03 access-path evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_user_access_evidence(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_user_access_evidence(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_component_dependency_evidence",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P04 component-dependency evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_component_dependency_evidence(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_component_dependency_evidence(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_automation_inventory",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P05 automation inventory from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_automation_inventory(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_automation_inventory(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_flow_test_result",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P06 flow-test / release-readiness evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_flow_test_result(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_flow_test_result(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_code_analysis_result",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P07 code-analysis / security-posture evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_code_analysis_result(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_code_analysis_result(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_integration_config_summary",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P08 integration-config evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_integration_config_summary(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_integration_config_summary(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_data_load_result",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P09 data-load result evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_data_load_result(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_data_load_result(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_org_snapshot_manifest",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P10 org-snapshot manifest from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_org_snapshot_manifest(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_org_snapshot_manifest(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="get_agentforce_test_result",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P11 Agentforce test evidence from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def get_agentforce_test_result(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.get_agentforce_test_result(result_path=result_path, item_limit=item_limit, cursor=cursor)
+
+    @mcp.tool(
+        name="compare_org_snapshots",
+        annotations=_ANN_ORG_READ,
+        description="Read-only P12 org-snapshot comparison from a captured JSON fixture (result_path). Bounded to 32 KiB.",
+    )
+    def compare_org_snapshots(result_path: str, item_limit: int = 100, cursor: str | None = None) -> dict[str, Any]:
+        return product_evidence.compare_org_snapshots(result_path=result_path, item_limit=item_limit, cursor=cursor)
 
     @mcp.tool(
         name="list_deprecated_redirects",

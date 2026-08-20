@@ -1,6 +1,6 @@
 # SfSkills V2 — current repository state
 
-Living document for branch `product/sfskills-v2-local`. Updated at M1 deterministic core integration.
+Living document for branch `product/sfskills-v2-local`. Updated at M6 local RC packaging.
 
 ## Git
 
@@ -9,71 +9,62 @@ Living document for branch `product/sfskills-v2-local`. Updated at M1 determinis
 | Branch | `product/sfskills-v2-local` |
 | Original baseline SHA | `774d666d191a01682610149cb2927bcd6365fe82` |
 | Inherited product commit | `77f559923` — `chore(v2): preserve inherited pre-spec product implementation` |
-| M0 specification commit | `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` — see `docs/product-v2/milestones/m0-spec-adoption.md` |
-| M0 tag | `sfskills-v2-m0-spec-adopted` |
-| M1 deterministic core | `336ab80ce3edf304ed12516a1dd2ed9540de116c` — see `docs/product-v2/milestones/m1-deterministic-core.md` |
-| M1 tag | `sfskills-v2-m1-deterministic-core` |
+| M0 tag | `sfskills-v2-m0-spec-adopted` → `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` |
+| M1 tag | `sfskills-v2-m1-deterministic-core` → `336ab80ce3edf304ed12516a1dd2ed9540de116c` |
+| M2 tag | `sfskills-v2-m2-triage` → `0e0bc9534` |
+| M3 tag | `sfskills-v2-m3-behavioral-qa` |
+| M4 tag | `sfskills-v2-m4-flagship` |
+| M5 tag | `sfskills-v2-m5-beta-portfolio` |
+| RC tag | `sfskills-v2-rc1-local` |
 
-## Temporary script disposition (M0 cleanup)
-
-All six `scripts/_tmp_*.py` files were **deleted** as disposable scratch. None contained unique logic absent from canonical modules.
-
-| File | Decision |
-| --- | --- |
-| `_tmp_cherry.py` | Deleted — git cherry-pick helper only |
-| `_tmp_commit_inspector.py` | Deleted — one-off staging helper superseded by selective commits |
-| `_tmp_copy_inspector_addon.py` | Deleted — copy helper; canonical files already in tree |
-| `_tmp_isolate_test_phase1.py` | Deleted — test isolation scratch |
-| `_tmp_pack_inspector_review.py` | Deleted — ad-hoc review ZIP builder; superseded by `pack_v2_review.py` |
-| `_tmp_restore_p1.py` | Deleted — stash restore helper only |
-
-## Inventory (committed M0 tree)
+## Inventory (committed tree)
 
 | Artifact class | Live | Ledger | Notes |
 | --- | ---: | ---: | --- |
 | Skill packages | 1034 | 1034 | legacy knowledge substrate |
-| Canonical agents | 77 | 77 | includes inherited `deployment-failure-triager` |
-| Slash commands | 69 | 69 | includes inherited `triage-deployment`, `sfskills-doctor` |
-| MCP tools | 40 | 40 | includes `get_deployment_result`, `get_apex_test_run` |
+| Canonical agents | 88 | 88 | includes P01–P12 product agents |
+| Slash commands | 80 | 80 | includes P01–P12 product commands |
+| MCP tools | 50 | 50 | includes product evidence broker tools |
 
 Reconciliation report: `docs/product-v2/migration-reconciliation.md`
 
-### Capability classes (not product completion)
+## Product qualification (truthful)
 
-- **Legacy repository capabilities** — 1034 skills, 67 legacy commands, 38 baseline MCP tools, 76 baseline agents
-- **Inherited partial V2 capabilities** — P01 pipeline, project inspector, Cursor plugin surfaces (commit `77f559923`); **partial, unqualified**
-- **Specification-defined future capabilities** — P02–P12 product definitions under `framework/specification/products/`
-- **Implemented and qualified products** — none at M0
+| Product | Status | Qualification |
+| --- | --- | --- |
+| P01 Deployment Failure Triage | implemented | fixture-qualified (M2); host smoke `not_run` |
+| P02 Apex Test Failure Triage | implemented | fixture-qualified (M2); host smoke `not_run` |
+| P03 Access Path Explainer | implemented | fixture-beta; scratch `not_run` |
+| P04 Change Impact Planner | implemented | fixture-beta |
+| P05 Automation Transaction Profiler | implemented | fixture-beta |
+| P06 Release Readiness Review | implemented | fixture-beta |
+| P07 Security Posture Review | implemented | fixture-beta |
+| P08 Integration Incident Triage | implemented | fixture-beta |
+| P09 Data Migration Reconciliation | implemented | fixture-beta |
+| P10 Org Health Assessment | implemented | fixture-beta |
+| P11 Agentforce Quality Engineer | implemented | fixture-beta |
+| P12 Multi-Org Drift Analysis | implemented | fixture-beta |
 
-## Inherited product work (commit `77f559923`)
+Overall release posture: **local RC (beta)** — fixture gates pass; Cursor host smoke, live read-only org, and scratch-org behavioral QA recorded as `not_run`.
 
-Status: **inherited; partial; unqualified; subject to M1/M2 reconciliation.**
+## Framework core
 
-Includes `pipelines/product/`, project inspector, deployment triager agent/command, Cursor integrations, `pack_v2_review.py`, and 49 product tests. Does **not** claim P01 completion, host smoke, live-org verification, or release readiness.
+- Spec: `framework/specification/` (SFAEF 0.9.0-draft)
+- Deterministic core: `pipelines/framework/core/`
+- Validator: `python3 scripts/validate_framework.py`
+- Review ZIP: `python3 scripts/capture_v2_rc_evidence.py`
 
-## M0 specification adoption
-
-- Imported SFAEF **0.9.0-draft** under `framework/specification/`
-- Deliberate import deviations: `docs/product-v2/spec-deviations.md`
-- Repo validator: `python3 scripts/validate_framework.py`
-- Traceability: `docs/product-v2/requirement-traceability.csv`
-- Evidence: `.sfskills/v2-evidence/m0/`
-
-## M1 deterministic core
-
-- `pipelines/framework/core/` — kernel bridge, run session, envelope v2, run bundle, review contract, product adapters
-- Reference kernel path: `framework/specification/reference-kernel/` (imported with M0 spec)
-- Tests: 13 framework tests (4 validate + 9 core conformance); 49 product tests unchanged
-- Evidence: `.sfskills/v2-evidence/m1/`
-
-## Baseline deviations (documented, not hidden)
+## Baseline deviations
 
 | Check | Classification | Notes |
 | --- | --- | --- |
-| `export_skills.py --check` | advisory | Aider `CONVENTIONS.md` hash drift; verified unchanged vs baseline SHA `774d666d1` — see `.sfskills/v2-evidence/m0/export-drift/` |
-| `validate_repo.py --agents` | advisory | 12 warnings (skill-read ceilings, decision-tree unreachable questions) |
+| `export_skills.py --check` | advisory | Aider hash drift unchanged vs baseline |
+| Cursor host smoke | not_run | checklist at `docs/product-v2/cursor-smoke-checklist.md` |
+| Scratch-org QA | not_run | guards tested; `qa/scratch/` |
 
-## Deferred
+## Not in this release
 
-- **M2** — P02 Apex test triage, Cursor host smoke for P01/P02, P01 qualification path
-- **M3–M6** — additional products, scratch QA, flagship products, RC
+- V2.1 Change Studio
+- V2.2 Governed Operations
+- Public Cursor Marketplace publication
+- Push / PR / remote mutation

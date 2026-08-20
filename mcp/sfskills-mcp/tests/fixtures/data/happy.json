@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "expected": 100,
+    "loaded": 97,
+    "rejects": [
+      {
+        "name": "Account-row-14",
+        "message": "DUPLICATE_VALUE: External_Id__c"
+      }
+    ]
+  }
+}

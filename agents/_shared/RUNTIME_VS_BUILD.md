@@ -25,11 +25,11 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (50)
+## Run-time agents (60)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Developer + architecture tier (18)
+### Developer + architecture tier (28)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -50,6 +50,16 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `changeset-builder` | DevOps | Change set manifest + deployment checklist | `/build-changeset` |
 | `flow-orchestrator-designer` | Flow | Flow Orchestrator design + stage / step map | `/design-flow-orchestrator` |
 | `automation-migration-router` | Flow / Apex | Automation inventory → WFR/PB-to-Flow migration plan | `/automation-migration-router` |
+| `access-path-explainer` | Security / Admin | Layered explanation of why a user can or cannot perform an operation | `/why-cant-user` |
+| `change-impact-planner` | Admin / DevOps | Direct and transitive impact of a proposed metadata change | `/plan-metadata-change` |
+| `automation-transaction-profiler` | Flow / Apex | Save-order automation inventory and recursion/DML risk | `/profile-automation` |
+| `release-readiness-reviewer` | DevOps | Evidence-backed go/no-go for an explicit release scope | `/review-release-readiness` |
+| `security-posture-reviewer` | Security | Scoped access/code/session/integration posture findings | `/review-security-posture` |
+| `integration-incident-triager` | Integration | Incident classification from Named Credential and event evidence | `/triage-integration` |
+| `data-migration-reconciler` | Data | Load reject/count reconciliation without writing records | `/reconcile-data-load` |
+| `org-health-assessor-v2` | Architect | Trusted/Easy/Adaptable health roadmap from a snapshot | `/assess-org-health` |
+| `agentforce-quality-engineer` | Agentforce | Agent topics/actions/tests/guardrails review | `/review-agentforce-agent` |
+| `multi-org-drift-analyzer` | Architect / DevOps | Expected vs dangerous differences between two explicit snapshots | `/compare-orgs` |
 
 ### Admin accelerators — Tier 1 (14)
 

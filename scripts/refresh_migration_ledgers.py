@@ -24,6 +24,23 @@ V2_AGENT_DISPOSITIONS: dict[str, tuple[str, str, str, str, str]] = {
         "promote-native-product-agent",
         "Export as focused Cursor subagent for P01; not a legacy alias.",
     ),
+    "apex-test-failure-triager": (
+        "runtime",
+        "stable",
+        "P02",
+        "promote-native-product-agent",
+        "Export as focused Cursor subagent for P02; not a legacy alias.",
+    ),
+    "access-path-explainer": ("runtime", "stable", "P03", "promote-native-product-agent", "Export as focused Cursor subagent for P03."),
+    "change-impact-planner": ("runtime", "stable", "P04", "promote-native-product-agent", "Export as focused Cursor subagent for P04."),
+    "automation-transaction-profiler": ("runtime", "stable", "P05", "promote-native-product-agent", "Export as focused Cursor subagent for P05."),
+    "release-readiness-reviewer": ("runtime", "stable", "P06", "promote-native-product-agent", "Export as focused Cursor subagent for P06."),
+    "security-posture-reviewer": ("runtime", "stable", "P07", "promote-native-product-agent", "Export as focused Cursor subagent for P07."),
+    "integration-incident-triager": ("runtime", "stable", "P08", "promote-native-product-agent", "Export as focused Cursor subagent for P08."),
+    "data-migration-reconciler": ("runtime", "stable", "P09", "promote-native-product-agent", "Export as focused Cursor subagent for P09."),
+    "org-health-assessor-v2": ("runtime", "stable", "P10", "promote-native-product-agent", "Export as focused Cursor subagent for P10."),
+    "agentforce-quality-engineer": ("runtime", "stable", "P11", "promote-native-product-agent", "Export as focused Cursor subagent for P11."),
+    "multi-org-drift-analyzer": ("runtime", "stable", "P12", "promote-native-product-agent", "Export as focused Cursor subagent for P12."),
 }
 
 V2_COMMAND_DISPOSITIONS: dict[str, tuple[str, str, str, str]] = {
@@ -41,6 +58,23 @@ V2_COMMAND_DISPOSITIONS: dict[str, tuple[str, str, str, str]] = {
         "true",
         "Framework doctor/install verification; not a legacy alias.",
     ),
+    "triage-apex-tests": (
+        "apex-test-failure-triager",
+        "P02",
+        "promote-native-product-command",
+        "true",
+        "Primary P02 entry command; requires independent review and read-only broker.",
+    ),
+    "why-cant-user": ("access-path-explainer", "P03", "promote-native-product-command", "true", "Primary P03 entry command."),
+    "plan-metadata-change": ("change-impact-planner", "P04", "promote-native-product-command", "true", "Primary P04 entry command."),
+    "profile-automation": ("automation-transaction-profiler", "P05", "promote-native-product-command", "true", "Primary P05 entry command."),
+    "review-release-readiness": ("release-readiness-reviewer", "P06", "promote-native-product-command", "true", "Primary P06 entry command."),
+    "review-security-posture": ("security-posture-reviewer", "P07", "promote-native-product-command", "true", "Primary P07 entry command."),
+    "triage-integration": ("integration-incident-triager", "P08", "promote-native-product-command", "true", "Primary P08 entry command."),
+    "reconcile-data-load": ("data-migration-reconciler", "P09", "promote-native-product-command", "true", "Primary P09 entry command."),
+    "assess-org-health": ("org-health-assessor-v2", "P10", "promote-native-product-command", "true", "Primary P10 entry command."),
+    "review-agentforce-agent": ("agentforce-quality-engineer", "P11", "promote-native-product-command", "true", "Primary P11 entry command."),
+    "compare-orgs": ("multi-org-drift-analyzer", "P12", "promote-native-product-command", "true", "Primary P12 entry command."),
 }
 
 
@@ -83,6 +117,17 @@ V2_MCP_TOOL_DISPOSITIONS: dict[str, tuple[str, str, str, str]] = {
         "wrap-as-normalized-evidence",
         "P01 typed deployment evidence; broker-internal only.",
     ),
+    "get_apex_test_run": ("get_apex_test_run", "_ANN_ORG_READ", "P02", "wrap-as-normalized-evidence", "P02 typed Apex test evidence; broker-internal only."),
+    "get_user_access_evidence": ("get_user_access_evidence", "_ANN_ORG_READ", "P03", "wrap-as-normalized-evidence", "P03 typed access evidence; broker-internal only."),
+    "get_component_dependency_evidence": ("get_component_dependency_evidence", "_ANN_ORG_READ", "P04", "wrap-as-normalized-evidence", "P04 typed dependency evidence; broker-internal only."),
+    "get_automation_inventory": ("get_automation_inventory", "_ANN_ORG_READ", "P05", "wrap-as-normalized-evidence", "P05 typed automation inventory; broker-internal only."),
+    "get_flow_test_result": ("get_flow_test_result", "_ANN_ORG_READ", "P06", "wrap-as-normalized-evidence", "P06 typed flow-test evidence; broker-internal only."),
+    "get_code_analysis_result": ("get_code_analysis_result", "_ANN_ORG_READ", "P07", "wrap-as-normalized-evidence", "P07 typed code-analysis evidence; broker-internal only."),
+    "get_integration_config_summary": ("get_integration_config_summary", "_ANN_ORG_READ", "P08", "wrap-as-normalized-evidence", "P08 typed integration evidence; broker-internal only."),
+    "get_data_load_result": ("get_data_load_result", "_ANN_ORG_READ", "P09", "wrap-as-normalized-evidence", "P09 typed data-load evidence; broker-internal only."),
+    "get_org_snapshot_manifest": ("get_org_snapshot_manifest", "_ANN_ORG_READ", "P10", "wrap-as-normalized-evidence", "P10 typed org-snapshot evidence; broker-internal only."),
+    "get_agentforce_test_result": ("get_agentforce_test_result", "_ANN_ORG_READ", "P11", "wrap-as-normalized-evidence", "P11 typed Agentforce test evidence; broker-internal only."),
+    "compare_org_snapshots": ("compare_org_snapshots", "_ANN_ORG_READ", "P12", "wrap-as-normalized-evidence", "P12 typed org-compare evidence; broker-internal only."),
 }
 
 

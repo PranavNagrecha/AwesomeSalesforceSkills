@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "release_scope": "sprint-42-package",
+    "tests": [
+      {
+        "name": "Account_Onboarding.happy_path",
+        "message": "Flow test failed: expected Status=Active",
+        "outcome": "Fail"
+      }
+    ]
+  }
+}

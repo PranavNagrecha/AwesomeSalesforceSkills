@@ -82,6 +82,16 @@ EXPECTED_TOOLS = {
     "health",
     "get_deployment_result",
     "get_apex_test_run",
+    "get_user_access_evidence",
+    "get_component_dependency_evidence",
+    "get_automation_inventory",
+    "get_flow_test_result",
+    "get_code_analysis_result",
+    "get_integration_config_summary",
+    "get_data_load_result",
+    "get_org_snapshot_manifest",
+    "get_agentforce_test_result",
+    "compare_org_snapshots",
 }
 
 
@@ -128,14 +138,14 @@ class TestProbeInputValidation(unittest.TestCase):
             self.assertIn("error", result, f"Expected error for scope={bad!r}")
 
     def test_expected_tool_count(self):
-        """Roster is 40 tools after get_apex_test_run (39 + 1).
+        """Roster is 50 tools after P03–P12 primary evidence tools (40 + 10).
 
         Changing this number without updating ``EXPECTED_TOOLS`` is a failure
         by design — adding a tool means a deliberate canon update.
         """
         self.assertEqual(
-            len(EXPECTED_TOOLS), 40,
-            "tool roster is 40 after get_apex_test_run — update EXPECTED_TOOLS if intentional",
+            len(EXPECTED_TOOLS), 50,
+            "tool roster is 50 after P03-P12 evidence tools — update EXPECTED_TOOLS if intentional",
         )
 
 

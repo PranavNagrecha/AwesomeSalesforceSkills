@@ -1,0 +1,14 @@
+{
+  "status": 0,
+  "result": {
+    "object": "Account",
+    "operation": "update",
+    "automations": [
+      {
+        "name": "AccountBeforeUpdate",
+        "message": "Apex trigger before update",
+        "order": 1
+      }
+    ]
+  }
+}

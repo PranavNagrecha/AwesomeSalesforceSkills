@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (50 active runtime agents across developer, admin,
+3. **Run-time agents** (60 active runtime agents across developer, admin,
    strategic, and vertical/governance tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
@@ -104,12 +104,12 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 50 active runtime agents. Fourteen single-mode
+Tier sizes below count the 60 active runtime agents. Fourteen single-mode
 auditors/governors were retired in Wave 3b and now redirect via
 `list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
 returns the active set shown here.
 
-Developer + architecture tier (18):
+Developer + architecture tier (28):
 
 | Agent name                 | What it returns |
 | -------------------------- | --------------- |
@@ -130,6 +130,16 @@ Developer + architecture tier (18):
 | `changeset-builder`        | Change set manifest + deployment checklist |
 | `flow-orchestrator-designer` | Flow Orchestrator design + stage / step map |
 | `automation-migration-router` | WFR/PB automation inventory → Flow migration plan |
+| `access-path-explainer` | Why a user can or cannot perform an operation (layer-by-layer) |
+| `change-impact-planner` | Impact of a proposed metadata change |
+| `automation-transaction-profiler` | Automation that runs for an object operation |
+| `release-readiness-reviewer` | Release-scope go/no-go from evidence |
+| `security-posture-reviewer` | Scoped security posture findings |
+| `integration-incident-triager` | Integration incident classification |
+| `data-migration-reconciler` | Data-load reconciliation without writes |
+| `org-health-assessor-v2` | Org health roadmap from a snapshot |
+| `agentforce-quality-engineer` | Agentforce agent quality review |
+| `multi-org-drift-analyzer` | Compare two explicit org snapshots |
 
 Admin accelerators — Tier 1 (14):
 

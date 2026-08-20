@@ -314,9 +314,10 @@ class PluginPresenceTests(unittest.TestCase):
         ):
             self.assertTrue((src / rel).is_file(), rel)
         agents = list((src / "agents").glob("*.md"))
-        self.assertEqual(len(agents), 6)
+        self.assertEqual(len(agents), 16)
         names = {p.name for p in agents}
         self.assertIn("apex-test-failure-triager.md", names)
+        self.assertIn("access-path-explainer.md", names)
         self.assertNotIn("sf-repo-mapper.md", names)
 
 

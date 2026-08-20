@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/agentforce-quality-engineer/inputs.schema.json",
+  "title": "agentforce-quality-engineer inputs",
+  "type": "object",
+  "properties": {
+    "result_path": {
+      "type": "string",
+      "description": "Path to captured JSON fixture."
+    },
+    "item_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "target_org": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "agent_metadata_path": {
+      "type": "string"
+    },
+    "agent_developer_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "agent_metadata_path",
+    "agent_developer_name"
+  ]
+}

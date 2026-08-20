@@ -423,6 +423,7 @@ def _gather_product_docs(stage: Path) -> None:
     product_dir = stage / "product"
     product_dir.mkdir(parents=True, exist_ok=True)
     mapping = {
+        "current-state.md": ROOT / "docs" / "product-v2" / "current-state.md",
         "phase-plan.md": ROOT / "docs" / "product-v2" / "pr-1-deployment-triage-plan.md",
         "final-report.md": ROOT / "docs" / "product-v2" / "pr-1-final-report.md",
         "architecture.md": ROOT / "docs" / "product-v2" / "cursor-plugin.md",
@@ -741,12 +742,24 @@ def _run_reconstruction_smoke(stage: Path, head: str) -> None:
 
         unittest_cmd = [
             sys.executable,
+            "-B",
             "-m",
             "unittest",
-            "tests.product.test_phase1",
-            "tests.product.test_project_discover",
-            "-v",
+            "discover",
+            "-s",
+            "tests/product",
+            "-p",
+            "test_*.py",
         ]
+        if milestone == "phase1":
+            unittest_cmd = [
+                sys.executable,
+                "-m",
+                "unittest",
+                "tests.product.test_phase1",
+                "tests.product.test_project_discover",
+                "-v",
+            ]
         unittest_rc = _run_command_logged(unittest_cmd, cwd=clone_root, dest_dir=smoke_dir / "unittest", label="unittest")
         plugin_cmd = [sys.executable, str(clone_root / "scripts" / "build_cursor_plugin.py"), "--check"]
         plugin_rc = _run_command_logged(plugin_cmd, cwd=clone_root, dest_dir=smoke_dir / "plugin-check", label="plugin-check")

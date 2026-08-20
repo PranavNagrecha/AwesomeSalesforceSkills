@@ -285,9 +285,9 @@ class Validator:
     def validate_migration_ledgers(self) -> None:
         expected = {
             "migration/catalogs/current-skills.csv": 1034,
-            "migration/catalogs/current-agents.csv": 78,
-            "migration/catalogs/current-commands.csv": 70,
-            "migration/catalogs/current-mcp-tools.csv": 40,
+            "migration/catalogs/current-agents.csv": 88,
+            "migration/catalogs/current-commands.csv": 80,
+            "migration/catalogs/current-mcp-tools.csv": 50,
         }
         for rel, expected_rows in expected.items():
             path = self.root / rel

@@ -1,5 +1,5 @@
 {
-  "count": 40,
+  "count": 60,
   "files": [
     {
       "path": ".cursor-plugin/plugin.json",
@@ -10,12 +10,52 @@
       "sha256": "e82b2b1cdb9d8107bb615fb40af4fe3db19308dca62c89440fd249199bec0e40"
     },
     {
+      "path": "agents/access-path-explainer.md",
+      "sha256": "52310f7474d6cab6bbff07c3a6140ed66c4c01acf2d42c150a8f89e2af500437"
+    },
+    {
+      "path": "agents/agentforce-quality-engineer.md",
+      "sha256": "3f87c7d4be2041848408f8a88346530f846ee3cbfab430a7c3d038a890711374"
+    },
+    {
       "path": "agents/apex-test-failure-triager.md",
       "sha256": "8fbc7cff4300fae6dcd9926aa4961dd43dfacd46fb45f890bc849d9f24591a6a"
     },
     {
+      "path": "agents/automation-transaction-profiler.md",
+      "sha256": "b461a005ab83ea45651a8f00adae6e5bd3b2d0ecb99b1b5bdb72ae29d6d332f6"
+    },
+    {
+      "path": "agents/change-impact-planner.md",
+      "sha256": "4a7923519c5124ae82cbfaa6a94cd25e660b3d3fd2d72de922726f9a5f5a5a24"
+    },
+    {
+      "path": "agents/data-migration-reconciler.md",
+      "sha256": "d770771bb5fa6875c7104e876fe633b4305a7dc6500608e503b3c203e5b88493"
+    },
+    {
       "path": "agents/deployment-failure-triager.md",
       "sha256": "d270afde6a8a32b98be538948712fa59f7a1b0b3b3e8240e0cdcf2269e98b67d"
+    },
+    {
+      "path": "agents/integration-incident-triager.md",
+      "sha256": "4d82e661fb62f84b4067dc3a41b34449669117de451e9224c833221a67b6d91d"
+    },
+    {
+      "path": "agents/multi-org-drift-analyzer.md",
+      "sha256": "a1695ba4056d7ac0f86da23a931f2bbad4add6ff191654708e66e558548eae86"
+    },
+    {
+      "path": "agents/org-health-assessor-v2.md",
+      "sha256": "93d2f290426d2b0796453c34eb469d44bb2212fd7a3f30f19d5b2341773cbd39"
+    },
+    {
+      "path": "agents/release-readiness-reviewer.md",
+      "sha256": "b13b9b2c603b3c9a69ddcafde634b697a2b7fb6b1a5abad99efdb585308e715d"
+    },
+    {
+      "path": "agents/security-posture-reviewer.md",
+      "sha256": "37d84f8c1b329d9916cc988897d115cac635a1a892affb9676cf957206a70674"
     },
     {
       "path": "agents/sf-context-librarian.md",
@@ -34,6 +74,38 @@
       "sha256": "ced8c1d05f5af0719a759dc935378c45ffd6d39747d98ef1448843a3628c0e16"
     },
     {
+      "path": "commands/assess-org-health.md",
+      "sha256": "11ebdd14cae9d71bc382b7cc29402cd77bc9d8df145cd9afb5eeae812b1eaa12"
+    },
+    {
+      "path": "commands/compare-orgs.md",
+      "sha256": "39d2a3eddb0892959fc196a20448f128dfcd345dde4238cb9f64642e9bd8372c"
+    },
+    {
+      "path": "commands/plan-metadata-change.md",
+      "sha256": "f0bb59763e4ab18497f2e8d46ab1aad5f514bf4e0d8e371f3fca6bea8851a0ea"
+    },
+    {
+      "path": "commands/profile-automation.md",
+      "sha256": "41862bd02837e6c02b9615220fe9931738bd0de874a66999eb6885b07c10ea0d"
+    },
+    {
+      "path": "commands/reconcile-data-load.md",
+      "sha256": "d6404b71b94ba8eb8561e9fe2d61ec11db14dda67ddfd85982b1a415c4ab29a5"
+    },
+    {
+      "path": "commands/review-agentforce-agent.md",
+      "sha256": "de73bdfd9dd0e3e21900792626875281c1bd2c952ac583b4a1db4e7aa82e7661"
+    },
+    {
+      "path": "commands/review-release-readiness.md",
+      "sha256": "19904aac3832914d60faf33b22a996ec0bd126ca66f8d8688893729d575f0742"
+    },
+    {
+      "path": "commands/review-security-posture.md",
+      "sha256": "ccd0d4bb8ed68b0ba381ab726a762d29739073510a82a52a954823563e9f6c8c"
+    },
+    {
       "path": "commands/sfskills-doctor.md",
       "sha256": "aa0b4bff3b69738efb9418bdd039f8161ae2519ee594100eb24cfb236bda3ac9"
     },
@@ -44,6 +116,14 @@
     {
       "path": "commands/triage-deployment.md",
       "sha256": "51efd4bd0f3d76d3acfb1da225919c43befda890876f9f9f854e37fe7721f100"
+    },
+    {
+      "path": "commands/triage-integration.md",
+      "sha256": "d038fbe4e1fff266266131c0d8103d41f9196a6280eabf4597af2db94323b637"
+    },
+    {
+      "path": "commands/why-cant-user.md",
+      "sha256": "3b1a3fc3c9f8eb1c5fca3a59d04bdbe2d8176eff4561af3d4734f4abb97d2548"
     },
     {
       "path": "hooks/hooks.json",

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/org-health-assessor-v2/inputs.schema.json",
+  "title": "org-health-assessor-v2 inputs",
+  "type": "object",
+  "properties": {
+    "result_path": {
+      "type": "string"
+    },
+    "item_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "target_org": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "evidence_bundle": {
+      "type": "string"
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "target_org"
+      ]
+    },
+    {
+      "required": [
+        "evidence_bundle"
+      ]
+    },
+    {
+      "required": [
+        "result_path"
+      ]
+    }
+  ]
+}

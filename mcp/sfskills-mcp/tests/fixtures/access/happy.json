@@ -1,0 +1,15 @@
+{
+  "status": 0,
+  "result": {
+    "user": "005000000000001AAA",
+    "resource": "Account.Name",
+    "operation": "read",
+    "layers": [
+      {
+        "layer": "FLS",
+        "decision": "deny",
+        "reason": "Field-level security hidden on Account.Name for the assigned permission set"
+      }
+    ]
+  }
+}

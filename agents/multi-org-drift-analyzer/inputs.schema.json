@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/multi-org-drift-analyzer/inputs.schema.json",
+  "title": "multi-org-drift-analyzer inputs",
+  "type": "object",
+  "properties": {
+    "result_path": {
+      "type": "string",
+      "description": "Path to captured JSON fixture."
+    },
+    "item_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "target_org": {
+      "type": "string"
+    },
+    "project_path": {
+      "type": "string"
+    },
+    "left_org_or_snapshot": {
+      "type": "string"
+    },
+    "right_org_or_snapshot": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "left_org_or_snapshot",
+    "right_org_or_snapshot"
+  ]
+}

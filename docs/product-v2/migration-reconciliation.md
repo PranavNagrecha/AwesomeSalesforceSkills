@@ -8,9 +8,9 @@
 
 | Artifact class | Live | Ledger |
 | --- | ---: | ---: |
-| agents | 78 | 78 |
-| commands | 70 | 70 |
-| mcp_tools | 40 | 40 |
+| agents | 88 | 88 |
+| commands | 80 | 80 |
+| mcp_tools | 50 | 50 |
 | skills | 1034 | 1034 |
 
 ## Deltas

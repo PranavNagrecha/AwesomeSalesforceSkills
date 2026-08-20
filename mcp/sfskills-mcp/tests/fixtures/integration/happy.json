@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "integration": "BillingGateway",
+    "time_window": "2026-08-19T00:00:00Z/2026-08-19T23:59:59Z",
+    "events": [
+      {
+        "name": "CalloutException",
+        "message": "Read timed out after 120000 ms"
+      }
+    ]
+  }
+}

@@ -141,6 +141,16 @@ _MCP_ALLOW_EXACT = frozenset(
         "health",
         "get_deployment_result",
         "get_apex_test_run",
+        "get_user_access_evidence",
+        "get_component_dependency_evidence",
+        "get_automation_inventory",
+        "get_flow_test_result",
+        "get_code_analysis_result",
+        "get_integration_config_summary",
+        "get_data_load_result",
+        "get_org_snapshot_manifest",
+        "get_agentforce_test_result",
+        "compare_org_snapshots",
     }
 )
 

@@ -77,8 +77,8 @@ too, unless rebuilding embeddings is the point. Rebuild them deliberately with
 
 ## Working on agents (not skills)
 
-Agents live under `agents/<slug>/AGENT.md`. There are 77 of them —
-49 active run-time, 14 build-time, 14 deprecated run-time stubs — plus
+Agents live under `agents/<slug>/AGENT.md`. There are 88 of them —
+60 active run-time, 14 build-time, 14 deprecated run-time stubs — plus
 `agents/_shared/`, which is shared material, not an agent. Before editing or
 adding one:
 

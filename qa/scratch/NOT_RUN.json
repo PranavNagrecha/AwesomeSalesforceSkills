@@ -1,0 +1,16 @@
+{
+  "status": "not_run",
+  "milestone": "M3",
+  "suite": "scratch-org-behavioral-qa",
+  "reason": "Scratch-org lab is scaffolded only. No Dev Hub, no org create, no live mutation.",
+  "required_before_run": [
+    "SFSKILLS_SCRATCH_OPT_IN=1",
+    "Dev Hub allowlist match",
+    "versioned scenario fixtures under qa/scratch/scenarios/"
+  ],
+  "never": [
+    "sandbox or production as a scenario target",
+    "expose create/setup scripts as MCP tools",
+    "skip destroy because grading failed"
+  ]
+}

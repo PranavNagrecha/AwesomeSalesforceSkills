@@ -1,0 +1,12 @@
+{
+  "status": 0,
+  "result": {
+    "org_id": "00D000000000001EAA",
+    "signals": [
+      {
+        "name": "DataStorage",
+        "message": "Data storage 92 percent used"
+      }
+    ]
+  }
+}

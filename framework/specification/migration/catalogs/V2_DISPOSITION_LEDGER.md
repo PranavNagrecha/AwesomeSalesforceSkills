@@ -6,9 +6,9 @@ These generated ledgers give every artifact in the uploaded SfSkills snapshot an
 
 - Uploaded archive SHA-256: `not supplied`
 - Skills: 1034
-- Canonical agents: 77
-- Commands: 69
-- MCP tools: 40
+- Canonical agents: 76
+- Commands: 67
+- MCP tools: 38
 
 ## Binding migration rules
 

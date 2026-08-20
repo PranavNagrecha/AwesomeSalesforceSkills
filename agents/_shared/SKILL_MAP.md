@@ -377,6 +377,38 @@ Templates: none. There is no `templates/omnistudio/` directory yet — a real ga
 
 ---
 
+### `access-path-explainer`
+- `security/record-access-troubleshooting`, `admin/sharing-and-visibility`, `security/permission-set-groups-and-muting`
+
+### `change-impact-planner`
+- `admin/field-dependency-and-controlling`, `data/deployment-data-dependencies`, `devops/destructive-changes-deployment`
+
+### `automation-transaction-profiler`
+- `apex/order-of-execution-deep-dive`, `flow/record-triggered-flow-patterns`, `apex/trigger-and-flow-coexistence`
+
+### `release-readiness-reviewer`
+- `devops/pre-deployment-checklist`, `devops/release-management`, `flow/flow-testing`
+
+### `security-posture-reviewer`
+- `security/secure-coding-review-checklist`, `security/org-hardening-and-baseline-config`, `devops/salesforce-code-analyzer`
+
+### `integration-incident-triager`
+- `integration/named-credentials-setup`, `integration/callout-limits-and-async-patterns`, `integration/api-governance-and-rate-limits`
+
+### `data-migration-reconciler`
+- `data/data-reconciliation-patterns`, `data/bulk-api-and-large-data-loads`, `data/external-id-strategy`
+
+### `org-health-assessor-v2`
+- `architect/well-architected-review`, `architect/org-limits-monitoring`, `architect/limits-and-scalability-planning`
+
+### `agentforce-quality-engineer`
+- `agentforce/agent-testing-and-evaluation`, `agentforce/agent-security-review`, `agentforce/agentforce-guardrails`
+
+### `multi-org-drift-analyzer`
+- `architect/multi-org-strategy`, `devops/source-tracking-and-conflict-resolution`, `devops/package-development-strategy`
+
+---
+
 ## MCP tools available to these agents
 
 Existing: `search_skill`, `get_skill`, `describe_org`, `list_custom_objects`, `list_flows_on_object`, `validate_against_org`, `list_agents`, `get_agent`.

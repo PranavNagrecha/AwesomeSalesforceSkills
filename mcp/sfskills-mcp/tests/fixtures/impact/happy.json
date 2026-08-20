@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "component": "CustomField:Account.Industry__c",
+    "proposed_change": "delete",
+    "dependencies": [
+      {
+        "name": "Flow:Account_Industry_Sync",
+        "message": "Record-triggered flow references Account.Industry__c"
+      }
+    ]
+  }
+}

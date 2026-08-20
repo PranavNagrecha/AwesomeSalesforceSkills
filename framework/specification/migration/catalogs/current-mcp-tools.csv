@@ -1,17 +1,27 @@
 tool_id,function,annotations,argument_count,mapped_v2_products,v2_disposition,direct_product_exposure,required_action
+compare_org_snapshots,compare_org_snapshots,_ANN_ORG_READ,,P12,wrap-as-normalized-evidence,false,P12 typed org-compare evidence; broker-internal only.
 describe_object_full,describe_object_full,_ANN_ORG_READ,6,P03;P04;P05;P09;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
 describe_org,describe_org,_ANN_ORG_READ,1,P01;P02;P03;P06;P07;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
 describe_permission_set,describe_permission_set,_ANN_ORG_READ,3,P03;P07;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
 emit_envelope,emit_envelope,_ANN_ENVELOPE,5,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
 get_agent,get_agent,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+get_agentforce_test_result,get_agentforce_test_result,_ANN_ORG_READ,,P11,wrap-as-normalized-evidence,false,P11 typed Agentforce test evidence; broker-internal only.
 get_apex_class,get_apex_class,_ANN_ORG_READ,3,P01;P02;P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+get_apex_test_run,get_apex_test_run,_ANN_ORG_READ,,P02,wrap-as-normalized-evidence,false,P02 typed Apex test evidence; broker-internal only.
+get_automation_inventory,get_automation_inventory,_ANN_ORG_READ,,P05,wrap-as-normalized-evidence,false,P05 typed automation inventory; broker-internal only.
+get_code_analysis_result,get_code_analysis_result,_ANN_ORG_READ,,P07,wrap-as-normalized-evidence,false,P07 typed code-analysis evidence; broker-internal only.
+get_component_dependency_evidence,get_component_dependency_evidence,_ANN_ORG_READ,,P04,wrap-as-normalized-evidence,false,P04 typed dependency evidence; broker-internal only.
+get_data_load_result,get_data_load_result,_ANN_ORG_READ,,P09,wrap-as-normalized-evidence,false,P09 typed data-load evidence; broker-internal only.
 get_decision_tree,get_decision_tree,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
 get_deployment_result,get_deployment_result,_ANN_ORG_READ,,P01,wrap-as-normalized-evidence,false,P01 typed deployment evidence; broker-internal only.
-get_apex_test_run,get_apex_test_run,_ANN_ORG_READ,,P02,wrap-as-normalized-evidence,false,P02 typed Apex test evidence; broker-internal only.
+get_flow_test_result,get_flow_test_result,_ANN_ORG_READ,,P06,wrap-as-normalized-evidence,false,P06 typed flow-test evidence; broker-internal only.
+get_integration_config_summary,get_integration_config_summary,_ANN_ORG_READ,,P08,wrap-as-normalized-evidence,false,P08 typed integration evidence; broker-internal only.
 get_invocation_modes,get_invocation_modes,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
 get_lwc_bundle,get_lwc_bundle,_ANN_ORG_READ,3,P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+get_org_snapshot_manifest,get_org_snapshot_manifest,_ANN_ORG_READ,,P10,wrap-as-normalized-evidence,false,P10 typed org-snapshot evidence; broker-internal only.
 get_skill,get_skill,_ANN_REPO_ONLY,3,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
 get_template,get_template,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+get_user_access_evidence,get_user_access_evidence,_ANN_ORG_READ,,P03,wrap-as-normalized-evidence,false,P03 typed access evidence; broker-internal only.
 health,health,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
 list_agents,list_agents,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
 list_apex_classes,list_apex_classes,_ANN_ORG_READ,5,P01;P02;P04;P06;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.

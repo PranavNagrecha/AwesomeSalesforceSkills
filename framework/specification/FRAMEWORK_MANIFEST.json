@@ -1,14 +1,14 @@
 {
   "counts": {
     "agents": 20,
-    "bytes": 3650994,
+    "bytes": 3655664,
     "commands": 18,
     "context_packs": 12,
     "evidence_tools": 18,
     "files": 529,
-    "legacy_agents_covered": 78,
-    "legacy_commands_covered": 70,
-    "legacy_mcp_tools_covered": 40,
+    "legacy_agents_covered": 88,
+    "legacy_commands_covered": 80,
+    "legacy_mcp_tools_covered": 50,
     "legacy_skills_covered": 1034,
     "products": 12,
     "qa_scenarios": 74,
@@ -890,7 +890,7 @@
     {
       "bytes": 1474,
       "path": "migration/catalogs/V2_DISPOSITION_LEDGER.md",
-      "sha256": "170eda1917e499176680a5a3e7fcfc5b2655654a5cd5997ff6d7b0d816e2f3f7"
+      "sha256": "d9c5db611f91e285ad177807e22f140bada386ceefe52fd14ac5c2db71fdf5bf"
     },
     {
       "bytes": 9083,
@@ -1283,19 +1283,19 @@
       "sha256": "ea1597f8ed1ea15fa01c3cf4ba1d9ca2d740e8831a4b4ae8e58cd68cf746eb6d"
     },
     {
-      "bytes": 16720,
+      "bytes": 18365,
       "path": "migration/catalogs/current-agents.csv",
-      "sha256": "e651bbbacb7ce560106f93150120594ecb5c394ca1e55b078e4bcc8d174cda8f"
+      "sha256": "d91136f7acbab65e2af1a9f8a697ba0f073b436c91f28445cac3e931cb067a8e"
     },
     {
-      "bytes": 13898,
+      "bytes": 15342,
       "path": "migration/catalogs/current-commands.csv",
-      "sha256": "52cbb7dab805fcb2aca49f2851d47b5042e3b727753e67054725869435288ee8"
+      "sha256": "b8c9a5757747ef9033145d47c030c3bc283c11983f07ed6b23ac9a6074ae3d84"
     },
     {
-      "bytes": 7259,
+      "bytes": 8840,
       "path": "migration/catalogs/current-mcp-tools.csv",
-      "sha256": "34de631174a1745d35857d35beff40feb9e25b074b80087daa55789e19327c38"
+      "sha256": "633b344ff8fc33868d03d679fca2a3f0ea2a1b56c371e14d14dd51e387b85617"
     },
     {
       "bytes": 392530,
@@ -2415,7 +2415,7 @@
     {
       "bytes": 19904,
       "path": "scripts/validate_framework_package.py",
-      "sha256": "a81be304b2cd8bd1f765a4281b8d93e46d6af3dfdae33ba28d02798083adb984"
+      "sha256": "fb628f425f1d35a388afe10cfa06a2610aa6e0bda23b1eb55f8f82deb39aa1c5"
     },
     {
       "bytes": 6572,
@@ -2620,7 +2620,7 @@
     {
       "bytes": 7327,
       "path": "tests/test_framework_package.py",
-      "sha256": "807dc96c348e1c0e5d483761d52c39b3e208a3e0b851b09844b70749de4e7179"
+      "sha256": "61b61cd9931997cfd762fd86aa26c0e8e68ac4dbe385e9488779dbba5085e62c"
     },
     {
       "bytes": 807,

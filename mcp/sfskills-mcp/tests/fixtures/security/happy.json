@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "scope": "force-app",
+    "findings": [
+      {
+        "name": "ApexSOQLInjection",
+        "message": "Unbound SOQL concatenation in AccountSelector",
+        "severity": "high"
+      }
+    ]
+  }
+}

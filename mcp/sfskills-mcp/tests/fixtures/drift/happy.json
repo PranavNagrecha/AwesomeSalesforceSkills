@@ -1,0 +1,13 @@
+{
+  "status": 0,
+  "result": {
+    "left": "prod-snapshot",
+    "right": "qa-snapshot",
+    "diffs": [
+      {
+        "name": "CustomField:Account.VIP__c",
+        "message": "Present in left, missing in right"
+      }
+    ]
+  }
+}
