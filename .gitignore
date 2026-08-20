@@ -184,6 +184,9 @@ mcp/sfskills-mcp/dist/
 dist/cursor/
 !integrations/cursor/build-manifest.json
 
+# V2 review packages (regenerate with scripts/capture_v2_rc_evidence.py / pack_v2_review.py)
+dist/reviews/
+
 .intake-reports/
 
 # Session working directories — research dumps, per-wave workflows and resume
