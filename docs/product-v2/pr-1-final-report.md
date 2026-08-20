@@ -4,7 +4,7 @@ Branch: `product/cursor-plugin-deployment-triage` (local commits only; **not pus
 Date: 2026-08-19.
 Baseline: `main` @ `d5f068887`.
 
-This document is the Phase 1 exit report. Apex test triage, scratch-org QA lab, and repo-wide hardening are **not** started.
+This document is the Phase 1 exit report, **updated after the product-owner CHANGES REQUESTED review**. See `docs/product-v2/pr-1-po-review-response.md`. Scratch-org QA lab is still later.
 
 ---
 
@@ -21,7 +21,7 @@ Live retrieve against Excelsior Dev PN required two product fixes: refuse CLI ca
 3. `/triage-deployment` with **either** a deploy-report JSON fixture **or** `job_id` + org alias (`sf org list`) + optional DX `source_path`.
 4. Diagnosis + evidence review. No deploy start/cancel/retry/quick.
 
-Doctor on this machine 2026-08-19: `overall: ok`. Plugin linked at `~/.cursor/plugins/awesome-salesforce-skills`.
+Doctor on this machine 2026-08-19 (post-review): `overall: ok`. Plugin **copied** to `~/.cursor/plugins/local/awesome-salesforce-skills`.
 
 ## 3. Files added, changed, generated, and deleted
 
@@ -36,7 +36,7 @@ Deleted: none on `main`. Probe Apex files were added under the **separate** Exce
 ## 4. Architecture decisions
 
 - Cursor path is a **bounded plugin**, not 1,034 `.mdc` rules. Flat export remains legacy.
-- Five Cursor subagents only; `/triage-deployment` coordinates them. No extra orchestrator.
+- Focused Cursor subagents; `/triage-deployment` coordinates them. Mapping is optional (`sf-project-inspector`). `sf-org-grounder` is `readonly: false` so it can call MCP.
 - Salesforce product path is **report-only**. Job id is mandatory. `--use-most-recent` is forbidden.
 - CLI deploy-cache can return another org’s job; product returns `job_org_mismatch`.
 - `sf project deploy report` requires a DX cwd; optional `project_dir` or bundled empty project.
@@ -50,7 +50,7 @@ Deleted: none on `main`. Probe Apex files were added under the **separate** Exce
 |---|---|
 | `sf-org-grounder` | Fixture or `get_deployment_result`; bounded facts |
 | `sf-context-librarian` | File selection; no diagnosis |
-| `sf-repo-mapper` | Map `full_name` to local path / `line` / `column` |
+| `sf-project-inspector` | Optional: map `full_name` to local path / `line` / `column` when a DX project is found |
 | `deployment-failure-triager` | Grouped diagnosis and remediation **shown not run** |
 | `sf-evidence-reviewer` | Reject unsupported / unsafe claims |
 
@@ -73,6 +73,7 @@ Policy (this run):
 - `bash -c 'sf project deploy start'` → deny
 - `--use-most-recent` → deny
 - MCP `deploy_metadata` → deny
+- unknown MCP (`delete_record`, …) → **deny** (explicit allowlist)
 - `get_deployment_result` without `job_id` → deny
 - report with explicit job id + `--json` → allow
 
@@ -84,7 +85,7 @@ Hooks: `beforeShellExecution` + `beforeMCPExecution`, `failClosed: true`. Cloud 
 
 | Command | Result |
 |---|---|
-| `python3 -m unittest tests.product.test_phase1` | **23 tests OK** (2.84s) |
+| `python3 -m unittest tests.product.test_phase1 tests.product.test_phase2 tests.product.test_project_discover` | **43 tests OK** (post-review) |
 | `cd mcp/sfskills-mcp && python3 -m unittest tests.test_deliverable_contract tests.test_deploy_result` | **21 tests OK** after Output Contract persistence/guardrails added |
 | `cd mcp/sfskills-mcp && python3 -m unittest discover -s tests -p 'test_*.py'` | **First run: 263 tests, 2 FAIL** (`deployment-failure-triager` missing persistence + Scope Guardrails). **Fixed in AGENT.md.** Those two classes now OK; full MCP discover not re-run after the fix (~75s plus ONNX fetch in unrelated tests). |
 | `python3 -m unittest discover -s tests -p 'test_*.py'` | **272 tests OK in 0.38s** — too fast to have executed `tests.product` (that file alone is 2.8s). Treat as a **shallow/other suite**, not as a substitute for `tests.product.test_phase1`. |
@@ -92,7 +93,7 @@ Hooks: `beforeShellExecution` + `beforeMCPExecution`, `failClosed: true`. Cloud 
 | `python3 scripts/build_plugin.py --check` | OK (123 artifacts) |
 | `python3 scripts/build_cursor_plugin.py --check` | OK (37 files) |
 | `python3 scripts/check_doc_counts.py` | OK: 1034 skills, 49 runtime, 39 MCP tools |
-| `python3 scripts/export_skills.py --check` | **FAIL** (unrelated to product intent): aider target `CONVENTIONS.md` overall_hash drift vs `registry/export_manifest.json`. Not updated in this PR. |
+| `python3 scripts/export_skills.py --check` | Baseline `d5f068887` **green**. This branch was red until new slash commands were hashed into `registry/export_manifest.json`; **green** after `--all --manifest`. |
 | `python3 scripts/sfskills_doctor.py --json` | `overall: ok` |
 
 ## 9. Live-org verification run
@@ -113,15 +114,13 @@ Earlier job `0AfVB00000IYjjW0AT` was planted from `.sfskills/qa-excelsior-devpn`
 
 MyServDevPN was not written.
 
-Probe `.cls` files **remain** in the DevPN tree; a full-project deploy will fail until they are deleted or `SfskillsTriageProbeGhost` is added.
+Probe `.cls` files were **deleted** from the DevPN tree (PO P0-6). Tooling query for `SfskillsTriageProbe%` returned **0** Apex classes. Historical job `0AfVB00000IYow50AD` remains retrievable read-only. Do not seed compile-fail classes again for Phase 1.
 
 ## 10. Manual Cursor verification still required
 
-On disk: plugin linked, commands `triage-deployment.md` and `sfskills-doctor.md` present, five subagents present.
+On disk (post-review): plugin **copied** under `~/.cursor/plugins/local/`, commands and subagents present, grounder `readonly: false`.
 
-This **chat cannot Reload Window** or rebind `user-sfskills`. Until reload, slash commands and `get_deployment_result` in **this** MCP session are not the Phase 1 server.
-
-After reload, confirm the slash menu and that MCP `health` is the checkout (1034 skills / 49 runtime / tool `get_deployment_result`), not `~/.cache/sfskills-mcp/latest` 0.4.4.
+This **chat cannot Reload Window**. Global `user-sfskills` in this session still lacks `get_deployment_result`. After reload, confirm Customize, slash menu, and that the **plugin** MCP (not pipx cache) exposes `get_deployment_result`. Checklist: `docs/product-v2/cursor-smoke-checklist.md`.
 
 ## 11. Known limitations
 
@@ -129,7 +128,7 @@ After reload, confirm the slash menu and that MCP `health` is the checkout (1034
 - Aliases with spaces (`Excelsior Dev PN`) fail CLI parse; use `Excelsior-Dev-PN`.
 - Bundled empty DX cwd retrieves jobs but source-tracking warnings are stripped from groups.
 - In-session MCP can stay on a cached wheel until Cursor reloads.
-- `export_skills.py --check` currently fails on aider `CONVENTIONS.md` hash; leftover from outside this product’s intent.
+- Host-UI plugin binding still needs Reload Window.
 
 ## 12. Risks and migration notes
 
@@ -161,13 +160,9 @@ After reload, confirm the slash menu and that MCP `health` is the checkout (1034
 
 ## 14. Items explicitly deferred
 
-- Apex Test Failure Triager
+- Host-UI Reload Window confirmation (Customize, slash menu, plugin MCP)
 - Scratch-org QA lab / general workflow engine / capability graph
 - Backlog v2, decision-tree compiler, migrating all agents to context packs
 - Claude plugin modernization
 - Cursor Marketplace
 - Automated remediation
-- Deleting DevPN probe classes (left for mapping after reload)
-- Rebinding this chat’s MCP to the checkout server (requires Reload Window)
-- Refreshing `registry/export_manifest.json` for aider `CONVENTIONS.md`
-- Re-running the full 263-test MCP discover after the AGENT.md contract fix

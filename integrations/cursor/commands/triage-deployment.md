@@ -8,9 +8,9 @@ description: Diagnose an existing Salesforce deployment failure from a job ID or
 Coordinate these Cursor subagents in order. Pass structured handoffs only (no transcripts):
 
 1. `sf-org-grounder` — fixture file **or** `get_deployment_result(job_id, target_org, project_dir?)`
-2. `sf-context-librarian` — select ≤8 domain skill/reference files (hard limit 12)
-3. `sf-repo-mapper` — map components to the user-supplied DX project path
-4. `deployment-failure-triager` — diagnose
+2. `sf-project-inspector` — **optional** local DX project discovery / file mapping (skippable when standalone)
+3. `sf-context-librarian` — select ≤8 domain skill/reference files (hard limit 12)
+4. `deployment-failure-triager` — diagnose (works without `project_path` / `source_path`)
 5. `sf-evidence-reviewer` — reject unsupported/unsafe claims
 
 Then follow `agents/deployment-failure-triager/AGENT.md` output contract.
@@ -23,7 +23,7 @@ Need **one** of:
 - **B.** Path to `sf project deploy report --json` output
 - **C.** A supported CI deploy-result JSON with the same DeployResult shape
 
-Also ask for the Salesforce DX project path when local mapping is required.
+Optional canonical input: `project_path` (aliases: `repo_path`, `source_path`). When omitted, run project discovery from cwd or bounded workspace roots. `standalone` continues diagnosis without local mapping. `ambiguous` must not guess — ask for `project_path`.
 
 If the user says "latest deploy" or omits a job ID without a file, **refuse**. Do not pass `--use-most-recent`.
 

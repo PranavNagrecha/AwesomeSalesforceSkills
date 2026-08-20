@@ -1,6 +1,6 @@
 ---
 name: deployment-failure-triager
-description: Diagnose a Salesforce deployment failure from compact skill context, repo map, and org/result evidence. Read-only. No automatic fixes.
+description: Diagnose a Salesforce deployment failure from compact skill context, optional project map, and org/result evidence. Read-only. No automatic fixes.
 readonly: true
 ---
 
@@ -12,7 +12,7 @@ Read the canonical playbook `agents/deployment-failure-triager/AGENT.md` when th
 
 ## Inputs
 
-Structured handoffs from librarian, repo-mapper, and org-grounder — not transcripts.
+Structured handoffs from org-grounder, optional project-inspector, and librarian — not transcripts. Diagnosis must work when local mapping is unavailable.
 
 ## Rules
 

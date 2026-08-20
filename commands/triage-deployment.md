@@ -16,7 +16,7 @@ B. path to sf project deploy report --json
 C. CI DeployResult JSON with the same shape
 ```
 
-Optional: Salesforce DX project path for local mapping (passed as `project_dir` to `get_deployment_result`). Use the org alias from `sf org list` (for example `Excelsior-Dev-PN`, not a spaced display name).
+Optional canonical input: `project_path` (aliases: `repo_path`, `source_path`). Passed as `project_dir` to `get_deployment_result` when a DX project is known. Discovery from cwd / workspace roots is also supported; standalone mode is valid and diagnosis still runs. If discovery is `ambiguous`, stop guessing and ask for `project_path`.
 
 If the user says "the last deploy" without a job id or file, STOP.
 
@@ -30,7 +30,11 @@ Read `agents/deployment-failure-triager/AGENT.md` and only the skills listed und
 
 ## Step 3 — Execute
 
-Use Cursor subagents when this command runs inside the native plugin: org-grounder → context-librarian → repo-mapper → triager → evidence-reviewer. Pass structured handoffs, not transcripts.
+Use Cursor subagents when this command runs inside the native plugin:
+
+`org-grounder` → optional `project-inspector` → `context-librarian` → `deployment-failure-triager` → `evidence-reviewer`.
+
+Pass structured handoffs, not transcripts. Local project mapping is optional; do not block diagnosis when no DX project is found.
 
 ---
 

@@ -88,6 +88,61 @@ _MCP_DENY_SUBSTRINGS = (
     "execute_anonymous",
 )
 
+# Read-only SfSkills MCP tools permitted in product hooks. Keep in sync with
+# mcp/sfskills-mcp/tests/test_tools.py EXPECTED_TOOLS minus mutating tools.
+_MCP_ALLOW_EXACT = frozenset(
+    {
+        # Skill library
+        "search_skill",
+        "get_skill",
+        # Live-org core
+        "describe_org",
+        "list_custom_objects",
+        "list_flows_on_object",
+        "validate_against_org",
+        # Live-org admin metadata
+        "list_validation_rules",
+        "list_permission_sets",
+        "describe_permission_set",
+        "list_record_types",
+        "list_named_credentials",
+        "list_approval_processes",
+        "tooling_query",
+        # Probes
+        "probe_apex_references",
+        "probe_flow_references",
+        "probe_matching_rules",
+        "probe_permset_shape",
+        "probe_automation_graph",
+        # Agents
+        "list_agents",
+        "get_agent",
+        # Meta / session bootstrap
+        "list_deprecated_redirects",
+        "get_invocation_modes",
+        "emit_envelope",
+        # Tier C — dev-org tools
+        "list_apex_classes",
+        "get_apex_class",
+        "list_apex_triggers",
+        "list_lwc_bundles",
+        "get_lwc_bundle",
+        "list_custom_fields",
+        "describe_object_full",
+        "list_orgs",
+        # Tier C — knowledge-search + routing
+        "search_agents",
+        "search_templates",
+        "search_decision_trees",
+        "get_template",
+        "get_decision_tree",
+        "suggest_agent",
+        # Tier D — production polish
+        "health",
+        "get_deployment_result",
+    }
+)
+
 _SF_DATA_MUTATE = {"create", "update", "delete", "upsert", "import", "export", "bulk"}
 
 
@@ -204,7 +259,14 @@ def _evaluate_sf(argv: list[str]) -> dict[str, str]:
     if rest[:1] == ["data"] and len(rest) > 1 and rest[1] in _SF_DATA_MUTATE:
         return _deny(f"sf data {rest[1]} is not allowed")
     if rest[:1] == ["apex"] and rest[1:2] and rest[1] in {"run", "execute"}:
-        return _deny("anonymous / Apex execution is not allowed")
+        return _deny("anonymous / Apex execution / test start is not allowed")
+    if rest[:3] == ["apex", "get", "test"] or rest[:4] == ["force", "apex", "test", "report"]:
+        flags = _flag_map(rest)
+        if not flags.get("--test-run-id") and not flags.get("-i"):
+            return _deny("sf apex get test requires --test-run-id")
+        if "--json" not in rest and not any(t.startswith("--json") for t in rest):
+            return _deny("sf apex get test must include --json")
+        return _allow("read-only apex test report")
     if rest[:1] == ["package"] and rest[1:2] and rest[1] in {"install", "uninstall"}:
         return _deny("package install/uninstall is not allowed")
 
@@ -254,9 +316,15 @@ def _evaluate_python(argv: list[str]) -> dict[str, str]:
                 break
         else:
             return _deny("python invocation has no script")
-    base = script.replace("\\", "/").rsplit("/", 1)[-1]
+    normalized = script.replace("\\", "/")
+    base = normalized.rsplit("/", 1)[-1]
     if base in _ALLOWED_PYTHON_SCRIPTS:
         return _allow(f"product script {base}")
+    # Authoring CLIs in this checkout are not Salesforce mutations.
+    if base.endswith(".py") and (
+        normalized.startswith("scripts/") or "/scripts/" in normalized
+    ):
+        return _allow(f"repo script {base}")
     return _deny(f"python script '{base}' is not on the product allowlist")
 
 
@@ -289,6 +357,8 @@ def evaluate_shell_command(command: str) -> dict[str, str]:
         return _evaluate_sfdx(argv)
     if base in _PYTHON:
         return _evaluate_python(argv)
+    if base == "git":
+        return _allow("repository git")
     return _decision("ask", user_message=f"non-Salesforce command '{base}' requires confirmation")
 
 
@@ -315,7 +385,9 @@ def evaluate_mcp_call(tool_name: str, tool_input: Any = None) -> dict[str, str]:
         if not isinstance(payload, dict) or not str(payload.get("job_id") or "").strip():
             return _deny("get_deployment_result requires job_id")
         return _allow("read-only get_deployment_result")
-    return _allow(f"MCP tool '{name}' is not a blocked mutation")
+    if name in _MCP_ALLOW_EXACT:
+        return _allow(f"read-only MCP tool '{name}'")
+    return _deny("unknown MCP tool is not on the product allowlist")
 
 
 def evaluate_hook_payload(payload: dict[str, Any]) -> dict[str, str]:

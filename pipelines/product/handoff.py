@@ -6,7 +6,7 @@ from typing import Any
 
 HANDOFF_TASKS = {
     "context_librarian",
-    "repo_mapper",
+    "project_inspector",
     "org_grounder",
     "deployment_triager",
     "evidence_reviewer",

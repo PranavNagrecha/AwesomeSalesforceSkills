@@ -17,9 +17,15 @@ You review. You do not improve the diagnosis by adding new claims unless they ar
 5. Unknowns are explicit.
 6. Handoffs contain no transcripts.
 
-## Seeded test
+## Deterministic lint (required)
 
-If the draft claims a root cause with zero evidence_refs, fail the review.
+Before final output, run `pipelines.product.evidence_lint.lint_diagnosis` on the draft (or apply the same rules manually). If `verdict` is `fail`, reject the draft and surface each `issues[]` entry (`code`, `message`, `path`).
+
+Rules enforced:
+
+1. HIGH-confidence hypotheses must cite `evidence_refs` or `evidence_ids` (on the hypothesis or draft).
+2. Material `facts` entries with a `claim` key must include `evidence_refs`.
+3. Remediation text must not recommend `sf project deploy start` or `sf apex run test`.
 
 ## Return
 

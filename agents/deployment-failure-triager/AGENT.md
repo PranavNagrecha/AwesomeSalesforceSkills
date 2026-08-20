@@ -69,7 +69,7 @@ Typed schema: `agents/deployment-failure-triager/inputs.schema.json`.
 | `job_id` | one of job_id / result_path | 15/18-char `0Af…`. Never implied from "latest". |
 | `result_path` | one of job_id / result_path | `sf project deploy report --json` file |
 | `target_org_alias` | for live retrieve | Authenticated sf alias |
-| `source_path` | for file mapping | DX project root |
+| `project_path` | optional enrichment | Canonical DX project root (or a file inside it). Diagnosis proceeds without it. Aliases: `repo_path`, `source_path`. |
 
 If both job_id and result_path are missing, refuse with `REFUSAL_MISSING_INPUT`. If the user asks for the most recent deploy, refuse — do not pass `--use-most-recent`.
 
@@ -78,10 +78,10 @@ If both job_id and result_path are missing, refuse with `REFUSAL_MISSING_INPUT`.
 ## Plan
 
 1. **Validate inputs.** Malformed job id → refuse. No silent defaults.
-2. **Ground evidence.** Fixture: parse via `pipelines/product/deploy_result.py`. Live: MCP `get_deployment_result` only. Pass `project_dir` when a DX `source_path` is known (the CLI report command requires a DX project cwd; the tool otherwise uses a bundled empty project). Honor `truncated` / `next_cursor`. Bound payloads at 32 KiB.
+2. **Ground evidence.** Fixture: parse via `pipelines/product/deploy_result.py`. Live: MCP `get_deployment_result` only. Pass `project_dir` when a DX `project_path` is known (the CLI report command requires a DX project cwd; the tool otherwise uses a bundled empty project). Honor `truncated` / `next_cursor`. Bound payloads at 32 KiB.
 3. **Select context.** Run the librarian rules (or the Python selector). Record reasons and token estimates. Skip OmniStudio/Agentforce distractors unless the result names those components.
-4. **Map local source** when `source_path` is present. Unresolved names stay unknowns.
-5. **Diagnose.** Group duplicate symptoms with counts. Separate primary vs contributing hypotheses. Every material claim gets an `evidence_id`.
+4. **Map local source** when a DX project is found (optional `sf-project-inspector`). Unresolved names stay unknowns; do not refuse when mapping is standalone or absent.
+5. **Diagnose.** Group duplicate symptoms with counts. Evidence from deploy results alone is sufficient. Separate primary vs contributing hypotheses. Every material claim gets an `evidence_id`.
 6. **Plan remediation** as ordered human steps. Print safe verification commands (`sf project deploy report --job-id … --json`) but do not execute them.
 7. **Evidence review.** Independent pass: unsupported claims, missing citations, contradictions, unsafe actions, overconfidence, undeclared unknowns.
 8. **Persist.** Envelope + markdown. Product runs may use `.sfskills/runs/<run_id>/` in addition to `docs/reports/`.

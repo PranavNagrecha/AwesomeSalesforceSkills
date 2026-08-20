@@ -128,14 +128,35 @@ def _python_deps() -> dict[str, Any]:
 
 def _plugin_install(root: Path) -> dict[str, Any]:
     built = (root / "dist" / "cursor" / "awesome-salesforce-skills" / ".cursor-plugin" / "plugin.json").is_file()
-    home = Path.home() / ".cursor" / "plugins" / "awesome-salesforce-skills"
+    canonical = Path.home() / ".cursor" / "plugins" / "local" / "awesome-salesforce-skills"
+    legacy = Path.home() / ".cursor" / "plugins" / "awesome-salesforce-skills"
+    if canonical.is_symlink() or canonical.is_dir():
+        home = canonical
+        layout = "local"
+    elif legacy.is_symlink() or legacy.is_dir():
+        home = legacy
+        layout = "legacy"
+    else:
+        home = canonical
+        layout = "missing"
     linked = home.is_symlink() or home.is_dir()
+    status = "ok" if built and linked and layout == "local" else "warn"
+    if not built:
+        detail = "plugin not built — run python3 scripts/build_cursor_plugin.py"
+    elif layout == "missing":
+        detail = "plugin built but not installed under ~/.cursor/plugins/local — run python3 scripts/install_cursor_plugin.py --link"
+    elif layout == "legacy":
+        detail = "plugin found at legacy ~/.cursor/plugins (not plugins/local) — re-run install_cursor_plugin.py --link"
+        status = "warn"
+    else:
+        detail = "plugin built and linked under ~/.cursor/plugins/local"
     return {
-        "status": "ok" if built else "warn",
-        "detail": "plugin built" if built else "plugin not built — run python3 scripts/build_cursor_plugin.py",
+        "status": status,
+        "detail": detail,
         "built": built,
         "user_install_present": linked,
         "user_install_path": str(home),
+        "user_install_layout": layout,
     }
 
 

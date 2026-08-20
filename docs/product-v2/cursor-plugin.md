@@ -10,11 +10,11 @@ From a SfSkills checkout:
 python3 scripts/install_cursor_plugin.py --link
 ```
 
-Then reload Cursor. Confirm `awesome-salesforce-skills` is listed and that `/triage-deployment` and `/sfskills-doctor` appear.
+Then reload Cursor (`Developer: Reload Window`). Confirm `awesome-salesforce-skills` is listed under **local** plugins and that `/triage-deployment` and `/sfskills-doctor` appear.
 
-`--dry-run` prints paths without writing. `--copy` copies instead of symlink (writes `repo-root.json`). `--uninstall` removes only this plugin’s install.
+Default install path is `~/.cursor/plugins/local/awesome-salesforce-skills` ([Cursor: Test plugins locally](https://cursor.com/docs/plugins.md#test-plugins-locally)). `--link` / `--copy` **copy** the built plugin there. A symlink to the repo `dist/` tree can be rejected because the target sits outside `~/.cursor/plugins/local`. Use `--symlink` only when you know your Cursor build accepts it. `--uninstall` removes this plugin from `plugins/local` and from the legacy `~/.cursor/plugins/` location if present.
 
-Override the Cursor plugins directory with `SFSKILLS_CURSOR_PLUGIN_DIR` if your app version uses a different path.
+Override the parent directory with `SFSKILLS_CURSOR_PLUGIN_DIR` if a specific Cursor version uses a different path.
 
 ## What is in the plugin
 
@@ -44,6 +44,8 @@ When `target_org` is supplied, the tool compares it to `~/.sf/deploy-cache.json`
 If the user asks for “the latest deploy” without a job id or file, refuse. Do not use `--use-most-recent`.
 
 Telemetry (redacted) is written under `.sfskills/runs/` (gitignored). Canonical reports also go to `docs/reports/deployment-failure-triager/`.
+
+Apex test triage is **not** part of the Phase 1 plugin.
 
 ## Safety
 

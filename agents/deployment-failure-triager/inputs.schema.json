@@ -18,9 +18,17 @@
       "type": "string",
       "description": "Path to sf project deploy report --json output (fixture or CI)."
     },
+    "project_path": {
+      "type": "string",
+      "description": "Canonical optional Salesforce DX project root (or a file inside it) for local mapping."
+    },
+    "repo_path": {
+      "type": "string",
+      "description": "Alias of project_path."
+    },
     "source_path": {
       "type": "string",
-      "description": "Salesforce DX project root for local file mapping."
+      "description": "Alias of project_path. Optional Salesforce DX project root for local file mapping when known."
     }
   },
   "anyOf": [

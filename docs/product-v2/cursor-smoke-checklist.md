@@ -1,21 +1,29 @@
-# Manual Cursor smoke (not automated)
+# Manual Cursor smoke (not fully automatable)
 
-Verified 2026-08-19 on this machine unless marked **host-UI**.
+Verified **2026-08-19** after product-owner P0 remediations. Official path: [Test plugins locally](https://cursor.com/docs/plugins.md#test-plugins-locally) → `~/.cursor/plugins/local/<name>`.
 
-- [x] Plugin `awesome-salesforce-skills` is linked at `~/.cursor/plugins/awesome-salesforce-skills` → `dist/cursor/awesome-salesforce-skills` (doctor `plugin_install: ok`)
-- [x] `/sfskills-doctor` equivalent: `python3 scripts/sfskills_doctor.py --json` → `overall: ok` (index present, sf CLI 2.144.6)
-- [x] Fixture triage on `mcp/sfskills-mcp/tests/fixtures/deploy/component_failures.json`: 2 groups, citations/evidence IDs, domain files 5, overflow false
-- [x] Evidence reviewer flags a draft that claims a root cause with no evidence IDs (`tests.product.test_phase1.ReviewerFixtureTests`)
-- [x] Asking for “the latest deploy” without a job id refuses (`malformed_job_id` / `use_most_recent_forbidden`)
-- [x] Agent policy cannot allow `sf project deploy start` (deny, including compound/nested wrappers)
-- [x] Cloud-agent hook limitation is documented in `docs/product-v2/cursor-plugin.md`
+## On disk (this machine)
 
-Live retrieve:
+- [x] Plugin **copied** to `~/.cursor/plugins/local/awesome-salesforce-skills` (not an external symlink)
+- [x] `.cursor-plugin/plugin.json` name `awesome-salesforce-skills` version `1.0.0`
+- [x] Legacy `~/.cursor/plugins/awesome-salesforce-skills` removed
+- [x] Doctor `plugin_install.user_install_layout: local`, `overall: ok`
+- [x] Commands present: `triage-deployment.md`, `sfskills-doctor.md` (and Phase 2 `triage-apex-tests.md`)
+- [x] Subagents present: `sf-org-grounder` (`readonly: false`), `sf-project-inspector`, librarian, triager(s), reviewer
+- [x] Fixture `component_failures.json` → 2 groups
+- [x] `lint_diagnosis` fails uncited HIGH claims (`ReviewerFixtureTests`)
+- [x] Latest-deploy without job id refused by input validation
+- [x] Policy denies `sf project deploy start` and unknown MCP tools
+- [x] Standalone discovery from SfSkills cwd; explicit DevPN path is `explicit`
+- [x] Live **report-only** retrieve of `0AfVB00000IYow50AD` (Failed, 6 errors). No deploy start in this remediation pass
+- [x] Probe classes deleted from DevPN tree; org ApexClass query empty
 
-- [x] `get_deployment_result` returns the real job `0AfVB00000IYow50AD` on `Excelsior-Dev-PN` (Failed, 6 errors, 2 groups)
-- [x] No product tool started that retrieve (report-only). QA setup used an explicit deploy start **outside** the product MCP, with user authorization, to create the job.
+## Host UI after you run Developer: Reload Window
 
-Host-UI still true after **Reload Window**:
-
-- [ ] Slash menu shows `/triage-deployment` and `/sfskills-doctor` in the Composer UI
-- [ ] This chat’s `user-sfskills` MCP process is the **checkout** server (39 tools including `get_deployment_result`), not `~/.cache/sfskills-mcp/latest` (measured 2026-08-19: version 0.4.4, 997 skills, 47 runtime, **no** `get_deployment_result`)
+- [ ] Customize lists `awesome-salesforce-skills` as a **local** plugin
+- [ ] Slash menu shows `/sfskills-doctor` and `/triage-deployment`
+- [ ] Plugin MCP (not global pipx `user-sfskills`) lists `get_deployment_result`
+- [ ] `/triage-deployment` on the fixture completes through subagents
+- [ ] `sf-org-grounder` actually calls MCP (or reads the fixture) and returns evidence IDs
+- [ ] `sf-evidence-reviewer` reviews a draft
+- [ ] No Salesforce mutation during that run

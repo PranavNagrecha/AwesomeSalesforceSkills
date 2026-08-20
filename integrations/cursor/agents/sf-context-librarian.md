@@ -27,6 +27,6 @@ A structured handoff only (`task: context_librarian`):
 - `facts`: selected `{path, reason, estimated_tokens, exists}`
 - `unknowns`: missing paths
 - `context_metrics`: files_loaded, estimated_tokens, truncated/overflow
-- `recommended_next_agent`: `sf-repo-mapper`
+- `recommended_next_agent`: `deployment-failure-triager`
 
 No diagnosis, no remediation, no transcript.

@@ -8,6 +8,15 @@ from typing import Any
 from .job_id import is_well_formed_job_id
 
 
+def canonical_project_path(payload: dict[str, Any]) -> str | None:
+    """Return the optional DX project path. Canonical key is project_path."""
+    for key in ("project_path", "repo_path", "source_path"):
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
 def validate_triage_inputs(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     job_id = payload.get("job_id")

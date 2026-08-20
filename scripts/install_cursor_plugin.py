@@ -21,12 +21,25 @@ PLUGIN_NAME = "awesome-salesforce-skills"
 DIST = ROOT / "dist" / "cursor" / PLUGIN_NAME
 
 
+def default_plugin_parent() -> Path:
+    """Cursor's local (non-Marketplace) plugin directory.
+
+    Current Cursor docs: ``~/.cursor/plugins/local/<plugin-name>``.
+    Override with ``SFSKILLS_CURSOR_PLUGIN_DIR`` for older app versions.
+    """
+    return Path.home() / ".cursor" / "plugins" / "local"
+
+
+def legacy_plugin_parent() -> Path:
+    """Pre-review default (``~/.cursor/plugins`` without ``local/``)."""
+    return Path.home() / ".cursor" / "plugins"
+
+
 def detect_plugin_parent() -> Path:
     override = os.environ.get("SFSKILLS_CURSOR_PLUGIN_DIR")
     if override:
         return Path(override).expanduser().resolve()
-    # Cursor 3.9+ user plugin directory (macOS/Linux). Windows uses %USERPROFILE%.
-    return Path.home() / ".cursor" / "plugins"
+    return default_plugin_parent()
 
 
 def install_path(parent: Path) -> Path:
@@ -48,6 +61,13 @@ def build() -> None:
     from subprocess import check_call
 
     check_call([sys.executable, str(ROOT / "scripts" / "build_cursor_plugin.py")])
+
+
+def _remove_install(target: Path) -> None:
+    if target.is_symlink() or target.is_file():
+        target.unlink()
+    elif target.is_dir():
+        shutil.rmtree(target)
 
 
 def cmd_link(*, dry_run: bool, copy: bool) -> int:
@@ -76,10 +96,12 @@ def cmd_link(*, dry_run: bool, copy: bool) -> int:
         return 0
     parent.mkdir(parents=True, exist_ok=True)
     if target.is_symlink() or target.exists():
-        if target.is_symlink() or target.is_file():
-            target.unlink()
-        else:
-            shutil.rmtree(target)
+        _remove_install(target)
+    legacy = install_path(legacy_plugin_parent())
+    if legacy != target and (legacy.exists() or legacy.is_symlink()) and _is_our_install(legacy):
+        print(f"Removing legacy install at {legacy}")
+        if not dry_run:
+            _remove_install(legacy)
     if copy:
         shutil.copytree(DIST, target)
         pointer = {"repo_root": str(ROOT)}
@@ -95,18 +117,25 @@ def cmd_link(*, dry_run: bool, copy: bool) -> int:
 
 
 def cmd_uninstall() -> int:
-    target = install_path(detect_plugin_parent())
-    if not target.exists() and not target.is_symlink():
-        print(f"Nothing installed at {target}")
+    removed = 0
+    candidates = [install_path(detect_plugin_parent()), install_path(legacy_plugin_parent())]
+    seen: set[Path] = set()
+    for target in candidates:
+        resolved = target
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if not target.exists() and not target.is_symlink():
+            continue
+        if not _is_our_install(target):
+            print(f"ERROR: {target} is not this plugin. Refusing to delete.", file=sys.stderr)
+            return 2
+        _remove_install(target)
+        print(f"Removed {target}")
+        removed += 1
+    if removed == 0:
+        print(f"Nothing installed at {install_path(detect_plugin_parent())}")
         return 0
-    if not _is_our_install(target):
-        print(f"ERROR: {target} is not this plugin. Refusing to delete.", file=sys.stderr)
-        return 2
-    if target.is_symlink() or target.is_file():
-        target.unlink()
-    else:
-        shutil.rmtree(target)
-    print(f"Removed {target}")
     print("Reload Cursor.")
     return 0
 
@@ -115,7 +144,8 @@ def _print_after() -> None:
     print()
     print("Next:")
     print("  1. Reload Cursor (Developer: Reload Window).")
-    print("  2. Confirm plugins list includes awesome-salesforce-skills.")
+    print("  2. Confirm Customize / plugins lists awesome-salesforce-skills")
+    print("     (local plugins live under ~/.cursor/plugins/local/).")
     print("  3. Run /sfskills-doctor then try /triage-deployment on a fixture.")
     print("Uninstall: python3 scripts/install_cursor_plugin.py --uninstall")
     print()
@@ -124,8 +154,17 @@ def _print_after() -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Install the SfSkills Cursor plugin locally")
-    parser.add_argument("--link", action="store_true", help="symlink dist into Cursor plugins dir")
-    parser.add_argument("--copy", action="store_true", help="copy instead of symlink")
+    parser.add_argument(
+        "--link",
+        action="store_true",
+        help="copy dist into ~/.cursor/plugins/local (Cursor-loadable install)",
+    )
+    parser.add_argument("--copy", action="store_true", help="same as --link")
+    parser.add_argument(
+        "--symlink",
+        action="store_true",
+        help="symlink dist; Cursor may reject targets outside ~/.cursor/plugins/local",
+    )
     parser.add_argument("--uninstall", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--check", action="store_true", help="print paths and overwrite protection only")
@@ -133,13 +172,25 @@ def main() -> int:
     if args.check:
         parent = detect_plugin_parent()
         target = install_path(parent)
-        print(json.dumps({"parent": str(parent), "target": str(target), "dist": str(DIST)}, indent=2))
+        print(
+            json.dumps(
+                {
+                    "parent": str(parent),
+                    "target": str(target),
+                    "dist": str(DIST),
+                    "docs_path": "~/.cursor/plugins/local/<plugin-name>",
+                },
+                indent=2,
+            )
+        )
         return 0
     if args.uninstall:
         return cmd_uninstall()
-    if not args.link and not args.copy:
-        parser.error("specify --link, --copy, --uninstall, or --check")
-    return cmd_link(dry_run=args.dry_run, copy=args.copy)
+    if args.symlink:
+        return cmd_link(dry_run=args.dry_run, copy=False)
+    if args.link or args.copy:
+        return cmd_link(dry_run=args.dry_run, copy=True)
+    parser.error("specify --link, --copy, --symlink, --uninstall, or --check")
 
 
 if __name__ == "__main__":

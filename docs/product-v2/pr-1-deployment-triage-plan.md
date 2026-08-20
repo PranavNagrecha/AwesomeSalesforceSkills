@@ -83,7 +83,7 @@ Pilot pack (`integrations/cursor/context-packs/deployment-failure.yaml`):
 | Subagent | Role |
 |---|---|
 | `sf-context-librarian` | Select files; no diagnosis |
-| `sf-repo-mapper` | Map failures to local DX paths (user-supplied project) |
+| `sf-project-inspector` | Optional local DX discovery / file mapping (standalone is valid) |
 | `sf-org-grounder` | Call approved read-only MCP tools; bound output |
 | `deployment-failure-triager` | Diagnose from compact handoffs |
 | `sf-evidence-reviewer` | Reject unsupported / unsafe claims |

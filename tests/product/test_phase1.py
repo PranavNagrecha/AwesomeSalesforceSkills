@@ -303,7 +303,7 @@ class PluginPresenceTests(unittest.TestCase):
             "hooks/hooks.json",
             "hooks/sfskills_policy.py",
             "agents/sf-context-librarian.md",
-            "agents/sf-repo-mapper.md",
+            "agents/sf-project-inspector.md",
             "agents/sf-org-grounder.md",
             "agents/deployment-failure-triager.md",
             "agents/sf-evidence-reviewer.md",
@@ -312,8 +312,10 @@ class PluginPresenceTests(unittest.TestCase):
         ):
             self.assertTrue((src / rel).is_file(), rel)
         agents = list((src / "agents").glob("*.md"))
-        self.assertLessEqual(len(agents), 5)
         self.assertEqual(len(agents), 5)
+        names = {p.name for p in agents}
+        self.assertNotIn("apex-test-failure-triager.md", names)
+        self.assertNotIn("sf-repo-mapper.md", names)
 
 
 if __name__ == "__main__":
