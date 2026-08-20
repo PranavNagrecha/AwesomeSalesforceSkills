@@ -1,5 +1,5 @@
 {
-  "count": 60,
+  "count": 59,
   "files": [
     {
       "path": ".cursor-plugin/plugin.json",
@@ -140,10 +140,6 @@
     {
       "path": "mcp.json",
       "sha256": "10b7710b5e6f5124715317079f6c44db1e52cb965724a28cf222c5c849259e42"
-    },
-    {
-      "path": "scripts/__pycache__/run_mcp.cpython-314.pyc",
-      "sha256": "a99de8b89c6701066aba90f60d82c0edcbed50b1dd41f3ee3b76c4f2c218cfa9"
     },
     {
       "path": "scripts/run_mcp.py",

@@ -46,7 +46,11 @@ def _copy_tree(src: Path, dest: Path) -> None:
     if src.is_dir():
         if dest.exists():
             shutil.rmtree(dest)
-        shutil.copytree(src, dest)
+        shutil.copytree(
+            src,
+            dest,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+        )
     else:
         dest.write_bytes(src.read_bytes())
 
