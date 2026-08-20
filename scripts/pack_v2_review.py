@@ -271,9 +271,16 @@ def _capture_git_evidence(stage: Path, baseline: str, head: str, milestone: str)
     git_dir = stage / "git"
     git_dir.mkdir(parents=True, exist_ok=True)
 
+    current_head = _run_git(["rev-parse", "HEAD"], check=True).stdout.strip()
+    if current_head != head:
+        raise PackError(f"pack head {head} != current HEAD {current_head}")
+
     bundle_path = git_dir / "repo.bundle"
+    # Use HEAD (not the raw SHA) as the positive ref: some Git builds refuse
+    # `bundle create <sha> ^baseline baseline` with "empty bundle" even when
+    # the commit range is non-empty.
     proc = _run_git(
-        ["bundle", "create", str(bundle_path), head, f"^{baseline}", baseline],
+        ["bundle", "create", str(bundle_path), "HEAD", f"^{baseline}", baseline],
         check=False,
     )
     if proc.returncode != 0:
@@ -688,7 +695,7 @@ python3 scripts/build_cursor_plugin.py --check
 The packer prefers a bounded bundle:
 
 ```bash
-git bundle create repo.bundle {head} ^{baseline} {baseline}
+git bundle create repo.bundle HEAD ^{baseline} {baseline}
 git bundle verify repo.bundle
 ```
 
