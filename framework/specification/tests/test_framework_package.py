@@ -51,8 +51,8 @@ class FrameworkPackageTests(unittest.TestCase):
         import csv
         expected = {
             "current-skills.csv": 1034,
-            "current-agents.csv": 77,
-            "current-commands.csv": 69,
+            "current-agents.csv": 78,
+            "current-commands.csv": 70,
             "current-mcp-tools.csv": 40,
         }
         for name, count in expected.items():

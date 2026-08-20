@@ -89,19 +89,19 @@ class ApexPolicyTests(unittest.TestCase):
         from pipelines.product.policy import evaluate_mcp_call
 
         out = evaluate_mcp_call("get_apex_test_run", {"test_run_id": "707000000000001AAA"})
-        self.assertEqual(out["decision"], "allow")
+        self.assertEqual(out["permission"], "allow")
 
     def test_sf_apex_get_test_allowed(self):
         from pipelines.product.policy import evaluate_shell_command
 
         out = evaluate_shell_command("sf apex get test --test-run-id 707000000000001AAA --json")
-        self.assertEqual(out["decision"], "allow")
+        self.assertEqual(out["permission"], "allow")
 
     def test_sf_apex_run_denied(self):
         from pipelines.product.policy import evaluate_shell_command
 
         out = evaluate_shell_command("sf apex run test --json")
-        self.assertEqual(out["decision"], "deny")
+        self.assertEqual(out["permission"], "deny")
 
 
 if __name__ == "__main__":

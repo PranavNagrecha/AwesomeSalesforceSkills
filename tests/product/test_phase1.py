@@ -306,15 +306,17 @@ class PluginPresenceTests(unittest.TestCase):
             "agents/sf-project-inspector.md",
             "agents/sf-org-grounder.md",
             "agents/deployment-failure-triager.md",
+            "agents/apex-test-failure-triager.md",
             "agents/sf-evidence-reviewer.md",
             "commands/triage-deployment.md",
+            "commands/triage-apex-tests.md",
             "commands/sfskills-doctor.md",
         ):
             self.assertTrue((src / rel).is_file(), rel)
         agents = list((src / "agents").glob("*.md"))
-        self.assertEqual(len(agents), 5)
+        self.assertEqual(len(agents), 6)
         names = {p.name for p in agents}
-        self.assertNotIn("apex-test-failure-triager.md", names)
+        self.assertIn("apex-test-failure-triager.md", names)
         self.assertNotIn("sf-repo-mapper.md", names)
 
 

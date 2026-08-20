@@ -1,4 +1,4 @@
-"""Deterministic evidence lint for deployment triage drafts."""
+"""Deterministic evidence lint for product triage drafts (P01 deploy, P02 Apex tests)."""
 
 from __future__ import annotations
 
@@ -76,6 +76,14 @@ def _evidence_universe(draft: dict) -> set[str]:
     for failure in draft.get("component_failures") or []:
         if isinstance(failure, dict) and failure.get("evidence_id"):
             ids.add(str(failure["evidence_id"]))
+    for failure in draft.get("method_failures") or []:
+        if isinstance(failure, dict) and failure.get("evidence_id"):
+            ids.add(str(failure["evidence_id"]))
+    for cluster in draft.get("shared_root_clusters") or []:
+        if isinstance(cluster, dict):
+            if cluster.get("cluster_id"):
+                ids.add(str(cluster["cluster_id"]))
+            ids.update(str(x) for x in cluster.get("evidence_ids") or [])
     ids.update(str(x) for x in _refs(draft))
     return ids
 

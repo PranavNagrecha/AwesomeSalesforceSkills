@@ -1,13 +1,13 @@
 {
   "counts": {
     "agents": 20,
-    "bytes": 3650613,
+    "bytes": 3650994,
     "commands": 18,
     "context_packs": 12,
     "evidence_tools": 18,
     "files": 529,
-    "legacy_agents_covered": 77,
-    "legacy_commands_covered": 69,
+    "legacy_agents_covered": 78,
+    "legacy_commands_covered": 70,
     "legacy_mcp_tools_covered": 40,
     "legacy_skills_covered": 1034,
     "products": 12,
@@ -1283,14 +1283,14 @@
       "sha256": "ea1597f8ed1ea15fa01c3cf4ba1d9ca2d740e8831a4b4ae8e58cd68cf746eb6d"
     },
     {
-      "bytes": 16530,
+      "bytes": 16720,
       "path": "migration/catalogs/current-agents.csv",
-      "sha256": "a88231de26b5535dda9654eb881500014c82c1698ec2a1a1cd2a8c61134cfeb3"
+      "sha256": "e651bbbacb7ce560106f93150120594ecb5c394ca1e55b078e4bcc8d174cda8f"
     },
     {
-      "bytes": 13707,
+      "bytes": 13898,
       "path": "migration/catalogs/current-commands.csv",
-      "sha256": "5c204c0f333d1a322776bfdb0019301ea523d0646bddeae3e22160918fbc62a2"
+      "sha256": "52cbb7dab805fcb2aca49f2851d47b5042e3b727753e67054725869435288ee8"
     },
     {
       "bytes": 7259,
@@ -2415,7 +2415,7 @@
     {
       "bytes": 19904,
       "path": "scripts/validate_framework_package.py",
-      "sha256": "9dc9036bd4a58ce8b5330539a4305d0886e280a9543305788c6aa79bb2e39ef5"
+      "sha256": "a81be304b2cd8bd1f765a4281b8d93e46d6af3dfdae33ba28d02798083adb984"
     },
     {
       "bytes": 6572,
@@ -2620,7 +2620,7 @@
     {
       "bytes": 7327,
       "path": "tests/test_framework_package.py",
-      "sha256": "bd549ad27af790de54347298eb86b55641da9c4ed7b424eff2ea6e166f711c66"
+      "sha256": "807dc96c348e1c0e5d483761d52c39b3e208a3e0b851b09844b70749de4e7179"
     },
     {
       "bytes": 807,

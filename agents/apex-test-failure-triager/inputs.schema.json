@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/apex-test-failure-triager/inputs.schema.json",
+  "title": "apex-test-failure-triager inputs",
+  "description": "Exactly one evidence source is required: test_run_id or result_file/result_path. Do not guess a run id.",
+  "type": "object",
+  "properties": {
+    "test_run_id": {
+      "type": "string",
+      "pattern": "^707[A-Za-z0-9]{12}(?:[A-Za-z0-9]{3})?$",
+      "description": "Existing Apex test run id. Required for live retrieve. Never use --use-most-recent."
+    },
+    "target_org": {
+      "type": "string",
+      "description": "sf CLI alias for live retrieve. Optional if a result file is set."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Alias of target_org."
+    },
+    "result_file": {
+      "type": "string",
+      "description": "Path to sf apex get test --json output (fixture or CI)."
+    },
+    "result_path": {
+      "type": "string",
+      "description": "Alias of result_file."
+    },
+    "project_path": {
+      "type": "string",
+      "description": "Canonical optional Salesforce DX project root (or a file inside it) for local mapping."
+    },
+    "repo_path": {
+      "type": "string",
+      "description": "Alias of project_path."
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Alias of project_path."
+    },
+    "method_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500,
+      "description": "Bounded page size for failing methods returned to the model."
+    }
+  },
+  "anyOf": [
+    { "required": ["test_run_id"] },
+    { "required": ["result_file"] },
+    { "required": ["result_path"] }
+  ]
+}

@@ -407,12 +407,12 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > still name it as an entry point — that is wrong. Invoke build agents by
    > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
-2. **Run-time (49)** — four tiers:
-   - **Developer + architecture (17):** `apex-refactorer`,
+2. **Run-time (50)** — four tiers:
+   - **Developer + architecture (18):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
      `lwc-builder`, `lwc-auditor`, `lwc-debugger`, `deployment-risk-scorer`,
-     `deployment-failure-triager`,
+     `deployment-failure-triager`, `apex-test-failure-triager`,
      `agentforce-builder`, `apex-builder`, `changeset-builder`,
      `flow-orchestrator-designer`, `automation-migration-router`.
    - **Admin accelerators — Tier 1 (14):** `field-impact-analyzer`,

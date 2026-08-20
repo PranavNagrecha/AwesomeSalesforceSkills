@@ -64,13 +64,13 @@ def _top_router(registry: dict) -> str:
     )
     return f"""---
 name: salesforce
-description: "Entry point for the SfSkills Cursor plugin. Bounded domain routers plus /triage-deployment and MCP get_skill. Does not load 1,034 skill bodies. Not a Cursor Marketplace listing."
+description: "Entry point for the SfSkills Cursor plugin. Bounded domain routers plus /triage-deployment, /triage-apex-tests, and MCP get_skill. Does not load 1,034 skill bodies. Not a Cursor Marketplace listing."
 ---
 
 # Salesforce — SfSkills Cursor router
 
-This plugin ships **bounded routers**, five focused subagents, `/triage-deployment`,
-`/sfskills-doctor`, and the SfSkills MCP server. Detailed skill packages stay in
+This plugin ships **bounded routers**, six focused subagents, `/triage-deployment`,
+`/triage-apex-tests`, `/sfskills-doctor`, and the SfSkills MCP server. Detailed skill packages stay in
 the SfSkills checkout and are loaded on demand via MCP `search_skill` / `get_skill`
 or by opening `skills/<domain>/<slug>/SKILL.md` in that checkout.
 
@@ -93,6 +93,7 @@ or by opening `skills/<domain>/<slug>/SKILL.md` in that checkout.
 ## Product commands
 
 - `/triage-deployment` — existing deploy job or local JSON fixture
+- `/triage-apex-tests` — existing Apex test run (707…) or local JSON fixture
 - `/sfskills-doctor` — install, CLI, index, aliases (no secrets)
 
 ## Rules

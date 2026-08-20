@@ -324,7 +324,7 @@ class ProductWiringTest(unittest.TestCase):
         names = [path.name for path in agents_dir.glob("*.md")]
         self.assertEqual(names.count("sf-project-inspector.md"), 1)
         self.assertNotIn("sf-repo-mapper.md", names)
-        self.assertEqual(len(names), 5)
+        self.assertEqual(len(names), 6)
 
     def test_triage_continues_when_local_mapping_unavailable(self):
         paths = (

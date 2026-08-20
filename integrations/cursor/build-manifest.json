@@ -1,41 +1,49 @@
 {
-  "count": 37,
+  "count": 40,
   "files": [
     {
       "path": ".cursor-plugin/plugin.json",
-      "sha256": "fa7b9de7da8cc3d62abf8b0b9aacaf06ea3fd3619750a6dd887eba67ec618c72"
+      "sha256": "eddea0fef640749b0b6c5a157b8a3a0bc3f24aba82f7da924b33d4f02f8e7430"
     },
     {
       "path": "README.md",
       "sha256": "e82b2b1cdb9d8107bb615fb40af4fe3db19308dca62c89440fd249199bec0e40"
     },
     {
+      "path": "agents/apex-test-failure-triager.md",
+      "sha256": "8fbc7cff4300fae6dcd9926aa4961dd43dfacd46fb45f890bc849d9f24591a6a"
+    },
+    {
       "path": "agents/deployment-failure-triager.md",
-      "sha256": "19bd981306c8d463bcfce9ac5a6a24846c415ce51515b8301285c5202fc21702"
+      "sha256": "d270afde6a8a32b98be538948712fa59f7a1b0b3b3e8240e0cdcf2269e98b67d"
     },
     {
       "path": "agents/sf-context-librarian.md",
-      "sha256": "5fd207489e6dbec4b2a5bf89fb797b66695877f82b8c76cd035660ac8e736d94"
+      "sha256": "e0a0635faa445fbb2a22f8c32cc7d49c62d63c4134dbf80d99c336e1b5245cae"
     },
     {
       "path": "agents/sf-evidence-reviewer.md",
-      "sha256": "8964a2fc7b9168fa479308bbf978ba52dd97d170b7a7cd78c44e95294e586ba3"
+      "sha256": "5d5812288d88dfe90d2c69247c8a64f036a9d8c35d29bdfafd82bf2395762067"
     },
     {
       "path": "agents/sf-org-grounder.md",
-      "sha256": "77e2ea8e1d60471b233da595dd37f8d6d9d9f5f4bb1281f20aaed34b17b696fe"
+      "sha256": "afdb3ac0e1329136453203bb48775b1b7a2ac928d48a5b1ce113604638496491"
     },
     {
-      "path": "agents/sf-repo-mapper.md",
-      "sha256": "30e2e39d81e80e1fc3750c6e216aa42cbe6821bbc48d854aec5b8302de95adc9"
+      "path": "agents/sf-project-inspector.md",
+      "sha256": "ced8c1d05f5af0719a759dc935378c45ffd6d39747d98ef1448843a3628c0e16"
     },
     {
       "path": "commands/sfskills-doctor.md",
       "sha256": "aa0b4bff3b69738efb9418bdd039f8161ae2519ee594100eb24cfb236bda3ac9"
     },
     {
+      "path": "commands/triage-apex-tests.md",
+      "sha256": "533817389665a6c0b6987f217710bb3f5d89c99a94e9696f2b04377e143c5e9e"
+    },
+    {
       "path": "commands/triage-deployment.md",
-      "sha256": "7c99789fe62fe7410b7576ac4730049302d224391ae794ce5888e19777441dff"
+      "sha256": "51efd4bd0f3d76d3acfb1da225919c43befda890876f9f9f854e37fe7721f100"
     },
     {
       "path": "hooks/hooks.json",
@@ -54,12 +62,16 @@
       "sha256": "10b7710b5e6f5124715317079f6c44db1e52cb965724a28cf222c5c849259e42"
     },
     {
+      "path": "scripts/__pycache__/run_mcp.cpython-314.pyc",
+      "sha256": "a99de8b89c6701066aba90f60d82c0edcbed50b1dd41f3ee3b76c4f2c218cfa9"
+    },
+    {
       "path": "scripts/run_mcp.py",
       "sha256": "f810dce14fa5951de2808c610f75b7f3477940aa5cd73bbdee1ca6fc8073f6a3"
     },
     {
       "path": "skills/salesforce/SKILL.md",
-      "sha256": "6c673563dc8262b1194ad6f87c309dff0a7524ef0eb71d7088ffa5de5519af7a"
+      "sha256": "fff09d45989e70b71d3cd20f9ebaa2939f845a1371389391dc898ce477da9fde"
     },
     {
       "path": "skills/salesforce-admin/SKILL.md",

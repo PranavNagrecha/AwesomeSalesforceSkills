@@ -72,7 +72,7 @@ def _stack_root(stack: str) -> str:
 
 def classify_failure_kind(message: str, stack: str = "") -> str:
     text = f"{message}\n{stack}".lower()
-    if "mixed dml" in text:
+    if "mixed dml" in text or "mixed_dml" in text:
         return "mixed_dml"
     if "callout" in text or "test.setmock" in text or "uncommitted work" in text:
         return "missing_mock"

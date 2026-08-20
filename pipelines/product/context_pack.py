@@ -1,7 +1,7 @@
-"""Pilot context pack for deployment failure triage.
+"""Pilot context packs for product triage (P01 deploy, P02 Apex tests).
 
 Not a repository-wide dependency engine. Selection is deterministic from
-observed failure classes.
+observed failure classes / failure kinds.
 """
 
 from __future__ import annotations
@@ -108,6 +108,106 @@ DISTRACTORS = [
     "skills/agentforce/agent-deployment-checklist/SKILL.md",
 ]
 
+APEX_CORE_READS: list[dict[str, str]] = [
+    {
+        "path": "agents/_shared/AGENT_CONTRACT.md",
+        "reason": "Output envelope, confidence rubric, process observations",
+        "class": "contract",
+    },
+    {
+        "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+        "reason": "Persisted report + envelope requirement",
+        "class": "contract",
+    },
+    {
+        "path": "skills/apex/test-class-standards/SKILL.md",
+        "reason": "Assertion patterns and bulk-safe test conventions",
+        "class": "skill",
+    },
+    {
+        "path": "skills/apex/common-apex-runtime-errors/SKILL.md",
+        "reason": "Runtime exception taxonomy for failing methods",
+        "class": "skill",
+    },
+    {
+        "path": "skills/apex/apex-test-setup-patterns/SKILL.md",
+        "reason": "@TestSetup, data isolation, flakiness signals",
+        "class": "skill",
+    },
+]
+
+APEX_CONDITIONAL_PACKS: dict[str, list[dict[str, str]]] = {
+    "assertion": [
+        {
+            "path": "skills/apex/test-class-standards/references/gotchas.md",
+            "reason": "Assertion and test-structure gotchas",
+            "class": "reference",
+        },
+        {
+            "path": "skills/apex/test-data-factory-patterns/SKILL.md",
+            "reason": "Test data setup assumptions",
+            "class": "skill",
+        },
+    ],
+    "mixed_dml": [
+        {
+            "path": "skills/apex/mixed-dml-and-setup-objects/SKILL.md",
+            "reason": "Mixed DML and setup/non-setup object boundaries",
+            "class": "skill",
+        },
+    ],
+    "missing_mock": [
+        {
+            "path": "skills/apex/apex-http-callout-mocking/SKILL.md",
+            "reason": "Test.setMock and callout failures",
+            "class": "skill",
+        },
+        {
+            "path": "skills/apex/apex-mocking-and-stubs/SKILL.md",
+            "reason": "StubProvider and dependency isolation",
+            "class": "skill",
+        },
+    ],
+    "governor": [
+        {
+            "path": "skills/apex/governor-limits/SKILL.md",
+            "reason": "Governor limit prevention in tests",
+            "class": "skill",
+        },
+        {
+            "path": "skills/apex/governor-limit-recovery-patterns/SKILL.md",
+            "reason": "Recovering from limit failures",
+            "class": "skill",
+        },
+    ],
+    "sharing_context": [
+        {
+            "path": "skills/apex/apex-with-without-sharing-decision/SKILL.md",
+            "reason": "Sharing context and FLS in tests",
+            "class": "skill",
+        },
+    ],
+    "async_boundary": [
+        {
+            "path": "skills/apex/async-apex/SKILL.md",
+            "reason": "Future/Queueable/Batch boundaries in tests",
+            "class": "skill",
+        },
+    ],
+    "unknown": [
+        {
+            "path": "skills/apex/common-apex-runtime-errors/references/gotchas.md",
+            "reason": "Unclassified runtime failure gotchas",
+            "class": "reference",
+        },
+    ],
+}
+
+APEX_DISTRACTORS = [
+    "skills/devops/deployment-error-troubleshooting/SKILL.md",
+    "skills/agentforce/agent-deployment-checklist/SKILL.md",
+]
+
 
 def classify_failures(normalized: dict[str, Any]) -> list[str]:
     classes: list[str] = []
@@ -210,4 +310,95 @@ def select_context_pack(
         "missing_paths": missing,
         "failure_classes": classify_failures(normalized),
         "distractors_excluded": DISTRACTORS,
+    }
+
+
+def classify_apex_failures(normalized: dict[str, Any]) -> list[str]:
+    """Return ordered unique failure kinds from a normalized Apex test run."""
+    kinds: list[str] = []
+    for row in normalized.get("method_failures") or []:
+        if isinstance(row, dict):
+            kind = str(row.get("failure_kind") or "unknown")
+            if kind not in kinds:
+                kinds.append(kind)
+    for cluster in normalized.get("shared_root_clusters") or []:
+        if isinstance(cluster, dict):
+            kind = str(cluster.get("failure_kind") or "")
+            if kind and kind not in kinds:
+                kinds.append(kind)
+    if not kinds:
+        kinds.append("unknown")
+    return kinds
+
+
+def select_apex_context_pack(
+    normalized: dict[str, Any],
+    *,
+    repo_root: Path | None = None,
+    extra_paths: list[str] | None = None,
+) -> dict[str, Any]:
+    """P02 context selection from observed Apex test failure kinds."""
+    root = repo_root or REPO_ROOT
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    def add(item: dict[str, str]) -> None:
+        rel = item["path"]
+        if rel in seen:
+            return
+        seen.add(rel)
+        full = root / rel
+        selected.append(
+            {
+                "path": rel,
+                "reason": item["reason"],
+                "class": item.get("class", "other"),
+                "exists": full.is_file(),
+                "estimated_tokens": _estimate_tokens(full),
+                "bytes": full.stat().st_size if full.is_file() else 0,
+            }
+        )
+
+    for item in APEX_CORE_READS:
+        add(item)
+    for failure_kind in classify_apex_failures(normalized):
+        for item in APEX_CONDITIONAL_PACKS.get(failure_kind, []):
+            add(item)
+    for rel in extra_paths or []:
+        add({"path": rel, "reason": "caller extra", "class": "extra"})
+
+    domain_files = [s for s in selected if s["class"] in {"skill", "reference"}]
+    overflow = False
+    if len(domain_files) > HARD_LIMIT:
+        overflow = True
+        kept: list[dict[str, Any]] = []
+        domain_kept = 0
+        for row in selected:
+            if row["class"] in {"skill", "reference"}:
+                if domain_kept >= HARD_LIMIT:
+                    overflow = True
+                    continue
+                domain_kept += 1
+            kept.append(row)
+        selected = kept
+    elif len(domain_files) > TARGET_FILES:
+        overflow = False
+
+    missing = [s["path"] for s in selected if not s["exists"]]
+    tokens = sum(int(s["estimated_tokens"]) for s in selected)
+    failure_kinds = classify_apex_failures(normalized)
+    return {
+        "product_id": "P02",
+        "files": selected,
+        "files_loaded": len(selected),
+        "domain_skill_or_reference_files": len([s for s in selected if s["class"] in {"skill", "reference"}]),
+        "estimated_tokens": tokens,
+        "target": TARGET_FILES,
+        "hard_limit": HARD_LIMIT,
+        "overflow": overflow or (len([s for s in selected if s["class"] in {"skill", "reference"}]) > HARD_LIMIT),
+        "over_target": len([s for s in selected if s["class"] in {"skill", "reference"}]) > TARGET_FILES,
+        "missing_paths": missing,
+        "failure_kinds": failure_kinds,
+        "failure_classes": failure_kinds,
+        "distractors_excluded": APEX_DISTRACTORS,
     }

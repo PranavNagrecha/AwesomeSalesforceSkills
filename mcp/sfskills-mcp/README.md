@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (49 active runtime agents across developer, admin,
+3. **Run-time agents** (50 active runtime agents across developer, admin,
    strategic, and vertical/governance tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
@@ -104,12 +104,12 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 49 active runtime agents. Fourteen single-mode
+Tier sizes below count the 50 active runtime agents. Fourteen single-mode
 auditors/governors were retired in Wave 3b and now redirect via
 `list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
 returns the active set shown here.
 
-Developer + architecture tier (17):
+Developer + architecture tier (18):
 
 | Agent name                 | What it returns |
 | -------------------------- | --------------- |
@@ -123,6 +123,7 @@ Developer + architecture tier (17):
 | `lwc-auditor`              | A11y + performance + security audit of an LWC bundle |
 | `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
 | `deployment-failure-triager` | Evidence-grounded diagnosis of an existing deploy job or CLI JSON fixture |
+| `apex-test-failure-triager` | Evidence-grounded diagnosis of an existing Apex test run or CLI JSON fixture |
 | `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval || `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
 | `lwc-debugger`             | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
 | `apex-builder`             | Apex class(es) built from requirements + test class |

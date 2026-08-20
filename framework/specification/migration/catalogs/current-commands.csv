@@ -68,3 +68,4 @@ score-deployment,commands/score-deployment.md,deployment-risk-scorer,P01;P06,pre
 sfskills-doctor,commands/sfskills-doctor.md,,,promote-native-framework-command,true,Framework doctor/install verification; not a legacy alias.
 sync-upstream-skills,commands/sync-upstream-skills.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
 triage-deployment,commands/triage-deployment.md,deployment-failure-triager,P01,promote-native-product-command,true,Primary P01 entry command; requires independent review and read-only broker.
+triage-apex-tests,commands/triage-apex-tests.md,apex-test-failure-triager,P02,promote-native-product-command,true,Primary P02 entry command; requires independent review and read-only broker.
