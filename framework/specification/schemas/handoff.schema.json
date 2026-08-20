@@ -1,0 +1,133 @@
+{
+  "$id": "handoff.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "context_metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_tokens": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "files_loaded": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tool_output_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "files_loaded",
+        "estimated_tokens",
+        "tool_output_bytes",
+        "truncated"
+      ],
+      "type": "object"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "facts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "evidence_refs"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "from_agent": {
+      "type": "string"
+    },
+    "hypotheses": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "evidence_refs"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "recommended_next_agent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "task": {
+      "type": "string"
+    },
+    "to_agent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "unknowns": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "run_id",
+    "from_agent",
+    "to_agent",
+    "task",
+    "facts",
+    "evidence_refs",
+    "hypotheses",
+    "unknowns",
+    "context_metrics"
+  ],
+  "title": "SFAEF Structured Handoff",
+  "type": "object"
+}

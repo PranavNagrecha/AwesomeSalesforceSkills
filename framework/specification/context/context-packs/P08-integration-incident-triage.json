@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "incident boundary classification",
+      "max_files": 2,
+      "trigger": "incident boundary classification"
+    },
+    {
+      "id": "timeline",
+      "max_files": 2,
+      "trigger": "timeline"
+    },
+    {
+      "id": "auth/network/contract/limit/downstream/idempotency hypotheses",
+      "max_files": 2,
+      "trigger": "auth/network/contract/limit/downstream/idempotency hypotheses"
+    },
+    {
+      "id": "supporting and contradictory evidence",
+      "max_files": 2,
+      "trigger": "supporting and contradictory evidence"
+    },
+    {
+      "id": "blast radius",
+      "max_files": 2,
+      "trigger": "blast radius"
+    },
+    {
+      "id": "safe verification/recovery steps",
+      "max_files": 2,
+      "trigger": "safe verification/recovery steps"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P08-integration-incident-triage",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P08",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

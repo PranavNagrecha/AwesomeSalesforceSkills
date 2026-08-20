@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "agentforce",
+    "subagents",
+    "state-machine",
+    "qa"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-AGENTFORCE-BUILDER-2026",
+  "notes": "Official description of graph-based subagents, transitions, state variables, and new-builder direction. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Migrate Legacy Agents to the New Agentforce Builder",
+  "url": "https://developer.salesforce.com/blogs/2026/08/migrate-legacy-agents-to-the-new-agentforce-builder"
+}

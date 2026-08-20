@@ -1,0 +1,130 @@
+{
+  "$schema": "../../schemas/agent.schema.json",
+  "authority_profile": {
+    "authority_from_other_agents": false,
+    "authority_from_user_prose": false,
+    "may_call_product_tools": false,
+    "may_delegate": true,
+    "may_request_product_tools": true,
+    "may_write_local_reports": true,
+    "role": "synthesizer",
+    "salesforce_access": "none",
+    "target_binding": "run-bound-explicit"
+  },
+  "collaborators": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "sf-policy-reviewer",
+    "sf-evidence-reviewer"
+  ],
+  "completion_review_required": true,
+  "context_policy": {
+    "hard_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_files": 8,
+    "transcript_handoff": false
+  },
+  "design_notes": [
+    "This is a product agent contract. It does not require exposure as a top-level host subagent unless isolated context materially improves the product and host tests prove the configuration works."
+  ],
+  "evaluation_dimensions": [
+    "contract/schema validity;",
+    "evidence-reference validity;",
+    "unsupported-claim rate;",
+    "required output recall;",
+    "correct partial/refused behavior;",
+    "context efficiency;",
+    "security/policy adherence;",
+    "actual host behavior where applicable."
+  ],
+  "evidence_prohibited": [
+    "Hidden model memory as proof of target state.",
+    "Full subagent transcripts.",
+    "Unbounded raw tool output.",
+    "Cross-org/project evidence not explicitly selected.",
+    "Any evidence produced by unauthorized mutation."
+  ],
+  "evidence_required": [
+    "Only evidence explicitly provided or retrieved through the active run plan.",
+    "Every target-specific fact carries a stable evidence ID and target identity.",
+    "Platform guidance uses governed SfSkills knowledge or a current official source."
+  ],
+  "failure_modes": [
+    {
+      "code": "invalid_or_ambiguous_target",
+      "default_status": "refused",
+      "description": "Invalid or ambiguous target."
+    },
+    {
+      "code": "unavailable_stale_truncated_evidence",
+      "default_status": "partial",
+      "description": "Unavailable/stale/truncated evidence."
+    },
+    {
+      "code": "host_capability_mismatch",
+      "default_status": "partial",
+      "description": "Host capability mismatch."
+    },
+    {
+      "code": "policy_denial",
+      "default_status": "refused",
+      "description": "Policy denial."
+    },
+    {
+      "code": "context_overflow",
+      "default_status": "partial",
+      "description": "Context overflow."
+    },
+    {
+      "code": "invalid_handoff_output",
+      "default_status": "failed",
+      "description": "Invalid handoff/output."
+    },
+    {
+      "code": "contradictory_evidence",
+      "default_status": "partial",
+      "description": "Contradictory evidence."
+    },
+    {
+      "code": "unexpected_tool_runtime_failure",
+      "default_status": "failed",
+      "description": "Unexpected tool/runtime failure."
+    }
+  ],
+  "host_exposure_rationale": "Commands are the stable user surface. Expose this role as a host subagent only when isolated context materially improves quality and host smoke tests prove tool and policy behavior.",
+  "id": "security-posture-reviewer",
+  "inputs": "Validated `review-security-posture` input, selected knowledge manifest, normalized evidence, optional project inspection, and declared unknowns",
+  "kind": "product",
+  "outputs": "Structured Security Posture Review findings, claim/evidence graph, recommendations, status proposal, and review-ready draft",
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "product_id": "P07",
+  "prompt_principles": [
+    "Separate facts, inferences, recommendations, and unknowns explicitly.",
+    "Prefer a smaller evidence-backed answer over a broad plausible answer.",
+    "Never use hidden model memory as proof of target state.",
+    "Preserve contradictions and lower confidence rather than resolving them rhetorically.",
+    "Return structured handoffs and never forward full subagent transcripts."
+  ],
+  "purpose": "Own Security Posture Review synthesis: Assess a Salesforce scope for evidence-backed access, code, session, integration, data, and configuration risks, prioritized by exploitability and business impact.",
+  "recommended_host_exposure": "internal-stage",
+  "success_criteria": [
+    "No security claim without evidence and scope",
+    "Never exposes secrets",
+    "Severity rationale is explicit",
+    "Policy versus platform finding is distinguished"
+  ],
+  "tool_ids": [
+    "get_code_analysis_result",
+    "get_user_access_evidence",
+    "get_org_snapshot_manifest",
+    "get_integration_config_summary",
+    "describe_salesforce_component"
+  ],
+  "version": "0.9.0"
+}

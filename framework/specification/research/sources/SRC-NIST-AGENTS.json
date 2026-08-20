@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "security",
+    "identity",
+    "standards"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-NIST-AGENTS",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "NIST",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "NIST AI Agent Standards Initiative",
+  "url": "https://www.nist.gov/news-events/news/2026/02/announcing-ai-agent-standards-initiative-interoperable-and-secure"
+}

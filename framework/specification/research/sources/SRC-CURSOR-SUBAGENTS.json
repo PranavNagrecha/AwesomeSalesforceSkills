@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "cursor-adapter",
+    "subagents",
+    "context"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-CURSOR-SUBAGENTS",
+  "notes": "Official description of independent subagents with separate contexts and configurable prompts/tools/models. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Cursor",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Subagents, Skills, and Image Generation",
+  "url": "https://prod.cursor.com/changelog/2-4"
+}

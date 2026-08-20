@@ -1,0 +1,122 @@
+{
+  "$id": "claim.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "type": "string"
+        },
+        "rationale": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "score",
+        "label",
+        "rationale"
+      ],
+      "type": "object"
+    },
+    "depends_on": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "id": {
+      "pattern": "^CL-[A-F0-9]{16,64}$",
+      "type": "string"
+    },
+    "material": {
+      "type": "boolean"
+    },
+    "product_finding_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "supported",
+        "partially-supported",
+        "contradicted",
+        "hypothesis",
+        "unknown",
+        "rejected"
+      ],
+      "type": "string"
+    },
+    "support": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "relation": {
+            "enum": [
+              "supports",
+              "contradicts",
+              "contextualizes",
+              "derived_from"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "relation"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "text": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "observation",
+        "inference",
+        "recommendation",
+        "unknown",
+        "constraint"
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "text",
+    "material",
+    "status",
+    "support",
+    "confidence"
+  ],
+  "title": "SFAEF Claim",
+  "type": "object"
+}

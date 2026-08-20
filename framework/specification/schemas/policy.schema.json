@@ -1,0 +1,78 @@
+{
+  "$id": "policy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "allowed_shell_patterns": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "allowed_tools": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "authority_profile": {
+      "type": "string"
+    },
+    "data_policy": {
+      "type": "object"
+    },
+    "default_decision": {
+      "enum": [
+        "deny",
+        "ask"
+      ],
+      "type": "string"
+    },
+    "denied_actions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "denied_tools": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "filesystem_policy": {
+      "type": "object"
+    },
+    "host_requirements": {
+      "type": "object"
+    },
+    "id": {
+      "type": "string"
+    },
+    "org_policy": {
+      "type": "object"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "authority_profile",
+    "default_decision",
+    "allowed_tools",
+    "denied_actions",
+    "org_policy",
+    "filesystem_policy"
+  ],
+  "title": "SFAEF Policy",
+  "type": "object"
+}

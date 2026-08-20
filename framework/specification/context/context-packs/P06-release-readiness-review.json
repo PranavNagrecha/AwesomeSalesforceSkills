@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "hard blockers",
+      "max_files": 2,
+      "trigger": "hard blockers"
+    },
+    {
+      "id": "risk-ranked concerns",
+      "max_files": 2,
+      "trigger": "risk-ranked concerns"
+    },
+    {
+      "id": "test and validation coverage",
+      "max_files": 2,
+      "trigger": "test and validation coverage"
+    },
+    {
+      "id": "deployment ordering",
+      "max_files": 2,
+      "trigger": "deployment ordering"
+    },
+    {
+      "id": "environment prerequisites",
+      "max_files": 2,
+      "trigger": "environment prerequisites"
+    },
+    {
+      "id": "rollback gaps",
+      "max_files": 2,
+      "trigger": "rollback gaps"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P06-release-readiness-review",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P06",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

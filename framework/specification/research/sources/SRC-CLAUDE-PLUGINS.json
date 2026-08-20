@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "claude-adapter"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-CLAUDE-PLUGINS",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Anthropic",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Claude Code plugins reference",
+  "url": "https://code.claude.com/docs/en/plugins-reference"
+}

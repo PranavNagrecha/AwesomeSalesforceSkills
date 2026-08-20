@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "deployment",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "DEP-APEX-COMPILE",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P01",
+  "required_findings": [
+    {
+      "description": "classify compile root cause",
+      "id": "DEP-APEX-COMPILE-F1"
+    },
+    {
+      "description": "map class/line when project exists",
+      "id": "DEP-APEX-COMPILE-F2"
+    },
+    {
+      "description": "separate downstream component failures",
+      "id": "DEP-APEX-COMPILE-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Apex compilation fails due to a deterministic type/method mismatch.",
+  "version": "1.0.0"
+}

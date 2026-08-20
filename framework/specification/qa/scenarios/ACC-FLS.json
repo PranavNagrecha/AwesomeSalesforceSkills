@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "access",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "ACC-FLS",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P03",
+  "required_findings": [
+    {
+      "description": "trace object then field layer",
+      "id": "ACC-FLS-F1"
+    },
+    {
+      "description": "name blocking field permission",
+      "id": "ACC-FLS-F2"
+    },
+    {
+      "description": "avoid blaming sharing",
+      "id": "ACC-FLS-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Object access exists but field-level access blocks read/edit.",
+  "version": "1.0.0"
+}

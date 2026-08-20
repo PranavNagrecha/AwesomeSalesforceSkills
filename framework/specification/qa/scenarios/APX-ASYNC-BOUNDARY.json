@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "apex-test",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "APX-ASYNC-BOUNDARY",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P02",
+  "required_findings": [
+    {
+      "description": "identify startTest/stopTest boundary",
+      "id": "APX-ASYNC-BOUNDARY-F1"
+    },
+    {
+      "description": "cite method evidence",
+      "id": "APX-ASYNC-BOUNDARY-F2"
+    },
+    {
+      "description": "recommend deterministic async assertion placement",
+      "id": "APX-ASYNC-BOUNDARY-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Assertion occurs before or after an async boundary is handled incorrectly.",
+  "version": "1.0.0"
+}

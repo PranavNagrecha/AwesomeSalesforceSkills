@@ -1,0 +1,295 @@
+{
+  "$id": "command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "agent_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "aliases": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "allowed_statuses": {
+      "items": {
+        "enum": [
+          "completed",
+          "partial",
+          "refused",
+          "failed"
+        ],
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "arguments": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "default": {},
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "requirement": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "errors": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[a-z0-9_]+$",
+            "type": "string"
+          },
+          "description": {
+            "minLength": 10,
+            "type": "string"
+          },
+          "recovery": {
+            "minLength": 5,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "partial",
+              "refused",
+              "failed"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "status",
+          "description",
+          "recovery"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "examples": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "expected_status": {
+            "enum": [
+              "completed",
+              "partial",
+              "refused",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "input": {
+            "type": "object"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "input",
+          "expected_status"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "host_visibility": {
+      "enum": [
+        "user-command",
+        "maintainer-command",
+        "internal"
+      ],
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9-]+$",
+      "type": "string"
+    },
+    "maintainer_only": {
+      "type": "boolean"
+    },
+    "orchestration_stages": {
+      "items": {
+        "pattern": "^[a-z0-9_]+$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "output_schema": {
+      "type": "string"
+    },
+    "permissions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "product_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "requires_independent_review": {
+      "type": "boolean"
+    },
+    "side_effects": {
+      "additionalProperties": false,
+      "properties": {
+        "local_files": {
+          "enum": [
+            "none",
+            "read-only",
+            "report-write",
+            "qa-artifacts"
+          ],
+          "type": "string"
+        },
+        "network_access": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "salesforce": {
+          "enum": [
+            "none",
+            "read-only",
+            "read-only-if-explicit-refresh",
+            "qa-disposable-only"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "salesforce",
+        "local_files",
+        "network_access",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "supported_modes": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "tool_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "validation_rules": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "minLength": 10,
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[a-z0-9-]+$",
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "error",
+              "warning"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "severity"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "purpose",
+    "arguments",
+    "permissions",
+    "allowed_statuses",
+    "aliases",
+    "supported_modes",
+    "validation_rules",
+    "errors",
+    "examples",
+    "orchestration_stages",
+    "requires_independent_review",
+    "host_visibility",
+    "side_effects"
+  ],
+  "title": "SFAEF Command Definition",
+  "type": "object"
+}

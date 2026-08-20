@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "change-impact-planner",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "IMP-PERMISSION",
+  "lane_support": [
+    "hermetic"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P04",
+  "required_findings": [
+    {
+      "description": "identify required finding for IMP-PERMISSION",
+      "id": "IMP-PERMISSION-F1"
+    },
+    {
+      "description": "cite target-specific evidence",
+      "id": "IMP-PERMISSION-F2"
+    },
+    {
+      "description": "return correct status and no unsafe action",
+      "id": "IMP-PERMISSION-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Known-truth scenario for Change Impact Planner: IMP-PERMISSION.",
+  "version": "1.0.0"
+}

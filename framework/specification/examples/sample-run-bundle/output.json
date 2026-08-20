@@ -1,0 +1,51 @@
+{
+  "contradictions": [],
+  "envelope_path": ".sfskills/runs/RUN-20260819T120000Z-EXAMPLE001/output.json",
+  "evidence_review": {
+    "blocking_findings": [],
+    "status": "pass-with-warnings",
+    "warnings": [
+      "Root location is narrowed to package/target context but not fully resolved."
+    ]
+  },
+  "findings": [
+    {
+      "claim_ids": [
+        "CL-761796011DDDAAC88585EB79"
+      ],
+      "id": "P01-ROOT-CAUSE",
+      "recommendation_ids": [
+        "REC-1"
+      ],
+      "severity": "high",
+      "title": "Unresolved field reference blocks Apex compilation"
+    }
+  ],
+  "metrics": {
+    "context_files": 3,
+    "estimated_tokens": 1420
+  },
+  "mode": "fixture",
+  "persisted": true,
+  "product_id": "P01",
+  "provenance": {
+    "evidence_ids": [
+      "EV-E13EF0F4B5B5E647E2D6FBAD"
+    ],
+    "scenario": "DEP-MISSING-DEPENDENCY"
+  },
+  "recommendations": [
+    {
+      "id": "REC-1",
+      "text": "Verify that Missing_Field__c is in the intended deployment scope and is deployed before AccountService."
+    }
+  ],
+  "report_path": ".sfskills/runs/RUN-20260819T120000Z-EXAMPLE001/report.md",
+  "run_id": "RUN-20260819T120000Z-EXAMPLE001",
+  "schema_version": "0.9.0",
+  "status": "partial",
+  "summary": "The deployment failed at Apex compilation because AccountService references an unresolved field. The result does not prove whether the field is absent from the package, target org, or both.",
+  "unknowns": [
+    "No live org or local Salesforce project was supplied."
+  ]
+}

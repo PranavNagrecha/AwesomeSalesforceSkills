@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "a2a",
+    "portability"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-A2A-1",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Linux Foundation A2A",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "A2A Protocol 1.0",
+  "url": "https://a2a-protocol.org/latest/"
+}

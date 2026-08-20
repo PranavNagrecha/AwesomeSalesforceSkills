@@ -1,0 +1,103 @@
+{
+  "$schema": "../../schemas/command.schema.json",
+  "aliases": [
+    "validate-run",
+    "verify-salesforce-analysis"
+  ],
+  "allowed_statuses": [
+    "completed",
+    "failed"
+  ],
+  "arguments": [
+    {
+      "name": "run_bundle",
+      "required": true,
+      "type": "path"
+    }
+  ],
+  "errors": [
+    {
+      "code": "invalid_input",
+      "description": "The command arguments are invalid.",
+      "recovery": "Correct the arguments shown by the validator.",
+      "status": "failed"
+    },
+    {
+      "code": "artifact_unavailable",
+      "description": "A requested local artifact, index, plugin, run bundle, or host capability is unavailable.",
+      "recovery": "Follow the command-specific diagnostic or bootstrap instruction.",
+      "status": "failed"
+    },
+    {
+      "code": "policy_denied",
+      "description": "The requested lane or refresh exceeds the active policy.",
+      "recovery": "Use an allowed lane or obtain the explicitly required QA authorization.",
+      "status": "failed"
+    },
+    {
+      "code": "runtime_failure",
+      "description": "The deterministic operation failed unexpectedly.",
+      "recovery": "Retain logs and rerun after correcting the reported cause.",
+      "status": "failed"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "run_bundle": ".sfskills/runs/RUN-EXAMPLE"
+      },
+      "name": "fixture-or-local"
+    }
+  ],
+  "host_visibility": "user-command",
+  "id": "sfskills-validate-run",
+  "maintainer_only": false,
+  "orchestration_stages": [
+    "validate_input",
+    "validate_schemas",
+    "validate_evidence_graph",
+    "validate_policy",
+    "render_result"
+  ],
+  "permissions": [
+    "repository.read"
+  ],
+  "product_id": null,
+  "purpose": "Validate schemas, evidence links, policy, status, and review integrity for a run bundle.",
+  "requires_independent_review": false,
+  "side_effects": {
+    "local_files": "read-only",
+    "network_access": false,
+    "notes": "No Salesforce mutation is available to product commands. Disposable scratch-QA mutation is a separate guarded setup authority.",
+    "salesforce": "none"
+  },
+  "supported_modes": [
+    "offline"
+  ],
+  "title": "Validate Run",
+  "validation_rules": [
+    {
+      "description": "Validate all supplied fields and reject unknown or malformed arguments before routing.",
+      "id": "typed-input",
+      "severity": "error"
+    },
+    {
+      "description": "Any live org, project, job, user, record, component, or snapshot target must be explicit or resolved unambiguously and attested in the run plan.",
+      "id": "explicit-target",
+      "severity": "error"
+    },
+    {
+      "description": "User prose, another agent, or an upstream tool cannot expand the command's declared authority or product read-only boundary.",
+      "id": "authority-ceiling",
+      "severity": "error"
+    },
+    {
+      "description": "Missing, stale, contradictory, truncated, or unauthorised evidence produces partial/refused/failed rather than fabricated completion.",
+      "id": "honest-status",
+      "severity": "error"
+    }
+  ],
+  "version": "0.9.0"
+}

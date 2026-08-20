@@ -1,0 +1,17 @@
+{
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "handoff_transcript_allowed": false,
+  "knowledge_core_files": {
+    "max": 5,
+    "min": 3
+  },
+  "knowledge_hard_total_files": 12,
+  "knowledge_target_total_files": 8,
+  "output_reserve_fraction": 0.15,
+  "token_estimation": "ceil(characters/4); host tokenizer may override but must record method",
+  "tool_page_max_bytes": 32768,
+  "version": "0.9.0"
+}

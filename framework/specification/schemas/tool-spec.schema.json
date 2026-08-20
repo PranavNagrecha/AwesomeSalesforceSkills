@@ -1,0 +1,377 @@
+{
+  "$id": "tool-spec.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "arguments": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "default": {},
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "requirement": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "audit_events": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 5,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "cache_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_key_fields": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "cross_target": {
+          "type": "boolean"
+        },
+        "scope": {
+          "enum": [
+            "none",
+            "run",
+            "session"
+          ],
+          "type": "string"
+        },
+        "ttl_seconds": {
+          "maximum": 3600,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scope",
+        "ttl_seconds",
+        "cross_target",
+        "cache_key_fields"
+      ],
+      "type": "object"
+    },
+    "error_codes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[a-z0-9_]+$",
+            "type": "string"
+          },
+          "description": {
+            "minLength": 10,
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "partial",
+              "denied",
+              "error"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "status",
+          "retryable",
+          "description"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "evidence_types": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "id": {
+      "pattern": "^[a-z0-9_-]+$",
+      "type": "string"
+    },
+    "max_page_bytes": {
+      "maximum": 32768,
+      "minimum": 1024,
+      "type": "integer"
+    },
+    "normalization_rules": {
+      "items": {
+        "minLength": 10,
+        "type": "string"
+      },
+      "minItems": 5,
+      "type": "array"
+    },
+    "operation_type": {
+      "enum": [
+        "observation",
+        "local-analysis"
+      ],
+      "type": "string"
+    },
+    "output_contract": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "type": "boolean"
+        },
+        "redacted": {
+          "type": "boolean"
+        },
+        "source_counts": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "upstream_version": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "evidence_ids",
+        "truncated",
+        "redacted"
+      ],
+      "type": "object"
+    },
+    "pagination": {
+      "additionalProperties": false,
+      "properties": {
+        "default_limit": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_limit": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_page_bytes": {
+          "maximum": 32768,
+          "minimum": 1024,
+          "type": "integer"
+        },
+        "must_report_truncation": {
+          "type": "boolean"
+        },
+        "strategy": {
+          "enum": [
+            "none",
+            "opaque-cursor",
+            "offset",
+            "keyset"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy",
+        "default_limit",
+        "max_limit",
+        "max_page_bytes",
+        "must_report_truncation"
+      ],
+      "type": "object"
+    },
+    "permission_classes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "rate_limit": {
+      "additionalProperties": false,
+      "properties": {
+        "max_calls_per_run": {
+          "maximum": 20,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_concurrent": {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "on_limit": {
+          "enum": [
+            "partial",
+            "denied",
+            "error"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "max_calls_per_run",
+        "max_concurrent",
+        "on_limit",
+        "notes"
+      ],
+      "type": "object"
+    },
+    "read_only": {
+      "type": "boolean"
+    },
+    "redaction_profile": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "required_tests": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "requires_target_pinning": {
+      "type": "boolean"
+    },
+    "result_schema": {
+      "pattern": "^[a-z0-9-]+\\.schema\\.json$",
+      "type": "string"
+    },
+    "retry_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "backoff": {
+          "type": "string"
+        },
+        "max_attempts": {
+          "maximum": 3,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "never_retry_errors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "retryable_errors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "max_attempts",
+        "retryable_errors",
+        "never_retry_errors",
+        "backoff"
+      ],
+      "type": "object"
+    },
+    "sensitive_data_classes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "timeout_seconds": {
+      "maximum": 300,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "unknown_tool_default": {
+      "enum": [
+        "deny",
+        "ask"
+      ],
+      "type": "string"
+    },
+    "upstream_candidates": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "purpose",
+    "arguments",
+    "permission_classes",
+    "read_only",
+    "unknown_tool_default",
+    "max_page_bytes",
+    "requires_target_pinning",
+    "upstream_candidates",
+    "output_contract",
+    "required_tests",
+    "operation_type",
+    "result_schema",
+    "evidence_types",
+    "normalization_rules",
+    "pagination",
+    "timeout_seconds",
+    "retry_policy",
+    "rate_limit",
+    "cache_policy",
+    "sensitive_data_classes",
+    "error_codes",
+    "redaction_profile",
+    "audit_events"
+  ],
+  "title": "SFAEF Evidence Tool Specification",
+  "type": "object"
+}

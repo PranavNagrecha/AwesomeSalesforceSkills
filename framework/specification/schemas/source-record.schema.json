@@ -1,0 +1,83 @@
+{
+  "$id": "source-record.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "affects": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "applicable_versions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "retrieved_at": {
+      "format": "date",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date",
+      "type": "string"
+    },
+    "source_tier": {
+      "maximum": 5,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "current",
+        "review-due",
+        "stale",
+        "superseded",
+        "historical",
+        "unavailable"
+      ],
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "url": {
+      "format": "uri",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "publisher",
+    "source_tier",
+    "url",
+    "retrieved_at",
+    "reviewed_at",
+    "status",
+    "affects"
+  ],
+  "title": "SFAEF Knowledge Source Record",
+  "type": "object"
+}

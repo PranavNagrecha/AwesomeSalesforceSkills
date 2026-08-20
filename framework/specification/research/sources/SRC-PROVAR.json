@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "testing",
+    "agentforce"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-PROVAR",
+  "notes": "Vendor-authored market source. Confirms Salesforce-aware test automation, AI-assisted testing, metadata integration, and cross-application end-to-end testing. Re-check before public comparative claims.",
+  "publisher": "Provar",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 3,
+  "status": "current",
+  "title": "Provar Salesforce Test Automation",
+  "url": "https://provar.com/"
+}

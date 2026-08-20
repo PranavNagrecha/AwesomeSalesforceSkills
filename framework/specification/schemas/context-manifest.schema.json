@@ -1,0 +1,139 @@
+{
+  "$id": "context-manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "budget": {
+      "additionalProperties": false,
+      "properties": {
+        "hard_files": {
+          "type": "integer"
+        },
+        "max_tool_page_bytes": {
+          "type": "integer"
+        },
+        "output_reserve_fraction": {
+          "type": "number"
+        },
+        "target_files": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "target_files",
+        "hard_files",
+        "max_tool_page_bytes",
+        "output_reserve_fraction"
+      ],
+      "type": "object"
+    },
+    "items": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "conflicts_with": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "digest": {
+            "type": "string"
+          },
+          "estimated_tokens": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "control",
+              "knowledge",
+              "evidence",
+              "working",
+              "output-reserve"
+            ],
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "source",
+          "reason",
+          "priority",
+          "required",
+          "estimated_tokens",
+          "bytes",
+          "digest"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "overflow": {
+      "type": "boolean"
+    },
+    "overflow_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "totals": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "type": "integer"
+        },
+        "estimated_tokens": {
+          "type": "integer"
+        },
+        "files": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "files",
+        "estimated_tokens",
+        "bytes"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "run_id",
+    "stage",
+    "budget",
+    "items",
+    "totals",
+    "overflow"
+  ],
+  "title": "SFAEF Context Manifest",
+  "type": "object"
+}

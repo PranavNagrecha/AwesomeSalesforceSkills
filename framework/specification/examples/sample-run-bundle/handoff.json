@@ -1,0 +1,36 @@
+{
+  "context_metrics": {
+    "estimated_tokens": 1420,
+    "files_loaded": 3,
+    "tool_output_bytes": 480,
+    "truncated": false
+  },
+  "evidence_refs": [
+    "EV-E13EF0F4B5B5E647E2D6FBAD"
+  ],
+  "facts": [
+    {
+      "evidence_refs": [
+        "EV-E13EF0F4B5B5E647E2D6FBAD"
+      ],
+      "text": "Deployment compiler reports Missing_Field__c unresolved in AccountService line 42."
+    }
+  ],
+  "from_agent": "sf-org-grounder",
+  "hypotheses": [
+    {
+      "confidence": 0.85,
+      "evidence_refs": [
+        "EV-E13EF0F4B5B5E647E2D6FBAD"
+      ],
+      "text": "The field is missing from the deployment package or target context."
+    }
+  ],
+  "recommended_next_agent": "deployment-failure-triager",
+  "run_id": "RUN-20260819T120000Z-EXAMPLE001",
+  "task": "Diagnose normalized deployment failure",
+  "to_agent": "deployment-failure-triager",
+  "unknowns": [
+    "Whether the field exists in an external local project or target org snapshot"
+  ]
+}

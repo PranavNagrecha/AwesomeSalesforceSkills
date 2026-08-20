@@ -1,0 +1,123 @@
+{
+  "$id": "evidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "maximum": 5,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "classification": {
+      "enum": [
+        "public-knowledge",
+        "repository-internal",
+        "org-metadata",
+        "org-business-data",
+        "security-sensitive",
+        "credential-secret",
+        "benchmark-sanitized"
+      ],
+      "type": "string"
+    },
+    "content": {},
+    "digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "directness": {
+      "maximum": 5,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "fresh_until": {
+      "format": "date-time",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "pattern": "^EV-[A-F0-9]{16,64}$",
+      "type": "string"
+    },
+    "job_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "next_cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "org_id_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_digest": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "redacted": {
+      "type": "boolean"
+    },
+    "retained_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "source_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "source_locator": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string"
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "upstream_tool": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "upstream_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "source_type",
+    "source_locator",
+    "captured_at",
+    "authority",
+    "directness",
+    "classification",
+    "digest",
+    "content",
+    "redacted",
+    "truncated"
+  ],
+  "title": "SFAEF Evidence Item",
+  "type": "object"
+}

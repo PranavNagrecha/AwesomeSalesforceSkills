@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "salesforce-platform",
+    "tool-broker",
+    "skills",
+    "product-boundary"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-HEADLESS-360",
+  "notes": "Four stable tools backed by a growing skills library; includes mutating operations, so product policy remains independently read-only. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Headless 360 MCP Server (Beta)",
+  "url": "https://developer.salesforce.com/docs/platform/hosted-mcp-servers/guide/headless-360-mcp.html"
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "added/removed/changed components",
+      "max_files": 2,
+      "trigger": "added/removed/changed components"
+    },
+    {
+      "id": "expected differences",
+      "max_files": 2,
+      "trigger": "expected differences"
+    },
+    {
+      "id": "dangerous drift",
+      "max_files": 2,
+      "trigger": "dangerous drift"
+    },
+    {
+      "id": "dependency consequences",
+      "max_files": 2,
+      "trigger": "dependency consequences"
+    },
+    {
+      "id": "promotion/reconciliation recommendations",
+      "max_files": 2,
+      "trigger": "promotion/reconciliation recommendations"
+    },
+    {
+      "id": "snapshot limitations",
+      "max_files": 2,
+      "trigger": "snapshot limitations"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P12-multi-org-drift-analysis",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P12",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

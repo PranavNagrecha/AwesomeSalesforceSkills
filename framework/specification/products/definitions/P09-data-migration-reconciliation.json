@@ -1,0 +1,118 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "data-migration-reconciler",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "reconcile-data-load"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "count reconciliation",
+    "reject/duplicate categories",
+    "relationship and ownership gaps",
+    "transformation anomalies",
+    "business invariant violations",
+    "confidence and sample limits",
+    "safe correction plan"
+  ],
+  "id": "P09",
+  "inputs": [
+    {
+      "description": "Source/transform/load definitions and expected counts",
+      "name": "migration_manifest",
+      "requirement": "required"
+    },
+    {
+      "description": "Load success/error/reject outputs",
+      "name": "result_files",
+      "requirement": "required"
+    },
+    {
+      "description": "Read-only count/sample queries",
+      "name": "target_org",
+      "requirement": "optional"
+    },
+    {
+      "description": "Field/object mapping",
+      "name": "mapping_file",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Cannot prove full record equality from samples",
+    "Does not re-run or fix a load",
+    "Business invariants require user-defined rules"
+  ],
+  "known_truth_scenarios": [
+    "DATA-COUNT-MISMATCH",
+    "DATA-DUPLICATE",
+    "DATA-PARENT-MISSING",
+    "DATA-OWNER",
+    "DATA-TRANSFORM",
+    "DATA-REJECTS"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "Target aggregate counts",
+    "reject samples",
+    "external-ID/relationship checks",
+    "ownership/record-type checks",
+    "business invariants"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "data-engineer",
+    "admin",
+    "consultant",
+    "architect",
+    "release-engineer"
+  ],
+  "quality_gates": [
+    "Arithmetic is deterministic",
+    "Sampling limits are explicit",
+    "No corrective DML",
+    "PII is minimized and redacted"
+  ],
+  "required_evidence": [
+    "Expected source/transform/load counts and result files"
+  ],
+  "slug": "data-migration-reconciliation",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Data Migration Reconciliation",
+  "tool_ids": [
+    "get_data_load_result",
+    "run_bounded_read_query",
+    "get_org_identity",
+    "describe_salesforce_component"
+  ],
+  "user_job": "Explain whether a Salesforce data migration reconciled, where records or relationships were lost/changed, and which deterministic checks should be performed next.",
+  "version": "0.9.0"
+}

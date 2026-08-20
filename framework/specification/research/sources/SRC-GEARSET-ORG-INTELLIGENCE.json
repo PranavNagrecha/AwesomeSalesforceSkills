@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "org-intelligence",
+    "impact-analysis"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-GEARSET-ORG-INTELLIGENCE",
+  "notes": "Vendor description of metadata/dependency context and impact analysis. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Gearset",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Org Intelligence for Salesforce",
+  "url": "https://gearset.com/solutions/org-intelligence/"
+}

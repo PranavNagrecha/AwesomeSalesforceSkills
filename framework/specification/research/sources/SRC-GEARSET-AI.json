@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "devops",
+    "org-intelligence",
+    "testing"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-GEARSET-AI",
+  "notes": "Vendor description of org-grounded deterministic analysis plus AI, observability, testing, and build capabilities. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Gearset",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Gearset AI for Salesforce DevOps",
+  "url": "https://gearset.com/solutions/ai/"
+}

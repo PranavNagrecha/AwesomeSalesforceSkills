@@ -1,0 +1,199 @@
+{
+  "$schema": "../../schemas/command.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "data-migration-reconciler",
+    "sf-evidence-reviewer"
+  ],
+  "aliases": [
+    "data-load-reconciliation",
+    "migration-reconciliation"
+  ],
+  "allowed_statuses": [
+    "completed",
+    "partial",
+    "refused",
+    "failed"
+  ],
+  "arguments": [
+    {
+      "description": "Source/transform/load definitions and expected counts",
+      "name": "migration_manifest",
+      "required": true,
+      "requirement": "required",
+      "type": "string"
+    },
+    {
+      "description": "Load success/error/reject outputs",
+      "name": "result_files",
+      "required": true,
+      "requirement": "required",
+      "type": "string"
+    },
+    {
+      "description": "Read-only count/sample queries",
+      "name": "target_org",
+      "required": false,
+      "requirement": "optional",
+      "type": "string"
+    },
+    {
+      "description": "Field/object mapping",
+      "name": "mapping_file",
+      "required": false,
+      "requirement": "optional",
+      "type": "string"
+    }
+  ],
+  "errors": [
+    {
+      "code": "invalid_input",
+      "description": "The request does not satisfy the typed command contract.",
+      "recovery": "Correct the named fields and invoke the command again.",
+      "status": "refused"
+    },
+    {
+      "code": "ambiguous_target",
+      "description": "More than one org, project, job, user, record, or component could be selected safely.",
+      "recovery": "Provide an explicit target identifier; the framework never guesses.",
+      "status": "refused"
+    },
+    {
+      "code": "policy_denied",
+      "description": "The requested operation exceeds the active authority profile or read-only product boundary.",
+      "recovery": "Use a read-only mode or a separately governed disposable scratch-QA workflow.",
+      "status": "refused"
+    },
+    {
+      "code": "evidence_unavailable",
+      "description": "Required evidence could not be retrieved, parsed, or proven fresh.",
+      "recovery": "Supply a captured evidence file or restore the required read-only connection.",
+      "status": "partial"
+    },
+    {
+      "code": "context_overflow",
+      "description": "The bounded context or tool-page ceiling was reached.",
+      "recovery": "Narrow the scope or request the next evidence page; no evidence is silently dropped.",
+      "status": "partial"
+    },
+    {
+      "code": "host_unsupported",
+      "description": "The active host cannot enforce or execute a required stage exactly as specified.",
+      "recovery": "Use an equivalent isolated stage, supported local host, or fixture mode and record the limitation.",
+      "status": "partial"
+    },
+    {
+      "code": "runtime_failure",
+      "description": "An unexpected deterministic parser, tool, host, or persistence failure occurred.",
+      "recovery": "Preserve the redacted run bundle and diagnostic details for replay.",
+      "status": "failed"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "mapping_file": "migration/field-map.csv",
+        "migration_manifest": "migration/manifest.json",
+        "result_files": "migration/results/",
+        "target_org": "qa-sandbox"
+      },
+      "name": "fixture-or-local"
+    },
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "mapping_file": "migration/field-map.csv",
+        "migration_manifest": "migration/manifest.json",
+        "result_files": "migration/results/",
+        "target_org": "qa-sandbox"
+      },
+      "name": "live-read-only"
+    }
+  ],
+  "host_visibility": "user-command",
+  "id": "reconcile-data-load",
+  "orchestration_stages": [
+    "validate_input",
+    "resolve_targets",
+    "authorize_run",
+    "plan_context",
+    "collect_evidence",
+    "synthesize_findings",
+    "deterministic_lint",
+    "independent_review",
+    "persist_run_bundle"
+  ],
+  "output_schema": "output-envelope.schema.json",
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "product_id": "P09",
+  "purpose": "Explain whether a Salesforce data migration reconciled, where records or relationships were lost/changed, and which deterministic checks should be performed next.",
+  "requires_independent_review": true,
+  "side_effects": {
+    "local_files": "report-write",
+    "network_access": true,
+    "notes": "No Salesforce mutation is available to product commands. Disposable scratch-QA mutation is a separate guarded setup authority.",
+    "salesforce": "read-only"
+  },
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Data Migration Reconciliation",
+  "tool_ids": [
+    "get_data_load_result",
+    "run_bounded_read_query",
+    "get_org_identity",
+    "describe_salesforce_component"
+  ],
+  "validation_rules": [
+    {
+      "description": "Validate all supplied fields and reject unknown or malformed arguments before routing.",
+      "id": "typed-input",
+      "severity": "error"
+    },
+    {
+      "description": "Any live org, project, job, user, record, component, or snapshot target must be explicit or resolved unambiguously and attested in the run plan.",
+      "id": "explicit-target",
+      "severity": "error"
+    },
+    {
+      "description": "User prose, another agent, or an upstream tool cannot expand the command's declared authority or product read-only boundary.",
+      "id": "authority-ceiling",
+      "severity": "error"
+    },
+    {
+      "description": "Missing, stale, contradictory, truncated, or unauthorised evidence produces partial/refused/failed rather than fabricated completion.",
+      "id": "honest-status",
+      "severity": "error"
+    },
+    {
+      "description": "Use progressive disclosure; target <=8 knowledge/reference files, hard <=12, and <=32 KiB per model-visible tool page.",
+      "id": "bounded-context",
+      "severity": "error"
+    },
+    {
+      "description": "A completed product result requires deterministic evidence lint and an independent evidence-review stage.",
+      "id": "independent-review",
+      "severity": "error"
+    },
+    {
+      "description": "An external Salesforce project is optional enrichment; explicit path wins, ambiguity is never guessed, and standalone mode remains valid.",
+      "id": "optional-project-enrichment",
+      "severity": "error"
+    }
+  ],
+  "version": "0.9.0"
+}

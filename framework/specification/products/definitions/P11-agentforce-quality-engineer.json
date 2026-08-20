@@ -1,0 +1,118 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "agentforce-quality-engineer",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "review-agentforce-agent"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "topic/subagent coherence",
+    "action input/output and side effects",
+    "grounding/evidence quality",
+    "guardrail gaps",
+    "permission/data risks",
+    "test coverage and failures",
+    "release readiness"
+  ],
+  "id": "P11",
+  "inputs": [
+    {
+      "description": "Retrieved Agentforce metadata path",
+      "name": "agent_metadata_path",
+      "requirement": "required"
+    },
+    {
+      "description": "Explicit agent identity",
+      "name": "agent_developer_name",
+      "requirement": "required"
+    },
+    {
+      "description": "Read-only org for action implementations/test results",
+      "name": "target_org",
+      "requirement": "optional"
+    },
+    {
+      "description": "overview/topics/actions/full",
+      "name": "review_depth",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not publish or activate agents",
+    "Cannot inspect proprietary model internals",
+    "Quality depends on available test telemetry"
+  ],
+  "known_truth_scenarios": [
+    "AFX-ACTION-CONTRACT",
+    "AFX-GROUNDING",
+    "AFX-GUARDRAIL",
+    "AFX-PERMISSION",
+    "AFX-TEST-GAP",
+    "AFX-TOPIC-ROUTING"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "Action Apex/Flow source",
+    "Agentforce test definitions/results",
+    "grounding sources",
+    "prompt/templates",
+    "permission/security evidence"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "agentforce-builder",
+    "developer",
+    "architect",
+    "security-reviewer",
+    "consultant"
+  ],
+  "quality_gates": [
+    "Uses current Agentforce metadata concepts",
+    "Does not infer hidden production behavior",
+    "Side-effect surface is explicit",
+    "Test and grounding evidence are traceable"
+  ],
+  "required_evidence": [
+    "Agentforce metadata and explicit agent identity"
+  ],
+  "slug": "agentforce-quality-engineer",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Agentforce Quality Engineer",
+  "tool_ids": [
+    "get_agentforce_test_result",
+    "describe_salesforce_component",
+    "get_code_analysis_result",
+    "get_flow_test_result"
+  ],
+  "user_job": "Review an Agentforce agent, topics/subagents, actions, grounding, guardrails, tests, and implementation dependencies for correctness, safety, and release readiness.",
+  "version": "0.9.0"
+}

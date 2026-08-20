@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "agentforce",
+    "observability",
+    "subagents"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-AGENTLENS",
+  "notes": "Official example of graph and finite-state-machine observability over agent traces. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "AgentLens: Debug Agentforce with Interactive Visualizations",
+  "url": "https://developer.salesforce.com/blogs/2026/05/agentlens-debug-agentforce-with-interactive-visualizations"
+}

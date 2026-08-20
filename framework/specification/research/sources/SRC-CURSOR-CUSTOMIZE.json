@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "cursor-adapter",
+    "distribution",
+    "subagents",
+    "skills",
+    "hooks"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-CURSOR-CUSTOMIZE",
+  "notes": "Official component model: plugins, skills, subagents, commands, MCP, and hooks. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Cursor",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Customize Cursor",
+  "url": "https://prod.cursor.com/docs/customize-cursor"
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "org-intelligence",
+    "impact-analysis"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-ELEMENTS-ORG-INTELLIGENCE",
+  "notes": "Vendor description of multi-level dependency, impact, technical debt, and natural-language org intelligence. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Elements.cloud",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Conversational Org Intelligence",
+  "url": "https://elements.cloud/salesforce-org-ai/"
+}

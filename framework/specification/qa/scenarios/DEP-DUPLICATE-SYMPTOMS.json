@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "deployment",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "DEP-DUPLICATE-SYMPTOMS",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P01",
+  "required_findings": [
+    {
+      "description": "cluster duplicates",
+      "id": "DEP-DUPLICATE-SYMPTOMS-F1"
+    },
+    {
+      "description": "preserve count",
+      "id": "DEP-DUPLICATE-SYMPTOMS-F2"
+    },
+    {
+      "description": "rank shared cause first",
+      "id": "DEP-DUPLICATE-SYMPTOMS-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Many component errors repeat one missing dependency.",
+  "version": "1.0.0"
+}

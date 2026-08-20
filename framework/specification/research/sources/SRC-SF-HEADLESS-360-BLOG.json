@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "salesforce-platform",
+    "progressive-discovery",
+    "context"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-HEADLESS-360-BLOG",
+  "notes": "Official product rationale for a small stable tool surface with skills behind it. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Announcing the Headless 360 MCP Server Beta",
+  "url": "https://developer.salesforce.com/blogs/2026/07/announcing-the-headless-360-mcp-server-beta"
+}

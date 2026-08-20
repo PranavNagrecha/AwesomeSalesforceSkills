@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "devops",
+    "security",
+    "backup",
+    "governance"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-FLOSUM",
+  "notes": "Vendor-authored market source. Confirms Salesforce-native DevOps, AI-assisted risk detection, deployment, governance, backup, security, and data operations. Re-check before public comparative claims.",
+  "publisher": "Flosum",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 3,
+  "status": "current",
+  "title": "Flosum Salesforce DevOps and Deployment Platform",
+  "url": "https://www.flosum.com/"
+}

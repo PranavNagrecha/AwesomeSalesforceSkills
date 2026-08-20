@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "cursor-adapter",
+    "cloud",
+    "host-capabilities"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-CURSOR-CLOUD-AGENTS",
+  "notes": "Official cloud execution and MCP support; exact hook/subagent parity requires host testing. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Cursor",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Cloud Agents",
+  "url": "https://prod.cursor.com/docs/cloud-agent"
+}

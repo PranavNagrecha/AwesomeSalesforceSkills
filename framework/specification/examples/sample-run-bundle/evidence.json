@@ -1,0 +1,37 @@
+[
+  {
+    "authority": 5,
+    "captured_at": "2026-08-19T12:00:00+00:00",
+    "classification": "benchmark-sanitized",
+    "content": {
+      "component_failures": [
+        {
+          "component": "AccountService",
+          "line": 42,
+          "problem": "Variable does not exist: Missing_Field__c"
+        }
+      ],
+      "job_id": "0AfEXAMPLE",
+      "status": "Failed"
+    },
+    "digest": "567ed695be2d5957b9c5b35a5fc43324a886dcf9d44f10068ebf7bc6680fdfc5",
+    "directness": 5,
+    "fresh_until": null,
+    "id": "EV-E13EF0F4B5B5E647E2D6FBAD",
+    "job_id": "0AfEXAMPLE",
+    "metadata": {
+      "scenario": "DEP-MISSING-DEPENDENCY"
+    },
+    "next_cursor": null,
+    "org_id_hash": null,
+    "project_digest": null,
+    "redacted": true,
+    "retained_count": 1,
+    "source_count": 1,
+    "source_locator": "fixture:DEP-MISSING-DEPENDENCY",
+    "source_type": "salesforce-deployment-result",
+    "truncated": false,
+    "upstream_tool": "fixture-loader",
+    "upstream_version": "1.0"
+  }
+]

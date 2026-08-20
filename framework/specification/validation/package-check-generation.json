@@ -1,0 +1,176 @@
+{
+  "steps": [
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "scripts/build_requirement_catalog.py",
+        "--check"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.901,
+      "exit_code": 0,
+      "id": "requirements"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "scripts/build_catalogs.py",
+        "--check"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.812,
+      "exit_code": 0,
+      "id": "catalogs"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "tools/enrich_machine_contracts.py",
+        "--check"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.776,
+      "exit_code": 0,
+      "id": "machine-contracts"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "scripts/build_api_references.py",
+        "--check"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.841,
+      "exit_code": 0,
+      "id": "api-references"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "scripts/validate_framework_package.py"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 2.987,
+      "exit_code": 0,
+      "id": "package-validation"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "tools/validate_spec_package.py",
+        "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 2.947,
+      "exit_code": 0,
+      "id": "strict-package-validation"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 2.917,
+      "exit_code": 0,
+      "id": "root-tests"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 3.002,
+      "exit_code": 0,
+      "id": "validator-tests"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0/reference-kernel",
+      "duration_seconds": 1.862,
+      "exit_code": 0,
+      "id": "reference-kernel-tests"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/product",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0/reference-components/project-inspector/repo-files",
+      "duration_seconds": 5.435,
+      "exit_code": 0,
+      "id": "project-inspector-tests"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-m",
+        "compileall",
+        "-q",
+        "scripts",
+        "tools",
+        "reference-kernel",
+        "reference-components/project-inspector/repo-files"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.876,
+      "exit_code": 0,
+      "id": "python-compile"
+    },
+    {
+      "command": [
+        "/opt/pyvenv/bin/python3",
+        "-B",
+        "scripts/build_framework_manifest.py",
+        "--check"
+      ],
+      "cwd": "/mnt/data/SfSkills_Salesforce_AI_Engineering_Framework_Spec_v0.9.0",
+      "duration_seconds": 1.792,
+      "exit_code": 0,
+      "id": "manifest-check"
+    }
+  ],
+  "valid": true
+}

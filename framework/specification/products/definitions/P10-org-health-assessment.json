@@ -1,0 +1,116 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "org-health-assessor-v2",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "assess-org-health"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "trusted/easy/adaptable evidence",
+    "critical risks",
+    "maintainability and lifecycle issues",
+    "strengths",
+    "sequenced 30/60/90-day roadmap",
+    "measurement plan"
+  ],
+  "id": "P10",
+  "inputs": [
+    {
+      "description": "Explicit read-only org",
+      "name": "target_org",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Full or selected architecture dimensions",
+      "name": "assessment_scope",
+      "requirement": "optional"
+    },
+    {
+      "description": "Captured snapshot for offline mode",
+      "name": "evidence_bundle",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Critical processes, compliance, release cadence",
+      "name": "business_context",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Not a compliance audit",
+    "Some business/process health requires interviews",
+    "Org snapshots may omit managed/external behavior"
+  ],
+  "known_truth_scenarios": [
+    "HLT-SECURITY",
+    "HLT-AUTOMATION-DEBT",
+    "HLT-LIMITS",
+    "HLT-MAINTAINABILITY",
+    "HLT-ALM",
+    "HLT-DATA-INTEGRITY"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "metadata inventory",
+    "automation/security/access summaries",
+    "limits/adoption/technical debt evidence",
+    "release history supplied by user"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "architect",
+    "admin",
+    "consultant",
+    "security-reviewer",
+    "engineering-lead"
+  ],
+  "quality_gates": [
+    "Every score/rating has evidence and caveats",
+    "Strong areas are reported, not only defects",
+    "Roadmap prioritizes impact and effort",
+    "No unsupported maturity benchmark"
+  ],
+  "required_evidence": [
+    "Org snapshot or explicit fixture"
+  ],
+  "slug": "org-health-assessment",
+  "supported_modes": [
+    "fixture",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Org Health Assessment",
+  "tool_ids": [
+    "get_org_snapshot_manifest",
+    "get_automation_inventory",
+    "get_user_access_evidence",
+    "get_code_analysis_result",
+    "get_limits_snapshot"
+  ],
+  "user_job": "Produce an evidence-backed, prioritized Salesforce health roadmap across Trusted, Easy, and Adaptable dimensions without reducing the org to a superficial score.",
+  "version": "0.9.0"
+}

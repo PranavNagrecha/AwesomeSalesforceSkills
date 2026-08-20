@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "apex-test",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "APX-ASSERTION",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P02",
+  "required_findings": [
+    {
+      "description": "classify assertion",
+      "id": "APX-ASSERTION-F1"
+    },
+    {
+      "description": "cite method/stack",
+      "id": "APX-ASSERTION-F2"
+    },
+    {
+      "description": "separate product defect from stale test when evidence allows",
+      "id": "APX-ASSERTION-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Assertion expected/actual mismatch with clear stack evidence.",
+  "version": "1.0.0"
+}

@@ -1,0 +1,134 @@
+test_agents_cannot_gain_authority_from_prompts (test_framework_package.FrameworkPackageTests.test_agents_cannot_gain_authority_from_prompts) ... ok
+test_all_product_tools_are_read_only (test_framework_package.FrameworkPackageTests.test_all_product_tools_are_read_only) ... ok
+test_context_packs_enforce_hard_limit (test_framework_package.FrameworkPackageTests.test_context_packs_enforce_hard_limit) ... ok
+test_definition_counts_are_nontrivial (test_framework_package.FrameworkPackageTests.test_definition_counts_are_nontrivial) ... ok
+test_generated_api_references_are_current (test_framework_package.FrameworkPackageTests.test_generated_api_references_are_current) ... ok
+test_legacy_migration_ledgers_cover_uploaded_baseline (test_framework_package.FrameworkPackageTests.test_legacy_migration_ledgers_cover_uploaded_baseline) ... ok
+test_local_report_persistence_is_not_salesforce_mutation (test_framework_package.FrameworkPackageTests.test_local_report_persistence_is_not_salesforce_mutation) ... ok
+test_product_commands_have_review_and_read_only_contracts (test_framework_package.FrameworkPackageTests.test_product_commands_have_review_and_read_only_contracts) ... ok
+test_requirement_catalog_has_unique_stable_ids (test_framework_package.FrameworkPackageTests.test_requirement_catalog_has_unique_stable_ids) ... ok
+test_return_zip_verifier_rejects_empty_zip (test_framework_package.FrameworkPackageTests.test_return_zip_verifier_rejects_empty_zip) ... ok
+test_tools_have_bounded_replayable_contracts (test_framework_package.FrameworkPackageTests.test_tools_have_bounded_replayable_contracts) ... ok
+test_validator_reports_package_valid (test_framework_package.FrameworkPackageTests.test_validator_reports_package_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.970s
+
+OK
+test_blocked_with_failed_test_is_structurally_reviewable (test_validators.CursorReturnValidatorTests.test_blocked_with_failed_test_is_structurally_reviewable) ... ok
+test_checksum_mismatch_fails (test_validators.CursorReturnValidatorTests.test_checksum_mismatch_fails) ... ok
+test_completed_structural_and_release_pass (test_validators.CursorReturnValidatorTests.test_completed_structural_and_release_pass) ... ok
+test_failed_test_cannot_claim_completed (test_validators.CursorReturnValidatorTests.test_failed_test_cannot_claim_completed) ... ok
+test_missing_test_log_fails (test_validators.CursorReturnValidatorTests.test_missing_test_log_fails) ... ok
+test_actual_spec_package_is_consistent (test_validators.SpecValidatorTests.test_actual_spec_package_is_consistent) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.236s
+
+OK
+test_deduplicate (test_context.ContextTests.test_deduplicate) ... ok
+test_deterministic (test_context.ContextTests.test_deterministic) ... ok
+test_invalid_budget (test_context.ContextTests.test_invalid_budget) ... ok
+test_required_overflow (test_context.ContextTests.test_required_overflow) ... ok
+test_required_precedes_optional (test_context.ContextTests.test_required_precedes_optional) ... ok
+test_target_selection (test_context.ContextTests.test_target_selection) ... ok
+test_tool_payload_bound (test_context.ContextTests.test_tool_payload_bound) ... ok
+test_contradiction (test_evidence.EvidenceTests.test_contradiction) ... ok
+test_contradiction_penalty (test_evidence.EvidenceTests.test_contradiction_penalty) ... ok
+test_high_confidence (test_evidence.EvidenceTests.test_high_confidence) ... ok
+test_missing_ref (test_evidence.EvidenceTests.test_missing_ref) ... ok
+test_secret_evidence (test_evidence.EvidenceTests.test_secret_evidence) ... ok
+test_unsupported_material (test_evidence.EvidenceTests.test_unsupported_material) ... ok
+test_claim_whitespace_normalized (test_ids.IdTests.test_claim_whitespace_normalized) ... ok
+test_evidence_id_changes (test_ids.IdTests.test_evidence_id_changes) ... ok
+test_evidence_id_stable (test_ids.IdTests.test_evidence_id_stable) ... ok
+test_run_id_shape (test_ids.IdTests.test_run_id_shape) ... ok
+test_allowlisted_tool (test_policy.PolicyTests.test_allowlisted_tool) ... ok
+test_compound_denied (test_policy.PolicyTests.test_compound_denied) ... ok
+test_deploy_start_denied (test_policy.PolicyTests.test_deploy_start_denied) ... ok
+test_deployment_report_allowed (test_policy.PolicyTests.test_deployment_report_allowed) ... ok
+test_legacy_denied (test_policy.PolicyTests.test_legacy_denied) ... ok
+test_most_recent_denied (test_policy.PolicyTests.test_most_recent_denied) ... ok
+test_org_pin (test_policy.PolicyTests.test_org_pin) ... ok
+test_unknown_tool_denied (test_policy.PolicyTests.test_unknown_tool_denied) ... ok
+test_wrapper_denied (test_policy.PolicyTests.test_wrapper_denied) ... ok
+test_complete (test_review_package.ReviewTests.test_complete) ... ok
+test_dirty_rejected (test_review_package.ReviewTests.test_dirty_rejected) ... ok
+test_failed_required_test (test_review_package.ReviewTests.test_failed_required_test) ... ok
+test_missing (test_review_package.ReviewTests.test_missing) ... ok
+test_checkpoint_resume (test_run_state.RunStateTests.test_checkpoint_resume) ... ok
+test_happy_path (test_run_state.RunStateTests.test_happy_path) ... ok
+test_invalid_skip (test_run_state.RunStateTests.test_invalid_skip) ... ok
+test_terminal_immutable (test_run_state.RunStateTests.test_terminal_immutable) ... ok
+
+----------------------------------------------------------------------
+Ran 34 tests in 0.006s
+
+OK
+test_cli_json_standalone_exits_zero_by_default (test_project_discover.CliTest.test_cli_json_standalone_exits_zero_by_default) ... ok
+test_cli_requires_component_pair (test_project_discover.CliTest.test_cli_requires_component_pair) ... ok
+test_cwd_inside_project_is_discovered (test_project_discover.DiscoveryTest.test_cwd_inside_project_is_discovered) ... ok
+test_escaping_package_directory_is_rejected (test_project_discover.DiscoveryTest.test_escaping_package_directory_is_rejected) ... ok
+test_explicit_file_inside_project_finds_ancestor (test_project_discover.DiscoveryTest.test_explicit_file_inside_project_finds_ancestor) ... ok
+test_explicit_root_wins (test_project_discover.DiscoveryTest.test_explicit_root_wins) ... ok
+test_invalid_descriptor_is_reported (test_project_discover.DiscoveryTest.test_invalid_descriptor_is_reported) ... ok
+test_invalid_explicit_path_does_not_fall_back (test_project_discover.DiscoveryTest.test_invalid_explicit_path_does_not_fall_back) ... ok
+test_missing_workspace_warning_does_not_corrupt_found_result (test_project_discover.DiscoveryTest.test_missing_workspace_warning_does_not_corrupt_found_result) ... ok
+test_multiple_workspace_projects_are_ambiguous (test_project_discover.DiscoveryTest.test_multiple_workspace_projects_are_ambiguous) ... ok
+test_no_project_is_valid_standalone_mode (test_project_discover.DiscoveryTest.test_no_project_is_valid_standalone_mode) ... ok
+test_single_workspace_project_is_discovered (test_project_discover.DiscoveryTest.test_single_workspace_project_is_discovered) ... ok
+test_maps_apex_class (test_project_discover.MappingTest.test_maps_apex_class) ... ok
+test_maps_custom_field (test_project_discover.MappingTest.test_maps_custom_field) ... ok
+test_maps_lwc_bundle_directory (test_project_discover.MappingTest.test_maps_lwc_bundle_directory) ... ok
+test_non_positive_line_is_rejected (test_project_discover.MappingTest.test_non_positive_line_is_rejected) ... ok
+test_not_found_is_honest (test_project_discover.MappingTest.test_not_found_is_honest) ... ok
+test_standalone_mapping_is_skipped_not_failed (test_project_discover.MappingTest.test_standalone_mapping_is_skipped_not_failed) ... ok
+test_unsafe_full_name_is_rejected (test_project_discover.MappingTest.test_unsafe_full_name_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 3.602s
+
+OK
+[requirements] exit=0 duration=1.901s
+OK: implementation/requirements.csv
+OK: implementation/requirements.json
+Requirements: 266
+[catalogs] exit=0 duration=1.812s
+OK: catalogs/PRODUCT_CATALOG.md
+OK: catalogs/AGENT_CATALOG.md
+OK: catalogs/COMMAND_API.md
+OK: catalogs/EVIDENCE_TOOL_API.md
+OK: catalogs/CONTEXT_PACK_CATALOG.md
+OK: catalogs/SCENARIO_CATALOG.md
+OK: catalogs/SOURCE_CATALOG.md
+OK: catalogs/REQUIREMENT_CATALOG.md
+[machine-contracts] exit=0 duration=1.776s
+Machine contracts are current.
+[api-references] exit=0 duration=1.841s
+API references are current.
+[package-validation] exit=0 duration=2.987s
+SFAEF package valid: True
+  agents: 20
+  commands: 18
+  context_packs: 12
+  evidence_tools: 18
+  legacy_agents: 76
+  legacy_commands: 67
+  legacy_mcp-tools: 38
+  legacy_skills: 1034
+  products: 12
+  qa_scenarios: 74
+  requirements: 266
+  research_sources: 37
+  schema_validated_json: 194
+  errors: 0
+  warnings: 0
+[strict-package-validation] exit=0 duration=2.947s
+PASS: specification package is internally consistent
+[root-tests] exit=0 duration=2.917s
+[validator-tests] exit=0 duration=3.002s
+[reference-kernel-tests] exit=0 duration=1.862s
+[project-inspector-tests] exit=0 duration=5.435s
+[python-compile] exit=0 duration=1.876s
+[manifest-check] exit=0 duration=1.792s
+OK: FRAMEWORK_MANIFEST.json

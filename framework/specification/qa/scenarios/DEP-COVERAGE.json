@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "deployment",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "DEP-COVERAGE",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P01",
+  "required_findings": [
+    {
+      "description": "report exact coverage evidence",
+      "id": "DEP-COVERAGE-F1"
+    },
+    {
+      "description": "identify implicated classes if available",
+      "id": "DEP-COVERAGE-F2"
+    },
+    {
+      "description": "do not recommend meaningless test inflation",
+      "id": "DEP-COVERAGE-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Deployment result reports code-coverage failure.",
+  "version": "1.0.0"
+}

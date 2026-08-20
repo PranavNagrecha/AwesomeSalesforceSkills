@@ -1,0 +1,126 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "access-path-explainer",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "why-cant-user"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "access decision by layer",
+    "first blocking control",
+    "granting paths",
+    "conflicting or muted permissions",
+    "record-level path",
+    "UI versus platform permission distinction",
+    "evidence gaps",
+    "least-privilege remediation options"
+  ],
+  "id": "P03",
+  "inputs": [
+    {
+      "description": "User ID, username, or explicit fixture identity",
+      "name": "user",
+      "requirement": "required"
+    },
+    {
+      "description": "Object, field, record, record type, action, or capability",
+      "name": "resource",
+      "requirement": "required"
+    },
+    {
+      "description": "read/create/edit/delete/transfer/execute/assign or product-defined action",
+      "name": "operation",
+      "requirement": "required"
+    },
+    {
+      "description": "Explicit org alias/username",
+      "name": "target_org",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Record for record-level explanation",
+      "name": "record_id",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not assign permissions or modify sharing",
+    "Some formula/Apex/custom UI decisions may require code/project evidence",
+    "Record-level access explanation may be partial when APIs do not expose a decisive reason"
+  ],
+  "known_truth_scenarios": [
+    "ACC-FLS",
+    "ACC-OBJECT-CRUD",
+    "ACC-RECORD-SHARING",
+    "ACC-RESTRICTION-RULE",
+    "ACC-MUTING",
+    "ACC-LICENSE",
+    "ACC-RECORD-TYPE"
+  ],
+  "lifecycle_status": "release-candidate target",
+  "optional_evidence": [
+    "Permission-set groups and muting",
+    "CRUD/FLS/record type",
+    "sharing/restriction/territory/team/manual/Apex sharing",
+    "record ownership and role hierarchy",
+    "page/action visibility",
+    "automation or validation that blocks the operation"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "admin",
+    "developer",
+    "security-reviewer",
+    "consultant",
+    "architect"
+  ],
+  "quality_gates": [
+    "Never says \u201cprofile issue\u201d without tracing layers",
+    "Separates object/field/record/UI/automation causes",
+    "Sensitive user and record data are minimized",
+    "Unknown evaluation paths are explicit"
+  ],
+  "required_evidence": [
+    "User/license/profile/permission-set context",
+    "Resource identity and requested operation"
+  ],
+  "slug": "access-path-explainer",
+  "supported_modes": [
+    "fixture",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Access Path Explainer",
+  "tool_ids": [
+    "get_user_access_evidence",
+    "get_record_access_evidence",
+    "get_org_identity",
+    "describe_salesforce_component"
+  ],
+  "user_job": "Explain why a specific Salesforce user can or cannot see, create, edit, delete, or invoke an object, field, record, record type, or action.",
+  "version": "0.9.0"
+}

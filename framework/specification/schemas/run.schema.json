@@ -1,0 +1,132 @@
+{
+  "$id": "run.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_profile": {
+      "enum": [
+        "product-read-only",
+        "fixture-offline",
+        "qa-scratch-setup",
+        "maintainer-local-write",
+        "future-approved-action"
+      ],
+      "type": "string"
+    },
+    "claim_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "context_manifests": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "errors": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "host": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "mode": {
+      "enum": [
+        "knowledge-only",
+        "fixture",
+        "local-project",
+        "live-read-only",
+        "hybrid",
+        "scratch-qa"
+      ],
+      "type": "string"
+    },
+    "plan": {
+      "type": "object"
+    },
+    "product_id": {
+      "pattern": "^P[0-9]{2}$",
+      "type": "string"
+    },
+    "product_version": {
+      "type": "string"
+    },
+    "review": {
+      "type": "object"
+    },
+    "run_id": {
+      "pattern": "^RUN-[A-Z0-9-]+$",
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "state_history": {
+      "type": "array"
+    },
+    "status": {
+      "oneOf": [
+        {
+          "enum": [
+            "completed",
+            "partial",
+            "refused",
+            "failed"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "targets": {
+      "type": "object"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "versions": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "run_id",
+    "created_at",
+    "updated_at",
+    "product_id",
+    "product_version",
+    "mode",
+    "authority_profile",
+    "state",
+    "status",
+    "host",
+    "targets",
+    "plan",
+    "context_manifests",
+    "evidence_refs",
+    "claim_refs",
+    "review",
+    "versions"
+  ],
+  "title": "SFAEF Run",
+  "type": "object"
+}

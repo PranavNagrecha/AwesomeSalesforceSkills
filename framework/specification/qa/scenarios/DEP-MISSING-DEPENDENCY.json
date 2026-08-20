@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "deployment",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "DEP-MISSING-DEPENDENCY",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P01",
+  "required_findings": [
+    {
+      "description": "identify missing dependency",
+      "id": "DEP-MISSING-DEPENDENCY-F1"
+    },
+    {
+      "description": "name dependent component",
+      "id": "DEP-MISSING-DEPENDENCY-F2"
+    },
+    {
+      "description": "recommend dependency/order verification",
+      "id": "DEP-MISSING-DEPENDENCY-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "A component references a custom field absent from the target validation package/org.",
+  "version": "1.0.0"
+}

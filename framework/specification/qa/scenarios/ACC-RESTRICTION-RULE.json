@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "access",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "ACC-RESTRICTION-RULE",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P03",
+  "required_findings": [
+    {
+      "description": "preserve granting evidence",
+      "id": "ACC-RESTRICTION-RULE-F1"
+    },
+    {
+      "description": "identify restriction evidence",
+      "id": "ACC-RESTRICTION-RULE-F2"
+    },
+    {
+      "description": "explain precedence",
+      "id": "ACC-RESTRICTION-RULE-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Sharing grants access but a restriction rule removes visibility.",
+  "version": "1.0.0"
+}

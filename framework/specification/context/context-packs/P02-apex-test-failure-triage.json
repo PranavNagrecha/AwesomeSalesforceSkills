@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "failure clusters",
+      "max_files": 2,
+      "trigger": "failure clusters"
+    },
+    {
+      "id": "shared root causes",
+      "max_files": 2,
+      "trigger": "shared root causes"
+    },
+    {
+      "id": "test-data/setup assumptions",
+      "max_files": 2,
+      "trigger": "test-data/setup assumptions"
+    },
+    {
+      "id": "limit and async boundaries",
+      "max_files": 2,
+      "trigger": "limit and async boundaries"
+    },
+    {
+      "id": "affected classes and methods",
+      "max_files": 2,
+      "trigger": "affected classes and methods"
+    },
+    {
+      "id": "reproducibility/flakiness assessment",
+      "max_files": 2,
+      "trigger": "reproducibility/flakiness assessment"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P02-apex-test-failure-triage",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P02",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

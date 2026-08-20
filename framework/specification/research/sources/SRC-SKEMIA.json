@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "local-first",
+    "org-intelligence",
+    "privacy"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SKEMIA",
+  "notes": "Emerging vendor-authored market source. Relevant to local/offline metadata analysis and privacy positioning; monitor rather than making comparative quality claims. Re-check before public comparative claims.",
+  "publisher": "Skemia",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 3,
+  "status": "current",
+  "title": "Skemia Local Salesforce Org Intelligence",
+  "url": "https://skemia.com/"
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "agentforce",
+    "qa",
+    "cli"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-AGENT-TESTING-CLI",
+  "notes": "Official Agentforce testing workflow and CLI/API direction. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Deploy and Run Tests in the Command Line",
+  "url": "https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-cli.html"
+}

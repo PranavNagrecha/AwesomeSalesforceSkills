@@ -1,0 +1,123 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "apex-test-failure-triager",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "triage-apex-tests"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "failure clusters",
+    "shared root causes",
+    "test-data/setup assumptions",
+    "limit and async boundaries",
+    "affected classes and methods",
+    "reproducibility/flakiness assessment",
+    "minimal correction plan",
+    "regression test plan"
+  ],
+  "id": "P02",
+  "inputs": [
+    {
+      "description": "Existing Apex test run ID",
+      "name": "test_run_id",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Explicit org alias/username for live retrieval",
+      "name": "target_org",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Captured test-result JSON",
+      "name": "result_file",
+      "requirement": "conditional"
+    },
+    {
+      "description": "External Salesforce DX project",
+      "name": "project_path",
+      "requirement": "optional"
+    },
+    {
+      "description": "Bounded page size",
+      "name": "method_limit",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Retrieves existing runs only in product mode",
+    "Cannot inspect unprovided local source in standalone mode",
+    "May not distinguish production-only behavior without relevant evidence"
+  ],
+  "known_truth_scenarios": [
+    "APX-ASSERTION",
+    "APX-MIXED-DML",
+    "APX-MISSING-MOCK",
+    "APX-GOVERNOR",
+    "APX-SHARING-CONTEXT",
+    "APX-ASYNC-BOUNDARY",
+    "APX-SHARED-ROOT"
+  ],
+  "lifecycle_status": "release-candidate target",
+  "optional_evidence": [
+    "Apex class/test source",
+    "trigger/flow inventory relevant to the transaction",
+    "coverage result",
+    "current platform guidance"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "developer",
+    "release-engineer",
+    "consultant"
+  ],
+  "quality_gates": [
+    "Shared-cause clustering improves over one-error-per-test restatement",
+    "Stack/source claims cite exact evidence",
+    "No test is started by the product",
+    "Flaky/unknown is distinguished from deterministic root cause"
+  ],
+  "required_evidence": [
+    "Existing Apex test result with methods, messages, stack traces, timing, and org association"
+  ],
+  "slug": "apex-test-failure-triage",
+  "supported_modes": [
+    "fixture",
+    "live-read-only",
+    "local-project",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Apex Test Failure Triage",
+  "tool_ids": [
+    "get_apex_test_run",
+    "get_org_identity",
+    "describe_salesforce_component",
+    "get_automation_inventory",
+    "get_code_analysis_result"
+  ],
+  "user_job": "Explain why an existing Apex test run failed, identify shared root causes across methods, and propose the smallest evidence-backed fix and regression plan.",
+  "version": "0.9.0"
+}

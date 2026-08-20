@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "skills",
+    "mcp",
+    "migration"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-CODE-ANALYZER-MCP-TRANSITION",
+  "notes": "Records the June 2026 transition from the standalone Code Analyzer MCP workflow toward skills. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Use MCP Tools to Analyze Your Code",
+  "url": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html"
+}

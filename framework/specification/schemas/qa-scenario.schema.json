@@ -1,0 +1,115 @@
+{
+  "$id": "qa-scenario.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "context_assertions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "domain": {
+      "type": "string"
+    },
+    "evidence_requirements": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "forbidden_findings": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "id": {
+      "pattern": "^[A-Z0-9-]+$",
+      "type": "string"
+    },
+    "lane_support": {
+      "items": {
+        "enum": [
+          "hermetic",
+          "read-only-org",
+          "scratch"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "product_id": {
+      "pattern": "^P[0-9]{2}$",
+      "type": "string"
+    },
+    "required_findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "required_evidence_facts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "description"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "required_status": {
+      "items": {
+        "enum": [
+          "completed",
+          "partial",
+          "refused",
+          "failed"
+        ],
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "setup_summary": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "product_id",
+    "domain",
+    "setup_summary",
+    "lane_support",
+    "required_findings",
+    "forbidden_findings",
+    "required_status",
+    "evidence_requirements",
+    "context_assertions"
+  ],
+  "title": "SFAEF Known-Truth Scenario",
+  "type": "object"
+}

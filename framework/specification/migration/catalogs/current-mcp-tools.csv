@@ -1,0 +1,40 @@
+tool_id,function,annotations,argument_count,mapped_v2_products,v2_disposition,direct_product_exposure,required_action
+describe_object_full,describe_object_full,_ANN_ORG_READ,6,P03;P04;P05;P09;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+describe_org,describe_org,_ANN_ORG_READ,1,P01;P02;P03;P06;P07;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+describe_permission_set,describe_permission_set,_ANN_ORG_READ,3,P03;P07;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+emit_envelope,emit_envelope,_ANN_ENVELOPE,5,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
+get_agent,get_agent,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+get_apex_class,get_apex_class,_ANN_ORG_READ,3,P01;P02;P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+get_decision_tree,get_decision_tree,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+get_deployment_result,get_deployment_result,_ANN_ORG_READ,,P01,wrap-as-normalized-evidence,false,P01 typed deployment evidence; broker-internal only.
+get_invocation_modes,get_invocation_modes,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
+get_lwc_bundle,get_lwc_bundle,_ANN_ORG_READ,3,P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+get_skill,get_skill,_ANN_REPO_ONLY,3,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+get_template,get_template,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+health,health,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
+list_agents,list_agents,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+list_apex_classes,list_apex_classes,_ANN_ORG_READ,5,P01;P02;P04;P06;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_apex_triggers,list_apex_triggers,_ANN_ORG_READ,5,P04;P05;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_approval_processes,list_approval_processes,_ANN_ORG_READ,4,P04;P05;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_custom_fields,list_custom_fields,_ANN_ORG_READ,5,P03;P04;P09;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_custom_objects,list_custom_objects,_ANN_ORG_READ,4,P04;P09;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_deprecated_redirects,list_deprecated_redirects,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
+list_flows_on_object,list_flows_on_object,_ANN_ORG_READ,4,P04;P05;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_lwc_bundles,list_lwc_bundles,_ANN_ORG_READ,4,P04;P06;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_named_credentials,list_named_credentials,_ANN_ORG_READ,2,P07;P08;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_orgs,list_orgs,_ANN_ORG_READ,0,P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_permission_sets,list_permission_sets,_ANN_ORG_READ,4,P03;P07;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_record_types,list_record_types,_ANN_ORG_READ,4,P03;P04;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+list_validation_rules,list_validation_rules,_ANN_ORG_READ,4,P04;P05;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+probe_apex_references,probe_apex_references,_ANN_ORG_READ,6,P01;P02;P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+probe_automation_graph,probe_automation_graph,_ANN_ORG_READ,4,P04;P05;P10;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+probe_flow_references,probe_flow_references,_ANN_ORG_READ,6,P01;P04;P05;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+probe_matching_rules,probe_matching_rules,_ANN_ORG_READ,4,P04;P07;P10,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+probe_permset_shape,probe_permset_shape,_ANN_ORG_READ,2,P03;P07;P12,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
+search_agents,search_agents,_ANN_REPO_ONLY,2,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+search_decision_trees,search_decision_trees,_ANN_REPO_ONLY,2,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+search_skill,search_skill,_ANN_REPO_ONLY,3,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+search_templates,search_templates,_ANN_REPO_ONLY,2,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+suggest_agent,suggest_agent,_ANN_REPO_ONLY,3,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
+tooling_query,tooling_query,_ANN_ORG_READ,4,,broker-internal-restricted,false,Never expose directly to a product agent; require a typed broker operation and SOQL/policy validation.
+validate_against_org,validate_against_org,_ANN_ORG_READ,3,P04;P06;P10,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.

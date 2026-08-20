@@ -1,0 +1,84 @@
+{
+  "$id": "context-checkpoint.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "contains_transcript": {
+      "const": false,
+      "type": "boolean"
+    },
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "digest": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "next_stage": {
+      "type": "string"
+    },
+    "policy_version": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "selected_knowledge": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "state": {
+      "type": "string"
+    },
+    "target": {
+      "type": "object"
+    },
+    "unknowns": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "versions": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "run_id",
+    "created_at",
+    "state",
+    "product_id",
+    "versions",
+    "target",
+    "selected_knowledge",
+    "evidence_refs",
+    "claim_refs",
+    "unknowns",
+    "policy_version",
+    "next_stage",
+    "digest"
+  ],
+  "title": "SFAEF Context Checkpoint",
+  "type": "object"
+}

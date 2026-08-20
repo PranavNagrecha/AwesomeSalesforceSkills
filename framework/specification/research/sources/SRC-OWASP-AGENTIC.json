@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "security",
+    "threat-model"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-OWASP-AGENTIC",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "OWASP",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "OWASP Agentic Security Initiative",
+  "url": "https://genai.owasp.org/2024/12/15/announcing-the-owasp-llm-and-gen-ai-security-project-initiative-for-securing-agentic-applications/"
+}

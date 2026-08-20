@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "direct and transitive dependencies",
+      "max_files": 2,
+      "trigger": "direct and transitive dependencies"
+    },
+    {
+      "id": "runtime/deployment/data/security impacts",
+      "max_files": 2,
+      "trigger": "runtime/deployment/data/security impacts"
+    },
+    {
+      "id": "safe sequencing",
+      "max_files": 2,
+      "trigger": "safe sequencing"
+    },
+    {
+      "id": "test matrix",
+      "max_files": 2,
+      "trigger": "test matrix"
+    },
+    {
+      "id": "rollback/irreversibility",
+      "max_files": 2,
+      "trigger": "rollback/irreversibility"
+    },
+    {
+      "id": "unknown dynamic references",
+      "max_files": 2,
+      "trigger": "unknown dynamic references"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P04-change-impact-planner",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P04",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

@@ -1,0 +1,55 @@
+{
+  "budget": {
+    "hard_files": 12,
+    "max_tool_page_bytes": 32768,
+    "output_reserve_fraction": 0.15,
+    "target_files": 8
+  },
+  "items": [
+    {
+      "bytes": 3200,
+      "conflicts_with": [],
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "estimated_tokens": 800,
+      "id": "contract-p01",
+      "kind": "control",
+      "priority": 100,
+      "reason": "Product contract",
+      "required": true,
+      "source": "products/P01-deployment-failure-triage.md"
+    },
+    {
+      "bytes": 2000,
+      "conflicts_with": [],
+      "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "estimated_tokens": 500,
+      "id": "skill-apex-compile",
+      "kind": "knowledge",
+      "priority": 80,
+      "reason": "Observed Apex compilation failure",
+      "required": false,
+      "source": "skills/apex/example/SKILL.md"
+    },
+    {
+      "bytes": 480,
+      "conflicts_with": [],
+      "digest": "567ed695be2d5957b9c5b35a5fc43324a886dcf9d44f10068ebf7bc6680fdfc5",
+      "estimated_tokens": 120,
+      "id": "EV-E13EF0F4B5B5E647E2D6FBAD",
+      "kind": "evidence",
+      "priority": 100,
+      "reason": "Direct deployment failure",
+      "required": true,
+      "source": "evidence.json"
+    }
+  ],
+  "overflow": false,
+  "overflow_reason": null,
+  "run_id": "RUN-20260819T120000Z-EXAMPLE001",
+  "stage": "diagnosing",
+  "totals": {
+    "bytes": 5680,
+    "estimated_tokens": 1420,
+    "files": 3
+  }
+}

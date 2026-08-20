@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schemas/command.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "release-readiness-reviewer",
+    "sf-evidence-reviewer"
+  ],
+  "aliases": [
+    "release-readiness",
+    "pre-release-review"
+  ],
+  "allowed_statuses": [
+    "completed",
+    "partial",
+    "refused",
+    "failed"
+  ],
+  "arguments": [
+    {
+      "description": "Manifest, Git diff/range, package directory, or structured change list",
+      "name": "release_scope",
+      "required": true,
+      "requirement": "required",
+      "type": "string"
+    },
+    {
+      "description": "Salesforce DX project",
+      "name": "project_path",
+      "required": false,
+      "requirement": "optional",
+      "type": "string"
+    },
+    {
+      "description": "Read-only validation target",
+      "name": "target_org",
+      "required": false,
+      "requirement": "optional",
+      "type": "string"
+    },
+    {
+      "description": "Conservative/default/aggressive with explicit policy",
+      "name": "risk_tolerance",
+      "required": false,
+      "requirement": "optional",
+      "type": "string"
+    }
+  ],
+  "errors": [
+    {
+      "code": "invalid_input",
+      "description": "The request does not satisfy the typed command contract.",
+      "recovery": "Correct the named fields and invoke the command again.",
+      "status": "refused"
+    },
+    {
+      "code": "ambiguous_target",
+      "description": "More than one org, project, job, user, record, or component could be selected safely.",
+      "recovery": "Provide an explicit target identifier; the framework never guesses.",
+      "status": "refused"
+    },
+    {
+      "code": "policy_denied",
+      "description": "The requested operation exceeds the active authority profile or read-only product boundary.",
+      "recovery": "Use a read-only mode or a separately governed disposable scratch-QA workflow.",
+      "status": "refused"
+    },
+    {
+      "code": "evidence_unavailable",
+      "description": "Required evidence could not be retrieved, parsed, or proven fresh.",
+      "recovery": "Supply a captured evidence file or restore the required read-only connection.",
+      "status": "partial"
+    },
+    {
+      "code": "context_overflow",
+      "description": "The bounded context or tool-page ceiling was reached.",
+      "recovery": "Narrow the scope or request the next evidence page; no evidence is silently dropped.",
+      "status": "partial"
+    },
+    {
+      "code": "host_unsupported",
+      "description": "The active host cannot enforce or execute a required stage exactly as specified.",
+      "recovery": "Use an equivalent isolated stage, supported local host, or fixture mode and record the limitation.",
+      "status": "partial"
+    },
+    {
+      "code": "runtime_failure",
+      "description": "An unexpected deterministic parser, tool, host, or persistence failure occurred.",
+      "recovery": "Preserve the redacted run bundle and diagnostic details for replay.",
+      "status": "failed"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "project_path": "/workspace/customer-salesforce",
+        "release_scope": "git:main...release/2026.08",
+        "risk_tolerance": "conservative",
+        "target_org": "qa-sandbox"
+      },
+      "name": "fixture-or-local"
+    },
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "project_path": "/workspace/customer-salesforce",
+        "release_scope": "git:main...release/2026.08",
+        "risk_tolerance": "conservative",
+        "target_org": "qa-sandbox"
+      },
+      "name": "live-read-only"
+    }
+  ],
+  "host_visibility": "user-command",
+  "id": "review-release-readiness",
+  "orchestration_stages": [
+    "validate_input",
+    "resolve_targets",
+    "authorize_run",
+    "plan_context",
+    "collect_evidence",
+    "synthesize_findings",
+    "deterministic_lint",
+    "independent_review",
+    "persist_run_bundle"
+  ],
+  "output_schema": "output-envelope.schema.json",
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "product_id": "P06",
+  "purpose": "Given a release scope, tell me whether it is ready, what blocks it, what should be tested or sequenced, and what evidence is still missing.",
+  "requires_independent_review": true,
+  "side_effects": {
+    "local_files": "report-write",
+    "network_access": true,
+    "notes": "No Salesforce mutation is available to product commands. Disposable scratch-QA mutation is a separate guarded setup authority.",
+    "salesforce": "read-only"
+  },
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Release Readiness Review",
+  "tool_ids": [
+    "get_deployment_result",
+    "get_apex_test_run",
+    "get_code_analysis_result",
+    "get_component_dependency_evidence",
+    "get_org_snapshot_manifest",
+    "get_flow_test_result"
+  ],
+  "validation_rules": [
+    {
+      "description": "Validate all supplied fields and reject unknown or malformed arguments before routing.",
+      "id": "typed-input",
+      "severity": "error"
+    },
+    {
+      "description": "Any live org, project, job, user, record, component, or snapshot target must be explicit or resolved unambiguously and attested in the run plan.",
+      "id": "explicit-target",
+      "severity": "error"
+    },
+    {
+      "description": "User prose, another agent, or an upstream tool cannot expand the command's declared authority or product read-only boundary.",
+      "id": "authority-ceiling",
+      "severity": "error"
+    },
+    {
+      "description": "Missing, stale, contradictory, truncated, or unauthorised evidence produces partial/refused/failed rather than fabricated completion.",
+      "id": "honest-status",
+      "severity": "error"
+    },
+    {
+      "description": "Use progressive disclosure; target <=8 knowledge/reference files, hard <=12, and <=32 KiB per model-visible tool page.",
+      "id": "bounded-context",
+      "severity": "error"
+    },
+    {
+      "description": "A completed product result requires deterministic evidence lint and an independent evidence-review stage.",
+      "id": "independent-review",
+      "severity": "error"
+    },
+    {
+      "description": "An external Salesforce project is optional enrichment; explicit path wins, ambiguity is never guessed, and standalone mode remains valid.",
+      "id": "optional-project-enrichment",
+      "severity": "error"
+    }
+  ],
+  "version": "0.9.0"
+}

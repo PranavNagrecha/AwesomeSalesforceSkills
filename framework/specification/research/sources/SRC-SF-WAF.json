@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "org-health",
+    "architecture"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-WAF",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Salesforce Well-Architected overview",
+  "url": "https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "security",
+    "mcp"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-MCP-ANNOTATIONS",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Model Context Protocol community",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "MCP tool annotations as risk vocabulary",
+  "url": "https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/"
+}

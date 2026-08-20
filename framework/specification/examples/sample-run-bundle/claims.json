@@ -1,0 +1,26 @@
+[
+  {
+    "confidence": {
+      "label": "high",
+      "rationale": [
+        "Direct compiler evidence",
+        "Fixture target identity is explicit"
+      ],
+      "score": 0.95
+    },
+    "depends_on": [],
+    "id": "CL-761796011DDDAAC88585EB79",
+    "material": true,
+    "product_finding_id": "P01-ROOT-CAUSE",
+    "status": "supported",
+    "support": [
+      {
+        "evidence_id": "EV-E13EF0F4B5B5E647E2D6FBAD",
+        "note": "Compiler error names the unresolved field",
+        "relation": "supports"
+      }
+    ],
+    "text": "AccountService fails compilation because it references Missing_Field__c, which is unresolved in the deployment context.",
+    "type": "inference"
+  }
+]

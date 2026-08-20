@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/policy.schema.json",
+  "allowed_shell_patterns": [
+    "versioned qa scripts only"
+  ],
+  "allowed_tools": [],
+  "authority_profile": "qa-scratch-setup",
+  "data_policy": {
+    "artifact_secret_scan": true,
+    "sanitize_before_export": true
+  },
+  "default_decision": "deny",
+  "denied_actions": [
+    "target-non-scratch-org",
+    "target-unmarked-org",
+    "skip-cleanup",
+    "model-directed-mutation"
+  ],
+  "denied_tools": [],
+  "filesystem_policy": {
+    "read_roots": [
+      "qa/scenarios",
+      "qa/scratch"
+    ],
+    "write_roots": [
+      "protected QA artifact directory"
+    ]
+  },
+  "host_requirements": {
+    "separate_credentials": true,
+    "setup_code_not_model_tool": true
+  },
+  "id": "qa-scratch-setup",
+  "org_policy": {
+    "cleanup": "unconditional",
+    "max_expiration_days": 1,
+    "require_dev_hub_allowlist": true,
+    "require_scenario_marker": true,
+    "require_scratch_org": true
+  },
+  "version": "0.9.0"
+}

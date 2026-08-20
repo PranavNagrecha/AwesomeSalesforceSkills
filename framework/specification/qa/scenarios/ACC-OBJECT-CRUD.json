@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "access",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "ACC-OBJECT-CRUD",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P03",
+  "required_findings": [
+    {
+      "description": "identify CRUD blocker",
+      "id": "ACC-OBJECT-CRUD-F1"
+    },
+    {
+      "description": "show grants/missing grants",
+      "id": "ACC-OBJECT-CRUD-F2"
+    },
+    {
+      "description": "separate UI from platform permission",
+      "id": "ACC-OBJECT-CRUD-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "User lacks required object CRUD despite UI visibility.",
+  "version": "1.0.0"
+}

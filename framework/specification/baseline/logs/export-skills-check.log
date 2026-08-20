@@ -1,0 +1,12 @@
+Loading skills from /mnt/data/sfskills_source/AwesomeSalesforceSkills-main/skills...
+  Found 1034 skills
+  + 67 slash command(s) → .claude/commands/
+  + 67 slash command(s) → .cursor/commands/
+  + 65 workflow(s) → .windsurf/workflows/
+  build-skills.md: 13661 chars exceeds Windsurf's 12000-char workflow cap — skipped
+  onboard-source.md: 13864 chars exceeds Windsurf's 12000-char workflow cap — skipped
+  + 67 slash command(s) → .augment/commands/
+  + 1034 skill(s) → codex-skills/ (staged for ~/.codex/prompts/)
+  + 67 slash command(s) → codex-prompts/ (staged for ~/.codex/prompts/)
+
+✓ export manifest matches registry/export_manifest.json

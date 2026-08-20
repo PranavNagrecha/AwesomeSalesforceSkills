@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "devops",
+    "impact-analysis"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SALTO-SALESFORCE",
+  "notes": "Vendor description of configuration-as-code, references, impact analysis, conflict resolution, and deployment gating. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salto",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Salto for Salesforce",
+  "url": "https://www.salto.io/salto-for-salesforce"
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "cursor-adapter",
+    "security"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-CURSOR-HOOKS",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Cursor",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Cursor Hooks",
+  "url": "https://prod.cursor.com/docs/hooks"
+}

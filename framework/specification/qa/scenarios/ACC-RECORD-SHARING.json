@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "access",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "ACC-RECORD-SHARING",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P03",
+  "required_findings": [
+    {
+      "description": "trace record access",
+      "id": "ACC-RECORD-SHARING-F1"
+    },
+    {
+      "description": "show ownership/sharing evidence",
+      "id": "ACC-RECORD-SHARING-F2"
+    },
+    {
+      "description": "identify unresolved custom sharing",
+      "id": "ACC-RECORD-SHARING-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "CRUD/FLS pass but record-level sharing denies access.",
+  "version": "1.0.0"
+}

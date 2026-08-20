@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "agentforce-quality",
+    "freshness"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-AGENTFORCE-2026",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Migrate legacy agents to new Agentforce Builder",
+  "url": "https://developer.salesforce.com/blogs/2026/08/migrate-legacy-agents-to-the-new-agentforce-builder"
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "devops",
+    "agent-orchestration",
+    "testing"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-COPADO-AGENTIA",
+  "notes": "Vendor description of context-aware agents embedded across the Salesforce delivery lifecycle. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Copado",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Agentia by Copado",
+  "url": "https://www.copado.com/agentia"
+}

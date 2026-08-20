@@ -1,0 +1,218 @@
+{
+  "$id": "product.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "agent_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "command_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "context_policy": {
+      "additionalProperties": true,
+      "properties": {
+        "core_files_max": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "core_files_min": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "hard_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hard_total_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_tool_page_bytes": {
+          "minimum": 1024,
+          "type": "integer"
+        },
+        "target_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "target_total_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "transcript_handoff": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "evidence_policy": {
+      "type": "object"
+    },
+    "finding_types": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "id": {
+      "pattern": "^P[0-9]{2}$",
+      "type": "string"
+    },
+    "inputs": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "default": {},
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "requirement": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "known_limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "known_truth_scenarios": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "lifecycle_status": {
+      "type": "string"
+    },
+    "optional_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "permissions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "personas": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "quality_gates": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "required_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "slug": {
+      "pattern": "^[a-z0-9-]+$",
+      "type": "string"
+    },
+    "supported_modes": {
+      "items": {
+        "enum": [
+          "knowledge-only",
+          "fixture",
+          "local-project",
+          "live-read-only",
+          "hybrid",
+          "scratch-qa"
+        ],
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "tool_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "user_job": {
+      "minLength": 20,
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "slug",
+    "version",
+    "title",
+    "lifecycle_status",
+    "user_job",
+    "personas",
+    "supported_modes",
+    "command_ids",
+    "agent_ids",
+    "tool_ids",
+    "permissions",
+    "inputs",
+    "required_evidence",
+    "finding_types",
+    "context_policy",
+    "evidence_policy",
+    "quality_gates",
+    "known_limitations"
+  ],
+  "title": "SFAEF Product Definition",
+  "type": "object"
+}

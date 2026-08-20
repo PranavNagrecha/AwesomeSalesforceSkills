@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "apex-test",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "APX-MISSING-MOCK",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P02",
+  "required_findings": [
+    {
+      "description": "identify unmocked callout",
+      "id": "APX-MISSING-MOCK-F1"
+    },
+    {
+      "description": "cite exception",
+      "id": "APX-MISSING-MOCK-F2"
+    },
+    {
+      "description": "recommend Test.setMock scope",
+      "id": "APX-MISSING-MOCK-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Callout occurs without a registered mock.",
+  "version": "1.0.0"
+}

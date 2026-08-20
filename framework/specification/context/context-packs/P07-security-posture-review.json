@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "evidence-backed risks",
+      "max_files": 2,
+      "trigger": "evidence-backed risks"
+    },
+    {
+      "id": "affected assets/users",
+      "max_files": 2,
+      "trigger": "affected assets/users"
+    },
+    {
+      "id": "severity/exploitability/impact",
+      "max_files": 2,
+      "trigger": "severity/exploitability/impact"
+    },
+    {
+      "id": "false-positive and uncertainty notes",
+      "max_files": 2,
+      "trigger": "false-positive and uncertainty notes"
+    },
+    {
+      "id": "least-privilege remediation sequence",
+      "max_files": 2,
+      "trigger": "least-privilege remediation sequence"
+    },
+    {
+      "id": "verification controls",
+      "max_files": 2,
+      "trigger": "verification controls"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P07-security-posture-review",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P07",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

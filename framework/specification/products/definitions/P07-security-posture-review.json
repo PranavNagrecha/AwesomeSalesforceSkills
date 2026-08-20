@@ -1,0 +1,118 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "security-posture-reviewer",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "review-security-posture"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "evidence-backed risks",
+    "affected assets/users",
+    "severity/exploitability/impact",
+    "false-positive and uncertainty notes",
+    "least-privilege remediation sequence",
+    "verification controls"
+  ],
+  "id": "P07",
+  "inputs": [
+    {
+      "description": "Org, project, package, object set, or security domain",
+      "name": "scope",
+      "requirement": "required"
+    },
+    {
+      "description": "Local project",
+      "name": "project_path",
+      "requirement": "optional"
+    },
+    {
+      "description": "Read-only org",
+      "name": "target_org",
+      "requirement": "optional"
+    },
+    {
+      "description": "Framework default or approved organization policy",
+      "name": "policy_profile",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Not a penetration test or compliance certification",
+    "Cannot inspect encrypted secrets",
+    "Managed-package internals may be unavailable"
+  ],
+  "known_truth_scenarios": [
+    "SEC-INJECTION",
+    "SEC-FLS",
+    "SEC-SHARING",
+    "SEC-NAMED-CREDENTIAL",
+    "SEC-SESSION",
+    "SEC-GUEST"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "Code Analyzer results",
+    "CRUD/FLS/sharing/session evidence",
+    "integration/credential metadata summary",
+    "guest/external user exposure",
+    "audit settings"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "security-reviewer",
+    "architect",
+    "developer",
+    "admin",
+    "consultant"
+  ],
+  "quality_gates": [
+    "No security claim without evidence and scope",
+    "Never exposes secrets",
+    "Severity rationale is explicit",
+    "Policy versus platform finding is distinguished"
+  ],
+  "required_evidence": [
+    "Explicit scope and policy profile"
+  ],
+  "slug": "security-posture-review",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Security Posture Review",
+  "tool_ids": [
+    "get_code_analysis_result",
+    "get_user_access_evidence",
+    "get_org_snapshot_manifest",
+    "get_integration_config_summary",
+    "describe_salesforce_component"
+  ],
+  "user_job": "Assess a Salesforce scope for evidence-backed access, code, session, integration, data, and configuration risks, prioritized by exploitability and business impact.",
+  "version": "0.9.0"
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "org-health-assessment",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "HLT-ALM",
+  "lane_support": [
+    "hermetic"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P10",
+  "required_findings": [
+    {
+      "description": "identify required finding for HLT-ALM",
+      "id": "HLT-ALM-F1"
+    },
+    {
+      "description": "cite target-specific evidence",
+      "id": "HLT-ALM-F2"
+    },
+    {
+      "description": "return correct status and no unsafe action",
+      "id": "HLT-ALM-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Known-truth scenario for Org Health Assessment: HLT-ALM.",
+  "version": "1.0.0"
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "../../schemas/command.schema.json",
+  "aliases": [
+    "qa-run",
+    "run-salesforce-qa"
+  ],
+  "allowed_statuses": [
+    "completed",
+    "partial",
+    "refused",
+    "failed"
+  ],
+  "arguments": [
+    {
+      "name": "lane",
+      "required": true,
+      "type": "enum",
+      "values": [
+        "hermetic",
+        "read-only-org",
+        "scratch"
+      ]
+    },
+    {
+      "name": "scenario",
+      "required": false,
+      "type": "string"
+    }
+  ],
+  "errors": [
+    {
+      "code": "invalid_input",
+      "description": "The command arguments are invalid.",
+      "recovery": "Correct the arguments shown by the validator.",
+      "status": "refused"
+    },
+    {
+      "code": "artifact_unavailable",
+      "description": "A requested local artifact, index, plugin, run bundle, or host capability is unavailable.",
+      "recovery": "Follow the command-specific diagnostic or bootstrap instruction.",
+      "status": "partial"
+    },
+    {
+      "code": "policy_denied",
+      "description": "The requested lane or refresh exceeds the active policy.",
+      "recovery": "Use an allowed lane or obtain the explicitly required QA authorization.",
+      "status": "refused"
+    },
+    {
+      "code": "runtime_failure",
+      "description": "The deterministic operation failed unexpectedly.",
+      "recovery": "Retain logs and rerun after correcting the reported cause.",
+      "status": "failed"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Example invocation input; identifiers are illustrative and must be replaced explicitly.",
+      "expected_status": "completed",
+      "input": {
+        "lane": "hermetic",
+        "scenario": "DEP-MISSING-DEPENDENCY"
+      },
+      "name": "fixture-or-local"
+    }
+  ],
+  "host_visibility": "maintainer-command",
+  "id": "sfskills-qa-run",
+  "maintainer_only": true,
+  "orchestration_stages": [
+    "validate_input",
+    "authorize_qa_lane",
+    "execute_scenario",
+    "grade_result",
+    "persist_qa_bundle"
+  ],
+  "permissions": [
+    "repository.read",
+    "local_reports.write"
+  ],
+  "product_id": null,
+  "purpose": "Run fixture or protected scratch QA for selected products/scenarios.",
+  "requires_independent_review": false,
+  "side_effects": {
+    "local_files": "qa-artifacts",
+    "network_access": true,
+    "notes": "No Salesforce mutation is available to product commands. Disposable scratch-QA mutation is a separate guarded setup authority.",
+    "salesforce": "qa-disposable-only"
+  },
+  "supported_modes": [
+    "hermetic",
+    "live-read-only",
+    "scratch-qa"
+  ],
+  "title": "Run Framework QA",
+  "validation_rules": [
+    {
+      "description": "Validate all supplied fields and reject unknown or malformed arguments before routing.",
+      "id": "typed-input",
+      "severity": "error"
+    },
+    {
+      "description": "Any live org, project, job, user, record, component, or snapshot target must be explicit or resolved unambiguously and attested in the run plan.",
+      "id": "explicit-target",
+      "severity": "error"
+    },
+    {
+      "description": "User prose, another agent, or an upstream tool cannot expand the command's declared authority or product read-only boundary.",
+      "id": "authority-ceiling",
+      "severity": "error"
+    },
+    {
+      "description": "Missing, stale, contradictory, truncated, or unauthorised evidence produces partial/refused/failed rather than fabricated completion.",
+      "id": "honest-status",
+      "severity": "error"
+    },
+    {
+      "description": "Mutation is allowed only in a protected disposable scratch-org setup lane, never through product agents or product MCP tools, with unconditional cleanup proof.",
+      "id": "scratch-qa-isolation",
+      "severity": "error"
+    }
+  ],
+  "version": "0.9.0"
+}

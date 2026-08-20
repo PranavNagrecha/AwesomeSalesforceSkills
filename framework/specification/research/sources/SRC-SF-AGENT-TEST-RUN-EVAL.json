@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "agentforce",
+    "qa",
+    "evaluation"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-AGENT-TEST-RUN-EVAL",
+  "notes": "Official rich evaluation test CLI contract; beta status must be disclosed. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "agent test run-eval (Beta)",
+  "url": "https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_agent_test_run-eval.html"
+}

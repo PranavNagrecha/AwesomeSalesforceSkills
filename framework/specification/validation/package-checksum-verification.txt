@@ -1,0 +1,6 @@
+Checksum verification procedure
+
+1. Generate `SHA256SUMS.txt` over every packaged regular file except `SHA256SUMS.txt` itself.
+2. Execute `sha256sum -c SHA256SUMS.txt` from the package root.
+3. The final pre-archive verification completed with exit code 0.
+4. Archive extraction and checksum verification are repeated against the extracted delivery before release.

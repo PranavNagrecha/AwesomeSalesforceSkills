@@ -1,0 +1,123 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "integration-incident-triager",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "triage-integration"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "incident boundary classification",
+    "timeline",
+    "auth/network/contract/limit/downstream/idempotency hypotheses",
+    "supporting and contradictory evidence",
+    "blast radius",
+    "safe verification/recovery steps"
+  ],
+  "id": "P08",
+  "inputs": [
+    {
+      "description": "Named integration/interface identifier",
+      "name": "integration",
+      "requirement": "required"
+    },
+    {
+      "description": "Explicit bounded window",
+      "name": "time_window",
+      "requirement": "required"
+    },
+    {
+      "description": "Read-only org",
+      "name": "target_org",
+      "requirement": "optional"
+    },
+    {
+      "description": "Sanitized logs/events/response samples",
+      "name": "evidence_files",
+      "requirement": "optional"
+    },
+    {
+      "description": "Local project",
+      "name": "project_path",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Cannot prove downstream state without supplied evidence",
+    "Logs may be sampled or unavailable",
+    "Does not rotate credentials or replay transactions"
+  ],
+  "known_truth_scenarios": [
+    "INT-AUTH",
+    "INT-TIMEOUT",
+    "INT-SCHEMA-DRIFT",
+    "INT-RATE-LIMIT",
+    "INT-IDEMPOTENCY",
+    "INT-DOWNSTREAM"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "Named Credential/External Credential summary",
+    "Apex/Flow source",
+    "event/log summaries",
+    "HTTP status and contract samples",
+    "downstream status supplied by user"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "developer",
+    "integration-engineer",
+    "support-engineer",
+    "architect",
+    "consultant"
+  ],
+  "quality_gates": [
+    "Secrets are never reproduced",
+    "Salesforce versus downstream cause is not guessed",
+    "Time correlation and freshness are explicit",
+    "Recovery does not perform customer mutation"
+  ],
+  "required_evidence": [
+    "Integration identity and time window"
+  ],
+  "slug": "integration-incident-triage",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Integration Incident Triage",
+  "tool_ids": [
+    "get_integration_config_summary",
+    "get_integration_event_summary",
+    "get_org_identity",
+    "describe_salesforce_component",
+    "get_code_analysis_result"
+  ],
+  "user_job": "Correlate Salesforce and supplied integration evidence to classify an incident, identify the likely failing boundary, and propose safe verification and recovery steps.",
+  "version": "0.9.0"
+}

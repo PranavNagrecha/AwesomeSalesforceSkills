@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "apex-test",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "APX-SHARING-CONTEXT",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P02",
+  "required_findings": [
+    {
+      "description": "identify sharing/user context",
+      "id": "APX-SHARING-CONTEXT-F1"
+    },
+    {
+      "description": "cite access/stack evidence",
+      "id": "APX-SHARING-CONTEXT-F2"
+    },
+    {
+      "description": "recommend representative runAs/data setup",
+      "id": "APX-SHARING-CONTEXT-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Test assumes record visibility or user context not present.",
+  "version": "1.0.0"
+}

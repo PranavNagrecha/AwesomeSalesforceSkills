@@ -1,0 +1,123 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "change-impact-planner",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "plan-metadata-change"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "direct and transitive dependencies",
+    "runtime/deployment/data/security impacts",
+    "safe sequencing",
+    "test matrix",
+    "rollback/irreversibility",
+    "unknown dynamic references",
+    "change alternatives"
+  ],
+  "id": "P04",
+  "inputs": [
+    {
+      "description": "Canonical metadata component identity",
+      "name": "component",
+      "requirement": "required"
+    },
+    {
+      "description": "Typed change such as add/rename/delete/type-change/activate/deactivate",
+      "name": "proposed_change",
+      "requirement": "required"
+    },
+    {
+      "description": "Salesforce DX project",
+      "name": "project_path",
+      "requirement": "optional"
+    },
+    {
+      "description": "Read-only org for deployed-state evidence",
+      "name": "target_org",
+      "requirement": "optional"
+    },
+    {
+      "description": "Package, application, or explicit roots",
+      "name": "scope",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not apply the change",
+    "Cannot guarantee dynamic references absent runtime/log evidence",
+    "Dependency completeness depends on available metadata/tool coverage"
+  ],
+  "known_truth_scenarios": [
+    "IMP-FIELD-DELETE",
+    "IMP-FIELD-TYPE",
+    "IMP-FLOW-ACTIVE",
+    "IMP-PERMISSION",
+    "IMP-PACKAGE-BOUNDARY",
+    "IMP-DYNAMIC-REFERENCE"
+  ],
+  "lifecycle_status": "beta target",
+  "optional_evidence": [
+    "Local references",
+    "org metadata dependencies",
+    "Apex/LWC/Flow/report/permission references",
+    "data usage/count summaries",
+    "package and deployment boundaries"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "architect",
+    "developer",
+    "admin",
+    "release-engineer",
+    "consultant"
+  ],
+  "quality_gates": [
+    "Direct and inferred dependencies are distinguished",
+    "Destructive/irreversible effects are prominent",
+    "Dynamic references remain unknown unless evidenced",
+    "Plan works in project-only or org-only reduced modes"
+  ],
+  "required_evidence": [
+    "Component identity and proposed change"
+  ],
+  "slug": "change-impact-planner",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Change Impact Planner",
+  "tool_ids": [
+    "get_component_dependency_evidence",
+    "describe_salesforce_component",
+    "get_org_snapshot_manifest",
+    "get_code_analysis_result"
+  ],
+  "user_job": "Before I change or retire Salesforce metadata, identify direct and transitive impact, deployment order, tests, permissions, data implications, and rollback constraints.",
+  "version": "0.9.0"
+}

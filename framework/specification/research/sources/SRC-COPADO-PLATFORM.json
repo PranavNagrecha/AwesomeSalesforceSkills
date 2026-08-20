@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "devops",
+    "org-intelligence",
+    "testing",
+    "agents"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-COPADO-PLATFORM",
+  "notes": "Vendor-authored market source. Confirms AI agents, org intelligence, CI/CD, testing, and enterprise governance positioning. Use for capability-category comparison only. Re-check before public comparative claims.",
+  "publisher": "Copado",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 3,
+  "status": "current",
+  "title": "Copado Intelligent DevOps Platform for Salesforce",
+  "url": "https://www.copado.com/"
+}

@@ -1,0 +1,93 @@
+{
+  "$id": "context-pack.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "checkpoint_stages": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "conditional_packs": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "max_files": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "trigger": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "trigger",
+          "max_files"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "core_items": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "hard_files": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "id": {
+      "type": "string"
+    },
+    "max_tool_page_bytes": {
+      "minimum": 1024,
+      "type": "integer"
+    },
+    "output_reserve_fraction": {
+      "maximum": 0.5,
+      "minimum": 0,
+      "type": "number"
+    },
+    "product_id": {
+      "pattern": "^P[0-9]{2}$",
+      "type": "string"
+    },
+    "standalone_supported": {
+      "type": "boolean"
+    },
+    "target_files": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "product_id",
+    "core_items",
+    "conditional_packs",
+    "target_files",
+    "hard_files",
+    "max_tool_page_bytes",
+    "output_reserve_fraction",
+    "checkpoint_stages",
+    "standalone_supported"
+  ],
+  "title": "SFAEF Context Pack Definition",
+  "type": "object"
+}

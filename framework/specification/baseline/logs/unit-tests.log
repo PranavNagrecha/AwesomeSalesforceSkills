@@ -1,0 +1,339 @@
+test_matching_yaml_and_prose (test_check_agent_citation_parity.AgreesIsClean.test_matching_yaml_and_prose) ... ok
+test_bullet_form (test_check_agent_citation_parity.BodyMatcherIsPermissive.test_bullet_form) ... ok
+test_dot_slash_prefix_form (test_check_agent_citation_parity.BodyMatcherIsPermissive.test_dot_slash_prefix_form) ... ok
+test_markdown_link_form (test_check_agent_citation_parity.BodyMatcherIsPermissive.test_markdown_link_form) ... ok
+test_mention_outside_the_reading_list_still_counts (test_check_agent_citation_parity.BodyMatcherIsPermissive.test_mention_outside_the_reading_list_still_counts) ... ok
+test_paren_numbering_form (test_check_agent_citation_parity.BodyMatcherIsPermissive.test_paren_numbering_form) ... ok
+test_malformed_yaml_is_left_to_the_schema_gate (test_check_agent_citation_parity.Degenerate.test_malformed_yaml_is_left_to_the_schema_gate) ... ok
+test_missing_agents_directory (test_check_agent_citation_parity.Degenerate.test_missing_agents_directory) ... ok
+test_no_dependencies_block_and_no_citations (test_check_agent_citation_parity.Degenerate.test_no_dependencies_block_and_no_citations) ... ok
+test_no_frontmatter_is_skipped (test_check_agent_citation_parity.Degenerate.test_no_frontmatter_is_skipped) ... ok
+test_both_directions_at_once (test_check_agent_citation_parity.DetectsDivergence.test_both_directions_at_once) ... ok
+test_divergence_is_an_error_not_a_warning (test_check_agent_citation_parity.DetectsDivergence.test_divergence_is_an_error_not_a_warning) ... ok
+test_prose_only_citation (test_check_agent_citation_parity.DetectsDivergence.test_prose_only_citation) ... ok
+test_yaml_only_citation (test_check_agent_citation_parity.DetectsDivergence.test_yaml_only_citation) ... ok
+test_dangling_branch_target (test_check_decision_trees.DetectsRealDefects.test_dangling_branch_target) ... ok
+test_reference_to_unknown_domain_is_not_a_skill_reference (test_check_decision_trees.DetectsRealDefects.test_reference_to_unknown_domain_is_not_a_skill_reference) ... ok
+test_unreachable_question_when_its_only_arrow_is_removed (test_check_decision_trees.DetectsRealDefects.test_unreachable_question_when_its_only_arrow_is_removed) ... ok
+test_unresolvable_skill_reference_backticked (test_check_decision_trees.DetectsRealDefects.test_unresolvable_skill_reference_backticked) ... ok
+test_unresolvable_skill_reference_path_form (test_check_decision_trees.DetectsRealDefects.test_unresolvable_skill_reference_path_form) ... ok
+test_missing_tree_directory_is_not_an_error (test_check_decision_trees.RootHandling.test_missing_tree_directory_is_not_an_error) ... ok
+test_relative_root_does_not_raise (test_check_decision_trees.RootHandling.test_relative_root_does_not_raise) ... ok
+test_reachability_is_only_a_warning (test_check_decision_trees.Severity.test_reachability_is_only_a_warning) ... ok
+test_structural_defects_are_errors (test_check_decision_trees.Severity.test_structural_defects_are_errors) ... ok
+test_checklist_tree_is_clean (test_check_decision_trees.SilentOnCorrectTrees.test_checklist_tree_is_clean) ... ok
+test_reachability_crosses_fenced_block_boundaries (test_check_decision_trees.SilentOnCorrectTrees.test_reachability_crosses_fenced_block_boundaries) ... ok
+test_routed_tree_is_clean (test_check_decision_trees.SilentOnCorrectTrees.test_routed_tree_is_clean) ... ok
+test_a_clean_repo_needs_no_fixes (test_check_doc_counts.ApplyFixesTest.test_a_clean_repo_needs_no_fixes) ... ok
+test_fix_does_not_touch_runtime_tier_breakdowns (test_check_doc_counts.ApplyFixesTest.test_fix_does_not_touch_runtime_tier_breakdowns)
+Only the tier SUM has a canonical machine source; the split is a ... ok
+test_fix_is_idempotent (test_check_doc_counts.ApplyFixesTest.test_fix_is_idempotent) ... ok
+test_fix_leaves_untouched_files_byte_identical (test_check_doc_counts.ApplyFixesTest.test_fix_leaves_untouched_files_byte_identical) ... ok
+test_fix_preserves_thousands_comma_formatting (test_check_doc_counts.ApplyFixesTest.test_fix_preserves_thousands_comma_formatting) ... ok
+test_fix_repairs_every_drifted_doc_in_one_pass (test_check_doc_counts.ApplyFixesTest.test_fix_repairs_every_drifted_doc_in_one_pass) ... ok
+test_fix_repairs_the_covered_skills_table (test_check_doc_counts.ApplyFixesTest.test_fix_repairs_the_covered_skills_table) ... ok
+test_fix_rewrites_the_file_and_clears_the_issue (test_check_doc_counts.ApplyFixesTest.test_fix_rewrites_the_file_and_clears_the_issue) ... ok
+test_derives_every_count_from_machine_sources (test_check_doc_counts.CanonicalCountsTest.test_derives_every_count_from_machine_sources) ... ok
+test_promoting_an_agent_moves_the_canonical_count (test_check_doc_counts.CanonicalCountsTest.test_promoting_an_agent_moves_the_canonical_count) ... ok
+test_status_deprecated_wins_over_class_runtime (test_check_doc_counts.CanonicalCountsTest.test_status_deprecated_wins_over_class_runtime)
+The exact invariant that broke: a deprecated agent still carries ... ok
+test_a_missing_doc_is_an_error (test_check_doc_counts.DriftIsDetectedTest.test_a_missing_doc_is_an_error) ... ok
+test_a_removed_label_is_an_error_not_a_silent_pass (test_check_doc_counts.DriftIsDetectedTest.test_a_removed_label_is_an_error_not_a_silent_pass)
+If a doc is restructured so a labelled count disappears, the lint ... ok
+test_a_removed_tier_heading_is_an_error (test_check_doc_counts.DriftIsDetectedTest.test_a_removed_tier_heading_is_an_error) ... ok
+test_adding_an_agent_without_updating_the_docs_fails (test_check_doc_counts.DriftIsDetectedTest.test_adding_an_agent_without_updating_the_docs_fails)
+End-to-end: the drift the lint is actually deployed against. ... ok
+test_every_doc_quoting_a_count_is_checked_not_just_the_readme (test_check_doc_counts.DriftIsDetectedTest.test_every_doc_quoting_a_count_is_checked_not_just_the_readme) ... ok
+test_runtime_tiers_that_do_not_sum_to_the_active_total (test_check_doc_counts.DriftIsDetectedTest.test_runtime_tiers_that_do_not_sum_to_the_active_total)
+The nine-deprecated-agents-in-the-tiers bug, reproduced. ... ok
+test_wrong_active_runtime_count_in_claude_md (test_check_doc_counts.DriftIsDetectedTest.test_wrong_active_runtime_count_in_claude_md) ... ok
+test_wrong_agent_total_in_the_readme_headline (test_check_doc_counts.DriftIsDetectedTest.test_wrong_agent_total_in_the_readme_headline) ... ok
+test_wrong_build_agent_count (test_check_doc_counts.DriftIsDetectedTest.test_wrong_build_agent_count) ... ok
+test_wrong_deprecated_count_in_the_mcp_readme (test_check_doc_counts.DriftIsDetectedTest.test_wrong_deprecated_count_in_the_mcp_readme) ... ok
+test_wrong_flagship_eval_count (test_check_doc_counts.DriftIsDetectedTest.test_wrong_flagship_eval_count) ... ok
+test_wrong_mcp_tool_count (test_check_doc_counts.DriftIsDetectedTest.test_wrong_mcp_tool_count) ... ok
+test_wrong_per_domain_count_in_the_covered_skills_table (test_check_doc_counts.DriftIsDetectedTest.test_wrong_per_domain_count_in_the_covered_skills_table) ... ok
+test_wrong_skill_total_in_the_readme_headline (test_check_doc_counts.DriftIsDetectedTest.test_wrong_skill_total_in_the_readme_headline) ... ok
+test_a_matching_key_in_the_body_is_not_read (test_check_doc_counts.FrontmatterFieldTest.test_a_matching_key_in_the_body_is_not_read) ... ok
+test_absent_field_is_none (test_check_doc_counts.FrontmatterFieldTest.test_absent_field_is_none) ... ok
+test_file_without_frontmatter_is_none (test_check_doc_counts.FrontmatterFieldTest.test_file_without_frontmatter_is_none) ... ok
+test_reads_a_quoted_and_an_unquoted_value (test_check_doc_counts.FrontmatterFieldTest.test_reads_a_quoted_and_an_unquoted_value) ... ok
+test_a_consistent_repo_reports_no_issues (test_check_doc_counts.PassingRepoTest.test_a_consistent_repo_reports_no_issues) ... ok
+test_datetimes_are_normalized_too (test_frontmatter.NormalizeMetadataTest.test_datetimes_are_normalized_too)
+datetime.datetime subclasses datetime.date, so the isinstance check ... ok
+test_empty_dict (test_frontmatter.NormalizeMetadataTest.test_empty_dict) ... ok
+test_nested_dates_are_not_normalized (test_frontmatter.NormalizeMetadataTest.test_nested_dates_are_not_normalized)
+Characterization: normalization is one level deep. No frontmatter key ... ok
+test_other_types_pass_through_untouched (test_frontmatter.NormalizeMetadataTest.test_other_types_pass_through_untouched) ... ok
+test_top_level_dates_become_iso_strings (test_frontmatter.NormalizeMetadataTest.test_top_level_dates_become_iso_strings) ... ok
+test_completely_empty_file (test_frontmatter.ParseErrorTest.test_completely_empty_file) ... ok
+test_list_frontmatter_is_rejected (test_frontmatter.ParseErrorTest.test_list_frontmatter_is_rejected) ... ok
+test_malformed_yaml_propagates (test_frontmatter.ParseErrorTest.test_malformed_yaml_propagates) ... ok
+test_no_frontmatter_at_all (test_frontmatter.ParseErrorTest.test_no_frontmatter_at_all) ... ok
+test_scalar_frontmatter_is_rejected (test_frontmatter.ParseErrorTest.test_scalar_frontmatter_is_rejected) ... ok
+test_unterminated_frontmatter (test_frontmatter.ParseErrorTest.test_unterminated_frontmatter) ... ok
+test_a_horizontal_rule_in_the_body_is_not_a_second_boundary (test_frontmatter.ParseTest.test_a_horizontal_rule_in_the_body_is_not_a_second_boundary) ... ok
+test_body_excludes_the_frontmatter_and_is_left_stripped (test_frontmatter.ParseTest.test_body_excludes_the_frontmatter_and_is_left_stripped) ... ok
+test_crlf_line_endings_parse (test_frontmatter.ParseTest.test_crlf_line_endings_parse)
+A Windows-authored skill must not read as 'missing frontmatter'. ... ok
+test_empty_frontmatter_block_is_an_empty_dict_not_an_error (test_frontmatter.ParseTest.test_empty_frontmatter_block_is_an_empty_dict_not_an_error) ... ok
+test_returns_a_frozen_dataclass (test_frontmatter.ParseTest.test_returns_a_frozen_dataclass) ... ok
+test_scalars_lists_and_quoted_strings_round_trip (test_frontmatter.ParseTest.test_scalars_lists_and_quoted_strings_round_trip) ... ok
+test_trailing_whitespace_on_the_boundary_is_tolerated (test_frontmatter.ParseTest.test_trailing_whitespace_on_the_boundary_is_tolerated) ... ok
+test_unquoted_date_is_normalized_to_an_iso_string (test_frontmatter.ParseTest.test_unquoted_date_is_normalized_to_an_iso_string)
+PyYAML parses a bare `2026-08-01` as datetime.date, which is not ... ok
+test_utf8_content_survives (test_frontmatter.ParseTest.test_utf8_content_survives) ... ok
+test_version_stays_a_string_not_a_float (test_frontmatter.ParseTest.test_version_stays_a_string_not_a_float)
+`1.0.0` must not become 1.0 — the schema pattern is ^\d+\.\d+\.\d+$. ... ok
+test_a_rename_changes_the_hash (test_frontmatter.StableHashTest.test_a_rename_changes_the_hash)
+Paths are folded into the digest, so moving a file is drift even ... ok
+test_adding_a_file_changes_the_hash (test_frontmatter.StableHashTest.test_adding_a_file_changes_the_hash) ... ok
+test_binary_content_is_handled (test_frontmatter.StableHashTest.test_binary_content_is_handled) ... ok
+test_content_cannot_be_shuffled_between_files_unnoticed (test_frontmatter.StableHashTest.test_content_cannot_be_shuffled_between_files_unnoticed)
+The NUL separators after the path and after the bytes are what stop ... ok
+test_content_change_changes_the_hash (test_frontmatter.StableHashTest.test_content_change_changes_the_hash) ... ok
+test_deterministic_for_the_same_inputs (test_frontmatter.StableHashTest.test_deterministic_for_the_same_inputs) ... ok
+test_empty_input_is_the_sha256_of_nothing (test_frontmatter.StableHashTest.test_empty_input_is_the_sha256_of_nothing) ... ok
+test_hash_is_machine_independent_when_root_is_given (test_frontmatter.StableHashTest.test_hash_is_machine_independent_when_root_is_given)
+The Wave-1.1 hotfix: macOS dev boxes hash under /Users/... while ... ok
+test_input_order_does_not_matter (test_frontmatter.StableHashTest.test_input_order_does_not_matter) ... ok
+test_omitting_root_reintroduces_absolute_path_dependence (test_frontmatter.StableHashTest.test_omitting_root_reintroduces_absolute_path_dependence)
+Characterization of the legacy call form. Callers that care about ... ok
+test_paths_outside_root_fall_back_to_the_basename (test_frontmatter.StableHashTest.test_paths_outside_root_fall_back_to_the_basename)
+Documented guard against pathological inputs — it must not raise. ... ok
+test_builds_and_records_the_source_hash_and_count (test_lexical_index.BuildLexicalIndexTest.test_builds_and_records_the_source_hash_and_count) ... ok
+test_changed_hash_rebuilds_from_scratch (test_lexical_index.BuildLexicalIndexTest.test_changed_hash_rebuilds_from_scratch) ... ok
+test_empty_corpus_produces_a_valid_queryable_index (test_lexical_index.BuildLexicalIndexTest.test_empty_corpus_produces_a_valid_queryable_index) ... ok
+test_matching_hash_is_a_no_op_rebuild (test_lexical_index.BuildLexicalIndexTest.test_matching_hash_is_a_no_op_rebuild)
+The hash short-circuit is what keeps `build_index.py` cheap. If it ... ok
+test_optional_chunk_fields_may_be_absent (test_lexical_index.BuildLexicalIndexTest.test_optional_chunk_fields_may_be_absent)
+`skill_id`, `domain` and `tags` are read with `.get` — official-source ... ok
+test_hyphen_and_slash_still_split_into_separate_terms (test_lexical_index.FTS5MetacharacterRegressionTest.test_hyphen_and_slash_still_split_into_separate_terms)
+Neither is a legal bareword character, and splitting is load-bearing ... ok
+test_infix_plus_matches_documents_that_share_no_term (test_lexical_index.FTS5MetacharacterRegressionTest.test_infix_plus_matches_documents_that_share_no_term)
+Behavioural proof that the semantics are OR and not adjacency. ... ok
+test_infix_plus_produces_or_not_phrase_concatenation (test_lexical_index.FTS5MetacharacterRegressionTest.test_infix_plus_produces_or_not_phrase_concatenation)
+String-level assertion. Before the fix this returned the single ... ok
+test_no_ascii_punctuation_character_can_reach_fts5_as_syntax (test_lexical_index.FTS5MetacharacterRegressionTest.test_no_ascii_punctuation_character_can_reach_fts5_as_syntax)
+The allow-list's real contract: no ASCII punctuation character, in ... ok
+test_non_ascii_is_kept (test_lexical_index.FTS5MetacharacterRegressionTest.test_non_ascii_is_kept)
+Codepoints above 127 are legal barewords; dropping them would make ... ok
+test_plus_separated_query_is_not_silently_empty (test_lexical_index.FTS5MetacharacterRegressionTest.test_plus_separated_query_is_not_silently_empty)
+The narrowest statement of the bug that was shipping: a non-empty ... ok
+test_previously_crashing_queries_no_longer_raise (test_lexical_index.FTS5MetacharacterRegressionTest.test_previously_crashing_queries_no_longer_raise) ... ok
+test_underscore_is_kept_because_it_is_a_legal_bareword_character (test_lexical_index.FTS5MetacharacterRegressionTest.test_underscore_is_kept_because_it_is_a_legal_bareword_character)
+Underscore is valid inside an FTS5 bareword and appears in real API ... ok
+test_fts5_boolean_keywords_are_neutralised_by_lowercasing (test_lexical_index.QuerySanitisationTest.test_fts5_boolean_keywords_are_neutralised_by_lowercasing)
+`AND` / `OR` / `NOT` / `NEAR` are only FTS5 operators in upper case. ... ok
+test_known_safe_metacharacters_do_not_raise (test_lexical_index.QuerySanitisationTest.test_known_safe_metacharacters_do_not_raise) ... ok
+test_missing_file_is_none (test_lexical_index.ReadSourceHashTest.test_missing_file_is_none) ... ok
+test_non_sqlite_file_is_none_not_an_exception (test_lexical_index.ReadSourceHashTest.test_non_sqlite_file_is_none_not_an_exception)
+A truncated or half-written index must degrade to 'rebuild me', not ... ok
+test_sqlite_file_without_a_meta_table_is_none (test_lexical_index.ReadSourceHashTest.test_sqlite_file_without_a_meta_table_is_none) ... ok
+test_domain_filter_excludes_null_domain_chunks (test_lexical_index.SearchIndexTest.test_domain_filter_excludes_null_domain_chunks)
+The official-doc chunk has domain NULL; `AND domain = ?` drops it. ... ok
+test_domain_filter_restricts_results (test_lexical_index.SearchIndexTest.test_domain_filter_restricts_results) ... ok
+test_empty_query_returns_empty_without_touching_sqlite (test_lexical_index.SearchIndexTest.test_empty_query_returns_empty_without_touching_sqlite) ... ok
+test_limit_is_applied (test_lexical_index.SearchIndexTest.test_limit_is_applied) ... ok
+test_matches_across_title_tags_and_text (test_lexical_index.SearchIndexTest.test_matches_across_title_tags_and_text) ... ok
+test_missing_index_file_returns_empty_not_raises (test_lexical_index.SearchIndexTest.test_missing_index_file_returns_empty_not_raises) ... ok
+test_no_match_returns_empty (test_lexical_index.SearchIndexTest.test_no_match_returns_empty) ... ok
+test_or_semantics_union_the_terms (test_lexical_index.SearchIndexTest.test_or_semantics_union_the_terms) ... ok
+test_prefix_matching_is_on (test_lexical_index.SearchIndexTest.test_prefix_matching_is_on) ... ok
+test_returned_columns_cover_what_rerank_results_reads (test_lexical_index.SearchIndexTest.test_returned_columns_cover_what_rerank_results_reads) ... ok
+test_rows_are_ordered_best_first_by_bm25 (test_lexical_index.SearchIndexTest.test_rows_are_ordered_best_first_by_bm25)
+``rerank_results`` assumes position 0 is the most relevant row and ... ok
+test_a_query_of_only_stripped_punctuation_returns_empty (test_lexical_index.TokenizeQueryTest.test_a_query_of_only_stripped_punctuation_returns_empty) ... ok
+test_empty_and_whitespace_only_return_empty_string (test_lexical_index.TokenizeQueryTest.test_empty_and_whitespace_only_return_empty_string) ... ok
+test_no_bare_star_is_emitted_for_a_star_only_query (test_lexical_index.TokenizeQueryTest.test_no_bare_star_is_emitted_for_a_star_only_query) ... ok
+test_punctuation_in_the_translate_table_becomes_whitespace (test_lexical_index.TokenizeQueryTest.test_punctuation_in_the_translate_table_becomes_whitespace) ... ok
+test_quotes_are_stripped_so_phrase_syntax_cannot_be_injected (test_lexical_index.TokenizeQueryTest.test_quotes_are_stripped_so_phrase_syntax_cannot_be_injected) ... ok
+test_single_word (test_lexical_index.TokenizeQueryTest.test_single_word) ... ok
+test_slashes_split_rather_than_concatenate (test_lexical_index.TokenizeQueryTest.test_slashes_split_rather_than_concatenate) ... ok
+test_words_become_lowercased_prefix_terms_joined_by_or (test_lexical_index.TokenizeQueryTest.test_words_become_lowercased_prefix_terms_joined_by_or) ... ok
+test_every_other_parameter_is_keyword_only_and_defaulted (test_ranking.AggregateBackCompatTest.test_every_other_parameter_is_keyword_only_and_defaulted)
+Guards the other direction: a new positional parameter appended after ... ok
+test_limit_is_honoured_when_passed_positionally (test_ranking.AggregateBackCompatTest.test_limit_is_honoured_when_passed_positionally)
+The second positional is ``limit``, not something else. A newly ... ok
+test_rows_and_limit_are_positional (test_ranking.AggregateBackCompatTest.test_rows_and_limit_are_positional) ... ok
+test_the_mcp_calling_convention_works_end_to_end (test_ranking.AggregateBackCompatTest.test_the_mcp_calling_convention_works_end_to_end)
+Exercises the MCP server's exact calling convention BEHAVIOURALLY. ... ok
+test_two_positional_args_is_a_working_call (test_ranking.AggregateBackCompatTest.test_two_positional_args_is_a_working_call) ... ok
+test_all_stopword_query_applies_no_bonus (test_ranking.AggregateScoringTest.test_all_stopword_query_applies_no_bonus) ... ok
+test_bonus_can_overturn_the_chunk_level_ordering (test_ranking.AggregateScoringTest.test_bonus_can_overturn_the_chunk_level_ordering)
+The centrality signal exists to beat raw chunk evidence. ... ok
+test_bonus_is_applied_before_truncation (test_ranking.AggregateScoringTest.test_bonus_is_applied_before_truncation)
+A skill outside the top-``limit`` on chunk evidence alone can still ... ok
+test_bonus_never_leaks_into_the_gated_fields (test_ranking.AggregateScoringTest.test_bonus_never_leaks_into_the_gated_fields)
+``score`` and ``max_score`` feed the coverage gate. A title ... ok
+test_cumulative_score_breaks_max_score_ties (test_ranking.AggregateScoringTest.test_cumulative_score_breaks_max_score_ties) ... ok
+test_empty_rows_is_empty_list (test_ranking.AggregateScoringTest.test_empty_rows_is_empty_list) ... ok
+test_full_tie_breaks_on_skill_id_for_determinism (test_ranking.AggregateScoringTest.test_full_tie_breaks_on_skill_id_for_determinism) ... ok
+test_limit_truncates (test_ranking.AggregateScoringTest.test_limit_truncates) ... ok
+test_max_score_and_cumulative_score_are_distinct_units (test_ranking.AggregateScoringTest.test_max_score_and_cumulative_score_are_distinct_units)
+One precise chunk vs three weak ones. ... ok
+test_ordering_follows_max_score_not_cumulative_score (test_ranking.AggregateScoringTest.test_ordering_follows_max_score_not_cumulative_score) ... ok
+test_path_tracks_the_best_chunk_not_the_first (test_ranking.AggregateScoringTest.test_path_tracks_the_best_chunk_not_the_first) ... ok
+test_query_without_skill_meta_applies_no_bonus (test_ranking.AggregateScoringTest.test_query_without_skill_meta_applies_no_bonus) ... ok
+test_rolls_chunks_up_and_counts_hits (test_ranking.AggregateScoringTest.test_rolls_chunks_up_and_counts_hits) ... ok
+test_rows_without_a_skill_id_are_dropped (test_ranking.AggregateScoringTest.test_rows_without_a_skill_id_are_dropped) ... ok
+test_skill_meta_without_query_applies_no_bonus (test_ranking.AggregateScoringTest.test_skill_meta_without_query_applies_no_bonus) ... ok
+test_weights_are_honoured_from_the_caller (test_ranking.AggregateScoringTest.test_weights_are_honoured_from_the_caller)
+Both callers read these out of config/retrieval-config.yaml; a ... ok
+test_without_metadata_rank_score_equals_max_score (test_ranking.AggregateScoringTest.test_without_metadata_rank_score_equals_max_score)
+Pre-2026-07-31 behaviour must be recoverable exactly. ... ok
+test_chunks_without_official_sources_contribute_nothing (test_ranking.CollectOfficialSourcesTest.test_chunks_without_official_sources_contribute_nothing) ... ok
+test_dedupes_across_chunks_and_preserves_first_seen_order (test_ranking.CollectOfficialSourcesTest.test_dedupes_across_chunks_and_preserves_first_seen_order) ... ok
+test_limit_truncates (test_ranking.CollectOfficialSourcesTest.test_limit_truncates) ... ok
+test_title_and_url_are_placeholders_for_the_caller_to_canonicalize (test_ranking.CollectOfficialSourcesTest.test_title_and_url_are_placeholders_for_the_caller_to_canonicalize) ... ok
+test_unknown_chunk_ids_are_skipped_not_fatal (test_ranking.CollectOfficialSourcesTest.test_unknown_chunk_ids_are_skipped_not_fatal) ... ok
+test_empty_query_scores_zero (test_ranking.NameMatchBonusTest.test_empty_query_scores_zero) ... ok
+test_full_name_overlap_is_the_full_name_weight (test_ranking.NameMatchBonusTest.test_full_name_overlap_is_the_full_name_weight) ... ok
+test_no_overlap_scores_zero (test_ranking.NameMatchBonusTest.test_no_overlap_scores_zero) ... ok
+test_one_query_token_matching_several_targets_counts_once (test_ranking.NameMatchBonusTest.test_one_query_token_matching_several_targets_counts_once)
+The ratio stays bounded by 1.0, so the bonus cannot exceed its weight. ... ok
+test_overlap_is_a_fraction_of_the_query_not_the_name (test_ranking.NameMatchBonusTest.test_overlap_is_a_fraction_of_the_query_not_the_name)
+A long descriptive skill name must not be penalised, and a long ... ok
+test_prefix_matching_is_one_directional (test_ranking.NameMatchBonusTest.test_prefix_matching_is_one_directional)
+A query token may PREFIX a target token, not the reverse. ... ok
+test_query_token_prefix_matches_a_plural_in_the_name (test_ranking.NameMatchBonusTest.test_query_token_prefix_matches_a_plural_in_the_name)
+Overlap is prefix-based, matching FTS5's own ``token*`` semantics. ... ok
+test_unknown_skill_falls_back_to_the_slug (test_ranking.NameMatchBonusTest.test_unknown_skill_falls_back_to_the_slug)
+A skill missing from skill_meta still gets a name signal from its own ... ok
+test_weights_are_applied_independently (test_ranking.NameMatchBonusTest.test_weights_are_applied_independently) ... ok
+test_domain_boost_flips_a_near_tie (test_ranking.RerankResultsTest.test_domain_boost_flips_a_near_tie) ... ok
+test_domain_filter_boost_can_reorder (test_ranking.RerankResultsTest.test_domain_filter_boost_can_reorder)
+A same-domain chunk at position 1 (0.5 + 0.2 + 0.1 = 0.8) beats an ... ok
+test_empty_input (test_ranking.RerankResultsTest.test_empty_input) ... ok
+test_falls_back_to_chunk_embeddings_when_the_skill_has_none (test_ranking.RerankResultsTest.test_falls_back_to_chunk_embeddings_when_the_skill_has_none) ... ok
+test_input_order_is_preserved_when_no_boost_applies (test_ranking.RerankResultsTest.test_input_order_is_preserved_when_no_boost_applies) ... ok
+test_original_row_fields_survive (test_ranking.RerankResultsTest.test_original_row_fields_survive) ... ok
+test_rank_based_lexical_score_decays_with_position (test_ranking.RerankResultsTest.test_rank_based_lexical_score_decays_with_position) ... ok
+test_skill_attached_chunks_get_a_flat_boost (test_ranking.RerankResultsTest.test_skill_attached_chunks_get_a_flat_boost) ... ok
+test_skill_embeddings_take_precedence_over_chunk_embeddings (test_ranking.RerankResultsTest.test_skill_embeddings_take_precedence_over_chunk_embeddings)
+Skill-level vectors answer 'which skill applies'; chunk-level is the ... ok
+test_vector_contribution_is_capped_at_the_0_2_weight (test_ranking.RerankResultsTest.test_vector_contribution_is_capped_at_the_0_2_weight) ... ok
+test_vector_score_is_zero_without_a_query_vector (test_ranking.RerankResultsTest.test_vector_score_is_zero_without_a_query_vector) ... ok
+test_stopword_set_is_unchanged (test_ranking.StopwordSetTest.test_stopword_set_is_unchanged) ... ok
+test_digits_are_kept_only_above_two_characters (test_ranking.TokenizerTest.test_digits_are_kept_only_above_two_characters)
+Characterization, not endorsement: the >2-char rule applies to ... ok
+test_drops_stopwords (test_ranking.TokenizerTest.test_drops_stopwords) ... ok
+test_drops_tokens_of_two_chars_or_fewer (test_ranking.TokenizerTest.test_drops_tokens_of_two_chars_or_fewer) ... ok
+test_empty_and_none_are_empty_sets (test_ranking.TokenizerTest.test_empty_and_none_are_empty_sets) ... ok
+test_splits_on_non_alphanumerics_and_lowercases (test_ranking.TokenizerTest.test_splits_on_non_alphanumerics_and_lowercases) ... ok
+test_agreement_holds_under_the_limit_truncation (test_search_knowledge.EquivalenceTest.test_agreement_holds_under_the_limit_truncation) ... ok
+test_collect_official_sources_agrees_with_the_full_mapping (test_search_knowledge.EquivalenceTest.test_collect_official_sources_agrees_with_the_full_mapping) ... ok
+test_changed_separators_degrade_to_correct_not_wrong (test_search_knowledge.FastPathTest.test_changed_separators_degrade_to_correct_not_wrong) ... ok
+test_marker_does_not_fire_on_chunk_text_containing_it (test_search_knowledge.FastPathTest.test_marker_does_not_fire_on_chunk_text_containing_it) ... ok
+test_blank_lines_are_skipped (test_search_knowledge.LoadOfficialSourceChunksTest.test_blank_lines_are_skipped) ... ok
+test_keeps_only_records_with_non_empty_official_source_ids (test_search_knowledge.LoadOfficialSourceChunksTest.test_keeps_only_records_with_non_empty_official_source_ids) ... ok
+test_missing_file_returns_empty_mapping (test_search_knowledge.LoadOfficialSourceChunksTest.test_missing_file_returns_empty_mapping) ... ok
+test_record_missing_the_key_entirely_is_dropped (test_search_knowledge.LoadOfficialSourceChunksTest.test_record_missing_the_key_entirely_is_dropped) ... ok
+test_alternate_heading_nouns (test_validators.AntiPatternCounterTest.test_alternate_heading_nouns) ... ok
+test_empty_text (test_validators.AntiPatternCounterTest.test_empty_text) ... ok
+test_inline_backticks_in_prose_do_not_eat_headings (test_validators.AntiPatternCounterTest.test_inline_backticks_in_prose_do_not_eat_headings) ... ok
+test_mixed_formats_take_the_max_not_the_sum (test_validators.AntiPatternCounterTest.test_mixed_formats_take_the_max_not_the_sum) ... ok
+test_named_headings (test_validators.AntiPatternCounterTest.test_named_headings) ... ok
+test_numbered_headings (test_validators.AntiPatternCounterTest.test_numbered_headings) ... ok
+test_numbered_lines_inside_a_code_fence_are_not_counted (test_validators.AntiPatternCounterTest.test_numbered_lines_inside_a_code_fence_are_not_counted) ... ok
+test_repeated_list_markers_count_once (test_validators.AntiPatternCounterTest.test_repeated_list_markers_count_once)
+Markdown lets every item be `1.`; counting the raw matches would ... ok
+test_top_level_numbered_list (test_validators.AntiPatternCounterTest.test_top_level_numbered_list) ... ok
+test_fail_inline_pillar_mapping_when_the_reference_has_content (test_validators.AuthoringStyleGateTest.test_fail_inline_pillar_mapping_when_the_reference_has_content) ... ok
+test_fail_lowercase_and_extended_when_to_use_variants (test_validators.AuthoringStyleGateTest.test_fail_lowercase_and_extended_when_to_use_variants) ... ok
+test_fail_paragraph_duplicated_verbatim_into_gotchas (test_validators.AuthoringStyleGateTest.test_fail_paragraph_duplicated_verbatim_into_gotchas) ... ok
+test_fail_when_to_use_section_duplicates_the_description (test_validators.AuthoringStyleGateTest.test_fail_when_to_use_section_duplicates_the_description) ... ok
+test_missing_skill_md_returns_no_issues (test_validators.AuthoringStyleGateTest.test_missing_skill_md_returns_no_issues) ... ok
+test_pass_a_clean_skill (test_validators.AuthoringStyleGateTest.test_pass_a_clean_skill) ... ok
+test_pass_a_shared_citation_list_is_not_duplication (test_validators.AuthoringStyleGateTest.test_pass_a_shared_citation_list_is_not_duplication)
+URLs are legitimately repeated across a skill's files. ... ok
+test_pass_an_h3_when_to_use_subheading_is_legitimate (test_validators.AuthoringStyleGateTest.test_pass_an_h3_when_to_use_subheading_is_legitimate)
+`### When to Use Flow` is a decision-tree branch, not a duplicate. ... ok
+test_pass_inline_pillar_mapping_when_the_reference_is_a_stub (test_validators.AuthoringStyleGateTest.test_pass_inline_pillar_mapping_when_the_reference_is_a_stub)
+The gate is 'map once', not 'never map' — with no real reference ... ok
+test_pass_short_shared_phrasing_is_not_duplication (test_validators.AuthoringStyleGateTest.test_pass_short_shared_phrasing_is_not_duplication) ... ok
+test_comments_and_blank_lines_do_not_count_as_meaningful (test_validators.CheckerScriptGateTest.test_comments_and_blank_lines_do_not_count_as_meaningful) ... ok
+test_pass_a_real_checker (test_validators.CheckerScriptGateTest.test_pass_a_real_checker) ... ok
+test_short_file_short_circuits_the_other_two_checks (test_validators.CheckerScriptGateTest.test_short_file_short_circuits_the_other_two_checks)
+Documented behaviour: a stub gets one message, not three. ... ok
+test_warn_no_conditional_branch (test_validators.CheckerScriptGateTest.test_warn_no_conditional_branch) ... ok
+test_warn_no_error_output_path (test_validators.CheckerScriptGateTest.test_warn_no_error_output_path) ... ok
+test_warn_too_few_meaningful_lines (test_validators.CheckerScriptGateTest.test_warn_too_few_meaningful_lines) ... ok
+test_a_valid_instance_produces_no_messages (test_validators.EnumHintTest.test_a_valid_instance_produces_no_messages) ... ok
+test_aws_waf_alias_gets_a_named_suggestion (test_validators.EnumHintTest.test_aws_waf_alias_gets_a_named_suggestion) ... ok
+test_near_miss_gets_a_fuzzy_suggestion (test_validators.EnumHintTest.test_near_miss_gets_a_fuzzy_suggestion) ... ok
+test_non_enum_failures_are_not_rewritten (test_validators.EnumHintTest.test_non_enum_failures_are_not_rewritten) ... ok
+test_unrelated_value_is_left_alone (test_validators.EnumHintTest.test_unrelated_value_is_left_alone) ... ok
+test_fail_body_under_the_word_floor (test_validators.FrontmatterGateTest.test_fail_body_under_the_word_floor) ... ok
+test_fail_category_does_not_match_the_parent_domain_folder (test_validators.FrontmatterGateTest.test_fail_category_does_not_match_the_parent_domain_folder) ... ok
+test_fail_category_outside_the_enum (test_validators.FrontmatterGateTest.test_fail_category_outside_the_enum) ... ok
+test_fail_description_without_a_scope_exclusion (test_validators.FrontmatterGateTest.test_fail_description_without_a_scope_exclusion) ... ok
+test_fail_missing_required_key (test_validators.FrontmatterGateTest.test_fail_missing_required_key) ... ok
+test_fail_name_does_not_match_the_folder (test_validators.FrontmatterGateTest.test_fail_name_does_not_match_the_folder) ... ok
+test_fail_scalar_field_that_should_be_a_list (test_validators.FrontmatterGateTest.test_fail_scalar_field_that_should_be_a_list) ... ok
+test_fail_schema_violation_bad_version_string (test_validators.FrontmatterGateTest.test_fail_schema_violation_bad_version_string) ... ok
+test_fail_schema_violation_unknown_key (test_validators.FrontmatterGateTest.test_fail_schema_violation_unknown_key)
+`additionalProperties: false` — a typo'd key must not sail through. ... ok
+test_fail_todo_marker_in_a_list_field (test_validators.FrontmatterGateTest.test_fail_todo_marker_in_a_list_field) ... ok
+test_fail_todo_marker_in_the_body (test_validators.FrontmatterGateTest.test_fail_todo_marker_in_the_body) ... ok
+test_fail_todo_with_a_colon_in_a_list_field_is_caught_by_the_schema (test_validators.FrontmatterGateTest.test_fail_todo_with_a_colon_in_a_list_field_is_caught_by_the_schema)
+Characterization worth knowing: `- TODO: fill this in` is valid YAML ... ok
+test_pass_a_well_formed_skill_produces_no_issues (test_validators.FrontmatterGateTest.test_pass_a_well_formed_skill_produces_no_issues) ... ok
+test_pass_todo_inside_an_html_comment_is_allowed (test_validators.FrontmatterGateTest.test_pass_todo_inside_an_html_comment_is_allowed)
+Scaffold hints in comments are how new_skill.py annotates a template. ... ok
+test_empty (test_validators.MedianTest.test_empty) ... ok
+test_even_length_averages_the_middle_pair (test_validators.MedianTest.test_even_length_averages_the_middle_pair) ... ok
+test_odd_length (test_validators.MedianTest.test_odd_length) ... ok
+test_a_skill_with_no_official_sources_section_is_skipped (test_validators.OfficialSourcesUniquenessTest.test_a_skill_with_no_official_sources_section_is_skipped) ... ok
+test_an_empty_sources_block_is_skipped_not_grouped (test_validators.OfficialSourcesUniquenessTest.test_an_empty_sources_block_is_skipped_not_grouped)
+Otherwise every empty block would collide with every other one and ... ok
+test_cross_domain_reuse_is_deliberately_allowed (test_validators.OfficialSourcesUniquenessTest.test_cross_domain_reuse_is_deliberately_allowed) ... ok
+test_distinct_blocks_are_not_flagged (test_validators.OfficialSourcesUniquenessTest.test_distinct_blocks_are_not_flagged) ... ok
+test_identical_blocks_in_the_same_domain_are_flagged (test_validators.OfficialSourcesUniquenessTest.test_identical_blocks_in_the_same_domain_are_flagged) ... ok
+test_only_skills_in_skill_paths_are_reported (test_validators.OfficialSourcesUniquenessTest.test_only_skills_in_skill_paths_are_reported)
+Corpus-level by construction — the map covers everything, but a ... ok
+test_whitespace_only_differences_still_collide (test_validators.OfficialSourcesUniquenessTest.test_whitespace_only_differences_still_collide)
+The fingerprint strips per-line whitespace, so reindenting a pasted ... ok
+test_frontmatter_bullets_are_not_counted (test_validators.ParallelProseGateTest.test_frontmatter_bullets_are_not_counted)
+The scanner skips the frontmatter block — `tags:` list items must ... ok
+test_pass_at_three_consecutive_bullets (test_validators.ParallelProseGateTest.test_pass_at_three_consecutive_bullets) ... ok
+test_pass_under_the_related_skills_exemption (test_validators.ParallelProseGateTest.test_pass_under_the_related_skills_exemption) ... ok
+test_pass_when_bullets_are_paragraph_length (test_validators.ParallelProseGateTest.test_pass_when_bullets_are_paragraph_length)
+Median > 220 chars means these are prose, not a table in disguise. ... ok
+test_pass_when_the_bullets_are_inside_a_code_fence (test_validators.ParallelProseGateTest.test_pass_when_the_bullets_are_inside_a_code_fence) ... ok
+test_pass_when_the_run_is_broken_by_a_heading (test_validators.ParallelProseGateTest.test_pass_when_the_run_is_broken_by_a_heading)
+No blank line anywhere — only the heading can end the run, so this ... ok
+test_pass_when_the_run_is_broken_by_a_paragraph (test_validators.ParallelProseGateTest.test_pass_when_the_run_is_broken_by_a_paragraph) ... ok
+test_warn_at_four_consecutive_bullets (test_validators.ParallelProseGateTest.test_warn_at_four_consecutive_bullets) ... ok
+test_warn_names_the_line_range (test_validators.ParallelProseGateTest.test_warn_names_the_line_range) ... ok
+test_warn_when_six_bullets_run_unbroken_under_one_heading (test_validators.ParallelProseGateTest.test_warn_when_six_bullets_run_unbroken_under_one_heading)
+The control for the two tests above: same bullet count, no break. ... ok
+test_a_record_without_a_file_location_falls_back_to_registry (test_validators.RecordAndSourceSchemaTest.test_a_record_without_a_file_location_falls_back_to_registry) ... ok
+test_a_structurally_invalid_record_reports_against_its_file_location (test_validators.RecordAndSourceSchemaTest.test_a_structurally_invalid_record_reports_against_its_file_location) ... ok
+test_an_invalid_knowledge_source_reports_against_its_id (test_validators.RecordAndSourceSchemaTest.test_an_invalid_knowledge_source_reports_against_its_id) ... ok
+test_a_distinct_skill_is_not_flagged (test_validators.SimilarityGateTest.test_a_distinct_skill_is_not_flagged) ... ok
+test_a_near_clone_is_flagged_as_warn (test_validators.SimilarityGateTest.test_a_near_clone_is_flagged_as_warn) ... ok
+test_a_pair_is_reported_once_not_twice (test_validators.SimilarityGateTest.test_a_pair_is_reported_once_not_twice) ... ok
+test_empty_input_short_circuits (test_validators.SimilarityGateTest.test_empty_input_short_circuits) ... ok
+test_threshold_of_one_flags_nothing (test_validators.SimilarityGateTest.test_threshold_of_one_flags_nothing) ... ok
+test_fail_empty_templates_directory (test_validators.StructureGateTest.test_fail_empty_templates_directory) ... ok
+test_fail_missing_llm_anti_patterns_file (test_validators.StructureGateTest.test_fail_missing_llm_anti_patterns_file) ... ok
+test_fail_missing_required_reference_file (test_validators.StructureGateTest.test_fail_missing_required_reference_file) ... ok
+test_fail_official_sources_heading_with_no_content (test_validators.StructureGateTest.test_fail_official_sources_heading_with_no_content)
+The heading alone is the exact rubber-stamp this gate exists to stop. ... ok
+test_fail_scripts_without_a_python_file (test_validators.StructureGateTest.test_fail_scripts_without_a_python_file) ... ok
+test_fail_templates_holding_only_a_subdirectory (test_validators.StructureGateTest.test_fail_templates_holding_only_a_subdirectory) ... ok
+test_fail_todo_in_llm_anti_patterns_is_an_error (test_validators.StructureGateTest.test_fail_todo_in_llm_anti_patterns_is_an_error) ... ok
+test_fail_well_architected_without_official_sources_used (test_validators.StructureGateTest.test_fail_well_architected_without_official_sources_used) ... ok
+test_pass_a_complete_package_produces_no_issues (test_validators.StructureGateTest.test_pass_a_complete_package_produces_no_issues) ... ok
+test_pass_a_non_code_fenced_block_satisfies_the_examples_gate (test_validators.StructureGateTest.test_pass_a_non_code_fenced_block_satisfies_the_examples_gate)
+Deliberately language-agnostic: a governance skill's worked artifact ... ok
+test_warn_anti_patterns_file_under_the_depth_floor (test_validators.StructureGateTest.test_warn_anti_patterns_file_under_the_depth_floor) ... ok
+test_warn_examples_without_a_fenced_block (test_validators.StructureGateTest.test_warn_examples_without_a_fenced_block) ... ok
+test_warn_fewer_than_five_anti_patterns (test_validators.StructureGateTest.test_warn_fewer_than_five_anti_patterns) ... ok
+test_warn_skill_md_without_a_recommended_workflow (test_validators.StructureGateTest.test_warn_skill_md_without_a_recommended_workflow) ... ok
+
+----------------------------------------------------------------------
+Ran 272 tests in 0.352s
+
+OK

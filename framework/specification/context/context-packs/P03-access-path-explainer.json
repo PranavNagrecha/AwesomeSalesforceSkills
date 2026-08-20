@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "access decision by layer",
+      "max_files": 2,
+      "trigger": "access decision by layer"
+    },
+    {
+      "id": "first blocking control",
+      "max_files": 2,
+      "trigger": "first blocking control"
+    },
+    {
+      "id": "granting paths",
+      "max_files": 2,
+      "trigger": "granting paths"
+    },
+    {
+      "id": "conflicting or muted permissions",
+      "max_files": 2,
+      "trigger": "conflicting or muted permissions"
+    },
+    {
+      "id": "record-level path",
+      "max_files": 2,
+      "trigger": "record-level path"
+    },
+    {
+      "id": "ui versus platform permission distinction",
+      "max_files": 2,
+      "trigger": "UI versus platform permission distinction"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P03-access-path-explainer",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P03",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

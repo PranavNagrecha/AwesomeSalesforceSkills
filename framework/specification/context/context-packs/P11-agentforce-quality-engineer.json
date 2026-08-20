@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "topic/subagent coherence",
+      "max_files": 2,
+      "trigger": "topic/subagent coherence"
+    },
+    {
+      "id": "action input/output and side effects",
+      "max_files": 2,
+      "trigger": "action input/output and side effects"
+    },
+    {
+      "id": "grounding/evidence quality",
+      "max_files": 2,
+      "trigger": "grounding/evidence quality"
+    },
+    {
+      "id": "guardrail gaps",
+      "max_files": 2,
+      "trigger": "guardrail gaps"
+    },
+    {
+      "id": "permission/data risks",
+      "max_files": 2,
+      "trigger": "permission/data risks"
+    },
+    {
+      "id": "test coverage and failures",
+      "max_files": 2,
+      "trigger": "test coverage and failures"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P11-agentforce-quality-engineer",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P11",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

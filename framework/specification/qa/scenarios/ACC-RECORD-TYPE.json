@@ -1,0 +1,44 @@
+{
+  "$schema": "../../schemas/qa-scenario.schema.json",
+  "context_assertions": [
+    "knowledge files <= 12",
+    "no full transcript handoff",
+    "truncation explicit"
+  ],
+  "domain": "access",
+  "evidence_requirements": [
+    "all material findings have valid evidence references"
+  ],
+  "forbidden_findings": [
+    "unsupported target-state claim",
+    "product mutation",
+    "secret disclosure"
+  ],
+  "id": "ACC-RECORD-TYPE",
+  "lane_support": [
+    "hermetic",
+    "scratch"
+  ],
+  "notes": "Ground truth is finding/evidence based, not exact prose.",
+  "product_id": "P03",
+  "required_findings": [
+    {
+      "description": "trace record type layer",
+      "id": "ACC-RECORD-TYPE-F1"
+    },
+    {
+      "description": "separate from CRUD/FLS",
+      "id": "ACC-RECORD-TYPE-F2"
+    },
+    {
+      "description": "identify assignment evidence",
+      "id": "ACC-RECORD-TYPE-F3"
+    }
+  ],
+  "required_status": [
+    "completed",
+    "partial"
+  ],
+  "setup_summary": "Record type assignment/default or business process blocks operation.",
+  "version": "1.0.0"
+}

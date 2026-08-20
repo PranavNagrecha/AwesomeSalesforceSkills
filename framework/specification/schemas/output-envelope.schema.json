@@ -1,0 +1,166 @@
+{
+  "$id": "output-envelope.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contradictions": {
+      "type": "array"
+    },
+    "envelope_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_review": {
+      "additionalProperties": false,
+      "properties": {
+        "blocking_findings": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "pass",
+            "pass-with-warnings",
+            "blocked"
+          ],
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "status",
+        "blocking_findings",
+        "warnings"
+      ],
+      "type": "object"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "recommendation_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "claim_ids",
+          "severity"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "mode": {
+      "enum": [
+        "knowledge-only",
+        "fixture",
+        "local-project",
+        "live-read-only",
+        "hybrid",
+        "scratch-qa"
+      ],
+      "type": "string"
+    },
+    "persisted": {
+      "type": "boolean"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "recommendations": {
+      "type": "array"
+    },
+    "report_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "partial",
+        "refused",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "unknowns": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "product_id",
+    "status",
+    "mode",
+    "summary",
+    "findings",
+    "unknowns",
+    "evidence_review",
+    "provenance",
+    "persisted"
+  ],
+  "title": "SFAEF Output Envelope",
+  "type": "object"
+}

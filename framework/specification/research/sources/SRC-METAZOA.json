@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "competition",
+    "org-intelligence",
+    "technical-debt",
+    "security",
+    "impact-analysis"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-METAZOA",
+  "notes": "Vendor-authored market source. Confirms AI-first org management, technical-debt analysis, security, documentation, impact analysis, deployment, and data migration. Re-check before public comparative claims.",
+  "publisher": "Metazoa",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 3,
+  "status": "current",
+  "title": "Metazoa Total Org Intelligence",
+  "url": "https://www.metazoa.com/"
+}

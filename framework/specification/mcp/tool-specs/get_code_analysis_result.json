@@ -1,0 +1,178 @@
+{
+  "$schema": "../../schemas/tool-spec.schema.json",
+  "arguments": [
+    {
+      "name": "result_file",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "project_path",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "rule_filter",
+      "required": false,
+      "type": "string"
+    },
+    {
+      "name": "cursor",
+      "required": false,
+      "type": "string"
+    }
+  ],
+  "audit_events": [
+    "tool.requested",
+    "tool.policy_evaluated",
+    "tool.target_attested",
+    "tool.started",
+    "tool.page_normalized",
+    "tool.completed",
+    "tool.partial",
+    "tool.denied",
+    "tool.failed"
+  ],
+  "cache_policy": {
+    "cache_key_fields": [
+      "tool_id",
+      "target_binding",
+      "normalized_arguments",
+      "upstream_version"
+    ],
+    "cross_target": false,
+    "scope": "run",
+    "ttl_seconds": 300
+  },
+  "error_codes": [
+    {
+      "code": "invalid_input",
+      "description": "Arguments failed deterministic validation.",
+      "retryable": false,
+      "status": "error"
+    },
+    {
+      "code": "policy_denied",
+      "description": "The tool or requested scope is not allowed by the active policy.",
+      "retryable": false,
+      "status": "denied"
+    },
+    {
+      "code": "authentication_unavailable",
+      "description": "Required local authentication is unavailable; no credential is returned.",
+      "retryable": false,
+      "status": "error"
+    },
+    {
+      "code": "upstream_unavailable",
+      "description": "The official upstream CLI/API/tool is temporarily unavailable or timed out.",
+      "retryable": true,
+      "status": "partial"
+    },
+    {
+      "code": "malformed_upstream",
+      "description": "Upstream output could not be normalized safely.",
+      "retryable": false,
+      "status": "error"
+    },
+    {
+      "code": "result_too_large",
+      "description": "The bounded page was returned with truncation and a continuation cursor where supported.",
+      "retryable": false,
+      "status": "partial"
+    },
+    {
+      "code": "redaction_failure",
+      "description": "Model-visible output was withheld because the redaction contract could not be proven.",
+      "retryable": false,
+      "status": "error"
+    },
+    {
+      "code": "rate_limited",
+      "description": "The per-run or upstream call budget was reached.",
+      "retryable": true,
+      "status": "partial"
+    }
+  ],
+  "evidence_types": [
+    "repository.code-analysis.finding"
+  ],
+  "id": "get_code_analysis_result",
+  "max_page_bytes": 32768,
+  "normalization_rules": [
+    "Normalize timestamps to UTC ISO 8601 while preserving the original locator and upstream version.",
+    "Generate stable evidence IDs from tool, target binding, source locator, canonical record identity, and redacted content digest.",
+    "Preserve source_count and retained_count; never silently discard records or contradictions.",
+    "Remove credentials, access tokens, auth URLs, session identifiers, and disallowed fields before model-visible serialization.",
+    "Sort deterministic collections by canonical identity so repeated captures are diffable.",
+    "Store raw redacted evidence outside the prompt when practical and return only the bounded normalized page."
+  ],
+  "operation_type": "local-analysis",
+  "output_contract": {
+    "evidence_ids": true,
+    "next_cursor": true,
+    "redacted": true,
+    "source_counts": true,
+    "truncated": true,
+    "upstream_version": true
+  },
+  "pagination": {
+    "default_limit": 100,
+    "max_limit": 500,
+    "max_page_bytes": 32768,
+    "must_report_truncation": true,
+    "strategy": "opaque-cursor"
+  },
+  "permission_classes": [
+    "repository.read",
+    "shell.read_only"
+  ],
+  "purpose": "Normalize an existing or newly local-only Code Analyzer result.",
+  "rate_limit": {
+    "max_calls_per_run": 5,
+    "max_concurrent": 1,
+    "notes": "A continuation request consumes the same run budget unless an explicit reviewed run plan grants a larger deterministic budget.",
+    "on_limit": "partial"
+  },
+  "read_only": true,
+  "redaction_profile": "salesforce-evidence-default-v1",
+  "required_tests": [
+    "happy path",
+    "empty result",
+    "malformed upstream",
+    "timeout/unavailable",
+    "redaction-shaped data",
+    "pagination/truncation",
+    "target mismatch when applicable",
+    "policy denial"
+  ],
+  "requires_target_pinning": false,
+  "result_schema": "tool-result.schema.json",
+  "retry_policy": {
+    "backoff": "bounded-exponential-with-jitter",
+    "max_attempts": 2,
+    "never_retry_errors": [
+      "invalid_input",
+      "policy_denied",
+      "authentication_unavailable",
+      "ambiguous_target",
+      "target_mismatch",
+      "malformed_upstream",
+      "redaction_failure"
+    ],
+    "retryable_errors": [
+      "upstream_unavailable",
+      "rate_limited"
+    ]
+  },
+  "sensitive_data_classes": [
+    "repository-source",
+    "local-file-paths"
+  ],
+  "timeout_seconds": 60,
+  "unknown_tool_default": "deny",
+  "upstream_candidates": [
+    "Salesforce Code Analyzer CLI/result file"
+  ],
+  "version": "0.9.0"
+}

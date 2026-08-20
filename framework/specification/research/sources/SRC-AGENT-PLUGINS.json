@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "portability"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-AGENT-PLUGINS",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Agent Plugins community",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 2,
+  "status": "current",
+  "title": "Agent Plugins",
+  "url": "https://agent-plugins.org/"
+}

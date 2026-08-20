@@ -1,0 +1,61 @@
+{
+  "$id": "qa-result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "forbidden_findings": {
+      "type": "array"
+    },
+    "hard_fail": {
+      "type": "boolean"
+    },
+    "hard_fail_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "required_findings": {
+      "type": "array"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "versions": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "run_id",
+    "versions",
+    "hard_fail",
+    "metrics",
+    "required_findings",
+    "forbidden_findings",
+    "artifacts"
+  ],
+  "title": "SFAEF QA Result",
+  "type": "object"
+}

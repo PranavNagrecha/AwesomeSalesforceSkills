@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/context-pack.schema.json",
+  "checkpoint_stages": [
+    "evidence_ready",
+    "draft_ready"
+  ],
+  "conditional_packs": [
+    {
+      "id": "count reconciliation",
+      "max_files": 2,
+      "trigger": "count reconciliation"
+    },
+    {
+      "id": "reject/duplicate categories",
+      "max_files": 2,
+      "trigger": "reject/duplicate categories"
+    },
+    {
+      "id": "relationship and ownership gaps",
+      "max_files": 2,
+      "trigger": "relationship and ownership gaps"
+    },
+    {
+      "id": "transformation anomalies",
+      "max_files": 2,
+      "trigger": "transformation anomalies"
+    },
+    {
+      "id": "business invariant violations",
+      "max_files": 2,
+      "trigger": "business invariant violations"
+    },
+    {
+      "id": "confidence and sample limits",
+      "max_files": 2,
+      "trigger": "confidence and sample limits"
+    }
+  ],
+  "core_items": [
+    "spec/product-contract",
+    "spec/output-envelope",
+    "policy/product-read-only"
+  ],
+  "hard_files": 12,
+  "id": "P09-data-migration-reconciliation",
+  "max_tool_page_bytes": 32768,
+  "output_reserve_fraction": 0.15,
+  "product_id": "P09",
+  "standalone_supported": true,
+  "target_files": 8,
+  "version": "0.9.0"
+}

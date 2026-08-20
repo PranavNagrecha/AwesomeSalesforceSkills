@@ -1,0 +1,123 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "deployment-failure-triager",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "triage-deployment"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "component failure groups",
+    "Apex test failure groups",
+    "coverage/warning groups",
+    "primary and contributing root causes",
+    "affected components and resolvable local paths",
+    "ordered remediation plan",
+    "safe verification commands",
+    "unknowns and contradictions"
+  ],
+  "id": "P01",
+  "inputs": [
+    {
+      "description": "Existing Salesforce deployment job ID; never guessed",
+      "name": "job_id",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Explicit org alias/username; required with live retrieval unless safely resolved and confirmed",
+      "name": "target_org",
+      "requirement": "conditional"
+    },
+    {
+      "description": "Captured Salesforce CLI/API deployment-result JSON",
+      "name": "result_file",
+      "requirement": "conditional"
+    },
+    {
+      "description": "External Salesforce DX project for source mapping",
+      "name": "project_path",
+      "requirement": "optional"
+    },
+    {
+      "description": "Bounded page size, default 100",
+      "name": "failure_limit",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not start, retry, cancel, quick-deploy, or modify a deployment",
+    "Cannot prove local source state without a selected project",
+    "May return partial when job data is expired or truncated"
+  ],
+  "known_truth_scenarios": [
+    "DEP-MISSING-DEPENDENCY",
+    "DEP-APEX-COMPILE",
+    "DEP-TEST-FAILURE",
+    "DEP-COVERAGE",
+    "DEP-DUPLICATE-SYMPTOMS",
+    "DEP-ORG-MISMATCH"
+  ],
+  "lifecycle_status": "release-candidate target",
+  "optional_evidence": [
+    "External Salesforce DX project",
+    "Relevant component source and metadata",
+    "Current official API/tool behavior",
+    "Existing Apex test result details"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "developer",
+    "release-engineer",
+    "consultant",
+    "architect"
+  ],
+  "quality_gates": [
+    "Every material cause links to deployment evidence",
+    "Duplicate symptoms preserve counts and evidence IDs",
+    "No most-recent job fallback",
+    "Standalone diagnosis works without a local project",
+    "Unsafe deploy/cancel/retry actions are not executed"
+  ],
+  "required_evidence": [
+    "Existing deployment result with status, timestamp, target org association, and failure details"
+  ],
+  "slug": "deployment-failure-triage",
+  "supported_modes": [
+    "fixture",
+    "live-read-only",
+    "local-project",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Deployment Failure Triage",
+  "tool_ids": [
+    "get_deployment_result",
+    "get_org_identity",
+    "describe_salesforce_component",
+    "get_code_analysis_result"
+  ],
+  "user_job": "Tell me why this Salesforce deployment failed, group downstream symptoms under likely shared causes, and give me the safest remediation order.",
+  "version": "0.9.0"
+}

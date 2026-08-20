@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "skills",
+    "code-analysis",
+    "portability"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-CODE-ANALYZER-SKILLS",
+  "notes": "Official Salesforce guidance on portable, progressively loaded skills for Code Analyzer workflows. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Use Salesforce Agent Skills to Analyze Code in Natural Language",
+  "url": "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/skills.html"
+}

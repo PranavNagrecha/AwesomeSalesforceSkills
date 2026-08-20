@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saef-reference-kernel"
+version = "0.9.0"
+description = "Deterministic reference controls for the SfSkills Salesforce AI Engineering Framework"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+validation = ["jsonschema>=4.20"]
+
+[project.scripts]
+saef-reference = "saef_kernel.cli:main"

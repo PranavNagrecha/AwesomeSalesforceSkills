@@ -1,0 +1,115 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "multi-org-drift-analyzer",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "compare-orgs"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "added/removed/changed components",
+    "expected differences",
+    "dangerous drift",
+    "dependency consequences",
+    "promotion/reconciliation recommendations",
+    "snapshot limitations"
+  ],
+  "id": "P12",
+  "inputs": [
+    {
+      "description": "Explicit org alias or captured snapshot",
+      "name": "left_org_or_snapshot",
+      "requirement": "required"
+    },
+    {
+      "description": "Explicit org alias or captured snapshot",
+      "name": "right_org_or_snapshot",
+      "requirement": "required"
+    },
+    {
+      "description": "Metadata types, packages, settings, permissions, or components",
+      "name": "scope",
+      "requirement": "optional"
+    },
+    {
+      "description": "Expected-difference rules",
+      "name": "difference_policy",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not mutate either org",
+    "Completeness depends on snapshot coverage",
+    "Some secrets/settings cannot be compared directly"
+  ],
+  "known_truth_scenarios": [
+    "DRIFT-FIELD",
+    "DRIFT-FLOW-VERSION",
+    "DRIFT-PERMISSION",
+    "DRIFT-SETTING",
+    "DRIFT-PACKAGE",
+    "DRIFT-EXPECTED"
+  ],
+  "lifecycle_status": "beta portfolio",
+  "optional_evidence": [
+    "project source",
+    "package/version manifests",
+    "expected environment policy",
+    "deployment history"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "release-engineer",
+    "architect",
+    "consultant",
+    "admin",
+    "developer"
+  ],
+  "quality_gates": [
+    "Never compares implicit/default orgs",
+    "Snapshot versions and scope are visible",
+    "Expected policy is separate from observed diff",
+    "No synchronization or deployment"
+  ],
+  "required_evidence": [
+    "Two explicit identities/snapshots and capture times"
+  ],
+  "slug": "multi-org-drift-analysis",
+  "supported_modes": [
+    "fixture",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Multi-Org Drift Analysis",
+  "tool_ids": [
+    "get_org_snapshot_manifest",
+    "compare_org_snapshots",
+    "describe_salesforce_component",
+    "get_component_dependency_evidence"
+  ],
+  "user_job": "Compare two explicit Salesforce org snapshots and distinguish expected environmental differences from dangerous deployment or configuration drift.",
+  "version": "0.9.0"
+}

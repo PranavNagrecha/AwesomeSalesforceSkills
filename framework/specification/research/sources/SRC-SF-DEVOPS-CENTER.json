@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "devops",
+    "integration"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-DEVOPS-CENTER",
+  "notes": "Official Salesforce delivery product; re-check availability and feature claims before release. Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Salesforce DevOps Center",
+  "url": "https://developer.salesforce.com/tools/devops-center"
+}

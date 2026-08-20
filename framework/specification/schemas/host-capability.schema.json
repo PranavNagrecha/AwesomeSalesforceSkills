@@ -1,0 +1,92 @@
+{
+  "$id": "host-capability.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adapter_version": {
+      "type": "string"
+    },
+    "capabilities": {
+      "additionalProperties": true,
+      "properties": {
+        "after_mcp_hook": {
+          "type": "boolean"
+        },
+        "before_mcp_hook": {
+          "type": "boolean"
+        },
+        "before_shell_hook": {
+          "type": "boolean"
+        },
+        "commands": {
+          "type": "boolean"
+        },
+        "human_approval": {
+          "type": "boolean"
+        },
+        "local_filesystem": {
+          "type": "boolean"
+        },
+        "mcp": {
+          "type": "boolean"
+        },
+        "pre_compact_hook": {
+          "type": "boolean"
+        },
+        "skills": {
+          "type": "boolean"
+        },
+        "subagent_isolation": {
+          "type": "boolean"
+        },
+        "subagent_mcp": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "evidence_paths": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "host": {
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "verification_mode": {
+      "enum": [
+        "documentation-only",
+        "fixture",
+        "actual-host"
+      ],
+      "type": "string"
+    },
+    "verified_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "host",
+    "version",
+    "adapter_version",
+    "capabilities",
+    "limitations",
+    "verified_at",
+    "verification_mode"
+  ],
+  "title": "SFAEF Host Capability Record",
+  "type": "object"
+}

@@ -1,0 +1,142 @@
+{
+  "$id": "review-manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SFAEF Cursor Return Review Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema_version": {"type": "string"},
+    "specification_version": {"type": "string"},
+    "phase": {"type": "string"},
+    "status": {"enum": ["completed", "partial", "blocked", "failed"], "type": "string"},
+    "baseline_sha": {"pattern": "^[0-9a-fA-F]{7,64}$", "type": "string"},
+    "head_sha": {"pattern": "^[0-9a-fA-F]{7,64}$", "type": "string"},
+    "branch": {"minLength": 1, "type": "string"},
+    "local_only": {"const": true, "type": "boolean"},
+    "clean_tree": {"type": "boolean"},
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sha", "subject"],
+        "properties": {
+          "sha": {"pattern": "^[0-9a-fA-F]{7,64}$", "type": "string"},
+          "subject": {"type": "string"}
+        }
+      }
+    },
+    "tags": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "tag"],
+        "properties": {
+          "id": {"type": "string"},
+          "status": {"enum": ["completed", "partial", "blocked", "not_started"]},
+          "tag": {"type": ["string", "null"]},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["product_id", "status", "qualification", "representative_run_paths"],
+        "properties": {
+          "product_id": {"pattern": "^P[0-9]{2}$", "type": "string"},
+          "status": {"enum": ["stable", "release-candidate", "beta", "experimental", "stub", "not_implemented", "blocked"]},
+          "qualification": {"enum": ["none", "schema-only", "fixture-qualified", "host-qualified", "read-only-org-qualified", "scratch-qualified"]},
+          "representative_run_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "known_blockers": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "command", "cwd", "started_at", "ended_at", "duration_seconds",
+          "exit_code", "stdout_path", "stderr_path", "required"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "command": {"type": "string"},
+          "cwd": {"type": "string"},
+          "started_at": {"format": "date-time", "type": "string"},
+          "ended_at": {"format": "date-time", "type": "string"},
+          "duration_seconds": {"minimum": 0, "type": "number"},
+          "exit_code": {"type": "integer"},
+          "stdout_path": {"type": "string"},
+          "stderr_path": {"type": "string"},
+          "required": {"type": "boolean"},
+          "environment": {"type": "object"}
+        }
+      }
+    },
+    "host_smoke": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["host", "status", "evidence_paths"],
+        "properties": {
+          "host": {"type": "string"},
+          "version": {"type": ["string", "null"]},
+          "status": {"enum": ["passed", "failed", "partial", "not_run"]},
+          "evidence_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "reason_not_run": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": {"type": ["string", "array", "object", "null"]}
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_bundle_verified", "checksums_verified", "offline_reconstruction_verified",
+        "source_tree_digest_verified", "secret_scan_passed"
+      ],
+      "properties": {
+        "git_bundle_verified": {"type": "boolean"},
+        "checksums_verified": {"type": "boolean"},
+        "offline_reconstruction_verified": {"type": "boolean"},
+        "source_tree_digest_verified": {"type": "boolean"},
+        "secret_scan_passed": {"type": "boolean"}
+      }
+    },
+    "unrun_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "reason", "impact"],
+        "properties": {
+          "id": {"type": "string"},
+          "reason": {"type": "string"},
+          "impact": {"enum": ["none", "limits-qualification", "blocks-release", "unknown"]}
+        }
+      }
+    },
+    "known_limitations": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "requirement_traceability_path": {"type": "string"},
+    "deviations_path": {"type": "string"}
+  },
+  "required": [
+    "schema_version", "specification_version", "phase", "status",
+    "baseline_sha", "head_sha", "branch", "local_only", "clean_tree",
+    "commits", "tags", "milestones", "products", "tests", "host_smoke",
+    "artifacts", "integrity", "unrun_checks", "known_limitations",
+    "requirement_traceability_path", "deviations_path"
+  ]
+}

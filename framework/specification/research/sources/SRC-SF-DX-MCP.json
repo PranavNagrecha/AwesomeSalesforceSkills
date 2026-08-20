@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/source-record.schema.json",
+  "affects": [
+    "tool-broker",
+    "cursor",
+    "claude",
+    "copilot",
+    "vibes"
+  ],
+  "applicable_versions": [],
+  "digest": null,
+  "id": "SRC-SF-DX-MCP",
+  "notes": "Re-check before release-sensitive implementation or public claim.",
+  "publisher": "Salesforce",
+  "retrieved_at": "2026-08-19",
+  "reviewed_at": "2026-08-19",
+  "source_tier": 1,
+  "status": "current",
+  "title": "Salesforce DX MCP Server",
+  "url": "https://github.com/salesforcecli/mcp"
+}

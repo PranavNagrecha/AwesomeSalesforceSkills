@@ -1,0 +1,84 @@
+{
+  "$schema": "../schemas/policy.schema.json",
+  "allowed_shell_patterns": [
+    "sf project deploy report --job-id <explicit> --json",
+    "sf apex get test --test-run-id <explicit> --json",
+    "sf org display --target-org <explicit> --json"
+  ],
+  "allowed_tools": [
+    "compare_org_snapshots",
+    "describe_salesforce_component",
+    "get_agentforce_test_result",
+    "get_apex_test_run",
+    "get_automation_inventory",
+    "get_code_analysis_result",
+    "get_component_dependency_evidence",
+    "get_data_load_result",
+    "get_deployment_result",
+    "get_flow_test_result",
+    "get_integration_config_summary",
+    "get_integration_event_summary",
+    "get_limits_snapshot",
+    "get_org_identity",
+    "get_org_snapshot_manifest",
+    "get_record_access_evidence",
+    "get_user_access_evidence",
+    "run_bounded_read_query"
+  ],
+  "authority_profile": "product-read-only",
+  "data_policy": {
+    "credential_secret": "never persist or model expose",
+    "cross_org_reuse": "deny",
+    "org_business_data": "minimize"
+  },
+  "default_decision": "deny",
+  "denied_actions": [
+    "salesforce.metadata.write",
+    "salesforce.data.write",
+    "salesforce.apex.execute",
+    "salesforce.permissions.write",
+    "salesforce.users.write",
+    "salesforce.packages.write",
+    "salesforce.orgs.write",
+    "implicit-most-recent-job",
+    "implicit-first-project",
+    "allow-all-orgs"
+  ],
+  "denied_tools": [
+    "deploy_metadata",
+    "quick_deploy",
+    "cancel_deployment",
+    "retry_deployment",
+    "run_anonymous_apex",
+    "data_insert",
+    "data_update",
+    "data_delete",
+    "data_upsert",
+    "assign_permission_set",
+    "create_org",
+    "delete_org",
+    "install_package",
+    "promote_devops_center_work_item"
+  ],
+  "filesystem_policy": {
+    "path_traversal": "deny",
+    "read_roots": "explicit project or bounded workspace roots",
+    "symlink_escape": "deny",
+    "write_roots": [
+      ".sfskills/runs",
+      "generated dist/reports under maintainer operation"
+    ]
+  },
+  "host_requirements": {
+    "host_gaps": "disclose and restrict exposed server",
+    "unknown_mcp_tool": "deny"
+  },
+  "id": "product-read-only",
+  "org_policy": {
+    "allow_all_orgs": false,
+    "ambiguous": "deny",
+    "explicit_target_preferred": true,
+    "record_resolved_identity": true
+  },
+  "version": "0.9.0"
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "../../schemas/product.schema.json",
+  "agent_ids": [
+    "sf-context-librarian",
+    "sf-project-inspector",
+    "sf-org-grounder",
+    "automation-transaction-profiler",
+    "sf-evidence-reviewer"
+  ],
+  "command_ids": [
+    "profile-automation"
+  ],
+  "context_policy": {
+    "core_files_max": 5,
+    "core_files_min": 3,
+    "hard_total_files": 12,
+    "max_tool_page_bytes": 32768,
+    "target_total_files": 8,
+    "transcript_handoff": false
+  },
+  "evidence_policy": {
+    "contradictions_preserved": true,
+    "material_claims_require_evidence": true,
+    "skill_does_not_prove_target_state": true
+  },
+  "finding_types": [
+    "ordered transaction graph",
+    "conditional branches",
+    "recursion and re-entry paths",
+    "DML/query/callout/async amplification",
+    "conflicts and duplicate ownership",
+    "hotspots and consolidation options",
+    "verification scenarios"
+  ],
+  "id": "P05",
+  "inputs": [
+    {
+      "description": "Object API name",
+      "name": "object",
+      "requirement": "required"
+    },
+    {
+      "description": "insert/update/delete/undelete or supported business event",
+      "name": "operation",
+      "requirement": "required"
+    },
+    {
+      "description": "Changed fields, entry conditions, user context, volume",
+      "name": "scenario",
+      "requirement": "optional"
+    },
+    {
+      "description": "Local project",
+      "name": "project_path",
+      "requirement": "optional"
+    },
+    {
+      "description": "Read-only org",
+      "name": "target_org",
+      "requirement": "optional"
+    }
+  ],
+  "known_limitations": [
+    "Does not execute transactions in customer orgs",
+    "Runtime-only managed-package behavior may remain opaque",
+    "Exact governor consumption requires representative execution evidence"
+  ],
+  "known_truth_scenarios": [
+    "AUT-FLOW-TRIGGER-ORDER",
+    "AUT-RECURSION",
+    "AUT-DML-AMPLIFICATION",
+    "AUT-ASYNC-BRANCH",
+    "AUT-ROLLUP-REENTRY",
+    "AUT-LEGACY-CONFLICT"
+  ],
+  "lifecycle_status": "beta target",
+  "optional_evidence": [
+    "Flow inventory and versions",
+    "triggers/handlers",
+    "validation rules",
+    "workflow/process legacy automation",
+    "rollups and cross-object updates",
+    "async branches/events",
+    "debug/test evidence"
+  ],
+  "permissions": [
+    "repository.read",
+    "knowledge.read",
+    "local_reports.write",
+    "salesforce.read"
+  ],
+  "personas": [
+    "developer",
+    "admin",
+    "architect",
+    "consultant"
+  ],
+  "quality_gates": [
+    "Does not pretend static inventory proves runtime branch execution",
+    "Order follows current Salesforce semantics",
+    "Volume assumptions are explicit",
+    "Graph remains bounded and useful"
+  ],
+  "required_evidence": [
+    "Object and operation"
+  ],
+  "slug": "automation-transaction-profiler",
+  "supported_modes": [
+    "fixture",
+    "local-project",
+    "live-read-only",
+    "hybrid",
+    "scratch-qa"
+  ],
+  "title": "Automation Transaction Profiler",
+  "tool_ids": [
+    "get_automation_inventory",
+    "get_component_dependency_evidence",
+    "describe_salesforce_component",
+    "get_apex_test_run"
+  ],
+  "user_job": "Show what Salesforce automation executes for an object operation, in what order, where recursion/DML/limit risk exists, and which automation should be consolidated.",
+  "version": "0.9.0"
+}

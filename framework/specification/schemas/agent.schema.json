@@ -1,0 +1,295 @@
+{
+  "$id": "agent.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "authority_profile": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_from_other_agents": {
+          "const": false,
+          "type": "boolean"
+        },
+        "authority_from_user_prose": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_call_product_tools": {
+          "type": "boolean"
+        },
+        "may_delegate": {
+          "type": "boolean"
+        },
+        "may_request_product_tools": {
+          "type": "boolean"
+        },
+        "may_write_local_reports": {
+          "type": "boolean"
+        },
+        "role": {
+          "enum": [
+            "orchestrator",
+            "selector",
+            "inspector",
+            "evidence-broker",
+            "synthesizer",
+            "reviewer",
+            "policy-control",
+            "recovery",
+            "qa-control"
+          ],
+          "type": "string"
+        },
+        "salesforce_access": {
+          "enum": [
+            "none",
+            "read-only",
+            "qa-disposable-only"
+          ],
+          "type": "string"
+        },
+        "target_binding": {
+          "enum": [
+            "none",
+            "run-bound-explicit"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "salesforce_access",
+        "may_call_product_tools",
+        "may_request_product_tools",
+        "may_delegate",
+        "may_write_local_reports",
+        "target_binding",
+        "authority_from_user_prose",
+        "authority_from_other_agents"
+      ],
+      "type": "object"
+    },
+    "collaborators": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "completion_review_required": {
+      "type": "boolean"
+    },
+    "context_policy": {
+      "additionalProperties": true,
+      "properties": {
+        "core_files_max": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "core_files_min": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "hard_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "hard_total_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_tool_page_bytes": {
+          "maximum": 32768,
+          "minimum": 1024,
+          "type": "integer"
+        },
+        "target_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "target_total_files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "transcript_handoff": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "design_notes": {
+      "items": {
+        "minLength": 10,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "evaluation_dimensions": {
+      "items": {
+        "minLength": 3,
+        "type": "string"
+      },
+      "minItems": 3,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "evidence_prohibited": {
+      "items": {
+        "minLength": 10,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "evidence_required": {
+      "items": {
+        "minLength": 10,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "failure_modes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[a-z0-9_]+$",
+            "type": "string"
+          },
+          "default_status": {
+            "enum": [
+              "completed",
+              "partial",
+              "refused",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "minLength": 5,
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "default_status",
+          "description"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "host_exposure_rationale": {
+      "minLength": 20,
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9-]+$",
+      "type": "string"
+    },
+    "inputs": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "core",
+        "product",
+        "catalog",
+        "maintainer",
+        "qa"
+      ],
+      "type": "string"
+    },
+    "outputs": {
+      "type": "string"
+    },
+    "permissions": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "product_id": {
+      "pattern": "^P[0-9]{2}$",
+      "type": "string"
+    },
+    "prompt_principles": {
+      "items": {
+        "minLength": 10,
+        "type": "string"
+      },
+      "minItems": 3,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "purpose": {
+      "minLength": 20,
+      "type": "string"
+    },
+    "recommended_host_exposure": {
+      "enum": [
+        "top-level",
+        "subagent",
+        "internal-stage",
+        "catalog-only",
+        "maintainer-only",
+        "qa-only"
+      ],
+      "type": "string"
+    },
+    "success_criteria": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      ]
+    },
+    "tool_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "kind",
+    "purpose",
+    "inputs",
+    "outputs",
+    "permissions",
+    "context_policy",
+    "success_criteria",
+    "authority_profile",
+    "evidence_required",
+    "evidence_prohibited",
+    "collaborators",
+    "failure_modes",
+    "evaluation_dimensions",
+    "prompt_principles",
+    "design_notes",
+    "completion_review_required",
+    "recommended_host_exposure",
+    "host_exposure_rationale"
+  ],
+  "title": "SFAEF Agent Definition",
+  "type": "object"
+}
