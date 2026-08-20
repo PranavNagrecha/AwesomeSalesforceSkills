@@ -12,12 +12,12 @@ M0 does **not** claim Deployment Failure Triage (P01) is complete, host-verified
 | --- | --- |
 | `774d666d191a01682610149cb2927bcd6365fe82` | Original baseline (pre-M0) |
 | `77f559923` | `chore(v2): preserve inherited pre-spec product implementation` |
-| `3aee862cf5f876e5e3a6f4482f84c24fb8135aa6` | `feat(framework): adopt SFAEF v0.9.0 and establish M0 baseline` |
+| `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` | `feat(framework): adopt SFAEF v0.9.0 and establish M0 baseline` |
 
 ## Tag
 
 - **Name:** `sfskills-v2-m0-spec-adopted`
-- **Target:** `3aee862cf5f876e5e3a6f4482f84c24fb8135aa6`
+- **Target:** `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2`
 - **Specification:** `0.9.0-draft`
 
 ## Files introduced (M0 commit)
@@ -44,7 +44,7 @@ Capability classes:
 - **Specification-defined** — P01–P12 definitions under `framework/specification/products/`
 - **Qualified products** — none at M0
 
-## Gates (clean tree at `650c38160`)
+## Gates (clean tree at `0dce1ae7`)
 
 Evidence: `.sfskills/v2-evidence/m0/gates/`
 

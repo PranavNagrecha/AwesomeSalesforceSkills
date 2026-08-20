@@ -1,6 +1,6 @@
 # SfSkills V2 — current repository state
 
-Living document for branch `product/sfskills-v2-local`. Updated at M0 specification adoption.
+Living document for branch `product/sfskills-v2-local`. Updated at M1 deterministic core integration.
 
 ## Git
 
@@ -9,8 +9,10 @@ Living document for branch `product/sfskills-v2-local`. Updated at M0 specificat
 | Branch | `product/sfskills-v2-local` |
 | Original baseline SHA | `774d666d191a01682610149cb2927bcd6365fe82` |
 | Inherited product commit | `77f559923` — `chore(v2): preserve inherited pre-spec product implementation` |
-| M0 specification commit | see `docs/product-v2/milestones/m0-spec-adoption.md` |
-| Milestone tag | `sfskills-v2-m0-spec-adopted` (after M0 gates) |
+| M0 specification commit | `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` — see `docs/product-v2/milestones/m0-spec-adoption.md` |
+| M0 tag | `sfskills-v2-m0-spec-adopted` |
+| M1 deterministic core | see `docs/product-v2/milestones/m1-deterministic-core.md` |
+| M1 tag | `sfskills-v2-m1-deterministic-core` (after M1 gates) |
 
 ## Temporary script disposition (M0 cleanup)
 
@@ -57,6 +59,13 @@ Includes `pipelines/product/`, project inspector, deployment triager agent/comma
 - Traceability: `docs/product-v2/requirement-traceability.csv`
 - Evidence: `.sfskills/v2-evidence/m0/`
 
+## M1 deterministic core
+
+- `pipelines/framework/core/` — kernel bridge, run session, envelope v2, run bundle, review contract, product adapters
+- Reference kernel path: `framework/specification/reference-kernel/` (imported with M0 spec)
+- Tests: 13 framework tests (4 validate + 9 core conformance); 49 product tests unchanged
+- Evidence: `.sfskills/v2-evidence/m1/`
+
 ## Baseline deviations (documented, not hidden)
 
 | Check | Classification | Notes |
@@ -66,5 +75,5 @@ Includes `pipelines/product/`, project inspector, deployment triager agent/comma
 
 ## Deferred
 
-- **M1** — deterministic core integration (run state, envelope v2, replay bundle, reference-kernel conformance)
-- **M2** — P02, Cursor host smoke, P01 qualification path
+- **M2** — P02 Apex test triage, Cursor host smoke for P01/P02, P01 qualification path
+- **M3–M6** — additional products, scratch QA, flagship products, RC
