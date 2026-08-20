@@ -1,14 +1,14 @@
 {
   "counts": {
     "agents": 20,
-    "bytes": 3650472,
+    "bytes": 3650613,
     "commands": 18,
     "context_packs": 12,
     "evidence_tools": 18,
     "files": 529,
     "legacy_agents_covered": 77,
     "legacy_commands_covered": 69,
-    "legacy_mcp_tools_covered": 39,
+    "legacy_mcp_tools_covered": 40,
     "legacy_skills_covered": 1034,
     "products": 12,
     "qa_scenarios": 74,
@@ -890,7 +890,7 @@
     {
       "bytes": 1474,
       "path": "migration/catalogs/V2_DISPOSITION_LEDGER.md",
-      "sha256": "4815b218591f5ca69d14e0b6d381cde6bfdcd8b8ddd9f2a45df72821d98c7630"
+      "sha256": "170eda1917e499176680a5a3e7fcfc5b2655654a5cd5997ff6d7b0d816e2f3f7"
     },
     {
       "bytes": 9083,
@@ -1293,9 +1293,9 @@
       "sha256": "5c204c0f333d1a322776bfdb0019301ea523d0646bddeae3e22160918fbc62a2"
     },
     {
-      "bytes": 7118,
+      "bytes": 7259,
       "path": "migration/catalogs/current-mcp-tools.csv",
-      "sha256": "e8981f315e2a4e3273eb54f17c830209729dc34df2bebd42ccb69670dd1a8222"
+      "sha256": "34de631174a1745d35857d35beff40feb9e25b074b80087daa55789e19327c38"
     },
     {
       "bytes": 392530,
@@ -2415,7 +2415,7 @@
     {
       "bytes": 19904,
       "path": "scripts/validate_framework_package.py",
-      "sha256": "85abf1ddaa63b9bcc174749ca560eb3b74a60e4b4bcaac3ac65d6f1cd10448a8"
+      "sha256": "9dc9036bd4a58ce8b5330539a4305d0886e280a9543305788c6aa79bb2e39ef5"
     },
     {
       "bytes": 6572,
@@ -2620,7 +2620,7 @@
     {
       "bytes": 7327,
       "path": "tests/test_framework_package.py",
-      "sha256": "4fcc9426c16481d228e1c8c1b397d1ba66ff5cdf624e39b9edc0b2cbb9caed4a"
+      "sha256": "bd549ad27af790de54347298eb86b55641da9c4ed7b424eff2ea6e166f711c66"
     },
     {
       "bytes": 807,

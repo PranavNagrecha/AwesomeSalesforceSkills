@@ -64,7 +64,7 @@ from typing import Any
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.types import ToolAnnotations
 
-from . import admin, agents, deploy, dev_org, library, meta, org, paths, probes, prompts, resources, routing, skills
+from . import admin, agents, apex_test, deploy, dev_org, library, meta, org, paths, probes, prompts, resources, routing, skills
 
 
 # Reusable annotation profiles. The MCP spec lets clients (Cursor, Cline,
@@ -623,6 +623,33 @@ def build_server() -> FastMCP:
             target_org=target_org,
             wait_minutes=wait_minutes,
             failure_limit=failure_limit,
+            cursor=cursor,
+            project_dir=project_dir,
+        )
+
+    @mcp.tool(
+        name="get_apex_test_run",
+        annotations=_ANN_ORG_READ,
+        description=(
+            "Read-only: retrieve an EXISTING Apex test run via "
+            "`sf apex get test --test-run-id --json`. test_run_id is required "
+            "(15/18-char 707…). Optional project_dir is a Salesforce DX project "
+            "used only as CLI cwd. Never starts or reruns tests. Output is "
+            "normalized, redacted, paginated, and capped at 32 KiB for model "
+            "injection."
+        ),
+    )
+    def get_apex_test_run(
+        test_run_id: str,
+        target_org: str | None = None,
+        method_limit: int = 100,
+        cursor: str | None = None,
+        project_dir: str | None = None,
+    ) -> dict[str, Any]:
+        return apex_test.get_apex_test_run(
+            test_run_id=test_run_id,
+            target_org=target_org,
+            method_limit=method_limit,
             cursor=cursor,
             project_dir=project_dir,
         )

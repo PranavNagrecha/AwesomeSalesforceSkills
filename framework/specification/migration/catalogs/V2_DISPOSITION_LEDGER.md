@@ -8,7 +8,7 @@ These generated ledgers give every artifact in the uploaded SfSkills snapshot an
 - Skills: 1034
 - Canonical agents: 77
 - Commands: 69
-- MCP tools: 39
+- MCP tools: 40
 
 ## Binding migration rules
 

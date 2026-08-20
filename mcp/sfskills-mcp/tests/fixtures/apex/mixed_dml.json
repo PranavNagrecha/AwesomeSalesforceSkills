@@ -1,0 +1,24 @@
+{
+  "status": 0,
+  "result": {
+    "summary": {
+      "outcome": "Failed",
+      "testsRan": 1,
+      "passing": 0,
+      "failing": 1,
+      "skipped": 0,
+      "testRunId": "707000000000002AAA"
+    },
+    "tests": [
+      {
+        "FullName": "MixedDmlTest.testSetupAndNonSetup",
+        "MethodName": "testSetupAndNonSetup",
+        "Outcome": "Fail",
+        "Message": "System.DmlException: Insert failed. First exception on row 0; first error: MIXED_DML_OPERATION, DML operation on setup object is not permitted after you have updated a non-setup object (or vice versa)",
+        "StackTrace": "Class.MixedDmlTest.testSetupAndNonSetup: line 15, column 1",
+        "RunTime": 55,
+        "ApexClass": { "Name": "MixedDmlTest" }
+      }
+    ]
+  }
+}

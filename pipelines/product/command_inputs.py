@@ -30,3 +30,20 @@ def validate_triage_inputs(payload: dict[str, Any]) -> list[str]:
     if payload.get("use_most_recent"):
         errors.append("use_most_recent_forbidden")
     return errors
+
+
+def validate_triage_apex_inputs(payload: dict[str, Any]) -> list[str]:
+    from .test_run_id import is_well_formed_test_run_id
+
+    errors: list[str] = []
+    test_run_id = payload.get("test_run_id")
+    result_path = payload.get("result_path") or payload.get("result_file")
+    if not test_run_id and not result_path:
+        errors.append("missing_evidence_source")
+    if test_run_id and not is_well_formed_test_run_id(str(test_run_id)):
+        errors.append("malformed_test_run_id")
+    if result_path and not Path(str(result_path)).is_file():
+        errors.append("result_path_not_found")
+    if payload.get("use_most_recent"):
+        errors.append("use_most_recent_forbidden")
+    return errors

@@ -287,7 +287,7 @@ class Validator:
             "migration/catalogs/current-skills.csv": 1034,
             "migration/catalogs/current-agents.csv": 77,
             "migration/catalogs/current-commands.csv": 69,
-            "migration/catalogs/current-mcp-tools.csv": 39,
+            "migration/catalogs/current-mcp-tools.csv": 40,
         }
         for rel, expected_rows in expected.items():
             path = self.root / rel

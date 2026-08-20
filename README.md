@@ -334,7 +334,7 @@ run it yourself.
   [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md);
   roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md);
   skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
-- **MCP server** (`mcp/sfskills-mcp/`) — 39 tools across skill / agent /
+- **MCP server** (`mcp/sfskills-mcp/`) — 40 tools across skill / agent /
   template / decision-tree retrieval plus live-org metadata and read-only
   SOQL, so the agent can answer "does this already exist in my org?" without
   asking you.
@@ -353,7 +353,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 ## MCP server
 
-39 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
+40 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
 over the 1,034-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,

@@ -53,7 +53,7 @@ class FrameworkPackageTests(unittest.TestCase):
             "current-skills.csv": 1034,
             "current-agents.csv": 77,
             "current-commands.csv": 69,
-            "current-mcp-tools.csv": 39,
+            "current-mcp-tools.csv": 40,
         }
         for name, count in expected.items():
             with (ROOT / "migration" / "catalogs" / name).open(encoding="utf-8", newline="") as handle:

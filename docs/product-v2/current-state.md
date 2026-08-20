@@ -34,7 +34,7 @@ All six `scripts/_tmp_*.py` files were **deleted** as disposable scratch. None c
 | Skill packages | 1034 | 1034 | legacy knowledge substrate |
 | Canonical agents | 77 | 77 | includes inherited `deployment-failure-triager` |
 | Slash commands | 69 | 69 | includes inherited `triage-deployment`, `sfskills-doctor` |
-| MCP tools | 39 | 39 | includes inherited `get_deployment_result` |
+| MCP tools | 40 | 40 | includes `get_deployment_result`, `get_apex_test_run` |
 
 Reconciliation report: `docs/product-v2/migration-reconciliation.md`
 

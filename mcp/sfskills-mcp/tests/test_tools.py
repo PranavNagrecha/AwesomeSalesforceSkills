@@ -81,6 +81,7 @@ EXPECTED_TOOLS = {
     # Tier D — production polish (1, v0.4)
     "health",
     "get_deployment_result",
+    "get_apex_test_run",
 }
 
 
@@ -127,14 +128,14 @@ class TestProbeInputValidation(unittest.TestCase):
             self.assertIn("error", result, f"Expected error for scope={bad!r}")
 
     def test_expected_tool_count(self):
-        """Roster is 39 tools after get_deployment_result (38 + 1).
+        """Roster is 40 tools after get_apex_test_run (39 + 1).
 
         Changing this number without updating ``EXPECTED_TOOLS`` is a failure
         by design — adding a tool means a deliberate canon update.
         """
         self.assertEqual(
-            len(EXPECTED_TOOLS), 39,
-            "tool roster is 39 after get_deployment_result — update EXPECTED_TOOLS if intentional",
+            len(EXPECTED_TOOLS), 40,
+            "tool roster is 40 after get_apex_test_run — update EXPECTED_TOOLS if intentional",
         )
 
 

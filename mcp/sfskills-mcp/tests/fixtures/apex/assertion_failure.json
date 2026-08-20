@@ -1,0 +1,39 @@
+{
+  "status": 0,
+  "result": {
+    "summary": {
+      "outcome": "Failed",
+      "testsRan": 3,
+      "passing": 2,
+      "failing": 1,
+      "skipped": 0,
+      "testRunId": "707000000000001AAA",
+      "orgId": "00D000000000001EAA"
+    },
+    "tests": [
+      {
+        "FullName": "AccountServiceTest.testInsert",
+        "MethodName": "testInsert",
+        "Outcome": "Fail",
+        "Message": "System.AssertException: Assertion Failed: Expected 1, actual 0",
+        "StackTrace": "Class.AccountServiceTest.testInsert: line 20, column 1",
+        "RunTime": 42,
+        "ApexClass": { "Name": "AccountServiceTest" }
+      },
+      {
+        "FullName": "AccountServiceTest.testUpdate",
+        "MethodName": "testUpdate",
+        "Outcome": "Pass",
+        "RunTime": 18,
+        "ApexClass": { "Name": "AccountServiceTest" }
+      },
+      {
+        "FullName": "ContactServiceTest.testInsert",
+        "MethodName": "testInsert",
+        "Outcome": "Pass",
+        "RunTime": 21,
+        "ApexClass": { "Name": "ContactServiceTest" }
+      }
+    ]
+  }
+}

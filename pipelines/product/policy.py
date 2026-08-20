@@ -140,6 +140,7 @@ _MCP_ALLOW_EXACT = frozenset(
         # Tier D — production polish
         "health",
         "get_deployment_result",
+        "get_apex_test_run",
     }
 )
 

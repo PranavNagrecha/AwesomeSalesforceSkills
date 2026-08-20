@@ -60,6 +60,7 @@ _ORG_TOUCHING = frozenset(
         "describe_object_full",
         "list_orgs",
         "get_deployment_result",
+        "get_apex_test_run",
     }
 )
 

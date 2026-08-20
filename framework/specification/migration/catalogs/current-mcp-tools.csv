@@ -7,6 +7,7 @@ get_agent,get_agent,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add
 get_apex_class,get_apex_class,_ANN_ORG_READ,3,P01;P02;P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
 get_decision_tree,get_decision_tree,_ANN_REPO_ONLY,1,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.
 get_deployment_result,get_deployment_result,_ANN_ORG_READ,,P01,wrap-as-normalized-evidence,false,P01 typed deployment evidence; broker-internal only.
+get_apex_test_run,get_apex_test_run,_ANN_ORG_READ,,P02,wrap-as-normalized-evidence,false,P02 typed Apex test evidence; broker-internal only.
 get_invocation_modes,get_invocation_modes,_ANN_REPO_ONLY,0,,retain-control-plane,false,Preserve locally; align envelopes and doctor behavior with V2 contracts.
 get_lwc_bundle,get_lwc_bundle,_ANN_ORG_READ,3,P04;P06,wrap-as-normalized-evidence,false,Keep implementation where sound; expose only through typed read-only V2 evidence contracts.
 get_skill,get_skill,_ANN_REPO_ONLY,3,,retain-knowledge-plane,false,Preserve; add bounded result and explicit index/error semantics where missing.

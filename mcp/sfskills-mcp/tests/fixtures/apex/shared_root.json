@@ -1,0 +1,39 @@
+{
+  "status": 0,
+  "result": {
+    "summary": {
+      "outcome": "Failed",
+      "testsRan": 3,
+      "passing": 0,
+      "failing": 3,
+      "skipped": 0,
+      "testRunId": "707000000000003AAA"
+    },
+    "tests": [
+      {
+        "FullName": "SharedRootTest.testAlpha",
+        "MethodName": "testAlpha",
+        "Outcome": "Fail",
+        "Message": "System.NullPointerException: Attempt to de-reference a null object",
+        "StackTrace": "Class.SharedRootHelper.load: line 8, column 1\nClass.SharedRootTest.testAlpha: line 12, column 1",
+        "ApexClass": { "Name": "SharedRootTest" }
+      },
+      {
+        "FullName": "SharedRootTest.testBeta",
+        "MethodName": "testBeta",
+        "Outcome": "Fail",
+        "Message": "System.NullPointerException: Attempt to de-reference a null object",
+        "StackTrace": "Class.SharedRootHelper.load: line 8, column 1\nClass.SharedRootTest.testBeta: line 22, column 1",
+        "ApexClass": { "Name": "SharedRootTest" }
+      },
+      {
+        "FullName": "SharedRootTest.testGamma",
+        "MethodName": "testGamma",
+        "Outcome": "Fail",
+        "Message": "System.NullPointerException: Attempt to de-reference a null object",
+        "StackTrace": "Class.SharedRootHelper.load: line 8, column 1\nClass.SharedRootTest.testGamma: line 31, column 1",
+        "ApexClass": { "Name": "SharedRootTest" }
+      }
+    ]
+  }
+}
