@@ -15,7 +15,7 @@ Living document for branch `product/sfskills-v2-local`. Updated at M6 local RC p
 | M3 tag | `sfskills-v2-m3-behavioral-qa` → `3c4a5db23b167e126717475eeb26cf886da387ed` |
 | M4 tag | `sfskills-v2-m4-flagship` → `3c4a5db23b167e126717475eeb26cf886da387ed` |
 | M5 tag | `sfskills-v2-m5-beta-portfolio` → `3c4a5db23b167e126717475eeb26cf886da387ed` |
-| RC tag | `sfskills-v2-rc1-local` → `040994fb8b167e126717475eeb26cf886da387ed` |
+| RC tag | `sfskills-v2-rc1-local` → `ddf2fcb1e` |
 
 ## Inventory (committed tree)
 
