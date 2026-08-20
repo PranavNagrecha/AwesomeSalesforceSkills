@@ -33,8 +33,8 @@ Evidence: `.sfskills/v2-evidence/m1/gates/`
 
 ## Commit and tag
 
-- **Commit:** (recorded after local commit)
-- **Tag:** `sfskills-v2-m1-deterministic-core`
+- **Commit:** `336ab80ce3edf304ed12516a1dd2ed9540de116c`
+- **Tag:** `sfskills-v2-m1-deterministic-core` → `336ab80ce3edf304ed12516a1dd2ed9540de116c`
 
 ## Evidence
 

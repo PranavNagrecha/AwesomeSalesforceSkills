@@ -11,8 +11,8 @@ Living document for branch `product/sfskills-v2-local`. Updated at M1 determinis
 | Inherited product commit | `77f559923` — `chore(v2): preserve inherited pre-spec product implementation` |
 | M0 specification commit | `0dce1ae721bf692e440a84e09c4f5cc3ff653ee2` — see `docs/product-v2/milestones/m0-spec-adoption.md` |
 | M0 tag | `sfskills-v2-m0-spec-adopted` |
-| M1 deterministic core | see `docs/product-v2/milestones/m1-deterministic-core.md` |
-| M1 tag | `sfskills-v2-m1-deterministic-core` (after M1 gates) |
+| M1 deterministic core | `336ab80ce3edf304ed12516a1dd2ed9540de116c` — see `docs/product-v2/milestones/m1-deterministic-core.md` |
+| M1 tag | `sfskills-v2-m1-deterministic-core` |
 
 ## Temporary script disposition (M0 cleanup)
 

@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / ".sfskills" / "v2-evidence" / "m1"
 M0_TAG = "sfskills-v2-m0-spec-adopted"
+KERNEL_ROOT = ROOT / "framework" / "specification" / "reference-kernel"
 
 
 def utc_now() -> str:
@@ -54,7 +55,18 @@ def write_gate(name: str, result: dict, classification: str) -> None:
     )
 
 
+def _clean_kernel_pycache() -> None:
+    import shutil
+
+    if not KERNEL_ROOT.is_dir():
+        return
+    for cache in KERNEL_ROOT.rglob("__pycache__"):
+        if cache.is_dir():
+            shutil.rmtree(cache)
+
+
 def main() -> int:
+    _clean_kernel_pycache()
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     head = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=False
@@ -70,12 +82,12 @@ def main() -> int:
         json.dumps(meta, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
 
-    gates = [
-        ("validate-framework", [sys.executable, "scripts/validate_framework.py"], "required"),
+    gates: list[tuple[str, list[str], str, Path | None]] = [
         (
             "framework-tests",
             [
                 sys.executable,
+                "-B",
                 "-m",
                 "unittest",
                 "discover",
@@ -85,11 +97,13 @@ def main() -> int:
                 "test_*.py",
             ],
             "required",
+            ROOT,
         ),
         (
             "product-tests",
             [
                 sys.executable,
+                "-B",
                 "-m",
                 "unittest",
                 "discover",
@@ -99,28 +113,33 @@ def main() -> int:
                 "test_*.py",
             ],
             "required",
+            ROOT,
         ),
         (
             "reference-kernel-tests",
             [
                 sys.executable,
+                "-B",
                 "-m",
                 "unittest",
                 "discover",
                 "-s",
-                "framework/specification/reference-kernel/tests",
+                "tests",
                 "-p",
                 "test_*.py",
             ],
             "required",
+            KERNEL_ROOT,
         ),
+        ("validate-framework", [sys.executable, "-B", "scripts/validate_framework.py"], "required", ROOT),
     ]
     failed = False
-    for name, cmd, classification in gates:
-        result = run(cmd)
+    for name, cmd, classification, cwd in gates:
+        result = run(cmd, cwd=cwd)
         write_gate(name, result, classification)
         if result["exit_code"] != 0:
             failed = True
+    _clean_kernel_pycache()
     return 1 if failed else 0
 
 
