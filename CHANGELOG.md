@@ -4,6 +4,13 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [0.4.10] — 2026-09-03 — sfskills-mcp (data-bundle search hotfix)
+
+**Server tool/API surface is unchanged.** Hotfix for PyPI installs:
+`sfskills-data.tar.gz` now includes `pipelines/` and `config/` so
+`search_skill` works after `sfskills-mcp-init` without a git checkout.
+Supersedes the 0.4.9 data bundle as `/releases/latest`.
+
 ## [Plugin 1.2.0] — 2026-09-03 — public Salesforce skill-source integration
 
 V2.0 Intelligence and Assurance release. Not V2.1 Change Studio and not V2.2

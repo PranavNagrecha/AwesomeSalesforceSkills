@@ -91,6 +91,8 @@ jobs:
         run: |
           mkdir -p _bundle/sfskills-data
           # Mirror the layout the server expects under SFSKILLS_REPO_ROOT.
+          # pipelines/ is required for search_skill (lexical_index + ranking).
+          # config/ carries retrieval-config.yaml for optional embeddings.
           cp -r registry _bundle/sfskills-data/
           cp -r vector_index _bundle/sfskills-data/
           cp -r agents _bundle/sfskills-data/
@@ -98,8 +100,40 @@ jobs:
           cp -r templates _bundle/sfskills-data/
           cp -r standards _bundle/sfskills-data/
           cp -r commands _bundle/sfskills-data/
+          cp -r pipelines _bundle/sfskills-data/
+          cp -r config _bundle/sfskills-data/
           tar -czf sfskills-data.tar.gz -C _bundle sfskills-data
+          python3 - <<'PY'
+          import tarfile
+          with tarfile.open("sfskills-data.tar.gz", "r:gz") as tf:
+              names = set(tf.getnames())
+          required = {
+              "sfskills-data/pipelines/lexical_index.py",
+              "sfskills-data/pipelines/ranking.py",
+              "sfskills-data/pipelines/embedding_backends.py",
+              "sfskills-data/config/retrieval-config.yaml",
+              "sfskills-data/vector_index/lexical.sqlite",
+          }
+          missing = sorted(required - names)
+          assert not missing, missing
+          print("data-bundle-pipelines-ok")
+          PY
           ls -lh sfskills-data.tar.gz
+
+      - name: Smoke search_skill against the data bundle
+        run: |
+          mkdir -p /tmp/sfskills-data-smoke
+          tar -xzf sfskills-data.tar.gz -C /tmp/sfskills-data-smoke
+          SFSKILLS_REPO_ROOT=/tmp/sfskills-data-smoke/sfskills-data \
+            /tmp/sfskills-mcp-wheel-smoke/bin/python - <<'PY'
+          from sfskills_mcp import skills
+          result = skills.search_skill(
+              "weighted criteria sensitivity Salesforce decision", limit=5
+          )
+          ids = [item["id"] for item in result.get("skills", [])]
+          assert "architect/salesforce-decision-analysis" in ids, ids
+          print("search_skill_ok", ids[:3])
+          PY
 
       - name: Generate SHA256SUMS.txt
         run: |
