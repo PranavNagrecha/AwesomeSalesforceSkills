@@ -15,6 +15,7 @@ if str(MCP_SRC) not in sys.path:
 from sfskills_mcp.skills import search_skill  # noqa: E402
 
 PACK = ROOT / "evals" / "source-integrations" / "public-salesforce-skills-routing.json"
+LEXICAL_INDEX = ROOT / "vector_index" / "lexical.sqlite"
 ALLOWED_TYPES = {"positive", "negative", "neighbor", "boundary"}
 
 
@@ -32,6 +33,12 @@ class PublicSourceRoutingPackTest(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_routing_cases(self) -> None:
+        if not LEXICAL_INDEX.is_file():
+            self.skipTest(
+                "vector_index/lexical.sqlite is absent; hermetic CI jobs do not "
+                "build the gitignored index. Run bootstrap locally or rely on "
+                "the MCP suite job that builds the index before discovery."
+            )
         failures: list[str] = []
         for case in self.payload["cases"]:
             top_k = int(case.get("top_k", 3))

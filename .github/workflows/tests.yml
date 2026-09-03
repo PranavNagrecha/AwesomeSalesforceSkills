@@ -125,6 +125,9 @@ jobs:
         working-directory: mcp/sfskills-mcp
         run: python3 -m unittest discover -s tests -t tests -v
 
+      - name: public-source routing pack
+        run: python3 -m unittest tests.test_public_source_routing.PublicSourceRoutingPackTest.test_routing_cases -v
+
       # The coverage gate is implemented twice — scripts/search_knowledge.py
       # and mcp/.../skills.py — against the same index. Both surfaces keep
       # answering when they drift, they just stop agreeing about which skill
