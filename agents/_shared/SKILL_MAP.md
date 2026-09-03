@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-All 48 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
+All 50 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
@@ -367,6 +367,31 @@ Decision trees:
 - `standards/decision-trees/automation-selection.md` — cited for route-away only. This tree has no OmniStudio branch; the agent says so in plain text rather than inventing one.
 
 Templates: none. There is no `templates/omnistudio/` directory yet — a real gap, tracked as follow-up work.
+
+---
+
+## Wave I (2026-09-01) — evidence-grounded decision and learning agents
+
+### `salesforce-decision-facilitator`
+
+Runtime, `modes: [single]`, `multi_dimensional: true`, slash command `/decide-salesforce`. Produces analysis and a recommendation posture only; it has no approval, deployment, or org-mutation authority.
+
+- `architect/salesforce-decision-analysis` — hard gates, claim states, scoring anchors, sensitivity, reversibility, and decision-packet contract
+- `architect/solution-design-patterns` — cross-cutting Salesforce implementation alternatives
+- `architect/architecture-decision-records` — handoff after a decision is accepted; the working matrix is not itself an ADR
+- `architect/well-architected-review` — Trusted / Easy / Adaptable concerns without pre-filling weights
+- `standards/source-hierarchy.md`, `standards/decision-trees/README.md`
+- `skills/architect/salesforce-decision-analysis/templates/salesforce-decision-analysis-template.md`
+
+### `salesforce-learning-guide`
+
+Runtime, `modes: [single]`, `multi_dimensional: true`, slash command `/learn-salesforce`. Produces a source-bounded learning brief and a safe practice task; it does not author repository skills, certify a learner, or mutate Salesforce.
+
+- `architect/salesforce-learning-research` — atomic claim ledger, source boundaries, contradiction and freshness handling
+- `admin/salesforce-learning-brief` — role-aware explanation, worked example, misconception checks, knowledge checks, and bounded practice
+- `standards/source-hierarchy.md`, `standards/official-salesforce-sources.md`
+- `skills/architect/salesforce-learning-research/templates/salesforce-learning-research-template.md`
+- `skills/admin/salesforce-learning-brief/templates/salesforce-learning-brief-template.md`
 
 ---
 

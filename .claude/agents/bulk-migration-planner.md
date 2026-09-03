@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/plan-bulk-migration` (`commands/plan-bulk-migration.md`)
 - Domain router skill: `salesforce-integration`
-

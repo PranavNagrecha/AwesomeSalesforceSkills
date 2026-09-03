@@ -121,4 +121,16 @@
 #           index from `triggers:`), skipping the index surface rather than
 #           failing when vector_index/ is absent.
 
-__version__ = "0.4.8"
+#   0.4.9 — Compatible data/catalog release. Server tool/API surface is
+#           unchanged. Ships five new canonical skill packages
+#           (architect/salesforce-decision-analysis,
+#           architect/salesforce-learning-research,
+#           admin/salesforce-learning-brief,
+#           apex/apexguru-performance-analysis,
+#           lwc/lwc-typescript-migration), a deepened Code Analyzer package,
+#           two advisory runtime agents with /decide-salesforce and
+#           /learn-salesforce MCP prompts, Draft 2020-12 source-integration
+#           ledger validation, and MCP search/get/agent/prompt parity for
+#           those surfaces. Forcedotcom remains clean-room.
+
+__version__ = "0.4.9"

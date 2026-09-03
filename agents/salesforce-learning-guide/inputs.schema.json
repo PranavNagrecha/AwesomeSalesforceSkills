@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/salesforce-learning-guide/inputs.schema.json",
+  "title": "Salesforce Learning Guide Inputs",
+  "description": "Typed inputs for a source-grounded, role-aware Salesforce learning brief.",
+  "type": "object",
+  "properties": {
+    "topic": {
+      "type": "string",
+      "description": "One bounded Salesforce topic to research and teach."
+    },
+    "learning_outcome": {
+      "type": "string",
+      "description": "Observable capability the learner should have after the brief."
+    },
+    "learner_role": {
+      "type": "string",
+      "description": "Salesforce administrator, developer, architect, analyst, consultant, release manager, or other named role."
+    },
+    "learner_level": {
+      "type": "string",
+      "description": "Current experience level used to select terminology and depth.",
+      "enum": ["foundation", "practitioner", "advanced"]
+    },
+    "depth": {
+      "type": "string",
+      "description": "Requested breadth and detail for the brief.",
+      "enum": ["quick", "standard", "deep"],
+      "default": "standard"
+    },
+    "time_budget_minutes": {
+      "type": "integer",
+      "description": "Approximate number of minutes available for the lesson and practice.",
+      "default": 30
+    },
+    "product_context": {
+      "type": ["object", "string"],
+      "description": "Optional cloud, product, release/API, edition/license, package, project, or org context."
+    },
+    "source_boundary": {
+      "type": "string",
+      "description": "Controls whether the guide may research outside supplied material.",
+      "enum": ["supplied-only", "official-salesforce", "open-research"],
+      "default": "official-salesforce"
+    },
+    "supplied_sources": {
+      "type": ["array", "object", "string"],
+      "description": "Optional attached files, URLs, or evidence identifiers the guide must use."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Optional authenticated org alias for org-specific learning evidence."
+    },
+    "practice_authority": {
+      "type": "string",
+      "description": "Maximum authority allowed for the practice task.",
+      "enum": ["conceptual", "read-only", "scratch", "nonprod-approved"],
+      "default": "conceptual"
+    }
+  },
+  "required": ["topic", "learning_outcome", "learner_role", "learner_level"]
+}

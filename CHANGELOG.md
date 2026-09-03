@@ -2,6 +2,57 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [Unreleased]
+
+## [Plugin 1.2.0] — 2026-09-03 — public Salesforce skill-source integration
+
+V2.0 Intelligence and Assurance release. Not V2.1 Change Studio and not V2.2
+Governed Operations.
+
+### Added
+
+- Five canonical skill packages:
+  - `architect/salesforce-decision-analysis`
+  - `architect/salesforce-learning-research`
+  - `admin/salesforce-learning-brief`
+  - `apex/apexguru-performance-analysis`
+  - `lwc/lwc-typescript-migration`
+- Two advisory runtime agents: `salesforce-decision-facilitator`
+  (`/decide-salesforce`) and `salesforce-learning-guide` (`/learn-salesforce`).
+  Analysis and recommendation posture only; no approval, deployment, or org
+  mutation authority.
+- Durable source-integration ledger under `registry/source-integrations/`
+  with Draft 2020-12 schema validation and changed-file hashes.
+- MCP search, get, resource, agent, and prompt parity for the new surfaces.
+
+### Changed
+
+- Deepened `devops/salesforce-code-analyzer` with remote ApexGuru engine
+  setup and an explicit handoff to `apex/apexguru-performance-analysis`.
+- Plugin/library version `1.1.0` → `1.2.0`. Inventory after integration:
+  1,039 skills, 50 active runtime agents, 14 build, 14 deprecated
+  (78 `AGENT.md` packages), 69 commands/MCP prompts, 38 MCP tools.
+
+### License / provenance
+
+- Four public sources recorded as permissive with unavailable upstream
+  archives (`pin.kind: unavailable`).
+- `forcedotcom/sf-skills` remains **clean-room only** because current root
+  license and package metadata conflict; no unverified copy was imported.
+
+### Validation
+
+Hard gates exit 0. No Salesforce org mutation. Known limitation: upstream
+candidate archives were unavailable, so source pins stay `unavailable`. The
+exact latest baseline archive `AwesomeSalesforceSkills-main (3).zip` was
+mounted and is byte-identical to `(1).zip`.
+
+## [0.4.9] — 2026-09-03 — sfskills-mcp (public-source catalog)
+
+**Server tool/API surface is unchanged.** Compatible data/catalog release
+carrying the Plugin 1.2.0 corpus, source-ledger checker, and MCP parity
+tests for the five new skills, two agents, and two prompts.
+
 ## [0.4.8] — 2026-08-17 — sfskills-mcp (record-access corpus, first PolyForm release)
 
 **Server code is unchanged.** What ships is a refreshed data bundle and the

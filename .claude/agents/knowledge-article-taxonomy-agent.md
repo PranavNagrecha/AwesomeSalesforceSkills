@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-knowledge-taxonomy` (`commands/design-knowledge-taxonomy.md`)
 - Domain router skill: `salesforce-admin`
-

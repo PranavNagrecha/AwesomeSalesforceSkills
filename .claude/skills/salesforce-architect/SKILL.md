@@ -1,13 +1,13 @@
 ---
 name: salesforce-architect
-description: "Router for the 104 SfSkills `architect` skill packages. Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records. Use when the request mentions architecture, solution design, ADR, Well-Architected, scalability, large data volume, multi-org, licensing, tenant isolation, HA/DR, technical debt. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 106 SfSkills `architect` skill packages. Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records. Use when the request mentions architecture, solution design, ADR, Well-Architected, scalability, large data volume, multi-org, licensing, tenant isolation, HA/DR, technical debt. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce architect — SfSkills domain router
 
 Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
 
-**104 skill packages** live under
+**106 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/architect/<slug>/SKILL.md`. They are not
 loaded — reach them by path, on demand.
 
@@ -53,7 +53,7 @@ it is a map, not the territory.
 
 Curated starting points when the request is broad or the lookup is
 ambiguous. This is a shortlist, not the catalogue — the roster at
-`references/skill-index.md` has all 104.
+`references/skill-index.md` has all 106.
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/architect/solution-design-patterns/SKILL.md` — the pattern catalogue to check before inventing a design
 - `${CLAUDE_PLUGIN_ROOT}/skills/architect/well-architected-review/SKILL.md` — running a Salesforce Well-Architected assessment against a real org
@@ -79,6 +79,7 @@ solved more than one way, and cite the branch that decided it.
 Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
+- `salesforce-decision-facilitator` — Compare viable Salesforce options with evidence, hard gates, sensitivity, and reversibility
 - `waf-assessor` — Well-Architected Framework assessment
 
 ## Rules

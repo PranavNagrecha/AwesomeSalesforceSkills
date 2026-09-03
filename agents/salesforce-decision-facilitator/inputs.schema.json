@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/salesforce-decision-facilitator/inputs.schema.json",
+  "title": "Salesforce Decision Facilitator Inputs",
+  "description": "Typed inputs for one evidence-based Salesforce decision analysis.",
+  "type": "object",
+  "properties": {
+    "decision_question": {
+      "type": "string",
+      "description": "One bounded Salesforce decision question that the run must answer."
+    },
+    "desired_outcome": {
+      "type": "string",
+      "description": "Measurable business or engineering outcome used to evaluate options."
+    },
+    "constraints": {
+      "type": ["array", "object", "string"],
+      "description": "Hard constraints, preferences, and non-goals; hard constraints must be distinguishable."
+    },
+    "known_options": {
+      "type": "array",
+      "description": "Optional starting options; the agent still checks standard, reuse, experiment, and no-change alternatives."
+    },
+    "target_context": {
+      "type": ["object", "string"],
+      "description": "Optional org, project, release, workload, data-volume, package, and authority context."
+    },
+    "evidence": {
+      "type": ["array", "object", "string"],
+      "description": "Optional source, org, project, test, cost, or policy evidence supplied to the run."
+    },
+    "criteria_weights": {
+      "type": "object",
+      "description": "Optional named criterion weights whose numeric values must total 100."
+    },
+    "decision_deadline": {
+      "type": "string",
+      "description": "Optional ISO date or named milestone by which the decision is needed."
+    },
+    "stopping_point": {
+      "type": "string",
+      "description": "Requested terminal artifact for the run.",
+      "enum": ["recommendation", "experiment-plan", "adr-ready"],
+      "default": "recommendation"
+    },
+    "source_boundary": {
+      "type": "string",
+      "description": "Controls whether analysis is bounded to supplied sources or may use official/open research.",
+      "enum": ["supplied-only", "official-salesforce", "open-research"],
+      "default": "official-salesforce"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Optional authenticated org alias when org-specific evidence is material."
+    }
+  },
+  "required": ["decision_question", "desired_outcome", "constraints"]
+}

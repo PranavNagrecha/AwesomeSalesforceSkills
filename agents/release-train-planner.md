@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/plan-release-train` (`commands/plan-release-train.md`)
 - Domain router skill: `salesforce-devops`
-

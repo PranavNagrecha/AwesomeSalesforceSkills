@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/map-csv-to-object` (`commands/map-csv-to-object.md`)
 - Domain router skill: `salesforce-admin`
-

@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,034 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 48 run-time agents and 67 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,039 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 50 run-time agents and 69 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -12,12 +12,12 @@ load. This file tells you how to reach the one page you need.
 
 ## What is in the library
 
-- **1,034 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
+- **1,039 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
   Each is a `SKILL.md` plus `references/examples.md`, `gotchas.md`,
   `well-architected.md` and `llm-anti-patterns.md`.
-- **48 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
+- **50 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
   exposed as subagents (see the roster at the bottom of this file).
-- **67 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
+- **69 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
 - **Decision trees** under `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/`,
   which route between technologies *before* a skill is opened.
 - **Canonical templates** under `${CLAUDE_PLUGIN_ROOT}/templates/`.
@@ -26,18 +26,18 @@ Skill counts by domain:
 
 | Domain | Skills | Router |
 |---|---:|---|
-| `admin` | 259 | `salesforce-admin` |
+| `admin` | 260 | `salesforce-admin` |
 | `agentforce` | 53 | `salesforce-agentforce` |
-| `apex` | 158 | `salesforce-apex` |
-| `architect` | 104 | `salesforce-architect` |
+| `apex` | 159 | `salesforce-apex` |
+| `architect` | 106 | `salesforce-architect` |
 | `data` | 101 | `salesforce-data` |
 | `devops` | 70 | `salesforce-devops` |
 | `flow` | 63 | `salesforce-flow` |
 | `integration` | 61 | `salesforce-integration` |
-| `lwc` | 82 | `salesforce-lwc` |
+| `lwc` | 83 | `salesforce-lwc` |
 | `omnistudio` | 34 | `salesforce-omnistudio` |
 | `security` | 49 | `salesforce-security` |
-| **total** | **1,034** | |
+| **total** | **1,039** | |
 
 ## How to find the right skill
 
@@ -81,15 +81,15 @@ it is a map, not the territory.
 Hand off to the router for the domain the request lands in. Each one
 carries that domain's featured skills, decision trees and templates.
 
-- **`salesforce-admin`** (259 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
+- **`salesforce-admin`** (260 skills) — Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 - **`salesforce-agentforce`** (53 skills) — Agentforce and Einstein: agents, topics, actions, prompt templates, grounding, guardrails, evaluation and production readiness.
-- **`salesforce-apex`** (158 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
-- **`salesforce-architect`** (104 skills) — Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
+- **`salesforce-apex`** (159 skills) — Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
+- **`salesforce-architect`** (106 skills) — Solution and platform architecture: multi-org strategy, scalability limits, licensing, Well-Architected reviews and architecture decision records.
 - **`salesforce-data`** (101 skills) — Data model, data movement and data quality: migrations, bulk loads, query optimisation, deduplicating at volume, archival. Ordinary-volume duplicate cleanup and prevention use salesforce-admin; come here for hundreds-of-thousands+ dedup or third-party tools. LDV architecture uses salesforce-architect.
 - **`salesforce-devops`** (70 skills) — Salesforce delivery: source tracking, packaging, branching, CI/CD pipelines, environment strategy and deployment troubleshooting.
 - **`salesforce-flow`** (63 skills) — Flow Builder: record-triggered, screen, scheduled and orchestration flows, bulkification, fault handling, limits, testing. "My flow" belongs here even when salesforce-apex also names the limit. Nightly scheduling without naming code defaults here; apex takes it when code/class/Apex is named. Flow-vs-Apex choice before anything is built: admin/process-automation-selection.
 - **`salesforce-integration`** (61 skills) — INBOUND integration and the API surface itself: the Salesforce REST and SOAP APIs, Bulk API 2.0 jobs, Platform Events, CDC, Pub/Sub, Named Credentials and middleware. For calling OUT to someone else's API from Apex, use salesforce-apex instead.
-- **`salesforce-lwc`** (82 skills) — Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
+- **`salesforce-lwc`** (83 skills) — Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
 - **`salesforce-omnistudio`** (34 skills) — OmniStudio: OmniScripts, FlexCards, DataRaptors, Integration Procedures, Business Rules Engine and DataPack deployment.
 - **`salesforce-security`** (49 skills) — Platform security and compliance: org hardening, encryption, session policy, MFA, monitoring, incident response, and TROUBLESHOOTING a specific record-access denial. Designing the sharing model itself (OWD, role hierarchy, sharing rules) is salesforce-admin.
 
@@ -134,10 +134,10 @@ For a whole workflow rather than a single question, invoke the
 matching subagent. Each reads its full `AGENT.md` playbook, cites
 every skill it consulted, and never deploys to an org.
 
-- **admin** — `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `business-hours-and-holidays-configurator`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `process-flow-mapper`, `profile-to-permset-migrator`, `sales-stage-designer`, `story-drafter`, `user-access-diff`
+- **admin** — `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `business-hours-and-holidays-configurator`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `process-flow-mapper`, `profile-to-permset-migrator`, `sales-stage-designer`, `salesforce-learning-guide`, `story-drafter`, `user-access-diff`
 - **agentforce** — `agentforce-action-reviewer`, `agentforce-builder`
 - **apex** — `apex-builder`, `apex-refactorer`, `security-scanner`, `soql-optimizer`, `test-class-generator`, `trigger-consolidator`
-- **architect** — `waf-assessor`
+- **architect** — `salesforce-decision-facilitator`, `waf-assessor`
 - **data** — `data-loader-pre-flight`, `data-model-reviewer`, `duplicate-rule-designer`
 - **devops** — `changeset-builder`, `deployment-risk-scorer`, `release-train-planner`, `sandbox-strategy-designer`
 - **flow** — `flow-analyzer`, `flow-builder`, `flow-orchestrator-designer`

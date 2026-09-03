@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/gen-tests` (`commands/gen-tests.md`)
 - Domain router skill: `salesforce-apex`
-

@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/assess-waf` (`commands/assess-waf.md`)
 - Domain router skill: `salesforce-architect`
-

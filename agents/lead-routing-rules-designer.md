@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-lead-routing` (`commands/design-lead-routing.md`)
 - Domain router skill: `salesforce-admin`
-

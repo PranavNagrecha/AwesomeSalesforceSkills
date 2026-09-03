@@ -10,6 +10,10 @@
 
 - **Performance** — PMD includes performance-oriented Apex rules (e.g., SOQL in loops, DML inside loops) that identify patterns likely to cause governor limit violations under load. Running these rules in CI prevents performance regressions from reaching production.
 
+## ApexGuru Remote Analysis Boundary
+
+ApexGuru extends Code Analyzer with remote AI-driven Apex performance analysis. It requires an authenticated org and scans `.cls`/`.trigger` source. Treat connected-org access as a prerequisite, not automatic proof of production runtime telemetry. Preserve explicit analysis-mode fields when present and use separate runtime evidence to validate impact. The repository-specific MCP server exposes this skill and the specialized ApexGuru skill as knowledge resources; it does not misrepresent the retired Salesforce Code Analyzer MCP integration as an execution path.
+
 ## Architectural Tradeoffs
 
 **Full scan on every push vs. staged scanning:** Running all engines including Graph Engine on every push provides maximum coverage but adds significant pipeline time. The recommended tradeoff is to run fast engines (PMD, ESLint, RetireJS, Regex) on every push with a tight severity threshold, and run Graph Engine on a scheduled nightly job or on branch merges to the release branch. This maintains fast developer feedback cycles while ensuring security-critical taint analysis is performed before release.
@@ -39,4 +43,6 @@
 - PMD Engine (custom_rulesets, java_classpath_entries, XPath vs Java rules, automatic Custom tag) — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-pmd.html
 - Regex Engine (custom_rules fields, severity values, global modifier requirement) — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-regex.html
 - ESLint Engine (eslint_config_file, auto_discover_eslint_config, base-config toggles) — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-eslint.html
+- ApexGuru engine (target org, Apex-only coverage, JSON output, timeout/backoff) — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/engine-apexguru.html
+- Code Analyzer MCP lifecycle and engine limitations — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/mcp.html
 - Migrate from Code Analyzer v4 to v5 — confirms the August 2025 v4 retirement sentence, the `scanner` → `code-analyzer` topic move and full command mapping (including the two commands with no v5 equivalent), the `--category`/`--engine` → `--rule-selector`, `--projectdir` → `--workspace` and `--pmdconfig`/`--eslintconfig` → `code-analyzer.yml` flag mappings, and the inversion of PMD custom-ruleset semantics from restrictive to additive — https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/migrate.html (verified 2026-08-13)

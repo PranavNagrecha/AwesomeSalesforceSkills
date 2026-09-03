@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-omni-channel` (`commands/design-omni-channel.md`)
 - Domain router skill: `salesforce-admin`
-

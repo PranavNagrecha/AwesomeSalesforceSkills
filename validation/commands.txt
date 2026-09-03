@@ -1,0 +1,42 @@
+# Run from the reconciled repository root.
+
+python3 scripts/bootstrap.py --skip-commands
+
+node --check .claude/workflows/source-onboarding.js
+
+python3 -m py_compile \
+  scripts/new_skill.py \
+  scripts/patch_agent_skill.py \
+  scripts/onboard_source.py \
+  scripts/upstream_radar.py \
+  scripts/check_source_integrations.py \
+  skills/architect/salesforce-decision-analysis/scripts/check_salesforce_decision_analysis.py \
+  skills/architect/salesforce-learning-research/scripts/check_salesforce_learning_research.py \
+  skills/admin/salesforce-learning-brief/scripts/check_salesforce_learning_brief.py \
+  skills/apex/apexguru-performance-analysis/scripts/check_apexguru_performance_analysis.py \
+  skills/lwc/lwc-typescript-migration/scripts/check_lwc_typescript_migration.py
+
+python3 -m unittest -v \
+  tests.test_skill_scaffolding_wiring \
+  tests.test_onboard_source_license_gate \
+  tests.test_public_source_routing \
+  tests.test_source_integrations
+
+python3 scripts/check_source_integrations.py
+python3 scripts/check_license.py
+python3 scripts/check_doc_counts.py
+python3 scripts/check_skill_map.py
+
+python3 scripts/build_plugin.py
+python3 scripts/build_plugin.py --check
+python3 scripts/build_plugin.py --measure
+
+python3 scripts/validate_repo.py --all --changed-only
+python3 scripts/skill_doctor.py --all --json > skill-doctor.json
+
+git diff --check
+
+python3 -m pip install -e 'mcp/sfskills-mcp[dev]'
+python3 -m unittest discover -s mcp/sfskills-mcp/tests -p 'test_*.py' -v
+
+python3 scripts/validate_repo.py --all

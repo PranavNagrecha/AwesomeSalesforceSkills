@@ -62,26 +62,30 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install repo tooling (needed to build the index)
+        run: python -m pip install -r requirements.txt
+
       - name: Install build tooling
         run: python -m pip install --upgrade build twine
+
+      - name: Build lexical retrieval index without mutating tracked files
+        run: |
+          python3 scripts/bootstrap.py --skip-commands
+          git diff --exit-code
 
       - name: Build wheel + sdist
         working-directory: mcp/sfskills-mcp
         run: python -m build
 
-      # The bundle step below is NAMED "lexical index" but a fresh checkout has
-      # no index to copy: vector_index/ is gitignored except for 3 small JSON
-      # files (manifest, query-fixtures, query-variants). Without this step the
-      # tarball shipped no lexical.sqlite and no chunks.jsonl, so an install
-      # bootstrapped by `sfskills-mcp-init` answered "Coverage: NONE" for every
-      # query. Build it here, exactly as validate.yml already does.
-      # Adds ~300 MB to the release asset (chunks.jsonl ~127 MB +
-      # lexical.sqlite ~169 MB); embeddings are NOT built and stay excluded.
-      - name: Install repo tooling (needed to build the index)
-        run: python -m pip install -r requirements.txt
+      - name: Twine check
+        run: python -m twine check mcp/sfskills-mcp/dist/*
 
-      - name: Build lexical retrieval index
-        run: python3 scripts/build_index.py
+      - name: Smoke-install the wheel
+        run: |
+          python -m venv /tmp/sfskills-mcp-wheel-smoke
+          /tmp/sfskills-mcp-wheel-smoke/bin/python -m pip install --upgrade pip
+          /tmp/sfskills-mcp-wheel-smoke/bin/python -m pip install mcp/sfskills-mcp/dist/*.whl
+          /tmp/sfskills-mcp-wheel-smoke/bin/python -c "import sfskills_mcp, sys; print(sfskills_mcp.__version__); sys.exit(0)"
 
       - name: Build data bundle (registry + lexical index + agents + templates + decision-trees)
         run: |
@@ -97,6 +101,15 @@ jobs:
           tar -czf sfskills-data.tar.gz -C _bundle sfskills-data
           ls -lh sfskills-data.tar.gz
 
+      - name: Generate SHA256SUMS.txt
+        run: |
+          shasum -a 256 \
+            mcp/sfskills-mcp/dist/*.whl \
+            mcp/sfskills-mcp/dist/*.tar.gz \
+            sfskills-data.tar.gz \
+            | sed 's# .*/# #' > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: Upload artefacts
         uses: actions/upload-artifact@v4
         with:
@@ -104,6 +117,7 @@ jobs:
           path: |
             mcp/sfskills-mcp/dist/*
             sfskills-data.tar.gz
+            SHA256SUMS.txt
 
   publish-data:
     name: Attach data bundle to the GitHub release
@@ -122,6 +136,7 @@ jobs:
           files: |
             sfskills-data.tar.gz
             mcp/sfskills-mcp/dist/*
+            SHA256SUMS.txt
 
   publish-pypi:
     name: Publish wheel to PyPI / TestPyPI

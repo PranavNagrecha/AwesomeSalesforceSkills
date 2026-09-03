@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/optimize-soql` (`commands/optimize-soql.md`)
 - Domain router skill: `salesforce-apex`
-

@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/automation-migration-router` (`commands/automation-migration-router.md`)
 - Domain router skill: `salesforce-admin`
-

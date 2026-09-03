@@ -585,10 +585,9 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    1
    ```
 
-Until a release is cut ([section 6](#6-cutting-a-github-release-maintainer-only)),
-use the clone path above. In-tree the package is already at **0.4.8**
-(`mcp/sfskills-mcp/pyproject.toml` and `src/sfskills_mcp/__init__.py` agree), so
-the version skew is fixed at source and waiting on a publish.
+Until a later MCP version is cut, use the clone path above. In-tree the package
+is **0.4.9** (`mcp/sfskills-mcp/pyproject.toml` and
+`src/sfskills_mcp/__init__.py` agree).
 
 ### The `mcp` SDK pin
 
@@ -610,104 +609,60 @@ bumping a number.
 
 ## 6. Cutting a GitHub release (maintainer only)
 
-**No agent may execute this section.** Publishing a release is outward-facing and
-is the repository owner's decision. What follows is the diagnosis and the
-runbook.
+Owner authorization is a safety gate. An agent may execute this section **only
+when the repository owner explicitly authorizes the active task**. This
+document is the runbook; it is not standing permission.
 
-### Diagnosis
+Current in-tree versions after the public-source integration:
 
-The repository has **zero** published releases, re-checked 2026-08-15:
+- Plugin/library: **1.2.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
+- sfskills-mcp: **0.4.9** (`pyproject.toml` and `sfskills_mcp.__version__`)
 
-```text
-$ gh api repos/PranavNagrecha/AwesomeSalesforceSkills/releases --jq 'length'
-0
-$ curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -L \
-    'https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz'
-HTTP 404
-```
+Do not create a separate public GitHub Release for a `plugin-v*` tag.
+`sfskills-mcp-init` downloads `/releases/latest/download/sfskills-data.tar.gz`,
+so **latest must be an `mcp-v*` release that includes that asset**.
 
-`sfskills-mcp-init` builds that exact URL (`init.py:_release_url` plus
-`ASSET_NAME = "sfskills-data.tar.gz"`) and exits 1 on the 404.
-`/releases/latest/download/` only resolves against a **published, non-draft,
-non-prerelease** release.
+### Historical diagnosis (why one-tag-per-push remains required)
 
-The workflow that would create one exists and is correct — it has just never run:
+GitHub Actions does not create events when more than three tags are pushed at
+once. Push `plugin-v*` and `mcp-v*` **one tag at a time**.
+`workflow_dispatch` still cannot attach `sfskills-data.tar.gz` because
+`publish-data` is gated on `refs/tags/mcp-v*`.
 
-```text
-$ git ls-remote --tags origin | grep 'refs/tags/mcp-v'
-mcp-v0.4.0  mcp-v0.4.1  mcp-v0.4.4  mcp-v0.4.6
-```
+### Lexical index in the data bundle
 
-All four tags are on origin and all four carry `publish-mcp.yml`. They date
-2026-05-08 … 2026-06-17 and the GitHub repository was created 2026-06-17, so all
-four arrived in the single initial import push. GitHub Actions documents this
-exact behaviour: *"Events will not be created for tags when more than three tags
-are pushed at once."*
-([Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows),
-quote re-verified 2026-08-15.) Four tags in one push therefore produced **no
-`push` event at all**, and `publish-mcp.yml` never fired. This is also why step 4
-below insists on one tag per push.
-
-`workflow_dispatch` cannot rescue it. The `publish-data` job that attaches the
-tarball is gated on `if: startsWith(github.ref, 'refs/tags/mcp-v')`
-(`publish-mcp.yml:80`), so a manual dispatch from a branch builds the bundle and
-then skips the upload. Only a fresh tag push cuts a release.
-
-### The bundle-without-an-index blocker — fixed
-
-`publish-mcp.yml` used to build the data bundle with `cp -r vector_index
-_bundle/sfskills-data/` against a bare CI checkout, where `vector_index/` holds
-only `manifest.json` and the two fixture files — `lexical.sqlite` and
-`chunks.jsonl` are gitignored. A release cut that way published a tarball with
-**no retrieval index**, and `sfskills-mcp-init` succeeded into a cache that
-answered nothing.
-
-Fixed before the `mcp-v0.4.7` release: the workflow now runs
-`python -m pip install -r requirements.txt` and `python3 scripts/build_index.py`
-before the bundle step (`publish-mcp.yml`, *Build lexical retrieval index*).
-That adds ~300 MB to the release asset — `chunks.jsonl` ~127 MB plus
-`lexical.sqlite` ~169 MB. Embeddings are deliberately not built and stay
-excluded.
-
-Verify it stayed fixed before any release:
-
-```bash
-grep -n 'build_index' .github/workflows/publish-mcp.yml   # must match
-```
+`publish-mcp.yml` builds the gitignored lexical index in CI with
+`python3 scripts/bootstrap.py --skip-commands` and then
+`git diff --exit-code` so tracked registry files are not rewritten. The
+tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
 
 ### Steps
 
-1. Confirm the index step is still present (see above) — without it the release
-   ships an unusable bundle.
-2. Confirm the versions still agree. `mcp/sfskills-mcp/pyproject.toml` `version`
-   and `src/sfskills_mcp/__init__.py` `__version__` must match; both read
-   **0.4.8** in-tree today, which is the bump that carries the record-access
-   corpus and the first PolyForm-licensed wheel.
-3. Commit and push to `main`.
-4. Tag and push — **one tag per push**, which is what the >3-tags rule above
-   requires:
+1. Confirm `bootstrap.py --skip-commands` is still in
+   `.github/workflows/publish-mcp.yml`.
+2. Confirm plugin and MCP versions agree with generated manifests and
+   changelog headings (`python3 scripts/check_release_versions.py`).
+3. Merge to `main` after required GitHub checks pass. Do not force-push or
+   bypass protection.
+4. Tag and push **one tag per push**:
    ```bash
-   git tag mcp-v0.4.8
-   git push origin mcp-v0.4.8
+   git tag -a plugin-v1.2.0 <final-main> -m "SfSkills plugin 1.2.0"
+   git push origin plugin-v1.2.0
+   git tag -a mcp-v0.4.9 <final-main> -m "sfskills-mcp 0.4.9"
+   git push origin mcp-v0.4.9
    ```
-5. Watch it: `gh run watch`.
-6. Confirm the asset attached:
-   ```bash
-   gh release view mcp-v0.4.8 --json assets --jq '.assets[].name'
-   ```
-   `sfskills-data.tar.gz` must be listed.
-7. Confirm the URL the client actually requests now resolves:
+5. Watch `publish-mcp.yml`: `gh run watch`.
+6. Confirm assets on the MCP release include `sfskills-data.tar.gz`, the
+   wheel, the sdist, and `SHA256SUMS.txt`.
+7. Confirm latest-download returns HTTP 200:
    ```bash
    curl -sSIL -o /dev/null -w '%{http_code}\n' \
      https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz
    ```
-   must print `200`.
-8. End-to-end, in a clean virtualenv:
+8. Clean-room smoke test from public PyPI:
    ```bash
-   pip install sfskills-mcp && sfskills-mcp-init
+   pip install "sfskills-mcp==0.4.9" && sfskills-mcp-init --force
    ```
-   must exit 0, `python -c "import sfskills_mcp.server"` must succeed, and the
-   extracted cache must contain a non-trivial `vector_index/lexical.sqlite`.
 
 ---
 

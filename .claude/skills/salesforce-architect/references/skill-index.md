@@ -1,4 +1,4 @@
-# SfSkills — `architect` skill roster (104 packages)
+# SfSkills — `architect` skill roster (106 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -110,7 +110,9 @@ If your question is X, stop and open Y instead of this package.
 - `skills/architect/revenue-cloud-architecture/SKILL.md` — Architecting on Salesforce Revenue Cloud (Revenue Lifecycle Management — RLM, the successor …. NOT for implementing DRO fulfilment plans or Connect API billing schedules - use integration/revenue-lifecycle-management.
 - `skills/architect/sales-cloud-architecture/SKILL.md` — Triggers: 'design a Sales Cloud architecture for enterprise org', 'Sales Cloud data model and automation strategy', …. NOT for individual feature configuration (use … use architect/sales-cloud-integration-patterns
 - `skills/architect/sales-cloud-integration-patterns/SKILL.md` — Triggers: 'sync Accounts and Products with ERP', 'integrate marketing leads with Salesforce', 'quote-to-order flow between Salesforce and ERP', …. NOT for generic integration … use apex/callouts-and-http-integrations
+- `skills/architect/salesforce-decision-analysis/SKILL.md` — Triggers: compare Salesforce options, evaluate alternatives, make a platform decision, decision matrix, weighted decision. NOT for documenting an already accepted choice — use architect/architecture-decision-records.
 - `skills/architect/salesforce-erd-and-diagramming/SKILL.md` — Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce …. NOT for writing the field inventory or data dictionary — use admin/data-model-documentation.
+- `skills/architect/salesforce-learning-research/SKILL.md` — Triggers: research Salesforce topic, find official Salesforce docs, prepare learning sources, verify Salesforce concept, …. NOT for the final learner-facing explanation — use admin/salesforce-learning-brief.
 - `skills/architect/salesforce-shield-architecture/SKILL.md` — Salesforce Shield as an architectural choice — Platform Encryption + Event Monitoring …. NOT for setting up one Shield feature — use security/platform-encryption, security/event-monitoring or security/field-audit-trail.
 - `skills/architect/security-architecture-review/SKILL.md` — Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, …. NOT for auditing Apex … use security/secure-coding-review-checklist
 - `skills/architect/service-cloud-architecture/SKILL.md` — Triggers: service cloud architecture, case routing design, omni-channel strategy, contact center design, channel strategy, knowledge deflection, …. NOT for case setup click-paths - use admin/case-management-setup.

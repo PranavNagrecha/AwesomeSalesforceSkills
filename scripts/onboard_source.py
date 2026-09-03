@@ -77,6 +77,24 @@ PERMISSIVE_SPDX = {
     "CC0-1.0", "Unlicense", "0BSD", "Zlib",
 }
 
+# Some repositories publish conflicting license signals across tracked files.
+# GitHub's repository metadata exposes only one of those signals, so an
+# apparently permissive SPDX result is not sufficient for these known cases.
+# Keep them clean-room until the upstream project resolves the conflict.
+REPO_LICENSE_OVERRIDES = {
+    "forcedotcom/sf-skills": {
+        "license": (
+            "CONFLICTING: repository LICENSE.txt declares Apache-2.0 while "
+            "package metadata declares CC-BY-NC-4.0"
+        ),
+        "license_class": "clean-room",
+        "reason": (
+            "Known public license conflict; use topic discovery only and author "
+            "all shipped SfSkills content independently from official Salesforce sources."
+        ),
+    },
+}
+
 # Directory shapes that usually hold one topic per child directory.
 SKILL_DIR_PATTERNS = (
     re.compile(r"^(?:\.claude/|\.agents/)?skills/([^/]+)/"),
@@ -121,8 +139,15 @@ def discover_repo(url: str, ref: str | None = None, subpath: str | None = None) 
     subpath = (subpath or url_subpath or "").strip("/")
 
     meta = gh_json(f"repos/{full}")
-    spdx = ((meta.get("license") or {}).get("spdx_id")) or "NONE"
+    detected_spdx = ((meta.get("license") or {}).get("spdx_id")) or "NONE"
+    spdx = detected_spdx
     license_class = "permissive" if spdx in PERMISSIVE_SPDX else "clean-room"
+    license_reason = None
+    override = REPO_LICENSE_OVERRIDES.get(full.lower())
+    if override:
+        spdx = override["license"]
+        license_class = override["license_class"]
+        license_reason = override["reason"]
     ref = ref or meta.get("default_branch") or "main"
 
     tree = gh_json(f"repos/{full}/git/trees/{ref}?recursive=1")
@@ -179,7 +204,9 @@ def discover_repo(url: str, ref: str | None = None, subpath: str | None = None) 
         **({"subpath": subpath} if subpath else {}),
         "report_slug": f"{full}-{subpath}" if subpath else full,
         "license": spdx,
+        "detected_license": detected_spdx,
         "license_class": license_class,
+        **({"license_reason": license_reason} if license_reason else {}),
         "manifest_blobs": {
             slug: blobs.get(f"skills/{slug}/SKILL.md") or blobs.get(f"{slug}/SKILL.md", "")
             for slug in candidates
@@ -306,6 +333,8 @@ def write_manifest(report: dict) -> Path:
         "upstream": report["source"],
         "license": report["license"],
         "license_class": report["license_class"],
+        **({"detected_license": report["detected_license"]} if report.get("detected_license") else {}),
+        **({"license_reason": report["license_reason"]} if report.get("license_reason") else {}),
         "ref": report.get("ref", ""),
         **({"subpath": report["subpath"]} if report.get("subpath") else {}),
         "retrieved": report["generated"],

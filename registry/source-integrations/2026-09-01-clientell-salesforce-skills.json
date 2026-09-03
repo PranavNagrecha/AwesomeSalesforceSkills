@@ -1,0 +1,98 @@
+{
+  "$schema": "../../config/source-integration.schema.json",
+  "schema_version": 1,
+  "integration_id": "clientell-salesforce-skills-2026-09-01",
+  "created_at": "2026-09-01T00:00:00Z",
+  "baseline": {
+    "requested_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive_sha256": "fdf1823f02d3145066da3b48c8e31b2b5309a3f93284c1e7c4ecec697c727bc0",
+    "exact_requested_snapshot_available": true,
+    "repository_baseline_commit": "7e0ecaba888f3d986362782f04d7035064bfce34",
+    "notes": "The designated AwesomeSalesforceSkills-main (3).zip archive was mounted and hashed. Its SHA-256 matches the earlier inspectable (1).zip fallback byte-for-byte, so reconciliation used commit 7e0ecaba888f3d986362782f04d7035064bfce34 created from the (3) extract as the exact latest baseline. Upstream candidate archives remain unavailable for byte-level pins."
+  },
+  "sources": [
+    {
+      "id": "clientell-salesforce-skills",
+      "requested_archive": "salesforce-skills-main.zip",
+      "repository": "https://github.com/Clientell-Ai/salesforce-skills",
+      "pin": {
+        "kind": "unavailable",
+        "value": null,
+        "reason": "The user-supplied archive was not mounted, so no archive hash, commit, or tag is asserted for the reviewed snapshot."
+      },
+      "license": {
+        "detected": "Apache-2.0",
+        "class": "permissive",
+        "conflict": false,
+        "conflict_reason": null,
+        "evidence": [
+          "https://github.com/Clientell-Ai/salesforce-skills",
+          "https://github.com/Clientell-Ai/salesforce-skills/blob/main/LICENSE"
+        ]
+      },
+      "candidate_count": 18,
+      "content_use": "Catalog and benchmark-claim discovery only. No source implementation or benchmark output was imported."
+    }
+  ],
+  "decisions": [
+    {
+      "source_id": "clientell-salesforce-skills",
+      "candidate_id": "eighteen-broad-skill-catalog",
+      "disposition": "STOP",
+      "target": "existing canonical domain skills and runtime agents",
+      "scope": "Do not add duplicate broad sf-apex, sf-flow, sf-lwc, sf-soql, security, deploy, data, schema, and related umbrella packages.",
+      "rationale": "Each broad category already maps to richer narrow owners in the 1,039-skill corpus. Importing umbrella skills would create duplicate triggers, competing advice, and a lower-confidence routing layer.",
+      "routing": "Route through the existing top-level Salesforce router, domain rosters, and specific runtime commands rather than adding sf-* aliases.",
+      "files": []
+    },
+    {
+      "source_id": "clientell-salesforce-skills",
+      "candidate_id": "plus-108-percent-benchmark",
+      "disposition": "REJECT",
+      "target": "evals/measurement and repository-owned held-out evaluations",
+      "scope": "Do not reuse or advertise an upstream self-reported benchmark as SfSkills evidence.",
+      "rationale": "The attached benchmark artifacts were unavailable and the result was not independently reproduced under this repository’s labels, models, prompts, baselines, and anti-circularity rules.",
+      "routing": "Use only repository-owned evaluation harnesses and label every result by retrieval path, data set, date, and scoring method.",
+      "files": [
+        "tests/test_public_source_routing.py"
+      ]
+    }
+  ],
+  "changed_files": {
+    "config/upstream-sources/clientell-salesforce-skills.manifest.json": "df1c85f09a813dd19e08c77db145a5c747b7d18c32a844135378ca763bc930cc",
+    "docs/source-integrations/2026-09-01-public-skill-source-audit.md": "74509125d22628ebfc4b228c0056fde151403ebb325b6a6e37c04d14576bf110",
+    "tests/test_public_source_routing.py": "c9dc5e5beaf513c463c46d2c6e11bfb42bacb4326c4cba1a353a0a4c6b47f217",
+    "validation/commands.txt": "65b17ab4a9ef8707dadb392e7f7e3e9ab63b731e2f94199cab1f1b608624b3bf",
+    "config/source-integration.schema.json": "e03dc93331dc48f530ae3a93942190a5d26ec7e2977eb0422a94eaa980a074b2",
+    "tests/test_source_integrations.py": "e691c8558b6f7d2aaa46e4ede50794a1ee974aaaef872d9a1374851785ef3d38",
+    "scripts/check_source_integrations.py": "01a89fcbc04ed109c08a68b9489c4b61d545ce705da41f30428f8fcb5e1a4408"
+  },
+  "validation": [
+    {
+      "command": "python3 scripts/check_source_integrations.py",
+      "status": "passed",
+      "evidence": "source-integration-check.txt"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py --all --changed-only",
+      "status": "passed",
+      "evidence": "validate-changed.txt"
+    },
+    {
+      "command": "python3 -m unittest mcp.sfskills-mcp.tests.test_public_source_integration",
+      "status": "passed",
+      "evidence": "mcp-public-source-integration.txt"
+    },
+    {
+      "command": "new skill checker passing and failing fixtures",
+      "status": "passed",
+      "evidence": "unit-core.txt"
+    }
+  ],
+  "attestation": {
+    "clean_room": "No Clientell wording, code, fixtures, or benchmark data was copied. The Apache-2.0 report was treated as inventory metadata only because the exact supplied archive was unavailable.",
+    "no_unverified_copy": true,
+    "product_boundary": "All accepted additions remain read-only analysis, teaching, retrieval, or local validation guidance. They do not deploy, mutate an org, grant authority, or bypass the V2.0/V2.1/V2.2 product gates."
+  }
+}

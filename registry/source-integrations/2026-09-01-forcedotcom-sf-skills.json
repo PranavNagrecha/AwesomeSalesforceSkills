@@ -1,0 +1,140 @@
+{
+  "$schema": "../../config/source-integration.schema.json",
+  "schema_version": 1,
+  "integration_id": "forcedotcom-sf-skills-2026-09-01",
+  "created_at": "2026-09-01T00:00:00Z",
+  "baseline": {
+    "requested_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive_sha256": "fdf1823f02d3145066da3b48c8e31b2b5309a3f93284c1e7c4ecec697c727bc0",
+    "exact_requested_snapshot_available": true,
+    "repository_baseline_commit": "7e0ecaba888f3d986362782f04d7035064bfce34",
+    "notes": "The designated AwesomeSalesforceSkills-main (3).zip archive was mounted and hashed. Its SHA-256 matches the earlier inspectable (1).zip fallback byte-for-byte, so reconciliation used commit 7e0ecaba888f3d986362782f04d7035064bfce34 created from the (3) extract as the exact latest baseline. Upstream candidate archives remain unavailable for byte-level pins."
+  },
+  "sources": [
+    {
+      "id": "forcedotcom-sf-skills",
+      "requested_archive": "sf-skills-main (1).zip",
+      "repository": "https://github.com/forcedotcom/sf-skills",
+      "pin": {
+        "kind": "unavailable",
+        "value": null,
+        "reason": "The user-supplied archive was not mounted, so no archive hash, commit, or tag is asserted for the reviewed snapshot."
+      },
+      "license": {
+        "detected": "CONFLICTING: Apache-2.0 root license; CC-BY-NC-4.0 package metadata",
+        "class": "clean-room",
+        "conflict": true,
+        "conflict_reason": "The current root license and package metadata identify different licenses; the exact requested archive was unavailable.",
+        "evidence": [
+          "https://github.com/forcedotcom/sf-skills/blob/main/LICENSE.txt",
+          "https://github.com/forcedotcom/sf-skills/blob/main/package.json",
+          "https://github.com/forcedotcom/sf-skills/issues/316"
+        ]
+      },
+      "candidate_count": 179,
+      "content_use": "Topic discovery only. The license conflict forces independent authorship from official Salesforce documentation."
+    }
+  ],
+  "decisions": [
+    {
+      "source_id": "forcedotcom-sf-skills",
+      "candidate_id": "experience-lwc-typescript-migrate",
+      "disposition": "ADD",
+      "target": "lwc/lwc-typescript-migration",
+      "scope": "Create one canonical owner for LWC TypeScript migration strategy, execution, validation, and rollback.",
+      "rationale": "Local coverage had general LWC development and framework migrations but no version-aware TypeScript migration owner with deterministic project checks.",
+      "routing": "Use only for JavaScript-to-TypeScript migration or migration audit; route greenfield LWC work and other framework migrations to existing owners.",
+      "files": [
+        "skills/lwc/lwc-typescript-migration",
+        "agents/lwc-builder/AGENT.md",
+        "agents/lwc-auditor/AGENT.md"
+      ]
+    },
+    {
+      "source_id": "forcedotcom-sf-skills",
+      "candidate_id": "dx-code-analyzer-apexguru-run",
+      "disposition": "ADD",
+      "target": "apex/apexguru-performance-analysis",
+      "scope": "Add a dedicated evidence-bound ApexGuru result acquisition and triage workflow.",
+      "rationale": "The existing Code Analyzer package did not distinguish remote ApexGuru source analysis, authenticated-org prerequisites, supported file types, evidence modes, and runtime-proof boundaries.",
+      "routing": "Use devops/salesforce-code-analyzer to configure and run engines; use apex/apexguru-performance-analysis to validate and triage ApexGuru output.",
+      "files": [
+        "skills/apex/apexguru-performance-analysis",
+        "agents/apex-refactorer/AGENT.md",
+        "agents/code-reviewer/AGENT.md"
+      ]
+    },
+    {
+      "source_id": "forcedotcom-sf-skills",
+      "candidate_id": "dx-code-analyzer-run",
+      "disposition": "DEEPEN",
+      "target": "devops/salesforce-code-analyzer",
+      "scope": "Extend the existing Code Analyzer skill for current v5 engine selection and ApexGuru handoff.",
+      "rationale": "Deepening the established owner preserves routing and avoids a second overlapping Code Analyzer package.",
+      "routing": "Run and configure Code Analyzer through the existing devops skill; delegate only ApexGuru-specific evidence triage to the new Apex skill.",
+      "files": [
+        "skills/devops/salesforce-code-analyzer"
+      ]
+    },
+    {
+      "source_id": "forcedotcom-sf-skills",
+      "candidate_id": "remaining-broad-and-specialist-catalog",
+      "disposition": "STOP",
+      "target": "existing canonical skills and historical sf-skills manifest",
+      "scope": "Do not bulk-create one local package per upstream folder.",
+      "rationale": "The baseline already tracks 89 historical forcedotcom candidates and the 1,039-skill corpus owns most current topics. Only verified net-new gaps should alter the catalog.",
+      "routing": "Use upstream_radar for pinned deltas, then classify each candidate as ADD, DEEPEN, MERGE, STOP, DEFER, or REJECT before authoring.",
+      "files": [
+        "config/upstream-sources/sf-skills.manifest.json",
+        "scripts/upstream_radar.py"
+      ]
+    }
+  ],
+  "changed_files": {
+    "agents/apex-refactorer/AGENT.md": "cd3c4258915b07816150618654093d4ba74ec78c70fab15c24a1c4a251472b44",
+    "agents/code-reviewer/AGENT.md": "9388bce390670138e037e98efbd39829826de74031a75636aa5b3a62e8b0de32",
+    "agents/lwc-auditor/AGENT.md": "17bb078ceaed361aeafe8d1d2d91a0898cdc704741ab003fde124f0199ef04ac",
+    "agents/lwc-builder/AGENT.md": "9a1ec43c59b959867cf3643fa933bf5ec8f3db0bddbe09b2e16558c9f175f0cb",
+    "config/upstream-sources/sf-skills.manifest.json": "831e30988ff98fd95ae2f0ebd36503ea9e64bdd0ecb46782dd79c3c120ceb122",
+    "docs/source-integrations/2026-09-01-public-skill-source-audit.md": "74509125d22628ebfc4b228c0056fde151403ebb325b6a6e37c04d14576bf110",
+    "scripts/onboard_source.py": "fd98243955e564fffc7b05f6ba2af53059b9b75aca16bfc949b02cc5da748caf",
+    "scripts/upstream_radar.py": "65f4c92c095ec183f9e7733369d83bcf3aa0f93378e311ef31df1dd83a781517",
+    "skills/apex/apexguru-performance-analysis/SKILL.md": "af689b2ad11abfd0e68d25dc7fe28419f933df8c2d005d9a29b1b54c9e42cec6",
+    "skills/apex/apexguru-performance-analysis/scripts/check_apexguru_performance_analysis.py": "13a3aac32131a1e7973ad7cc7f9ed823f594f10f66293c7076f09902542557b6",
+    "skills/devops/salesforce-code-analyzer/SKILL.md": "8f89dfeb7c6d895fb77a3e14468ae08953bf5faa4e3672423a15df66d2acbc72",
+    "skills/lwc/lwc-typescript-migration/SKILL.md": "91a99f833f6a1b5d03e82b10a240fe72b5b8d0148451aa74ca67d7cdcf524101",
+    "tests/test_onboard_source_license_gate.py": "c5e60f28bf12b23d4d27333d10be80c88225a40f26a64047a8c066f627a6d74f",
+    "validation/commands.txt": "65b17ab4a9ef8707dadb392e7f7e3e9ab63b731e2f94199cab1f1b608624b3bf",
+    "config/source-integration.schema.json": "e03dc93331dc48f530ae3a93942190a5d26ec7e2977eb0422a94eaa980a074b2",
+    "tests/test_source_integrations.py": "e691c8558b6f7d2aaa46e4ede50794a1ee974aaaef872d9a1374851785ef3d38",
+    "scripts/check_source_integrations.py": "01a89fcbc04ed109c08a68b9489c4b61d545ce705da41f30428f8fcb5e1a4408"
+  },
+  "validation": [
+    {
+      "command": "python3 scripts/check_source_integrations.py",
+      "status": "passed",
+      "evidence": "source-integration-check.txt"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py --all --changed-only",
+      "status": "passed",
+      "evidence": "validate-changed.txt"
+    },
+    {
+      "command": "python3 -m unittest mcp.sfskills-mcp.tests.test_public_source_integration",
+      "status": "passed",
+      "evidence": "mcp-public-source-integration.txt"
+    },
+    {
+      "command": "new skill checker passing and failing fixtures",
+      "status": "passed",
+      "evidence": "unit-core.txt"
+    }
+  ],
+  "attestation": {
+    "clean_room": "The governing license for the unavailable snapshot could not be established because current upstream signals conflict. Every accepted file is clean-room original work grounded in official Salesforce sources.",
+    "no_unverified_copy": true,
+    "product_boundary": "All accepted additions remain read-only analysis, teaching, retrieval, or local validation guidance. They do not deploy, mutate an org, grant authority, or bypass the V2.0/V2.1/V2.2 product gates."
+  }
+}

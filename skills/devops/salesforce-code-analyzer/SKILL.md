@@ -1,6 +1,6 @@
 ---
 name: salesforce-code-analyzer
-description: "Use this skill to run Salesforce Code Analyzer v5 for static analysis, CI quality gates, and AppExchange security review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine. NOT for manual code review workflows, runtime debugging, performance profiling, or Check — use security/secure-coding-review-checklist."
+description: "Use this skill to configure and run Salesforce Code Analyzer v5 across PMD, ESLint, RetireJS, Regex, Flow, CPD, SFGE, and remote ApexGuru analysis for CI quality gates and AppExchange review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine, apexguru. NOT for triaging ApexGuru findings and proving performance impact — use apex/apexguru-performance-analysis. NOT for manual code review or runtime debugging."
 category: devops
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,7 @@ triggers:
   - "retire js flagging a dependency in my lwc project"
   - "how do i suppress a false positive in salesforce code analyzer"
   - "add a custom pmd rule to salesforce code analyzer"
+  - "run the remote ApexGuru engine against authenticated-org Apex source"
   - "write a custom regex rule in code-analyzer.yml"
 tags:
   - salesforce-code-analyzer
@@ -28,9 +29,10 @@ tags:
   - security
 inputs:
   - "Salesforce DX project directory or metadata source path to scan"
-  - "Target engines to run (PMD, CPD, ESLint, RetireJS, Regex, Flow, Graph Engine/sfge)"
+  - "Target engines to run (PMD, CPD, ESLint, RetireJS, Regex, Flow, Graph Engine/sfge, ApexGuru)"
   - "Severity threshold for CI gate (1=critical, 2=high, 3=moderate, 4=low, 5=info)"
   - "Rule selector string or AppExchange preset if preparing a security review submission"
+  - "Authenticated target org alias when a remote engine such as ApexGuru is selected"
   - "Output format required by the CI system (json, xml, csv, html, or sarif — set by the --output-file extension)"
 outputs:
   - "Scan results report in the selected output format"
@@ -38,14 +40,14 @@ outputs:
   - "code-analyzer.yml configuration file for project-level defaults"
   - "Remediation guidance for each flagged rule category"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-07-06
+updated: 2026-09-01
 ---
 
 # Salesforce Code Analyzer
 
-This skill activates when a practitioner needs to configure, run, or interpret Salesforce Code Analyzer v5 — the Salesforce CLI plugin that performs static analysis of Apex, Lightning Web Components, and JavaScript dependencies. It covers CI gate configuration, AppExchange security review preparation, Graph Engine taint analysis, and custom rule authoring.
+This skill activates when a practitioner needs to configure, run, or interpret Salesforce Code Analyzer v5 — the Salesforce CLI plugin that performs static analysis of Apex, Lightning Web Components, and JavaScript dependencies. It covers CI gate configuration, AppExchange security review preparation, Graph Engine taint analysis, remote ApexGuru engine setup, and custom rule authoring. Deep triage of ApexGuru performance recommendations belongs to `apex/apexguru-performance-analysis`.
 
 ---
 
@@ -54,7 +56,7 @@ This skill activates when a practitioner needs to configure, run, or interpret S
 Gather this context before working on anything in this domain:
 
 - Confirm the project is using Salesforce Code Analyzer **v5** (GA, replaces v4 which was retired August 2025). The CLI command is `sf code-analyzer run`, not the legacy `sfdx scanner:run`. Mixing v4 and v5 commands in the same pipeline is a common source of breakage.
-- Identify which engines are relevant: PMD targets Apex and Visualforce; ESLint targets LWC and JavaScript; RetireJS scans JavaScript dependencies for known vulnerabilities; Regex is engine-agnostic pattern matching; Graph Engine (engine name `sfge`) performs data-flow analysis on Apex. v5 also ships Flow and CPD engines.
+- Identify which engines are relevant: PMD targets Apex and Visualforce; ESLint targets JavaScript, TypeScript, and LWC; RetireJS scans JavaScript dependencies for known vulnerabilities; Regex is engine-agnostic pattern matching; Graph Engine (engine name `sfge`) performs data-flow analysis on Apex. v5 also ships Flow and CPD engines. ApexGuru is a remote, AI-driven Apex performance engine that requires an authenticated org and scans `.cls` and `.trigger` files only.
 - Confirm whether the output is for a CI gate (needs `--severity-threshold` and a machine-readable `--output-file` such as JSON or XML — the extension selects the format) or for a developer review session (`--view table` is fine).
 - For AppExchange security review submissions, the documented selectors are `--rule-selector AppExchange --rule-selector Recommended:Security`, with an HTML report generated via `--output-file` and attached in the Security Review Wizard.
 
@@ -75,6 +77,22 @@ Salesforce Code Analyzer v5 runs one or more engines against source files. Each 
 - `eslint:@salesforce/lwc/no-inner-html` — a single named ESLint rule
 
 Rule selectors are composable: `--rule-selector Security --rule-selector pmd:ApexFlowControl` adds specific rules on top of a category.
+
+### ApexGuru Is a Remote Engine, Not a Generic Runtime Profiler
+
+Select ApexGuru with `--rule-selector apexguru` and pass an explicit authenticated org using `--target-org <alias>` when more than one org is available. Authentication comes from the Salesforce CLI session; credentials never belong in `code-analyzer.yml`. The engine returns line-level Apex findings in the same Code Analyzer output formats, but it does not scan Flow, object metadata, LWC, or other files.
+
+```bash
+sf code-analyzer run \
+  --rule-selector apexguru \
+  --workspace . \
+  --target "force-app/main/default/classes/**/*.cls" \
+  --target-org perf-sandbox \
+  --view detail \
+  --output-file artifacts/apexguru-results.json
+```
+
+A connected org is a service prerequisite, not proof that the JSON includes production telemetry. Preserve an explicit report mode if one exists; otherwise label the output `Source analysis` and route interpretation, validation, and before/after evidence to `apex/apexguru-performance-analysis`. The historical Code Analyzer MCP tool surface did not include ApexGuru and Salesforce states that that MCP integration is no longer supported as of June 2026. SfSkills exposes this guidance as MCP prompts/resources, while execution remains the CLI or supported Salesforce tooling.
 
 ### Severity Levels and CI Gates
 
@@ -245,6 +263,7 @@ rules:
 | CI gate on every push | `--rule-selector Security --severity-threshold 2 --output-file scan-results.json` | Blocks High/Critical, produces artifact for audit |
 | AppExchange submission | `--rule-selector AppExchange --rule-selector Recommended:Security --output-file appexchange-scan.html` | The documented security-review selectors; the HTML report is attached in the Security Review Wizard |
 | Security-focused deep scan | Add `--rule-selector sfge` explicitly | Selects all Graph Engine data-flow rules regardless of which tag-based selectors are in play |
+| Apex performance source scan | `--rule-selector apexguru --target-org <alias> --output-file results.json` | Uses the remote ApexGuru engine with explicit target identity; triage in `apex/apexguru-performance-analysis` |
 | Brownfield codebase with many existing violations | Start at threshold 1 or 2 (Critical, or Critical+High only) and tighten toward 3+ over time | Avoid blocking every push while tech debt is addressed |
 | Custom rule authoring (Apex) | Write a PMD ruleset XML (XPath-based, no compilation) and register it in `engines.pmd.custom_rulesets` in `code-analyzer.yml` | `custom_rulesets` is the v5 wiring mechanism; XPath rules avoid the Java build + `java_classpath_entries` overhead |
 | Custom rule authoring (LWC) | Write custom ESLint rules/plugins in your ESLint config and point `engines.eslint.eslint_config_file` at it | ESLint config is the extension point; Code Analyzer merges it with its base configurations |
@@ -265,11 +284,11 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 4. **Configure the CI gate.** Add `--severity-threshold 2` (or 1, Critical-only, for heavily indebted brownfield code) and `--output-file scan-results.json` to the pipeline command — the `.json` extension selects the format. Ensure the step fails on non-zero exit. Archive the JSON artifact.
 
-5. **Add Graph Engine rules for security-critical paths.** For AppExchange packages or security-sensitive code, add `--rule-selector sfge` alongside `--rule-selector AppExchange --rule-selector Recommended:Security`. Run this as a separate, scheduled pipeline stage to avoid slowing every push.
+5. **Add remote ApexGuru analysis when performance review requires it.** Pass an explicit `--target-org`, scope `.cls`/`.trigger` targets, write JSON, and preserve source revision and output hash. Do not claim runtime telemetry unless the report actually contains it.
 
-6. **Triage and remediate violations.** Fix rule violations at severity 1 and 2 first. For intentional bypasses, add `@SuppressWarnings` with the exact rule name and a justification comment. Document all suppressions.
+6. **Add Graph Engine rules for security-critical paths.** For AppExchange packages or security-sensitive code, add `--rule-selector sfge` alongside `--rule-selector AppExchange --rule-selector Recommended:Security`. Run this as a separate, scheduled pipeline stage to avoid slowing every push.
 
-7. **Validate before submission.** Re-run with the `AppExchange` and `Recommended:Security` selectors (plus `sfge`), confirm zero Critical/High violations or all suppressions are documented, then generate the HTML report to attach in the Security Review Wizard.
+7. **Triage, remediate, and validate.** Fix severity 1 and 2 first; for intentional bypasses, add `@SuppressWarnings` with the exact rule name and a justification comment. Re-run with `AppExchange` and `Recommended:Security` (plus `sfge` when required), confirm zero Critical/High findings or document every suppression, then generate the HTML report for Security Review submission.
 
 ---
 
@@ -287,6 +306,7 @@ Run through these before marking work in this area complete:
 - [ ] Custom PMD rulesets are registered in `engines.pmd.custom_rulesets`; Java-based rule JARs are also in `engines.pmd.java_classpath_entries`
 - [ ] Custom regex rules include the global modifier (`/pattern/g...`) and a `description`
 - [ ] Rule severity/tag adjustments use the top-level `rules:` block, not ad-hoc suppressions
+- [ ] ApexGuru runs identify the authenticated target org, scope only `.cls`/`.trigger`, preserve JSON and source revision, and avoid unsupported runtime-telemetry claims
 
 ---
 
@@ -298,7 +318,9 @@ Non-obvious platform behaviors that cause real production problems:
 
 2. **Graph Engine memory limits on large orgs** — Graph Engine walks code paths on the Java VM and dynamically limits the allowed path complexity based on the maximum Java heap size, skipping paths it detects might cause OutOfMemory errors. Mitigate by scoping the scan (`--workspace force-app/main/default/classes/security`) or raising the heap via `engines.sfge.java_max_heap_size` in `code-analyzer.yml`; long-running analyses may also need a higher `engines.sfge.java_thread_timeout`.
 
-3. **`--severity-threshold` failures are "non-zero", not a documented specific code** — Code Analyzer fails with a non-zero exit code when a violation meets or exceeds the threshold. Some CI systems treat only specific non-zero codes as failures. Always test that your CI step is correctly failing by running with a known violation and confirming the pipeline fails, not just that the file is produced.
+3. **ApexGuru is not included in the retired Code Analyzer MCP engine list** — Do not assume an LLM-facing Code Analyzer MCP call ran ApexGuru. Use the supported CLI/VS Code path and expose the resulting evidence through SfSkills resources or reports.
+
+4. **`--severity-threshold` failures are "non-zero", not a documented specific code** — Code Analyzer fails with a non-zero exit code when a violation meets or exceeds the threshold. Some CI systems treat only specific non-zero codes as failures. Always test that your CI step is correctly failing by running with a known violation and confirming the pipeline fails, not just that the file is produced.
 
 ---
 
@@ -318,3 +340,4 @@ Non-obvious platform behaviors that cause real production problems:
 - `deployment-error-troubleshooting` — Use alongside this skill when code analyzer violations are causing deployment failures or when post-deployment errors trace back to security rule violations
 - `connected-app-security-policies` — Complements AppExchange scan prep by ensuring connected app OAuth scopes and policies meet Partner Security requirements
 - `apex-security-patterns` — Deep dive into Apex-level CRUD/FLS, sharing model, and injection prevention that code analyzer rules enforce
+- `apex/apexguru-performance-analysis` — Target identity, evidence-mode attribution, finding triage, runtime validation, and before/after proof for ApexGuru results

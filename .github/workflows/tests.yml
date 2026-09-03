@@ -68,6 +68,9 @@ jobs:
       - name: repo test suite
         run: python3 -m unittest discover -s tests -t tests -v
 
+      - name: version consistency
+        run: python3 scripts/check_release_versions.py
+
   # -----------------------------------------------------------------------
   # MCP server — the FULL suite, by discovery.
   #

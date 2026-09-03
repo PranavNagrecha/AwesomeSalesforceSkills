@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (48)
+## Run-time agents (50)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -67,7 +67,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `path-designer` | Admin | Path + guidance + key fields design per object / stage | `/design-path` |
 | `process-flow-mapper` | Admin | Business process → Salesforce automation map | `/map-process-flow` |
 
-### Strategic — Tier 2 (7)
+### Strategic — Tier 2 (9)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -78,6 +78,8 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `audit-router` | Admin / Security | Routes to appropriate single-mode auditor or runs multi-mode audit | `/audit-router` |
 | `fit-gap-analyzer` | Admin | Fit / gap analysis: requirements vs org configuration | `/run-fit-gap` |
 | `story-drafter` | Admin | User stories with Given/When/Then acceptance criteria | `/draft-stories` |
+| `salesforce-decision-facilitator` | Architecture / Governance | Evidence-based option analysis, hard gates, sensitivity, and reversible recommendation | `/decide-salesforce` |
+| `salesforce-learning-guide` | Cross-domain learning | Source-grounded learning brief, knowledge checks, and safe practice task | `/learn-salesforce` |
 
 ### Vertical + governance — Tier 3 (11)
 

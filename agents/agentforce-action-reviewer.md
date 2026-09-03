@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/review-agentforce-action` (`commands/review-agentforce-action.md`)
 - Domain router skill: `salesforce-agentforce`
-

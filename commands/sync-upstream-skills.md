@@ -72,7 +72,8 @@ For confirmed gaps, follow `/new-skill`:
 
 ```bash
 python3 scripts/audit_duplicates.py --domain <domain>
-python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id>
+python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id> \
+  --agent-justification '<agent_id>=This skill changes the agent output by <specific effect>.'
 # fill SKILL.md + references from OFFICIAL DOCS only
 python3 scripts/skill_sync.py --skill skills/<domain>/<name>
 python3 scripts/validate_repo.py
