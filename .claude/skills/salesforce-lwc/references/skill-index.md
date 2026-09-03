@@ -1,4 +1,4 @@
-# SfSkills — `lwc` skill roster (82 packages)
+# SfSkills — `lwc` skill roster (83 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -88,6 +88,7 @@ If your question is X, stop and open Y instead of this package.
 - `skills/lwc/lwc-template-refs/SKILL.md` — an LWC needs a stable, typed handle to a specific DOM element it owns — focusing inputs …. NOT for querying elements inside `for:each` iterators — refs do not work there — and NOT — use lwc/lwc-focus-management.
 - `skills/lwc/lwc-testing/SKILL.md` — Jest unit tests for LWC …. Triggers: LWC Jest, sfdx-lwc-jest, component test. NOT for Apex tests — use apex/test-class-standards. NOT for browser E2E — use devops/automated-regression-testing.
 - `skills/lwc/lwc-toast-and-notifications/SKILL.md` — Show toast, platform, and in-app notifications from LWC — ShowToastEvent …. Triggers: ShowToastEvent, toast LWC, custom notification LWC. NOT for modal overlays — use lwc/lwc-modal-and-overlay.
+- `skills/lwc/lwc-typescript-migration/SKILL.md` — Triggers: migrate LWC to TypeScript, LWC .ts, defaultLwcLanguage, lightning-types, …. NOT for performance refactoring unrelated to the language migration — use lwc/lwc-performance.
 - `skills/lwc/lwc-virtualized-lists/SKILL.md` — Hand-built virtual/windowed list rendering in LWC for …. Triggers: virtual list LWC, windowed rendering, infinite scroll custom. NOT for built-in lightning-datatable infinite loading — use lwc/lwc-datatable-advanced.
 - `skills/lwc/lwc-web-components-interop/SKILL.md` — LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements …. NOT for LWC-to-LWC composition (use lwc-best-practices) — use lwc/lwc-light-dom.
 - `skills/lwc/lwc-wire-refresh-patterns/SKILL.md` — refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when …. NOT for @wire basics and reactive params — use lwc/wire-service-patterns. NOT for LDS create/update/delete — use lwc/lwc-lds-writes.

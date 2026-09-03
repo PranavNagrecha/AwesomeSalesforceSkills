@@ -1,4 +1,4 @@
-# SfSkills — `admin` skill roster (259 packages)
+# SfSkills — `admin` skill roster (260 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -248,6 +248,7 @@ If your question is X, stop and open Y instead of this package.
 - `skills/admin/role-hierarchy-design/SKILL.md` — Triggers: role hierarchy, manager cannot see subordinate records, grant access using hierarchies, role reparenting, portal role, …. NOT for territory models - use admin/enterprise-territory-management.
 - `skills/admin/sales-engagement-cadences/SKILL.md` — Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', …. NOT for cadence enrollment from … use apex/sales-engagement-api
 - `skills/admin/sales-process-mapping/SKILL.md` — Triggers: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, …. NOT for configuring … use admin/opportunity-management
+- `skills/admin/salesforce-learning-brief/SKILL.md` — Triggers: teach me Salesforce, explain Salesforce concept, create learning brief, Salesforce study guide, role-based lesson. NOT for open-ended source discovery or … use architect/salesforce-learning-research
 - `skills/admin/salesforce-object-queryability/SKILL.md` — Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for …. NOT for one object's own query restrictions, required filters or row caps - use apex/soql-object-limits-and-restrictions.
 - `skills/admin/salesforce-release-preparation/SKILL.md` — Triggers: 'upcoming Salesforce release', 'release notes triage', 'Release Updates', 'sandbox preview opt-in', 'release readiness checklist', …. NOT for planning your own release train — use devops/release-management.
 - `skills/admin/salesforce-support-escalation/SKILL.md` — Open, classify, and escalate support cases with Salesforce Technical Support via the Help portal: choosing severity, engaging …. NOT for escalating your own org's cases after N hours - use admin/escalation-rules.

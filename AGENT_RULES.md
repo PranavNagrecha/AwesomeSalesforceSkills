@@ -71,7 +71,8 @@ Review before adding a skill that scores near an existing one.
 ### Step 2 — Scaffold (never write from scratch)
 
 ```bash
-python3 scripts/new_skill.py <domain> <skill-name> --strict --agent <agent_id>
+python3 scripts/new_skill.py <domain> <skill-name> --strict --agent <agent_id> \
+  --agent-justification '<agent_id>=This skill changes the agent output by <specific effect>.'
 ```
 
 `--strict` exits non-zero if the proposed name scores at or above the
@@ -79,7 +80,10 @@ similarity threshold against any existing skill, so an agent cannot silently
 create an overlapping package.
 
 `--agent` records which run-time agent will cite the new skill; repeat it for
-several. If no agent honestly owns the topic, use
+several and pair every occurrence with a scenario-specific
+`--agent-justification`. The justification must explain how the package changes
+that agent's output or review decision; echoing the slug/description is rejected
+before files are written. If no agent honestly owns the topic, use
 `--runtime-orphan --orphan-reason "<why>"` instead. The two are mutually
 exclusive, and in a non-TTY run you must pass one of them. Add `--assume-yes`
 in pipelines: without it the coverage-warning prompt reads stdin and
@@ -160,7 +164,7 @@ Two separate gates apply, both **ERROR**:
 | Flag | What it does | When to use |
 |---|---|---|
 | `--skills-only` | Skill validation only. The default when no class flag is set. | Normal skill work. |
-| `--agents` | AGENT.md structural + citation gate only. Measured 0.4 s for all 76 agents. | After editing an `AGENT.md`. |
+| `--agents` | AGENT.md structural + citation gate only. Measured 0.4 s for all 78 agents. | After editing an `AGENT.md`. |
 | `--all` | Both. | Pre-release sweep. |
 | `--changed-only` | Only skills/agents in the current git diff (staged + unstaged + untracked); drift check still runs. | Pre-commit hook. Fastest path on small changes. |
 | `--shard N/M` | The N-th bucket of skills partitioned by stable hash mod M (0-indexed). | CI matrix jobs (`.github/workflows/validate.yml`). |
@@ -257,7 +261,7 @@ do NOT go in `skills/admin/`.
 
 - Domain folder: `architect`
 - `category` frontmatter: `architect`
-- Scaffold: `python3 scripts/new_skill.py architect <skill-name> --strict --agent <agent_id>`
+- Scaffold: `python3 scripts/new_skill.py architect <skill-name> --strict --agent <agent_id> --agent-justification '<agent_id>=This skill changes the agent output by <specific effect>.'`
 
 Enforced by `validate_repo.py`: `category` must match the parent folder name
 (`pipelines/validators.py:176`, ERROR).
@@ -391,7 +395,7 @@ separately in `vector_index/query-fixtures.json`; do not duplicate.
 
 ## Run-time Agents
 
-76 `AGENT.md` files live under `agents/`, in three classes. The class and
+78 `AGENT.md` files live under `agents/`, in three classes. The class and
 status come from frontmatter (`class:`, `status:`), which is the canonical
 source — `scripts/check_doc_counts.py` derives every quoted count from it.
 
@@ -407,7 +411,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > still name it as an entry point — that is wrong. Invoke build agents by
    > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
-2. **Run-time (48)** — four tiers:
+2. **Run-time (50)** — four tiers:
    - **Developer + architecture (16):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
@@ -422,10 +426,11 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
      `custom-metadata-and-settings-designer`,
      `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`,
      `path-designer`, `process-flow-mapper`.
-   - **Strategic — Tier 2 (7):** `data-model-reviewer`,
+   - **Strategic — Tier 2 (9):** `data-model-reviewer`,
      `integration-catalog-builder`, `csv-to-object-mapper`,
      `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
-     `story-drafter`.
+     `story-drafter`, `salesforce-decision-facilitator`,
+     `salesforce-learning-guide`.
    - **Vertical + governance — Tier 3 (11):** `omni-channel-routing-designer`,
      `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
      `lead-routing-rules-designer`, `sandbox-strategy-designer`,

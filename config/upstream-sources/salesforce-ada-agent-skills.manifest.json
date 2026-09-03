@@ -1,0 +1,14 @@
+{
+  "upstream": "deejay-hub/salesforce-ada-agent-skills",
+  "license": "MIT",
+  "license_class": "permissive",
+  "ref": "main",
+  "retrieved": "2026-09-01T00:00:00Z",
+  "snapshot_status": "topic-discovery-only",
+  "snapshot_notes": "The user-supplied archive was not mounted in the active container, so no upstream blob or archive hash is asserted. Public repository pages were used only to identify the learn and decide product functions; accepted content is original and grounded independently.",
+  "candidate_topics": [
+    "decide",
+    "learn"
+  ],
+  "skills": {}
+}

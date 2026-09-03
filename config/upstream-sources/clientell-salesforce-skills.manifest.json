@@ -1,0 +1,30 @@
+{
+  "upstream": "Clientell-Ai/salesforce-skills",
+  "license": "Apache-2.0",
+  "license_class": "permissive",
+  "ref": "main",
+  "retrieved": "2026-09-01T00:00:00Z",
+  "snapshot_status": "topic-discovery-only",
+  "snapshot_notes": "The user-supplied archive was not mounted in the active container, so no upstream blob or archive hash is asserted. Public repository pages were used only for an 18-topic inventory and benchmark claim; no upstream prose, code, fixtures, or benchmark result was reused.",
+  "candidate_topics": [
+    "sf-apex",
+    "sf-test",
+    "sf-flow",
+    "sf-lwc",
+    "sf-soql",
+    "sf-security",
+    "sf-deploy",
+    "sf-data",
+    "sf-schema",
+    "sf-debug",
+    "sf-agentforce",
+    "sf-permissions",
+    "sf-integration",
+    "sf-docs",
+    "sf-diagram",
+    "sf-omnistudio",
+    "sf-find",
+    "sf-eval"
+  ],
+  "skills": {}
+}

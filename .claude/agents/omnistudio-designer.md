@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-omnistudio` (`commands/design-omnistudio.md`)
 - Domain router skill: `salesforce-omnistudio`
-

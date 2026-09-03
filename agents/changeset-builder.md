@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/build-changeset` (`commands/build-changeset.md`)
 - Domain router skill: `salesforce-devops`
-

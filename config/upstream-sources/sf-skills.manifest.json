@@ -1,6 +1,6 @@
 {
   "upstream": "forcedotcom/sf-skills",
-  "license": "CC BY-NC 4.0 \u2014 clean-room only; author from official docs, never copy upstream prose",
+  "license": "CONFLICT: repository metadata/root LICENSE indicate Apache-2.0, while package metadata declares CC-BY-NC-4.0; clean-room only until upstream resolves the conflict",
   "tag": "1.29.0",
   "skills": {
     "agentforce-architecture-analyze": "4b36bbaa76f661cc2a98b375f6c2abb64449b15c",
@@ -92,5 +92,16 @@
     "platform-trust-archive-manage": "d1388f4f7eafe54268e0fcb2a2ab632683f7d52b",
     "platform-validation-rule-generate": "ce12e6d0a031bbdae03015d3dab1884b260d1702",
     "platform-value-set-generate": "fb371eab0d8410b1430cf22eb07cd4586fe8571d"
-  }
+  },
+  "license_class": "clean-room",
+  "detected_license": "Apache-2.0",
+  "license_reason": "Conflicting upstream declarations and an open license-clarification issue make the effective grant ambiguous. Treat names/topics as radar only; never copy prose, examples, prompts, templates, or code.",
+  "retrieved": "2026-09-01T00:00:00Z",
+  "content_policy": "Clean-room topic discovery only. Final SfSkills content must be independently authored from official Salesforce evidence.",
+  "snapshot_status": "pinned-historical-inventory-plus-unpinned-current-radar",
+  "snapshot_notes": "The 1.29.0 skill blob map remains pinned historical evidence. The user-supplied current archive was not mounted, so current-only ApexGuru and LWC TypeScript topics are recorded without blob hashes and were used as clean-room topic radar only.",
+  "candidate_topics": [
+    "dx-apexguru-scan",
+    "experience-lwc-typescript-migrate"
+  ]
 }

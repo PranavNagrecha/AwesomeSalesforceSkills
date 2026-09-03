@@ -34,7 +34,7 @@ Before creating or materially revising a skill:
    - `python3 scripts/audit_duplicates.py --domain <domain>`
    - Review the top of `docs/reports/duplicate-candidates.md`.
 3. Read the relevant official Salesforce docs from `standards/official-salesforce-sources.md`.
-4. Scaffold with `python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id>` — `--strict` blocks scaffolding when the proposed name produces a near-duplicate; `--agent` records which run-time agent will cite the new skill (repeat for multiple). If genuinely no agent owns the topic, use `--runtime-orphan --orphan-reason "<why>"` instead. **Record the wiring decision, but do not manufacture one.** Being uncited is a WARN, not a failure — wire a skill only when some agent's output would be wrong without it, and use `--runtime-orphan` when the honest answer is that none does. `validate_repo.py` ERRORs on one narrow shape: a Mandatory Reads description that is an exact echo of the skill slug ("b2b-commerce-store-setup" → "B2b commerce store setup"). That is a regression guard against the machine-generated stub wave, not a judge of citation quality — appending a word ("… setup guidance") clears it, and no gate can tell a real justification from a plausible-sounding one. Writing a justification a reader would accept is your job and the reviewer's. Reading-list length is bounded by a WARN at 40 skill reads per agent, counted across the whole AGENT.md.
+4. Scaffold with `python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id> --agent-justification '<agent_id>=<specific output impact>'` — `--strict` blocks scaffolding when the proposed name produces a near-duplicate; repeat both agent flags for multiple owners. The justification must explain how the skill changes that agent's output or review decision; echoing the slug is rejected before any files are written. If genuinely no agent owns the topic, use `--runtime-orphan --orphan-reason "<why>"` instead. **Record the wiring decision, but do not manufacture one.** Being uncited is a WARN, not a failure — wire a skill only when some agent's output would be wrong without it, and use `--runtime-orphan` when the honest answer is that none does. Reading-list length is bounded by a WARN at 40 skill reads per agent, counted across the whole AGENT.md.
 
 After any skill add or skill update:
 
@@ -198,14 +198,14 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (48)
+### Run-time agents (50)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
 The roster:
 - **Developer + architecture (16)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/build-agentforce-action`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`.
 - **Admin accelerators — Tier 1 (14)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/preflight-load`, `/design-duplicate-rule`, `/design-assignment-rules`, `/configure-business-hours`, `/author-config-workbook`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-path`, `/map-process-flow`.
-- **Strategic — Tier 2 (7)** — `/review-data-model`, `/catalog-integrations`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`.
+- **Strategic — Tier 2 (9)** — `/review-data-model`, `/catalog-integrations`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`, `/decide-salesforce`, `/learn-salesforce`.
 - **Vertical + governance — Tier 3 (11)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/migrate-profile-to-permset`, `/diff-users`, `/design-omnistudio`.
 - **Deprecated (14)** — single-mode auditors/governors consolidated into `/audit-router` (Wave 3b); their slash commands redirect: `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/audit-reports`, `/audit-validation-rules`, `/audit-case-escalation`, `/govern-prompt-library`, `/detect-drift`, plus 5 earlier stubs (`/audit-list-views`, `/audit-actions`, `/audit-identity-and-session`, `/govern-field-history`, `/audit-report-folder-sharing`).
 

@@ -3,14 +3,14 @@
 Model Context Protocol server that hands any MCP-capable AI coding assistant
 three things at once:
 
-1. The full **SfSkills** library (1,034 Salesforce skills, source-grounded,
+1. The full **SfSkills** library (1,039 Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (48 active runtime agents across developer, admin,
+3. **Run-time agents** (50 active runtime agents across developer, admin,
    strategic, and vertical/governance tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
@@ -104,7 +104,7 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 48 active runtime agents. Fourteen single-mode
+Tier sizes below count the 50 active runtime agents. Fourteen single-mode
 auditors/governors were retired in Wave 3b and now redirect via
 `list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
 returns the active set shown here.
@@ -147,7 +147,7 @@ Admin accelerators — Tier 1 (14):
 | `path-designer`              | Path + guidance + key fields design per object / stage |
 | `process-flow-mapper`        | Business process → Salesforce automation map |
 
-Strategic — Tier 2 (7):
+Strategic — Tier 2 (9):
 
 | Agent name                                 | What it returns |
 | ------------------------------------------ | --------------- || `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
@@ -156,6 +156,8 @@ Strategic — Tier 2 (7):
 | `audit-router`                             | Routes to appropriate single-mode auditor or runs multi-mode audit |
 | `fit-gap-analyzer`                         | Fit / gap analysis: requirements vs org configuration |
 | `story-drafter`                            | User stories with Given/When/Then acceptance criteria |
+| `salesforce-decision-facilitator`          | Evidence-based option analysis and reversible recommendation |
+| `salesforce-learning-guide`                | Source-grounded learning brief and safe practice task |
 
 Vertical + governance — Tier 3 (11):
 

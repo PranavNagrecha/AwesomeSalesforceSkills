@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/score-deployment` (`commands/score-deployment.md`)
 - Domain router skill: `salesforce-devops`
-

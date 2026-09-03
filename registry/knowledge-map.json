@@ -232,6 +232,7 @@
       "admin/role-hierarchy-design",
       "admin/sales-engagement-cadences",
       "admin/sales-process-mapping",
+      "admin/salesforce-learning-brief",
       "admin/salesforce-object-queryability",
       "admin/salesforce-release-preparation",
       "admin/salesforce-support-escalation",
@@ -378,6 +379,7 @@
       "apex/apex-with-without-sharing-decision",
       "apex/apex-wrapper-class-patterns",
       "apex/apex-wsdl2apex-patterns",
+      "apex/apexguru-performance-analysis",
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/billing-integration-apex",
@@ -570,7 +572,9 @@
       "architect/revenue-cloud-architecture",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns",
+      "architect/salesforce-decision-analysis",
       "architect/salesforce-erd-and-diagramming",
+      "architect/salesforce-learning-research",
       "architect/salesforce-shield-architecture",
       "architect/security-architecture-review",
       "architect/service-cloud-architecture",
@@ -957,6 +961,7 @@
       "lwc/lwc-template-refs",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwc-typescript-migration",
       "lwc/lwc-virtualized-lists",
       "lwc/lwc-web-components-interop",
       "lwc/lwc-wire-refresh-patterns",
@@ -2109,6 +2114,9 @@
       "apex/apex-metadata-api",
       "apex/custom-metadata-in-apex"
     ],
+    "apex-performance": [
+      "apex/apexguru-performance-analysis"
+    ],
     "apex-performance-profiling": [
       "apex/apex-performance-profiling"
     ],
@@ -2181,6 +2189,9 @@
     ],
     "apexdoc": [
       "devops/development-documentation-standards"
+    ],
+    "apexguru": [
+      "apex/apexguru-performance-analysis"
     ],
     "api": [
       "integration/api-versioning-strategy",
@@ -2353,6 +2364,7 @@
       "architect/omnistudio-vs-standard-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture",
+      "architect/salesforce-decision-analysis",
       "lwc/lwc-state-management",
       "omnistudio/omnistudio-vs-flow-decision"
     ],
@@ -3603,6 +3615,10 @@
       "admin/industries-energy-utilities-setup",
       "architect/industries-integration-architecture"
     ],
+    "citations": [
+      "admin/salesforce-learning-brief",
+      "architect/salesforce-learning-research"
+    ],
     "claims": [
       "admin/industries-insurance-setup",
       "architect/insurance-cloud-architecture"
@@ -3715,6 +3731,7 @@
       "architect/subscription-management-architecture"
     ],
     "code-analyzer": [
+      "apex/apexguru-performance-analysis",
       "security/secure-coding-review-checklist"
     ],
     "code-comments": [
@@ -4225,6 +4242,9 @@
     "contracts": [
       "admin/contract-and-renewal-management",
       "data/historical-order-migration"
+    ],
+    "contradiction-resolution": [
+      "architect/salesforce-learning-research"
     ],
     "controller": [
       "apex/apex-with-without-sharing-decision"
@@ -5279,6 +5299,9 @@
     "decision": [
       "flow/flow-decision-element-patterns",
       "lwc/lwc-shadow-vs-light-dom-decision"
+    ],
+    "decision-analysis": [
+      "architect/salesforce-decision-analysis"
     ],
     "decision-framework": [
       "architect/crm-analytics-vs-tableau-decision",
@@ -6423,6 +6446,12 @@
     "evergreen-billing": [
       "admin/billing-schedule-setup"
     ],
+    "evidence": [
+      "architect/salesforce-decision-analysis"
+    ],
+    "evidence-ledger": [
+      "architect/salesforce-learning-research"
+    ],
     "excel": [
       "admin/agent-output-formats"
     ],
@@ -7230,6 +7259,9 @@
     ],
     "fraud-prevention": [
       "architect/loyalty-program-architecture"
+    ],
+    "freshness": [
+      "architect/salesforce-learning-research"
     ],
     "friction-analysis": [
       "admin/persona-and-journey-mapping-sf"
@@ -8566,6 +8598,9 @@
     "knowledge-base": [
       "admin/knowledge-base-administration"
     ],
+    "knowledge-check": [
+      "admin/salesforce-learning-brief"
+    ],
     "knowledge-management": [
       "architect/case-deflection-strategy"
     ],
@@ -8690,6 +8725,12 @@
     "learner-profile": [
       "integration/sis-integration-patterns",
       "security/ferpa-compliance-in-salesforce"
+    ],
+    "learning-brief": [
+      "admin/salesforce-learning-brief"
+    ],
+    "learning-research": [
+      "architect/salesforce-learning-research"
     ],
     "least-privilege": [
       "admin/permission-set-architecture",
@@ -8894,7 +8935,8 @@
       "security/network-security-and-trusted-ips"
     ],
     "lightning-types": [
-      "agentforce/agentforce-custom-lightning-types"
+      "agentforce/agentforce-custom-lightning-types",
+      "lwc/lwc-typescript-migration"
     ],
     "lightning-utility-bar": [
       "apex/cti-adapter-development"
@@ -9102,6 +9144,7 @@
       "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwc-show-toast-patterns",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwc-typescript-migration",
       "lwc/lwc-web-components-interop",
       "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
@@ -9576,6 +9619,7 @@
       "flow/workflow-rule-to-flow-migration",
       "integration/salesforce-functions-replacement",
       "lwc/lwc-locker-to-lws-migration",
+      "lwc/lwc-typescript-migration",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -10380,6 +10424,9 @@
     "optimizer": [
       "admin/fsl-scheduling-optimization-design",
       "admin/org-cleanup-and-technical-debt"
+    ],
+    "option-assessment": [
+      "architect/salesforce-decision-analysis"
     ],
     "option-constraints": [
       "admin/cpq-product-catalog-setup"
@@ -12302,6 +12349,9 @@
     "revenue-transaction-error-log": [
       "data/billing-data-reconciliation"
     ],
+    "reversibility": [
+      "architect/salesforce-decision-analysis"
+    ],
     "review": [
       "agentforce/agent-security-review"
     ],
@@ -12336,6 +12386,9 @@
     ],
     "roi-estimation": [
       "admin/ai-use-case-assessment"
+    ],
+    "role-aware": [
+      "admin/salesforce-learning-brief"
     ],
     "role-hierarchy": [
       "admin/delegated-administration",
@@ -12710,6 +12763,7 @@
       "devops/cpq-deployment-administration"
     ],
     "scalability": [
+      "apex/apexguru-performance-analysis",
       "architect/limits-and-scalability-planning",
       "architect/nfr-definition-for-salesforce",
       "architect/sales-cloud-architecture",
@@ -13702,6 +13756,9 @@
     "sosl-with-clauses": [
       "data/sosl-with-clauses"
     ],
+    "source-analysis": [
+      "apex/apexguru-performance-analysis"
+    ],
     "source-api-version": [
       "devops/salesforce-dx-project-structure"
     ],
@@ -13711,6 +13768,9 @@
     "source-format": [
       "devops/migration-from-change-sets-to-sfdx",
       "devops/salesforce-dx-project-structure"
+    ],
+    "source-hierarchy": [
+      "architect/salesforce-learning-research"
     ],
     "source-maps": [
       "lwc/lwc-debugging-devtools"
@@ -13831,7 +13891,8 @@
       "apex/batch-apex-patterns"
     ],
     "static-analysis": [
-      "devops/salesforce-code-analyzer"
+      "devops/salesforce-code-analyzer",
+      "lwc/lwc-typescript-migration"
     ],
     "static-boolean": [
       "apex/recursive-trigger-prevention"
@@ -13934,6 +13995,9 @@
     ],
     "student-success": [
       "admin/education-cloud-eda-setup"
+    ],
+    "study-guide": [
+      "admin/salesforce-learning-brief"
     ],
     "styling-hooks": [
       "lwc/lwc-css-and-styling"
@@ -14083,6 +14147,9 @@
     "target-configs": [
       "lwc/lwc-app-builder-config"
     ],
+    "target-org": [
+      "apex/apexguru-performance-analysis"
+    ],
     "targets": [
       "lwc/lwc-app-builder-config"
     ],
@@ -14108,6 +14175,9 @@
     ],
     "tdtm": [
       "apex/npsp-trigger-framework-extension"
+    ],
+    "teaching": [
+      "admin/salesforce-learning-brief"
     ],
     "team-members": [
       "apex/opportunity-trigger-patterns"
@@ -14327,6 +14397,9 @@
     "tool-use": [
       "agentforce/agentforce-tool-use-patterns"
     ],
+    "tooling": [
+      "lwc/lwc-typescript-migration"
+    ],
     "tooling-api": [
       "admin/salesforce-object-queryability",
       "apex/tooling-api-patterns",
@@ -14359,6 +14432,9 @@
     ],
     "track": [
       "lwc/lwc-reactive-state-patterns"
+    ],
+    "tradeoffs": [
+      "architect/salesforce-decision-analysis"
     ],
     "training": [
       "admin/change-management-and-training"
@@ -14538,7 +14614,8 @@
       "apex/apex-soql-relationship-queries"
     ],
     "typescript": [
-      "devops/sf-cli-plugin-authoring"
+      "devops/sf-cli-plugin-authoring",
+      "lwc/lwc-typescript-migration"
     ],
     "uat": [
       "admin/uat-and-acceptance-criteria",

@@ -1,0 +1,112 @@
+{
+  "$schema": "../../config/source-integration.schema.json",
+  "schema_version": 1,
+  "integration_id": "salesforce-ada-agent-skills-2026-09-01",
+  "created_at": "2026-09-01T00:00:00Z",
+  "baseline": {
+    "requested_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive_sha256": "fdf1823f02d3145066da3b48c8e31b2b5309a3f93284c1e7c4ecec697c727bc0",
+    "exact_requested_snapshot_available": true,
+    "repository_baseline_commit": "7e0ecaba888f3d986362782f04d7035064bfce34",
+    "notes": "The designated AwesomeSalesforceSkills-main (3).zip archive was mounted and hashed. Its SHA-256 matches the earlier inspectable (1).zip fallback byte-for-byte, so reconciliation used commit 7e0ecaba888f3d986362782f04d7035064bfce34 created from the (3) extract as the exact latest baseline. Upstream candidate archives remain unavailable for byte-level pins."
+  },
+  "sources": [
+    {
+      "id": "salesforce-ada-agent-skills",
+      "requested_archive": "salesforce-ada-agent-skills-main.zip",
+      "repository": "https://github.com/deejay-hub/salesforce-ada-agent-skills",
+      "pin": {
+        "kind": "unavailable",
+        "value": null,
+        "reason": "The user-supplied archive was not mounted, so no archive hash, commit, or tag is asserted for the reviewed snapshot."
+      },
+      "license": {
+        "detected": "MIT",
+        "class": "permissive",
+        "conflict": false,
+        "conflict_reason": null,
+        "evidence": [
+          "https://github.com/deejay-hub/salesforce-ada-agent-skills",
+          "https://github.com/deejay-hub/salesforce-ada-agent-skills/blob/main/LICENSE"
+        ]
+      },
+      "candidate_count": 2,
+      "content_use": "Topic and product-function discovery only. The accepted decision and learning workflows were independently authored."
+    }
+  ],
+  "decisions": [
+    {
+      "source_id": "salesforce-ada-agent-skills",
+      "candidate_id": "decide",
+      "disposition": "ADD",
+      "target": "architect/salesforce-decision-analysis",
+      "scope": "Create a traceable Salesforce decision-analysis workflow and runtime surface.",
+      "rationale": "The fallback corpus had ADR recording and narrow decision trees but no reusable pre-commitment decision packet with hard gates, evidence states, sensitivity, and reversibility.",
+      "routing": "Use /decide-salesforce for one consequential decision; route narrow technology choices to existing decision trees and accepted decisions to architecture-decision-records.",
+      "files": [
+        "skills/architect/salesforce-decision-analysis",
+        "agents/salesforce-decision-facilitator",
+        "commands/decide-salesforce.md"
+      ]
+    },
+    {
+      "source_id": "salesforce-ada-agent-skills",
+      "candidate_id": "learn",
+      "disposition": "MERGE",
+      "target": "architect/salesforce-learning-research + admin/salesforce-learning-brief",
+      "scope": "Separate citation-first research from learner-facing synthesis and expose both through one runtime guide.",
+      "rationale": "A two-stage evidence and teaching contract prevents stale or unsupported claims from being converted directly into instructional prose while retaining a simple user command.",
+      "routing": "Use /learn-salesforce for the end-to-end flow; use architect/salesforce-learning-research for evidence packets and admin/salesforce-learning-brief for synthesis from verified evidence.",
+      "files": [
+        "skills/architect/salesforce-learning-research",
+        "skills/admin/salesforce-learning-brief",
+        "agents/salesforce-learning-guide",
+        "commands/learn-salesforce.md"
+      ]
+    }
+  ],
+  "changed_files": {
+    "agents/salesforce-decision-facilitator/AGENT.md": "d7db2bc73da848ced7bd72e0dbfd45a527b5d3f8265d8d5122013d5cfa7e2568",
+    "agents/salesforce-learning-guide/AGENT.md": "1ad28a274c18aea91f18073c01fb8fd00aed879cf019eff45f2375e2ff45e461",
+    "commands/decide-salesforce.md": "d9e1e7a606f348dba351a0fc9fec35a91b7f5dea8ee91001a867c37990bc0f6e",
+    "commands/learn-salesforce.md": "d9d96c55208d4a0ce3994fa66f61a37fd8f1e456e0353958e5b192465cdc5ab5",
+    "config/upstream-sources/salesforce-ada-agent-skills.manifest.json": "93a7081c920fe7b16f4374f5c42823a20fe0d62986f3e6702467b02fe235060d",
+    "docs/source-integrations/2026-09-01-public-skill-source-audit.md": "74509125d22628ebfc4b228c0056fde151403ebb325b6a6e37c04d14576bf110",
+    "mcp/sfskills-mcp/tests/test_public_source_integration.py": "f710044d75c63b5f64451ec445fcb3d8b23ca8d344dacf9ade8d90369e4f9c40",
+    "skills/admin/salesforce-learning-brief/SKILL.md": "5d3353bc009e86b323f7fbbd4b96c0e9d566cb1971c6afd6916b1de81628af87",
+    "skills/architect/salesforce-decision-analysis/SKILL.md": "bc1d9cd2adb9a652e124448d010c80580d8809d4cff08cd649b77c8c09fb8408",
+    "skills/architect/salesforce-learning-research/SKILL.md": "8177f87595da3798bb267c640c5ff4ceca74aea489ebf48e5fa5967610c807e4",
+    "validation/commands.txt": "65b17ab4a9ef8707dadb392e7f7e3e9ab63b731e2f94199cab1f1b608624b3bf",
+    "config/source-integration.schema.json": "e03dc93331dc48f530ae3a93942190a5d26ec7e2977eb0422a94eaa980a074b2",
+    "tests/test_source_integrations.py": "e691c8558b6f7d2aaa46e4ede50794a1ee974aaaef872d9a1374851785ef3d38",
+    "scripts/check_source_integrations.py": "01a89fcbc04ed109c08a68b9489c4b61d545ce705da41f30428f8fcb5e1a4408"
+  },
+  "validation": [
+    {
+      "command": "python3 scripts/check_source_integrations.py",
+      "status": "passed",
+      "evidence": "source-integration-check.txt"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py --all --changed-only",
+      "status": "passed",
+      "evidence": "validate-changed.txt"
+    },
+    {
+      "command": "python3 -m unittest mcp.sfskills-mcp.tests.test_public_source_integration",
+      "status": "passed",
+      "evidence": "mcp-public-source-integration.txt"
+    },
+    {
+      "command": "new skill checker passing and failing fixtures",
+      "status": "passed",
+      "evidence": "unit-core.txt"
+    }
+  ],
+  "attestation": {
+    "clean_room": "Although MIT was reported, no source archive bytes were available. Only the two product functions were used as discovery signals; all wording, scripts, templates, and tests were authored independently.",
+    "no_unverified_copy": true,
+    "product_boundary": "All accepted additions remain read-only analysis, teaching, retrieval, or local validation guidance. They do not deploy, mutate an org, grant authority, or bypass the V2.0/V2.1/V2.2 product gates."
+  }
+}

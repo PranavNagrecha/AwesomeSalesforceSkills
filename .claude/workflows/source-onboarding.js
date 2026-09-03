@@ -95,12 +95,24 @@ const GATE_OUT = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['id', 'domain', 'slug', 'wiring'],
+        required: ['id', 'domain', 'slug', 'wiring', 'agent_justifications'],
         properties: {
           id: { type: 'string' },
           domain: { type: 'string', description: 'one of the repo skill domains (admin|apex|lwc|flow|omnistudio|agentforce|security|integration|data|devops|architect)' },
           slug: { type: 'string', description: 'kebab-case skill name' },
-          wiring: { type: 'string', description: 'either "--agent <id>" (repeatable, space-separated) or \'--runtime-orphan --orphan-reason "<why>"\' — agent ids must exist under agents/' },
+          wiring: { type: 'string', description: 'either "--agent <id>" (repeatable, space-separated) or '--runtime-orphan --orphan-reason "<why>"' — agent ids must exist under agents/' },
+          agent_justifications: {
+            type: 'array',
+            description: 'One entry for every --agent in wiring; empty only for runtime-orphan.',
+            items: {
+              type: 'object',
+              required: ['agent_id', 'reason'],
+              properties: {
+                agent_id: { type: 'string' },
+                reason: { type: 'string', description: 'Concrete explanation of how this skill changes the agent output or review decision.' },
+              },
+            },
+          },
           rationale: { type: 'string' },
         },
       },
@@ -262,7 +274,7 @@ Fact sheets from the verification pass: ${JSON.stringify(sheets)}
 Rules:
 - NEVER promote a candidate to build if is_real_capability=false, or if its fact sheet has fewer than 5 officially-sourced facts, or if the deterministic evidence classified it COVERED.
 - Spot-check before trusting: for each candidate you intend to BUILD, run python3 scripts/search_knowledge.py "<a better query than the intake used>" via Bash and read the verbatim output; if a strong hit (score >= 5) appears, demote to enrich/drop and cite it.
-- For build items pick domain + kebab slug per repo conventions, and decide agent wiring: read agents/_shared/SKILL_MAP.md and the agents/ directory listing to pick 1-2 run-time agents that would genuinely cite this skill ("--agent <id>"); if none plausibly owns it, use --runtime-orphan with a one-sentence --orphan-reason.
+- For build items pick domain + kebab slug per repo conventions, and decide agent wiring: read agents/_shared/SKILL_MAP.md and the agents/ directory listing to pick 1-2 run-time agents that would genuinely cite this skill ("--agent <id>"). For every --agent, return an agent_justifications entry whose reason states how the skill changes that agent's output or review decision. If none plausibly owns it, use --runtime-orphan with a one-sentence --orphan-reason and return an empty agent_justifications array.
 - For enrich items, name the exact existing skills/<domain>/<slug> path.
 - Cap builds at ${MAX_BUILD}; overflow goes to drop with reason "deferred — over build cap".`,
   { label: 'gate', phase: 'Gate', schema: GATE_OUT, model: 'opus', effort: 'high' }
@@ -281,7 +293,13 @@ if (gate.build.length) {
   phase('Scaffold')
   const scaffold = await agent(
     `Repo root is the CWD. Run these commands ONE AT A TIME via Bash, in order, and report per-command success. Do not parallelize (they edit shared agents/*/AGENT.md files). A non-zero exit from the --strict near-duplicate gate means that item FAILED (ok=false, include stderr) — do not retry with the gate dropped.
-${gate.build.map(b => `python3 scripts/new_skill.py ${b.domain} ${b.slug} --strict --assume-yes ${b.wiring}`).join('\n')}
+${gate.build.map(b => {
+  const justificationArgs = (b.agent_justifications || []).map(j => {
+    const value = `${j.agent_id}=${j.reason}`.replace(/'/g, `'"'"'`)
+    return `--agent-justification '${value}'`
+  }).join(' ')
+  return `python3 scripts/new_skill.py ${b.domain} ${b.slug} --strict --assume-yes ${b.wiring} ${justificationArgs}`.trim()
+}).join('\n')}
 skill_path for each item is skills/<domain>/<slug>.`,
     { label: 'scaffold-serial', phase: 'Scaffold', schema: SCAFFOLD_OUT, model: 'sonnet', effort: 'low' }
   )

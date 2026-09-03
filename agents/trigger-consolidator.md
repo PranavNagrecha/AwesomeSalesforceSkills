@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/consolidate-triggers` (`commands/consolidate-triggers.md`)
 - Domain router skill: `salesforce-apex`
-

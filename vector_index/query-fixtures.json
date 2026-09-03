@@ -8177,6 +8177,96 @@
       "domain": "security",
       "expected_skill": "security/sso-configuration",
       "top_k": 3
+    },
+    {
+      "query": "teach an administrator one Salesforce topic with facts recommendations assumptions safe practice and proof boundaries",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-learning-brief",
+      "top_k": 5
+    },
+    {
+      "query": "turn verified Salesforce research into a role aware learning brief with a worked example and knowledge checks",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-learning-brief",
+      "top_k": 3
+    },
+    {
+      "query": "write a Salesforce lesson that includes Do Not Teach as Fact and changed constraint application questions",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-learning-brief",
+      "top_k": 3
+    },
+    {
+      "query": "compare ApexGuru before and after scans for the same Apex classes target org and commit",
+      "domain": "apex",
+      "expected_skill": "apex/apexguru-performance-analysis",
+      "top_k": 5
+    },
+    {
+      "query": "normalize ApexGuru JSON findings and distinguish source analysis from production runtime telemetry",
+      "domain": "apex",
+      "expected_skill": "apex/apexguru-performance-analysis",
+      "top_k": 3
+    },
+    {
+      "query": "run ApexGuru through Salesforce Code Analyzer v5 and triage Apex performance findings",
+      "domain": "apex",
+      "expected_skill": "apex/apexguru-performance-analysis",
+      "top_k": 3
+    },
+    {
+      "query": "build an evidence based Salesforce decision matrix before writing an architecture decision record",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-decision-analysis",
+      "top_k": 3
+    },
+    {
+      "query": "compare multiple Salesforce implementation options with hard gates weighted criteria sensitivity and reversal conditions",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-decision-analysis",
+      "top_k": 3
+    },
+    {
+      "query": "decide between configure build buy reuse and no change for a Salesforce requirement",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-decision-analysis",
+      "top_k": 5
+    },
+    {
+      "query": "create a citation mapped Salesforce research packet from supplied sources without silently filling gaps",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-learning-research",
+      "top_k": 3
+    },
+    {
+      "query": "research a Salesforce topic with an atomic claim ledger source hierarchy release freshness and contradictions",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-learning-research",
+      "top_k": 3
+    },
+    {
+      "query": "verify current Salesforce documentation before teaching and keep unsupported claims visible",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-learning-research",
+      "top_k": 5
+    },
+    {
+      "query": "choose native TypeScript versus compile to JavaScript deployment strategy for an LWC project",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-typescript-migration",
+      "top_k": 3
+    },
+    {
+      "query": "configure @salesforce lightning-types and validate an LWC TypeScript migration in CI",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-typescript-migration",
+      "top_k": 5
+    },
+    {
+      "query": "migrate existing Lightning Web Components from JavaScript to TypeScript bundle by bundle without changing behavior",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-typescript-migration",
+      "top_k": 3
     }
   ]
 }

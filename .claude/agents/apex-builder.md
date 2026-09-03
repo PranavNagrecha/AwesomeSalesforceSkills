@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/build-apex` (`commands/build-apex.md`)
 - Domain router skill: `salesforce-apex`
-

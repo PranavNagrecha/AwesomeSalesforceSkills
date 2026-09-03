@@ -1,4 +1,4 @@
-# SfSkills — `apex` skill roster (158 packages)
+# SfSkills — `apex` skill roster (159 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -78,6 +78,7 @@ If your question is X, stop and open Y instead of this package.
 - `skills/apex/apex-with-without-sharing-decision/SKILL.md` — Choosing the sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how it …. NOT for enforcing CRUD/FLS on the records themselves — use apex/apex-stripinaccessible-and-fls-enforcement.
 - `skills/apex/apex-wrapper-class-patterns/SKILL.md` — designing wrapper or inner classes in Apex to …. Triggers: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess. NOT for JSON serialization mechanics — use apex/apex-json-serialization.
 - `skills/apex/apex-wsdl2apex-patterns/SKILL.md` — Triggers: 'generate Apex from WSDL', 'wsdl2apex', 'WSDL parse error xsd:choice', 'outbound SOAP callout from Apex', 'WebServiceCalloutException not caught'. NOT for … use apex/apex-callout-retry-and-resilience
+- `skills/apex/apexguru-performance-analysis/SKILL.md` — Triggers: ApexGuru scan, apexguru Code Analyzer, Apex performance findings, SOQL scalability issue, AI Apex optimization. NOT for general PMD/security lint — use devops/salesforce-code-analyzer.
 - `skills/apex/async-apex/SKILL.md` — selecting, designing, or reviewing …. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Batchable structure or scope sizing — use apex/batch-apex-patterns.
 - `skills/apex/batch-apex-patterns/SKILL.md` — designing, reviewing, or debugging Batch Apex …. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for choosing Batch vs Queueable vs Future — use apex/async-apex.
 - `skills/apex/billing-integration-apex/SKILL.md` — Triggers: billing apex, blng.InvoiceAPI, blng.TransactionAPI, invoice generation apex, credit note apex, programmatic invoice, payment gateway adapter. NOT for a … use apex/commerce-payment-integration

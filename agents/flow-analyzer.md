@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/analyze-flow` (`commands/analyze-flow.md`)
 - Domain router skill: `salesforce-flow`
-
