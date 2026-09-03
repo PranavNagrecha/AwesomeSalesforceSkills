@@ -586,7 +586,7 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    ```
 
 Until a later MCP version is cut, use the clone path above. In-tree the package
-is **0.4.9** (`mcp/sfskills-mcp/pyproject.toml` and
+is **0.4.10** (`mcp/sfskills-mcp/pyproject.toml` and
 `src/sfskills_mcp/__init__.py` agree).
 
 ### The `mcp` SDK pin
@@ -616,7 +616,7 @@ document is the runbook; it is not standing permission.
 Current in-tree versions after the public-source integration:
 
 - Plugin/library: **1.2.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
-- sfskills-mcp: **0.4.9** (`pyproject.toml` and `sfskills_mcp.__version__`)
+- sfskills-mcp: **0.4.10** (`pyproject.toml` and `sfskills_mcp.__version__`)
 
 Do not create a separate public GitHub Release for a `plugin-v*` tag.
 `sfskills-mcp-init` downloads `/releases/latest/download/sfskills-data.tar.gz`,
@@ -648,8 +648,8 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    ```bash
    git tag -a plugin-v1.2.0 <final-main> -m "SfSkills plugin 1.2.0"
    git push origin plugin-v1.2.0
-   git tag -a mcp-v0.4.9 <final-main> -m "sfskills-mcp 0.4.9"
-   git push origin mcp-v0.4.9
+   git tag -a mcp-v0.4.10 <final-main> -m "sfskills-mcp 0.4.10"
+   git push origin mcp-v0.4.10
    ```
 5. Watch `publish-mcp.yml`: `gh run watch`.
 6. Confirm assets on the MCP release include `sfskills-data.tar.gz`, the
@@ -661,7 +661,7 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    ```
 8. Clean-room smoke test from public PyPI:
    ```bash
-   pip install "sfskills-mcp==0.4.9" && sfskills-mcp-init --force
+   pip install "sfskills-mcp==0.4.10" && sfskills-mcp-init --force
    ```
 
 ---

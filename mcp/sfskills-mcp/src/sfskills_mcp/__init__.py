@@ -133,4 +133,10 @@
 #           ledger validation, and MCP search/get/agent/prompt parity for
 #           those surfaces. Forcedotcom remains clean-room.
 
-__version__ = "0.4.9"
+#   0.4.10 — Hotfix data bundle. Server tool/API surface is unchanged.
+#            Includes `pipelines/` and `config/` in `sfskills-data.tar.gz` so
+#            a PyPI install + `sfskills-mcp-init` can run lexical `search_skill`
+#            without a full git checkout. 0.4.9 GitHub assets remain published
+#            but are superseded by this release for `/releases/latest`.
+
+__version__ = "0.4.10"

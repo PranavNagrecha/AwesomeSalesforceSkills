@@ -371,8 +371,8 @@ under any tool. And "no secrets in output" is enforced rather than assumed —
 both the success and the error path, with 20 tests behind it
 (`tests/test_sf_cli_redaction.py`).
 
-The server reports version **0.4.9** (`meta.health()` on this checkout).
-The latest release on PyPI is 0.4.9 as of 2026-09-03.
+The server reports version **0.4.10** (`meta.health()` on this checkout).
+The latest release on PyPI is 0.4.10 as of 2026-09-03.
 
 Setup for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Cline,
 Continue, Codex CLI, Gemini CLI, Goose and the generic stdio transport:
