@@ -241,6 +241,15 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-example-case-intake.md` | Building a whole intake solution from requirements: the questions, decisions, ten-section workbook rows, artefact list, tests, and the gaps found |
+| `references/gotchas.md` | Auto-response dependency, escalation reactivation waves, truncation, queue deletion, Web-to-Case validation |
+
+---
+
 ## Related Skills
 
 - assignment-rules — use when the focus is on case assignment rule entry logic, criteria design, or API trigger behavior for case assignment specifically
