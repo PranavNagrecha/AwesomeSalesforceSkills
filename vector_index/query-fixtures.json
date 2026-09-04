@@ -8177,6 +8177,24 @@
       "domain": "security",
       "expected_skill": "security/sso-configuration",
       "top_k": 3
+    },
+    {
+      "query": "escalation rule is firing over the weekend even though we set business hours",
+      "domain": "admin",
+      "expected_skill": "admin/business-hours-and-holidays",
+      "top_k": 3
+    },
+    {
+      "query": "set up business hours and holidays for support cases and deploy them",
+      "domain": "admin",
+      "expected_skill": "admin/business-hours-and-holidays",
+      "top_k": 3
+    },
+    {
+      "query": "milestone SLA clock is not pausing on public holidays",
+      "domain": "admin",
+      "expected_skill": "admin/business-hours-and-holidays",
+      "top_k": 3
     }
   ]
 }

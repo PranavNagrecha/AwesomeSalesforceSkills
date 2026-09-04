@@ -7,7 +7,7 @@ requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-09-04
 default_output_dir: "docs/reports/business-hours-and-holidays-configurator/"
 output_formats:
   - markdown
@@ -16,6 +16,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/approval-processes
+    - admin/business-hours-and-holidays
     - admin/case-management-setup
     - admin/email-to-case-configuration
     - admin/entitlements-and-milestones
@@ -50,14 +51,15 @@ Designs and audits the Business Hours and Holidays configuration that every time
 
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md` § Run-time Agents — the repo-wide hard rules this run is bound by: never write to the org, never auto-chain to another agent, never cite a skill path that does not resolve. `AGENT_CONTRACT.md` says what this file must contain; `AGENT_RULES.md` says what the agent may do while executing it.
-3. `skills/admin/entitlements-and-milestones` — a milestone timer reads the calendar attached at process level or at milestone level, not the one on the Case; without it the referenced-by inventory attributes a milestone to the wrong calendar and the SLA looks like it fired early
-4. `skills/admin/escalation-rules` — an escalation entry chooses its own business hours, and where none is defined the platform falls back to 24/7; without it the agent maps one calendar to Case escalation and misses the entries still running on a round-the-clock clock
-5. `skills/admin/case-management-setup` — the Case's own business-hours field is what the escalation clock and `BusinessHours` math read; without it the agent produces a region calendar map with no rule for how that field gets set at case creation, and every case falls back to the org default
-6. `skills/admin/omni-channel-routing-setup` — a negative check: Omni's availability model is Service Channel weight plus Presence Configuration, with no calendar input anywhere in it; without it the agent lists Omni in the referenced-by inventory and the design promises SLA pausing the routing layer does not implement
-7. `skills/admin/email-to-case-configuration` — the routing address is the only place an inbound channel is pre-classified before assignment rules run, so it is the hook a per-channel calendar has to hang off; without it the agent proposes one case-create rule and every channel arriving on a different address keeps the org default
-8. `skills/admin/approval-processes` — a negative check: approval time constructs count elapsed days, not working hours; without it the agent counts approvals as a calendar consumer and promises business-hours-aware approval escalation the approval engine cannot deliver
-9. `templates/admin/naming-conventions.md`
-10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+3. `skills/admin/business-hours-and-holidays` — the calendar itself: `BusinessHoursSettings` metadata with per-day `HH:mm:ss.SSSZ` windows, holidays that must be attached to a calendar before they suspend anything, the one-default-calendar rule, and the Apex `BusinessHours.diff/add/isWithin` math; without it the agent can map consumers to calendars but cannot emit a deployable calendar or tell why a holiday that exists in Setup did not pause the clock
+4. `skills/admin/entitlements-and-milestones` — a milestone timer reads the calendar attached at process level or at milestone level, not the one on the Case; without it the referenced-by inventory attributes a milestone to the wrong calendar and the SLA looks like it fired early
+5. `skills/admin/escalation-rules` — an escalation entry chooses its own business hours, and where none is defined the platform falls back to 24/7; without it the agent maps one calendar to Case escalation and misses the entries still running on a round-the-clock clock
+6. `skills/admin/case-management-setup` — the Case's own business-hours field is what the escalation clock and `BusinessHours` math read; without it the agent produces a region calendar map with no rule for how that field gets set at case creation, and every case falls back to the org default
+7. `skills/admin/omni-channel-routing-setup` — a negative check: Omni's availability model is Service Channel weight plus Presence Configuration, with no calendar input anywhere in it; without it the agent lists Omni in the referenced-by inventory and the design promises SLA pausing the routing layer does not implement
+8. `skills/admin/email-to-case-configuration` — the routing address is the only place an inbound channel is pre-classified before assignment rules run, so it is the hook a per-channel calendar has to hang off; without it the agent proposes one case-create rule and every channel arriving on a different address keeps the org default
+9. `skills/admin/approval-processes` — a negative check: approval time constructs count elapsed days, not working hours; without it the agent counts approvals as a calendar consumer and promises business-hours-aware approval escalation the approval engine cannot deliver
+10. `templates/admin/naming-conventions.md`
+11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

@@ -36,3 +36,5 @@ Least Active equalizes the number of open items per agent — it does not accoun
 - Create Service Channels — https://help.salesforce.com/s/articleView?id=sf.omnichannel_create_service_channel.htm
 - Create Routing Configurations — https://help.salesforce.com/s/articleView?id=sf.omnichannel_create_routing_config.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Metadata API Developer Guide (PDF v62): ServiceChannel, QueueRoutingConfig, PresenceUserConfig, ServicePresenceStatus, PresenceDeclineReason, Skill — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide: QueueRoutingConfig — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_queueroutingconfig.htm

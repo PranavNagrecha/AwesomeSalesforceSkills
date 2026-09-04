@@ -1,13 +1,13 @@
 ---
 name: salesforce-admin
-description: "Router for the 259 SfSkills `admin` skill packages. Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them. Use when the request mentions custom object, custom field, picklist, record type, page layout, permission set, profile, validation rule, report, dashboard, queue, approval process, user setup, sharing rule, org-wide default, OWD, role hierarchy, record access, record visibility, who can see this record, duplicate rule, matching rule, duplicate prevention, clean up duplicates, merge governance, Spring release, seasonal release, Release Updates, Sandbox Preview. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 260 SfSkills `admin` skill packages. Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them. Use when the request mentions custom object, custom field, picklist, record type, page layout, permission set, profile, validation rule, report, dashboard, queue, approval process, user setup, sharing rule, org-wide default, OWD, role hierarchy, record access, record visibility, who can see this record, duplicate rule, matching rule, duplicate prevention, clean up duplicates, merge governance, Spring release, seasonal release, Release Updates, Sandbox Preview. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce admin — SfSkills domain router
 
 Declarative Salesforce configuration: objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work that precedes them.
 
-**259 skill packages** live under
+**260 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/admin/<slug>/SKILL.md`. They are not
 loaded — reach them by path, on demand.
 
@@ -53,7 +53,7 @@ it is a map, not the territory.
 
 Curated starting points when the request is broad or the lookup is
 ambiguous. This is a shortlist, not the catalogue — the roster at
-`references/skill-index.md` has all 259.
+`references/skill-index.md` has all 260.
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/admin/object-creation-and-design/SKILL.md` — start here for any new sObject — naming, relationships, and the fields you will regret later
 - `${CLAUDE_PLUGIN_ROOT}/skills/admin/custom-field-creation/SKILL.md` — field types, FLS, and the ones that cannot be changed after data lands
@@ -92,6 +92,7 @@ rather than a single question:
 - `audit-router` — Run the SfSkills audit-router run-time agent
 - `automation-migration-router` — Run the SfSkills automation-migration-router run-time agent
 - `business-hours-and-holidays-configurator` — Design or audit Business Hours + Holidays
+- `change-impact-planner` — Change Impact Planner
 - `config-workbook-author` — Compile the canonical 10-section Salesforce Configuration Workbook
 - `csv-to-object-mapper` — Map a CSV to an sObject for a data load
 - `custom-metadata-and-settings-designer` — Design or audit Custom Metadata Types + Custom Settings

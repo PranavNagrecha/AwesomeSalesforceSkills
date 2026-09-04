@@ -33,3 +33,5 @@
 - Salesforce Help: Prepare for Changes to "Role and Subordinates" Group (roleAndSubordinates) — https://help.salesforce.com/s/articleView?id=002628970&language=en_US&type=1 — confirms the "Roles and Internal Subordinates" label, the Summer '25 sandbox / Winter '26 production release updates, and that dynamic translation of old references is transitional (verified 2026-08-13)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Record Access Under the Hood (Salesforce Architects) — local knowledge: knowledge/imports/salesforce-record-access-under-the-hood.md
+- Metadata API Developer Guide: Queue (fields `queueMembers`, `queueSobject`, `queueRoutingConfig`, `doesSendEmailToMembers`, `doesIncludeBosses`; PDF v62) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide: Queue — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_queue.htm

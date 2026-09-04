@@ -60,6 +60,21 @@ Gather this context before working on assignment rules:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How do Leads or Cases arrive: web form, email, UI, API, Data Loader, Flow?" | Only the web and email intake channels invoke the rule by default; every other channel must opt in | The channel matrix and the header each integration must send |
+| "Is there an active rule today, and who owns it?" | Activating yours silently deactivates theirs | A cutover plan instead of a surprise |
+| "Which field values decide the owner, and are they set at save time?" | Criteria read values at save; formulas and after-save Flows are not there yet | Routing on plain fields the intake populates |
+| "Queue or person, and what happens when nobody matches?" | Person targets break on leave and departures; unmatched records go to the default owner silently | Queue targets and a catch-all entry |
+| "Does anything else write `OwnerId` after save?" | After-save Flows, triggers, Omni-Channel and escalation all overwrite the rule's result | One authoritative writer |
+| "Should the customer get an acknowledgement?" | Auto-response fires only when the assignment rule fires, from a verified org-wide address | Auto-response wired to the same channels, not bolted on later |
+
+A proper assignment configuration adds deterministic ownership on every creation channel, a visible fallback for unmatched records, and a rule file that deploys between orgs; "just creating a rule" routes web forms and leaves the API and UI paths unrouted. Comparison with the other routing mechanisms: `references/routing-selector.md`.
+
+---
+
 ## Core Concepts
 
 ### Active Rule Limit and Rule Entry Order
@@ -146,31 +161,71 @@ For production round-robin, Approach 1 (Apex) or Approach 2 (Omni-Channel) is pr
 
 ### Pattern: Apex Round-Robin for Lead Assignment
 
-**When to use:** Leads must be distributed evenly among a fixed list of sales reps, and a queue-based approach is not suitable.
+**When to use:** Leads must be distributed evenly among a fixed rep list, Omni-Channel is not licensed or not wanted for Leads, and the rotation must survive concurrent inserts.
+
+**Ask first:** who maintains the rep list (Custom Metadata is admin-editable and deployable; the counter must be writable at run time, so it lives in a List Custom Setting); what happens when a rep is inactive or on leave (skip inactive users, and keep a "pause" flag per rep); which creation paths should rotate (usually only records that arrived owned by the integration or default user).
 
 **How it works:**
+
 ```apex
-trigger LeadAssignmentRoundRobin on Lead (before insert) {
-    // Store the rep list and counter in Custom Metadata or Custom Settings
-    Lead_Assignment_Config__mdt config = [
-        SELECT Current_Index__c, Rep_Ids__c
-        FROM Lead_Assignment_Config__mdt
-        WHERE DeveloperName = 'Default' LIMIT 1
-    ];
-    List<String> repIds = config.Rep_Ids__c.split(',');
-    Integer idx = (Integer)config.Current_Index__c;
-    for (Lead l : Trigger.new) {
-        if (l.OwnerId == null || l.OwnerId == UserInfo.getUserId()) {
-            l.OwnerId = repIds[Math.mod(idx, repIds.size())];
+// Trigger delegates; keep the logic in a handler you can unit-test.
+trigger LeadTrigger on Lead (before insert) {
+    LeadRoundRobin.assign(Trigger.new);
+}
+
+public with sharing class LeadRoundRobin {
+
+    // Rep list: Custom Metadata (deployable, admin-editable, read-only at run time).
+    // Counter: List Custom Setting, one record, writable and lockable.
+    public static void assign(List<Lead> leads) {
+        List<Lead> toRoute = new List<Lead>();
+        for (Lead l : leads) {
+            // Only rotate records nobody routed on purpose.
+            if (l.OwnerId == null || l.OwnerId == UserInfo.getUserId()) {
+                toRoute.add(l);
+            }
+        }
+        if (toRoute.isEmpty()) return;
+
+        List<Id> reps = activeReps();
+        if (reps.isEmpty()) return;   // leave the default owner; do not throw in a trigger
+
+        // FOR UPDATE serialises concurrent transactions on the counter row.
+        Round_Robin_Counter__c counter = [
+            SELECT Id, Last_Index__c FROM Round_Robin_Counter__c
+            WHERE Name = 'Lead' LIMIT 1 FOR UPDATE
+        ];
+        Integer idx = counter.Last_Index__c == null ? 0 : counter.Last_Index__c.intValue();
+
+        for (Lead l : toRoute) {
+            l.OwnerId = reps[Math.mod(idx, reps.size())];
             idx++;
         }
+        counter.Last_Index__c = Math.mod(idx, reps.size());
+        update counter;   // one DML for the whole batch; custom settings are not setup objects, so no mixed-DML
     }
-    // Increment counter — requires separate DML on Custom Setting instance record
-    // Use a queueable job to avoid mixed DML restriction
+
+    private static List<Id> activeReps() {
+        Set<Id> configured = new Set<Id>();
+        for (Round_Robin_Rep__mdt r : [
+            SELECT User_Id__c FROM Round_Robin_Rep__mdt WHERE Object__c = 'Lead' AND Paused__c = false ORDER BY Sort_Order__c
+        ]) {
+            configured.add((Id) r.User_Id__c);
+        }
+        List<Id> reps = new List<Id>();
+        for (User u : [SELECT Id FROM User WHERE Id IN :configured AND IsActive = true ORDER BY Id]) {
+            reps.add(u.Id);
+        }
+        return reps;
+    }
 }
 ```
 
-Note: Custom Metadata records are read-only at runtime — use a Custom Setting (Hierarchy or List) for the mutable counter. Be aware of concurrency: under high insert volume, parallel transactions may read the same index. Use `FOR UPDATE` or an Apex queueable with serialized updates for production-grade implementations.
+**What to expect:** the counter row is locked for the duration of each transaction, so parallel bulk loads queue up briefly instead of double-assigning; the update is one DML per transaction regardless of batch size; a rep removed from the metadata or deactivated drops out of the rotation on the next insert. Records that already carry a deliberate owner are left alone.
+
+**Why not the alternatives:** an assignment rule cannot rotate (one target per entry, see `references/llm-anti-patterns.md`); a Flow counter has no row lock and double-assigns under concurrent inserts; Custom Metadata cannot hold the counter because it is read-only at run time.
+
+**Test it:** insert 10 leads in one transaction and assert the owners cycle through the rep list; insert one lead with an explicit owner and assert it is unchanged; deactivate a rep and assert they are skipped (`references/testing.md` has the assignment-header tests to sit alongside).
 
 ---
 

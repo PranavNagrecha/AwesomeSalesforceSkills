@@ -32,3 +32,6 @@ Email sprawl becomes governance debt quickly.
 
 - Salesforce Well-Architected Overview — operational and user-facing notification design framing
 - Metadata API Developer Guide — email template and alert metadata deployment behavior
+- Metadata API Developer Guide: EmailTemplate (types, `uiType`, subject limits, no wildcard retrieval; PDF v62) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide: EmailTemplate — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_emailtemplate.htm
+- Object Reference: OrgWideEmailAddress (`IsVerified`, `Purpose`, `IsAllowAllProfiles`; PDF v62) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf

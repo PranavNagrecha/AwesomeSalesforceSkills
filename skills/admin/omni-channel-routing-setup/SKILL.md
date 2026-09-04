@@ -8,6 +8,7 @@ well-architected-pillars:
   - Operational Excellence
   - Scalability
 triggers:
+  - "omni-channel routing configuration metadata xml to deploy with sf cli"
   - "how do I set up Omni-Channel routing in Service Cloud for the first time"
   - "agents are not receiving work items — Omni-Channel is enabled but nothing is routing"
   - "how do I configure skills-based routing so cases go to agents with matching product expertise"
@@ -38,9 +39,9 @@ outputs:
   - Queue-to-Routing Configuration mapping
   - Validated Omni-Channel setup checklist
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-04
 ---
 
 # Omni-Channel Routing Setup
@@ -56,6 +57,21 @@ Gather this context before working on anything in this domain:
 - **Omni-Channel must be explicitly enabled.** Navigate to Service Setup > Omni-Channel Settings and turn on Omni-Channel. This is a one-way switch — it cannot be disabled once enabled in production. Confirm the org's Service Cloud license level, as some features (Enhanced Omni-Channel, Skills-Based Routing) require an add-on or specific license tier.
 - **The most common wrong assumption is that enabling Omni-Channel automatically routes work.** Enabling the feature only activates the framework. Work items do not route until a Service Channel is created for the object, a Routing Configuration is created and associated with a queue, and at least one Presence Configuration allows that channel.
 - **Platform limits:** A Routing Configuration can be associated with only one queue at a time. Skills-Based Routing requires the Skills-Based Routing feature to be enabled separately under Omni-Channel Settings (distinct from enabling basic Omni-Channel). Service Resources must be created for each agent — simply having a user account is not sufficient.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which objects are pushed, and does capacity release on close or on tab close?" | One service channel per object; `capacityModel` decides when an agent frees up | Channels that match how agents actually work |
+| "How many items can an agent hold, and how much is each type worth?" | Presence configuration `capacity` versus routing configuration `capacityWeight` | A capacity model instead of a guess |
+| "Least active or most available, and what is the tie-breaker?" | `routingModel` plus `secondaryRoutingPriorityField` | Predictable push order that agents can explain |
+| "What happens when nobody accepts?" | `pushTimeout` and `presenceStatusOnPushTimeout` decide whether the item loops to the same agent | No silent stalls |
+| "Who receives work, by profile or by user?" | Presence configuration `assignments` is the only way an agent enters Omni-Channel | Agents who are online and actually routable |
+| "Skills-based or queue-based, and is the feature enabled?" | Skills-based routing is a separate enablement with extra records | The right routing family before any metadata is written |
+
+A proper Omni-Channel configuration adds routed work with a capacity model, a documented push order, and overflow handling; enabling the feature and pointing it at a queue adds a list view that agents still pick from by hand. Deployable shapes and order: `references/metadata-examples.md`.
 
 ---
 
@@ -208,6 +224,15 @@ Non-obvious platform behaviors that cause real production problems:
 | Skills matrix (skills-based only) | Agent-to-skill mapping with skill levels, used to configure Service Resource Skills |
 | Skills-Based Routing Rules (skills-based only) | Rule criteria mapped to required skills and minimum levels |
 | Validated routing test results | Evidence of end-to-end work item routing in sandbox |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Deploying service channels, presence statuses and configurations, decline reasons, skills, routing configurations, and the queue link, in the right order |
+| `references/gotchas.md` | The six behaviours that cause most routing incidents |
 
 ---
 

@@ -60,6 +60,21 @@ Gather this context before working on case management configuration:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which channels create cases, and at what volume?" | Email-to-Case, Web-to-Case, and manual entry have different limits, routing behaviour, and spam exposure | A channel inventory with the daily limit and pending-queue risk for each |
+| "Which mailbox addresses route in, and who owns them?" | Each routing address pre-classifies the case before assignment runs and must never be an auto-response sender | Routing addresses mapped to origin, queue, and calendar |
+| "What must happen in the first minute: owner, acknowledgement, calendar, priority?" | Assignment, auto-response, business hours, and priority all resolve during the save; anything set later runs on the wrong clock | The before-save Flow scope and the assignment rule design |
+| "What is the SLA, and does it pause outside working hours?" | Escalation entries and milestones read calendars only if wired; the shipped default is 24/7 | Calendar design and the consumer map (`admin/business-hours-and-holidays`) |
+| "Who is allowed to reply to the customer from which address?" | Sender identity is a verified org-wide address with profile restrictions | Templates and senders that deploy and deliver |
+| "How will we know it works before customers do?" | Threading, auto-response loops, and truncation only show up under real email | A clock test, a threading test, and a loop test in the sandbox |
+
+A proper case intake configuration adds a channel inventory with limits, deterministic routing on every channel, acknowledgements that cannot loop, an SLA clock that pauses on purpose, and evidence from a sandbox test; "just turning on Email-to-Case" adds an inbox that fills a queue nobody was assigned to.
+
+---
+
 ## Core Concepts
 
 ### Inbound Channel Limits and Behaviors

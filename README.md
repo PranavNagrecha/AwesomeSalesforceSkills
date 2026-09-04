@@ -310,9 +310,9 @@ run it yourself.
 
 ## What's in it
 
-**1,034 skills · 88 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,035 skills · 88 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
-- **Skills** (`skills/`) — 1,034 structured guides across 11 domains: admin 253,
+- **Skills** (`skills/`) — 1,035 structured guides across 11 domains: admin 253,
   apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
   61, agentforce 53, security 48, omnistudio 34. Each carries SKILL.md
   instructions, worked examples, gotchas, Well-Architected mapping, and the
@@ -341,7 +341,7 @@ run it yourself.
 
 Shipped in v1:
 
-- [x] 1,034 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 1,035 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] MCP server on PyPI exposing the library plus live-org lookups
@@ -355,7 +355,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 50 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
-over the 1,034-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
+over the 1,035-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,
 `list_validation_rules`, `list_permission_sets`, `describe_permission_set`,
 `list_record_types`, `list_named_credentials`, `list_approval_processes`,

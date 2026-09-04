@@ -140,6 +140,21 @@ The third column ("Notes") is where gotchas, format constraints, and silent-fail
 
 ---
 
+### 3.7 "Questions to Ask Before Configuring" is mandatory
+
+Every skill carries a `## Questions to Ask Before Configuring` section between
+`## Before Starting` and `## Core Concepts`: a table of the questions a
+practitioner must put to the requester before touching Setup, why each answer
+matters, and what a good answer adds to the design; followed by one sentence on
+what a *proper* configuration adds over "just doing it". The gotchas in
+`references/gotchas.md` are where these questions come from — each gotcha
+should be traceable to a question that would have prevented it.
+
+Rule (effective 2026-09-04): `validate_repo.py` WARNs on any skill whose
+`updated` date is on or after that date and has no `## Questions to Ask`
+heading. `scripts/new_skill.py` scaffolds the section. Exemplar:
+`skills/admin/business-hours-and-holidays/SKILL.md`.
+
 ## § 4. Per-Category Expectations
 
 Different skill categories have different shapes. This matrix scopes the four techniques per category — apply judgment within these defaults.

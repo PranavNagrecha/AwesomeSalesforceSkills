@@ -7,6 +7,8 @@ well-architected-pillars:
   - Operational Excellence
   - Scalability
 triggers:
+  - "queue metadata xml example to deploy queues with sf cli"
+  - "should the queue email members or just the queue address when a case is assigned"
   - "how to create a support queue for my team in Salesforce"
   - "set up a public group for use in sharing rules"
   - "assign cases to a queue instead of a specific person"
@@ -34,9 +36,9 @@ outputs:
   - "Decision guidance on queue vs public group for a given use case"
   - "SOQL pattern for finding queue-owned records"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-04
 ---
 
 # Queues and Public Groups
@@ -53,6 +55,20 @@ Gather this context before working in this domain:
 - **What is the goal — routing work or sharing access?** Queues are for routing records to a pool of workers. Public groups are for granting shared access via sharing rules or manual sharing. The two mechanisms are distinct and should not be substituted for each other.
 - **Understand org sharing model first.** Public group utility depends on the org-wide default (OWD) setting. If OWD is Public Read/Write for an object, groups add no incremental access. Groups are most valuable in Private or Public Read Only OWDs.
 - **Platform limit on sharing recalculation.** Deeply nested public groups (groups containing groups containing groups) trigger expensive sharing recalculation jobs when membership changes. Prefer flat group structures in high-volume orgs.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who works this pool, and how does that list change?" | Named users churn; roles and public groups maintain themselves | Membership that survives onboarding and offboarding |
+| "Which objects will the queue own?" | A queue owns only the objects in `queueSobject`; rules and Omni-Channel targeting it for another object fail | One queue per work pool |
+| "Who should be notified of a new record: shared mailbox, every member, nobody?" | `email` and `doesSendEmailToMembers` are independent switches | A notification people read instead of filter |
+| "Is Omni-Channel pushing from this queue?" | Without a routing configuration the queue is a list view | The link into the routing stack |
+| "What happens to queue-owned records when the queue is retired?" | Records are stranded | A retirement step in the runbook |
+
+A proper queue adds a pool that follows the org chart, a notification channel someone reads, manager visibility by design, and a routing target every rule can name by developer name. Full matrix: `references/queue-behaviour-matrix.md`.
 
 ---
 
@@ -196,6 +212,16 @@ Non-obvious platform behaviors that cause real production problems:
 | Sharing rule | Criteria-based or ownership-based rule referencing the public group |
 | SOQL pattern | `WHERE Owner.Type = 'Queue'` filter for queue-owned record queries |
 | Checker script output | List of Group metadata references found in the project metadata for review |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/queue-behaviour-matrix.md` | Choosing membership sources, objects, notifications, and visibility, with the questions to ask first |
+| `references/metadata-examples.md` | Writing deployable `Queue` and `Group` XML and the package.xml for them |
+| `references/gotchas.md` | The six behaviours that cause most queue incidents |
 
 ---
 

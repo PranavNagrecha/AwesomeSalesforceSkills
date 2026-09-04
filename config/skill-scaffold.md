@@ -38,6 +38,20 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before touching Setup or writing code. Each row should trace to a gotcha in `references/gotchas.md` that the question would have prevented.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "TODO: the first question the requester must answer" | TODO: the platform behaviour that makes the answer matter | TODO: the design element the answer produces |
+| "TODO: second question" | TODO: why | TODO: what it adds |
+| "TODO: third question" | TODO: why | TODO: what it adds |
+
+TODO: One sentence on what a *proper* configuration adds over "just doing it" (what it prevents, what it makes deployable, what it makes testable).
+
+---
+
 ## Core Concepts
 
 TODO: Explain the 2–4 central concepts a practitioner must understand to work in this space.

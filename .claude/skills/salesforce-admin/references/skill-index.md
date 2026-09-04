@@ -1,4 +1,4 @@
-# SfSkills — `admin` skill roster (259 packages)
+# SfSkills — `admin` skill roster (260 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -45,6 +45,7 @@ If your question is X, stop and open Y instead of this package.
 - `skills/admin/b2c-commerce-store-setup/SKILL.md` — Triggers: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning (WebStore, BuyerGroup) — use admin/b2b-commerce-store-setup.
 - `skills/admin/batch-job-scheduling-and-monitoring/SKILL.md` — monitoring, diagnosing, or managing Batch Apex, Scheduled Apex, Queueable, and Flow scheduled jobs …. NOT for writing the Batch or Schedulable class itself — use apex/batch-apex-patterns or apex/apex-scheduled-jobs.
 - `skills/admin/billing-schedule-setup/SKILL.md` — Triggers: 'billing schedule not generating invoices', 'blng__BillingSchedule__c missing after order activation', 'in-advance vs in-arrears billing', …. NOT for revenue … use admin/revenue-recognition-requirements
+- `skills/admin/business-hours-and-holidays/SKILL.md` — Triggers: business hours, holidays, SLA clock, escalation not pausing, working hours, support hours, milestone timer weekend. NOT for the escalation rule entries themselves — use admin/escalation-rules.
 - `skills/admin/campaign-planning-and-attribution/SKILL.md` — Triggers: campaign ROI, attribution model, campaign hierarchy, first-touch, last-touch, multi-touch, CCI, campaign influence, revenue attribution, …. NOT for deciding which … use admin/marketing-reporting-requirements
 - `skills/admin/care-coordination-requirements/SKILL.md` — mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care …. NOT for building care plan templates, problems, and goals — use admin/care-plan-configuration.
 - `skills/admin/care-plan-configuration/SKILL.md` — Triggers: care plan template, ICM care plan, PGI library, action plan template, problem definition, goal definition. NOT for enrolling a patient into a clinical program - use admin/care-program-management.

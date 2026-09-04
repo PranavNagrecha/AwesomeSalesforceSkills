@@ -29,6 +29,7 @@
       "admin/b2c-commerce-store-setup",
       "admin/batch-job-scheduling-and-monitoring",
       "admin/billing-schedule-setup",
+      "admin/business-hours-and-holidays",
       "admin/campaign-planning-and-attribution",
       "admin/care-coordination-requirements",
       "admin/care-plan-configuration",
@@ -3085,6 +3086,7 @@
       "architect/ha-dr-architecture"
     ],
     "business-hours": [
+      "admin/business-hours-and-holidays",
       "admin/entitlements-and-milestones",
       "admin/escalation-rules",
       "admin/fsl-sla-configuration-requirements",
@@ -3360,6 +3362,7 @@
     ],
     "case-management": [
       "admin/assignment-rules",
+      "admin/business-hours-and-holidays",
       "admin/entitlements-and-milestones",
       "admin/escalation-rules",
       "admin/queues-and-public-groups",
@@ -6198,6 +6201,7 @@
       "architect/sla-design-and-escalation-matrix"
     ],
     "entitlements": [
+      "admin/business-hours-and-holidays",
       "admin/case-management-setup",
       "admin/entitlements-and-milestones",
       "admin/fsl-sla-configuration-requirements",
@@ -6311,6 +6315,7 @@
       "architect/sla-design-and-escalation-matrix"
     ],
     "escalation-rules": [
+      "admin/business-hours-and-holidays",
       "admin/case-management-setup",
       "admin/escalation-rules"
     ],
@@ -7824,6 +7829,9 @@
     "holdings": [
       "admin/financial-account-setup",
       "data/financial-account-migration"
+    ],
+    "holidays": [
+      "admin/business-hours-and-holidays"
     ],
     "hotfix": [
       "devops/rollback-and-hotfix-strategy"
@@ -13499,6 +13507,7 @@
       "data/data-model-design-patterns"
     ],
     "sla": [
+      "admin/business-hours-and-holidays",
       "apex/entitlement-apex-hooks",
       "architect/nfr-definition-for-salesforce",
       "data/service-metrics-data-model"

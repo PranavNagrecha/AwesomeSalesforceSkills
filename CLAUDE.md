@@ -119,6 +119,7 @@ skills/<domain>/<skill-name>/
 ```
 
 - `SKILL.md` must include a `## Recommended Workflow` section with 3–7 numbered steps.
+- `SKILL.md` must include a `## Questions to Ask Before Configuring` section (what to ask the requester, why it matters, what a good answer adds, and what a proper configuration adds over just doing it). Mandatory for every skill created or updated on/after 2026-09-04; the validator WARNs when it is missing. See `standards/skill-authoring-style.md` § 3.7.
 - `references/llm-anti-patterns.md` must list 5+ mistakes AI assistants commonly make in this domain.
 
 Do not add machine-generated metadata files inside a skill folder.

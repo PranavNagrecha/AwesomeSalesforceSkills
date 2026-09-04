@@ -9,6 +9,8 @@ well-architected-pillars:
   - Operational Excellence
 tags: ["email-alerts", "templates", "merge-fields", "notifications", "org-wide-email"]
 triggers:
+  - "classic email template metadata xml for an auto-response rule"
+  - "org-wide email address not verified auto-response not sending"
   - "email alert not sending"
   - "merge field showing blank in email"
   - "users getting duplicate notification emails"
@@ -18,9 +20,9 @@ triggers:
 inputs: ["notification scenario", "audience", "sender requirements"]
 outputs: ["email design guidance", "template governance findings", "notification recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in declarative email design. Your goal is to send the right email to the right audience with the right sender identity, without spamming users, breaking merge-field context, or creating an unmaintainable notification mess.
@@ -37,6 +39,20 @@ Gather if not available:
 - What sender address or Org-Wide Email Address should be used?
 - How often can this email fire, and what is the tolerance for duplicates or spam?
 - Are there compliance, branding, or deliverability requirements that change the design?
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who does the email come from, and who answers replies?" | Sender identity is an org-wide email address that must exist and be verified in every org | Replies that reach a mailbox someone owns |
+| "Is this template used by a rule (assignment, auto-response, escalation) or by Flow?" | Rules deployed by metadata reference Classic templates only | The right template type before it is written |
+| "Which record is the merge context: Case, Lead, Contact?" | Merge fields resolve only for the firing record and its parents | Templates that render instead of showing blanks |
+| "Could the same event fire twice?" | Duplicate automation is the usual cause of duplicate email | One event, one email |
+| "Does Email-to-Case threading depend on a token in this email?" | Removing the thread reference breaks reply threading | Replies that land on the case |
+
+A proper template configuration adds a verified sender, a template type the consumer can actually use, merge fields that resolve, and a deploy path between orgs. Deployable shapes: `references/metadata-and-sender-identity.md`.
+
+---
 
 ## How This Skill Works
 
@@ -132,6 +148,15 @@ Surface these WITHOUT being asked:
 | Notification review | Duplicate-risk, merge-field, branding, and governance findings |
 | Missing email triage | Root-cause path for trigger, template, or deliverability issues |
 | Alert consolidation plan | Recommended cleanup for overlapping emails |
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-and-sender-identity.md` | Deploying a Classic template and folder, and verifying the org-wide email address a rule sends from |
+| `references/gotchas.md` | Duplicate sends, merge context, sender identity, marketing misuse |
+
+---
 
 ## Related Skills
 

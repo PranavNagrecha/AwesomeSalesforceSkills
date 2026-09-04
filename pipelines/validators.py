@@ -344,6 +344,19 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
         if "## Recommended Workflow" not in skill_text:
             issues.append(ValidationIssue("WARN", str(skill_md_path), "SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions"))
 
+        # Questions to Ask Before Configuring — WARN if missing on skills created or
+        # materially revised on/after 2026-09-04 (the rule's effective date). Older
+        # skills are grandfathered so the gate does not emit ~1,000 warnings at once;
+        # it bites the moment a skill's `updated` date is bumped.
+        updated_match = re.search(r"^updated:\s*[\"']?(\d{4}-\d{2}-\d{2})", skill_text, re.MULTILINE)
+        if updated_match and updated_match.group(1) >= "2026-09-04" and "## Questions to Ask" not in skill_text:
+            issues.append(ValidationIssue(
+                "WARN", str(skill_md_path),
+                "SKILL.md has no `## Questions to Ask Before Configuring` section — every skill updated on/after "
+                "2026-09-04 must tell the reader what to ask, what to expect, and what a proper configuration adds "
+                "(see standards/skill-authoring-style.md § 3.7)",
+            ))
+
     waf_path = path / "references" / "well-architected.md"
     if waf_path.exists():
         text = waf_path.read_text(encoding="utf-8")
