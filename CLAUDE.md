@@ -90,6 +90,7 @@ It enforces the same gates as the manual workflow above, plus a license wall
 - `vector_index/`: generated retrieval chunks, lexical index, optional embeddings
 - `scripts/`: top-level CLI entrypoints used by agents and contributors
 - `docs/reports/duplicate-candidates.md`: generated report of near-duplicate skills — regenerate with `python3 scripts/audit_duplicates.py`
+- `docs/reports/skill-depth.md`: generated depth scoreboard (12 agentic-coding signals per skill, lowest first = worklist) — regenerate with `python3 scripts/score_skill_depth.py --out docs/reports/skill-depth.md`
 - `standards/validation-gates.md`: generated index of every gate the validators enforce — read this when you want to know what `validate_repo.py` will check
 - `BACKLOG.yaml`: machine-readable queue of pending / researched / blocked / duplicate skill entries (the row data formerly inside `MASTER_QUEUE.md`)
 - `docs/queue-progress.md`: generated dashboard for `BACKLOG.yaml` — status counts, drift, next-pick
