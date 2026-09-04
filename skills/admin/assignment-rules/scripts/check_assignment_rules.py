@@ -51,6 +51,18 @@ def _tag(local: str) -> str:
     return f"{{{SF_NS}}}{local}"
 
 
+def _find(parent: ET.Element, name: str) -> ET.Element | None:
+    """Find a direct child by name in namespaced or bare XML.
+
+    ``a or b`` must not be used here: an Element with no children is falsy,
+    so ``rule.find(ns) or rule.find(bare)`` silently discards a found leaf and
+    made every namespaced rule look inactive and unnamed (fail-open).
+    """
+    el = parent.find(_tag(name))
+    return el if el is not None else parent.find(name)
+
+
+
 def check_rule_file(path: Path) -> list[str]:
     """Parse one assignment rule metadata file and return issues."""
     issues: list[str] = []
@@ -65,8 +77,8 @@ def check_rule_file(path: Path) -> list[str]:
 
     active_rules: list[str] = []
     for rule in rules:
-        name_el = rule.find(_tag("fullName")) or rule.find("fullName")
-        active_el = rule.find(_tag("active")) or rule.find("active")
+        name_el = _find(rule, "fullName")
+        active_el = _find(rule, "active")
         rule_name = name_el.text if name_el is not None else "<unnamed>"
         is_active = (active_el is not None and active_el.text == "true")
 
@@ -88,7 +100,7 @@ def check_rule_file(path: Path) -> list[str]:
             criteria_items = (
                 entry.findall(_tag("criteriaItems")) or entry.findall("criteriaItems")
             )
-            criteria_filter = entry.find(_tag("criteriaFilterType")) or entry.find("criteriaFilterType")
+            criteria_filter = _find(entry, "criteriaFilterType")
             is_catch_all = (
                 len(criteria_items) == 0
                 and (criteria_filter is None or criteria_filter.text in (None, "", "AllCriteriaTrue"))
@@ -115,7 +127,7 @@ def check_rule_file(path: Path) -> list[str]:
         # (usually means a duplicate or copy-paste error)
         targets = []
         for entry in entries:
-            assigned_to = entry.find(_tag("assignedTo")) or entry.find("assignedTo")
+            assigned_to = _find(entry, "assignedTo")
             targets.append(assigned_to.text if assigned_to is not None else None)
 
         seen: set[str | None] = set()

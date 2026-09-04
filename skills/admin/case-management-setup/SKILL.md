@@ -38,9 +38,9 @@ outputs:
   - "Case team roles and predefined team setup"
   - "Entitlement process with milestones and violation actions (if SLA tracking required)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-09-04
 ---
 
 # Case Management Setup
@@ -66,8 +66,8 @@ Gather this context before working on case management configuration:
 
 **Email-to-Case** converts inbound customer emails into cases. Key limits and behaviors:
 
-- Maximum inbound email size: **25 MB** (attachments included). Emails exceeding this limit are rejected.
-- Email body is truncated at **32,000 characters**. Content beyond that limit is silently dropped — not stored in an attachment.
+- Maximum inbound message size: **35 MB** total (body, HTML, and attachments together; MIME encoding inflation makes roughly 25 MB the effective attachment ceiling). Larger messages are rejected. The sourced limit history is in admin/email-to-case-configuration.
+- Email body is truncated at **32,000 characters** and the remainder is dropped without any notice to the agent or customer. UNVERIFIED (2026-09-04): this figure is carried from the Email-to-Case Limits Help page cited in references/well-architected.md and could not be re-checked against a fetchable official source; treat the exact number as approximate and confirm in the org before quoting it to a customer.
 - Thread ID handling is critical. Salesforce embeds a thread ID token in outgoing case emails. When the customer replies, Salesforce reads the token to find the parent case and adds the reply as a new Email Message record. **If the routing address is misconfigured or the thread ID is stripped by a mail server, the reply creates a new case instead of threading.** Test threading end-to-end before go-live.
 - On-Demand Email-to-Case (recommended) uses Salesforce-hosted routing addresses. Classic Email-to-Case uses a local email agent. Use On-Demand unless firewall or data residency requirements prevent it.
 
@@ -205,7 +205,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Auto-response rule requires assignment rule to fire** — The auto-response rule is not independent. It fires only when the active case assignment rule fires for that case. If the assignment rule is inactive, has no matching entry, or was bypassed (e.g., API insert without `Sforce-Auto-Assign: true` header), the auto-response will not send. This is the most commonly misdiagnosed "auto-response not working" issue.
 2. **Escalation reactivation triggers bulk escalations** — Deactivating an escalation rule pauses escalation time accumulation for open cases. When you reactivate the rule, the engine evaluates all open cases at once. Cases that have been open longer than the threshold since deactivation will escalate immediately in a single wave. In a large org, this can generate thousands of emails and re-assignments at once. Always test reactivation volume in a sandbox.
-3. **Email-to-Case body truncation is silent** — Long customer emails are truncated at 32,000 characters without any notification to the agent or customer. Content after that limit is permanently lost. If customers send lengthy technical logs or attachments-as-text, critical information may be missing from the case body.
+3. **Email-to-Case body truncation is silent** — Long customer emails are truncated (32,000 characters per the cited Help page; figure marked UNVERIFIED in Core Concepts) without any notification to the agent or customer. Content after that limit is not in the case body. If customers send lengthy technical logs or attachments-as-text, critical information may be missing; ask for logs as attachments.
 4. **Deleting a queue orphans owned cases** — If you delete a queue that currently owns open cases, those cases lose their owner. They will not appear in any queue view or any individual's My Cases view until manually reassigned. Enforce a case transfer protocol before queue deletion.
 5. **Web-to-Case has no native validation** — The generated HTML form contains no JavaScript validation. Required-field enforcement, format checks (phone numbers, email formats), and spam prevention must all be implemented in the HTML form customization or via post-creation Flow/Apex. Without this, garbage data will enter your org.
 6. **Entitlement template on product is Classic-only** — Associating an entitlement template with a product (so cases auto-receive an entitlement) is only configurable in Salesforce Classic. In Lightning Experience, there is no equivalent UI. Entitlements must be applied to cases via Flow, Process Builder, or Apex.

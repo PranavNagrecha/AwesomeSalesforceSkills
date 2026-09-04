@@ -176,6 +176,7 @@ Do NOT graduate to Apex because:
 - `apex/async-apex` — paired with the async selection tree below
 - `agentforce/agentforce-agent-creation` — conversational automation
 - `architect/platform-selection-guidance` — org-wide strategic defaults
+- `admin/assignment-rules` — Lead/Case ownership on create is a rule engine, not a Flow; its `references/routing-selector.md` covers rules vs Omni-Channel vs Flow vs Apex vs territories
 
 ## Related templates
 

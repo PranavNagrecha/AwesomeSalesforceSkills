@@ -26,4 +26,10 @@
 - Salesforce Help: Set Up Case Assignment Rules — https://help.salesforce.com/s/articleView?id=sf.cases_assignment.htm&type=5
 - Metadata API Developer Guide: AssignmentRules Metadata Type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_assignmentrule.htm
 - Object Reference: AssignmentRule sObject — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_assignmentrule.htm
+- Metadata API Developer Guide: AutoResponseRules Metadata Type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_autoresponserules.htm
+- Metadata API Developer Guide: EscalationRules Metadata Type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_escalationrules.htm
+- Metadata API Developer Guide (PDF, v62, used for the field tables and sample definitions in references/metadata-examples.md) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Object Reference (PDF, v62): AssignmentRule is read-only, queryable, and its Id feeds AssignmentRuleHeader / Bulk API assignment — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Apex Reference Guide: Database.DMLOptions Class — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions.htm
+- Salesforce Help: Create a Sandbox (usernames and email deliverability after refresh) — https://help.salesforce.com/s/articleView?id=sf.data_sandbox_create.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

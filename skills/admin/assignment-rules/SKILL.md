@@ -22,6 +22,11 @@ triggers:
   - "assignment rule not running when I create a record via the API"
   - "assignment rules isn't working"
   - "we're having issues with assignment rules"
+  - "deploy lead assignment rules from sandbox to production"
+  - "assignmentRules-meta.xml example for case assignment"
+  - "assignment rules metadata xml example to deploy with sf cli"
+  - "write an Apex test that checks the assignment rule set the owner"
+  - "should I use assignment rules or omni-channel or flow to route cases"
 inputs:
   - "Object type: Lead or Case (assignment rules only exist for these two objects)"
   - "Assignment target: specific User or Queue to receive matched records"
@@ -33,9 +38,9 @@ outputs:
   - "Apex-based round-robin pattern when equal distribution is required"
   - "Troubleshooting analysis when rules are not firing as expected"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-09-04
 ---
 
 # Assignment Rules
@@ -180,6 +185,8 @@ Note: Custom Metadata records are read-only at runtime — use a Custom Setting 
 | High-volume records created in bulk | Queue assignment + Omni-Channel | Avoids Apex CPU limits from complex trigger logic |
 | Time-sensitive escalation routing | Combine assignment rule (initial owner) + escalation rules (time-based re-route) | Assignment rules set initial owner; escalation rules handle SLA breach |
 
+For the full comparison against Omni-Channel, Flow, Apex, Enterprise Territory Management, lead scoring, and third-party routing products, read `references/routing-selector.md` before choosing.
+
 ---
 
 
@@ -187,11 +194,12 @@ Note: Custom Metadata records are read-only at runtime — use a Custom Setting 
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Gather context — confirm the object (Lead or Case), how records are created, the currently active rule, and whether anything else writes `OwnerId`
+2. Choose the mechanism — confirm with `references/routing-selector.md` that an assignment rule is the right layer, and check the official sources in `references/well-architected.md`
+3. Design the entries — most specific first, catch-all last, queue targets over user targets; capture them in `templates/assignment-rules-template.md`
+4. Build as metadata — shape the file from `references/metadata-examples.md` and run `scripts/check_assignment_rules.py` on the folder
+5. Test — the Apex test and channel matrix in `references/testing.md`; every creation channel gets one record
+6. Deploy and hand over — follow `references/migration-and-sandbox.md` for deploy order and the post-deploy checklist; when a rule "didn't fire" later, start at `references/troubleshooting.md`
 
 ---
 
@@ -229,11 +237,32 @@ Non-obvious platform behaviors that cause real production problems:
 | Queue configuration | Named queues with correct membership, email address, and supported objects |
 | Apex round-robin trigger | Trigger + Custom Setting implementation if native routing is insufficient |
 | API integration notes | Documentation of required headers for each integration consuming the rule |
+| Deployable metadata | `assignmentRules/<Object>.assignmentRules-meta.xml` (plus auto-response and escalation files) shaped per `references/metadata-examples.md` |
+| Test evidence | Apex test class and channel matrix results from `references/testing.md` |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/routing-selector.md` | Deciding between assignment rules, Omni-Channel, Flow, Apex, territories, scoring |
+| `references/metadata-examples.md` | Writing or reviewing the deployable XML for assignment, auto-response, and escalation rules |
+| `references/troubleshooting.md` | A rule or auto-response "didn't fire" |
+| `references/testing.md` | Proving the rule routes correctly from Apex and from every channel |
+| `references/migration-and-sandbox.md` | Moving rules between orgs, sandbox refresh, deploy order |
+| `references/gotchas.md` | The five platform behaviours that cause most production incidents |
 
 ---
 
 ## Related Skills
 
-- escalation-rules — use alongside assignment rules to handle time-based re-routing when SLA is breached after initial assignment
-- user-management — queue membership requires active users; deactivated users should be removed from queue membership
-- duplicate-management — assignment rules run before duplicate rules; duplicates may still land in the assigned queue
+- admin/escalation-rules — time-based re-routing after initial assignment when an SLA is breached
+- admin/queues-and-public-groups — the queues rule entries route into; queue membership requires active users
+- admin/omni-channel-routing-setup — distributing queued work to available agents by presence and capacity
+- admin/case-management-setup and admin/email-to-case-configuration — Case intake channels and the auto-response dependency
+- admin/lead-management-and-conversion — Web-to-Lead, lead auto-response, and conversion ownership
+- apex/apex-dml-patterns — `Database.DMLOptions` and the assignment header from Apex
+- flow/flow-record-save-order-interaction — where the rule sits relative to before-save and after-save automation
+- devops/sandbox-refresh-and-templates — what a refresh does to usernames and sandbox-only rules
+- admin/duplicate-management — assignment rules run before duplicate rules; duplicates may still land in the assigned queue

@@ -115,14 +115,15 @@ template-on-product UI path is Classic-only.
 
 **What the LLM generates:** Email-to-Case setup instructions that describe the feature without mentioning the 32,000-character body truncation limit.
 
-**Why it happens:** The 25 MB attachment size limit is more visible in the documentation than the body character limit. LLMs surface the headline limit but miss the body truncation, which silently drops content from long technical support emails.
+**Why it happens:** The 35 MB message size limit is more visible in the documentation than the body character limit. LLMs surface the headline limit but miss the body truncation, which silently drops content from long technical support emails.
 
 **Correct pattern:**
 
 ```
-Email-to-Case truncates the email body at 32,000 characters.
-Content beyond this limit is permanently lost — it is not stored
-as an attachment or surfaced in any error message.
+Email-to-Case truncates the email body at 32,000 characters
+(figure from the Email-to-Case Limits Help page; marked UNVERIFIED
+in SKILL.md until re-checked). Content beyond this limit is not in
+the case body and no error is surfaced.
 
 For technical support orgs receiving long log files or detailed
 error traces, communicate this limit to the support team. For
