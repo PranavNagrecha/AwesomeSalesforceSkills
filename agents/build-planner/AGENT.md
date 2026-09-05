@@ -122,11 +122,22 @@ python3 scripts/build_plan.py status .sfskills/builds/<build-id>/plan.json
 
 Every subcommand except `init` takes the **path to `plan.json`** as its positional argument — not the build directory, and there is no `--build-dir` flag outside `init`. All of them also accept `--repo-root`, which defaults to this checkout and is what resolves the `agents/`, `skills/`, `templates/` and `standards/` citations a plan makes.
 
-`status` prints the gate records and the step counts. Then read `requirement.md`, `plan.json`, and every clarification with its answer. Refuse unless G1 is `approved` in `human_gates[]` and every `blocking` clarification is either answered or explicitly deferred with a reason. An unanswered blocking question is not a small gap: it is precisely the decision the skill said would change the design.
+`status` prints the gate records and the step counts. Then read `requirement.md`, `plan.json`, and every clarification with its answer.
+
+**Read the gate, not the status label.** The state Intake hands over is `status: "clarifying"` with the `clarifications` gate (G1) recorded `approved` in `human_gates[]`. Nothing moves the status between G1 and this agent, because `set-plan` in Step 7 is what writes `planned` and this agent is what runs `set-plan`. So `clarifying` is the normal entry state and is accepted on sight once its gate is approved — treating it as "too early" strands every build at the handover.
+
+Refuse on two conditions and no others:
+
+| Condition | Code |
+|---|---|
+| The `clarifications` gate is `pending`, `rejected`, or has no record at all (the usual shape of a build still at `intake`) | `REFUSAL_NEEDS_HUMAN_REVIEW` — the human has not signed the answers this plan would rest on |
+| `status` is `verified`, `approved`, `building` or `done` | `REFUSAL_COMPETING_ARTIFACT` — see below |
+
+Everything else proceeds. Alongside the gate, each `blocking` clarification must be answered or explicitly deferred with a reason on the record; an unanswered blocking question is not a small gap, it is precisely the decision the skill said would change the design. A deferral is not a dead end — it is carried into `assumptions[]` in Step 7, where the verifier can challenge it and the G2 human can see it.
 
 Read `plan.build_mode` in the same pass. It is `design-only` or `org-connected`, it is required, and it decides which agents may own a step (Step 6). A plan whose `build_mode` is absent is a plan from before this contract: stop and tell the human to re-run `init` rather than assuming either mode.
 
-**When re-planning is allowed.** `plan-rejected` is the one status this agent may re-plan from: the gate rejection has already bumped `plan.version` and archived the superseded plan into `history[]`, so planning version n+1 into that file is exactly what the loop expects next. Refuse (`REFUSAL_COMPETING_ARTIFACT`) at `verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate — and tell the human that `build_plan.py gate <plan> plan reject` is what creates the next version. `clarifying` is too early: run through G1 first.
+**When re-planning is allowed.** `plan-rejected` is the status re-planning was designed for: the gate rejection has already bumped `plan.version` and archived the superseded plan into `history[]`, so planning version n+1 into that file is exactly what the loop expects next. Refuse (`REFUSAL_COMPETING_ARTIFACT`) at `verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate — and tell the human that `build_plan.py gate <plan> plan reject` is what creates the next version. `planned` is re-plannable as well, because a plan nobody has gated yet is a draft and overwriting it destroys no human decision. The CLI enforces the same boundary a layer down: `set-plan` refuses exactly those four frozen statuses, so the agent's precondition and the tool's cannot drift apart.
 
 ### Step 2 — Write scope in and out
 
@@ -167,9 +178,27 @@ For every technology choice the plan makes, read the matching tree from the list
 }
 ```
 
-`id` matches `^D[0-9]+$` and `decision` is the required statement of what was chosen; `decision_tree` is validated to exist on disk and `branch` is the tree step that resolved the choice (`Q2`, not a paraphrase). The last three keys are the agent's own; the schema permits them. Quote the branch text into `branch_quote` so the verifier's grounding lens can find it in the tree without re-deriving the route.
+`id` matches `^D[0-9]+$` and `decision` is the required statement of what was chosen; the rest are optional and every one of them is defined by the schema. `decision_tree` is validated to exist on disk, and `branch` names the tree step that resolved the choice (`Q2`, not a paraphrase) — `validate` opens that tree and ERRORs unless a step with that id actually heads a section in it, so a branch nobody can find is caught at plan time. Quote the branch text into `branch_quote` so the verifier's grounding lens can check it without re-deriving the route: `render` prints `branch_quote`, `alternatives_rejected` and `consequences` as sub-bullets beneath the PLAN.md decisions table, with `adr_required` as a column of its own.
 
-Rules: no decision without a branch. If no tree covers the choice, omit `decision_tree` and `branch` entirely — the schema has no null for them — and set `adr_required: true` with a `rationale` saying which trees were checked. An uncovered choice is an architecture decision, not a planner improvisation. Where two trees both claim the choice, `standards/decision-trees/README.md` resolves which one owns it.
+Rules, in force order:
+
+1. **A cited branch must actually say what the decision says.** Open the tree and read the branch before writing its id. A step that routes between Flow and Apex does not settle which *native rule engine* sets a Case owner, and citing it because it is the nearest thing in the file is a fabricated ground — the verifier's grounding lens compares `branch_quote` against the decision text and rejects the pair. Cite nothing rather than cite loosely.
+2. **When no tree covers the choice**, omit `decision_tree` and `branch` entirely — the schema has no null for either — and record `source_reference` instead: the repo-relative path of the skill file that did resolve it, either the package's `SKILL.md` or a specific file under its `references/`. `validate` checks that path exists on disk, so it carries the same weight as a tree citation rather than being prose. Set `adr_required: true` on the same record, and write a `rationale` naming which trees were read and what each of them was silent about.
+
+   ```json
+   {
+     "id": "D4",
+     "decision": "Set the initial Case owner with a Case Assignment Rule rather than a record-triggered Flow",
+     "source_reference": "skills/admin/assignment-rules/SKILL.md",
+     "rationale": "automation-selection and flow-pattern-selector were both read end to end; neither routes between a native rule engine and Flow for initial ownership, so the skill is the source.",
+     "alternatives_rejected": ["Before-save record-triggered Flow", "Apex before-insert trigger"],
+     "consequences": "Ownership criteria live in Setup rather than in a Flow, so they are editable by an admin but invisible to a Flow-only inventory.",
+     "adr_required": true
+   }
+   ```
+
+3. **Where two trees both claim the choice**, `standards/decision-trees/README.md` resolves which one owns it.
+4. **A decision with neither a branch nor a `source_reference` is not written.** It is an unsourced Salesforce claim, and the step that needed it becomes `blocked` with `blocked_reason: "skill-gap"` under Step 6 — which is the signal to deepen a skill, and the honest one.
 
 ### Step 5 — Cut the milestones
 
@@ -206,7 +235,7 @@ One step per unit of build. Step objects are `additionalProperties: false`, and 
 - Every step that emits metadata also gets an `xml` test and a `manifest` test. Always both — they are cheap, and they catch the two failures (a malformed file, a member with no file) that make a milestone report meaningless.
 - `command` tests start with `python3 ` and reference a path under the repo or the build directory, are stdlib-only, and never deploy: § 5 carries a deny-list regex that `validate` ERRORs on, covering `sf … deploy`, `sfdx`, `force:source:deploy`, `curl`, `wget`, a pipe into a shell, `bash -c`, `python3 -c`, `rm -rf` and `git push`. `manual` tests are single observable outcomes a human ticks at the gate.
 
-**Human gate** — `true` when the step changes who can see or do something (permission sets, permission set groups, profiles, sharing rules, org-wide defaults, queue or group membership, guest access) or when it deletes anything (a field, an object, records, a `destructiveChanges.xml` entry). Access and deletion are the two classes where an agent being wrong is not recoverable by re-running the step. `human_gate: true` has teeth: `ensure-gates` creates a pending `step:<step-id>` gate for it, `next` will not offer the step until a human approves that gate, and `set-status <step> running` is refused while it is pending.
+**Human gate** — `true` when the step changes who can see or do something (permission sets, permission set groups, profiles, sharing rules, org-wide defaults, queue or group membership, guest access) or when it deletes anything (a field, an object, records, a `destructiveChanges.xml` entry). Access and deletion are the two classes where an agent being wrong is not recoverable by re-running the step. `human_gate: true` has teeth: `set-plan` creates a pending `step:<step-id>` gate for it on the same write, `next` will not offer the step until a human approves that gate, and `set-status <step> running` is refused while it is pending.
 
 **Blocked steps** — when no skill covers what a step needs, write the step anyway with `status: "blocked"` and `blocked_reason: "skill-gap"`, naming what was searched. That is the signal to deepen a skill. It is never a licence to write the Salesforce claim from memory.
 
@@ -214,21 +243,26 @@ Three rules govern this whole step and are worth stating flatly: **agents only f
 
 ### Step 7 — Write, validate, render
 
-Never edit `plan.json` by hand. Write the plan body — `scope` (in, out, `fit_gap`), `decisions`, `milestones`, `steps` — to `inputs/plan/plan-body.json` under the build directory and hand it to the CLI, which replaces all five in one validated write and sets `status: "planned"`. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. Then the gates, then validate, then render:
+Never edit `plan.json` by hand. Write the plan body to `inputs/plan/plan-body.json` under the build directory and hand it to the CLI, which replaces the body in one validated write and sets `status: "planned"`.
+
+**`set-plan` accepts six top-level keys and rejects every other by name:** `scope`, `fit_gap`, `assumptions`, `decisions`, `milestones`, `steps`. A `fit_gap` written at the top level is folded into `scope.fit_gap` on the way in, so either shape is accepted for that one. A gate record, a status, a `verification` block or a `history` entry in the body is refused outright, because each of those has a different single writer and letting the planner post them would put two writers on one field.
+
+`assumptions[]` is the key most easily left out and the one the rest of the loop most depends on: **every clarification deferred at G1 becomes an assumption row here.** Each row carries `id` matching `^A[0-9]+$`, `text` stating what the plan is taking as true, `because` naming the `Qn` the deferral came from, and `risk` at `low`, `medium` or `high`. `A3 — "Tier-2 cases keep the default 8×5 business hours" (because: Q7 deferred at G1; risk: medium)` is the shape. A deferred question with no matching assumption is a guess with no paper trail: the verifier has nothing to challenge and the human at G2 sees a plan that looks fully answered.
+
+The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. Three commands, in this order:
 
 ```bash
 mkdir -p .sfskills/builds/<build-id>/inputs/plan
 
-python3 scripts/build_plan.py set-plan     .sfskills/builds/<build-id>/plan.json \
+python3 scripts/build_plan.py set-plan  .sfskills/builds/<build-id>/plan.json \
   --file .sfskills/builds/<build-id>/inputs/plan/plan-body.json
-python3 scripts/build_plan.py ensure-gates .sfskills/builds/<build-id>/plan.json
-python3 scripts/build_plan.py validate     .sfskills/builds/<build-id>/plan.json
-python3 scripts/build_plan.py render       .sfskills/builds/<build-id>/plan.json
+python3 scripts/build_plan.py validate  .sfskills/builds/<build-id>/plan.json
+python3 scripts/build_plan.py render    .sfskills/builds/<build-id>/plan.json
 ```
 
 `set-plan` validates before it writes, so a plan body that would not have validated never lands — the failure arrives as an error message rather than as a half-written plan file. If it rejects the body, fix the body and re-run; do not route around it by editing `plan.json`.
 
-`ensure-gates` is not optional and it is not the human's job: `validate` ERRORs with `missing human gate 'milestone:M1'` until every milestone has a gate record, and `ensure-gates` is what adds them — one per milestone plus a `step:<step-id>` gate for every step written with `human_gate: true`, all as `pending`, never approved, and it never touches a gate that already exists. Adding a *pending* gate record is not approving one; `gate` remains the only writer of a decision and a human the only decider.
+**`ensure-gates` is a repair command, not a fourth line in that block.** `set-plan` already fills the gate records in on its way through — one `milestone:<id>` per milestone, plus a `step:<step-id>` for every step written with `human_gate: true`, all `pending` — and names what it added on its `gates added:` output line. Reach for `ensure-gates` only when `validate` still reports `missing human gate '<name>'`, which happens to a plan that predates this behaviour or was edited outside the CLI; it is idempotent and leaves any existing record untouched. Writing a *pending* record is not approving one: `build_plan.py gate` stays the only writer of a gate decision, and a human the only decider.
 
 `validate` rejects an unknown step type, an agent that is not eligible under the four checks in Step 6, a skill that does not resolve, a dependency cycle, a step or milestone with no acceptance test, a milestone whose `steps[]` does not match its members, a missing gate, a `checker` test whose script is not on disk, and any test `command` that matches the § 5 deploy deny-list. Fix every error and re-run until it exits 0 — finishing with a plan that does not validate hands the verifier a file it will reject on mechanics instead of on substance. Report the next command in the loop, [`/verify-plan`](../../commands/verify-plan.md), and stop.
 
@@ -272,7 +306,7 @@ python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/plan/
 2. **Confidence** — HIGH / MEDIUM / LOW against the rubric below.
 3. **Scope table** — in and out, each row citing the answer that put it there.
 4. **Fit-gap table** — Step 3 entries.
-5. **Decisions** — Step 4 records, each with its tree and branch.
+5. **Decisions** — Step 4 records, each showing either its tree and branch or the `source_reference` that stood in for one, with `adr_required` visible.
 6. **Milestones and steps** — the plan as written, in dependency order, with acceptance tests per step and the `human_gate` flag visible.
 7. **Blocked steps** — every `skill-gap`, with the search phrases that found nothing. This list is the depth-wave worklist.
 8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups.
@@ -287,7 +321,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 | Score | Condition |
 |---|---|
 | **HIGH** | Every blocking clarification answered; every step's agent, skills and templates resolve; every decision cites a tree branch; every step has a test whose runner exists; `validate` exits 0; no blocked steps. |
-| **MEDIUM** | One or more steps are `blocked` on a skill gap, or one decision has `decision_tree: null` with `adr_required: true`, or a blocking clarification was deferred rather than answered. |
+| **MEDIUM** | One or more steps are `blocked` on a skill gap, or one decision was resolved from a `source_reference` instead of a tree branch and carries `adr_required: true`, or a blocking clarification was deferred rather than answered. |
 | **LOW** | More than a quarter of steps are blocked, answers contradict each other on a decision the plan had to make anyway, or `validate` still reports errors the agent could not resolve. |
 
 ### Process Observations
@@ -336,10 +370,10 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 ## What This Agent Does NOT Do
 
 - Never deploys to an org, never runs `sf project deploy`, never probes an org.
-- Never approves a gate. It writes `status: planned` and stops. `ensure-gates` adds missing gate records as `pending`, which is bookkeeping the schema requires; `scripts/build_plan.py gate` is the only writer of a gate *decision*, and only a human runs it.
+- Never approves a gate. It writes `status: planned` and stops. `set-plan` lays down the missing gate records as `pending` and `ensure-gates` repairs a plan that is somehow missing one, which is bookkeeping the schema requires; `scripts/build_plan.py gate` is the only writer of a gate *decision*, and only a human runs it.
 - Never invents a skill path, a template path, a decision-tree branch or an agent id. Every one is checked on disk before it is written into a step.
 - Never assigns a build-time agent, a deprecated agent, an agent whose `status` is off the frontmatter-schema enum, or an org-requiring agent in a `design-only` build.
-- Never hand-edits `plan.json`. `set-plan --file` writes the plan body; `ensure-gates` writes the pending gate records; nothing else in this agent touches the file.
+- Never hand-edits `plan.json`. `set-plan --file` writes the six-key plan body and the pending gate records with it; `ensure-gates` is the repair path when one is missing; nothing else in this agent touches the file.
 - Never writes a Salesforce claim no skill supports — the step is `blocked` with `blocked_reason: skill-gap` instead.
 - Never executes a step, runs a checker against artefacts, or writes anything under `artefacts/`.
 - Never edits `PLAN.md` or any other rendered view by hand.

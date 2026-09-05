@@ -214,11 +214,30 @@ Every step has ≥ 1 acceptance test; every milestone has ≥ 1. Types:
 
 | type | runner | pass condition |
 |---|---|---|
-| `checker` | `python3 skills/<domain>/<slug>/scripts/check_*.py --manifest-dir artefacts/<step>` | exit 0 **and** `check-outputs` ok |
+| `checker` | the command as declared in the plan — default form `python3 skills/<domain>/<slug>/scripts/check_*.py --manifest-dir artefacts/<step>`; a checker that takes a positional path or `--file` is declared with that form instead | exit 0 **and** `check-outputs` ok |
 | `xml` | ElementTree parse of every `*.xml`/`*-meta.xml` in the step's artefacts | all parse |
 | `manifest` | every artefact type/member appears in `package.xml`; no member without a file | consistent |
 | `command` | a stdlib-only `python3 …` command declared in the plan, over a path in the repo or the build dir (never a deploy — see the deny-list below) | exit 0 |
 | `manual` | a checklist line the human ticks at the milestone gate | ticked |
+
+`step-tester` executes a declared `checker` command verbatim once the
+deny-list below has cleared it, and never rewrites it — no flag is appended,
+removed or re-ordered, and no path is substituted. A checker invoked with an
+argument its own parser does not define exits on a usage error, which reads as
+a failing step when nothing about the artefacts is wrong.
+
+> **Follow-up: converge checker argument forms.** `--manifest-dir <dir>` is the
+> form this layer standardises on and every new skill checker should take it.
+> Three predate it and are declared with their own form until they are changed:
+> `skills/admin/email-templates-and-alerts/scripts/check_email_templates.py`
+> (positional `paths…`),
+> `skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py`
+> (positional `path`) and
+> `skills/admin/configuration-workbook-authoring/scripts/check_workbook.py`
+> (`--workbook`, with `--file` as its alias). Meanwhile `validate` WARNs — it
+> does not ERROR — on a `checker` command with no `--manifest-dir`, saying the
+> checker declares a non-standard argument form and the tester will run it
+> verbatim.
 
 The tester never invents a test; it runs what the plan declares plus the
 always-on `xml` and `manifest` checks. If a declared checker does not exist,

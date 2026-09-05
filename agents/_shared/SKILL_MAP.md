@@ -142,6 +142,20 @@ under the classifier's `Mandatory Reads` section.
 ### `email-template-modernizer`
 - `admin/email-templates-and-alerts`
 
+### `story-drafter`
+- `admin/acceptance-criteria-given-when-then`, `admin/agent-output-formats`, `admin/ai-use-case-assessment`
+- `admin/change-management-and-deployment`, `admin/change-management-and-training`
+- `admin/compliance-documentation-requirements`, `admin/configuration-workbook-authoring`
+- `admin/fit-gap-analysis-against-org`, `admin/moscow-prioritization-for-sf-backlog`
+- `admin/persona-and-journey-mapping-sf`, `admin/process-flow-as-is-to-be`
+- `admin/requirements-gathering-for-sf`, `admin/requirements-traceability-matrix`
+- `admin/stakeholder-raci-for-sf-projects`, `admin/uat-and-acceptance-criteria`
+- `admin/uat-test-case-design`, `admin/user-story-writing-for-salesforce`
+- `architect/architecture-decision-records`, `architect/license-optimization-strategy`
+- `architect/nfr-definition-for-salesforce`
+- `standards/decision-trees/automation-selection.md`
+- Harness: `designer_base`. Also the build layer's design-only owner of workbook and story `docs` steps (`standards/build-orchestration.md` § 4).
+
 ---
 
 ## Wave C — Tier 3 (10 vertical / governance)
@@ -465,6 +479,29 @@ Templates: none. There is no `templates/omnistudio/` directory yet — a real ga
 
 ### `multi-org-drift-analyzer`
 - `architect/multi-org-strategy`, `devops/source-tracking-and-conflict-resolution`, `devops/package-development-strategy`
+
+### `apex-builder`
+- `apex/apex-class-decomposition-pattern`, `apex/apex-collections-patterns`, `apex/apex-cpu-and-heap-optimization`
+- `apex/apex-design-patterns`, `apex/apex-dml-patterns`, `apex/apex-dynamic-soql-binding-safety`
+- `apex/apex-mocking-and-stubs`, `apex/apex-named-credentials-patterns`, `apex/apex-queueable-patterns`
+- `apex/apex-rest-services`, `apex/apex-security-patterns`, `apex/apex-stripinaccessible-and-fls-enforcement`
+- `apex/apex-test-setup-patterns`, `apex/apex-with-without-sharing-decision`, `apex/async-apex`
+- `apex/batch-apex-patterns`, `apex/callouts-and-http-integrations`, `apex/error-handling-framework`
+- `apex/governor-limits`, `apex/invocable-methods`, `apex/mixed-dml-and-setup-objects`
+- `apex/order-of-execution-deep-dive`, `apex/platform-events-apex`, `apex/recursive-trigger-prevention`
+- `apex/soql-fundamentals`, `apex/soql-security`, `apex/test-class-standards`
+- `apex/test-data-factory-patterns`, `apex/trigger-and-flow-coexistence`, `apex/trigger-framework`
+- Templates: `templates/apex/` (`ApplicationLogger.cls`, `BaseDomain.cls`, `BaseSelector.cls`, `BaseService.cls`, `HttpClient.cls`, `SecurityUtils.cls`, `TriggerControl.cls`, `TriggerHandler.cls`) and `templates/apex/tests/` (`BulkTestPattern.cls`, `MockHttpResponseGenerator.cls`, `TestDataFactory.cls`, `TestRecordBuilder.cls`, `TestUserFactory.cls`)
+- Decision trees: `async-selection.md`, `sharing-selection.md`
+- Also the build layer's design-only owner of Apex `automation` steps (`standards/build-orchestration.md` § 4).
+
+### `bulk-migration-planner`
+- `admin/agent-output-formats`, `apex/callouts-and-http-integrations`
+- `architect/large-data-volume-architecture`, `integration/bulk-api-2-patterns`
+- `integration/idempotent-integration-patterns`, `integration/named-credentials-setup`
+- Templates: `templates/apex/HttpClient.cls`
+- Decision trees: `integration-pattern-selection.md`
+- Also the build layer's design-only owner of `data` and `integration` steps (`standards/build-orchestration.md` § 4).
 
 ---
 
