@@ -190,7 +190,7 @@ The UAT test-case pack (`uat-test-cases.yaml`) and the compiled acceptance-crite
 **Borrowing a roster agent from outside Tier 4.** `story-drafter` is a Tier-2 agent with no build-layer clause in its contract: it takes `discovery_artifact_path`, `discovery_artifact_kind` and `feature_scope`, and it persists to its own `default_output_dir`. That does not make it ineligible. The planner maps those inputs from the build directory into the step's `inputs{}` and declares the step's outputs under `artefacts/<step-id>/`; `build-step-runner` relocates what the agent wrote onto those declared paths and records the move. The same accommodation applies to any roster agent a plan borrows for a step, on two conditions:
 
 1. **Read the Inputs table *and* the Escalation / Refusal Rules section, not either alone.** The table states what the agent needs; the refusal section states what it does when it does not get it, and the two are authored separately — an input the table marks "yes for design" is often the same one a single refusal line turns into a stop before the agent reads the plan. `sandbox-strategy-designer` is the standing case: five inputs are mandatory for a design run (`mode`, `team_size`, `concurrent_workstreams`, `release_cadence`, `data_sensitivity`) and its Escalation section reads, in full, "No team size / cadence → refuse." Every input either section makes mandatory is mapped into `inputs{}` from an answered clarification, from `requirement.md`, or from a `depends_on` step's outputs. When one exists nowhere on file the step is `blocked` with `blocked_reason: "borrowed agent requires <inputs>"`, naming them.
-2. **Declare only outputs the agent's Output Contract names.** A borrowed agent produces what its contract says it produces; a path in `outputs[]` with no counterpart there is an artefact nobody writes, `check-outputs` never confirms it, and the step cannot reach `built`. Re-own the step, or move the output to the agent that does declare it.
+2. **Declare only outputs the agent's Output Contract names.** A borrowed agent produces what its contract says it produces; a path in `outputs[]` with no counterpart there is an artefact nobody writes, `check-outputs` never confirms it, and the step cannot reach `built`. Re-own the step, or move the output to the agent that does declare it. This condition wins over § 5's declare-a-manifest rule wherever the two meet, and the one place they meet — `apex-builder`, whose Output Contract names no `package.xml` — is settled in § 5 under **The Apex exception**: the Apex step declares its classes and their meta XML, and the build-level manifest step aggregates the members.
 
 **Adding a step type is not one edit.** It touches, in this order: this table
 and the artefact map above it; `STEP_TYPES` in `scripts/build_plan.py`; the
@@ -248,15 +248,38 @@ a failing step when nothing about the artefacts is wrong.
 
 ### Checker scope
 
-A `checker` acceptance test may carry a `scope`:
+**The literal command governs.** `step-tester` runs the declared `command`
+string exactly as written and substitutes no path, so the tree a checker
+actually reads is the one spelled into that string — never the one `scope`
+names. `scope` is the plan's declared **intent** for the test: it states which
+tree the author meant the exit code to stand for, and `render` prints it beside
+the command so a reader of PLAN.md can see that claim without re-deriving it
+from the flags. A `checker` acceptance test may carry one:
 
-| `scope` | What the tester passes the checker | When to use it |
+| `scope` | The `--manifest-dir` the command itself must carry | When to declare it |
 |---|---|---|
-| `step` (default, and what is assumed when the field is absent) | the step's own artefacts — `--manifest-dir artefacts/<step-id>` | the checker's assertions are all satisfiable inside one step's output |
-| `build` | the whole tree — `--manifest-dir artefacts` | the checker asserts a link between files that different steps write |
+| `step` (default, and what is assumed when the field is absent) | `artefacts/<step-id>` — the step's own artefacts | the checker's assertions are all satisfiable inside one step's output |
+| `build` | `artefacts` — the whole tree | the checker asserts a link between files that different steps write |
 
-`render` prints the scope beside the command, so a reader of PLAN.md can see
-which of the two a test was declared at.
+**Intent and command must agree.** A test declaring no `scope` while passing
+`--manifest-dir artefacts` is not thereby build-scoped; it is a test whose
+declared reading and executed reading disagree, and nothing downstream can tell
+which of the two its exit code stands for. `validate` WARNs on the
+disagreement; `agents/build-planner/AGENT.md` Step 6 writes the two in
+agreement in the first place, and the plan verifier's testability lens refutes
+a test where they diverge. A checker taking a positional path, `--file` or
+`--workbook` rather than `--manifest-dir` carries no path for `scope` to
+disagree with — declare the scope the test's reading actually needs and say in
+its `description` which tree that is.
+
+**At milestone level the scope is always `build`.** A milestone acceptance test
+runs once every step in the milestone is documented, and exists to assert what
+no single step owns, so it reads the whole `artefacts/` tree by definition —
+`validate` passes no step type when it checks a milestone's tests, and there is
+no narrower reading for `scope` to select. Declaring it on a milestone test is
+redundant rather than wrong. A milestone test whose command points inside one
+step's directory is a step test filed at the wrong level: move it onto that
+step, or widen the command to `artefacts`.
 
 **Cross-referential checkers.** Some checkers assert a relationship spanning
 two metadata files that the plan assigns to two different steps. Run at step
@@ -287,14 +310,34 @@ the step is `blocked`, not silently passed. The always-on `manifest` check
 **fails** — it does not skip — when the step's type is a metadata type
 (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`)
 and no `package.xml` exists under the step's artefacts or those of a step it
-depends on.
+depends on. The one carve-out is the `apex-builder`-owned `automation` step
+described under **The Apex exception** below: its members live in the
+build-level manifest, so the check records skipped-not-applicable and names
+that step rather than failing.
 
-**Every metadata step declares `artefacts/<step-id>/package.xml` in its
-`outputs[]`.** `metadata-builder` writes one on every run, but an agent-side
-guarantee is invisible to a reader of `plan.json` and invisible to
-`check-outputs`, which only ever confirms paths the plan declared. Declaring it
-turns the manifest the tester reads into a file the plan promised and the CLI
-verifies, on all seven metadata types alike.
+**Every `metadata-builder`-owned metadata step declares
+`artefacts/<step-id>/package.xml` in its `outputs[]`.** `metadata-builder`
+writes one on every run, but an agent-side guarantee is invisible to a reader
+of `plan.json` and invisible to `check-outputs`, which only ever confirms paths
+the plan declared. Declaring it turns the manifest the tester reads into a file
+the plan promised and the CLI verifies, on all seven metadata types alike.
+
+**The Apex exception, and why it is not an exemption.** `apex-builder` is the
+other design-only owner of an `automation` step, and its Output Contract names
+no manifest — it produces class bodies, their `.cls-meta.xml` / `.trigger-meta.xml`
+siblings, an integration note, a governor-limit budget and a test plan. Section 4
+condition 2 forbids declaring an output the owning agent does not produce, so an
+`apex-builder` step that declared `package.xml` would be caught between the two
+rules. It does not declare one. It declares its `.cls` / `.trigger` files and
+their meta XML, and the build-level manifest step — type `docs`, owned by
+`metadata-builder` — aggregates its `ApexClass` and `ApexTrigger` members into
+the build's `package.xml` alongside every other step's, and `depends_on` the
+Apex step to do it. Because that dependency runs the other way, the Apex step
+has no manifest of its own to read: its always-on `manifest` check records
+skipped-not-applicable, naming the build-level manifest step that carries its
+members, rather than failing for the absence of a local file. The rule is
+unchanged for every `metadata-builder`-owned step of any of the seven metadata
+types.
 
 `validate` enforces three constraints on declared tests, all ERRORs:
 

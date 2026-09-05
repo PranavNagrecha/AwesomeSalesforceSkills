@@ -2217,3 +2217,23 @@ def test_checker_scope_is_validated_and_rendered(tmp_path, fixture_repo):
     assert any("only means anything on a 'checker' test" in w
                for w in warns_for(noisy, fixture_repo))
     assert errors_for(noisy, fixture_repo) == []
+
+
+def test_scope_must_agree_with_manifest_dir(fixture_repo):
+    """Section 5: scope is intent; the literal --manifest-dir governs; disagreement WARNs."""
+    rel = add_checker(fixture_repo, "admin", "fake-scope", "check_scope.py", REAL_CHECKER)
+
+    # Agreeing pairs: step scope + artefacts/<step-id>, build scope + artefacts root.
+    for scope, target in (("step", "artefacts/M1-S01"), ("build", "artefacts"), ("build", "artefacts/")):
+        plan = plan_dict([step("M1-S01", "M1", tests=[
+            {"type": "checker", "command": f"python3 {rel} --manifest-dir {target}", "scope": scope}])])
+        assert not [w for w in warns_for(plan, fixture_repo) if "disagrees" in w], (scope, target)
+
+    # Disagreeing pairs WARN and never ERROR.
+    for scope, target in (("build", "artefacts/M1-S01"), ("step", "artefacts")):
+        plan = plan_dict([step("M1-S01", "M1", tests=[
+            {"type": "checker", "command": f"python3 {rel} --manifest-dir {target}", "scope": scope}])])
+        hits = [w for w in warns_for(plan, fixture_repo) if "disagrees" in w]
+        assert len(hits) == 1, (scope, target, warns_for(plan, fixture_repo))
+        assert target.rstrip("/") in hits[0] and scope in hits[0]
+        assert errors_for(plan, fixture_repo) == []

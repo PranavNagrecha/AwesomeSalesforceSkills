@@ -529,6 +529,17 @@ def _acceptance_issues(tests: list, owner: str, repo_root: Path,
                                            f"deepen the skill's checker, or declare a test type "
                                            f"that can actually run"))
                 name = m.group(1).rsplit("/", 1)[-1]
+                # Section 5: `scope` is declared intent; the literal --manifest-dir governs.
+                # The two must name the same tree.
+                md = re.search(r"--manifest-dir(?:=|\s+)(\S+)", command or "")
+                if md and test.get("scope"):
+                    target = md.group(1).strip("'\"").rstrip("/")
+                    looks_step = bool(re.search(r"artefacts/M\d+-S\d+", target))
+                    looks_build = target in {"artefacts", "./artefacts", "artefacts/"} or target.endswith("/artefacts")
+                    if (scope == "build" and looks_step) or (scope == "step" and looks_build):
+                        issues.append(("WARN", f"{where}: declared scope '{scope}' disagrees with the command's "
+                                               f"--manifest-dir {target} — the tester runs the command verbatim, "
+                                               f"so make the two name the same tree"))
                 if (name in CROSS_REFERENTIAL_CHECKERS
                         and step_type in CROSS_REFERENTIAL_STEP_TYPES
                         and scope == "step"):
