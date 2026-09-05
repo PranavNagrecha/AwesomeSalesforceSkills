@@ -149,7 +149,7 @@
     "fca92201185f7df633f1",
     "fdc2214e62e0ebfb4553"
   ],
-  "content_hash": "cf4f78d0dd08307239fdf2c2f765bb545c45b773188ecf1c8a80af4855e0981c",
+  "content_hash": "1584646e4a0f74081cddfb5dc68b18d92a679205dfac5726ccaf30a0150a9026",
   "dependencies": [],
   "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration. Triggers: custom property editor, Flow configuration editor, builderContext, configuration_editor_input_value_changed, genericTypeMappings, elementInfo, validate() key errorString, propertyType T generic sObject. NOT for a Flow screen component with no design-time editor \u2014 use lwc/lwc-in-flow-screens. NOT for deciding whether a property editor is warranted \u2014 use flow/flow-custom-property-editors.",
   "file_location": "skills/lwc/custom-property-editor-for-flow",

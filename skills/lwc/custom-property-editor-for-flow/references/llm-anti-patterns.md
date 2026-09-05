@@ -117,18 +117,33 @@ export default class MyEditor extends LightningElement {
 ```javascript
 @api
 validate() {
-    const param = this.inputVariables.find(v => v.name === 'requiredField');
+    const validity = [];
+    const param = this.inputVariables.find((v) => v.name === 'requiredField');
     if (!param || !param.value) {
-        return {
-            isValid: false,
-            errorMessage: 'Required Field must be configured.'
-        };
+        const cmp = this.template.querySelector('[data-id="requiredField"]');
+        if (cmp) {
+            cmp.setCustomValidity('Required Field must be configured.');
+            cmp.reportValidity();
+        }
+        validity.push({
+            key: 'RequiredField',
+            errorString: 'Required Field must be configured.'
+        });
     }
-    return { isValid: true };
+    return validity;
 }
 ```
 
-**Detection hint:** Property editor class with `@api inputVariables` but no `validate()` method.
+`validate()` returns an **array of `{ key, errorString }`** objects — empty array for valid.
+An `{ isValid, errorMessage }` object, a boolean, or a `{ message, severity }` object is not
+the documented contract, and Flow Builder will not block the save (lwc_guide
+`use-flow-custom-property-editor-interface` L9731–9735; worked examples L9091–9099,
+L9231–9238). Flow Builder renders only the error **count**; call `setCustomValidity()` and
+`reportValidity()` yourself to show the strings (lwc_guide L9235–9238, L9744–9752).
+
+**Detection hint:** Property editor class with `@api inputVariables` but no `validate()`
+method; or a `validate()` whose `return` is not an array literal or array variable —
+grep for `return {` and `return true` / `return false` inside a `validate()` body.
 
 ---
 
@@ -142,6 +157,8 @@ validate() {
     <targetConfigs>
         <targetConfig targets="lightning__FlowScreen">
             <property name="label" type="String"/>
+            <!-- Wrong twice: configurationEditor is an ATTRIBUTE of targetConfig, not a
+                 child element, and the value points at the component's own bundle. -->
             <configurationEditor>c-my-runtime-component</configurationEditor>
         </targetConfig>
     </targetConfigs>
@@ -155,12 +172,23 @@ validate() {
 The `configurationEditor` must reference a separate, dedicated LWC component built specifically for the builder context:
 
 ```xml
-<configurationEditor>c-my-property-editor</configurationEditor>
+<targetConfig targets="lightning__FlowScreen" configurationEditor="c-my-property-editor">
+    <property name="label" type="String"/>
+</targetConfig>
+```
+
+For an invocable action there is no XML at all — the registration is the
+`configurationEditor` modifier on `@InvocableMethod` (apexdev L5413):
+
+```apex
+@InvocableMethod(label='Send HTML Email' configurationEditor='c-html-email-editor')
+public static List<Result> sendEmails(List<Request> requests) { /* ... */ }
 ```
 
 The editor component receives `inputVariables` and `builderContext`. The runtime component receives the actual `@api` properties set by the admin.
 
-**Detection hint:** `configurationEditor` value that matches the parent component's own name, or editor component files that import runtime-only modules like `lightning/navigation`.
+**Detection hint:** a `<configurationEditor>` child element instead of a `targetConfig`
+attribute; a `configurationEditor` value that matches the parent component's own name, or editor component files that import runtime-only modules like `lightning/navigation`.
 
 ---
 
@@ -188,3 +216,42 @@ get availableVariables() {
 ```
 
 **Detection hint:** Property editor that builds dynamic picklists or variable references but does not declare `@api builderContext`.
+
+---
+
+## Anti-Pattern 7: Mutating inputVariables in place instead of dispatching an event
+
+**What the LLM generates:**
+
+```javascript
+handleChange(event) {
+    const param = this.inputVariables.find(v => v.name === 'volume');
+    param.value = event.detail.value;   // writes straight into the builder's copy
+}
+```
+
+**Why it happens:** The array is right there and assignment reads like the obvious update.
+LLMs also carry over the two-way-binding habit from other frameworks.
+
+**Why it is wrong:** `inputVariables` is described as "a copy of the flow metadata from Flow
+Builder" (lwc_guide L9089, L9214). Flow Builder is not watching the array; the only channel
+back is an event. Worse, writing through an `@api` property is an illegal mutation in LWC,
+so the same line can throw instead of silently doing nothing.
+
+**Correct pattern:**
+
+```javascript
+handleChange(event) {
+    this.dispatchEvent(new CustomEvent('configuration_editor_input_value_changed', {
+        bubbles: true,
+        cancelable: false,
+        composed: true,
+        detail: { name: 'volume', newValue: event.detail.value, newValueDataType: 'Number' }
+    }));
+}
+```
+
+**Detection hint:** assignment into a `find()` result or an index of `inputVariables` /
+`genericTypeMappings` — grep for `inputVariables[` followed by `]` and `=`, `param.value =`,
+`.value =` on a variable derived from `inputVariables`, and any `this.inputVariables.push(`
+or `.splice(`.
