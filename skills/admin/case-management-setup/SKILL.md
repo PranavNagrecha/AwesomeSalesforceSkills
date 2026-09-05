@@ -44,7 +44,7 @@ outputs:
   - "Case team roles and predefined team setup"
   - "Entitlement process with milestones and violation actions (if SLA tracking required)"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
 updated: 2026-09-05
 ---

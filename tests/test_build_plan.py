@@ -2237,3 +2237,36 @@ def test_scope_must_agree_with_manifest_dir(fixture_repo):
         assert len(hits) == 1, (scope, target, warns_for(plan, fixture_repo))
         assert target.rstrip("/") in hits[0] and scope in hits[0]
         assert errors_for(plan, fixture_repo) == []
+
+
+def test_rejected_body_archives_its_own_verdict_and_replan_clears_it(tmp_path, fixture_repo, requirement, capsys):
+    """W06: history[v].plan.verification is the verdict that rejected v; a re-plan has no verification."""
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Build B", "--requirement", str(requirement),
+               "--repo-root", str(fixture_repo), "--now", "2026-09-05T09:00:00Z") == 0
+    path = build_dir / "plan.json"
+    body = write_json(tmp_path / "body.json", {
+        "scope": {"in": ["Case"], "out": [], "fit_gap": []}, "fit_gap": [],
+        "decisions": [{"id": "D1", "decision": "Flow"}],
+        "milestones": [{"id": "M1", "title": "Intake", "steps": ["M1-S01"],
+                        "acceptance_tests": [{"type": "manifest", "description": "ok"}]}],
+        "steps": [step("M1-S01", "M1")],
+    })
+    capsys.readouterr()
+    assert run("set-plan", str(path), "--file", str(body), "--repo-root", str(fixture_repo)) == 0
+    v1 = write_json(tmp_path / "v1.json", {"lenses": [], "blockers": [{"step": "M1-S01", "problem": "x"}], "plan_version": 1})
+    assert run("set-verification", str(path), "--file", str(v1), "--outcome", "plan-rejected",
+               "--by", "verifier", "--repo-root", str(fixture_repo)) == 0
+    plan = json.loads(path.read_text())
+    assert plan["history"][-1]["version"] == 1
+    assert plan["history"][-1]["plan"]["verification"]["plan_version"] == 1
+    assert plan["history"][-1]["plan"]["verification"]["status"] == "plan-rejected"
+    # re-plan -> v2 with no inherited verdict
+    assert run("set-plan", str(path), "--file", str(body), "--repo-root", str(fixture_repo)) == 0
+    plan = json.loads(path.read_text())
+    assert plan["version"] == 2 and "verification" not in plan
+    v2 = write_json(tmp_path / "v2.json", {"lenses": [], "blockers": [{"step": "M1-S01", "problem": "y"}], "plan_version": 2})
+    assert run("set-verification", str(path), "--file", str(v2), "--outcome", "plan-rejected",
+               "--by", "verifier", "--repo-root", str(fixture_repo)) == 0
+    plan = json.loads(path.read_text())
+    assert [h["plan"]["verification"]["plan_version"] for h in plan["history"]] == [1, 2]

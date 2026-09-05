@@ -1915,6 +1915,9 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
     if replanned:
         plan["version"] = int(plan.get("version") or 1) + 1
     plan["status"] = "planned"
+    # A new body has not been verified; the previous round's verdict belongs
+    # to the archived body in history[], not to this one (dry-run v4 W06).
+    plan.pop("verification", None)
     summary = (getattr(args, "summary", None) or "").strip()
     if summary:
         # The planner is the second agent to restate the requirement, and the
@@ -1992,6 +1995,9 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
         # — `set-plan` does that when the re-plan actually arrives.
         snapshot = copy.deepcopy(plan)
         snapshot.pop("history", None)
+        # The archived body carries the verdict that rejected IT, not the one
+        # it inherited from the previous round (dry-run v4 finding W06).
+        snapshot["verification"] = verification
         archived = _archive_rejected_plan(
             plan, snapshot, verification["verified_at"], args.by or "plan-verifier",
             "plan-verifier outcome plan-rejected")

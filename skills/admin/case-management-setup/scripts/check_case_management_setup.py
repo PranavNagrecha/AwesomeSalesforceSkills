@@ -60,11 +60,35 @@ def parse_args() -> argparse.Namespace:
 
 
 def find_xml_files(base: Path, subdir: str, suffix: str = ".xml") -> list[Path]:
-    """Return all XML files under base/subdir with the given suffix."""
-    target = base / subdir
-    if not target.is_dir():
+    """Return all XML files with the given suffix under every `<subdir>/`
+    directory at any depth below base.
+
+    A build tree keeps each step's metadata in its own folder
+    (artefacts/M3-S04/assignmentRules/...), so `base/subdir` alone would miss
+    everything when the checker is pointed at the tree root; the absence
+    guards already recurse, and the two must see the same files.
+    """
+    found: set[Path] = set()
+    for directory in [base / subdir, *base.rglob(subdir)]:
+        if directory.is_dir():
+            found.update(directory.rglob(f"*{suffix}"))
+    return sorted(found)
+
+
+def rule_elements(root, child_tag: str):
+    """Return the individual rule elements inside a rules wrapper.
+
+    Metadata-format files wrap rules: <AssignmentRules><assignmentRule>...,
+    <EscalationRules><escalationRule>..., <AutoResponseRules><autoResponseRule>....
+    <active> and <ruleEntry> live on the inner rule, not on the wrapper, so a
+    checker that reads them from the root never sees an active rule. A file
+    that has no wrapper children is treated as a single rule (source-format
+    single-rule shape).
+    """
+    if root is None:
         return []
-    return sorted(target.rglob(f"*{suffix}"))
+    inner = root.findall(f"{{{SF_NS}}}{child_tag}")
+    return inner if inner else [root]
 
 
 def xml_root(path: Path):
@@ -132,35 +156,37 @@ def check_assignment_rules(manifest_dir: Path, verbose: bool) -> list[str]:
 
     active_rules = 0
     for path in case_rule_files:
-        root = xml_root(path)
-        if root is None:
+        parsed = xml_root(path)
+        if parsed is None:
             issues.append(f"Could not parse assignment rule file: {path}")
             continue
 
-        active_val = text(root, "active")
-        if active_val.lower() == "true":
-            active_rules += 1
+        for root in rule_elements(parsed, "assignmentRule"):
 
-        rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
-        if active_val.lower() == "true" and not rule_entries:
-            issues.append(
-                f"Active assignment rule '{path.stem}' has no rule entries. "
-                "Cases will fall to the default case owner — auto-response will not fire."
-            )
+            active_val = text(root, "active")
+            if active_val.lower() == "true":
+                active_rules += 1
 
-        # Check for a catch-all entry (entry with no criteria)
-        has_catchall = False
-        for entry in rule_entries:
-            criteria = entry.findall(f"{{{SF_NS}}}criteriaItems")
-            formula = text(entry, "booleanFilter")
-            if not criteria and not formula:
-                has_catchall = True
-        if active_val.lower() == "true" and rule_entries and not has_catchall:
-            notes.append(
-                f"Assignment rule '{path.stem}' has no catch-all entry (entry with no criteria). "
-                "Cases that do not match any entry go to the default case owner. "
-                "Consider adding a catch-all as the last entry."
-            )
+            rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
+            if active_val.lower() == "true" and not rule_entries:
+                issues.append(
+                    f"Active assignment rule '{path.stem}' has no rule entries. "
+                    "Cases will fall to the default case owner — auto-response will not fire."
+                )
+
+            # Check for a catch-all entry (entry with no criteria)
+            has_catchall = False
+            for entry in rule_entries:
+                criteria = entry.findall(f"{{{SF_NS}}}criteriaItems")
+                formula = text(entry, "booleanFilter")
+                if not criteria and not formula:
+                    has_catchall = True
+            if active_val.lower() == "true" and rule_entries and not has_catchall:
+                notes.append(
+                    f"Assignment rule '{path.stem}' has no catch-all entry (entry with no criteria). "
+                    "Cases that do not match any entry go to the default case owner. "
+                    "Consider adding a catch-all as the last entry."
+                )
 
     if active_rules == 0:
         issues.append(
@@ -204,35 +230,48 @@ def check_escalation_rules(manifest_dir: Path, verbose: bool) -> list[str]:
         return issues
 
     for path in files:
-        root = xml_root(path)
-        if root is None:
+        parsed = xml_root(path)
+        if parsed is None:
             issues.append(f"Could not parse escalation rule file: {path}")
             continue
 
-        active_val = text(root, "active")
-        if active_val.lower() != "true":
-            notes.append(f"Escalation rule '{path.stem}' is not active.")
-            continue
+        for root in rule_elements(parsed, "escalationRule"):
 
-        rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
-        for i, entry in enumerate(rule_entries, start=1):
-            biz_hours = text(entry, "businessHours")
-            if not biz_hours:
-                issues.append(
-                    f"Escalation rule '{path.stem}', entry {i}: "
-                    "No business hours record attached. "
-                    "Without business hours, the escalation clock runs 24/7 including weekends. "
-                    "Attach a business hours record to this entry."
-                )
+            active_val = text(root, "active")
+            if active_val.lower() != "true":
+                notes.append(f"Escalation rule '{path.stem}' is not active.")
+                continue
 
-            assigned_to = text(entry, "assignedTo")
-            notify_template = text(entry, "template")
-            if not assigned_to and not notify_template:
-                issues.append(
-                    f"Escalation rule '{path.stem}', entry {i}: "
-                    "No assignedTo user/queue and no notification template. "
-                    "This escalation entry will match cases but take no action."
-                )
+            rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
+            for i, entry in enumerate(rule_entries, start=1):
+                biz_hours = text(entry, "businessHours")
+                if not biz_hours:
+                    issues.append(
+                        f"Escalation rule '{path.stem}', entry {i}: "
+                        "No business hours record attached. "
+                        "Without business hours, the escalation clock runs 24/7 including weekends. "
+                        "Attach a business hours record to this entry."
+                    )
+
+                # Actions live on <escalationAction> children of the entry (assignedTo,
+                # notifyTo, notifyToTemplate, assignedToTemplate), not on the entry itself.
+                actions = entry.findall(f"{{{SF_NS}}}escalationAction")
+                acting = [
+                    a for a in actions
+                    if text(a, "assignedTo") or text(a, "notifyTo")
+                    or text(a, "notifyToTemplate") or text(a, "assignedToTemplate")
+                ]
+                if not actions:
+                    issues.append(
+                        f"Escalation rule '{path.stem}', entry {i}: "
+                        "No escalationAction. This escalation entry will match cases but take no action."
+                    )
+                elif not acting:
+                    issues.append(
+                        f"Escalation rule '{path.stem}', entry {i}: "
+                        "escalationAction has no assignedTo user/queue and no notification target. "
+                        "This escalation entry will fire but reassign and notify nobody."
+                    )
 
     if verbose:
         for note in notes:
@@ -262,32 +301,34 @@ def check_auto_response_rules(manifest_dir: Path, verbose: bool) -> list[str]:
         return issues
 
     for path in files:
-        root = xml_root(path)
-        if root is None:
+        parsed = xml_root(path)
+        if parsed is None:
             issues.append(f"Could not parse auto-response rule file: {path}")
             continue
 
-        active_val = text(root, "active")
-        if active_val.lower() != "true":
-            continue
+        for root in rule_elements(parsed, "autoResponseRule"):
 
-        rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
-        for i, entry in enumerate(rule_entries, start=1):
-            template = text(entry, "template")
-            if not template:
-                issues.append(
-                    f"Auto-response rule '{path.stem}', entry {i}: "
-                    "No email template assigned. This entry will match but send no email."
-                )
-            sender_type = text(entry, "senderType")
-            sender_email = text(entry, "senderEmail")
-            if not sender_type and not sender_email:
-                notes.append(
-                    f"Auto-response rule '{path.stem}', entry {i}: "
-                    "No sender type or email configured. "
-                    "Verify the 'from' address is not the Email-to-Case routing address "
-                    "(which would create an email loop)."
-                )
+            active_val = text(root, "active")
+            if active_val.lower() != "true":
+                continue
+
+            rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
+            for i, entry in enumerate(rule_entries, start=1):
+                template = text(entry, "template")
+                if not template:
+                    issues.append(
+                        f"Auto-response rule '{path.stem}', entry {i}: "
+                        "No email template assigned. This entry will match but send no email."
+                    )
+                sender_type = text(entry, "senderType")
+                sender_email = text(entry, "senderEmail")
+                if not sender_type and not sender_email:
+                    notes.append(
+                        f"Auto-response rule '{path.stem}', entry {i}: "
+                        "No sender type or email configured. "
+                        "Verify the 'from' address is not the Email-to-Case routing address "
+                        "(which would create an email loop)."
+                    )
 
     if verbose:
         for note in notes:
