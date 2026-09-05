@@ -35,6 +35,33 @@ from score_skill_depth import score_skill, SIGNALS, BOILERPLATE_WORKFLOW  # noqa
 FENCE_RE = re.compile(r"```([A-Za-z0-9_-]*)\n(.*?)```", re.S)
 
 
+
+def _strip_apex(src: str) -> str:
+    """Blank string literals and comments in one left-to-right pass so that a '/*'
+    inside a string (e.g. urlMapping='/v1/cases/*') never opens a phantom comment
+    and an apostrophe inside a comment never opens a phantom string."""
+    out = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "'":
+            j = i + 1
+            while j < n and src[j] != "'":
+                j += 2 if src[j] == "\\" else 1
+            i = j + 1
+            continue
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+            continue
+        if src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
 def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
     hard: list[str] = []
     info: list[str] = []
@@ -55,9 +82,7 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
                     hard.append(f"{p.relative_to(ROOT)}: malformed XML fence — {exc}")
             elif lang in ("apex", "java"):
                 # braces inside string literals (e.g. Mermaid connectors '||--o{') are not code braces
-                code = re.sub(r"//[^\n]*", "", body)              # drop line comments (apostrophes in prose)
-                code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)  # drop block comments
-                code = re.sub(r"'(?:\\.|[^'\\])*'", "''", code)   # then string literals
+                code = _strip_apex(body)  # single pass: strings, // and /* */ removed in source order
                 if code.count("{") != code.count("}"):
                     # a labelled excerpt (the 300 chars before the fence say "excerpt") is allowed
                     lead = t[max(0, m.start() - 300):m.start()].lower()
