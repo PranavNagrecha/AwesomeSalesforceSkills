@@ -237,3 +237,140 @@ public class ContactSelector {
 ```
 
 **Detection hint:** Multiple SOQL queries in the same selector class with overlapping but inconsistent field lists.
+
+---
+
+## Anti-Pattern 7: Wrapping every DML in its own savepoint and calling it a unit of work
+
+**What the LLM generates:**
+
+```apex
+public class OrderService {
+    public void placeOrder(Order o, List<OrderItem> items, Shipment__c shipment) {
+        Savepoint sp1 = Database.setSavepoint();
+        insert o;
+        Savepoint sp2 = Database.setSavepoint();
+        insert items;
+        Savepoint sp3 = Database.setSavepoint();
+        try {
+            insert shipment;
+        } catch (DmlException e) {
+            Database.rollback(sp1);   // sp2 and sp3 are now invalid
+            ApplicationLogger.error('OrderService.placeOrder', e);  // and this row is gone too
+            throw e;
+        }
+    }
+}
+```
+
+**Why it happens:** "Unit of work" reads like "a transaction object", and LLMs reach for one savepoint per step by analogy with nested transactions in other platforms. On this platform three things go wrong at once. Each savepoint costs one of the 150 DML statements per transaction (Apex Developer Guide L8691, L19554). Rolling back to `sp1` invalidates `sp2` and `sp3`, so touching either afterwards is a run-time error (L8686–8688). And the logger's own `insert` happens *after* the savepoint, so the rollback deletes the audit row the catch block just created (L8682–8684).
+
+**Correct pattern:**
+
+```apex
+public with sharing class OrderService extends BaseService {
+    public void placeOrder(Order o, List<OrderItem> items, Shipment__c shipment) {
+        Savepoint sp = beginTransaction();     // exactly one, at the method boundary
+        try {
+            insert o;
+            for (OrderItem i : items) { i.OrderId = o.Id; }
+            insert items;
+            shipment.Order__c = o.Id;
+            insert shipment;
+            commitTransaction();
+        } catch (Exception e) {
+            rollbackTransaction(sp);           // roll back FIRST
+            logAndRethrow('OrderService.placeOrder', e);   // then log, so the row survives
+        }
+    }
+}
+```
+
+**Detection hint:** More than one `Database.setSavepoint()` in a single method, or a `Database.rollback(` that appears *after* a logging call inside the same `catch` block.
+
+---
+
+## Anti-Pattern 8: A `Type.forName` factory with no null guard, no interface check, and no fallback
+
+**What the LLM generates:**
+
+```apex
+public class StrategyFactory {
+    public static ICaseEscalationStrategy get(String origin) {
+        Strategy__mdt row = Strategy__mdt.getInstance(origin);
+        return (ICaseEscalationStrategy) Type.forName(row.Apex_Class__c).newInstance();
+    }
+}
+```
+
+**Why it happens:** The Apex Reference Guide's own `Type` example is a three-line happy path, and LLMs reproduce its shape without the production guards. Every failure mode here is silent until run time: `getInstance` returns `null` for a missing developer name, `Type.forName` returns `null` for an inner class, a private class, or a class that was renamed since the row was written (Apex Reference Guide L241920–241922, L242076–242082), the cast throws if the class does not implement the interface, and `newInstance()` can only reach a no-argument constructor (L242303). None of these is a compile error, so the deploy is green and the trigger dies in production.
+
+**Correct pattern:**
+
+```apex
+public with sharing class StrategyFactory {
+    @TestVisible private static Map<String, ICaseEscalationStrategy> cache =
+        new Map<String, ICaseEscalationStrategy>();
+
+    public ICaseEscalationStrategy get(String origin) {
+        String key = String.isBlank(origin) ? '' : origin.toLowerCase();
+        if (cache.containsKey(key)) { return cache.get(key); }
+
+        Type resolved = Type.forName(classNameFor(key));      // may be null
+        Object instance = resolved == null ? null : resolved.newInstance();
+        ICaseEscalationStrategy strategy = (instance instanceof ICaseEscalationStrategy)
+            ? (ICaseEscalationStrategy) instance
+            : new DefaultCaseEscalationStrategy();            // named fallback, never null
+
+        cache.put(key, strategy);
+        return strategy;
+    }
+
+    @TestVisible
+    private static void reset() { cache = new Map<String, ICaseEscalationStrategy>(); }
+}
+```
+
+**Detection hint:** `Type.forName(` on the same expression as `.newInstance()` with no intervening null check, or a `(ISomething)` cast applied directly to `newInstance()`. Also flag any static mutable `Map`/`Set`/`List` in a factory with no `reset()` — a rollback does not clear it (Apex Developer Guide L8692–8693).
+
+---
+
+## Anti-Pattern 9: Declaring the outer class `with sharing` and assuming the inner classes inherit it
+
+**What the LLM generates:**
+
+```apex
+public with sharing class CaseEscalationService {
+    // The LLM believes this inner class is covered by the outer declaration.
+    public class EscalationBatch implements Database.Batchable<SObject> {
+        public Database.QueryLocator start(Database.BatchableContext bc) {
+            return Database.getQueryLocator('SELECT Id FROM Case WHERE IsEscalated = false');
+        }
+        public void execute(Database.BatchableContext bc, List<Case> scope) { /* ... */ }
+        public void finish(Database.BatchableContext bc) {}
+    }
+}
+```
+
+**Why it happens:** Nesting looks like containment, and the outer keyword looks like it applies to everything inside. It does not: "You can declare a sharing mode on both inner classes and outer classes. Inner classes don't adopt the sharing mode of the container class." (Apex Developer Guide L4931–4932.) The batch is also an asynchronous entry point, which changes the answer again — an `inherited sharing` class always runs `with sharing` for asynchronous operations (L4935–4936). And no sharing keyword of any kind enforces object- or field-level security (L4925–4926).
+
+**Correct pattern:**
+
+```apex
+public with sharing class CaseEscalationService extends BaseService {
+    public with sharing class EscalationBatch implements Database.Batchable<SObject> {
+        public Database.QueryLocator start(Database.BatchableContext bc) {
+            // AccessLevel is separate from sharing: this enforces CRUD + FLS too.
+            return Database.getQueryLocatorWithBinds(
+                'SELECT Id FROM Case WHERE IsEscalated = false',
+                new Map<String, Object>(),
+                AccessLevel.USER_MODE
+            );
+        }
+        public void execute(Database.BatchableContext bc, List<Case> scope) { /* ... */ }
+        public void finish(Database.BatchableContext bc) {}
+    }
+}
+```
+
+**Detection hint:** Any `class` declaration nested inside another class with no `with sharing` / `without sharing` / `inherited sharing` keyword of its own. Note that this is a *readability and version-safety* defect as well as a behavioural one: from API version 67.0 an undeclared class runs `with sharing` (L4961), so the same source means different things at different API versions unless the keyword is written down.

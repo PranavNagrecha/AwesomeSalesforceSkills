@@ -90,4 +90,58 @@ public inherited sharing class AccountNotificationService {
 
 **What goes wrong:** No single layer has a clear responsibility, tests cannot isolate collaborators, and refactors become risky.
 
-**Correct approach:** Keep the controller thin, move orchestration to a service, query shape to selectors, and object rules to domain logic.
+**Correct approach:** Keep the controller thin, move orchestration to a service, query shape to selectors, and object rules to domain logic. The `@AuraEnabled` method becomes an adapter that translates parameters in and exceptions out — nothing else. Note that an `@AuraEnabled` method called from a Lightning web component is an entry point, so an `inherited sharing` class reached through it runs `with sharing` (Apex Developer Guide L4851–4856).
+
+```apex
+public with sharing class CaseConsoleController {
+
+    /**
+     * Adapter only: no SOQL, no DML, no branching on business rules.
+     * Its whole job is parameter marshalling and turning a ServiceException
+     * into something the LWC can display.
+     */
+    @AuraEnabled
+    public static void escalateCases(List<Id> caseIds) {
+        try {
+            new CaseEscalationService().escalate(new Set<Id>(caseIds));
+        } catch (BaseService.ServiceException e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Case> openCasesForAccount(Id accountId) {
+        return new CaseSelector().selectOpenByAccountIds(new Set<Id>{ accountId });
+    }
+}
+```
+
+---
+
+## Example 3: One Rule, Many Business Units — Strategy Instead Of A Growing `switch`
+
+**Context:** Escalation behaviour differs by `Case.Origin`, and a new origin arrives roughly once a quarter.
+
+**Problem:** The service holds an `if/else` chain. Every new origin is an Apex change, a code review, a test update, and a deployment — for what is really a configuration decision.
+
+**Solution:** One interface, one class per variant, and a Custom Metadata row that names the class. The routing table becomes data:
+
+| `Case_Origin__c` | `Apex_Class__c` | `Is_Active__c` | Effect |
+|---|---|---|---|
+| `Phone` | `PhoneCaseEscalationStrategy` | true | High priority + same-day callback Task |
+| `Web` | `WebCaseEscalationStrategy` | true | High priority + next-day email Task |
+| `Chat` | `WebCaseEscalationStrategy` | false | Row present but switched off — falls back |
+| *(no row)* | — | — | `DefaultCaseEscalationStrategy`, no Task |
+
+Verifying the table against the org is a two-query check, and it is the check that catches a row still naming a class that was renamed:
+
+```soql
+SELECT Case_Origin__c, Apex_Class__c, Is_Active__c
+FROM Case_Escalation_Strategy__mdt
+WHERE Is_Active__c = true
+ORDER BY Case_Origin__c
+```
+
+**Why it works:** A new origin ships as a Custom Metadata row plus one small class, and the service never changes. The cost is that the class name is now a string the compiler cannot check — which is exactly why the factory in `references/code-examples.md` § 6 null-checks the `Type`, `instanceof`-checks the instance, and always has a named fallback.
+
+**When not to do this:** Two variants that will never become three. A `switch` over an enum is cheaper to read and impossible to misconfigure. Add the seam when the third variant arrives, not in anticipation of it.
