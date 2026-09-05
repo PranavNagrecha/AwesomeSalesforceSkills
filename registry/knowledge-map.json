@@ -5294,6 +5294,9 @@
     "debug-interview": [
       "flow/flow-testing"
     ],
+    "debug-log": [
+      "flow/flow-debugging"
+    ],
     "debug-log-analysis": [
       "apex/salesforce-debug-log-analysis"
     ],
@@ -14530,6 +14533,9 @@
     "toxicity-detection": [
       "agentforce/einstein-trust-layer"
     ],
+    "trace-flag": [
+      "flow/flow-debugging"
+    ],
     "trace-flags": [
       "apex/debug-logs-and-developer-console"
     ],
@@ -15239,6 +15245,9 @@
     ],
     "workflow-automation": [
       "integration/slack-workflow-builder"
+    ],
+    "workflow-log-category": [
+      "flow/flow-debugging"
     ],
     "workflow-metadata": [
       "admin/outbound-message-setup"

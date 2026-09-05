@@ -20,11 +20,14 @@ Answer these before proceeding:
 
 | Question | Answer |
 |---|---|
-| Does the job make outbound HTTP or web service callouts? | |
+| Where is the enqueue called from — trigger, controller, batch `finish()`, finalizer? (50 per sync transaction, 1 per async) | |
+| Does the job make outbound HTTP or web service callouts, and does it also write records? (callouts must precede all DML) | |
 | Does the job need to chain to a next step? If so, how many steps maximum? | |
 | Does failure require cleanup, notification, or compensating action? | |
 | How is state passed between chain links? | |
 | What is the expected record or payload volume per job execution? | |
+| Can the same logical work be enqueued from two different transactions? (`AsyncOptions.DuplicateSignature`) | |
+| Who runs it, and are they in system mode? (View Setup and Configuration is required outside system mode) | |
 | How will operations monitor job success and failure? | |
 
 ---
@@ -54,8 +57,14 @@ Work through these in order:
 - [ ] If chaining: `System.AsyncInfo.getCurrentQueueableStackDepth()` is checked before re-enqueueing.
 - [ ] State is passed through constructor parameters — no static variables used to bridge transactions.
 - [ ] Finalizer implements `System.Finalizer` and checks `ctx.getResult()` before deciding action.
+- [ ] Finalizer uses `ctx.getAsyncApexJobId()` and `ctx.getRequestId()` — `FinalizerContext` has no `getJobId()`.
+- [ ] No `transient` member on the Queueable or the Finalizer (serialized as `null`).
+- [ ] Sharing is declared explicitly on the Queueable class.
+- [ ] The enqueue call site is a single helper, not a per-record loop.
 - [ ] Finalizer enqueues retry or compensating Queueable (not performing heavy inline work).
 - [ ] Tests use `Test.startTest()` / `Test.stopTest()` boundaries for async execution.
+- [ ] No test class that enqueues carries `@IsTest(IsParallel=true)`.
+- [ ] Checker run clean: `python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir <src> --strict`.
 - [ ] `AsyncApexJob` query or monitoring plan is in place for operations.
 
 ---
@@ -120,10 +129,15 @@ If diagnosing a failing or stuck job:
 
 **`AsyncApexJob` query used:**
 ```soql
-SELECT Id, Status, NumberOfErrors, ExtendedStatus, JobType
+SELECT Id, ApexClass.Name, JobType, Status, NumberOfErrors, ExtendedStatus,
+       CreatedDate, CompletedDate
 FROM AsyncApexJob
 WHERE Id = '<job-id>'
 ```
+
+Do not filter on `Status = 'Holding'` or read `JobItemsProcessed` / `TotalJobItems`:
+`Holding` is a batch/flex-queue status and the batch counters are always zero for
+Queueable jobs. See `references/gotchas.md`.
 
 **`ExtendedStatus` error message:** ___________________________________________
 
@@ -133,6 +147,11 @@ WHERE Id = '<job-id>'
 - [ ] Unbounded chain hit platform queue limits
 - [ ] Finalizer failure (separate transaction rolled back)
 - [ ] State deserialization error (complex type in constructor)
+- [ ] `transient` member arrived `null`
+- [ ] Callout attempted after DML in the same `execute()`
+- [ ] Duplicate signature suppressed the enqueue (`DuplicateMessageException` treated as an error)
+- [ ] Running user lacks View Setup and Configuration (enqueue outside system mode)
+- [ ] Sharing mode changed by an `apiVersion` bump to 67.0 or later
 - [ ] Governor limit exceeded inside `execute()`
 - [ ] Other: ___________________________________________
 
