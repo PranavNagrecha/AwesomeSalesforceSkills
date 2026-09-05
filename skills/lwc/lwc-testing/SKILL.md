@@ -31,6 +31,7 @@ triggers:
   - "add __tests__ to forceignore"
   - "replace registerLdsTestWireAdapter with the modern api"
   - "gate the ci pipeline on lwc jest coverage"
+  - "write jest tests for a lightning web component"
 inputs:
   - "component responsibilities, data sources, and important user interactions"
   - "whether the component uses wire adapters, imperative Apex, navigation, or LMS"

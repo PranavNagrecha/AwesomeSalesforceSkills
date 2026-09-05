@@ -6353,6 +6353,9 @@
     "error-mapping": [
       "apex/exception-handling"
     ],
+    "error-normalisation": [
+      "lwc/lwc-error-boundaries"
+    ],
     "error-payload-design": [
       "integration/api-error-handling-design"
     ],
@@ -6695,6 +6698,9 @@
     ],
     "fallback-strategy": [
       "admin/agent-conversation-design"
+    ],
+    "fallback-ui": [
+      "lwc/lwc-error-boundaries"
     ],
     "fault-connectors": [
       "flow/fault-handling"
@@ -14270,6 +14276,9 @@
     "technical-debt": [
       "admin/org-cleanup-and-technical-debt",
       "architect/technical-debt-assessment"
+    ],
+    "telemetry": [
+      "lwc/lwc-error-boundaries"
     ],
     "telephony": [
       "admin/service-cloud-voice-setup"

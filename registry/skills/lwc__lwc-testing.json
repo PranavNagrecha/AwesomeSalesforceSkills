@@ -144,7 +144,7 @@
     "ff8202748f8b450d9267",
     "ff8e0bc588615ec6a094"
   ],
-  "content_hash": "3ff2bef4500293729a43b88abc54e77e48e83a06ce9aecbb1f4b4ba0fe037009",
+  "content_hash": "f0d0735707be62eda9cf22cf466d3632c5f418d09f4bc61d999428b853f87266",
   "dependencies": [],
   "description": "Jest unit tests for LWC \u2014 @salesforce/sfdx-lwc-jest, wire adapter mocks, DOM assertions. Triggers: LWC Jest, sfdx-lwc-jest, component test. NOT for Apex tests \u2014 use apex/test-class-standards. NOT for browser E2E \u2014 use devops/automated-regression-testing.",
   "file_location": "skills/lwc/lwc-testing",
