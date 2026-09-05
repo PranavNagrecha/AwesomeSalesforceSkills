@@ -137,7 +137,7 @@ disconnectedCallback() {
 </template>
 ```
 
-**Why it happens:** `if:true` and `if:false` dominated LWC documentation and Stack Overflow answers for years. LLMs reproduce this pattern despite its deprecation in favor of `lwc:if`, `lwc:elseif`, and `lwc:else`.
+**Why it happens:** `if:true` and `if:false` dominated LWC documentation and Stack Overflow answers for years. LLMs reproduce them despite the guide's position: they "are no longer recommended. They may be deprecated and removed in the future. Use `lwc:if`, `lwc:elseif`, and `lwc:else` instead" (`lwc_guide reference-directives` L19500), and chained `if:true`/`if:false` "are not as performant nor as lightweight" than the `lwc:` directives (L19501). Note the guide says *not recommended*, not *removed* — existing `if:true` still compiles.
 
 **Correct pattern:**
 
@@ -183,3 +183,87 @@ disconnectedCallback() {
 ```
 
 **Detection hint:** `connectedCallback` that creates subscriptions, intervals, or event listeners without checking for existing ones.
+
+---
+
+## Anti-Pattern 7: Marking a lifecycle hook `async` so it can `await`
+
+**What the LLM generates:**
+
+```javascript
+async connectedCallback() {
+    this.record = await getRecord({ recordId: this.recordId });
+    this.ready = true;
+}
+
+async disconnectedCallback() {
+    await this.flushPendingEdits();
+    window.removeEventListener('resize', this._handler);
+}
+```
+
+**Why it happens:** `async`/`await` is the default idiom for asynchronous JavaScript, and marking the enclosing function `async` is the mechanical way to use it. Nothing in the syntax signals that the caller is a framework that will not wait. The guide is explicit: "`connectedCallback()` and `disconnectedCallback()` are synchronous. The framework doesn't await a promise that's returned from a lifecycle hook. If you mark a hook as `async`, code after an `await` runs after the framework moves on, which causes unpredictable order of execution relative to rendering, parent and child callbacks, and event handlers" (`lwc_guide create-lifecycle-hooks-dom` L4117). The `disconnectedCallback` case is the dangerous one — the `removeEventListener` above runs after the element is already detached.
+
+**Correct pattern:**
+
+```javascript
+connectedCallback() {
+    this.loadRecord();                                  // fire, do not await
+    this._handler = this.handleResize.bind(this);
+    window.addEventListener('resize', this._handler);
+}
+
+disconnectedCallback() {
+    window.removeEventListener('resize', this._handler); // synchronous, runs before detach
+    this.flushPendingEdits();                            // best-effort, not awaited
+}
+
+async loadRecord() {
+    try {
+        this.record = await getRecord({ recordId: this.recordId });
+    } catch (error) {
+        this.error = error;
+    }
+}
+```
+
+"To run async work from a lifecycle hook, call a separate async method from the synchronous hook" (L4118).
+
+**Detection hint:** the token `async` immediately before `connectedCallback`, `disconnectedCallback`, `renderedCallback`, or `errorCallback`. Rule **L7** in `scripts/check_lwc_lifecycle.py`.
+
+---
+
+## Anti-Pattern 8: Treating `render()` as a lifecycle notification
+
+**What the LLM generates:**
+
+```javascript
+render() {
+    console.log('component is rendering');
+    this.updateChartData();          // side effect
+    super.render();                  // and no return value
+}
+```
+
+**Why it happens:** the name matches React's `render()`, and the LWC docs list it alongside the hooks, so an assistant reaches for it as "the hook that tells me a render is happening". It is not one: "The `render()` method is not technically a lifecycle hook. It is a protected method on the `LightningElement` class. A hook usually tells you that something happened… The `render()` method must exist on the prototype chain" (`lwc_guide create-lifecycle-hooks-render` L4153). Its single documented job is to choose a template, and "The method must return a valid HTML template" (L4150) — specifically a template reference, "the imported default export from an HTML file" (`create-render` L1573). Returning nothing, or performing side effects here, breaks rendering rather than observing it.
+
+**Correct pattern:**
+
+```javascript
+import compact from './caseWatchList.html';
+import detail from './caseWatchListDetail.html';
+
+render() {
+    return this.mode === 'detail' ? detail : compact;   // choose, do nothing else
+}
+
+renderedCallback() {
+    if (this.hasRendered) return;                        // observe here instead
+    this.hasRendered = true;
+    this.updateChartData();
+}
+```
+
+And prefer not to fork at all: "we recommend using the `lwc:if|elseif|else` directives to render nested templates conditionally instead" (`create-render` L1572). If you do fork, each extra template needs its own matching `.css` filename (L1579).
+
+**Detection hint:** a `render()` body containing anything other than a `return` of an imported template reference, or a `render()` with no `return` at all.

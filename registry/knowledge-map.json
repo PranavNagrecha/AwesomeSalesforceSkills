@@ -4206,14 +4206,16 @@
     ],
     "contentdocumentlink": [
       "apex/apex-blob-and-content-version",
-      "data/attachment-to-files-migration"
+      "data/attachment-to-files-migration",
+      "lwc/file-upload-patterns"
     ],
     "contention": [
       "apex/record-locking-and-contention"
     ],
     "contentversion": [
       "apex/apex-blob-and-content-version",
-      "data/attachment-to-files-migration"
+      "data/attachment-to-files-migration",
+      "lwc/file-upload-patterns"
     ],
     "context-variables": [
       "apex/apex-trigger-context-variables"
@@ -5690,6 +5692,9 @@
     "disclosure-compliance": [
       "apex/fsc-document-generation"
     ],
+    "disconnectedcallback": [
+      "lwc/lifecycle-hooks"
+    ],
     "discount-approval": [
       "admin/cpq-approval-workflows",
       "admin/quotes-and-quote-templates"
@@ -6358,6 +6363,7 @@
       "flow/flow-error-monitoring"
     ],
     "errorcallback": [
+      "lwc/lifecycle-hooks",
       "lwc/lwc-error-boundaries"
     ],
     "escalation": [
@@ -7896,6 +7902,9 @@
     ],
     "holidays": [
       "admin/business-hours-and-holidays"
+    ],
+    "hook-order": [
+      "lwc/lifecycle-hooks"
     ],
     "hotfix": [
       "devops/rollback-and-hotfix-strategy"

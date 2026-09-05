@@ -94,17 +94,17 @@ export default class AccountCard extends NavigationMixin(LightningElement) {
 <!-- accountCard.html -->
 <template>
     <!-- Loading state -->
-    <template if:true={_isLoading}>
+    <template lwc:if={_isLoading}>
         <lightning-spinner alternative-text="Loading account details..."></lightning-spinner>
     </template>
 
     <!-- Error state -->
-    <template if:true={hasError}>
+    <template lwc:if={hasError}>
         <p class="slds-text-color_error">{_error}</p>
     </template>
 
     <!-- Data state -->
-    <template if:true={isLoaded}>
+    <template lwc:if={isLoaded}>
         <div class="chart-container"></div>
         <p>{_account.Name}</p>
         <lightning-button label="View Account" onclick={handleNavigateToAccount}></lightning-button>
@@ -155,23 +155,35 @@ export default class RecordEditor extends LightningElement {
 
 ```javascript
 // chartWrapper.js
-import { LightningElement, api, track } from 'lwc';
-import { loadScript } from 'lightning/platformResourceLoader';
-import ChartJS from '@salesforce/resourceUrl/ChartJS';   // Uploaded to Static Resources
+import { LightningElement, api } from 'lwc';
+import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
+import CHART_JS from '@salesforce/resourceUrl/ChartJS';   // Uploaded to Static Resources
 
 export default class ChartWrapper extends LightningElement {
 
     @api chartData;
-    _chartJsLoaded = false;
+    _loadStarted = false;      // first-render guard
     _renderError;
 
-    connectedCallback() {
-        loadScript(this, ChartJS)
-            .then(() => {
-                this._chartJsLoaded = true;
-                this.initializeChart();
-            })
-            .catch(error => {
+    // The library loads on the FIRST RENDER, not in connectedCallback: the guide
+    // invokes loadStyle and loadScript "in renderedCallback() on the first render.
+    // Using renderedCallback() ensures that the page loads and renders the
+    // container before the graph is created."
+    // (lwc_guide js-third-party-library L2680)
+    renderedCallback() {
+        if (this._loadStarted) {
+            return;
+        }
+        this._loadStarted = true;
+
+        // Promise.all aggregates both loads; then() runs only after both resolve
+        // and only if neither errored. (lwc_guide js-third-party-library L2681)
+        Promise.all([
+            loadScript(this, CHART_JS + '/chart.min.js'),
+            loadStyle(this, CHART_JS + '/chart.min.css')
+        ])
+            .then(() => this.initializeChart())
+            .catch((error) => {
                 this._renderError = 'Chart library failed to load. Please refresh the page.';
                 // In production: log to structured logger
                 console.error('ChartJS load failed:', error);
@@ -188,16 +200,81 @@ export default class ChartWrapper extends LightningElement {
 
 ```html
 <template>
-    <template if:true={_renderError}>
+    <template lwc:if={_renderError}>
         <p class="slds-text-color_error">{_renderError}</p>
     </template>
-    <template if:false={_renderError}>
-        <canvas></canvas>
+    <template lwc:else>
+        <!-- lwc:dom="manual" marks an element whose DOM a library inserts, so the
+             engine preserves encapsulation (lwc_guide js-third-party-library L2669) -->
+        <canvas lwc:dom="manual"></canvas>
     </template>
 </template>
 ```
 
 **Key points:**
-- Script loaded from Static Resource — not from a CDN URL
-- Load failure is caught and shown to user
-- `initializeChart()` called only after confirmed load, not in `renderedCallback` (prevents timing issues)
+- Script loaded from Static Resource — not from a CDN URL. This is "a Lightning Web Components content security policy requirement", not a style preference (`lwc_guide js-third-party-library` L2655).
+- Load failure is caught and shown to the user.
+- The load starts in `renderedCallback()` behind a first-render guard, **not** in `connectedCallback()`. An earlier revision of this file claimed the opposite; the guide loads in `renderedCallback()` precisely so the container element exists (`js-third-party-library` L2680), and `connectedCallback` cannot reach rendered children at all — "You can't access child elements from the callbacks because they don't exist yet" (`create-lifecycle-hooks-dom` L4112).
+- The full loading contract — zip layout, `loadStyle` ordering, LWS considerations — belongs to `lwc/static-resources-in-lwc`.
+
+
+---
+
+## Example 4: Print the Hook Order Yourself
+
+Drop this pair on a Lightning page for five minutes when you need to *see* the order
+rather than trust a table. `lifecycleTraceParent` renders `lifecycleTraceChild`.
+
+```javascript
+// lifecycleTraceParent.js — same body in lifecycleTraceChild.js with LABEL = 'child'
+import { LightningElement } from 'lwc';
+
+const LABEL = 'parent';
+const stamp = (hook) => console.log(`${performance.now().toFixed(1)}  ${LABEL}.${hook}`);
+
+export default class LifecycleTraceParent extends LightningElement {
+    constructor() {
+        super();            // must be first, no parameters
+        stamp('constructor');
+    }
+
+    connectedCallback() {
+        stamp('connectedCallback');
+    }
+
+    renderedCallback() {
+        stamp('renderedCallback');   // no field writes here — nothing to guard
+    }
+
+    disconnectedCallback() {
+        stamp('disconnectedCallback');
+    }
+}
+```
+
+Expected console output on first render, then on removal:
+
+```text
+  12.4  parent.constructor
+  12.6  child.constructor
+  12.7  parent.connectedCallback
+  12.8  child.connectedCallback
+  13.9  child.renderedCallback
+  14.0  parent.renderedCallback
+--- element removed from the page ---
+  91.2  parent.disconnectedCallback
+  91.3  child.disconnectedCallback
+```
+
+Read it against the guide: `constructor` and `connectedCallback` flow parent → child
+(`lwc_guide create-lifecycle-hooks-created` L4085, `create-lifecycle-hooks-dom` L4101),
+`renderedCallback` reverses to child → parent (`create-lifecycle-hooks-rendered` L4127),
+and `disconnectedCallback` goes back to parent → child (`create-lifecycle-hooks-dom` L4101).
+
+UNVERIFIED (2026-09-05): the timestamps above are illustrative. The guide states the
+direction of each hook but publishes no reference console transcript, so treat the
+elapsed values as filler and only the ordering as documented.
+
+Toggle the parent behind an `lwc:if` and watch the whole block repeat — that is
+`connectedCallback` firing more than once (`create-lifecycle-hooks-dom` L4111), the
+behaviour every subscription guard exists to survive.
