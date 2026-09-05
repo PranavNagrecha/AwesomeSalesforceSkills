@@ -97,7 +97,7 @@ If the Create Task element fails, the fault connector will catch the error
 and the original record save will still succeed.
 ```
 
-**Why it happens:** LLMs assume fault connectors isolate errors. In after-save record-triggered flows, an unhandled fault rolls back the entire transaction, including the triggering record save. Fault connectors prevent the rollback only if the fault path completes without re-throwing.
+**Why it happens:** LLMs assume fault connectors isolate errors. After-save record-triggered flows execute at save-order step 14, and the record is not durable until step 19, "Commits all DML operations to the database" (`apexdev.txt` L15470, L15478). Everything between those steps is one transaction, so an interview that ends on an unhandled fault takes the triggering save down with it. Fault connectors prevent that only if the fault path itself completes.
 
 **Correct pattern:**
 
@@ -132,9 +132,22 @@ Use a Platform Event to send the notification outside the transaction:
 [Update Records] --fault--> [Create Records: Publish Error_Event__e]
 ```
 
-A separate Platform Event-triggered flow then sends the email. Platform Events are committed independently and survive rollbacks.
+A separate Platform Event-triggered flow then sends the email.
 
-**Detection hint:** `Send Email` action inside a fault path of a record-triggered after-save flow.
+Platform events survive the rollback **only when the event definition's `publishBehavior`
+is `PublishImmediately`** — "published when the publish call executes, regardless of
+whether the transaction succeeds" — as against `PublishAfterCommit`, where "if the
+transaction fails, the event message isn't published" (`api_meta.txt` L42206–L42229,
+API 46.0 and later). `PublishImmediately` is the default when the field is omitted, but it
+is a field on the `CustomObject` metadata for the event, not on the flow, so a reviewer
+checking only the flow cannot see it. Generated advice that says "use a platform event, it
+survives rollback" without naming `publishBehavior` is right by luck.
+
+Note also *why* the email is lost: sending email is post-commit work, step 20 of the save
+order, after the commit at step 19 (`apexdev.txt` L15478–L15487). A rolled-back transaction
+never reaches step 19.
+
+**Detection hint:** `Send Email` action inside a fault path of a record-triggered after-save flow; or a platform-event notification pattern whose write-up never mentions `publishBehavior`.
 
 ---
 
@@ -157,3 +170,59 @@ Design fault paths to be bulk-safe:
 - Consider using a scheduled flow to process error logs instead of real-time notifications
 
 **Detection hint:** Fault path that creates records or sends emails without considering that it may execute 200 times in a single transaction.
+
+---
+
+## Anti-Pattern 7: Telling the reader to put a fault connector on a Subflow element
+
+**What the LLM generates:**
+
+```
+Add a fault connector to every DML, Action, and Subflow element in the flow.
+```
+
+Or, in XML:
+
+```xml
+<subflows>
+    <name>Call_Routing_Child</name>
+    <flowName>Resolve_Case_Routing</flowName>
+    <faultConnector>
+        <targetReference>Log_Subflow_Failure</targetReference>
+    </faultConnector>
+</subflows>
+```
+
+**Why it happens:** "DML, Action and Subflow" reads like a natural group — all three hand
+control somewhere and all three can fail — and the phrase appears verbatim in a lot of
+community guidance. But `FlowSubflow`'s documented field list is `connector`, `flowName`,
+`inputAssignments`, `outputAssignments`, `storeOutputAutomatically` (`api_meta.txt`
+L72625–L72660). There is no `faultConnector`. The admin goes looking for a connector Flow
+Builder never draws, and the generated XML does not match the schema.
+
+**Correct pattern:**
+
+Handle the failure inside the child flow, on the child's own fault-capable elements, and
+return the outcome as a value the parent branches on:
+
+```xml
+<subflows>
+    <name>Call_Routing_Child</name>
+    <flowName>Resolve_Case_Routing</flowName>
+    <connector>
+        <targetReference>Check_Child_Outcome</targetReference>
+    </connector>
+    <outputAssignments>
+        <assignToReference>childOutcome</assignToReference>
+        <name>outcome</name>
+    </outputAssignments>
+</subflows>
+```
+
+The parent's Decision on `childOutcome` is the fault path. The same applies to
+`FlowOrchestratedStage`, which *does* accept a `faultConnector` but whose documentation for
+that field is the single word "Not used." (`api_meta.txt` L70803) — a connector that
+deploys and never fires is worse than one that does not exist.
+
+**Detection hint:** the literal string `faultConnector` inside a `<subflows>` block; or
+prose that lists "DML, Action, and Subflow" as the elements needing fault connectors.
