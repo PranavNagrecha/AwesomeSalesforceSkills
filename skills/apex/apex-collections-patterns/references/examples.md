@@ -52,7 +52,7 @@ public override void afterInsert() {
 }
 ```
 
-**Why it works:** The SOQL and DML each execute exactly once regardless of how many OrderItems are in `Trigger.new`. The `containsKey` guard prevents overwriting an initialized List, and the `items != null` check at retrieval handles keys that may not be in the result map (e.g., orders with zero existing items after deletion).
+**Why it works:** The SOQL and DML each execute exactly once regardless of how many OrderItems are in `Trigger.new`, staying inside the 100 synchronous SOQL queries a transaction is allowed (`apexdev` L19544). The `containsKey` guard prevents overwriting an initialized List, and the `items != null` check at retrieval handles keys that may not be in the result map (e.g., orders with zero existing items after deletion).
 
 ---
 
@@ -95,7 +95,7 @@ List<Id> safeIds = filterExcluded(new List<Id>(Trigger.newMap.keySet()), exclude
 
 **What practitioners do:** Declare a `Map<Id, List<SObject>>` as an instance field in a `Database.Stateful` batch class and append records to it during every `execute()` chunk, intending to process them all at once in `finish()`.
 
-**What goes wrong:** The map grows with each of the (up to) 500 `execute()` chunks. For a 200-scope batch over 100,000 records, the map accumulates all 100,000 records before `finish()` runs. This easily exceeds the 6 MB heap limit, causing a `System.LimitException: Apex heap size too large` that fails the entire job.
+**What goes wrong:** The map grows with each of the (up to) 500 `execute()` chunks. For a 200-scope batch over 100,000 records, the map accumulates all 100,000 records before `finish()` runs. Batch Apex runs against the asynchronous ceiling of 12 MB total heap (`apexdev` L19577), and the per-transaction counters that reset for each `execute` (`apexdev` L19530–L19531) do not shrink the retained map. Breaching the ceiling raises `System.LimitException` — the exception "the runtime throws if a governor limit such as heap" is exceeded (`apexdev` L39724) — and it is uncatchable (`apexdev` L17856), so the whole job fails with no partial recovery.
 
 **Correct approach:** Flush accumulated data to Salesforce records or Platform Events at the end of each `execute()` chunk. Reserve `Database.Stateful` instance fields for lightweight counters (integers, small Sets of failure Ids) rather than growing collections.
 
@@ -125,3 +125,42 @@ public class SummaryBatch implements Database.Batchable<SObject>, Database.State
     }
 }
 ```
+
+---
+
+## Example 3: Pruning a Map While Iterating It
+
+**Context:** A service loads `Map<Id, Case> openCases` and must drop every entry whose `Owner` is now inactive, then act on what remains. The obvious loop edits the map from inside the loop that is walking it.
+
+**Problem:** `keySet()` is not a snapshot — "the returned keySet is backed by the map and reflects any changes made to the map, and vice versa" (`apexrefguide` L222249–L222250). Removing from the map while iterating that keySet is the documented "Modifying a collection's elements while iterating through that collection is not supported and causes an error" case (`apexdev` L3182–L3183). The guide's own remedy is to "keep the keys you wish to remove in a temporary list, then remove them after you finish iterating the collection" (`apexdev` L3202–L3203).
+
+**Solution:**
+
+```apex
+// WRONG — the loop is walking the map it is editing
+for (Id caseId : openCases.keySet()) {
+    if (!activeOwnerIds.contains(openCases.get(caseId).OwnerId)) {
+        openCases.remove(caseId);
+    }
+}
+
+// CORRECT — collect first, mutate afterwards
+List<Id> orphaned = new List<Id>();
+for (Id caseId : openCases.keySet()) {
+    if (!activeOwnerIds.contains(openCases.get(caseId).OwnerId)) {
+        orphaned.add(caseId);
+    }
+}
+for (Id caseId : orphaned) {
+    openCases.remove(caseId);
+}
+
+// ALSO CORRECT — never hand a live keySet across a method boundary
+Set<Id> caseIdsForCallout = new Set<Id>(openCases.keySet());  // detached copy
+enqueueSync(caseIdsForCallout);
+openCases.clear();               // does not empty caseIdsForCallout
+```
+
+**Why it works:** The first loop only reads; every write happens after the iteration finishes. The third block is the same rule applied across a method boundary — a bare `openCases.keySet()` passed to `enqueueSync` would shrink to nothing the moment the caller cleared the map, and the callout would silently process zero records. `CollectionUtils.snapshotKeys()` in `code-examples.md` §1 is this one-liner with a null guard.
+
+**Where this bites hardest:** the second block is safe but not free. "The List.remove method performs linearly. Using it to remove elements has time and resource implications" (`apexdev` L3200) — that note is about `List.remove`, and building a filtered copy is usually cheaper than repeated removal when more than a handful of entries go.

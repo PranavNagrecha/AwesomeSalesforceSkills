@@ -3897,6 +3897,7 @@
       "apex/apex-wrapper-class-patterns"
     ],
     "comparator": [
+      "apex/apex-collections-patterns",
       "apex/apex-wrapper-class-patterns"
     ],
     "compensation": [
@@ -4690,7 +4691,8 @@
       "apex/feature-flags-and-kill-switches"
     ],
     "custom-notification": [
-      "flow/flow-email-and-notifications"
+      "flow/flow-email-and-notifications",
+      "lwc/lwc-toast-and-notifications"
     ],
     "custom-notification-type": [
       "admin/custom-notification-type-design"
@@ -6306,6 +6308,9 @@
     ],
     "ept": [
       "devops/performance-testing-salesforce"
+    ],
+    "equals-and-hashcode": [
+      "apex/apex-collections-patterns"
     ],
     "er-diagram": [
       "admin/data-model-documentation"
@@ -9006,6 +9011,9 @@
     ],
     "lightning-security": [
       "security/network-security-and-trusted-ips"
+    ],
+    "lightning-toast": [
+      "lwc/lwc-toast-and-notifications"
     ],
     "lightning-types": [
       "agentforce/agentforce-custom-lightning-types"
