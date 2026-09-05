@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-member-management
-description: "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for choosing which external user license to buy — use architect/experience-cloud-licensing-model. NOT for what records external users can see — use security/experience-cloud-security."
+description: "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for choosing which external user license to buy — use architect/experience-cloud-licensing-model. Also covers the networkMemberGroups membership block, NetworkMemberGroup assignment status, external-user creation from contacts, offboarding, and LoginHistory diagnosis for site logins. NOT for what records external users can see — use security/experience-cloud-security."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -21,6 +21,10 @@ triggers:
   - "partner user onboarding experience cloud"
   - "login page branding experience builder registration"
   - "default account self registration setup"
+  - "add a profile to an experience cloud site members list"
+  - "external user cannot log in to community diagnose login history"
+  - "deactivate external user and free the community license seat"
+  - "bulk create partner users from contacts data loader"
 inputs:
   - Experience Cloud site name and network ID
   - Target external-user license type (Customer Community, Customer Community Plus, Partner Community, External Identity)
@@ -33,9 +37,9 @@ outputs:
   - Login/registration page branding settings in Experience Builder
   - Validation checklist confirming license-profile alignment
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-05
 ---
 
 # Experience Cloud Member Management
@@ -50,8 +54,26 @@ Gather this context before working on anything in this domain:
 
 - Which Experience Cloud license type is required: Customer Community, Customer Community Plus, Partner Community, or External Identity? The answer determines which profiles are available and constrains every subsequent decision.
 - Is self-registration needed, or will admins add users manually (or through automation)? Self-registration requires a default account and default profile — confirm both exist before enabling the feature.
-- What are the current license counts? Deactivated external users continue to consume a license seat; check Setup > Company Information > Licenses before promising capacity.
+- What are the current licence counts, and on which meter? Seat-metered SKUs report through `UserLicense.TotalLicenses` / `UsedLicenses`; Login-metered SKUs report through `MonthlyLoginsEntitlement` / `MonthlyLoginsUsed`. Read both before promising capacity — see gotcha 3.
 - Has the site been activated? Unapproved/inactive sites do not process registration or login flows.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before touching Setup. Each one maps to a gotcha in references/gotchas.md, and skipping it produces a site whose Members list looks correct and whose users still cannot get in.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is each audience reached through a Contact, or are they employees?" | Contact-based users need an external licence and a `ContactId`; employees are legitimate site members on an internal profile (gotcha 6) | Two membership lists instead of one, and an explicit `allowInternalUserLogin` decision |
+| "Which external licence, and is it the seat variant or the Login variant?" | The licence is fixed at profile creation and can never be changed (gotcha 1), and the Login variant is metered by monthly logins, not seats (gotcha 3) | The profile list, the right capacity meter, and the per-licence API allocation (gotcha 10) |
+| "Do we grant membership by profile, by permission set, or both?" | `networkMemberGroups` accepts both, but a permission set silently skips Chatter customers from a customer group (metadata-examples § How to read it) | A membership matrix that survives someone changing a user's profile |
+| "Is self-registration in scope, and who owns the default account?" | `selfRegProfile` is read only when `selfRegistration` is true, and the default account is not a `Network` field — it is a runtime argument to the handler (gotcha 4) | An owner for the catch-all account and a decision on declarative vs `Auth.ConfigurableSelfRegHandler` |
+| "How will external users be created — UI, Data Loader, or Apex?" | Data Loader cannot set `UserType` (gotcha 8) and `Site.createExternalUser` requires a nickname and reuses or creates a Contact by email match | The exact column list, the nickname convention, and whether a Savepoint is needed |
+| "What happens to a leaver's records, and can they ever come back?" | Users can never be deleted and the username is burned across all orgs (gotcha 3) | A reassignment target and a username convention that tolerates a returning person |
+| "Who will diagnose a login failure, and do they have Monitor Login History?" | `LoginHistory` is permission-gated and `Status` is not filterable, so the obvious query neither runs nor returns anything for a delegated admin (gotcha 9) | A named on-call owner with the permission, and the site-scoped `NetworkId` query written in advance |
+
+What a proper configuration adds over just adding profiles to the Members list: the membership block, the profile licences, the user-creation path and the offboarding path all agree with each other, so capacity is predictable, a leaver's records have somewhere to go, and a login failure is diagnosed from `LoginType` rather than guessed at.
 
 ---
 
@@ -142,13 +164,13 @@ Changes to the login page do not require a site re-publish if you are only adjus
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Confirm license type and profile** — Identify which Experience Cloud license the users will need. Verify that an external profile tied to that license already exists (Setup > Profiles > filter by User License). If not, create the profile before proceeding.
-2. **Check license capacity** — Navigate to Setup > Company Information and confirm there are enough available seats for the external license. Remember that deactivated users still consume seats; deactivate and free them if needed before adding new users.
-3. **Configure site membership method** — In Setup > Digital Experiences > [site] > Administration > Members, add the external profile(s) for profile-based access. For manual addition, enable the portal user on the Contact record and assign the correct profile. For self-registration, proceed to step 4.
-4. **Set up self-registration (if required)** — Enable self-registration in the site's Registration settings. Set the Default New User Account (catch-all account) and Default Profile. Optionally, specify a custom `Auth.ConfigurableSelfRegHandler` Apex class for advanced logic. Test the registration flow as a guest user.
-5. **Customise and validate login page branding** — In Experience Builder, open Login & Registration, apply branding (logo, colours, background), enable or disable self-reg/forgot-password links, then publish the site. Confirm the login URL resolves and registration/login completes end-to-end in a browser.
+1. **Fix the licence and the profile, in that order.** Decide the licence per audience with architect/experience-cloud-licensing-model, then create or confirm one external profile per licence (Setup > Profiles, filtered by User License). The binding is one-way and permanent — gotcha 1. Read the current meters before committing to a volume: `SELECT Name, TotalLicenses, UsedLicenses, MonthlyLoginsEntitlement, MonthlyLoginsUsed FROM UserLicense WHERE Name LIKE 'PID_%Community%'`.
+2. **Write the membership block.** Copy the `Network` skeleton from references/metadata-examples.md § "Network: the membership and registration block" into `networks/<Site>.network-meta.xml`. Every profile and permission set that should confer membership goes in `networkMemberGroups`; set `selfRegistration` / `selfRegProfile` only if self-registration is in scope; decide `allowInternalUserLogin`, `enableMemberVisibility` and `enableGuestMemberVisibility` deliberately rather than leaving the defaults.
+3. **Write the member permission set** from the same file's `PermissionSet` example if you are granting membership that way. Retrieve the live version first — from API 40.0 an unspecified permission is disabled on deploy.
+4. **Run the checker before the deploy.** `python3 skills/admin/experience-cloud-member-management/scripts/check_experience_cloud_member_management.py --manifest-dir force-app/main/default` — it cross-checks that every `<profile>` and `<permissionSet>` in `networkMemberGroups` resolves to a file in the manifest, that `selfRegistration` true implies `selfRegProfile`, that any external-user CSV has the required columns and no `UserType`, and that no Apex class implements a non-existent `Auth` handler shape.
+5. **Deploy in dependency order** — profiles, permission sets and the handler class first, then `CustomSite`, then `Network` with `status` `UnderConstruction`. The package.xml and `sf project deploy` commands are in references/metadata-examples.md § "package.xml and deploy order".
+6. **Poll membership, do not assume it.** `SELECT Id, ParentId, AssignmentStatus FROM NetworkMemberGroup WHERE NetworkId = '...'` until every row reads `Added`. `Waiting for Add` is normal for a few minutes; `Failed Add` is the real deploy failure and the `Network` deploy will not report it (gotcha 7).
+7. **Create the users, then verify the shape you actually got.** Use the CSV or the `Site.createExternalUser` snippet in references/metadata-examples.md § "Creating external users", then read back `UserType`, `ContactId` and `Profile.UserLicense.Name` with the query in references/examples.md § Anti-Pattern. Flip `status` to `Live` only after that query is clean and one real login appears in `LoginHistory` for the site's `NetworkId`.
 
 ---
 
@@ -170,11 +192,13 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Deactivated users still consume license seats** — Deactivating an external user does not free the license. You must deactivate the user AND then go to Setup > Company Information to confirm the count drops. If license seats are exhausted, new user creation fails silently or with a generic error. Audit inactive external users regularly.
+1. **Deactivation frees the seat but never the username** — `UserLicense.UsedLicenses` counts only licences assigned to active users, so `IsActive = false` does return a seat on a seat-metered SKU. It returns nothing on a Login-metered SKU, and it never releases the User record or the globally unique `Username`. Full detail and the branching query: gotcha 3.
 2. **Profile-license binding is permanent** — A profile created for the Customer Community license can never be reassigned to the Partner Community license or any other license. Attempting to change the license on an existing profile throws an error. If you chose the wrong license, you must create a new profile and migrate users.
 3. **`Auth.ConfigurableSelfRegHandler` and `Auth.RegistrationHandler` are different jobs, not old and new** — `Auth.ConfigurableSelfRegHandler` backs a site's own self-registration page and declares one method, `global Id createUser(Id accountId, Id profileId, Map<SObjectField, String> registrationAttributes, String password)`, returning the new User's Id. `Auth.RegistrationHandler` backs an Auth. Provider (SSO / social sign-on) and declares `User createUser(Id portalId, Auth.UserData userData)` plus `void updateUser(Id userId, Id portalId, Auth.UserData userData)`. Models frequently emit a third, nonexistent shape — `registerUser(Auth.SelfRegistrationContext)` returning a `User`. Neither that method nor that class exists in the Auth namespace; code using them will not compile.
 4. **Self-registration fails silently without a Default Account** — If the Default New User Account is not set in the Registration settings, self-registration POST requests return a generic error page with no useful debug output. This is the single most common self-reg setup mistake. Confirm the account is set and is not a Person Account (standard accounts only for the catch-all).
 5. **Login page changes require a publish to take effect for structural changes** — Style-only changes (CSS, background colour) may propagate without a full publish in some scenarios, but adding or removing components on the login page always requires clicking Publish in Experience Builder before external users see the change.
+6. **Membership is asynchronous, and internal users are allowed** — a successful `Network` deploy does not mean the Members list is populated; poll `NetworkMemberGroup.AssignmentStatus` until it reads `Added`. And internal profiles are legitimate members, contrary to the common rule of thumb — gotchas 6 and 7.
+7. **`UserType` cannot be set and `LoginHistory.Status` cannot be filtered** — the two facts that break the first bulk load and the first login incident respectively. Gotchas 8 and 9.
 
 ---
 
@@ -189,7 +213,28 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| references/metadata-examples.md | You are writing the `Network` membership block, the member `PermissionSet`, the external-user CSV or Apex, the offboarding DML, or the login-failure SOQL — every element name is cited to a guide line |
+| references/gotchas.md | Something worked in Setup but not through the API, membership did not appear after a deploy, a licence count did not move, or a login query will not compile |
+| references/examples.md | You want the two end-to-end walkthroughs — self-registration with a custom handler, and vetted partner onboarding — plus the internal-profile anti-pattern and its detection query |
+| references/well-architected.md | You are justifying the licence, membership and self-registration tradeoffs to a reviewer, or you need the grounded source list |
+| references/llm-anti-patterns.md | You are reviewing AI-generated Experience Cloud membership config or a generated `Auth` handler class |
+| scripts/check_experience_cloud_member_management.py | Before every deploy — validates the membership block, self-reg config, external-user CSV and handler classes against the manifest |
+| templates/experience-cloud-member-management-template.md | You are capturing the membership decisions for a new site in a reviewable document |
+
+---
+
 ## Related Skills
 
 - flow/flow-for-experience-cloud — when a screen flow or guided process needs to be surfaced on the Experience Cloud site for self-registered or authenticated users
 - security/experience-cloud-security — for deeper CORS, CSP, guest user access, and sharing-model security configuration on Experience Cloud sites
+- admin/experience-cloud-site-setup — for creating the site itself, the `CustomSite` container, URL path prefix, template choice, and activation
+- admin/experience-cloud-guest-access — for the unauthenticated visitor: guest user profile, guest sharing rules, and `enableGuestMemberVisibility`
+- admin/self-service-design — for deciding what a self-registered customer should be able to do once they are in
+- admin/partner-community-requirements — for gathering the partner-side requirements that decide the licence and the vetting gate before any of this is configured
+- admin/user-management — for the general user lifecycle, freezing, and delegated administration that this skill's offboarding step plugs into
+- admin/permission-set-architecture — for designing the member permission set as part of a coherent permission-set model rather than a one-off
+- architect/experience-cloud-licensing-model — for choosing and costing the licence, including the seat-vs-Login decision that gotchas 3 and 10 depend on

@@ -29,22 +29,27 @@ and SFDX source pushes. Custom Settings are org-specific data that do not deploy
 String threshold = My_Setting__c.getValues('OrgDefault').Threshold__c;
 ```
 
-**Why it happens:** LLMs confuse `getValues()` (List Custom Setting method by name) with `getInstance()` (Hierarchical Custom Setting method). Both methods exist on Custom Settings, but they have different semantics. `getValues('name')` is for List Custom Settings and retrieves a specific named record. `getInstance()` is for Hierarchical Custom Settings and resolves the User > Profile > Org Default hierarchy automatically.
+**Why it happens:** LLMs confuse the two method families. `getValues(dataSetName)` belongs to **list** settings, where the Apex Reference Guide says it "returns the exact same object as `getInstance(dataSetName)`". `getValues(userId)` and `getValues(profileId)` belong to **hierarchy** settings and are not equivalent to `getInstance` at all: they return only the row defined at that exact level and null for every field set higher up, while `getInstance` merges the levels field by field.
 
 **Correct pattern:**
 
 ```apex
-// Hierarchical Custom Setting — resolves User > Profile > Org Default
+// Hierarchy setting — merges User > Profile > Org Default, per field
 My_Setting__c settings = My_Setting__c.getInstance();
+My_Setting__c forUser  = My_Setting__c.getInstance(userId);
+My_Setting__c orgOnly  = My_Setting__c.getOrgDefaults();
 
-// Or for a specific user (in batch/trigger contexts)
-My_Setting__c settings = My_Setting__c.getInstance(userId);
+// getValues(id) on a hierarchy setting: THAT LEVEL ONLY, no merge.
+// Correct in seeding/migration code that needs to know whether a row exists;
+// wrong anywhere a resolved runtime value is expected.
+My_Setting__c userRowOnly = My_Setting__c.getValues(userId);
 
-// getValues() with no-arg or org-id is for getting org default only
-// getValues(name) is for List Custom Settings — avoid for new code
+// List setting — keyed by data set name; getInstance and getValues are identical
+Foundation_Countries__c row = Foundation_Countries__c.getValues('United States');
+Map<String, Foundation_Countries__c> all = Foundation_Countries__c.getAll();
 ```
 
-**Detection hint:** Any code calling `getValues('SomeStringName')` on a Hierarchical Custom Setting is using the wrong method and will return null if no record with that Name exists.
+**Detection hint:** `getValues('<string literal>')` against a setting declared `customSettingsType=Hierarchy`, or `getAll()` against one, is a type mismatch that compiles. `getValues(someId)` feeding a runtime decision is the subtler version: it works in the developer's org, where the value happens to be set at the user level, and returns null everywhere else.
 
 ---
 
@@ -57,15 +62,20 @@ My_Setting__c settings = My_Setting__c.getInstance(userId);
 **Correct pattern:**
 
 ```
-Custom Metadata Type SOQL queries do NOT consume the Salesforce SOQL governor limit.
-The platform serves CMT queries from a metadata cache. You can query CMT in loops,
-triggers, batch contexts, and helper methods without SOQL budget concerns.
+Custom Metadata Type SOQL queries do NOT consume the SOQL governor limit: "In a
+single Apex transaction, custom metadata records can have unlimited SOQL queries."
 
-Custom Settings DO consume SOQL governor limits on the first call per transaction
-(subsequent calls within the same transaction are cached). This is the key difference.
+Custom Settings accessed through the Apex custom settings methods (getInstance,
+getValues, getAll, getOrgDefaults) also cost nothing: the data is served from the
+application cache, so "you don't have to use SOQL queries that count against your
+governor limits."
+
+The one access path that DOES cost a query is a SOQL statement against the custom
+setting object itself: "querying custom settings data using SOQL doesn't use the
+application cache and is similar to querying a custom object."
 ```
 
-**Detection hint:** If generated code adds a `private static Map<String, MyType__mdt> cmtCache` pattern purely to avoid governor limits, the LLM has applied the wrong concern. CMT caching is still a valid pattern for application performance, but it is not necessary for governor compliance.
+**Detection hint:** Two symptoms, opposite directions. If generated code adds a `private static Map<String, MyType__mdt> cmtCache` purely to avoid governor limits, the LLM invented a cost that does not exist. If it rewrites `My_Setting__c.getInstance()` into `[SELECT ... FROM My_Setting__c WHERE SetupOwnerId = :uid]` to "bulkify" a trigger, it has created the one real cost by hand.
 
 ---
 
@@ -73,18 +83,22 @@ Custom Settings DO consume SOQL governor limits on the first call per transactio
 
 **What the LLM generates:** "Create a List Custom Setting called `Integration_Config__c` with a Name key for each integration endpoint. Use `getValues('PaymentGateway')` to retrieve it."
 
-**Why it happens:** List Custom Settings appear in older Salesforce training material and documentation. LLMs trained on historical Salesforce content surface this pattern without knowing it is deprecated in Lightning Experience.
+**Why it happens:** List Custom Settings appear in older Salesforce training material and documentation, and LLMs reproduce the pattern by default. The counter-argument is deployability, not deprecation: UNVERIFIED (2026-09-05) — no extracted Salesforce guide states that List Custom Settings are deprecated, and `SchemaSettings.enableListCustomSettingCreation` defaulting to false means the real risk is that the org cannot create one at all.
 
 **Correct pattern:**
 
 ```
-Do NOT create new List Custom Settings. They are deprecated in Lightning Experience.
-For flat, non-hierarchical configuration use Custom Metadata Types instead:
+Prefer a Custom Metadata Type over a new List Custom Setting. The reason is that
+CMT records deploy and list setting rows do not, and that creating list settings
+depends on SchemaSettings.enableListCustomSettingCreation, which defaults to false.
+For flat, non-hierarchical configuration:
 
 CREATE: Integration_Config__mdt with DeveloperName (standard) and Endpoint_URL__c
 ACCESS: SELECT Endpoint_URL__c FROM Integration_Config__mdt WHERE DeveloperName = 'PaymentGateway' LIMIT 1
 
-Benefits: deployable, zero SOQL cost, packageable, supported in Lightning.
+Benefits: the records deploy with the release, they are packageable, and no org
+switch has to be enabled first. (Both storage types are cached; read cost is not
+the differentiator.)
 ```
 
 **Detection hint:** Any recommendation to create a new Custom Setting of type "List" or any code using `CustomSettingName__c.getValues('StringKey')` for a new implementation is applying a deprecated pattern.
@@ -101,14 +115,15 @@ Integer limit = (Integer) My_Setting__c.getInstance().Record_Limit__c;
 
 **Why it happens:** LLMs generate "happy path" code. They assume the Custom Setting record exists because it exists in the example org where the pattern was trained. In reality, Custom Setting records do not deploy and may be absent in any org that has not had the post-deploy setup script run.
 
+The over-correction is just as common and equally wrong: an LLM told to "add a null check" wraps the record. `getInstance()` and `getOrgDefaults()` do not return null in any modern org — "If no custom setting data is defined for the user, this method returns a new custom setting object … contains an ID set to null and merged fields from higher in the hierarchy." Only Apex saved using API version 21.0 or earlier returned null. The null that actually reaches production is on the **field**.
+
 **Correct pattern:**
 
 ```apex
-My_Setting__c settings = My_Setting__c.getInstance();
-Integer limit = 100; // safe default
-if (settings != null && settings.Record_Limit__c != null) {
-    limit = (Integer) settings.Record_Limit__c;
-}
+My_Setting__c settings = My_Setting__c.getInstance(); // never null
+Integer recordLimit = settings.Record_Limit__c == null
+    ? 100                                   // safe default
+    : (Integer) settings.Record_Limit__c;
 ```
 
 Or, for CMT, handle the case where the record does not exist:
@@ -121,7 +136,7 @@ List<Feature_Flag__mdt> flags = [
 Boolean isEnabled = !flags.isEmpty() && flags[0].Is_Enabled__c;
 ```
 
-**Detection hint:** Any code that chains directly from `getInstance()` or a CMT query to a field access without a null check is a fragile pattern. Look for `getInstance().Field__c` or `[SELECT ...][0].Field__c` without null/empty-list guards.
+**Detection hint:** Look for `getInstance().Field__c` or `[SELECT ...][0].Field__c` feeding a cast or a comparison with no default. Equally, treat `if (settings == null)` around a `getInstance()` result as dead code that is standing in for the field guard that is missing.
 
 ---
 
@@ -129,13 +144,14 @@ Boolean isEnabled = !flags.isEmpty() && flags[0].Is_Enabled__c;
 
 **What the LLM generates:** "You should always use Custom Metadata Types instead of Custom Settings. Custom Settings are deprecated."
 
-**Why it happens:** LLMs overgeneralize from the List Custom Settings deprecation to claim that all Custom Settings are deprecated. Hierarchical Custom Settings are not deprecated and remain the correct tool for per-user and per-profile override patterns.
+**Why it happens:** LLMs overgeneralize from community advice about list settings into a claim that all Custom Settings are deprecated. Hierarchical Custom Settings remain the platform's per-user and per-profile override mechanism, with merge semantics that CMT has no equivalent for.
 
 **Correct pattern:**
 
 ```
-Only List Custom Settings are deprecated. Hierarchical Custom Settings are fully
-supported and are the correct choice when behavior must vary by User or Profile.
+Custom Settings are not deprecated. Hierarchical Custom Settings are the correct
+choice whenever behavior must legitimately vary by User or Profile, and list
+settings remain a documented feature (see Anti-Pattern 4 for what is actually true).
 
 CMT has no built-in hierarchy resolution. If you replace a Hierarchical Custom Setting
 with CMT and need per-user overrides, you must build custom resolution logic —

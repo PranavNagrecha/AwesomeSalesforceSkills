@@ -4,7 +4,7 @@
 
 **Scenario:** `Product_Family__c` (controlling) filters `Product_Line__c` (dependent) on a custom object. Two families, four lines.
 
-**Problem:** Hand-authored `valueSettings` almost always ships partial, and the collection is an allow-list — anything not listed is disabled. The failure is silent: the field deploys, and users simply stop seeing options.
+**Problem:** Hand-authored `valueSettings` almost always ships partial, and a partial file fails in the direction people do not expect. Deploying is additive for pairs — "You can add field dependency values via the Metadata API but not remove them" (api_meta.txt:45855–45858) — so the pairs you left out stay enabled in the org while source control says they are gone. In the same file, values behave the opposite way: a `<value>` you left out of `valueSetDefinition` is deactivated on deploy. Author the whole field, always.
 
 **Solution:** One `valueSettings` block per dependent value, each listing every controlling value that enables it. `controllingFieldValue` is a repeated element because the Metadata API types it as a string array:
 
@@ -47,7 +47,7 @@
 </CustomField>
 ```
 
-**Why it works:** Every enabled pair is present, so nothing is disabled by omission. `restricted` is set alongside the matrix but does a different job — it limits which values may exist at all, not which controlling value they may accompany.
+**Why it works:** Every enabled pair is present and every value is present, so the file is a faithful picture of the org in both directions — nothing is left to be added later by hand, and no value is deactivated by omission. `restricted` is set alongside the matrix but does a different job: it limits which values may exist at all, not which controlling value they may accompany.
 
 ---
 
@@ -101,6 +101,57 @@ export default class DependentProductLine extends LightningElement {
 ```
 
 **Why it works:** The map is built from `controllerValues` at runtime, so adding a controlling value in Setup needs no code change. The `isDependent` guard is what makes the component reusable: on an independent picklist `validFor` is an empty list, and filtering on it would hide every option.
+
+---
+
+## Example 3: Proving a Deployed Matrix Is Actually Wired, from Apex
+
+**Scenario:** A dependent picklist shipped last release. Support now reports "the dropdown shows everything". Before anyone reopens the Setup grid, you need to know whether the field is still dependent at all — a merge that dropped `<controllingField>` from the field file leaves a perfectly valid, perfectly independent picklist and no deploy error.
+
+**Problem:** Apex describe exposes the *wiring* but not the matrix. `Schema.PicklistEntry` has only `getLabel()`, `getValue()`, `isActive()` and `isDefaultValue()`, so there is nothing to assert pair-by-pair. What you can assert is that the dependency exists and points at the field you expect — which is precisely the thing a bad merge breaks.
+
+**Solution:** A test that fails on the wiring, not on the data. Run it as an anonymous block for triage, keep it as a test class for regression:
+
+```apex
+@IsTest
+private class ProductLineDependencyTest {
+
+    @IsTest
+    static void dependentPicklistIsWiredToProductFamily() {
+        Schema.DescribeFieldResult dep = Warranty_Claim__c.Product_Line__c.getDescribe();
+
+        Assert.isTrue(dep.isDependentPicklist(),
+            'Product_Line__c lost its controllingField — the matrix is not being applied at all.');
+        Assert.areEqual('Product_Family__c', String.valueOf(dep.getController()),
+            'Product_Line__c is dependent on the wrong controlling field.');
+        Assert.isTrue(dep.isRestrictedPicklist(),
+            'Product_Line__c is unrestricted — loads can invent values the matrix never covers.');
+
+        // The matrix itself is not readable from describe. The second test below
+        // asserts the guard that stands in for it on every non-UI write path.
+    }
+
+    @IsTest
+    static void invalidCombinationIsRejectedOnApexDml() {
+        Warranty_Claim__c bad = new Warranty_Claim__c(
+            Product_Family__c = 'Peripherals',
+            Product_Line__c   = 'Laptops'          // not enabled for Peripherals
+        );
+
+        Database.SaveResult sr = Database.insert(bad, false);
+
+        Assert.isFalse(sr.isSuccess(),
+            'A combination outside the matrix inserted cleanly. The dependency filter is browser-side only, '
+            + 'so this row proves the validation rule is missing or inactive.');
+        Assert.areEqual('FIELD_CUSTOM_VALIDATION_EXCEPTION',
+            String.valueOf(sr.getErrors()[0].getStatusCode()));
+    }
+}
+```
+
+**Why it works:** The first test catches the failure mode metadata has — a dropped `controllingField` — which no functional test notices, because an independent picklist works fine, it just shows too much. The second catches the failure mode the platform has: the matrix is enforced by browser JavaScript that runs before the server sequence and nowhere else, so `Database.insert` is exactly the path that proves whether anything server-side is guarding the pair. Delete the validation rule and the second test goes red; that is the point.
+
+Both methods run in any org with no Tooling API access and no seeded data. `String.valueOf(dep.getController())` is how you compare an `Schema.SObjectField` token against an expected API name; `getController()` returns the token, not a string.
 
 ---
 

@@ -32,13 +32,29 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: `valueSettings` Is an Allow-List — Omitted Pairs Are Disabled, Not Preserved
+## Gotcha 4: A Deploy Can Add Dependency Pairs but Can Never Remove One
 
-**What happens:** An admin adds one new dependent value by deploying a `valueSettings` block containing only that pair. Every other pair in the matrix is switched off, because the deployed `valueSettings` collection replaces the matrix rather than merging into it. Users see a picklist that has lost most of its options and no error was raised.
+**What happens:** A team narrows a matrix by deleting `valueSettings` blocks from the field's XML and
+deploying. The deploy succeeds, the diff looks clean, source control says the pair is gone — and the pair is
+still enabled in the org. Users go on selecting the combination the team believed it had retired, and the
+next `sf project retrieve` quietly puts the deleted blocks back into the file.
 
-**When it occurs:** Hand-authored partial metadata, or a source-control workflow where only the changed lines were staged. Also after a merge conflict resolution that dropped `valueSettings` elements.
+**When it occurs:** Every attempt to shrink an existing matrix through metadata, in every org, on every API
+version. The Metadata API Developer Guide states the asymmetry twice in the same page — once on
+`ValueSet.valueSettings` and again on `ValueSettings.controllingFieldValue`: "You can add field dependency
+values via the Metadata API but not remove them" (api_meta.txt:45855–45858 and 45873–45875). Deploying is
+additive here; it is not a replace.
 
-**How to avoid:** Always deploy the complete matrix. In Metadata API terms, `ValueSettings.controllingFieldValue` is a string array — "Applies only to dependent custom picklists. A list of values in the controlling or parent picklist" — and `valueName` "Defines the values in the custom dependent picklist." So the natural shape is one `valueSettings` block per dependent value, listing every controlling value that enables it. Retrieve the field before editing, never assemble the block from scratch, and diff the deployed pair count against the retrieved one.
+**How to avoid:** Treat the matrix as append-only from source control and get it right before the first
+deploy. To actually disable a pair, do it in Setup — Object Manager → the object → Fields & Relationships →
+the dependent field → **Field Dependencies** → Edit — then re-retrieve so source matches the org. Never
+report "removed the mapping" on the strength of a green deploy; verify in the Field Dependencies grid or
+against the UI API `validFor` payload. Note the inverse trap in Gotcha 8: omitting a *value* is destructive
+where omitting a *pair* is inert.
+
+> Correction (2026-09-05): an earlier revision of this file claimed `valueSettings` was an allow-list whose
+> omitted pairs get disabled. The guide says the opposite. If you have downstream notes repeating the
+> allow-list framing, they are wrong for pairs — though correct for picklist *values* (Gotcha 8).
 
 ---
 
@@ -49,3 +65,53 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Data loads, integrations, and Apex DML — any path that sets both fields without going through a Lightning form. The record saves and then displays oddly in the UI, where the dependency filter hides the stored value.
 
 **How to avoid:** Enforce combinations with an explicit rule (a validation rule or a before-save automation) and treat `restricted` as a separate, complementary control that stops free-text values appearing. Also note the ceiling if you are consolidating onto a Global Value Set: "A global value set can have up to 1,000 total values, including inactive values," and the dependency itself is not defined on the GVS — the `controllingField` and `valueSettings` live on each field's own `ValueSet`, because "The global value set is inherited by any custom picklist field that uses that value set." Two fields sharing one GVS still need two separate dependency matrices.
+
+---
+
+## Gotcha 6: The Dependency Filter Is Browser JavaScript, and It Is the Only Client-Side Check There Is
+
+**What happens:** A record loaded through Data Loader, Bulk API, REST, or Apex DML saves a combination the matrix forbids. No error, no warning, no `FIELD_FILTER_VALIDATION_EXCEPTION`. The row then reads oddly in the UI, where the dependency filter hides the stored value and the field looks blank while SOQL still returns it.
+
+**When it occurs:** Every non-browser write path, on every dependent picklist, always. This is architecture, not a bug: the Apex Developer Guide places the check *outside* the server sequence entirely — "Before Salesforce executes these events on the server, the browser runs JavaScript validation if the record contains any dependent picklist fields. The validation limits each dependent picklist field to its available values. No other validation occurs on the client side." (apexdev.txt:15404–15406). The seventeen-plus server-side steps that follow never mention the dependency again.
+
+**How to avoid:** Assume zero enforcement anywhere the browser is absent, and restate the matrix as a validation rule or before-save automation whenever any integration, load, or Apex path writes both fields. Two consequences follow from the check being client-side. It cannot be trusted for security or data integrity — a determined caller simply does not use the browser. And it runs *before* step 1, so a before-save flow that sets the controlling field after the user picked a dependent value is never re-checked against the matrix.
+
+---
+
+## Gotcha 7: A Checkbox Controller's Values Are `checked` and `unchecked`, Not `true` and `false`
+
+**What happens:** A checkbox-controlled matrix is authored with `<controllingFieldValue>true</controllingFieldValue>`. Either the deploy is rejected, or — worse where the value is accepted as an unrecognised string — the field ships with a matrix that maps nothing, and the dependent picklist renders empty for every user in every state of the checkbox.
+
+**When it occurs:** Any checkbox controlling field authored by hand or generated by a tool that reasoned from the checkbox's own storage type. The confusion is legitimate: the checkbox field really does deploy `<defaultValue>false</defaultValue>` and really does read `true`/`false` in Apex, SOQL, and every API payload. Only the *matrix* uses different literals. The Metadata API Developer Guide spells them out on `controllingFieldValues`: "The values in the list depend on the field type: • Checkbox: `checked` or `unchecked`. • Picklist: The fullname of the picklist value in the controlling field" (api_meta.txt:79250–79258), and the guide's own dependent-picklist sample writes `<controllingFieldValues>checked</controllingFieldValues>` against the `isAmerican__c` checkbox (api_meta.txt:44762–44790).
+
+**How to avoid:** Hard-code the two literals in any generator, and make the checker assert them — no checkbox-controlled matrix may contain a `controllingFieldValue` outside `{checked, unchecked}`. Note also that `checked`/`unchecked` are matrix literals, not picklist values: they never appear in `valueSetDefinition`, in SOQL, or in a validation-rule formula, where the checkbox is tested as a plain Boolean.
+
+---
+
+## Gotcha 8: Omitting a Picklist *Value* Deactivates It; Omitting a Dependency *Pair* Does Nothing
+
+**What happens:** Someone hand-trims one field file and gets two opposite outcomes from the same edit. Deleting a `<value>` from `valueSetDefinition` silently deactivates it in the org and takes it out of every picklist that used it. Deleting a `<valueSettings>` block beside it changes nothing at all. The deploy result reports neither.
+
+**When it occurs:** Partial staging, merge-conflict resolution, or any workflow that assembles a field file rather than retrieving it. The two rules live a few hundred lines apart in the guide. For values: "If picklist values are missing from a component definition, they get deactivated when deployed. Deactivation occurs for picklist values of both standard and custom fields." (api_meta.txt:79237–79239, repeated on `CustomValue` at 47481–47483). For pairs: add-only (Gotcha 4).
+
+**How to avoid:** Never assemble a picklist field file from scratch — retrieve, edit, redeploy. A second trap compounds it: `CustomValue.isActive` documents that "An API retrieve operation for global picklist values returns all active and inactive values in the picklist. But retrieving the values of a non-global, unrestricted picklist returns only the active values" (api_meta.txt:47521–47525). So on an unrestricted local picklist, a plain retrieve-then-deploy round trip is safe only because the inactive values were already inactive — it will never resurrect one, and it will deactivate anything you delete by hand.
+
+---
+
+## Gotcha 9: Record Types Hide Values the Matrix Enabled, and Metadata API Retrieval Will Not Show You Why
+
+**What happens:** A dependent value is enabled for the selected controlling value, the field is visible, FLS is open — and the value is still missing from the dropdown. It was never added to the record type's selected values. Worse, the team cannot see this in source, because the record-type file retrieved from the org is incomplete.
+
+**When it occurs:** Whenever the object has record types and a new dependent value was added after the record types were created. The `RecordType` section carries the warning twice: "Metadata API doesn't retrieve specific picklist fields that are associated with a record type", and for person accounts "Metadata API retrieves standard picklist values only" if the picklist exists on Contact (api_meta.txt:44984–44988). Deploying values through `StandardValueSet` has its own version of the trap: "When setting `standardValue` on Record Types, including person account record types, new picklist values loaded into your organization through the Metadata API don't display in the picklist UI by default. For users to see the new values, go to the Record Types list for the object containing the picklist field, click Edit, and add the new value to the Selected Fields list." (api_meta.txt:130774–130779).
+
+**How to avoid:** Treat "value exists" and "value is available on this record type" as two separate facts, and verify the second in Setup rather than in the repo. Every new dependent value needs a matching entry under the record type's `picklistValues` for that field, in every record type that should offer it — the checker in `scripts/` flags dependent values reachable through the matrix but absent from a record type that lists the field. Availability is the intersection of record type and matrix, so a value can be present in both files and still be unreachable if the *controlling* value is the one the record type omitted.
+
+---
+
+## Gotcha 10: Apex Describe Tells You a Dependency Exists but Will Not Tell You What It Contains
+
+**What happens:** A test or a utility class tries to read the matrix from Apex so it can generate valid test data, and there is nothing to read. `Schema.PicklistEntry` has exactly four methods — `getLabel()`, `getValue()`, `isActive()`, `isDefaultValue()` (apexrefguide.txt:193673–193685). There is no `getValidFor()` on it. The `getValidFor()` that search turns up belongs to the invocable-action picklist-value class, a different type entirely (apexrefguide.txt:162512–162522).
+
+**When it occurs:** Any attempt to build matrix-aware seed data, a generic dependent-picklist controller, or an assertion that a pair is enabled. It usually surfaces as a compile error, then as a search for the undocumented `validFor` base64 string on the serialized describe — which is not a documented API and should not go into a package.
+
+**How to avoid:** Use describe for what it does expose: `isDependentPicklist()` "Returns true if the picklist is a dependent picklist" (apexrefguide.txt:191169–191178) and `getController()` "Returns the token of the controlling field" (apexrefguide.txt:190710–190720). That is enough to *assert the wiring* in a test — that the field is dependent and on the expected controller — which is the assertion most worth having, because it fails when a deploy drops `controllingField`. For the pair-level data, read the UI API `getPicklistValues` payload (`controllerValues` plus `validFor`) from the client, or keep the intended matrix in the test as an explicit fixture and let the validation rule be the thing under test.

@@ -4,7 +4,7 @@
 
 ### Operational Excellence
 
-The dependency matrix is metadata, and its failure mode is omission rather than error. `valueSettings` is an allow-list: a partial deploy disables every pair it does not mention, and nothing in the deploy result says so. Operationally excellent teams retrieve the field before editing it, deploy the complete matrix as one unit, and diff enabled-pair counts between source and target as a release check — the same discipline applied to any allow-list configuration.
+The dependency matrix is metadata, and its failure mode is omission rather than error — but the direction of that failure is counter-intuitive, and it differs between the two collections in the same file. Dependency pairs are add-only: "You can add field dependency values via the Metadata API but not remove them" (api_meta.txt:45855–45858), so a deploy that drops a `valueSettings` block leaves the pair live in the org and source control lies about it. Picklist values are the opposite: "If picklist values are missing from a component definition, they get deactivated when deployed" (api_meta.txt:79237–79239). Operationally excellent teams therefore retrieve the field before editing it, deploy the whole field as one unit, treat un-mapping as a Setup task with its own ticket, and diff the enabled-pair count in the Field Dependencies grid against the pair count in source as a release check.
 
 ### User Experience
 
@@ -24,7 +24,7 @@ The controlling field is a security surface, not just an input. "If the controll
 
 ## Anti-Patterns
 
-1. **Deploying a partial `valueSettings` collection.** Adding one pair by deploying only that pair disables the rest of the matrix. The pattern looks like a minimal diff and behaves like a wipe. Always deploy the full matrix retrieved from the source org.
+1. **Believing a deploy can shrink the matrix.** Deleting a `valueSettings` block from source and deploying is inert — the pair stays enabled in the org, and the next retrieve puts the block back. The pattern looks like a minimal diff and changes nothing. Un-map in Setup (Field Dependencies → Edit), then re-retrieve. Always deploy the whole field, because the *values* in the same file are governed by the opposite rule.
 
 2. **Treating `restricted` as combination enforcement.** `restricted` limits "the picklist's values ... to only the values defined by a Salesforce admin" — membership, not pairing. A load can still write a legal value against the wrong controller. Combination enforcement needs an explicit rule.
 
@@ -37,5 +37,12 @@ The controlling field is a security surface, not just an input. "If the controll
 - User Interface API — Picklist Value response body — `validFor` is an Integer array, empty on independent picklists (verified 2026-08-14) — https://developer.salesforce.com/docs/atlas.en-us.uiapi.meta/uiapi/ui_api_responses_picklist_value.htm
 - Metadata API — Metadata Field Types — `ValueSet.controllingField`, `ValueSet.restricted`, `ValueSettings.controllingFieldValue` (string array) and `valueName` (verified 2026-08-14) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_field_types.htm
 - Metadata API — `GlobalValueSet` — 1,000-value ceiling including inactive values; the value set is inherited by fields that use it (verified 2026-08-14) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_globalvalueset.htm
+- Metadata API Developer Guide, Summer '26 / v62 PDF — `ValueSet` and `ValueSettings`: `controllingField` accepts "a checkbox or picklist field" (45843–45845), `restricted` as membership control (45847–45848), and "You can add field dependency values via the Metadata API but not remove them" (45855–45858, 45873–45875) — grounds Gotchas 4, 5 and 8 and metadata-examples §1, §2, §8 — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide — `Picklist (Including Dependent Picklist)`: deprecated at v38.0 in favour of `ValueSet` (44676–44679), and the sample where a checkbox controls a picklist which in turn controls a third field, using `checked`/`unchecked` literals (44745–44852) — grounds Gotcha 7 and metadata-examples §3, §4
+- Metadata API Developer Guide — `PicklistValue.controllingFieldValues`: "Checkbox: checked or unchecked. Picklist: The fullname of the picklist value in the controlling field" (79250–79258) — grounds Gotcha 7
+- Metadata API Developer Guide — `CustomValue` and picklist-value deployment: "If picklist values are missing from a component definition, they get deactivated when deployed" (79237–79239, 47481–47483) and the retrieve asymmetry on unrestricted local picklists (47521–47525) — grounds Gotcha 8
+- Metadata API Developer Guide — `RecordType` / `RecordTypePicklistValue` (45041–45053), the two retrieval caveats (44984–44988), and the `StandardValueSet` note that new values "don't display in the picklist UI by default" until added to the record type's Selected Fields (130774–130779) — grounds Gotcha 9 and metadata-examples §6
+- Apex Developer Guide, Summer '26 / v62 PDF — Triggers and Order of Execution: "the browser runs JavaScript validation if the record contains any dependent picklist fields… No other validation occurs on the client side" (15404–15406) — grounds Gotcha 6, metadata-examples §7, and the whole UI-vs-API split in SKILL.md — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Reference Guide, Summer '26 / v62 PDF — `DescribeFieldResult.isDependentPicklist()` (191169–191178) and `getController()` (190710–190720); `Schema.PicklistEntry` exposes only `getLabel`/`getValue`/`isActive`/`isDefaultValue` (193673–193685) — grounds Gotcha 10, metadata-examples §9, and examples.md Example 3
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

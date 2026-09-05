@@ -103,10 +103,24 @@ Step 5 — Save. The user receives a welcome email with a login link and tempora
 
 ---
 
-## Anti-Pattern: Reusing an Internal Profile for External Users
+## Anti-Pattern: Reusing an Internal Profile for a Contact-Based External User
 
-**What practitioners do:** To save time, some admins clone an existing internal "Standard User" profile and assign it to a portal user, expecting it to work with the Experience Cloud site.
+**What practitioners do:** To save time, an admin clones an internal "Standard User" profile, assigns it to a portal user record, and expects that user to reach the Experience Cloud site the way the external members do.
 
-**What goes wrong:** Internal profiles (tied to the Salesforce license) cannot be added to the site's Members list. Even if the user record is created, the user cannot log in to the Experience Cloud site because internal profiles are blocked from external-facing sites by the platform. The admin sees the user in Setup > All Users but the user sees an "Insufficient Privileges" error on login.
+**What goes wrong:** Not what most write-ups claim. Internal profiles *can* legitimately sit in a site's members list — `NetworkMemberGroup` says members "can be either users in your internal org or external users assigned portal profiles", and `Network.allowInternalUserLogin` exists precisely so employees can sign in on the site login page. So the deploy succeeds and the profile really does appear under Members. What breaks is the user record. An internal profile carries an internal user licence, because "every profile belongs to exactly one user license type", so the moment you save that user you have consumed a full Salesforce seat instead of a Community seat. And `User.AccountId` is read-only and null for Salesforce users, so the record is not contact-based: it has no account, it is invisible to the account-driven sharing the portal is built on, and it cannot be reached by the "Enable Partner User" path at all. The org quietly pays internal-licence prices for portal users who then cannot see portal data.
 
-**Correct approach:** Always create or use a profile tied to an external license (Customer Community, Customer Community Plus, Partner Community, or External Identity). Clone from an existing external profile of the correct license type, never from an internal profile.
+**Correct approach:** Separate the two questions. If the person is a *customer or partner reached through a Contact*, they need an external profile (Customer Community, Customer Community Plus, Partner Community, or External Identity) and a `ContactId` whose Contact has an `AccountId`. If the person is an *employee who should see the site*, leave them on their internal profile, add that profile to `networkMemberGroups` on purpose, and set `allowInternalUserLogin` deliberately. Then check which one you actually built:
+
+```sql
+-- Any row here with a null ContactId or a Standard UserType is an internal-licence
+-- user wearing a portal costume. UserType is derived from the profile's licence and
+-- cannot be set on insert.
+SELECT Id, Username, UserType, ContactId, Contact.AccountId,
+       Profile.Name, Profile.UserLicense.Name, IsActive, IsPortalEnabled
+FROM User
+WHERE Profile.Id IN (SELECT ParentId FROM NetworkMemberGroup WHERE NetworkId = '0DBXX0000004CAa')
+  AND IsActive = true
+ORDER BY Profile.Name
+```
+
+Cross-check the licence choice itself against architect/experience-cloud-licensing-model before creating the profile — the licence is fixed at profile creation and cannot be changed afterwards.
