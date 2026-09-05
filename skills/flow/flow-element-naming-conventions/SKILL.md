@@ -31,9 +31,9 @@ outputs:
   - Subflow input/output rename + version-bump recommendation
   - Audit table of non-conforming element names with proposed replacements
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-05
 ---
 
 # Flow Element Naming Conventions

@@ -74,7 +74,7 @@ public class MockHttp implements HttpCalloutMock {
 
 ---
 
-## Anti-Pattern 3: Forgetting that StubProvider only works with instance methods on interfaces or virtual classes
+## Anti-Pattern 3: Guessing at what the Stub API can mock instead of using the documented list
 
 **What the LLM generates:**
 
@@ -91,7 +91,26 @@ public class UtilityStub implements System.StubProvider {
 // TaxCalculator.calculateTax() still calls the real static method
 ```
 
-**Why it happens:** LLMs assume `StubProvider` can stub any method. It only intercepts instance method calls on interfaces or virtual/abstract classes. Static methods, private methods, and methods on concrete non-virtual classes cannot be stubbed.
+**Why it happens:** LLMs assume `StubProvider` can stub any method, then over-correct into the opposite myth — that the target must be `virtual` or an interface. Both are wrong, and the second one is wrong in a way that produces useless `virtual` keywords all over the codebase.
+
+The Apex Developer Guide states the boundary exactly (L42209–42219). You **cannot** mock:
+
+| Cannot be mocked | Why it bites |
+|---|---|
+| Static methods (including `@future` methods) | The most common "dependency" shape in legacy Apex |
+| Private methods | `@TestVisible` widens access; it does not make the method stubbable |
+| Properties (getters and setters) | A `public Integer count { get; set; }` is not a method to the Stub API |
+| Triggers | Trigger logic must live in a handler class to be testable at all |
+| Inner classes | A helper nested inside its consumer can never be a seam |
+| System types | You cannot stub `Http`, `Database`, `Messaging` — use `Test.setMock` |
+| Classes implementing `Batchable` | Extract the work into an injectable service the batch calls |
+| Classes with only private constructors | The singleton-with-private-constructor idiom blocks stubbing |
+
+Plus: iterators can't be used as return types or parameter types.
+
+What you **can** mock includes ordinary non-`virtual` public instance methods on ordinary non-`virtual` top-level classes — stubs are generated as anonymous subclasses at runtime, and the guide's own worked example stubs `getTodaysDate()` on a plain `public class DateHelper` (L42060–42073, L42180–42192). Prefer interfaces because they document the contract, not because the API requires them.
+
+The failure is also a **runtime** failure, not a compile error: `Test.createStub()` on a rejected type saves fine and blows up when the test runs.
 
 **Correct pattern:**
 
@@ -112,7 +131,7 @@ ITaxCalculator stub = (ITaxCalculator) Test.createStub(
 OrderService svc = new OrderService(stub);
 ```
 
-**Detection hint:** `Test\.createStub` called with a concrete class that is not declared `virtual` or `abstract`.
+**Detection hint:** `Test\.createStub\(` whose first argument names a type on the cannot-mock list — an inner class (`Outer.Inner.class`), a class declaring `implements Database.Batchable`, or a class whose only constructor is `private`. Do **not** flag a plain non-`virtual` class; that is a false positive.
 
 ---
 
@@ -214,3 +233,41 @@ public Object handleMethodCall(Object stubbedObject, String stubbedMethodName,
 ```
 
 **Detection hint:** `StubProvider` implementation that ends with `return null` without a preceding exception for unexpected method names.
+
+---
+
+## Anti-Pattern 7: Setting the mock before `Test.startTest()` in a test that inserts its own data
+
+**What the LLM generates:**
+
+```apex
+@IsTest
+static void testCallout() {
+    Account a = new Account(Name = 'Acme');
+    insert a;                                      // pending uncommitted work
+    Test.setMock(HttpCalloutMock.class, new SuccessMock());
+    Test.startTest();
+    SyncService.push(a.Id);                        // "You have uncommitted work pending"
+    Test.stopTest();
+}
+```
+
+**Why it happens:** LLMs group the two `Test.` calls together because they look like setup, and the pattern works by accident in tests that use `@TestSetup` (where the DML happened in a prior transaction). It fails the moment the test does its own DML inline.
+
+**Correct pattern:**
+
+```apex
+@IsTest
+static void testCallout() {
+    Account a = new Account(Name = 'Acme');
+    insert a;                                      // DML OUTSIDE the block
+    Test.startTest();                              // startTest FIRST
+    Test.setMock(HttpCalloutMock.class, new SuccessMock());   // then setMock
+    SyncService.push(a.Id);
+    Test.stopTest();
+}
+```
+
+The Apex Developer Guide states the ordering rule directly: enclose the callout in `Test.startTest`/`Test.stopTest`, "the `Test.startTest` statement must appear before the `Test.setMock` statement", and the DML calls must not be part of the block (L35675–35681).
+
+**Detection hint:** a `Test\.setMock\(` line that appears before the `Test\.startTest\(\)` line in a method that also contains a bare `insert`/`update`/`upsert` statement outside `@TestSetup`.

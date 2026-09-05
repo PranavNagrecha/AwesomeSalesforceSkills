@@ -97,6 +97,29 @@ having to flip back to the subflow's variable list.
 
 ---
 
+## Example 5: Linting the Convention in CI
+
+`scripts/check_flow_element_naming_conventions.py` encodes the tables above so a
+pipeline enforces them instead of a reviewer:
+
+```bash
+# ERROR-only gate (default): fails on auto-names, default/duplicate Labels,
+# 80-char overruns, reserved words, bare Yes/No outcomes, unprefixed resources.
+python3 scripts/check_flow_element_naming_conventions.py --manifest-dir force-app/main/default
+
+# House-style gate: also fails on the verb prefix, `LogFault_<Parent>` targets,
+# the 60-char practice cap, and input/output contract prefixes.
+python3 scripts/check_flow_element_naming_conventions.py --manifest-dir force-app --strict
+```
+
+Exit codes: `0` clean (or WARN/INFO only), `1` on any ERROR, `2` when
+`--manifest-dir` does not exist. An empty directory WARNs rather than passing
+silently, so a mis-pointed path in CI does not read as a green build. The
+checker's module docstring lists every rule with the reference line it comes
+from, and names the three conventions a regex cannot enforce.
+
+---
+
 ## Anti-Pattern: Renaming a Subflow Input Without Bumping Version
 
 **What practitioners do:** open the subflow `Account_RollupChildContactsCount`,
