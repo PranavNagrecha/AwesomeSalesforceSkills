@@ -211,7 +211,7 @@
     "fc78b8bc18fa34f6f5bb",
     "fe4da4a1113cf97a4c61"
   ],
-  "content_hash": "49e54942ffaa808a991f077975566bf091455a64caafe56157cfaeaad4b97ff4",
+  "content_hash": "abebb09e82dda8963d036a37397d5b4a5f6afb534739e95097f0cf920ce4243f",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale', 'collection variable', 'noMoreValuesConnector', 'Collection Filter', 'Collection Sort', 'Too many SOQL queries: 101', 'Too many DML statements: 151', 'bulk-safe flow XML'. NOT for 'Too many query rows' at LDV scale \u2014 use flow/flow-large-data-volume-patterns. NOT for refactoring one Loop element \u2014 use flow/flow-loop-element-patterns.",
   "file_location": "skills/flow/flow-bulkification",

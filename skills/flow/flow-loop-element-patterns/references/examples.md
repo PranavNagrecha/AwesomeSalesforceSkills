@@ -1,6 +1,6 @@
 # Examples — Flow Loop Element Patterns
 
-Concrete before/after refactors for the most common Loop-element anti-patterns. Each example uses Flow element pseudo-syntax (the literal element list a designer would build), not Flow XML — the goal is reviewability, not deployability.
+Concrete before/after refactors for the most common Loop-element anti-patterns. Most examples use Flow element pseudo-syntax (the literal element list a designer would build) because the goal here is reviewability. For deployable `*.flow-meta.xml` — the anti-pattern, the correction, a Filter-replaces-nested-loop flow, a Map processor, a `FlowTest`, `package.xml` and verification — see `references/metadata-examples.md`, which uses a different object model so the two can be read side by side.
 
 ---
 
@@ -56,7 +56,54 @@ Update Records: UpdateAllQuotes              <-- single DML, post-loop
   Record(s): vQuotesToUpdate
 ```
 
-**Why it works:** One DML statement regardless of input volume. The iteration variable for an SObject collection is a reference into `vQuotes`, so the field assignments mutate the same instance you Add to `vQuotesToUpdate` — no copy required.
+**Why it works:** One DML statement regardless of input volume. The `Add` is not optional bookkeeping — it is the only thing that carries the edited record out of the loop, because nothing on `FlowLoop` writes a modified loop variable back into `collectionReference` (`api_meta.txt` L70698–70716). Here is the single Assignment that does both jobs, as it appears in the flow metadata:
+
+```xml
+<assignments>
+    <name>SetAndCollect</name>
+    <label>Set And Collect</label>
+    <locationX>182</locationX>
+    <locationY>350</locationY>
+    <assignmentItems>
+        <assignToReference>vCurrentQuote.Status</assignToReference>
+        <operator>Assign</operator>
+        <value>
+            <stringValue>Won</stringValue>
+        </value>
+    </assignmentItems>
+    <assignmentItems>
+        <assignToReference>vCurrentQuote.Won_Date__c</assignToReference>
+        <operator>Assign</operator>
+        <value>
+            <elementReference>$Flow.CurrentDate</elementReference>
+        </value>
+    </assignmentItems>
+    <assignmentItems>
+        <assignToReference>vQuotesToUpdate</assignToReference>
+        <operator>Add</operator>
+        <value>
+            <elementReference>vCurrentQuote</elementReference>
+        </value>
+    </assignmentItems>
+    <connector>
+        <targetReference>LoopQuotes</targetReference>
+    </connector>
+</assignments>
+```
+
+Two `assignmentItems` say `Assign` and one says `Add`; on a collection variable `Add` "appends the value to the end of the collection" (`api_meta.txt` L69800–69802). Delete that third item and the flow still deploys, still runs green, and saves nothing.
+
+Confirm it worked against the database rather than against the debug pane:
+
+```soql
+SELECT COUNT(Id)
+FROM Quote
+WHERE OpportunityId = '0065g00000XXXXXAAA'
+  AND Status = 'Won'
+  AND Won_Date__c = TODAY
+```
+
+A count of zero while the flow reported success is the signature failure this skill exists to prevent.
 
 ---
 
@@ -227,6 +274,6 @@ Loop: LoopCases
     Decision: Match { vCase.OwnerId = vOwner.Id }
 ```
 
-**What goes wrong:** 200 cases × 200 owners = 40,000 element-executions before any work happens. On API 57.0+ there is no element ceiling to trip, so this does not fail fast — it burns synchronous CPU time until the interview dies at 10,000 ms, which is a slower and much harder failure to diagnose. (A flow still pinned to API <= 56.0 fails earlier and more legibly with `Number of iterations exceeded`.)
+**What goes wrong:** 200 cases × 200 owners = 40,000 element-executions before any work happens. No developer guide documents an element ceiling to trip (`references/gotchas.md` Gotcha 3), so this does not fail fast — it burns synchronous CPU time until the interview dies at 10,000 ms (`apexdev.txt` L19579), a slower and much harder failure to diagnose. Note there is no DML and no SOQL anywhere in this shape, so every piece of bulkification advice passes it.
 
-**Correct approach:** Pre-load owners once, then the inner loop iterates a small bounded collection — or better, escalate to invocable Apex with a `Map<Id, User>` for true O(n).
+**Correct approach:** Replace the inner loop with a `FilterCollectionProcessor` whose `formula` references the outer loop's variable — one element per outer iteration instead of `m`, and the outer variable is reachable because Flow resources are flow-scoped. `references/metadata-examples.md` §3 is that flow, deployable. Where the match is genuinely many-to-many rather than a lookup, escalate to invocable Apex with a `Map<Id, User>` for true O(n).

@@ -51,16 +51,18 @@ Update Records: vAcctsToUpdate
 
 **Why it happens:** The model recognizes the join-by-key shape and reaches for nested iteration because Flow has no native `Map<K,V>` declarative element. It does not consider that O(n*m) element-executions exhaust the transaction's CPU-time budget at any realistic data size.
 
-**Correct pattern:** Pre-load one side into a collection variable, then use Map-Lookup pattern (single outer loop + bounded inner search) for low-hundreds of records, OR escalate to invocable Apex with a real `Map<Id, SObject>` for true O(n) lookup.
+**Correct pattern:** Replace the inner loop with a `FilterCollectionProcessor` whose `formula` names the outer loop's variable — one element per outer iteration instead of `m`. Flow resources are flow-scoped, not block-scoped, so the outer variable is legally in scope inside the filter's formula. `references/metadata-examples.md` §3 is a deployable version.
 
 ```
 Get Records: AllOwnersOnce → vOwners
 Loop Cases:
-  Loop vOwners:           <-- bounded by vOwners size, not multiplicative
-    Decision: match
+  Collection Filter: OwnersForThisCase       <-- ONE element, not m
+    conditionLogic: Formula
+    formula: {!vOwner.Id} = {!vCase.OwnerId}
+  Decision: IsEmpty(OwnersForThisCase) = false
 ```
 
-For larger volumes, escalate to Apex.
+For genuinely many-to-many joins at volume, escalate to invocable Apex with a real `Map<Id, SObject>`.
 
 **Detection hint:** Flag any Flow with two Loop elements where the inner loop's input collection is not a small bounded constant (e.g., a hardcoded list of up to ~10).
 
@@ -132,3 +134,76 @@ For larger volumes, escalate to Apex.
 The design advice built on top of the wrong limit is *not* all wrong: nested loops are still bad, collect-then-DML is still right, and estimating `body_elements × iterations` is still the right instinct. Keep the advice, change the reason — otherwise you decompose a perfectly viable flow, or escalate to invocable Apex, to dodge a ceiling that no longer exists.
 
 **Detection hint:** three mechanical greps. (1) `2000` or `2,000` within ~40 characters of `element` in Flow guidance. (2) The literal string `Number of executed elements` — it is not a Salesforce message; the real one is `Number of iterations exceeded`. (3) Any statement of this limit that does **not** also name an API version — the version qualifier is load-bearing, and its absence is the strongest signal the claim came from stale training data rather than from the docs.
+
+
+---
+
+## Anti-Pattern 8: Inventing `MapCollectionProcessor` (and other plausible enum values)
+
+**What the LLM generates:** Flow XML for the Map element with
+`<collectionProcessorType>MapCollectionProcessor</collectionProcessorType>`. It deploys
+nowhere. The same reflex produces `FilterProcessor`, `SortProcessor`, and an
+`<iterationOrder>Ascending</iterationOrder>` that should read `Asc`.
+
+**Why it happens:** The Builder label and the metadata enum disagree, and the model
+generates the label. The real values are `SortCollectionProcessor` (API 50.0+),
+`RecommendationMapCollectionProcessor` (API 53.0+) and `FilterCollectionProcessor`
+(API 53.0+) — `api_meta.txt` L69934–69941. The `Recommendation` prefix is a fossil of the
+element's Einstein origin and is not guessable from the UI. `iterationOrder` takes only
+`Asc` and `Desc` (`api_meta.txt` L70706–70710).
+
+**Correct pattern:** Retrieve one Builder-authored element and copy its literal strings —
+`sf project retrieve start --metadata Flow:<name>`. Where the guide documents a field but
+ships no sample (all of `FlowCollectionProcessor` and `FlowCollectionMapItem`), say so
+rather than presenting a reconstructed shape as verified.
+
+**Detection hint:** grep generated Flow XML for `<collectionProcessorType>` and assert
+membership in the three-value set; grep `<iterationOrder>` and assert `Asc|Desc`. Both are
+checks in `scripts/check_flow_loop_element_patterns.py`.
+
+---
+
+## Anti-Pattern 9: Emitting a Loop with no `noMoreValuesConnector`
+
+**What the LLM generates:** A `<loops>` node with `collectionReference`,
+`assignNextValueToReference` and `nextValueConnector`, and nothing for the exhausted path —
+because the loop body was the interesting part and the model stopped when it was done.
+
+**Why it happens:** In every general-purpose language the loop's exit is implicit; you fall
+through to the next statement. Flow has no fall-through — `noMoreValuesConnector` is "the
+element to navigate to when all entries in the collection have been iterated through"
+(`api_meta.txt` L70714–70716) and nothing supplies a default. The schema does not require
+it, so the flow deploys.
+
+The sharper version: an empty collection reaches that connector on the *first* evaluation,
+so a flow that "worked in testing" was never tested on the empty path at all.
+
+**Correct pattern:** Wire `noMoreValuesConnector` on every loop, even when its target is the
+end of the flow, and put anything the post-loop path depends on *before* the loop rather
+than in its body.
+
+**Detection hint:** any `<loops>` element with a `<nextValueConnector>` and no
+`<noMoreValuesConnector>`.
+
+---
+
+## Anti-Pattern 10: Filling in every documented field of a collection processor
+
+**What the LLM generates:** A Filter element carrying `conditionLogic`, a `conditions`
+array, *and* a `formula`, because the guide lists all three as fields of
+`FlowCollectionProcessor`.
+
+**Why it happens:** Field tables read as a checklist. They are not — `conditionLogic`
+selects which of the other two is live: `And`, `Or` and custom logic such as
+`(1 AND (2 OR 3))` drive `conditions`; the value `Formula` drives `formula`
+(`api_meta.txt` L69946–69960). Populating both produces an element whose XML says one thing
+and whose runtime does another, which survives review precisely because the ignored half
+looks correct.
+
+**Correct pattern:** Exactly one of `formula` or `conditions`, matching `conditionLogic`. A
+formula-based filter also needs `assignNextValueToReference` so the formula has a name for
+the current item.
+
+**Detection hint:** any `<collectionProcessors>` with both a non-empty `<formula>` and one
+or more `<conditions>`; any `RecommendationMapCollectionProcessor` with `<mapItems>` and no
+`<assignNextValueToReference>`.

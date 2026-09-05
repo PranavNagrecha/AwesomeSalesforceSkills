@@ -26,6 +26,7 @@ triggers:
   - "System.LimitException: Too many SOQL queries from a flow"
   - "move get records outside the loop in my flow"
   - "build a collection variable and update it once after the loop"
+  - "dml inside a flow loop - collect records and update once"
   - "check whether this flow is bulk safe before the integration go live"
   - "flow worked in sandbox but failed on the 200 record data load"
   - "why did only the first child record update in my flow"
