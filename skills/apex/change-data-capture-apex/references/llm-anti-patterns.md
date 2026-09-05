@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Using `before insert` Instead of `after insert`
 
-**What the LLM generates:** A CDC trigger with a `before insert` event declaration:
+**What the LLM generates:** A CDC trigger with a `before insert` event declaration (declaration-line excerpt):
 
 ```apex
 // WRONG
@@ -14,7 +14,7 @@ trigger AccountChangeEventTrigger on AccountChangeEvent (before insert) {
 
 **Why it happens:** LLMs trained on general Apex patterns default to `before insert` for validation-style triggers. CDC triggers are always `after insert` — the event is published after the DML commits, so there is no "before" phase.
 
-**Correct pattern:**
+**Correct pattern** (declaration-line excerpt):
 
 ```apex
 trigger AccountChangeEventTrigger on AccountChangeEvent (after insert) {
@@ -26,7 +26,7 @@ trigger AccountChangeEventTrigger on AccountChangeEvent (after insert) {
 
 ## Anti-Pattern 2: Writing the Trigger on the Base sObject Instead of the Change Event Type
 
-**What the LLM generates:** A trigger on the underlying sObject that attempts to behave like a CDC subscriber:
+**What the LLM generates:** A trigger on the underlying sObject that attempts to behave like a CDC subscriber (excerpt):
 
 ```apex
 // WRONG — this is a standard DML trigger, not a CDC trigger
@@ -203,6 +203,6 @@ trigger AccountChangeTrigger on AccountChangeEvent (after insert) {
 
 **Why it happens:** The Change Data Capture docs correctly and repeatedly describe change event triggers as running **asynchronously**, after the transaction that produced the change. The model reads "asynchronous" and applies the asynchronous heap allocation, which is the natural inference and is wrong — Salesforce documents change event triggers as running under *synchronous* governor limits despite the asynchronous delivery. The 10 MB variant is a separate failure: a round number that splits the difference between the two real values, emitted when the model recalls "there is a heap limit around ten-ish megabytes" without recalling which. Both survive review because the accompanying advice (bulkify, query outside the loop) is correct on its own terms.
 
-**Correct pattern:** Change event triggers run under **synchronous** limits: 100 SOQL, 150 DML, **6 MB heap**, 10,000 ms CPU — with up to 2,000 events per trigger invocation. Do not infer the limit profile from the word "asynchronous"; delivery timing and limit context are independent here. Size hydration against 6 MB: select only the fields you consume, and if 2,000 events × parent records will not fit, chunk into a Queueable (which *does* get 12 MB) rather than assuming you already have it.
+**Correct pattern:** Change event triggers run under **synchronous** limits: 100 SOQL, 150 DML, **6 MB heap**, 10,000 ms CPU (`apexdev` L19542, L19553, L19577, L19579) — with up to 2,000 events per trigger invocation (`apexdev` L19862). UNVERIFIED (2026-09-05): the 2,000 batch size and the 6/12 MB heap split are both grounded in the Apex Developer Guide, but the classification of a *change event trigger* into the synchronous column is a Change Data Capture Developer Guide claim and cannot be read in the Apex guides. The 10 MB figure below remains a fabrication either way — no Apex context has a 10 MB heap. Do not infer the limit profile from the word "asynchronous"; delivery timing and limit context are independent here. Size hydration against 6 MB: select only the fields you consume, and if 2,000 events × parent records will not fit, chunk into a Queueable (which *does* get 12 MB) rather than assuming you already have it.
 
 **Detection hint:** `10\s?MB\s+heap` anywhere in Salesforce material is a fabrication — no Apex context has a 10 MB heap. Additionally flag any file matching `ChangeEvent|change event trigger` that also matches `12\s?MB`, and any sentence containing both `asynchron` and `heap` within a CDC file: the pairing is almost always the wrong inference. Conversely, correct CDC guidance states `6 MB` and `synchronous` together.

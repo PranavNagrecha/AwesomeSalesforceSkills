@@ -23,6 +23,9 @@ Answer these before writing any code:
 - **Field-level filtering needed for UPDATE?** Yes / No — if yes, list fields: ___
 - **Downstream action:** Internal Salesforce DML / Queueable / @future callout / other: ___
 - **Known limits concern:** e.g., high daily event volume, large batch sizes, > 5 tracked entities
+- **Idempotency store:** `Change_Event_Receipt__c` (see `references/code-examples.md` Artifact 5) / other: ___
+- **Enrichment or filtering needed?** `enrichedFields` / `filterExpression` on a custom channel member: ___
+- **Running identity:** Automated Process (default) / `PlatformEventSubscriberConfig` user: ___
 
 ---
 
@@ -81,34 +84,28 @@ trigger ___ChangeEventTrigger on ___ChangeEvent (after insert) {
         }
     }
 
-    // --- Process creates ---
-    if (!createdIds.isEmpty()) {
-        List<___> records = [SELECT Id, ___ FROM ___ WHERE Id IN :createdIds];
-        // TODO: handler
+    // --- Creates and undeletes share one hydration query ---
+    Set<Id> hydrate = new Set<Id>(createdIds);
+    hydrate.addAll(updatedIds);
+    hydrate.addAll(undeletedIds);
+    if (!hydrate.isEmpty()) {
+        List<___> records = [SELECT Id, ___ FROM ___ WHERE Id IN :hydrate];
+        ___Handler.upsertDownstream(records);
     }
 
-    // --- Process updates (query for full current state) ---
-    if (!updatedIds.isEmpty()) {
-        List<___> records = [SELECT Id, ___ FROM ___ WHERE Id IN :updatedIds];
-        // TODO: handler
-    }
-
-    // --- Process deletes (do NOT query — record is gone) ---
+    // --- Deletes: do NOT query, the record is gone. The ids are the payload. ---
     if (!deletedIds.isEmpty()) {
-        // TODO: downstream delete notification using IDs only
+        ___Handler.notifyDeleted(deletedIds);
     }
 
-    // --- Process undeletes ---
-    if (!undeletedIds.isEmpty()) {
-        List<___> records = [SELECT Id, ___ FROM ___ WHERE Id IN :undeletedIds];
-        // TODO: handler
-    }
-
-    // --- Process gap events (re-fetch all affected records) ---
+    // --- Gap and overflow: no field values. Flag a resync, do not guess. ---
     if (!gapIds.isEmpty()) {
-        List<___> records = [SELECT Id, ___ FROM ___ WHERE Id IN :gapIds];
-        // TODO: reconcile with downstream system
+        ___Handler.flagForResync(gapIds);
+        ApplicationLogger.warn('___ChangeEventTrigger',
+            'Gap event resync flagged for ' + gapIds.size() + ' record(s)');
     }
+
+    ApplicationLogger.flush();
 }
 ```
 
@@ -124,7 +121,12 @@ trigger ___ChangeEventTrigger on ___ChangeEvent (after insert) {
 - [ ] DELETE branch does not attempt to SOQL the deleted record
 - [ ] No synchronous callouts in trigger body — dispatched to Queueable or @future
 - [ ] Automated Process trace flag configured for debugging
-- [ ] Unit tests cover all change-type branches using `Test.getEventBus().deliver()`
+- [ ] Unit tests call `Test.enableChangeDataCapture()` before any DML, then `Test.getEventBus().deliver()` per delivery phase
+- [ ] Dedupe key is `transactionKey` + `sequenceNumber` (never `transactionKey` alone, never `commitNumber`)
+- [ ] Entries in `recordIds` are checked for the `001*` wildcard form before being cast to `Id`
+- [ ] The `changeType` chain has an `else` branch that logs the unrecognised value (`SNAPSHOT` is reserved)
+- [ ] The watched field is a stored field, not a formula (formula fields never appear in `changedFields`)
+- [ ] CDC enablement ships as `ChangeEvents_<Object>ChangeEvent.platformEventChannelMember-meta.xml`
 
 ---
 

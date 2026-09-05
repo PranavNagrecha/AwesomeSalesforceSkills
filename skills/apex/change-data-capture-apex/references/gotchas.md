@@ -23,13 +23,26 @@ Logs will then appear in Setup > Debug Logs, not in the Developer Console log ta
 
 **When it occurs:** When the underlying object has not been enabled in Setup > Integrations > Change Data Capture. The trigger compiles against the change event type (e.g., `AccountChangeEvent`), but no events are ever published to the event bus for untracked objects. The trigger is syntactically valid but dead.
 
-**How to avoid:** Before deploying a CDC trigger to any environment, confirm the object is selected in Setup > Change Data Capture. In CI/CD pipelines, include a pre-deployment validation that queries `SELECT QualifiedApiName FROM EntityDefinition WHERE IsChangeEventEnabled = true` via Tooling API to verify all required entities are tracked.
+**How to avoid:** Stop treating enablement as a Setup step. The selection on that page is a
+`PlatformEventChannelMember` on the `ChangeEvents` channel (`api_meta` L95842–95844, L96098–96108) —
+ship the file with the trigger (`references/code-examples.md` Artifact 1) and the trigger can never
+arrive in an org without it. To check an existing org, retrieve
+`PlatformEventChannelMember:ChangeEvents_<Object>ChangeEvent`; an empty retrieve is the answer.
+
+UNVERIFIED (2026-09-05): the Tooling API query `SELECT QualifiedApiName FROM EntityDefinition WHERE
+IsChangeEventEnabled = true` was the previous recommendation here. `IsChangeEventEnabled` does not
+appear anywhere in the Object Reference. Prefer the metadata retrieve, which is grounded.
 
 ---
 
 ## Gotcha 3: changedFields Contains Encoded Values in Some API Contexts — But Not in Apex
 
-**What happens:** Developers familiar with Pub/Sub API (gRPC) know that `changedFields` is a base64-encoded bitmap in the binary Avro payload and must be decoded before use. They apply the same assumption in Apex and write decoding logic that corrupts or misreads the values.
+**What happens:** Developers familiar with Pub/Sub API (gRPC) know that `changedFields` arrives
+encoded in the binary Avro payload and must be decoded before use. They apply the same assumption in
+Apex and write decoding logic that corrupts or misreads the values. UNVERIFIED (2026-09-05): the
+encoding on the Pub/Sub wire is described in the Change Data Capture / Pub/Sub API developer guides,
+neither of which is in the grounding corpus. The Apex side of this gotcha is grounded: `apexrefguide`
+L157340–157345 gives the signature `public List<String> changedfields {get; set;}`.
 
 **When it occurs:** When a developer ports Pub/Sub API subscriber code to an Apex trigger without accounting for the different runtime context.
 
@@ -54,3 +67,149 @@ Logs will then appear in Setup > Debug Logs, not in the Developer Console log ta
 **When it occurs:** In the `changeType == 'DELETE'` branch, when the trigger attempts `SELECT Id, Name FROM Account WHERE Id IN :deletedIds`. Deleted records are no longer in the standard SOQL scope.
 
 **How to avoid:** Do not query the record body after a DELETE event. The change event header provides the record IDs — use them to issue a delete notification or cleanup action downstream without fetching field values. If you need the last known field state, it must have been captured during a previous CREATE or UPDATE event and stored externally. If the use case truly requires archived field values after delete, use `SELECT ... FROM Account WHERE Id IN :ids ALL ROWS` — but understand that this returns soft-deleted records in the Recycle Bin only, and not permanently deleted ones.
+
+---
+
+## Gotcha 6: `changedFields` Always Contains `LastModifiedDate`, So "Did Anything Change" Is Never a Filter
+
+**What happens:** A subscriber tries to skip no-op updates with `if (!header.changedFields.isEmpty())`
+or logs "N fields changed" and gets N+1. Worse, a handler that treats "exactly one changed field" as
+a meaningful signal never sees the case it was written for.
+
+**When it occurs:** On every UPDATE change event. `changedFields` is documented as "a list of the
+fields that were changed in an update operation, **including the LastModifiedDate system field**"
+(`apexrefguide` L157231–157232, repeated at L157195–157196 and in the versioned-behaviour note at
+`apexdev` L44764–44766). The list is never empty for an update, because saving a record always moves
+`LastModifiedDate`.
+
+**How to avoid:** Ask `changedFields` for a named field — `changed.contains('BillingCountry')` — and
+never for its size or emptiness. If the handler needs a count of business-meaningful changes, subtract
+the system fields explicitly. Pair the check with `nulledFields`, or clearing the watched field will
+not be detected as a change to it (`apexrefguide` L157381–157385).
+
+---
+
+## Gotcha 7: `recordIds` Can Contain a Wildcard, and Casting It to `Id` Throws
+
+**What happens:** A handler does `(List<Id>) header.getRecordIds()` or `(Id) raw` and blows up with a
+string-conversion exception on an event that no test ever produced. Because change event triggers do
+not report through the originating user's transaction, the failure shows up as a silently missing
+batch rather than an error anyone sees.
+
+**When it occurs:** "The recordIds field can contain a wildcard value when a change event message is
+generated for custom field type conversions that cause data loss. In this case, the recordIds value is
+the three-character prefix of the object, followed by the wildcard character `*`. For example, for
+accounts, the value is `001*`" (`apexrefguide` L157413–157417). It fires when someone converts a field
+type in Setup — a schema change, not a data change, which is why no data-driven test finds it.
+
+**How to avoid:** Filter before casting. Any entry ending in `*` means "every record of this object
+may have changed" — route it to the same resync path as a `GAP_OVERFLOW`, never to a per-record loop.
+`references/code-examples.md` Artifact 4 has the guard (`addIds`).
+
+---
+
+## Gotcha 8: One `transactionKey` Covers Several Events, So It Is Not an Idempotency Key
+
+**What happens:** A subscriber dedupes on `transactionKey`, and a lead conversion loses three of its
+four events. The account arrives downstream, the contact and opportunity do not, and nothing errors.
+
+**When it occurs:** Whenever one transaction changes more than one record type. `transactionKey`
+"uniquely identifies each Salesforce transaction" (`apexrefguide` L157438–157441) — the transaction,
+not the change. `sequenceNumber` is "the sequence of the change within a transaction… starts from 1",
+and the guide's own worked example is exactly a lead conversion: create account (1), create contact
+(2), create opportunity (3), update lead (4), all under one `transactionKey`
+(`apexrefguide` L157420–157436).
+
+**How to avoid:** Key on `transactionKey + ':' + sequenceNumber`. Do not reach for `commitNumber`
+instead — it "is not guaranteed to be unique in Salesforce — it is unique only in a single database
+instance", and after an org migrates instances "the commit number might not be unique or sequential"
+(`apexrefguide` L157306–157310). It is documented for diagnostics.
+
+---
+
+## Gotcha 9: A Formula Field Will Never Appear in `changedFields`
+
+**What happens:** A subscriber is built to react when a formula field — a health score, a derived
+status, a concatenated key — changes. It is deployed, the formula's inputs change daily, and the
+handler never fires. Everyone checks the trigger, the channel member, and the permissions before
+anyone checks whether the field is in the event at all.
+
+**When it occurs:** Always, for formula and other derived fields. Change event fields correspond to
+the parent object's fields except "the IsDeleted system field", "the SystemModStamp system field", and
+"any field whose value isn't on the record and is derived from another record or from a formula,
+**except roll-up summary fields, which are included**. Examples are formula fields. Examples of fields
+with derived values include LastActivityDate and PhotoUrl" (`object_reference` L5157–5163).
+
+**How to avoid:** Watch the stored fields the formula reads, and recompute downstream. Roll-up summary
+fields are the exception and can be watched directly. Separately: change events exist for all custom
+objects but only a subset of standard objects (`object_reference` L5139–5140, list at L5211+), and
+custom-setting change events "aren't supported in Apex triggers but are supported in other types of
+subscribers" (`object_reference` L5140–5143) — an Apex trigger on one compiles and stays dead.
+
+---
+
+## Gotcha 10: A Long Text Field Can Arrive as a Diff Rather Than a Value
+
+**What happens:** A handler copies a long text field straight off the event into a downstream system
+and the destination ends up holding a fragment, or a patch, instead of the field's content. The
+`changedFields` check passed, so the code looks correct.
+
+**When it occurs:** When the changed field holds a large text value. `diffFields` "contains the names
+of fields whose values are sent as a unified diff because they contain large text values"
+(`apexrefguide` L157353–157358; the reference points onward to "Sending Data Differences for Fields of
+Updated Records" in the Change Data Capture Developer Guide).
+
+**How to avoid:** Before reading any long-text field off an event body, test whether its name is in
+`header.diffFields`. If it is, do not treat the value as the field's new content — re-query the record.
+The same rule that applies to unchanged fields applies harder here: the event is a change notification,
+not a record snapshot.
+
+UNVERIFIED (2026-09-05): the exact diff format, and the size threshold at which a field is sent as a
+diff rather than a value, are in the Change Data Capture Developer Guide and are not in the corpus.
+
+---
+
+## Gotcha 11: The Subscriber's Security Context Changes When You Move to API 67.0
+
+**What happens:** A CDC handler that has worked for a year starts failing on inserts or returning
+empty queries after a routine `apiVersion` bump, with no code change.
+
+**When it occurs:** At API version 67.0. "In API version 67.0 and later, Apex runs in user context by
+default, meaning that the current user's permissions and field-level security (FLS) are enforced
+during code execution. In API version 66.0 and earlier, system mode is the default", and "classes
+without an explicit sharing declaration run in `with sharing` mode" (`apexdev` L11744–11748, repeated
+at L18734–18740). The change event trigger's running user is the Automated Process entity by default
+(`api_meta` L96461–96462), and "Automated Process users can't perform Object and FLS checks in custom
+code unless appropriate permission sets are explicitly applied to those users" (`apexdev` L11921–11922).
+
+**How to avoid:** Treat the version bump as a security review for this class. Either assign the
+Automated Process user permission sets covering every object and field the handler touches, or set a
+real `user` on `PlatformEventSubscriberConfig` (`api_meta` L96453–96465) and grant that user the
+access. Declare `with sharing` / `without sharing` / `inherited sharing` explicitly so the decision is
+in the file rather than inherited from the API version.
+
+---
+
+## Gotcha 12: `changeOrigin` Tells You an Apex Process Made the Change, Not That *Your* Code Did
+
+**What happens:** A handler whose downstream effect writes back to the same object tries to break the
+loop by checking `changeOrigin`, finds it contains `apex`, and skips — silently dropping legitimate
+changes made by every other Apex process in the org.
+
+**When it occurs:** The `changeOrigin` format is
+`com/salesforce/api/<API_Name>/<API_Version>;client=<Client_ID>`, where `<API_Name>` is one of
+`soap, rest, bulkapi, xmlrpc, oldsoap, toolingsoap, toolingrest, apex, apexdebuggerrest`. The field is
+"only populated for changes done by API apps or from Lightning Experience; empty otherwise", and the
+client id half "is not appended" unless the caller set it — "the client ID is set in the Call Options
+header of an API call" (`apexrefguide` L157245–157275). So the API-name half identifies a category of
+caller; only the client-id half identifies an application.
+
+**How to avoid:** Use `changeOrigin` for what it is documented for — "detect whether your app
+initiated the change to not process the change again and potentially avoid a deep cycle of changes"
+(`apexrefguide` L157197–157200) — when your app is an external integration that *can* set a call-options
+client id. For an in-org loop between a CDC handler and its own DML, use the patterns in
+`apex/recursive-trigger-prevention` instead.
+
+UNVERIFIED (2026-09-05): that in-org Apex DML has no way to set the `client=` portion is an inference
+from the guide's list of Call Options headers (REST, SOAP, Bulk, and the Apex *API* `CallOptions`
+element). The Apex Reference Guide does not state it directly.

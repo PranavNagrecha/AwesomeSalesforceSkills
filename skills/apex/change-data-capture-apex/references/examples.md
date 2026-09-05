@@ -169,3 +169,65 @@ trigger AccountChangeEventTrigger on AccountChangeEvent (after insert) {
     }
 }
 ```
+
+---
+
+## Example 3: Reading a Real Event Payload and Deriving the Dedupe Key From It
+
+**Context:** A team is about to build an idempotent subscriber and needs to see what the header
+actually carries before choosing a key. This is the Object Reference's own change event message for a
+new Account (`object_reference` L5178–5203), unmodified except for the redacted ids it ships with.
+
+```json
+{
+  "schema": "IeRuaY6cbI_HsV8Rv1Mc5g",
+  "payload": {
+    "ChangeEventHeader": {
+      "entityName": "Account",
+      "recordIds": ["<record_ID>"],
+      "changeType": "CREATE",
+      "changeOrigin": "com/salesforce/api/soap/51.0;client=SfdcInternalAPI/",
+      "transactionKey": "0002343d-9d90-e395-ed20-cf416ba652ad",
+      "sequenceNumber": 1,
+      "commitTimestamp": 1612912679000,
+      "commitNumber": 10716283339728,
+      "commitUser": "<User_ID>"
+    },
+    "Name": "Acme",
+    "Description": "Everyone is talking about the cloud. But what does it mean?",
+    "OwnerId": "<Owner_ID>",
+    "CreatedDate": "2021-02-09T23:17:59Z",
+    "CreatedById": "<User_ID>",
+    "LastModifiedDate": "2021-02-09T23:17:59Z",
+    "LastModifiedById": "<User_ID>"
+  },
+  "event": { "replayId": 6 }
+}
+```
+
+**Problem:** Three of those fields look like idempotency keys and only one combination is one.
+
+| Candidate | Value here | Verdict |
+|---|---|---|
+| `transactionKey` alone | `0002343d-9d90-e395-ed20-cf416ba652ad` | **No.** Identifies the transaction, not the change. A lead conversion emits four events under one key (`apexrefguide` L157429–157436) |
+| `commitNumber` | `10716283339728` | **No.** "Not guaranteed to be unique in Salesforce — it is unique only in a single database instance"; may stop being sequential after an instance migration (`apexrefguide` L157306–157310). Diagnostics only |
+| `commitTimestamp` | `1612912679000` | **No.** Milliseconds, and merged events share one. Useful for ordering and for a `Datetime.newInstance(...)` audit column, not for identity |
+| `replayId` | `6` | **No.** It lives in `event`, outside `ChangeEventHeader`, and is the streaming-transport cursor — an Apex trigger never sees it |
+| `transactionKey` + `sequenceNumber` | `0002343d-…-cf416ba652ad:1` | **Yes.** Transaction plus the change's position within it (`apexrefguide` L157420–157441) |
+
+**Solution:** derive the key in one expression and store it behind a unique External Id.
+
+```apex
+String dedupeKey = header.transactionKey + ':' + String.valueOf(header.sequenceNumber);
+```
+
+**Why it works:** the pair is stable across redelivery of the same event and distinct across the four
+events of one lead conversion. The unique index on `Change_Event_Receipt__c.Dedupe_Key__c`
+(`references/code-examples.md` Artifact 5) turns a concurrent replay into a rejected row rather than a
+duplicated downstream effect.
+
+**What the payload also shows:** `changeOrigin` here is `com/salesforce/api/soap/51.0;client=SfdcInternalAPI/`
+— the `soap` half is the API category, the `client=` half is the only part that identifies an
+application, and it is present only because that caller set the Call Options header
+(`apexrefguide` L157245–157275). And note what is *absent* from the payload: no `IsDeleted`, no
+`SystemModStamp`, no formula fields (`object_reference` L5157–5163).
