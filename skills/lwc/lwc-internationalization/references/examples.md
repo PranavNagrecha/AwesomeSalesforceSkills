@@ -69,19 +69,43 @@ export default class CaseQuickAction extends LightningElement {
 </template>
 ```
 
-**Why it works:** the strings now live in the one store the Translation Workbench covers, so
+**Why it works:** the strings now live in metadata the `Translations` type covers, so
 translating the component becomes a translator task rather than a deployment. Custom labels
-hold up to 1,000 characters and an org can have up to 5,000, which is enough for the UI
-strings of a large application — the frequently repeated 255-character figure is a different
-limit and has pushed teams into unnecessary Custom Metadata workarounds.
+hold up to 1,000 characters (`api_meta` `CustomLabel.value`, "Maximum of 1000 characters"),
+which is enough for the UI strings of a large application — the frequently repeated
+255-character figure is `CustomLabel.categories`, a list-view filter field, and quoting it
+has pushed teams into unnecessary Custom Metadata workarounds. The ceiling that actually
+binds is lower still: a *translated* label caps at 765 characters
+(`CustomLabelTranslation.label`), so 765 is the working budget.
 
-**The constraint that shapes the design:** every one of those imports is a literal. There
-is no runtime label lookup, so a label name cannot be assembled from a variable. Where a
-value has to select between strings, import all of them and map — see anti-pattern 1.
+**The constraint that shapes the design:** every one of those import *specifiers* is a
+literal. The value behind it is resolved for the running user at runtime — "modules scoped
+with `@salesforce` add functionality to Lightning web components at runtime" — but the
+module identifier itself cannot be assembled from a variable. Where a value has to select
+between strings, import all of them and map — see anti-pattern 1.
 
-**What is still not done:** deploying the labels creates the English values only. Until a
-translated value exists for each active language every one of these renders in English, and
-nothing warns you.
+**What is still not done:** deploying the labels creates the master (English) values only.
+Master values live in `labels/*.labels-meta.xml`; translations live in
+`translations/<locale>.translation-meta.xml` and are a different metadata type. Until a
+`<customLabels>` entry exists for each label in each active language, every one of these
+renders in English, and nothing warns you. The only check is a count, and it is cheap:
+
+```bash
+# Every label name the component could show...
+grep -o '<fullName>[^<]*</fullName>' \
+  force-app/main/default/labels/CaseQuickAction.labels-meta.xml \
+  | sed 's/<[^>]*>//g' | sort > /tmp/labels.txt
+
+# ...against the names each language actually translates.
+for f in force-app/main/default/translations/*.translation-meta.xml; do
+  grep -o '<name>[^<]*</name>' "$f" | sed 's/<[^>]*>//g' | sort > /tmp/translated.txt
+  echo "== $(basename "$f")"
+  comm -23 /tmp/labels.txt /tmp/translated.txt   # prints every untranslated label
+done
+```
+
+An empty output per language is the pass condition. A non-empty one is the list of strings
+that will silently show English to the users the work was for.
 
 ---
 
@@ -170,10 +194,14 @@ export default class OpportunityTile extends LightningElement {
 }
 ```
 
-**Why it works:** `lightning-formatted-number` and `lightning-formatted-date-time` follow
-the user's Salesforce language, locale and time zone, so the tile agrees with the reports
-and list views the same user is looking at. Binding `currency-code` to the record keeps the
-symbol tied to the actual currency rather than to the developer's assumption.
+**Why it works:** the guide recommends base components "as they adapt automatically to the
+language, locale, and time zone settings of the Salesforce org they run in"
+(`create-i18n` L3795), so the tile agrees with the reports and list views the same user is
+looking at. Binding `currency-code` to the record keeps the symbol tied to the actual
+currency rather than to the developer's assumption. UNVERIFIED (2026-09-05): the attribute
+spellings `format-style`, `currency-code`, and `year`/`month`/`day` come from the Lightning
+Component Library, which is not in the extracted document set — the LWC Developer Guide
+names these components but publishes no attribute tables.
 
 **Why `@salesforce/i18n/locale` and not `navigator.language`:** they answer different
 questions. The browser knows what the operating system was set to; the platform knows what
@@ -182,4 +210,7 @@ the user record says, and only the second is consistent with the rest of Salesfo
 **On the RTL branch:** a chevron is one of the few cases where direction changes behaviour
 rather than appearance — pointing "forward" is left in an RTL layout. Prefer
 `lightning-icon` over inline SVG so directional icons mirror with the document, and reserve
-an explicit `DIR` check for the cases a stylesheet cannot express.
+an explicit `DIR` check for the cases a stylesheet cannot express. Do not substitute a
+`[dir="rtl"]` CSS rule for the JavaScript branch: that attribute selector "only works in
+synthetic shadow DOM" (`create-components-shadow-dom` L3517), so it stops applying under a
+native-shadow subtree without any error.

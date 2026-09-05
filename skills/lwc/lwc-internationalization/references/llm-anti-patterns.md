@@ -8,10 +8,13 @@ what the LWC does with them.
 
 ## Anti-Pattern 1: Building a label name at runtime
 
-The one that compiles in every other framework and cannot work here. `@salesforce/label`
-imports are resolved when the component is compiled, so the label name must be a literal in
-an `import` statement. Assistants produce a lookup keyed by a variable — a status, a record
-type, a language code — because that is how a translation dictionary works everywhere else.
+The one that compiles in every other framework and cannot work here. The label *specifier*
+must be a literal in a static `import` statement; only the *value* behind it is supplied per
+user. "Modules scoped with `@salesforce` add functionality to Lightning web components at
+runtime" (`reference-salesforce-modules` L21986), which is exactly why one deployed bundle
+can serve every language — but the module identifier itself is still fixed in source.
+Assistants produce a lookup keyed by a variable — a status, a record type, a language code —
+because that is how a translation dictionary works everywhere else.
 
 **Wrong** — there is no runtime label resolution to hook into:
 
@@ -52,9 +55,9 @@ export default class StatusBadge extends LightningElement {
 ```
 
 The map is the design, not a workaround: the set of translatable strings is finite and
-known at build time, which is exactly the property that lets the platform ship the right
-translation to each user. If the set genuinely is not known at build time, the strings are
-data and belong in records with a translatable field, not in labels.
+declared in source, which is what lets the platform resolve each one to the running user's
+language at runtime. If the set genuinely is not known when the component is written, the
+strings are data and belong in records with a translatable field, not in labels.
 
 Source: `@salesforce/label` scoped module, label reference format `namespace.labelName` — https://developer.salesforce.com/docs/platform/lwc/guide/create-labels.html
 
@@ -114,6 +117,14 @@ Hard-coding a currency symbol has the same defect in a more damaging form: it ch
 meaning of the number rather than its appearance. Bind `currency-code` to the record's
 currency in a multi-currency org instead of prefixing a symbol in the template.
 
+UNVERIFIED (2026-09-05): the attribute names in that markup — `format-style`,
+`currency-code`, and `lightning-formatted-date-time`'s `year`/`month`/`day` — come from the
+Lightning Component Library, which is not in the extracted document set. The LWC Developer
+Guide names the components and their purpose ("`lightning-formatted-number` displays numbers
+in a specified format", `data-wire-service-about` L6630–L6631) and recommends them for
+locale adaptation, but does not publish their attribute tables. Check the Component Library
+before copying attribute spellings.
+
 Source: Internationalization — the recommendation to use base components that adapt to the user's language, locale and time zone — https://developer.salesforce.com/docs/platform/lwc/guide/create-i18n.html
 
 ## Anti-Pattern 4: Reading `navigator.language` instead of the platform's locale
@@ -131,20 +142,29 @@ produces a component that is correct for neither.
 
 Source: `@salesforce/i18n` scoped module — https://developer.salesforce.com/docs/platform/lwc/guide/reference-salesforce-modules.html
 
-## Anti-Pattern 5: Quoting the wrong custom-label limit
+## Anti-Pattern 5: Quoting the wrong custom-label limit, in either direction
 
-Assistants routinely cite 255 characters, which is a text-field limit, not this one. Custom
-labels can be up to **1,000 characters**, and an org can have up to **5,000** of them
-(labels from managed packages do not count against that). Getting this wrong pushes teams
-into inventing a Custom Metadata workaround for paragraphs that would have fit, and losing
-Translation Workbench support in the process.
+Assistants routinely cite 255 characters. The Metadata API guide gives `CustomLabel.value`
+as "Maximum of 1000 characters" (`api_meta` L41219–L41220); the 255-character field on
+`CustomLabel` is `categories`, the list-view filter (L41191–L41193), which is a plausible
+source of the confusion. Quoting 255 pushes teams into a Custom Metadata workaround for a
+paragraph that would have fit.
+
+The correction that assistants then miss is the ceiling in the other direction:
+`CustomLabelTranslation.label` is "Maximum of 765 characters" (`api_meta` L135934–L135935).
+A 900-character master value deploys and can never be fully translated.
 
 ❌ "Labels max out at 255 characters, so use Custom Metadata for anything longer."
-✅ Use labels up to their real 1,000-character ceiling, because that is the only string
-store the Translation Workbench covers. Move to another store only past that limit, and
-accept that translation then becomes your problem.
+❌ "Labels hold 1,000 characters, so write the whole disclaimer as one label."
+✅ Write to a 765-character budget for anything that will be translated, and split longer
+text across labels. Move to another store only when the text is genuinely not UI copy.
 
-Source: Custom Labels — up to 5,000 labels per org, up to 1,000 characters each — https://help.salesforce.com/s/articleView?id=platform.cl_about.htm&type=5
+UNVERIFIED (2026-09-05): the frequently quoted "5,000 custom labels per org, managed-package
+labels excluded" figure appears in Salesforce Help, which cannot be fetched, and is not
+present in the Metadata API guide, the Object Reference, or the App Limits Cheat Sheet.
+Do not state it as a checked number.
+
+Source: `CustomLabel` field table — `value` Maximum of 1000 characters, `categories` Maximum of 255 characters; `CustomLabelTranslation.label` Maximum of 765 characters — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 
 ## Anti-Pattern 6: Treating right-to-left as a CSS problem to solve later
 
@@ -154,11 +174,17 @@ direction of travel, and any layout built with hard-coded `left`/`right` rather 
 properties.
 
 ❌ `margin-left: 0.5rem` throughout, plus an inline `<svg>` arrow.
-✅ Logical properties (`margin-inline-start`) so the platform's direction handling does the
-work, `lightning-icon` rather than inline SVG so directional icons mirror with the document,
-and `import DIR from '@salesforce/i18n/dir';` where a behaviour — not just a style — has to
+❌ `[dir="rtl"] .thing { ... }` as the fix — that attribute selector "only works in synthetic
+shadow DOM" (`create-components-shadow-dom` L3517), so it stops applying the moment the
+component runs under a native-shadow subtree, with no error.
+✅ Logical properties (`margin-inline-start`, `padding-inline-end`, `text-align: start`) so
+no direction selector is needed, `:dir()` where the browser supports it, `lightning-icon`
+rather than inline SVG so directional icons mirror with the document, and
+`import DIR from '@salesforce/i18n/dir';` where a behaviour — not just a style — has to
 branch on direction. Then actually load the component with an RTL language enabled; this is
 not a defect class that survives code review, only testing.
+
+Source: mixed shadow mode and the `[dir=""]` selector — https://developer.salesforce.com/docs/platform/lwc/guide/create-components-shadow-dom.html
 
 ## Anti-Pattern 7: Shipping labels without checking they are translated
 
@@ -168,8 +194,43 @@ shows English to exactly the users the work was for. Assistants stop at the impo
 that is the part that lives in the repo.
 
 ❌ Treat "label exists and deploys" as done.
-✅ Confirm the language is enabled in the org, that a translated value exists for each label
-in each active language, and that the translation was exported and re-imported through the
-Translation Workbench rather than typed once into the UI. Then verify by switching a test
-user's language — every fallback in this system is a silent one, so English on screen is
-the only signal you will get.
+✅ Confirm the language is enabled in the org and that a `<customLabels>` entry exists for
+each label in each `<locale>.translation` file — the master values and the translations are
+separate metadata in separate folders (`api_meta` L41165–L41167). Then verify by switching a
+test user's language; "users can set their individual language, locale, and time zone on
+their personal settings pages" (`create-i18n` L3794). Every fallback in this system is a
+silent one, so English on screen is the only signal you will get.
+
+UNVERIFIED (2026-09-05): the Translation Workbench export/import workflow itself — enabling
+it, assigning translators, the bilingual export file — is documented only in Salesforce
+Help, which cannot be fetched. The declarative side is owned by
+`admin/multi-language-and-translation`; do not restate its mechanics from here.
+
+## Anti-Pattern 8: Asserting on English text in a Jest test
+
+The test that is green for the wrong reason. Assistants write
+`expect(el.textContent).toBe('Save')` because that is what the label says in the org — but
+Jest never reaches the org. "In Jest tests, we use a jest-transformer to convert the
+`@salesforce/label` import statement into a variable declaration. The value is set to the
+label path. By default, `myImport` is assigned a string value of `c.specialLabel`"
+(`unit-testing-using-jest-patterns` L12650).
+
+❌ `expect(button.label).toBe('Save');` — fails, so the assistant "fixes" it to
+`expect(button.label).toBe('c.Action_Save');`, which passes and proves nothing about
+translation.
+✅ Mock the import and assert on the fixture, which is the guide's own instruction — "you
+can use `jest.mock()` to provide your own value for an import" (L12650):
+
+```javascript
+jest.mock(
+    '@salesforce/label/c.Action_Save',
+    () => ({ default: 'FIXTURE_SAVE' }),
+    { virtual: true }
+);
+```
+
+Do the same for `@salesforce/i18n/locale`, `currency` and `timeZone`, or a currency
+assertion passes on the author's machine and fails in CI. The rest of the Jest harness —
+config, wire mocks, coverage — belongs to `lwc/lwc-testing`.
+
+Source: Jest Test Patterns and Mock Dependencies — https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-jest-patterns.html
