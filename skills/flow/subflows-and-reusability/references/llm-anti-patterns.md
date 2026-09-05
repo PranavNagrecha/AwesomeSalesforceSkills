@@ -173,3 +173,73 @@ Screen Flow ------------> Autolaunched Subflow (same shared logic)
 ```
 
 **Detection hint:** Advice to call a Screen Flow from a record-triggered or autolaunched flow context.
+
+---
+
+## Anti-Pattern 7: Pinning a subflow call to a specific flow version
+
+**What the LLM generates:**
+
+```xml
+<subflows>
+    <name>Call_Resolve_Case_Routing</name>
+    <flowName>Resolve_Case_Routing-3</flowName>
+</subflows>
+```
+
+**Why it happens:** LLMs generalise from `Flow.fullName`, where the version suffix *is*
+legal — `sampleFlow-3` specifies version 3 for deploy and retrieve (`api_meta.txt`
+L68147-68151) — and from every other dependency system they have seen, where pinning a
+version is the responsible default. `FlowSubflow.flowName` is the exception: the value
+"must be an API name of a flow and it can't contain an appended hyphen and version
+number" (`api_meta.txt` L72638-72643).
+
+**Correct pattern:**
+
+```xml
+<subflows>
+    <name>Call_Resolve_Case_Routing</name>
+    <flowName>Resolve_Case_Routing</flowName>
+</subflows>
+```
+
+The parent runs whichever version is **active** in the target org. The mitigation is
+process, not XML: keep the caller list in the child's `description`, ship a `FlowTest`
+that pins the contract, and treat activating a new child version as a release affecting
+every caller.
+
+**Detection hint:** a hyphen followed by digits inside `<flowName>`, or advice that a
+parent can be "locked to" a subflow version.
+
+---
+
+## Anti-Pattern 8: Claiming a Subflow element can have a fault path
+
+**What the LLM generates:**
+
+```
+"Add a Fault path to the Subflow element so the parent can handle child-flow errors."
+```
+
+**Why it happens:** Every other fallible element in Flow — Create, Update, Delete, Get,
+Action, Apex plug-in, Wait — has a `faultConnector` field, so the generalisation is
+almost right. `FlowSubflow` does not: its field table is `connector`, `flowName`,
+`inputAssignments`, `outputAssignments`, `storeOutputAutomatically` and nothing else
+(`api_meta.txt` L72628-72660).
+
+**Correct pattern:**
+
+The child catches its own faults and reports through the contract:
+
+```
+Child:  [Update Records] --fault--> [Assignment: outSucceeded = false,
+                                     outErrorMessage = {!$Flow.FaultMessage}]
+        [Update Records] --success--> [Assignment: outSucceeded = true]
+
+Parent: [Subflow] --> [Decision: outSucceeded?]
+                        false --> [Create Application_Log__c] --> [End]
+                        true  --> continue
+```
+
+**Detection hint:** `<faultConnector>` nested inside `<subflows>`, or prose telling the
+caller to "wrap" the subflow call in error handling.

@@ -19,6 +19,14 @@ triggers:
   - "too much duplicated logic across flows"
   - "subflow fault handling and contracts"
   - "reusable autolaunched flow pattern"
+  - "extract duplicated flow logic into a subflow"
+  - "add a fault path to a subflow element"
+  - "subflow output variable comes back blank"
+  - "pin a subflow to a specific flow version"
+  - "parent flow calls the wrong subflow version after activation"
+  - "pass the triggering record into a subflow"
+  - "write a flow test for an autolaunched subflow"
+  - "deploy a subflow and its parent in the right order"
 inputs:
   - "which parent flows repeat the same logic and what outputs they need back"
   - "whether the reusable step is pure calculation, data lookup, mutation, or error handling"
@@ -28,9 +36,9 @@ outputs:
   - "review findings for over-coupled or under-specified flow reuse"
   - "guidance on when to keep logic inline versus moving it to subflow or Apex"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 Use this skill when the same Flow logic keeps appearing in more than one place or when one parent flow is becoming too long to reason about safely. A good subflow is a reusable contract with a narrow purpose, explicit inputs, explicit outputs, and predictable side effects. A bad subflow is just a pile of hidden assumptions moved out of sight.
@@ -47,6 +55,24 @@ Gather if not available:
 - What should happen when the called flow fails, returns nothing, or needs to evolve later?
 - Does the org have existing reusable subflow patterns I should align with?
 - Is this subflow going to be callable from Apex too, or Flow-only?
+
+## Questions to Ask Before Configuring
+
+Ask these before extracting anything. Each one maps to a failure this skill's
+`references/gotchas.md` documents, and skipping them produces a child flow that deploys
+cleanly and breaks a caller nobody was looking at.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Name every flow that will call this child today, and who owns each one." | `<flowName>` cannot name a version, so activating the child changes behaviour for all of them at once (gotcha: *A Parent Calls The Active Version*) | The caller list that goes in the child's `description` field, and the regression set for every future change |
+| "Does the child write anything, or only read and decide?" | There is no fault connector on a Subflow element, so a writing child needs a status-output contract instead (gotcha: *The Subflow Element Has No Fault Connector At All*) | The side-effect tier, and whether the parent or the child owns the DML |
+| "When the child fails, what should the caller do - stop, log, continue with a default?" | It fixes the shape of the error channel: a boolean, a reason string, or both (gotcha: *A Subflow Cannot Roll Back What The Parent Already Wrote*) | The `outSucceeded` / `outReason` output pair and the parent's Decision branch |
+| "Exactly which values does the child need, and which does it return?" | `isInput` and `isOutput` default to false, so anything unstated is silently invisible to callers (gotcha: *isInput And isOutput Default To False*) | The variable list with `dataType`, `isCollection`, and both flags set explicitly |
+| "Does the child need record-level access the caller's user does not have?" | `runInMode` is per flow; a child left on `SystemModeWithoutSharing` widens access for every future caller (gotcha: *runInMode Is Declared Per Flow*) | A deliberate `runInMode` value, or a documented reason the escalation exists |
+| "Can the child's DML re-trigger the parent, or another flow that calls the child?" | A record written by the child goes back through the save order, and the second pass skips steps 9-17 (gotcha: *A Child That Writes Can Re-Enter Itself*) | The re-entry guard, or a decision to keep the child read-only |
+| "Which org gets it first, and is 'Deploy processes and flows as active' enabled there?" | Production refuses changes to an active flow without that preference, so the child-then-parent order is not optional | The deploy sequence in `references/metadata-examples.md` § 5, wired into the release plan |
+
+What a proper configuration adds over just moving elements into a second flow: the child has a contract a caller can read without opening it, a failure the caller can branch on, a FlowTest that fails before a caller does, and a deploy order that never leaves a parent pointing at a flow that is missing or still `Draft`.
 
 ## Core Concepts
 
@@ -75,12 +101,13 @@ Moving logic into a subflow does not magically reset governor limits, rollback b
 Shared across parent and subflow:
 - Governor limits (SOQL, DML, CPU, heap)
 - Transaction boundaries (one commit across both)
-- User context (subflow runs as the same user)
-- `$Flow.InterviewStartTime` is from the ORIGINAL parent start
+- The running *user* (the child does not switch identity)
+- `$Flow.InterviewStartTime` is from the ORIGINAL parent start — UNVERIFIED (2026-09-05): `$Flow` global variables are not documented in the Metadata API guide and help.salesforce.com is not fetchable
 
 NOT shared:
 - Local variables (each flow has its own variable scope)
 - Record triggers (a subflow can't receive the "triggering record" semantics of the parent unless explicitly passed in)
+- **Record-access mode.** `runInMode` is a field on `Flow`, not on `FlowSubflow` (`api_meta.txt` L68374-68390), so a child set to `SystemModeWithoutSharing` runs that way no matter which caller invoked it
 
 ### Side Effects Should Be Deliberate
 
@@ -201,13 +228,30 @@ Callers share the same fault-routing without duplicating the Create-Log-then-Not
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; size the contract per the heuristic
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above** and fill in
+   `templates/subflows-and-reusability-template.md`. If the caller list has one entry, stop
+   — keep the logic inline and revisit when a second caller appears.
+2. **Fix the side-effect tier and the error channel.** Use the reuse-safety table in Core
+   Concepts. If the child writes, it needs `outSucceeded` + `outReason` outputs, because a
+   `<subflows>` element has no `faultConnector` (`references/gotchas.md`).
+3. **Write the child's variables first, as XML.** Copy the contract shape from
+   `templates/flow/Subflow_Pattern.md` and the full working pair from
+   `references/metadata-examples.md` § 1. Set `isInput`, `isOutput`, `dataType` and
+   `isCollection` explicitly on every variable — nothing defaults usefully.
+4. **Wire the parent.** `references/metadata-examples.md` § 2. Every `<inputAssignments>`
+   `name` and `<outputAssignments>` `name` must match a flagged variable in the child;
+   `assignToReference` is the only field that names a parent variable. Route the child's
+   status output into a Decision, then into a fault path shaped by
+   `templates/flow/FaultPath_Template.md`.
+5. **Pin the contract with a FlowTest** (`references/metadata-examples.md` § 3) so a renamed
+   output fails a test rather than a caller. Requires API 66.0+ for `InputVariable`
+   parameters.
+6. **Run the checker over parent and child together** — it is the only step that validates
+   the two files against each other:
+   `python3 skills/flow/subflows-and-reusability/scripts/check_subflows_and_reusability.py --manifest-dir force-app/main/default`
+7. **Deploy child before parent** and verify per `references/metadata-examples.md` § 5–6:
+   `sf project deploy validate`, activate the child, then Setup → Flows → *Where Is This
+   Used?* to confirm the caller list matches the one in the child's `description`.
 
 ---
 
@@ -218,11 +262,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 3. **A shared child flow can break many parents at once** — contract changes need versioning discipline and regression tests.
 4. **Moving logic out of sight is not the same as simplifying it** — some complex reuse should become Apex instead of another Flow layer.
 5. **Subflows cannot receive `$Record` directly from the parent's record-triggered context** — the parent must explicitly pass the record as an input variable.
-6. **"Available for input" / "Available for output" must be set explicitly** — missing these makes variables invisible to callers, silent coupling to defaults.
-7. **Subflows with record-triggered type CANNOT be called from auto-launched flows** — types must match; a "reusable" record-triggered flow isn't actually reusable in the general case.
-8. **Deleting a subflow doesn't error the parent at deploy time** — the parent fails at RUNTIME when the call happens; test deploys DO NOT catch missing subflows.
-9. **Managed-package subflows are opaque** — you can call them but can't see internals; contract changes in managed releases can break you silently.
-10. **Apex callers of Flows pass inputs differently than Flow callers** — if the subflow needs to be dual-callable (Pattern 4 escape hatch), consider making it Apex to start.
+6. **`isInput` / `isOutput` must be set explicitly** — both default to `False` for any variable created in API 25.0 or later (`api_meta.txt` L72891-72897, L72918-72924), so an unflagged variable is invisible to callers rather than merely private.
+7. **A Subflow element has no fault connector.** The `FlowSubflow` field table is `connector`, `flowName`, `inputAssignments`, `outputAssignments`, `storeOutputAutomatically` and nothing else (`api_meta.txt` L72628-72660) — the caller's fault path is a status output plus a Decision.
+8. **The parent calls whichever child version is ACTIVE.** `<flowName>` "can't contain an appended hyphen and version number" (`api_meta.txt` L72638-72643), unlike `Flow.fullName`, where `sampleFlow-3` is legal for deploy (L68147-68151). Activation is a release event for every caller.
+9. **The child must be an autolaunched flow.** `FlowActionCall`'s `actionType` value `flow` "Invokes an autolaunched flow... To invoke an autolaunched flow from one of those types, use FlowSubflow" (`api_meta.txt` L68751-68754). A screen flow is not callable this way.
+10. **Deleting a subflow doesn't error the parent at deploy time** — UNVERIFIED (2026-09-05): the Metadata API guide does not state whether a dangling `<flowName>` fails validation; what it does say is that a flow version can only be deleted when "it isn't active and doesn't have any paused interviews" (L68041-68042). Treat a missing child as a runtime failure until proven otherwise.
+11. **Managed-package subflows are opaque** — "You can't use Metadata API to access a flow installed from a managed package unless the flow is a template" (`api_meta.txt` L68035). You can call one; you cannot diff it.
+12. **A stray `flowDefinitions` directory overrides your `status` fields** — "the active version numbers in the flow definitions override the status fields in the flows" (`api_meta.txt` L73929-73934). Ship `Flow` members only.
+13. **Apex callers of Flows pass inputs differently than Flow callers** — if the subflow needs to be dual-callable (Pattern 4 escape hatch), consider making it Apex to start.
 
 ## Proactive Triggers
 
@@ -235,7 +282,8 @@ Surface these WITHOUT being asked:
 - **Subflow description field empty or generic** → Flag as Medium. Missing caller list + version history — OpsEx debt.
 - **Subflow name not following `<Verb>_<Object>_<Modifier>` convention** → Flag as Low. Naming debt.
 - **Parent flow calling > 3 subflows in sequence** → Flag as Medium. Consider whether the parent's logic is really one flow or several.
-- **Subflow doing same-transaction DML without explicit fault connector in parent** → Flag as High. Silent failure risk.
+- **Child flow doing DML with no `isOutput` status variable** → Flag as High. A `<subflows>` element cannot carry a `faultConnector`, so without a status output the caller has no way to branch on failure.
+- **Parent flow assuming it can pin a child version** → Flag as High. `<flowName>` binds to the active version; the mitigation is release discipline, not XML.
 
 ## Output Artifacts
 
@@ -246,6 +294,18 @@ Surface these WITHOUT being asked:
 | Reuse review findings | Risks around side effects, failure handling, over-decomposition |
 | Versioning plan | How to evolve the subflow contract without breaking callers |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing the actual XML — a deployable parent + child + FlowTest + `package.xml`, the deploy order, and the Setup/SOQL verification |
+| `references/examples.md` | You want the reasoning worked through on a real scenario — what got extracted, what stayed in the parent, and the variable-declaration and status-output XML that follows from it |
+| `references/gotchas.md` | A subflow behaves differently than the canvas suggests: blank outputs, the wrong version running, no fault path, a silent `status` override |
+| `references/llm-anti-patterns.md` | Reviewing generated subflow advice or XML before it ships |
+| `references/well-architected.md` | Justifying the reuse boundary in a design review, and for the grounded source list |
+| `templates/subflows-and-reusability-template.md` | Running the extraction decision with a requester, before any XML exists |
+| `scripts/check_subflows_and_reusability.py` | Validating parent and child against each other in a manifest directory |
+
 ## Related Skills
 
 - **flow/flow-bulkification** — alongside this skill when the shared child logic may still be unsafe under volume.
@@ -253,3 +313,7 @@ Surface these WITHOUT being asked:
 - **flow/record-triggered-flow-patterns** — when the subflow receives context from a record-triggered parent.
 - **flow/auto-launched-flow-patterns** — when the subflow itself is auto-launched.
 - **apex/trigger-framework** — when the reusable unit has outgrown Flow (Pattern 4).
+- **flow/flow-versioning-strategy** — when the question is how to evolve the child's contract across releases without breaking callers.
+- **flow/flow-testing** — when you need more than the single contract-pinning FlowTest shown here.
+- **flow/recursion-and-re-entry-prevention** — when a writing child can re-trigger a parent that calls it.
+- **flow/flow-governance** — when the number of shared children, not any one of them, is the problem.

@@ -45,9 +45,11 @@ public void execute(QueueableContext ctx) {
 **Correct pattern:**
 
 ```apex
-// WRONG — throws AsyncException at runtime
+// WRONG — a Finalizer's execute() is not a Queueable context, so the platform
+//         logs "System.attachFinalizer(Finalizer) is not allowed in this context"
+//         (Apex Developer Guide v67.0 L16543-16567) and the Finalizer dies here.
 public void execute(FinalizerContext ctx) {
-    System.attachFinalizer(new AnotherFinalizer()); // throws!
+    System.attachFinalizer(new AnotherFinalizer()); // fails at runtime
 }
 
 // CORRECT — enqueue a new Queueable; it attaches its own Finalizer
@@ -73,14 +75,14 @@ public void execute(FinalizerContext ctx) {
 ```apex
 // WRONG — runs compensation even on SUCCESS
 public void execute(FinalizerContext ctx) {
-    insert new Async_Job_Error__c(Job_Id__c = ctx.getJobId()); // inserts on every run
+    insert new Async_Job_Error__c(Async_Apex_Job_Id__c = ctx.getAsyncApexJobId()); // inserts on every run
 }
 
 // CORRECT — gate on result
 public void execute(FinalizerContext ctx) {
     if (ctx.getResult() == System.ParentJobResult.UNHANDLED_EXCEPTION) {
         insert new Async_Job_Error__c(
-            Job_Id__c        = ctx.getJobId(),
+            Async_Apex_Job_Id__c = ctx.getAsyncApexJobId(),
             Error_Message__c = ctx.getException().getMessage()
         );
     }
@@ -95,7 +97,7 @@ public void execute(FinalizerContext ctx) {
 
 **What the LLM generates:** A Finalizer that unconditionally calls `System.enqueueJob(new OriginalJob(payload))` on failure with no retry limit, creating an infinite loop.
 
-**Why it happens:** LLMs generate "retry on failure" as a simple pattern without modeling the termination condition. In a language runtime that would stack-overflow, but in async Salesforce it will just keep filling the flex queue.
+**Why it happens:** LLMs generate "retry on failure" as a simple pattern without modeling the termination condition, then reassure the reader that "the flex queue will fill up". It will not. The platform allows five consecutive re-enqueues from a finalizer and then fails the enqueue call (Apex Developer Guide v67.0 L16293-16295, and the guide's own sample comment at L16523) — so the unbounded version dies at the fifth failure having written nothing down, which is strictly worse than looping.
 
 **Correct pattern:**
 
@@ -115,14 +117,14 @@ public void execute(FinalizerContext ctx) {
         if (retryCount < MAX_RETRIES) {
             System.enqueueJob(new OriginalJob(payload, retryCount + 1));
         } else {
-            insert new Async_Job_Error__c(Job_Id__c = ctx.getJobId(),
+            insert new Async_Job_Error__c(Async_Apex_Job_Id__c = ctx.getAsyncApexJobId(),
                                           Error_Message__c = ctx.getException().getMessage());
         }
     }
 }
 ```
 
-**Detection hint:** A Finalizer `execute()` method that enqueues without checking a `retryCount` or similar ceiling variable.
+**Detection hint:** A Finalizer `execute()` method that enqueues without checking a `retryCount` or similar ceiling variable — or one whose ceiling is >= 5, which the platform reaches first.
 
 ---
 
@@ -130,7 +132,7 @@ public void execute(FinalizerContext ctx) {
 
 **What the LLM generates:** Documentation or code comments claiming the Finalizer "always runs" or will fire even if the job is aborted, leading practitioners to rely on Finalizer cleanup for the abort path.
 
-**Why it happens:** The documentation says Finalizers run "regardless of whether the job succeeds or fails," and LLMs over-generalize this to mean "in all termination scenarios," missing the abort exception.
+**Why it happens:** The documentation says Finalizers run "regardless of whether the job succeeds or fails," and LLMs over-generalize this to mean "in all termination scenarios." What the guide actually reserves is broader and vaguer: "If a job request is terminated unexpectedly, such as a database shutdown during system upgrade, the transaction finalizer can fail to execute" (Apex Developer Guide v67.0 L16533-16534). UNVERIFIED (2026-09-05): the guide says nothing at all about `System.abortJob()`, so an assistant that asserts either outcome for abort is inventing it.
 
 **Correct pattern:**
 
@@ -152,3 +154,60 @@ public class MyFinalizer implements System.Finalizer {
 ```
 
 **Detection hint:** Comments or documentation saying a Finalizer fires "always" or "in all cases" — add the qualifier "except when the parent job is aborted via System.abortJob()".
+
+---
+
+## Anti-Pattern 6: Calling `ctx.getJobId()` on a `FinalizerContext`
+
+**What the LLM generates:** `Id parentJobId = ctx.getJobId();` inside `execute(FinalizerContext ctx)`, usually alongside a comment or a table describing `FinalizerContext` as having three methods.
+
+**Why it happens:** `QueueableContext` does have `getJobId()`, and the guide's own worked examples put both interfaces on one class with `ctx.getJobId()` in the Queueable half (Apex Developer Guide v67.0 L16380) and `ctx.getAsyncApexJobId()` in the Finalizer half (L16424), forty lines apart. Training data mixes the two halves. The `System.FinalizerContext` interface "contains four methods: getAsyncApexJobId, getRequestId, getResult, and getException" (Apex Reference Guide v67.0 L215612-215614) — `getJobId` is not among them.
+
+**Correct pattern:**
+
+```apex
+// WRONG — no getJobId() on FinalizerContext; in a fused Queueable+Finalizer class
+//         this may even compile, and then correlates against the wrong ID.
+public void execute(FinalizerContext ctx) {
+    logFailure(ctx.getJobId());
+}
+
+// CORRECT — getAsyncApexJobId() is the AsyncApexJob join key; getRequestId()
+//           is the Event Monitoring correlation key. They are not interchangeable.
+public void execute(FinalizerContext ctx) {
+    logFailure(ctx.getAsyncApexJobId(), ctx.getRequestId());
+}
+```
+
+**Detection hint:** grep for `getJobId` in any file containing `FinalizerContext`. Also flag any prose claiming `FinalizerContext` has three members — the count is four.
+
+---
+
+## Anti-Pattern 7: Marking Finalizer State `transient`
+
+**What the LLM generates:** `private transient List<Id> recordIds;` or `private transient List<LogMessage__c> buffer;` on a class implementing `System.Finalizer`, usually introduced as a heap optimisation or copied from a Visualforce controller idiom.
+
+**Why it happens:** `transient` is the standard Apex answer to "this collection is large and I want to keep the view state / serialized payload small", and an assistant optimising for heap reaches for it without knowing that Finalizer state crosses a transaction boundary by serialization. The failure is silent: the field is simply empty in `execute(FinalizerContext)`, so the compensation runs and logs nothing.
+
+**Correct pattern:**
+
+```apex
+// WRONG — "Variables that are declared transient are ignored by serialization and
+//          deserialization, and therefore don't persist in the Transaction
+//          Finalizer" (Apex Developer Guide v67.0 L16360-16362).
+public class OrderFinalizer implements Finalizer {
+    private transient List<Id> orderIds;      // null when execute() runs
+    private transient List<String> trace;     // empty when execute() runs
+}
+
+// CORRECT — keep the state serializable and keep it small by storing IDs,
+//           not sObjects. Asynchronous heap limits apply to the Finalizer
+//           transaction (Apex Developer Guide v67.0 L16298-16303), so IDs are
+//           almost never the thing that blows the budget.
+public class OrderFinalizer implements Finalizer {
+    private final List<Id> orderIds;
+    private final List<String> trace = new List<String>();
+}
+```
+
+**Detection hint:** any `transient` keyword in a class that implements `Finalizer`, or in a class whose instance is passed to `System.attachFinalizer`. The skill's checker (`scripts/check_apex_transaction_finalizers.py`) flags this case directly.
