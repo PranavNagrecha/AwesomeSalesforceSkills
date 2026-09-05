@@ -10,8 +10,8 @@
 
 Pass the record ID and read-only mode down through `@api`, then let the child emit a save request upward.
 
-```js
-// parent.html
+```html
+<!-- parent.html -->
 <c-contact-editor
     record-id={selectedContactId}
     read-only={isLocked}
@@ -61,6 +61,47 @@ export default class RegionPicker extends LightningElement {
 Subscribers listen only where the cross-region context is genuinely needed.
 
 **Why it works:** The message contract matches the actual scope of the problem. Components remain decoupled from the page hierarchy.
+
+---
+
+## Example 3: Reading The Flattened Tree Before Choosing `bubbles` And `composed`
+
+**Context:** `c-child` sits inside `div.wrapper` inside `c-parent`, which sits inside
+`c-app`. A button inside `c-child` must tell `c-parent` that it was clicked.
+
+**Problem:** The team cannot agree on the propagation settings, so they set
+`bubbles: true, composed: true` "to be safe" and the event now reaches `body`.
+
+**Solution:**
+
+Trace where the event can be handled for each configuration before choosing. Reading down
+the flattened tree, `|` marks a shadow boundary crossing:
+
+```text
+body
+└─ c-app                         composed:true  + bubbles:true  reaches here and further
+   │ #shadow-root                ─────────────── shadow boundary
+   └─ c-parent                   composed:true  + bubbles:true  reaches here
+      │ #shadow-root             ─────────────── shadow boundary
+      └─ div.wrapper             bubbles:true   + composed:false reaches here
+         └─ c-child   <-- host   bubbles:false  + composed:false stops here  <== default
+            │ #shadow-root       ─────────────── shadow boundary
+            └─ button            dispatchEvent() called in the child's JS
+
+Event.target seen by a listener on...
+  c-child .......... c-child   (retargeted at the boundary)
+  div.wrapper ...... c-child
+  c-parent ......... c-parent  (retargeted again)
+```
+
+The listener `c-parent` actually needs is `<c-child onbuttonclick={handle}>` — attached to
+the `c-child` host element inside `c-parent`'s own template, which is *below* the first
+shadow boundary. The default configuration already reaches it.
+
+**Why it works:** The only configuration that had to be widened here was none of them.
+`bubbles: true, composed: false` becomes necessary one level further out — when `c-child`
+is passed into a `<slot>` and must reach the template that contains it. `composed: true`
+buys nothing except a public event name that every ancestor now owns.
 
 ---
 

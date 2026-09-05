@@ -66,9 +66,15 @@ Only set `bubbles: true, composed: true` when the event genuinely must cross sha
 @api record;
 
 handleUpdate() {
-    this.record.Name = 'Updated'; // Mutates parent's object reference
+    this.record.Name = 'Updated'; // Throws: "Invalid mutation ... is read-only"
 }
 ```
+
+**What actually happens on the platform:** a non-primitive passed from a parent is wrapped
+in a proxy, so this does not quietly mutate the parent's object — it raises
+`Uncaught Error: Invalid mutation: Cannot set "Name" on "[object Object]". "[object Object]" is read-only.`
+The trap is that the error surfaces only with Lightning Web Security enabled *and* debug
+mode active, so the generated code can look fine in an org where neither is on.
 
 **Why it happens:** In plain JavaScript, object references are shared, and many generic JS tutorials mutate props directly. LLMs carry this habit into LWC where it violates the one-way data flow contract.
 
@@ -173,10 +179,15 @@ subscribe(this.messageContext, MY_CHANNEL, handler, { scope: APPLICATION_SCOPE }
 **Correct pattern:**
 
 ```javascript
-// Default scope — only receives messages from the active page area
+// Default scope — delivers from the application's active area
 subscribe(this.messageContext, MY_CHANNEL, handler);
 ```
 
-Use `APPLICATION_SCOPE` only when components genuinely live in different workspace tabs or utility bars.
+Use `APPLICATION_SCOPE` when the subscriber can sit in a console tab or subtab that is
+**not the selected one**. Note the correction an assistant usually gets backwards: utility
+items are part of the active area and "are always active", so a utility-bar subscriber does
+*not* need `APPLICATION_SCOPE` to receive default-scope messages. Scoping is also available
+only through `@wire(MessageContext)`; a `createMessageContext()` subscriber has no scope
+option at all.
 
-**Detection hint:** `APPLICATION_SCOPE` with no comment explaining why cross-tab delivery is needed.
+**Detection hint:** `APPLICATION_SCOPE` with no comment explaining why cross-tab delivery is needed — and, in the other direction, a `lightning__UtilityBar` target in the `js-meta.xml` cited as the justification for it.
