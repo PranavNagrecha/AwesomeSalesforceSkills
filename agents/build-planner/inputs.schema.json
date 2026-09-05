@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/build-planner/inputs.schema.json",
+  "title": "build-planner inputs",
+  "description": "Typed inputs for the build-planner runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. One input by design: everything a plan needs — the requirement, the questions, the answers, the G1 record — already lives in the build directory, and a second input is a second copy of a fact that can drift from it.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "build_dir": {
+      "type": "string",
+      "description": "The build directory produced by /clarify-requirements. Must contain requirement.md and a plan.json whose 'clarifications' gate (G1) is approved. Example from AGENT.md: \".sfskills/builds/case-onboarding\". Required column: 'yes'.",
+      "minLength": 1,
+      "example": ".sfskills/builds/case-onboarding"
+    }
+  },
+  "required": [
+    "build_dir"
+  ]
+}

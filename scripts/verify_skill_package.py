@@ -85,7 +85,7 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
     # related skills resolve
     rel = s[s.find("## Related Skills"):] if "## Related Skills" in s else ""
     # `templates/admin/x.md` is a shared template path, not a skill slug
-    for slug in re.findall(r"(?<!templates/)`?\b(admin|apex|lwc|flow|omnistudio|agentforce|security|integration|data|devops|architect)/([a-z0-9-]+)`?", rel):
+    for slug in re.findall(r"(?<!templates/)(?<!/)`?\b(admin|apex|lwc|flow|omnistudio|agentforce|security|integration|data|devops|architect)/([a-z0-9-]+)`?", rel):
         if not (ROOT / "skills" / slug[0] / slug[1] / "SKILL.md").exists():
             hard.append(f"{skill_md.relative_to(ROOT)}: Related Skills cites missing skill {slug[0]}/{slug[1]}")
 

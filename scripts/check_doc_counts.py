@@ -136,6 +136,7 @@ TIER_PATTERNS = [
     rf"Admin accelerators {DASH} Tier 1 \((\d+)\)",
     rf"Strategic {DASH} Tier 2 \((\d+)\)",
     rf"Vertical \+ governance {DASH} Tier 3 \((\d+)\)",
+    rf"Orchestration\s+{DASH}\s+Tier 4 \((\d+)",
 ]
 
 # README "Covered Skills" table rows: "| Admin | 252 — ..."

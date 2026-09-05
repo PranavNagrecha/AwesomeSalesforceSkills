@@ -10,8 +10,8 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (60 active runtime agents across developer, admin,
-   strategic, and vertical/governance tiers, plus 14 build-time agents and
+3. **Run-time agents** (67 active runtime agents across developer, admin,
+   strategic, vertical/governance, and orchestration tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
    via `list_agents` and `get_agent`.
@@ -104,7 +104,7 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 60 active runtime agents. Fourteen single-mode
+Tier sizes below count the 67 active runtime agents. Fourteen single-mode
 auditors/governors were retired in Wave 3b and now redirect via
 `list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
 returns the active set shown here.
@@ -182,6 +182,20 @@ Vertical + governance — Tier 3 (11):
 | `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list || `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
 | `user-access-diff`                    | Side-by-side access comparison report between users |
 | `omnistudio-designer`                 | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit |
+
+Orchestration — Tier 4 (7, `status: beta`):
+
+| Agent name                | What it returns |
+| -------------------------- | --------------- |
+| `requirements-clarifier`   | Question set + proposed defaults, written to `plan.json` / `CLARIFICATIONS.md` (gate G1) |
+| `build-planner`            | Scope, decisions, milestones and steps written to `plan.json` (gate G2 pending) |
+| `plan-verifier`            | Per-step executability / grounding / testability verdicts; plan `verified` or `plan-rejected` (gate G2) |
+| `build-step-runner`        | One step's artefacts + run envelope; step moved to `built` or `blocked` |
+| `step-tester`              | Machine-readable test result; step moved to `tested` or `failed` |
+| `build-doc-keeper`         | Re-rendered `PLAN.md`, decisions log, workbook + traceability rows; step moved to `documented` |
+| `milestone-verifier`       | Milestone acceptance report + manual-test checklist (gate G3) |
+
+Implements the requirement-to-build loop in `standards/build-orchestration.md`; none of these deploys or approves a gate.
 
 ### `validate_against_org` routing
 

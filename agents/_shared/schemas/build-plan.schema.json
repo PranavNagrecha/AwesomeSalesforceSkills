@@ -1,0 +1,452 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sfskills:build-plan",
+  "title": "Build Plan",
+  "description": "Canonical state file for the requirements-to-build layer: .sfskills/builds/<build-id>/plan.json. Contract: standards/build-orchestration.md (v1, 2026-09-05) sections 2-5 and 8. Every agent in the loop reads this file before acting and updates only the fields it owns; the human-readable views (PLAN.md, CLARIFICATIONS.md) are rendered from it by scripts/build_plan.py, which is also the only writer of human_gates[].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "build_id",
+    "title",
+    "version",
+    "status",
+    "created",
+    "requirement",
+    "clarifications",
+    "assumptions",
+    "scope",
+    "decisions",
+    "milestones",
+    "steps",
+    "human_gates",
+    "artefacts_root",
+    "docs"
+  ],
+  "properties": {
+    "build_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Kebab-case build identifier. Matches the directory name under .sfskills/builds/."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "description": "One-line human title for the build."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Plan version. Section 3: re-planning after a rejected plan gate is a new version (version + 1); the superseded plan is pushed into history[]."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "clarifying",
+        "planned",
+        "verified",
+        "plan-rejected",
+        "approved",
+        "building",
+        "done"
+      ],
+      "description": "Build lifecycle status. Section 3 stage table: intake -> clarifying -> planned -> verified|plan-rejected -> approved (G2) -> building -> done (last milestone gate approved)."
+    },
+    "created": {
+      "type": "string",
+      "minLength": 10,
+      "description": "ISO-8601 creation timestamp, UTC."
+    },
+    "updated": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Optional ISO-8601 timestamp of the last mutation. scripts/build_plan.py does not maintain it (rendered views must stay byte-deterministic); agents may."
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_path", "summary"],
+      "properties": {
+        "source_path": {
+          "type": "string",
+          "description": "Path to the human's verbatim requirement, relative to the build directory. Section 2: requirement.md."
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One-paragraph restatement of the requirement in the layer's own words."
+        },
+        "source_format": {
+          "type": "string",
+          "description": "Optional: paragraph | worksheet | backlog | other."
+        }
+      }
+    },
+    "clarifications": {
+      "type": "array",
+      "description": "Section 1.1 / 3: every question the relevant skills' 'Questions to Ask Before Configuring' tables say must be asked, deduped, each with a proposed default. Never capped.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "question", "kind", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^Q[0-9]+$",
+            "description": "Q1, Q2, ... Stable across renders; CLARIFICATIONS.md round-trips on this id."
+          },
+          "question": {"type": "string", "minLength": 1},
+          "kind": {
+            "type": "string",
+            "enum": ["blocking", "informational"],
+            "description": "blocking = G1 cannot pass until answered or explicitly deferred."
+          },
+          "why": {
+            "type": "string",
+            "description": "Why the answer changes the build. Usually lifted from the source skill's Questions-to-Ask table."
+          },
+          "proposed_default": {
+            "type": "string",
+            "description": "The default the human may accept in one action."
+          },
+          "answer": {
+            "type": "string",
+            "description": "The human's answer. 'DEFER: <reason>' is the explicit deferral form for a blocking question."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["open", "answered", "deferred"]
+          },
+          "source_skill": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$",
+            "description": "Skill id whose Questions-to-Ask table produced this question."
+          },
+          "asked_by": {"type": "string"}
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "Everything the plan takes as true without confirmation, including accepted defaults for unanswered informational questions.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "text"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^A[0-9]+$"},
+          "text": {"type": "string", "minLength": 1},
+          "because": {"type": "string"},
+          "risk": {"type": "string", "enum": ["low", "medium", "high"]}
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in", "out", "fit_gap"],
+      "properties": {
+        "in": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "out": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "fit_gap": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["requirement", "verdict"],
+            "properties": {
+              "requirement": {"type": "string", "minLength": 1},
+              "verdict": {
+                "type": "string",
+                "enum": ["fit", "partial", "gap"],
+                "description": "fit = standard configuration covers it; partial = configuration plus work; gap = nothing on the platform covers it as asked."
+              },
+              "note": {"type": "string"},
+              "steps": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Section 1.2: each decision cites the decision-tree branch that resolved it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "decision"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^D[0-9]+$"},
+          "decision": {"type": "string", "minLength": 1},
+          "decision_tree": {
+            "type": "string",
+            "description": "Path under standards/decision-trees/. Validated to exist on disk."
+          },
+          "branch": {"type": "string", "description": "The tree step that resolved the choice, e.g. 'Q3'."},
+          "rationale": {"type": "string"},
+          "alternatives_rejected": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "milestones": {
+      "type": "array",
+      "description": "Ordered M1..Mn. Each milestone ends at a human acceptance gate (G3).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "steps", "acceptance_tests"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^M[0-9]+$"},
+          "title": {"type": "string", "minLength": 1},
+          "goal": {"type": "string"},
+          "steps": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^M[0-9]+-S[0-9]{2,}$"},
+            "description": "Exactly the ids of the steps whose 'milestone' is this id."
+          },
+          "acceptance_tests": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/acceptanceTest"},
+            "description": "Cross-step checks the milestone verifier runs. Section 5: every milestone has at least one."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "building", "verified", "accepted"]
+          },
+          "report_path": {"type": "string", "description": "reports/MILESTONE-<id>-REPORT.md once the verifier has run."}
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Section 4: the unit of build. Exactly one owning run-time agent and one step type per step.",
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "human_gates": {
+      "type": "array",
+      "description": "Section 3: 'clarifications' (G1), 'plan' (G2) and 'milestone:<id>' (G3, one per milestone). Agents never approve a gate; scripts/build_plan.py gate is the only writer.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^(clarifications|plan|milestone:M[0-9]+)$"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "rejected"]
+          },
+          "by": {"type": "string"},
+          "at": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "artefacts_root": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Directory, relative to the build directory, under which every step writes artefacts/<step-id>/. Section 2: 'artefacts'."
+    },
+    "docs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan", "clarifications", "decisions", "traceability"],
+      "description": "Rendered / appended human-readable views, relative to the build directory. Never hand-edit a rendered view (section 2).",
+      "properties": {
+        "plan": {"type": "string"},
+        "clarifications": {"type": "string"},
+        "decisions": {"type": "string"},
+        "traceability": {"type": "string"},
+        "workbook": {"type": "string"},
+        "reports": {"type": "string"},
+        "tests": {"type": "string"},
+        "envelopes": {"type": "string"}
+      }
+    },
+    "history": {
+      "type": "array",
+      "description": "Superseded plan versions (section 3). Written only by scripts/build_plan.py gate on a rejected plan gate.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["version", "plan"],
+        "properties": {
+          "version": {"type": "integer", "minimum": 1},
+          "status": {"type": "string"},
+          "superseded_at": {"type": "string"},
+          "superseded_by": {"type": "string"},
+          "reason": {"type": "string"},
+          "plan": {"type": "object", "additionalProperties": true}
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Section 7: written by .claude/workflows/plan-verify.js synthesis. Open shape so lenses can extend.",
+      "properties": {
+        "status": {"type": "string", "enum": ["verified", "plan-rejected"]},
+        "verified_at": {"type": "string"},
+        "by": {"type": "string"},
+        "lenses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["lens", "verdict"],
+            "properties": {
+              "lens": {"type": "string", "enum": ["executability", "grounding", "testability"]},
+              "verdict": {"type": "string", "enum": ["pass", "fail"]},
+              "notes": {"type": "string"}
+            }
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["step", "problem"],
+            "properties": {
+              "step": {"type": "string"},
+              "problem": {"type": "string"},
+              "lens": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "acceptanceTest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "description": "Section 5. checker/command declare a command; xml and manifest are the always-on structural checks; manual is a checklist line the human ticks at the milestone gate.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["checker", "xml", "manifest", "command", "manual"]
+        },
+        "command": {
+          "type": "string",
+          "description": "Required for type checker and command. Stdlib-only; never 'sf project deploy start'."
+        },
+        "description": {"type": "string"},
+        "expected": {"type": "string", "description": "Pass condition in words, e.g. 'exit 0'."}
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent", "started", "envelope_path", "result"],
+      "description": "Section 8: every agent invocation in the loop is recorded here with its envelope path. Re-running a step appends; it never overwrites history.",
+      "properties": {
+        "agent": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "started": {"type": "string", "minLength": 4},
+        "envelope_path": {"type": "string", "minLength": 1},
+        "result": {"type": "string", "minLength": 1},
+        "finished": {"type": "string"}
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "milestone",
+        "type",
+        "title",
+        "agent",
+        "skills",
+        "templates",
+        "decision_trees",
+        "inputs",
+        "outputs",
+        "depends_on",
+        "acceptance_tests",
+        "status",
+        "runs",
+        "human_gate"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^M[0-9]+-S[0-9]{2,}$", "description": "e.g. M1-S01."},
+        "milestone": {"type": "string", "pattern": "^M[0-9]+$"},
+        "type": {
+          "type": "string",
+          "enum": [
+            "object-model",
+            "access",
+            "automation",
+            "routing",
+            "sla",
+            "ui",
+            "data",
+            "integration",
+            "docs",
+            "custom"
+          ],
+          "description": "Section 4 step-type table. Adding a type = one new row there plus a roster agent."
+        },
+        "title": {"type": "string", "minLength": 1},
+        "agent": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Owning run-time agent id. Must exist with class: runtime and status != deprecated (section 8)."
+        },
+        "skills": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+          "description": "Skill ids the agent must read. Must resolve to skills/<domain>/<slug>/SKILL.md."
+        },
+        "templates": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Repo-relative template paths, e.g. templates/apex/TriggerHandler.cls."
+        },
+        "decision_trees": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Repo-relative decision-tree paths under standards/decision-trees/."
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Free-form inputs the runner hands the owning agent."
+        },
+        "outputs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Artefact paths, relative to the build directory, under artefacts/<step-id>/."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^M[0-9]+-S[0-9]{2,}$"},
+          "description": "Step ids that must be 'documented' before this step is runnable. Must form a DAG."
+        },
+        "acceptance_tests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/acceptanceTest"}
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "running", "built", "tested", "documented", "failed", "blocked"],
+          "description": "Section 4 state machine: pending -> running -> built -> tested -> documented, with failed and blocked as side exits."
+        },
+        "runs": {"type": "array", "items": {"$ref": "#/$defs/run"}},
+        "human_gate": {
+          "type": "boolean",
+          "description": "True if this step needs its own human sign-off beyond the milestone gate."
+        },
+        "blocked_reason": {
+          "type": "string",
+          "description": "Required when status is blocked. 'skill-gap' is the reserved reason for section 8's deepen-a-skill signal."
+        }
+      }
+    }
+  }
+}

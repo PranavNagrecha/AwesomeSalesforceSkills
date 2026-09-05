@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (60)
+## Run-time agents (67)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -105,6 +105,22 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` || `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
 | `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
 | `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
+
+### Orchestration — Tier 4 (7)
+
+`status: beta`. These agents implement the requirement-to-build loop in [`standards/build-orchestration.md`](../../standards/build-orchestration.md): one agent per stage, one human gate between stages, builds tracked under `.sfskills/builds/<build-id>/`. None of them deploys or approves a gate — each stops and prints the next command for a human to run.
+
+| Agent | Domain | Primary output | Slash command |
+|---|---|---|---|
+| `requirements-clarifier` | Requirements / Admin | Deduped question set + proposed defaults, written into `plan.json` and `CLARIFICATIONS.md` (gate G1) | `/clarify-requirements` |
+| `build-planner` | Planning / Architecture | Scope, fit-gap entries, decisions, milestones and steps written into `plan.json` (`status: planned`, awaiting gate G2) | `/plan-build` |
+| `plan-verifier` | Verification / QA | Per-step executability / grounding / testability verdicts in `plan.json.verification`; plan set `verified` or `plan-rejected` (gate G2) | `/verify-plan` |
+| `build-step-runner` | Execution / DevOps | One step's artefacts + run envelope; step moved to `built` or `blocked` | `/run-build-step` |
+| `step-tester` | Testing / DevOps | Machine-readable test result + human summary; step moved to `tested` or `failed` | `/test-build-step` |
+| `build-doc-keeper` | Documentation / Admin | Re-rendered `PLAN.md`, decisions log, configuration-workbook rows, traceability rows; step moved to `documented` | `/keep-build-docs` |
+| `milestone-verifier` | Verification / DevOps | Milestone acceptance report + manual-test checklist for gate G3 | `/verify-milestone` |
+
+Composite commands that span the whole loop rather than one agent: `/run-build` (every step of one milestone) and `/build-from-requirements` (all five stages, gate by gate).
 
 ### Deprecated (14)
 

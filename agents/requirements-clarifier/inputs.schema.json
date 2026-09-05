@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/requirements-clarifier/inputs.schema.json",
+  "title": "requirements-clarifier inputs",
+  "description": "Typed inputs for the requirements-clarifier runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. Exactly one of requirement_path or requirement_text is required — there is nothing to clarify without a requirement, and supplying both leaves the agent to guess which one the human meant.",
+  "type": "object",
+  "properties": {
+    "requirement_path": {
+      "type": "string",
+      "description": "Path to the human's requirement text — a paragraph, a worksheet, or a backlog extract. `build_plan.py init --requirement` copies it verbatim to requirement.md in the build directory. Example from AGENT.md: \"intake/case-intake.md\". Required column: 'one of these two'.",
+      "example": "intake/case-intake.md"
+    },
+    "requirement_text": {
+      "type": "string",
+      "description": "The requirement pasted inline instead of as a path. The agent writes it to a file first, because init --requirement takes a path and the build directory keeps the human's words verbatim. Required column: 'one of these two'.",
+      "minLength": 1,
+      "example": "Cases arrive by email and must be answered within four business hours."
+    },
+    "build_dir": {
+      "type": "string",
+      "description": "The build directory. Defaults to .sfskills/builds/<requirement-filename-slug>. The build id is the directory name, so there is no separate id input. Supply an existing directory when re-clarifying. Required column: 'no'.",
+      "example": ".sfskills/builds/case-onboarding"
+    },
+    "title": {
+      "type": "string",
+      "description": "The one-line human title `build_plan.py init --title` requires. Defaults to the requirement's first heading, or the build id in title case. Required column: 'no'.",
+      "minLength": 3,
+      "example": "Case onboarding"
+    }
+  },
+  "oneOf": [
+    {"required": ["requirement_path"]},
+    {"required": ["requirement_text"]}
+  ]
+}

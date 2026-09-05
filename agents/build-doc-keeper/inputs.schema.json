@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sfskills:agent-inputs:build-doc-keeper",
+  "title": "Build Doc Keeper Inputs",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "build_dir",
+    "step_id"
+  ],
+  "properties": {
+    "build_dir": {
+      "type": "string",
+      "description": "Path to the build directory containing plan.json."
+    },
+    "step_id": {
+      "type": "string",
+      "description": "Id of the single step to document. Its status in plan.json must be `tested`. Must match the `M<n>-S<nn>` form (e.g. M1-S04) that agents/_shared/schemas/build-plan.schema.json requires.",
+      "pattern": "^M[0-9]+-S[0-9]{2,}$"
+    }
+  }
+}

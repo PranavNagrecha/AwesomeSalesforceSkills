@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-All 49 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
+All 67 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
@@ -367,6 +367,58 @@ Decision trees:
 - `standards/decision-trees/automation-selection.md` — cited for route-away only. This tree has no OmniStudio branch; the agent says so in plain text rather than inventing one.
 
 Templates: none. There is no `templates/omnistudio/` directory yet — a real gap, tracked as follow-up work.
+
+---
+
+## Wave I — Tier 4 (7 orchestration agents)
+
+`status: beta`. Implements the requirement-to-build loop defined by the contract [`standards/build-orchestration.md`](../../standards/build-orchestration.md) — one agent per stage, a human gate between each. No agent in this wave cites a `templates/` path; each carries its own build-state schema instead. Skill and decision-tree lists below are copied verbatim from each AGENT.md's `dependencies` frontmatter.
+
+### `requirements-clarifier`
+- `admin/acceptance-criteria-given-when-then`, `admin/agent-output-formats`, `admin/configuration-workbook-authoring`
+- `admin/requirements-gathering-for-sf`, `admin/stakeholder-raci-for-sf-projects`
+- Contract: `standards/build-orchestration.md` §§ 1–3, 8 (stage 1 / gate G1)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `build-planner`
+- `admin/acceptance-criteria-given-when-then`, `admin/agent-output-formats`, `admin/configuration-workbook-authoring`
+- `admin/fit-gap-analysis-against-org`, `admin/requirements-gathering-for-sf`, `admin/requirements-traceability-matrix`
+- `architect/architecture-decision-records`
+- Decision trees: `agentforce-capability-selector.md`, `async-selection.md`, `automation-selection.md`, `flow-pattern-selector.md`, `integration-pattern-selection.md`, `performance-tuning.md`, `sharing-selection.md`
+- Contract: `standards/build-orchestration.md` §§ 3–5, 8 (stage 2 / gate G2 pending)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `plan-verifier`
+- `admin/acceptance-criteria-given-when-then`, `admin/agent-output-formats`, `admin/fit-gap-analysis-against-org`
+- `admin/requirements-traceability-matrix`, `admin/uat-test-case-design`
+- Decision trees: `agentforce-capability-selector.md`, `async-selection.md`, `automation-selection.md`, `flow-pattern-selector.md`, `integration-pattern-selection.md`, `performance-tuning.md`, `sharing-selection.md`
+- Contract: `standards/build-orchestration.md` §§ 3–5, 7 (stage 3 / gate G2)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `build-step-runner`
+- `admin/configuration-workbook-authoring`, `admin/requirements-traceability-matrix`
+- `devops/metadata-api-retrieve-deploy`, `devops/pipeline-secrets-management`, `devops/salesforce-dx-project-structure`
+- Contract: `standards/build-orchestration.md` §§ 4, 5, 8 (per-step execution)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `step-tester`
+- `admin/acceptance-criteria-given-when-then`, `admin/uat-and-acceptance-criteria`
+- `devops/metadata-api-coverage-gaps`, `devops/metadata-api-retrieve-deploy`, `devops/salesforce-dx-project-structure`
+- Contract: `standards/build-orchestration.md` § 5 (per-step testing)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `build-doc-keeper`
+- `admin/configuration-workbook-authoring`, `admin/requirements-traceability-matrix`, `admin/uat-and-acceptance-criteria`
+- `devops/development-documentation-standards`
+- Contract: `standards/build-orchestration.md` §§ 2, 6, 8 (per-step documentation)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `milestone-verifier`
+- `admin/requirements-traceability-matrix`, `admin/uat-and-acceptance-criteria`
+- `devops/deployment-error-diagnosis`, `devops/flow-deployment-activation-ordering`, `devops/metadata-api-retrieve-deploy`
+- `devops/permission-set-deployment-ordering`, `devops/pre-deployment-checklist`
+- Contract: `standards/build-orchestration.md` §§ 3, 5, 7 (gate G3)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
 
 ---
 

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/plan-verifier/inputs.schema.json",
+  "title": "plan-verifier inputs",
+  "description": "Typed inputs for the plan-verifier runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. step_id and lens narrow a single fanned-out worker to one (step, lens) pair, which is how .claude/workflows/plan-verify.js calls this agent; a run with neither does all three lenses on every step.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "build_dir": {
+      "type": "string",
+      "description": "The build directory. Must contain a plan.json at status 'planned', or 'verified' when re-checking after an edit. Example from AGENT.md: \".sfskills/builds/case-onboarding\". Required column: 'yes'.",
+      "minLength": 1,
+      "example": ".sfskills/builds/case-onboarding"
+    },
+    "step_id": {
+      "type": "string",
+      "pattern": "^M[0-9]+-S[0-9]{2,}$",
+      "description": "Verify one step rather than the whole plan. Same id shape the build-plan schema gives a step. Example from AGENT.md: \"M1-S02\". Required column: 'no'.",
+      "example": "M1-S02"
+    },
+    "lens": {
+      "type": "string",
+      "enum": ["executability", "grounding", "testability"],
+      "description": "Verify one lens rather than all three. Example from AGENT.md: \"grounding\". Required column: 'no'.",
+      "example": "grounding"
+    }
+  },
+  "required": [
+    "build_dir"
+  ]
+}

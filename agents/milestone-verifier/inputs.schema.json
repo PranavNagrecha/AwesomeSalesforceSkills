@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sfskills:agent-inputs:milestone-verifier",
+  "title": "Milestone Verifier Inputs",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "build_dir",
+    "milestone_id"
+  ],
+  "properties": {
+    "build_dir": {
+      "type": "string",
+      "description": "Path to the build directory containing plan.json."
+    },
+    "milestone_id": {
+      "type": "string",
+      "description": "Id of the single milestone to verify. Every step in it must be `documented`. Must match the `M<n>` form (e.g. M2) that agents/_shared/schemas/build-plan.schema.json requires.",
+      "pattern": "^M[0-9]+$"
+    },
+    "approver_name": {
+      "type": "string",
+      "description": "Optional human name, used only to render the build_plan.py gate command line."
+    }
+  }
+}

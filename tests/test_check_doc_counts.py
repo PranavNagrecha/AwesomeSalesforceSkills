@@ -32,12 +32,12 @@ from scripts.check_doc_counts import (  # noqa: E402
 
 # Canonical shape of the synthetic repo:
 #   3 skills (admin 2, apex 1)
-#   6 agents = 1 build + 4 active runtime (tiers 1/1/1/1) + 1 deprecated
+#   7 agents = 1 build + 5 active runtime (tiers 1/1/1/1/1) + 1 deprecated
 #   2 MCP tools, 1 flagship eval
 SKILLS_TOTAL = 3
-AGENTS_TOTAL = 6
+AGENTS_TOTAL = 7
 BUILD = 1
-ACTIVE_RUNTIME = 4
+ACTIVE_RUNTIME = 5
 DEPRECATED = 1
 MCP_TOOLS = 2
 EVALS = 1
@@ -47,6 +47,7 @@ TIERS = (
     "- **Admin accelerators — Tier 1 (1)** — `/design-object`.\n"
     "- **Strategic — Tier 2 (1)** — `/run-fit-gap`.\n"
     "- **Vertical + governance — Tier 3 (1)** — `/assess-waf`.\n"
+    "- **Orchestration — Tier 4 (1)** — `/plan-build`.\n"
 )
 
 README = f"""# SfSkills
@@ -117,6 +118,7 @@ AGENTS = [
     ("design-object", "runtime", "active"),
     ("run-fit-gap", "runtime", "active"),
     ("assess-waf", "runtime", "active"),
+    ("build-planner", "runtime", "beta"),
     ("audit-sharing", "runtime", "deprecated"),
 ]
 
@@ -244,7 +246,7 @@ class DriftIsDetectedTest(RootMixin, unittest.TestCase):
 
     def test_wrong_active_runtime_count_in_claude_md(self):
         self.edit("CLAUDE.md", f"Run-time agents ({ACTIVE_RUNTIME})", "Run-time agents (47)")
-        self.assert_fails("active_runtime is 47 in doc but canonical is 4")
+        self.assert_fails(f"active_runtime is 47 in doc but canonical is {ACTIVE_RUNTIME}")
 
     def test_wrong_deprecated_count_in_the_mcp_readme(self):
         self.edit("mcp/sfskills-mcp/README.md", f"{DEPRECATED} deprecation stubs", "14 deprecation stubs")
@@ -261,7 +263,7 @@ class DriftIsDetectedTest(RootMixin, unittest.TestCase):
     def test_runtime_tiers_that_do_not_sum_to_the_active_total(self):
         """The nine-deprecated-agents-in-the-tiers bug, reproduced."""
         self.edit("README.md", "Vertical + governance — Tier 3 (1)", "Vertical + governance — Tier 3 (10)")
-        self.assert_fails("runtime tiers sum to 13 (1+1+1+10) but active-runtime total is 4")
+        self.assert_fails(f"runtime tiers sum to 14 (1+1+1+10+1) but active-runtime total is {ACTIVE_RUNTIME}")
 
     def test_a_removed_label_is_an_error_not_a_silent_pass(self):
         """If a doc is restructured so a labelled count disappears, the lint
@@ -288,7 +290,7 @@ class DriftIsDetectedTest(RootMixin, unittest.TestCase):
         issues = collect_doc_count_issues(self.root)
         self.assertTrue(issues)
         joined = self.joined()
-        self.assertIn("agents_total is 6 in doc but canonical is 7", joined)
+        self.assertIn(f"agents_total is {AGENTS_TOTAL} in doc but canonical is {AGENTS_TOTAL + 1}", joined)
         self.assertIn("active_runtime is 4 in doc but canonical is 5", joined)
 
     def test_every_doc_quoting_a_count_is_checked_not_just_the_readme(self):

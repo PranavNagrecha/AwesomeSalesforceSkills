@@ -200,7 +200,7 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (60)
+### Run-time agents (67)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
@@ -209,6 +209,7 @@ The roster:
 - **Admin accelerators — Tier 1 (14)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/preflight-load`, `/design-duplicate-rule`, `/design-assignment-rules`, `/configure-business-hours`, `/author-config-workbook`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-path`, `/map-process-flow`.
 - **Strategic — Tier 2 (7)** — `/review-data-model`, `/catalog-integrations`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`.
 - **Vertical + governance — Tier 3 (11)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/migrate-profile-to-permset`, `/diff-users`, `/design-omnistudio`.
+- **Orchestration — Tier 4 (7)** — `status: beta`; implements the requirement-to-build loop in `standards/build-orchestration.md`: `/clarify-requirements`, `/plan-build`, `/verify-plan`, `/run-build-step`, `/test-build-step`, `/keep-build-docs`, `/verify-milestone`. See "Build Orchestration Layer" below.
 - **Deprecated (14)** — single-mode auditors/governors consolidated into `/audit-router` (Wave 3b); their slash commands redirect: `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/audit-reports`, `/audit-validation-rules`, `/audit-case-escalation`, `/govern-prompt-library`, `/detect-drift`, plus 5 earlier stubs (`/audit-list-views`, `/audit-actions`, `/audit-identity-and-session`, `/govern-field-history`, `/audit-report-folder-sharing`).
 
 Must:
@@ -259,6 +260,21 @@ trees**. `standards/decision-trees/README.md` is the authoritative table
 Rule: when a user query straddles more than one technology in a tree's
 scope, read the tree before activating any skill. Cite the tree step that
 resolved the choice. See `standards/decision-trees/README.md`.
+
+## Build Orchestration Layer
+
+Turns one clarified requirement into a deployable Salesforce build through the
+seven Orchestration — Tier 4 agents (`status: beta`), each one stage of the
+loop with a human gate between stages: `/clarify-requirements` (answer) →
+`/plan-build` → `/verify-plan` → gate → `/run-build-step` per step,
+`/test-build-step`, `/keep-build-docs` → `/verify-milestone` → gate, repeating
+per milestone. `/build-from-requirements` walks the whole loop; `/run-build`
+walks one milestone. Builds live under `.sfskills/builds/<build-id>/`, with
+`plan.json` as the single source of truth and rendered views (`PLAN.md`, the
+configuration workbook, traceability rows) regenerated from it, never
+hand-edited. The contract is `standards/build-orchestration.md` — read it
+before touching any of these agents. No agent in this layer deploys to an org
+or approves a gate; each stops and prints the next command for a human to run.
 
 ## Golden Evals Layer
 
