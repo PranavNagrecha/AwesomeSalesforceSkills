@@ -4,7 +4,7 @@
 
 **Context:** An ETL pipeline must first archive old Account records (Step 1) and then re-index a related search cache (Step 2). Both are large-volume operations that require full Batch Apex chunking.
 
-**Problem:** Without a capacity check, calling `Database.executeBatch` inside `finish()` silently enqueues the job even when the Flex Queue is near its 100-job ceiling. The second batch job sits in `Holding` status indefinitely with no alert.
+**Problem:** Without exception handling, calling `Database.executeBatch` inside `finish()` throws a `LimitException` when the flex queue already holds its maximum of 100 jobs (`apexdev` L17238-17239) — and an unhandled exception in `finish()` "prevents the next job from being enqueued and breaks the sequence" (`apexdev` L17823-17825). The first job still reports `Completed`, so the chain reads as healthy up to the link that never started.
 
 **Solution:**
 
@@ -26,32 +26,38 @@ public class ArchiveAccountsBatch implements Database.Batchable<SObject> {
     }
 
     public void finish(Database.BatchableContext bc) {
-        // Flex Queue guard: count all non-terminal batch jobs
-        Integer activeAndQueued = [
+        // Headroom check. The two ceilings are separate and must be compared
+        // separately: 100 is the Holding cap (apexdev L17687), 5 is the
+        // queued-or-active cap (apexdev L17686).
+        Integer holding = [
             SELECT COUNT() FROM AsyncApexJob
-            WHERE JobType = 'BatchApex'
-            AND Status IN ('Holding', 'Queued', 'Processing', 'Preparing')
+            WHERE JobType = 'BatchApex' AND Status = 'Holding'
         ];
-
-        if (activeAndQueued >= 95) {
-            // Surface a visible alert — do not silently swallow the chain
-            insert new Error_Log__c(
-                Message__c = 'ArchiveAccountsBatch.finish(): Flex Queue at ' +
-                             activeAndQueued + ' jobs. RebuildCacheBatch NOT enqueued.',
-                Severity__c = 'ERROR',
-                Context__c   = 'BatchChaining'
-            );
+        if (holding >= 95) {
+            ApplicationLogger.error('ArchiveAccountsBatch',
+                'Flex queue Holding at ' + holding + '/100. RebuildCacheBatch not started.');
+            ApplicationLogger.flush();
             return;
         }
 
-        // Safe to chain
-        Id nextJobId = Database.executeBatch(new RebuildCacheBatch(), 200);
-        System.debug('RebuildCacheBatch enqueued: ' + nextJobId);
+        // The guard narrows the window; it does not close it. Between the count
+        // and the call, another transaction can fill the queue — and the queue
+        // "sometimes exceeds the maximum limit, resulting from parallel requests"
+        // (apexdev L17251-17253). So the try/catch is the real protection.
+        try {
+            Id nextJobId = Database.executeBatch(new RebuildCacheBatch(), 200);
+            ApplicationLogger.info('ArchiveAccountsBatch',
+                'RebuildCacheBatch started as ' + nextJobId);
+        } catch (Exception e) {
+            ApplicationLogger.error('ArchiveAccountsBatch', e);
+        } finally {
+            ApplicationLogger.flush();
+        }
     }
 }
 ```
 
-**Why it works:** The SOQL guard checks real-time Flex Queue depth before every chain call. If the queue is near saturation the chain aborts with a logged alert instead of silently dropping work. The returned `nextJobId` can be stored or monitored downstream.
+**Why it works:** The count gives the on-call team a warning before saturation; the try/catch is what actually keeps a full queue from ending the chain invisibly. The logged `nextJobId` is the only durable record that link two was requested — the platform stores no link between the two `AsyncApexJob` rows (see `gotchas.md` gotcha 9).
 
 ---
 
@@ -119,16 +125,47 @@ public class ExtractLegacyBatch implements Database.Batchable<SObject>,
 
 ---
 
-## Anti-Pattern: Chaining Without FlexQueue Check
+## Example 3: Reading a Broken Chain Back Out of the Org
 
-**What practitioners do:**
+**Context:** The nightly pipeline `ArchiveAccountsBatch → RebuildCacheBatch → NotifyIndexQueueable` reported success in the Apex Jobs UI, but the search index is a day stale. Nothing failed visibly.
 
-```apex
-public void finish(Database.BatchableContext bc) {
-    Database.executeBatch(new StepTwoBatch(), 200);
-}
+**Problem:** There is no platform field that records which job started which. `AsyncApexJob.ParentJobId` links a batch job to its own internal `BatchApexWorker` rows, not to the next link (Object Reference, `AsyncApexJob.ParentJobId`). So "did link two ever start?" cannot be answered by walking a relationship — it has to be reconstructed from class name and time.
+
+**Diagnostic sequence — run these three in order:**
+
+```soql
+-- 1. Did each link produce a job at all, and in what order?
+SELECT ApexClass.Name, JobType, Status, CreatedDate, CompletedDate,
+       JobItemsProcessed, TotalJobItems, NumberOfErrors, ExtendedStatus
+FROM AsyncApexJob
+WHERE ApexClass.Name IN ('ArchiveAccountsBatch','RebuildCacheBatch','NotifyIndexQueueable')
+  AND JobType != 'BatchApexWorker'
+  AND CreatedDate = LAST_N_DAYS:1
+ORDER BY CreatedDate ASC
+
+-- 2. If link two is absent: was the org's flex queue full at the time?
+--    Holding is measured against 100; queued/active against 5.
+SELECT Status, COUNT(Id) jobs
+FROM AsyncApexJob
+WHERE JobType = 'BatchApex' AND CreatedDate = LAST_N_DAYS:1
+GROUP BY Status
+
+-- 3. Did any link raise an uncatchable failure? Requires the batch classes to
+--    declare Database.RaisesPlatformEvents, and a subscriber that persists it.
+SELECT Source__c, Severity__c, Message__c, Exception_Type__c, Request_Id__c, CreatedDate
+FROM Application_Log__c
+WHERE Source__c IN ('ArchiveAccountsBatch','RebuildCacheBatch','MarkChainFailure')
+  AND CreatedDate = LAST_N_DAYS:1
+ORDER BY CreatedDate ASC
 ```
 
-**What goes wrong:** When the Flex Queue already holds many jobs (e.g., in a busy production org during peak load), this call enqueues the job in `Holding` status. There is no exception, no log entry, and no alert. The downstream batch step simply never runs — or runs hours later — without any notification to the owning team.
+**How to read the result:**
 
-**Correct approach:** Always query `AsyncApexJob` for active and queued batch jobs before calling `Database.executeBatch` in `finish()`. If the count is above a safe threshold (typically 90–95 out of 100), log an error and abort the chain rather than proceeding silently.
+| What query 1 shows | What it means | Next move |
+|---|---|---|
+| Link 1 `Completed`, link 2 absent | `finish()` threw before the hand-off — the job still reports `Completed` (`apexdev` L17823–17825) | Query 3 for the logged exception; add the try/catch from Example 1 |
+| Link 2 present, `Status = 'Holding'` for hours | The queue is full ahead of it, not broken | Query 2; `System.FlexQueue.moveJobToFront(jobId)` to prioritise |
+| Link 2 `Completed`, `NumberOfErrors > 0` | Chunks failed; the chain advanced over dirty data | `ExtendedStatus` for the first error; add the upstream-error gate (`llm-anti-patterns.md` #6) |
+| Nothing at all for any link | The scheduler never fired, or the kill-switch is off | Check `CronTrigger` and `Chain_Step__mdt.Enabled__c` |
+
+**Why the `JobType != 'BatchApexWorker'` filter is mandatory:** "For each 10,000 AsyncApexJob records, Apex creates an AsyncApexJob record of type BatchApexWorker for internal use" (`apexdev` L17755–17758). Without the filter, query 2's counts are inflated and query 1 returns rows that look like phantom extra links.
