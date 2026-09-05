@@ -27,30 +27,41 @@ Correct approach:
 
 ---
 
-## Anti-Pattern 2: Omitting MFA Waiver for New Integration Users in MFA-Enforced Orgs
+## Anti-Pattern 2: Blaming Org-Wide MFA for a Blocked Integration User and Reaching for the Waiver First
 
-**What the LLM generates:** "Create the integration user with the Salesforce Integration license and Minimum Access - API Only Integrations profile, then test authentication."
+**What the LLM generates:** "Your integration user is failing because the org enforces MFA and server-to-server flows can't complete an MFA challenge. Create a permission set with 'Waive Multi-Factor Authentication for Exempt Users' and assign it to the integration user."
 
-**Why it happens:** MFA waiver configuration is a separate, easily overlooked step that is not part of the basic user creation workflow.
+**Why it happens:** MFA enforcement is the change the user just described, so it is the most available explanation, and "grant the waiver" is a satisfying one-step fix. The model never checks whether the setting is even in the code path for an API login.
 
 **Correct pattern:**
 
 ```
-In orgs with MFA enforcement enabled, ALSO:
+Org-wide MFA enforcement is scoped to DIRECT UI LOGINS.
+  SecuritySettings.enableMFADirectUILoginOptIn — "when logging in directly to
+  the UI with their username and password"          (api_meta.txt L126248-126252)
+An API Only User "can access Salesforce only via APIs, regardless of their
+other permissions"                                  (api_meta.txt L121360-121363)
+=> There is no UI login for the org MFA setting to challenge.
+=> The waiver is NOT a prerequisite for a working integration user.
 
-After creating the integration user:
-1. Check: Setup > Identity Verification > MFA for API Logins (is it Required?)
-2. If required: grant MFA waiver to the integration user
+Diagnose in this order instead. Read LoginHistory.Status on the failing row,
+filtering only on UserId and LoginTime (Status is not filterable), then match:
 
-Options:
-A) Permission set with "Waive MFA for Exempt Users" permission
-B) Use JWT bearer flow (certificate-based, inherently MFA-resistant — preferred)
+  restricted / untrusted IP   -> Profile.loginIpRanges, plus the connected app's
+                                 ipRelaxation (ENFORCE is what makes it apply)
+  outside permitted hours     -> Profile.loginHours for that weekday
+  session-level requirement   -> ProfileSessionSetting.requiredSessionLevel
+                                 = HIGH_ASSURANCE, or a connected-app
+                                 RaiseSessionLevel policy. "For flows without a
+                                 user approval step, API logins with the High
+                                 Assurance session security level are blocked."
+                                                    (api_meta.txt L35826-35836)
 
-Without this step in MFA-enforced orgs:
-New integration users fail authentication on first attempt.
+Grant the waiver only for an account genuinely exempt from the org's MFA
+policy — i.e. one that really does log in through the UI.
 ```
 
-**Detection hint:** Any integration user creation workflow in an MFA-enforced org that does not mention MFA waiver configuration.
+**Detection hint:** Any answer that proposes an MFA waiver for an API-only user without first asking what `LoginHistory.Status` says, or that describes JWT bearer flow as valuable because it "avoids MFA" rather than because it transmits no password.
 
 ---
 
@@ -114,14 +125,16 @@ Example naming: mulesoft_integration@company.com, informatica_etl@company.com
 ```
 Username-password OAuth flow limitations:
 - Sends credentials over the network (risk if TLS is misconfigured)
-- Requires MFA waiver in MFA-enforced orgs
+- Subject to the profile's password policy, so an expiry setting can lock the
+  integration out on a schedule nobody is watching
 - Salesforce plans to restrict this flow further in future releases
 
 Preferred: OAuth JWT Bearer Flow
-- Uses certificate pair (no credentials transmitted)
-- Inherently MFA-resistant
-- Works in all MFA enforcement configurations
-- Required for some Salesforce-to-Salesforce integrations
+- Uses certificate pair (no credentials transmitted, nothing to rotate or leak)
+- No password policy can expire it
+- Caveat: it has no user approval step, so a HIGH_ASSURANCE session level on the
+  profile or a RaiseSessionLevel connected-app policy blocks it outright
+  (api_meta.txt L35826-35836)
 
 Setup: Connected app > Use digital signatures > Upload public certificate
 Integration side: Generate signed JWT with private key, exchange for access token

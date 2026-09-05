@@ -102,10 +102,18 @@ ProcessInstanceWorkitem wi = [
     SELECT Id FROM ProcessInstanceWorkitem
     WHERE ProcessInstance.TargetObjectId = :recordId
       AND ProcessInstance.Status = 'Pending'
-    ORDER BY CreatedDate DESC LIMIT 1
+    ORDER BY ElapsedTimeInDays ASC LIMIT 1
 ];
 req.setWorkitemId(wi.Id);
 ```
+
+Better still when the submission happened in the same transaction:
+`ProcessResult.getNewWorkitemIds()` returns the new workitem Ids
+directly (apexrefguide.txt L3795-3801), so no query is needed at all.
+Order on `ElapsedTimeInDays`, not `CreatedDate` — the Object
+Reference field table for `ProcessInstanceWorkitem` documents the
+elapsed-time fields as Filter and Sort and does not list `CreatedDate`
+(object_reference.txt L226836-226852).
 
 **Detection hint.** Any `setWorkitemId` call with a value sourced
 from a ProcessInstance query is wrong-type confusion.
@@ -193,30 +201,60 @@ audit-trail discussion is missing a security review item.
 
 ---
 
-## Anti-Pattern 8: Submitting > 200 records in one Approval.process() call
+## Anti-Pattern 8: Budgeting bulk submission by chunk size instead of by DML
 
-**What the LLM generates.**
+**What the LLM generates.** One of two shapes, and both come from
+the same misunderstanding:
 
 ```apex
-Approval.process(requests);  // requests has 1000 entries
+Approval.process(requests);            // 1000 entries, allOrNone defaults true
 ```
 
-**Why it happens.** "Just bulk it" instinct; doesn't surface the
-200-per-call governor.
+```apex
+for (Expense__c e : records) {         // worse: one DML per record
+    Approval.ProcessSubmitRequest req = new Approval.ProcessSubmitRequest();
+    req.setObjectId(e.Id);
+    Approval.process(req);
+}
+```
 
-**Correct pattern.** Chunk into 200-record slices:
+**Why it happens.** The model has absorbed a "200 requests per
+`Approval.process` call" rule that does not appear in the Apex
+Reference Guide, the Apex Developer Guide, or the App Limits cheat
+sheet, and reasons about chunk size instead of about DML.
+
+**What the guides actually say.** `Approval.process` "counts against
+the DML limits for your organization" (apexdev.txt L20633-20636).
+The two binding numbers are 150 DML statements and 10,000 records
+processed per transaction, and the governors table names
+`Approval.process` in both rows (apexdev.txt L19548-19556,
+L19620-19626).
+
+**Correct pattern.** Build the requests in one loop, process them in
+chunks in another, and count the statements:
 
 ```apex
+List<Approval.ProcessSubmitRequest> requests = new List<Approval.ProcessSubmitRequest>();
+for (Expense__c e : records) {
+    Approval.ProcessSubmitRequest req = new Approval.ProcessSubmitRequest();
+    req.setObjectId(e.Id);
+    req.setProcessDefinitionNameOrId('Expense_Approval');
+    requests.add(req);
+}
 for (Integer i = 0; i < requests.size(); i += 200) {
     Integer end = Math.min(i + 200, requests.size());
     List<Approval.ProcessSubmitRequest> chunk = new List<Approval.ProcessSubmitRequest>();
     for (Integer j = i; j < end; j++) chunk.add(requests[j]);
-    Approval.process(chunk, false);
+    Approval.process(chunk, false);   // one DML statement per chunk
 }
 ```
 
-**Detection hint.** Any single Approval.process() call with a list
-larger than 200 entries hits the governor.
+**Detection hint.** A loop body that both constructs an
+`Approval.Process*Request` and calls `Approval.process` is the
+per-record shape — that is exactly what
+`scripts/check_approval_process_apex_patterns.py` flags CRITICAL.
+A model that cites "the 200-record governor" as its reason is
+repeating an ungrounded number; the reason is DML.
 
 ---
 

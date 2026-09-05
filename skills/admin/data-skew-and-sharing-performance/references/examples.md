@@ -15,7 +15,46 @@ Remove the user from the role hierarchy and remove them from all public groups t
 3. Verify the user is not a member of any public group that is the source group for an active sharing rule (Setup → Sharing Settings → Sharing Rules → check Source).
 4. For future imports, distribute Leads across a pool of queues — keep each queue's Lead count under 10,000.
 
-**Why it works:** A user with no role cannot trigger role-hierarchy-based sharing recalculations. Per the *Designing Record Access for Enterprise Scale* guide, placing skew-prone users outside the role hierarchy is the documented mitigation when ownership redistribution is not feasible.
+**Why it works:** A user with no role cannot trigger role-hierarchy-based sharing recalculations. Per the *Designing Record Access for Enterprise Scale* guide, placing skew-prone users outside the role hierarchy is the documented mitigation when ownership redistribution is not feasible. The *Large Data Volumes* guide states the ceiling the same way, as a general best practice: "Avoid having any user own more than 10,000 records." (`ldv.txt` L1033).
+
+**The measurement, recorded so the checker can read it.** The report above produces three numbers; write them into `skew-plan.json` beside the manifest so the finding survives the conversation and gates the deploy:
+
+```json
+{
+  "org": "acme-prod",
+  "measured": "2026-09-05",
+  "ownership": [
+    {
+      "object": "Lead",
+      "owner": "Marketing Import User",
+      "ownerId": "005000000000001",
+      "count": 120000,
+      "hasRole": true,
+      "sourcesSharingRule": true
+    }
+  ],
+  "parents": [],
+  "lookups": []
+}
+```
+
+`hasRole` and `sourcesSharingRule` are the two facts that turn a count into a diagnosis: 120,000 records under a *roleless* owner who sources no sharing rule is inert, while the same 120,000 under a roled owner is the 90-minute role change. Run:
+
+```bash
+python3 scripts/check_data_skew_and_sharing_performance.py \
+    --manifest-dir force-app/main/default --skew-plan skew-plan.json
+```
+
+which reports:
+
+```text
+ISSUE: WARN [skew-plan.json]: Ownership skew - 'Marketing Import User' owns 120,000 Lead
+records (ceiling 10,000). Any role change or sharing-rule source group change for this owner
+recalculates all 120,000. Distribute across bucket queues/groups, or take the owner out of
+the role hierarchy.
+```
+
+After step 2, re-run with `"hasRole": false` and the finding is expected to persist as a count — the checker measures skew, not risk appetite. What changes is that no role move can now fan out across those 120,000 records.
 
 ---
 

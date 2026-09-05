@@ -19,13 +19,32 @@ Use this template when setting up or auditing a Salesforce integration user.
 | Email | Team alias (not individual) | [ ] |
 | Active | true | [ ] |
 
-## MFA Configuration
+## Login Gates (the four things that actually block an API login)
 
-**Org MFA enforcement status:** [ ] Not enforced  [ ] Enforced
+**Org MFA enforcement status:** [ ] Not enforced  [ ] Enforced — note: this setting is scoped to direct UI logins, so it does not challenge this user's API logins. Do not record an MFA waiver as a setup step.
 
-If enforced:
-- [ ] MFA waiver configured via permission set
-- [ ] OR JWT bearer flow used (inherently MFA-resistant, preferred)
+| Gate | Value recorded | Verified? |
+|---|---|---|
+| Profile `loginIpRanges` | | [ ] |
+| Connected app `ipRelaxation` (`ENFORCE` for the ranges above to apply) | | [ ] |
+| Profile `loginHours` (all seven days, or absent) | | [ ] |
+| Profile `requiredSessionLevel` (`STANDARD`) | | [ ] |
+| Connected-app session policy (`RaiseSessionLevel` must be off) | | [ ] |
+
+**MFA waiver:** [ ] Not applicable — API-only account  [ ] Granted, because this account genuinely logs in through the UI: ___
+
+## Session and Network Restrictions
+
+| Setting | Value recorded | Checked? |
+|---|---|---|
+| `ProfileSessionSetting.requiredSessionLevel` | must be `STANDARD` — `HIGH_ASSURANCE` blocks JWT and client-credentials logins | [ ] |
+| `ProfileSessionSetting.sessionTimeout` | one of 0/15/30/60/90/120/240/480/720/1440 | [ ] |
+| `ProfilePasswordPolicy.passwordExpiration` | `0` (never) so an unattended integration is not broken by rotation; forces `passwordHistory` `0` | [ ] |
+| Profile `loginIpRanges` | middleware egress range(s), including retry cluster | [ ] |
+| Profile `loginHours` | all seven days covered, or absent entirely | [ ] |
+| Connected app `ipRelaxation` | `ENFORCE` so the profile IP ranges actually apply | [ ] |
+
+**Checker run:** `python3 skills/admin/integration-user-management/scripts/check_integration_user_management.py --manifest-dir <path>` — exit code: ___
 
 ## Permission Set Configuration
 
@@ -55,19 +74,21 @@ For JWT Bearer:
 - [ ] Authentication succeeds via selected flow
 - [ ] API call to required objects succeeds
 - [ ] UI login is blocked (API-only profile enforced)
-- [ ] MFA challenge does not appear during authentication
+- [ ] `LoginHistory.Status` for the test login reads success, and `LoginType` / `LoginSubType` match the configured flow
 
 ## Monitoring
 
 - [ ] LoginHistory monitoring configured
 - [ ] Periodic review scheduled (quarterly recommended)
 - [ ] Alert configured for failed login attempts from unexpected IPs
+- [ ] Monitoring query filters only on `UserId` and `LoginTime`; `Status` and `SourceIp` are evaluated client-side
+- [ ] Expected `LoginType` / `LoginSubType` for this flow recorded here: ___
 
 ## Documentation
 
 - [ ] Integration user details documented in runbook
 - [ ] Permission set contents documented with justification for each permission
-- [ ] MFA waiver status documented
+- [ ] Login gates documented: IP ranges, `ipRelaxation`, login hours, session level
 - [ ] Quarterly access review date set
 
 ## Notes

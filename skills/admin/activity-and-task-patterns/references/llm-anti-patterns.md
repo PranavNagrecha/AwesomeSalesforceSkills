@@ -107,3 +107,90 @@ Event record instead. DML on ActivityHistory fails with
 ```
 
 **Detection hint:** Apex `update ahList` where `ahList` is `List<ActivityHistory>`.
+
+---
+
+## Anti-Pattern 6: Bare `insert tasks;` in a backfill or trigger
+
+**What the LLM generates:**
+
+```
+List<Task> tasks = new List<Task>();
+for (Opportunity o : opps) { tasks.add(new Task(WhatId = o.Id, OwnerId = o.OwnerId)); }
+insert tasks;
+```
+
+**Why it happens:** The model has correctly learned "bulkify" and stops
+there. The DML verb is the shortest thing that compiles, and nothing in
+the code hints at the two side effects the platform attaches to it.
+
+**Correct pattern:**
+
+```
+The bare verb has nowhere to put DMLOptions, so you get all-or-nothing
+rollback AND an assignment email per task — creating or modifying a task
+is one of the events EmailHeader.triggerUserEmail governs.
+
+Database.DMLOptions dml = new Database.DMLOptions();
+dml.optAllOrNone = false;
+dml.EmailHeader.triggerUserEmail = false;
+List<Database.SaveResult> rs =
+    Database.insert(tasks, dml, AccessLevel.SYSTEM_MODE);
+// then iterate rs and report the failures
+```
+
+**Detection hint:** a file that declares `List<Task>` or `List<Event>`
+and contains `insert <var>;` with no `optAllOrNone` and no
+`Database.insert(..., false)` anywhere in it. This is check A5 in
+`scripts/check_activity_and_task_patterns.py`.
+
+---
+
+## Anti-Pattern 7: Deploying `ActivitiesSettings` to turn Shared Activities on
+
+**What the LLM generates:** an `Activities.settings-meta.xml` containing
+`<allowUsersToRelateMultipleContactsToTasksAndEvents>true</...>`, usually
+as step one of a "relate a task to several contacts" plan.
+
+**Why it happens:** Every other element in that file is deployable, and
+the field name reads like a switch. The deploy then *succeeds*, so
+nothing contradicts the model's assumption.
+
+**Correct pattern:**
+
+```
+That field has been read-only in every API version since v36.0. The
+deploy succeeds and changes nothing. Shared Activities is a Setup-only,
+effectively one-way org change a human must make first.
+
+Assert it instead of assuming it: TaskWhoIds and the TaskRelations child
+relationship only exist once it is on, and the ceiling is one lead OR up
+to 50 contacts per task.
+```
+
+**Detection hint:** the element name appearing anywhere in a `.settings`
+file. This is check M1 in `scripts/check_activity_and_task_patterns.py`.
+
+---
+
+## Anti-Pattern 8: FLS metadata for a shared Activity field on one child only
+
+**What the LLM generates:** a permission set with a single
+`fieldPermissions` entry for `Task.Outcome__c`, because the user asked
+about tasks.
+
+**Why it happens:** The model scopes the permission to the object named
+in the request and treats an unmentioned object as untouched.
+
+**Correct pattern:**
+
+```
+Task and Event share field-level security. A missing entry in the
+metadata is treated as FLS being disabled, not as "leave it alone", so a
+Task-only permission set can strip Event access on deploy. Always write
+both entries.
+```
+
+**Detection hint:** `fieldPermissions` naming `Task.<field>` without a
+matching `Event.<field>` (or vice versa). This is check M4 in
+`scripts/check_activity_and_task_patterns.py`.

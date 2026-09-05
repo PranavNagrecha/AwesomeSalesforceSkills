@@ -74,8 +74,9 @@ date 5 business days out. The trigger fires on bulk loads of up to
 200 records.
 
 **Problem:** Practitioners write loop-DML (`insert task` inside the
-`for` loop), which fails the platform's 150-DML governor limit on
-the second batch of 75 records and bricks the entire transaction.
+`for` loop), which fails the platform's synchronous limit of 150
+DML statements per transaction (salesforce_app_limits_cheatsheet.txt
+L64) on the 151st record and bricks the entire transaction.
 The fix is bulk DML — but the practitioner must also handle the
 case where `Stage` is being updated AND the OldMap shows it was
 already at `Proposal/Price Quote` (a re-save), so duplicates aren't
@@ -110,19 +111,45 @@ public with sharing class OpportunityStageFollowupHandler {
                 Status        = 'Not Started'
             ));
         }
-        if (!tasksToInsert.isEmpty()) {
-            insert tasksToInsert;
+        if (tasksToInsert.isEmpty()) {
+            return;
+        }
+
+        Database.DMLOptions dml = new Database.DMLOptions();
+        dml.optAllOrNone = false;                  // one bad row must not roll back 200 opps
+        dml.EmailHeader.triggerUserEmail = false;  // no assignment mail per task
+
+        for (Database.SaveResult sr :
+                Database.insert(tasksToInsert, dml, AccessLevel.SYSTEM_MODE)) {
+            if (!sr.isSuccess()) {
+                for (Database.Error err : sr.getErrors()) {
+                    System.debug(LoggingLevel.ERROR,
+                        err.getStatusCode() + ' ' + err.getMessage()
+                        + ' fields=' + err.getFields());
+                }
+            }
         }
     }
 }
 ```
 
-**Why it works:** Single `insert` call regardless of batch size keeps
-the trigger inside the 150-DML envelope. The `isFreshlyInProposal`
-gate prevents duplicates when a user re-saves an opportunity that
-was already in the target stage. `BusinessHours.add` respects the
-org's working calendar instead of naive `Date.today().addDays(5)`,
-which would land on a Saturday roughly 2/7 of the time.
+**Why it works:** One DML statement regardless of batch size, against
+a synchronous ceiling of 150. The `isFreshlyInProposal` gate prevents
+duplicates when a user re-saves an opportunity that was already in the
+target stage. `BusinessHours.add` respects the org's working calendar
+instead of a naive `Date.today().addDays(5)`, which would land on a
+Saturday roughly 2/7 of the time.
+
+The two `Database.DMLOptions` lines are the part practitioners omit.
+`optAllOrNone = false` lets the remainder of the operation succeed when
+one record fails, and you inspect `Database.SaveResult` instead of
+catching an exception (apexrefguide.txt L148100–L148104).
+`EmailHeader.triggerUserEmail = false` suppresses the notification the
+platform sends because *creating or modifying a task* is one of the
+events that header governs (apexdev.txt L8612–L8617) — see
+`references/gotchas.md` Gotcha 6. Neither option exists on the bare
+`insert` DML verb, which is the real reason to reach for the
+`Database` method here.
 
 ---
 

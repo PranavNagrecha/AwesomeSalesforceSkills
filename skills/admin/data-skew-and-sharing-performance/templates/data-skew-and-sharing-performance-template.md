@@ -38,6 +38,28 @@ Answer these before proposing any changes:
 |---|---|---|---|
 | (fill in) | (fill in) | (fill in) | Yes / No |
 
+### Lookup Skew Check
+
+Run this per custom lookup field on the object, not just per parent relationship. The count alone is not
+the diagnosis — concurrent write volume is what turns concentration into `UNABLE_TO_LOCK_ROW`.
+
+| Object | Lookup Field | Target Record | Records Pointing At It | Concurrent Writes? | Remediate or Monitor |
+|---|---|---|---|---|---|
+| (fill in) | (fill in) | (fill in) | (fill in) | Yes / No | (fill in) |
+
+### Skew Plan Handoff
+
+Copy the three tables above into `skew-plan.json` (or `skew-plan.csv`) so the checker can gate the deploy.
+See `references/examples.md` for the JSON shape and `references/metadata-examples.md` § 6 for the queries
+that produce the numbers.
+
+```bash
+python3 scripts/check_data_skew_and_sharing_performance.py \
+    --manifest-dir <retrieved metadata dir> \
+    --skew-plan skew-plan.json \
+    --job-plan bulk-job-plan.json
+```
+
 ---
 
 ## Recommended Approach

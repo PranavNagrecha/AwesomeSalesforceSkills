@@ -6092,6 +6092,9 @@
     "emailservicesaddress": [
       "admin/email-service-inbound"
     ],
+    "emailservicesfunction": [
+      "admin/email-service-inbound"
+    ],
     "embed": [
       "omnistudio/omnistudio-lwc-integration"
     ],
@@ -8039,6 +8042,9 @@
       "admin/email-service-inbound",
       "apex/apex-email-services"
     ],
+    "inbound-email-limits": [
+      "admin/email-service-inbound"
+    ],
     "inbound-integration": [
       "integration/webhook-inbound-patterns"
     ],
@@ -9529,6 +9535,7 @@
     ],
     "metadata-api": [
       "admin/change-data-capture-admin",
+      "admin/outbound-message-setup",
       "admin/restriction-rules",
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
@@ -12485,6 +12492,7 @@
       "architect/service-cloud-architecture"
     ],
     "routing-address": [
+      "admin/email-service-inbound",
       "admin/email-to-case-configuration"
     ],
     "routing-address-verification": [
@@ -15135,6 +15143,9 @@
     ],
     "workflow-automation": [
       "integration/slack-workflow-builder"
+    ],
+    "workflow-metadata": [
+      "admin/outbound-message-setup"
     ],
     "workflow-replacement": [
       "flow/flow-time-based-patterns"

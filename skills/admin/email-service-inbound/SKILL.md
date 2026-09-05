@@ -1,6 +1,6 @@
 ---
 name: email-service-inbound
-description: "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration)."
+description: "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration). Trigger keywords: EmailServicesFunction, EmailServicesAddress, runAsUser, localPart, EmailDomainName, attachmentOption, overLimitAction, errorRoutingAddress, routing address, inbound email limit."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,12 +14,23 @@ triggers:
   - "email service binary attachment max size limit"
   - "email service running user authorized senders"
   - "email-to-case vs custom email service decision"
+  - "configure an email service to create records from inbound email"
+  - "inbound email handler not firing after deploy"
+  - "find the salesforce email service routing address for an org"
+  - "deploy EmailServicesFunction metadata to production"
+  - "sender gets a bounce reply from my apex email handler"
+  - "email service address stopped working after sandbox refresh"
+  - "attachments missing from inbound email in apex"
+  - "email services daily limit exceeded messages bounced"
 tags:
   - email-service
   - inboundemailhandler
   - emailservicesaddress
   - inbound-email
   - email-to-case
+  - emailservicesfunction
+  - routing-address
+  - inbound-email-limits
 inputs:
   - "What the inbound email needs to produce: Case, custom record, file upload, audit log, downstream API call"
   - "Sender population: known users, anonymous public, mixed"
@@ -31,10 +42,12 @@ outputs:
   - "Apex class implementing Messaging.InboundEmailHandler"
   - "Routing-address policy (accept-from, max retention, error response)"
   - "Decision: custom email service vs Email-to-Case"
+  - "Deployable EmailServicesFunction XML with nested address records"
+  - "package.xml entries and the post-deploy SOQL that reveals the routing address"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-09-05
 ---
 
 # Inbound Email Service
@@ -55,7 +68,7 @@ service is the right answer for everything else (file uploads,
 custom-object creation, audit logging, complex routing).
 
 What this skill is NOT. Outbound email — `admin/email-templates-and-alerts`.
-Email-to-Case-specific configuration — `service/email-to-case`.
+Email-to-Case-specific configuration — `admin/email-to-case-configuration`.
 This skill is the custom-handler path.
 
 ---
@@ -65,14 +78,37 @@ This skill is the custom-handler path.
 - **Decide custom service vs Email-to-Case.** Case creation? E2C
   is built; don't reinvent. Anything else? Custom service.
 - **Plan the running user.** The handler runs as the user
-  configured on the Email Service. Their permissions determine
+  configured on each Email Services Address (`runAsUser`). Their permissions determine
   what the handler can do. Use a dedicated integration user.
 - **Plan the accept-from policy.** Anonymous public addresses
   receive spam; consider authorized-senders allow-listing or
   rate limiting.
-- **Plan attachment handling.** Salesforce has limits (max email
+- **Plan attachment handling.** Salesforce has limits (~25 MB combined email
   size, max attachment size, total org file storage). Decide
   store vs discard before traffic ramps.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each answer sets a specific, Required element on the
+`EmailServicesFunction` record. Skipping one does not leave a blank — it
+leaves a default whose failure mode nobody chose.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "If we are switched off during a cutover, or the org hits its daily inbound limit — hold the mail, bounce it, or drop it?" | `functionInactiveAction` and `overLimitAction` are Required; `Discard` loses messages with no notice to anyone | Two explicit enum values instead of `UseSystemDefault`, and a documented data-loss position |
+| "Who gets paged when a message fails to process — the sender, or us?" | Without `isErrorRoutingEnabled` + `errorRoutingAddress`, notifications go to the sender and intake breaks silently | A monitored internal address, and a rule that failure text sent outward stays generic |
+| "Which username does each address run as, and what can that user see?" | `runAsUser` is Required *per address*, so two addresses on one service can run the same Apex with different visibility | One named integration user per address plus its permission set |
+| "Which senders are legitimate, and must we verify the sending server?" | `authorizedSenders` filters before Apex; `isAuthenticationRequired` turns on SPF / SenderId / DomainKeys checks | An allow-list, and a decision on `authenticationFailureAction` for unverified mail |
+| "What do we need from attachments — nothing, filenames only, text, binary, or everything?" | `attachmentOption` filters at the platform layer before the bytes reach the heap | The right enum, plus size / count / MIME caps for whatever survives it |
+| "How many inbound messages a day, across every email service and On-Demand Email-to-Case?" | The daily limit is org-wide (user licences x 1,000, max 1,000,000), not per service | A capacity number checked against licence count before the service exists |
+| "Who owns re-pointing the forwarding rule after each sandbox refresh?" | The routing domain is generated per address per org and cannot be promoted from sandbox | A named owner and the address stored in Custom Metadata, not in Apex |
+
+What a proper configuration adds over just writing the handler: the mail
+that arrives while you are deploying, over quota, or failing is held rather
+than lost, the people who need to know are told, and the address survives a
+sandbox refresh as a data edit rather than a re-deployment.
 
 ---
 
@@ -92,11 +128,32 @@ The handler doesn't see which Address received the email
 *directly* — it sees the recipient in `email.toAddresses`. Branch
 on the recipient if you need per-address logic.
 
+`EmailServicesAddress` is not a separate deployable type: addresses are
+nested inside the `EmailServicesFunction` file as repeated
+`<emailServicesAddresses>` elements. The fields that decide behaviour:
+
+| Element | Level | Required | What it decides |
+|---|---|---|---|
+| `apexClass` | service | yes | The handler. Must exist in the target org, or ship in the same payload |
+| `attachmentOption` | service | yes | `None` / `NoContent` / `TextOnly` / `BinaryOnly` / `All` — platform-level attachment filter |
+| `isTextAttachmentsAsBinary` | service | no | `true` delivers text attachments as `BinaryAttachment` (Blob), not `TextAttachment` (String) |
+| `authorizedSenders` | service **and** address | no | Sender allow-list. Blank accepts anyone |
+| `authorizationFailureAction` | service | yes | What an unlisted sender gets — even when the allow-list was set on the address |
+| `isAuthenticationRequired` / `authenticationFailureAction` | service | no / yes | SPF, SenderId and DomainKeys verification of the sending server |
+| `isErrorRoutingEnabled` / `errorRoutingAddress` | service | no | Send failure notifications to an internal address instead of the sender |
+| `functionInactiveAction` | service | yes | Mail arriving while the service is off: `UseSystemDefault` / `Bounce` / `Discard` / `Requeue` |
+| `overLimitAction` | service | yes | Mail arriving after the org's daily limit: same four values |
+| `runAsUser` | address | yes | Username whose permissions the handler assumes for mail to *that* address |
+| `localPart` | address | yes | The string before the `@`. The domain is system-generated and read-only |
+
+Deployable XML, the handler, the test class and the post-deploy
+verification SOQL: `references/metadata-examples.md`.
+
 ### `Messaging.InboundEmailHandler` interface
 
 ```apex
-global class IncomingQuoteHandler implements Messaging.InboundEmailHandler {
-    global Messaging.InboundEmailResult handleInboundEmail(
+public with sharing class IncomingQuoteHandler implements Messaging.InboundEmailHandler {
+    public Messaging.InboundEmailResult handleInboundEmail(
         Messaging.InboundEmail email,
         Messaging.InboundEnvelope envelope
     ) {
@@ -105,9 +162,11 @@ global class IncomingQuoteHandler implements Messaging.InboundEmailHandler {
             processQuote(email);
             result.success = true;
         } catch (Exception ex) {
-            result.success = false;
-            result.message = 'Could not process: ' + ex.getMessage();
             ApplicationLogger.error('Quote email failed', ex);
+            result.success = false;
+            // Mailed to the sender: no exception text, no record Ids.
+            result.message = 'We could not process this request. '
+                + 'Please contact support@acme.example.';
         }
         return result;
     }
@@ -116,30 +175,45 @@ global class IncomingQuoteHandler implements Messaging.InboundEmailHandler {
 
 Three things to know:
 
-1. **`global` is required.** Same as `SandboxPostCopy`.
-2. **`InboundEmail` payload** — `subject`, `fromAddress`,
-   `fromName`, `toAddresses`, `ccAddresses`, `plainTextBody`,
-   `htmlBody`, `headers` (a list, not a map — the `references` /
-   `inReplyTo` headers are critical for threading), `binaryAttachments`,
-   `textAttachments`.
+1. **`global` is not required.** The Apex Developer Guide's own samples
+   (`CreateTaskEmailExample`, `unsubscribe`) are `public with sharing`.
+   Use `global` only when the class must be visible outside its namespace
+   — a managed package. (`references/gotchas.md` § 1.)
+2. **`InboundEmail` payload** — `subject`, `fromAddress`, `fromName`,
+   `toAddresses`, `ccAddresses`, `replyTo`, `plainTextBody`, `htmlBody`,
+   the matching `plainTextBodyIsTruncated` / `htmlBodyIsTruncated` flags,
+   `messageId`, `inReplyTo`, `references`, `authenticationResults`,
+   `binaryAttachments`, `textAttachments`, and `headers`
+   (`InboundEmail.Header[]`, exposing only `name` and `value`).
+   `InboundEnvelope` carries just `fromAddress` and `toAddress`.
 3. **Return value.** `success = true` → delivery confirmed.
-   `success = false` + `message` → bounce-back response. The
-   `message` is what the sender sees.
+   `success = false` → Salesforce rejects the email and replies to the
+   sender with `message`. `message` is sent irrespective of `success`, so
+   a successful acknowledgement reply is also possible.
 
 ### Email threading via `In-Reply-To` and `References` headers
 
 Email clients thread replies by `Message-Id` and `In-Reply-To`
-headers. Salesforce's email service parses them in `email.headers`:
+headers. Salesforce has already parsed all three onto the object — do not
+iterate `headers` for them:
 
 ```apex
-String inReplyTo = null;
-for (Messaging.InboundEmail.Header h : email.headers) {
-    if (h.name.toLowerCase() == 'in-reply-to') {
-        inReplyTo = h.value;
-        break;
-    }
+Set<String> parents = new Set<String>();
+if (String.isNotBlank(email.inReplyTo)) {
+    parents.add(email.inReplyTo);          // String
 }
+if (email.references != null) {
+    parents.addAll(email.references);      // String[]
+}
+String mine = email.messageId;             // this message's own Message-ID
 ```
+
+`references` is documented as containing the parent emails' References and
+message IDs "and possibly the In-Reply-To fields", so it often survives a
+client that dropped `inReplyTo`. Check both, then fall back to a subject
+token. Store your own outbound `Message-Id` on the record (or use
+`EmailMessage.MessageIdentifier`, which is `idLookup`-enabled) so the
+lookup has something to match.
 
 For threading inbound emails to existing Salesforce records:
 
@@ -166,13 +240,26 @@ for (Messaging.InboundEmail.BinaryAttachment att : email.binaryAttachments) {
 }
 ```
 
+The attachment lists are `null`, not empty, when nothing was sent, and
+`attachmentOption` = `NoContent` delivers metadata with `att.body` set to
+`null` — guard both before touching `body`. Collect the records and issue
+one DML statement after the loop.
+
 Limits:
 
-- **Max email size**: ~25 MB total (configured per Email Service;
-  email-with-attachments above this are bounced).
-- **Max single attachment**: limited by the email-size cap.
-- **Org-wide file storage**: every saved attachment counts against
-  the org's File Storage allocation. Plan retention.
+- **Max email size**: email services reject a message whose combined body
+  text, body HTML and attachments exceeds approximately 25 MB, varying with
+  language and character set. This is a platform ceiling, **not** a
+  per-service setting — there is no `maxEmailSize` element.
+  (`references/gotchas.md` § 4.)
+- **Heap**: email services get **50 MB**, not the 6 MB synchronous budget.
+  Do the Blob work inside the handler; hand off a `ContentVersion` Id, not
+  a `Blob`. (`references/gotchas.md` § 11.)
+- **Daily messages**: org-wide across all email services *and* On-Demand
+  Email-to-Case — number of user licences multiplied by 1,000, maximum
+  1,000,000. Overflow is handled by `overLimitAction`.
+- **Org-wide file storage**: every saved attachment counts against the
+  org's File Storage allocation. Plan retention.
 
 ### Email-to-Case vs custom service decision
 
@@ -197,8 +284,8 @@ Limits:
 to a known address; need to create a Lead from each.
 
 ```apex
-global class LeadFromEmail implements Messaging.InboundEmailHandler {
-    global Messaging.InboundEmailResult handleInboundEmail(
+public with sharing class LeadFromEmail implements Messaging.InboundEmailHandler {
+    public Messaging.InboundEmailResult handleInboundEmail(
         Messaging.InboundEmail email, Messaging.InboundEnvelope envelope
     ) {
         Messaging.InboundEmailResult res = new Messaging.InboundEmailResult();
@@ -237,7 +324,7 @@ private static final Set<String> ALLOWED_DOMAINS = new Set<String>{
     'acme.com', 'partner.example.com'
 };
 
-global Messaging.InboundEmailResult handleInboundEmail(
+public Messaging.InboundEmailResult handleInboundEmail(
     Messaging.InboundEmail email, Messaging.InboundEnvelope envelope
 ) {
     String fromDomain = email.fromAddress.substringAfter('@').toLowerCase();
@@ -252,7 +339,12 @@ global Messaging.InboundEmailResult handleInboundEmail(
 ```
 
 For more nuanced allow-listing, store the list in Custom Metadata
-or Custom Setting so admins can manage without redeploying Apex.
+or Custom Setting so admins can manage without redeploying Apex. Note the
+platform already does the coarse version for free: `authorizedSenders` on
+the service or the address rejects unlisted senders before Apex runs, and
+`authorizationFailureAction` (service level) decides whether they are
+bounced or discarded. Reach for Apex allow-listing when the rule is
+per-sender-plus-content, not per-domain.
 
 ---
 
@@ -264,52 +356,95 @@ or Custom Setting so admins can manage without redeploying Apex.
 | Create any other record from email | **Custom Email Service + InboundEmailHandler** | E2C only creates Cases |
 | Public address receives spam | **Custom service with allow-list** | E2C also has spam handling but per-Case |
 | Need to upload files | **Custom service** | E2C Email Message attachments tied to Case |
-| Threading replies to existing record | **Subject token** (`[ref:...]`) or `In-Reply-To` header parsing | Email clients mangle these; tokens are more robust |
-| Inbound volume > 1K / day per address | **Plan governor budget** + dedicated running user | High volume can hit Apex governor in a single batch |
-| Multi-language / RTL / encoded subject | **Custom handler with explicit charset handling** | E2C parses for the common cases; edge cases break it |
+| Threading replies to existing record | **`inReplyTo` + `references` first, subject token as fallback** | The identifiers come from the sender's client and are not always present; the token is in the visible subject |
+| Inbound volume approaching (user licences x 1,000) | **Model the org-wide daily budget before adding the service** | The limit is shared across all email services and On-Demand Email-to-Case; overflow is handled by `overLimitAction` |
+| Multi-language / RTL / encoded text attachment | **Custom handler reading `TextAttachment.charset`** | The body is re-encoded as UTF-8 for Apex; the original character set survives only on that property |
 | Inbound email triggers a callout | **Custom service** + Platform Event for async work | Don't do the callout in the handler synchronously |
-| Anonymous public access undesirable | **Email Service `Authorize Email Addresses`** | Per-Service allow-list at the platform level |
+| Anonymous public access undesirable | **`authorizedSenders` + `authorizationFailureAction`** | Platform-level allow-list; rejects before Apex runs. Add `isAuthenticationRequired` to verify the sending server via SPF / SenderId / DomainKeys |
 
 ---
 
 ## Recommended Workflow
 
-1. **Decide custom service vs Email-to-Case.** Case creation → E2C; everything else → custom.
-2. **Provision a dedicated running user** for the Email Service. Document its required permissions.
-3. **Implement the handler.**
-   - Write `Messaging.InboundEmailHandler` with the right business logic.
-   - Plan threading if applicable (subject token, `In-Reply-To` parse).
-4. **Configure the Email Service and its addresses.**
-   - Setup → Email → Email Services. Set running user, max email size, accept attachments, error-response template.
-   - Create one or more Email Services Addresses. Each gets a Salesforce-supplied subdomain.
-5. **Test and monitor.**
-   - Send real emails to the address. Verify success / failure paths.
-   - Monitor inbound email volume, handler exceptions, attachment storage growth.
+1. **Route the requirement.** Case creation goes to
+   `admin/email-to-case-configuration` — stop here. Anything else
+   continues. Run the `## Questions to Ask Before Configuring` table and
+   record the answers in `templates/email-service-inbound-template.md`;
+   each row names the element it sets.
+2. **Provision the running user(s).** One integration user per address,
+   with a named permission set. `runAsUser` is a username, per address,
+   and Required — an address without one fails the deploy.
+3. **Write the handler** against the shape in
+   `references/metadata-examples.md` § The handler class:
+   `public with sharing`, thread on `inReplyTo` / `references` with a
+   subject-token fallback, null-guard both attachment lists, collect then
+   insert once, and keep exception detail out of
+   `InboundEmailResult.message`.
+4. **Write the test class** from `references/metadata-examples.md` § The
+   test class — `new Messaging.InboundEmail()` and
+   `new Messaging.InboundEnvelope()` build the payload directly. Cover
+   first email, threaded reply, `binaryAttachments = null`, and an
+   attachment refused by policy.
+5. **Author the `EmailServicesFunction` XML.** Copy the service block from
+   `references/metadata-examples.md`, then set the six Required elements
+   deliberately — `apexClass`, `attachmentOption`,
+   `authenticationFailureAction`, `authorizationFailureAction`,
+   `functionInactiveAction`, `overLimitAction` — plus one nested
+   `<emailServicesAddresses>` per intake population.
+6. **Check before deploying.**
+   ```bash
+   python3 skills/admin/email-service-inbound/scripts/check_email_service_inbound.py \
+       --manifest-dir force-app/main/default
+   ```
+   It flags an unresolvable `apexClass`, an inactive service, an address
+   missing `runAsUser`, `isErrorRoutingEnabled` with no
+   `errorRoutingAddress`, an invented `maxEmailSize`, DML inside an
+   attachment loop, a stack-trace leak and a synchronous callout. Then
+   `sf project deploy start --dry-run` with the handler test.
+7. **Read the routing address back and smoke-test.** The domain part is
+   generated per org, so query
+   `SELECT LocalPart, EmailDomainName, IsActive FROM EmailServicesAddress
+   WHERE Function.FunctionName = '<name>'`, send a real message to
+   `LocalPart@EmailDomainName`, and verify the success path, the
+   failure reply, and that `errorRoutingAddress` received the failure
+   notification. Store the address in Custom Metadata — it changes on
+   every sandbox refresh.
 
 ---
 
 ## Review Checklist
 
-- [ ] Class implements `Messaging.InboundEmailHandler` with `global` access.
-- [ ] Handler returns `InboundEmailResult` with explicit `success` value (never silently throws).
-- [ ] Running user is dedicated to the Email Service, with documented permissions.
-- [ ] Allow-list / spam handling for public-facing addresses.
-- [ ] Attachment retention policy explicit.
-- [ ] Threading via subject token or `In-Reply-To` if applicable.
-- [ ] Test class covers success path, malformed input, attachment-too-large, allow-list-rejection.
-- [ ] Email Service `Max Email Size` and `Accept Attachments` configured deliberately.
+- [ ] Handler is `public with sharing` unless it ships in a managed package.
+- [ ] Handler returns `InboundEmailResult` with an explicit `success` value (never silently throws); `message` carries no exception detail.
+- [ ] Both attachment lists null-guarded; `att.body` null-guarded; one DML statement after the loop, not inside it.
+- [ ] `runAsUser` set on every address, each a documented integration user with a named permission set.
+- [ ] `attachmentOption` chosen deliberately; size / count / MIME caps in Apex on whatever it lets through.
+- [ ] `authorizedSenders` + `authorizationFailureAction` set for public-facing addresses.
+- [ ] `isErrorRoutingEnabled` true with a monitored `errorRoutingAddress`.
+- [ ] `functionInactiveAction` and `overLimitAction` are not `UseSystemDefault`.
+- [ ] Threading reads `inReplyTo` **and** `references`, with a subject-token fallback.
+- [ ] Truncation flags (`plainTextBodyIsTruncated`, `htmlBodyIsTruncated`) read before parsing.
+- [ ] Test class covers first email, threaded reply, null attachment list, and a policy-refused attachment.
+- [ ] Routing address read from `EmailServicesAddress.EmailDomainName`, stored in Custom Metadata, never hardcoded.
+- [ ] `scripts/check_email_service_inbound.py --manifest-dir …` is clean.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **`Messaging.InboundEmailHandler` requires `global` access.** Same as `SandboxPostCopy`. (See `references/gotchas.md` § 1.)
-2. **`email.headers` is a `List<Header>`, not a `Map`.** Iterate to find the header you want. (See `references/gotchas.md` § 2.)
-3. **Returning `success = false`** triggers a bounce-back to the sender. The `message` is what the sender sees — don't expose stack traces. (See `references/gotchas.md` § 3.)
-4. **Max email size has a hard ceiling**; emails above are bounced before the handler sees them. (See `references/gotchas.md` § 4.)
-5. **Email Services Address subdomain is Salesforce-supplied**, not customer-domain-mappable. For customer domains, use email forwarding from the customer side. (See `references/gotchas.md` § 5.)
-6. **The handler runs in the configured running user's context**, not the sender's. FLS / sharing applies to that user. (See `references/gotchas.md` § 6.)
-7. **In-Reply-To / Message-Id headers are unreliable** across email clients; subject-token threading is more robust. (See `references/gotchas.md` § 7.)
+1. **`global` is a packaging decision, not an interface requirement.** The guide's own samples are `public with sharing`. (§ 1.)
+2. **`email.headers` is `InboundEmail.Header[]`, not a `Map`** — and the three headers you want are already parsed onto the object. (§ 2.)
+3. **`success = false` mails your `message` to the sender.** Never a stack trace. `message` is also sent when `success` is true. (§ 3.)
+4. **The ~25 MB ceiling is a platform limit, not a service setting.** There is no `maxEmailSize` element to raise. (§ 4.)
+5. **The address domain is generated per address per org** and is read-only. Query `EmailDomainName`; never hardcode. (§ 5.)
+6. **`runAsUser` is Required per address, not per service** — two addresses on one service can run the same Apex as different users. (§ 6.)
+7. **`inReplyTo` comes from the sender's client**; check `references` too and keep a subject-token fallback. (§ 7.)
+8. **The daily message limit is org-wide** and shared with On-Demand Email-to-Case: licences x 1,000, max 1,000,000. (§ 10.)
+9. **Email-service Apex gets a 50 MB heap, not 6 MB** — keep the Blob work in the handler. (§ 11.)
+10. **Sandbox routing addresses cannot be copied to production**, and refreshes regenerate them. (§ 12.)
+11. **`authorizationFailureAction` is service-level** even when `authorizedSenders` was set on the address. (§ 13.)
+12. **Bodies and text attachments arrive truncated with a flag** you must read before parsing. (§ 14.)
+13. **`EmailServicesFunction` accepts no `*` wildcard in package.xml.** Name every service. (§ 16.)
 
 ---
 
@@ -317,17 +452,39 @@ or Custom Setting so admins can manage without redeploying Apex.
 
 | Artifact | Description |
 |---|---|
-| `Messaging.InboundEmailHandler` class | The handler implementation |
-| Test class | Covers handler with synthetic `InboundEmail` payloads |
-| Email Service configuration | Documented setup steps in Setup → Email → Email Services |
+| `Messaging.InboundEmailHandler` class | The handler implementation (`references/metadata-examples.md`) |
+| Test class | Synthetic `InboundEmail` / `InboundEnvelope` payloads; four named cases |
+| `emailservices/<Name>.emailservices-meta.xml` | The service plus its nested address records |
+| `package.xml` entries | `ApexClass` + `EmailServicesFunction` (no wildcard) |
+| Running-user permission set | One per address, named in the config workbook |
 | Allow-list source | Custom Metadata / Custom Setting for admin-managed sender list |
-| Threading strategy | Subject token format or `In-Reply-To` parsing logic |
+| Threading strategy | `inReplyTo` / `references` lookup plus the subject-token format |
+| Routing-address record | `LocalPart` + `EmailDomainName` per org, stored in Custom Metadata |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing the `EmailServicesFunction` XML, the handler, the test class or the package.xml, or you need the post-deploy SOQL that reveals the routing address |
+| `references/gotchas.md` | A configured service behaves unexpectedly — mail bounced or vanished, attachments missing or the wrong Apex type, an address that worked in sandbox and not in production, a `global`/`public` compile argument |
+| `references/examples.md` | You want worked before/after code: safe failure messages, threaded case lookup, Custom-Metadata allow-listing, and the two-layer attachment policy |
+| `references/llm-anti-patterns.md` | You are reviewing AI-generated inbound-email code or advice, or want the detection hints for each recurring mistake |
+| `references/well-architected.md` | You are justifying the design — pillar mapping, the tradeoffs behind one-service-many-addresses, and the official sources behind every claim here |
+
+Supporting files: `templates/email-service-inbound-template.md` (work
+template mapping each decision to its metadata element) and
+`scripts/check_email_service_inbound.py --manifest-dir <dir>` (metadata +
+handler checks).
 
 ---
 
 ## Related Skills
 
-- `service/email-to-case` — when the requirement is case creation; this skill is the custom-service alternative.
-- `admin/email-templates-and-alerts` — outbound email infrastructure.
+- `admin/email-to-case-configuration` — when the requirement is case creation; this skill is the custom-service alternative.
+- `admin/email-templates-and-alerts` — outbound email infrastructure, including the reply your handler acknowledges with.
+- `apex/apex-email-services` — the Apex-side treatment of the same handler; this skill owns the service configuration.
 - `apex/apex-event-bus-subscriber` — when the handler publishes a Platform Event for async downstream work.
 - `apex/dynamic-apex` — when the handler needs Schema describe to create records of varying types.
+- `admin/custom-metadata-types` — where the sender allow-list and the per-org routing address belong.
