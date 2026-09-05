@@ -1,8 +1,10 @@
 # LLM Anti-Patterns — LWC Error Boundaries
 
 Scope: `errorCallback(error, stack)` and the wrapper-component pattern built on it. What to
-do with an error once caught — user messaging, toast copy, retry UX — belongs to
-`lwc/lwc-error-handling-patterns`; Apex-side exception design belongs to the apex domain.
+do with an error once caught — toast copy, variants, notification containers — belongs to
+`lwc/lwc-toast-and-notifications`; the runtime error messages themselves are catalogued in
+`lwc/common-lwc-runtime-errors`; Apex-side exception design belongs to
+`apex/exception-handling`.
 This file is about what `errorCallback` actually catches, which is narrower than almost
 every generated example assumes.
 
@@ -124,15 +126,19 @@ learned React's boundary model miss this entirely, so a 404 or a `NoAccessExcept
 wire shows as a permanently empty component with a clean console.
 
 ❌ Rely on the boundary to surface a wire failure.
-✅ Read the provisioned error and branch on it:
+✅ Read the provisioned error and branch on it — and branch on the *body shape* too,
+because `getRecord` is a UI API read and its `error.body` is an array
+(`lwc_guide data-error L6568`):
 
 ```javascript
 @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
 wiredRecord({ data, error }) {
     if (error) {
         // FetchResponse: error.status (e.g. 404), error.statusText (e.g. NOT_FOUND),
-        // error.body defined by the underlying API
-        this.message = error.body?.message ?? error.statusText;
+        // error.body defined by the underlying API (lwc_guide data-error L6548-L6551)
+        this.messages = Array.isArray(error.body)
+            ? error.body.map((e) => e.message)
+            : [error.body?.message ?? error.statusText];
     } else if (data) {
         this.record = data;
     }
@@ -141,15 +147,22 @@ wiredRecord({ data, error }) {
 
 Source: Handle Errors (wire `error` property, `FetchResponse` shape) — https://developer.salesforce.com/docs/platform/lwc/guide/data-error.html
 
-## Anti-Pattern 5: One boundary around the whole application
+## Anti-Pattern 5: Choosing the boundary's height by tidiness rather than by blast radius
 
-The pattern looks tidier with a single wrapper at the root, and it converts every localised
-failure into a blank page — the exact outcome boundaries exist to prevent. Because the
-framework unmounts the erroring subtree, a root-level boundary unmounts the application.
+Generated code reaches for a single wrapper at the root because it reads cleanly. The guide
+does not forbid that — "You can wrap the entire app, or every individual component. Most
+likely, your architecture falls somewhere in between" (`lwc_guide
+create-lifecycle-hooks-error L4160`). What the guide *does* fix is the cost: when an error
+is thrown the subtree below the boundary "is unmounted and removed from the DOM" (`L4162`),
+and the framework "unmounts the component during rerender" (`L4165`). So a root-level
+boundary is a decision to lose the whole page on any single failure, and an assistant that
+picks it for symmetry has made that decision without noticing.
 
-❌ `<c-error-boundary>` wrapping the entire dashboard.
-✅ One boundary per independently-failing unit. The test is: if this subtree disappears,
-can the user still do something useful on this page? If not, the boundary is too high.
+❌ `<c-error-boundary>` wrapping the entire dashboard because it is one tag instead of six.
+✅ Size the boundary to what you are willing to lose in one go. The test is: if this subtree
+disappears, can the user still do something useful on this page? If not, the boundary is
+too high — not because the guide forbids it, but because the unmount takes everything with
+it.
 
 ## Anti-Pattern 6: A fallback that can fail as hard as the thing it replaces
 
@@ -168,9 +181,67 @@ grey box; nobody is told. This is strictly worse than the blank page it replaced
 the blank page at least got reported.
 
 ❌ `errorCallback(error) { this.hasError = true; }`
-✅ Record it. Send the component name, the reduced message and the `stack` string — `error`
-is a native JavaScript error object and `stack` is a string, so both serialise — to whatever
-the org already uses for logging. Send from the boundary, not from each widget, so
+✅ Record it. Send the component name, the reduced message and the `stack` string to
+whatever the org already uses for logging. `error` is a native JavaScript error object and
+`stack` is a string (`lwc_guide create-lifecycle-hooks-error L4164`) — pull the fields out
+by name rather than handing the whole object to a serialiser, because a native `Error`'s own
+properties are non-enumerable and `JSON.stringify(error)` produces `{}`. Send from the boundary, not from each widget, so
 instrumentation arrives with the wrapper rather than being remembered per component. Guard
 the reporting call itself with `try/catch`: a logger that throws inside `errorCallback` is
 a failure inside the failure handler.
+
+## Anti-Pattern 8: Reading `error.body.message` without checking whether `body` is an array
+
+The single most common way a boundary reports nothing useful. `error.body` is an **array of
+objects** for a UI API read such as `getRecord`, and an **object** for a UI API write, for
+Apex, and for a network failure (`lwc_guide data-error L6568–L6571`). Assistants write one
+accessor for all four, and the `getRecord` case silently yields `undefined`.
+
+❌ `this.message = error.body.message;`
+✅ Branch on the shape, the way the guide's own snippet does (`lwc_guide data-error
+L6555–L6557`):
+
+```javascript
+if (Array.isArray(error.body)) {
+    this.messages = error.body.map((e) => e.message);
+} else if (typeof error.body?.message === 'string') {
+    this.messages = [error.body.message];
+} else {
+    this.messages = [error.statusText];   // FetchResponse fallback (L6551)
+}
+```
+
+Better still, normalise once in a shared module and import it from the boundary and from
+every child — see `references/code-examples.md`, Bundle 1.
+
+## Anti-Pattern 9: Rethrowing from `errorCallback` to "let something upstream handle it"
+
+There is nothing upstream that improves the outcome. An unhandled error propagates to the
+parent component and then to the enclosing app, which shows the "A Component Error has
+occurred!" or "Something went wrong" popup with the message and stack trace (`lwc_guide
+data-error-types L7732`) — the blank-page failure the boundary was added to prevent. The
+framework has already unmounted the throwing subtree by this point (`lwc_guide
+create-lifecycle-hooks-error L4165`), so the rethrow buys no cleanup either.
+
+❌ `errorCallback(error) { this.log(error); throw error; }`
+✅ Set state, report, and stop. If a *higher* boundary genuinely needs to know, dispatch a
+custom event — the guide's own recommendation is to "propagate errors from child components
+and then handle errors in parent components" via `throw` **or** a custom event (`lwc_guide
+data-error-types L7743–L7744`), and the event version does not unmount anything.
+
+UNVERIFIED (2026-09-05): the guide never states whether rethrowing from `errorCallback`
+specifically is permitted. The position above is derived from what an unhandled error does
+(L7732) and from the unmount already having happened (L4165), not from a direct statement
+about rethrow.
+
+## Anti-Pattern 10: A fallback that shows the raw error object
+
+`error.body.stackTrace` names the Apex class and line that threw when the Apex method did
+not catch (`lwc_guide apex-error-handling L7518`). A fallback that renders
+`{JSON.stringify(error)}` for "debuggability" puts internal class names in front of whoever
+loads the page, including on an Experience Cloud site.
+
+❌ `<pre>{errorJson}</pre>` in the fallback template.
+✅ Render the normalised messages; send `body.stackTrace` and the `stack` string to
+telemetry. Have Apex throw `AuraHandledException`, which omits `body.stackTrace` entirely
+(`lwc_guide apex-error-handling L7521`) — see `apex/exception-handling`.

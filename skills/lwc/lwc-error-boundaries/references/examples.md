@@ -26,6 +26,10 @@ export default class ErrorBoundary extends LightningElement {
     errorCallback(error, stack) {
         this.hasError = true;
         // error is a native Error object; stack is a string. Both serialise.
+        // `error` is a native Error and `stack` is a string (lwc_guide
+        // create-lifecycle-hooks-error L4164). Pull the fields out explicitly — a native
+        // Error's own properties are non-enumerable, so JSON.stringify(error) yields "{}"
+        // and a whole-object hand-off silently logs nothing.
         logClientError({
             componentName: this.boundaryName,
             message: error?.message ?? String(error),
@@ -117,8 +121,12 @@ export default class RevenueTile extends LightningElement {
     @wire(getRecord, { recordId: '$recordId', fields: [AMOUNT_FIELD] })
     wiredOpportunity({ data, error }) {
         if (error) {
-            // FetchResponse: status (404), statusText (NOT_FOUND), body from the API
-            this.recordError = error.body?.message ?? error.statusText;
+            // FetchResponse: status (404), statusText (NOT_FOUND) — lwc_guide data-error
+            // L6550-L6551. getRecord is a UI API READ, so error.body is an ARRAY of
+            // objects (L6568): reading .message straight off it yields undefined.
+            this.recordError = Array.isArray(error.body)
+                ? error.body.map((e) => e.message).join(', ')
+                : (error.body?.message ?? error.statusText);
         } else if (data) {
             this.recordError = undefined;
         }
@@ -129,6 +137,8 @@ export default class RevenueTile extends LightningElement {
         try {
             this.series = await getRevenueSeries({ recordId: this.recordId });
         } catch (error) {
+            // Apex read/write returns error.body as an OBJECT (lwc_guide data-error
+            // L6570), so .message is correct here — and wrong one method up.
             this.loadError = error.body?.message ?? error.message;
         }
     }
@@ -160,3 +170,72 @@ worth reading.
 | Throw in a programmatically attached handler | Nowhere — needs local `try/catch` |
 | Rejected promise from imperative Apex | Nowhere — needs `.catch` / `try/await` |
 | Wire adapter failure | The wired property's `error` member |
+
+---
+
+## Example 3: The four error payloads, as fixtures
+
+**Context:** Writing the Jest tests for the normaliser, and reviewing a colleague's boundary
+that "handles errors" but was only ever tested against an Apex failure.
+
+**Problem:** Every implementation reads whichever shape the author happened to hit in a
+sandbox. The guide states four distinct body shapes for the same `FetchResponse` wrapper
+(`lwc_guide data-error L6568–L6571`), and a boundary tested against one of them reports
+`undefined` for the other three.
+
+**Solution:** Keep the four payloads as fixtures and assert against all four. These are
+shaped from the guide's own descriptions of each API's body — not captured from a live org,
+so treat the individual `errorCode` and `message` strings as illustrative and the *shape* as
+the thing under test.
+
+```json
+{
+  "uiApiRead": {
+    "ok": false,
+    "status": 404,
+    "statusText": "NOT_FOUND",
+    "body": [
+      { "errorCode": "NOT_FOUND", "message": "The requested resource does not exist" }
+    ]
+  },
+  "uiApiWrite": {
+    "ok": false,
+    "status": 400,
+    "statusText": "BAD_REQUEST",
+    "body": {
+      "message": "An error occurred while trying to update the record.",
+      "output": {
+        "errors": [{ "message": "You cannot close an Opportunity without a Close Date." }],
+        "fieldErrors": { "Email": [{ "message": "Email: invalid email address" }] }
+      }
+    }
+  },
+  "apex": {
+    "ok": false,
+    "status": 400,
+    "statusText": "Bad Request",
+    "body": { "message": "Revenue series is unavailable for this account." }
+  },
+  "network": {
+    "ok": false,
+    "status": 0,
+    "statusText": "",
+    "body": { "message": "You are offline. Reconnect to load this data." }
+  }
+}
+```
+
+**Why it works:** the shape differences are the whole problem, so the fixture set encodes
+them once and every consumer — boundary, tile, normaliser test — asserts against the same
+four. The wrapper fields (`ok`, `status`, `statusText`) are documented at `lwc_guide
+data-error L6548–L6551`; `output.fieldErrors` is documented as "a list of fields and record
+exception errors" on the `lightning-record-edit-form` error event (`lwc_guide
+data-edit-record L5509–L5510`).
+
+UNVERIFIED (2026-09-05): the guide describes a UI API write body as an object "often with
+object-level and field-level errors" (L6569) but never spells `error.body.output.errors` or
+`error.body.output.fieldErrors` for the wire or imperative path — only
+`event.detail.output.fieldErrors` for the record-edit-form event. Read `output` defensively
+and always keep the top-level `body.message` as the fallback.
+
+**The full bundle, `errorUtils` module and Jest suite are in `references/code-examples.md`.**
