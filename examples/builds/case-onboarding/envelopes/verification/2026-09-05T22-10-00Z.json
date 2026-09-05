@@ -1,0 +1,1800 @@
+{
+  "agent": "plan-verifier",
+  "mode": "single",
+  "run_id": "2026-09-05T22-10-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-05T22-10-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-05T22-10-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": null,
+    "lens": null,
+    "plan_body_read": "inputs/plan/plan-body-v3.json",
+    "planner_envelope_read": "envelopes/plan/2026-09-05T21-05-00Z.md",
+    "prior_verifications_read": [
+      "inputs/verification/verification.json",
+      "inputs/verification/verification-v2.json"
+    ]
+  },
+  "outcome": "completed",
+  "summary": "Verified plan v3 of case-onboarding (design-only, 5 milestones, 22 steps, 2 blocked, 120 acceptance tests) on all three lenses and rejected it. Executability 21/22, grounding 22/22, testability 12/22. Thirteen blockers and twelve warnings. All 45 declared checker tests were run verbatim against fixtures built from the cited skills' metadata examples, at the scope each test declares: 39 exit 0 on correct artefacts, six cannot exit 0 on any artefact set this plan declares. The plan's mechanics are clean — validate exits 0 with the same six warnings before and after this run, no output collides, the dependency graph is acyclic, every requirement reaches a tested step, and every decision-tree branch quote matched its tree verbatim. What fails is the test surface and one output ownership: five of the six failing checkers are the same four failure modes the planner found and fixed elsewhere in v3 but did not sweep for, and M4-S05 declares a package.xml apex-builder does not produce. Two milestone gates (M2, M3) are additionally unreachable, because a manual test whose tick is deferred to M5 stops its step reaching 'documented'.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "All three lenses ran on all 22 steps and every verdict names a file read or a command run. MEDIUM rather than HIGH because the grounding lens's 'gotchas not contradicted' and 'questions answered' checks were made by targeted reading of the skills each defect touched plus the checkers that encode those gotchas, not by opening all 33 cited skills' gotchas files and Questions tables; and because the fixtures are this agent's reconstruction of correct artefacts, so a checker that passed could still fail on what the builder actually writes. Not LOW: build_plan.py and the schema were available, no refutation rests on a missing file, and every blocker rests on a reproduced command output rather than on absence.",
+  "findings": [
+    {
+      "id": "PV-B01",
+      "severity": "P0",
+      "title": "M2-S01 — acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned o",
+      "detail": "[testability lens] acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned only to the integration/automated-process identity and to no human user'. PermissionSetAssignment is record data, not metadata; nothing in outputs[] records an assignment, and confirming one requires an org. In a design-only build the test cannot be ticked at the M2 gate. FIX: Rewrite as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) and move the assignment instruction into the step's deploy-order note.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "plan.json steps[M2-S01].outputs[] = customPermissions/..., permissionsets/Case_Intake_Integration.permissionset-meta.xml, package.xml; plan.build_mode = design-only"
+      }
+    },
+    {
+      "id": "PV-B02",
+      "severity": "P0",
+      "title": "M2-S02 — acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition",
+      "detail": "[testability lens] acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition.py exits 1 on any WARN (its own module docstring: 'Exits 1 on any WARN finding, 0 if only GOOD findings') and PSG_NAME_RE = ^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$ rejects all three PSG names this step itself declares. FIX: Rename the three PSGs in outputs[] to the PSG_<persona>_<env> form, or drop this checker and carry the composition assertion in a manual test the way X01 and X03 did.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture at the step's declared paths -> exit 1, 'Summary: 1 good, 3 warn'; three WARNs, one per PSG: \"PSG name 'Support_Tier1' does not match convention PSG_<persona>_<env>\". The same three PSGs renamed PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod -> 'Summary: 1 good, 0 warn', exit 0."
+      }
+    },
+    {
+      "id": "PV-B03",
+      "severity": "P0",
+      "title": "M2-S03 — acceptance_tests[1] description claims \"Every profile's record-type and layout assignment ",
+      "detail": "[testability lens] acceptance_tests[1] description claims \"Every profile's record-type and layout assignment names a record type and layout that exist\". At step scope the checker sees no record types and no layouts (both are M1-S01's and M1-S02's artefacts), so the cross-reference is never made and the exit code carries nothing. FIX: Declare \"scope\": \"build\" with --manifest-dir artefacts, or reword to what step scope proves and move the cross-reference to an M2 milestone test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture -> exit 0, 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s); 0 finding(s)'. NEGATIVE fixture: 'Acme Support Tier 1.profile-meta.xml' rewritten to name Case.Nonexistent and Case-Ghost Layout -> still exit 0, still '0 record type(s), 0 layout(s); 0 finding(s)'."
+      }
+    },
+    {
+      "id": "PV-B04",
+      "severity": "P0",
+      "title": "M2-S05 — acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as",
+      "detail": "[testability lens] acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M2 gate'. A manual test that cannot be ticked at its own milestone stops the step reaching 'tested', because set-status <step> tested requires tests/M2-S05/results.json with \"passed\": true; the step therefore never reaches 'documented', and standards/build-orchestration.md section 3 refuses 'gate milestone:M2 approve' unless every step in M2 is documented or blocked with a recorded reason. M2-S05 is neither. Milestone M2 deadlocks. FIX: Move the sandbox-proof assertion to an M5 milestone acceptance test and leave M2-S05 with a manual test tickable from the artefacts at the M2 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "scripts/build_plan.py:954 — 'records passed=... — only a passing test run moves a step to tested'; STATUS graph at scripts/build_plan.py:134-135; contract section 3 milestone-gate rule"
+      }
+    },
+    {
+      "id": "PV-B05",
+      "severity": "P0",
+      "title": "M3-S02 — acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_t",
+      "detail": "[testability lens] acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py artefacts/M3-S02' cannot exit 0 on this step's own correct artefacts. TEXT_SUFFIXES = ('.html','.htm','.txt','.email','.md') and the checker rglobs the directory, so the declared output sender-identity-note.md is linted as an email template; emit_result() returns 1 on any finding, REVIEW included. FIX: Pass the two .email files as positional paths instead of the directory, or move sender-identity-note.md out of the scanned directory.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture -> exit 1, score 100, 3 REVIEW findings, all three on artefacts/M3-S02/sender-identity-note.md: 'hardcoded email address `support@acme.example` found in template content', 'no obvious merge fields found', 'subject line is not documented'. check_email_templates.py:13 and :45."
+      }
+    },
+    {
+      "id": "PV-B06",
+      "severity": "P0",
+      "title": "M3-S02 — acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as",
+      "detail": "[testability lens] acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M3 gate' — the same deadlock as M2-S05: the step cannot reach 'tested', so it cannot reach 'documented', so 'gate milestone:M3 approve' is refused. FIX: Move the sandbox loop-test assertion to an M5 milestone acceptance test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "scripts/build_plan.py:954; contract section 3 milestone-gate rule"
+      }
+    },
+    {
+      "id": "PV-B07",
+      "severity": "P0",
+      "title": "M3-S05 — acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares.",
+      "detail": "[testability lens] acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares. check_omni_channel_routing_setup.py raises ERROR E2 when a ServiceChannel is present and the manifest holds no ServicePresenceStatus, and no step in the plan declares a servicePresenceStatuses/ artefact. The planner's W05 disposition recorded that E2 is an ERROR but did not add the artefact. FIX: Add artefacts/M3-S05/servicePresenceStatuses/<name>.servicePresenceStatus-meta.xml to outputs[] — acceptance_tests[4] already asserts that Tier_1_Presence names a presence status — or drop the checker and carry the assertion manually.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture over the whole corrected tree -> exit 1: \"ERROR E2 [M3-S05/serviceChannels/Case_Channel.serviceChannel-meta.xml] ServiceChannel 'Case_Channel': this manifest contains no ServicePresenceStatus at all\". check_omni_channel_routing_setup.py:251-258. grep of plan.json outputs[] for 'servicePresenceStatus' -> no match."
+      }
+    },
+    {
+      "id": "PV-B08",
+      "severity": "P0",
+      "title": "M4-S02 — acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitleme",
+      "detail": "[testability lens] acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitlement process references are the ones M4-S01 produced', but settings/BusinessHours.settings-meta.xml is M4-S01's artefact, so at artefacts/M4-S02 the checker prints 'INFO: No BusinessHours settings file found' and exits 0 whatever the process says. This is the identical defect the planner found and fixed on M4-S03 (X05) and M4-S04 (W07) and left standing here. FIX: Drop the test (M4's milestone test already runs the same checker at --manifest-dir artefacts), or declare \"scope\": \"build\" with --manifest-dir artefacts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture -> exit 0, 'INFO: No BusinessHours settings file found under artefacts/M4-S02.' NEGATIVE fixture: First_Response_Premier rewritten to name 'Ghost Calendar' -> still exit 0, same INFO line."
+      }
+    },
+    {
+      "id": "PV-B09",
+      "severity": "P0",
+      "title": "M4-S05 — outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does",
+      "detail": "[executability lens] outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name. Its nine numbered outputs are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations — no manifest. standards/build-orchestration.md section 4 borrowed-agent condition 2: 'a path in outputs[] with no counterpart there is an artefact nobody writes, check-outputs never confirms it, and the step cannot reach built.' Section 5 nonetheless requires every metadata-type step to declare it, so the step is caught between the two rules. FIX: Re-own the manifest: fold M4-S05's Apex members into M5-S05's build-level package.xml (metadata-builder writes it) and drop the path from M4-S05's outputs[], or split the manifest onto a metadata-builder step that depends on M4-S05.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "agents/apex-builder/AGENT.md '## Output Contract' (items 1-9, no package.xml anywhere in the file); standards/build-orchestration.md section 4 condition 2 and section 5 'Every metadata step declares artefacts/<step-id>/package.xml in its outputs[]'"
+      }
+    },
+    {
+      "id": "PV-B10",
+      "severity": "P0",
+      "title": "M5-S03 — acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares",
+      "detail": "[testability lens] acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares. check_invest.py split_stories() treats every '#' or '##' heading as a story, and main() returns 1 if any story fails. story-drafter emits ONE markdown document with seven top-level sections (Summary, Persona anchors, Story backlog, Requirements Traceability Matrix, MoSCoW capacity check, Process Observations, Citations); the six that are not stories each fail the As-a / I-want / So-that / Given-When-Then / Complexity lint. FIX: Declare a stories-only artefact for the checker to lint (e.g. artefacts/M5-S03/stories.md alongside story-backlog.md), or drop the checker and carry the INVEST assertion in the step's manual test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture in exactly story-drafter's seven-section shape with one fully compliant story -> exit 1, 'Summary: 1/9 stories passed (8 failed)'. The skill's own references/examples.md also exits 1 ('0/8 stories passed'). check_invest.py:117-145 and :331-375; agents/story-drafter/AGENT.md '## Output Contract'."
+      }
+    },
+    {
+      "id": "PV-B11",
+      "severity": "P0",
+      "title": "M5-S04 — acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose accepta",
+      "detail": "[testability lens] acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose acceptanceTest.scope description reads \"'step' runs the checker over the one step's artefacts (artefacts/<step-id>/)\" — while the command literally passes --manifest-dir artefacts, the build scope. The declared scope and the declared path disagree, so what the tester runs is undefined: section 5 also says the tester runs the command verbatim and substitutes no path. FIX: Add \"scope\": \"build\" to the test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "plan.json steps[M5-S04].acceptance_tests[1] has no 'scope' key; command = 'python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts'; agents/_shared/schemas/build-plan.schema.json:400-403"
+      }
+    },
+    {
+      "id": "PV-B12",
+      "severity": "P0",
+      "title": "M5-S05 — acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_mani",
+      "detail": "[testability lens] acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_manifest.py has RISKY_TYPES = {'SharingRules','ConnectedApp','ExternalCredential','NamedCredential'} and raises a HIGH finding for each; emit_result() returns 1 on any finding, blocking or not. M2-S05 declares sharingRules/Case.sharingRules-meta.xml, so the build-level package.xml this step writes must name SharingRules. FIX: Change expected to name the HIGH SharingRules finding as the known state and assert on the score, or drop the checker and let the always-on manifest checks plus the step's manual test carry the assertion.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture -> exit 1, score 90, '1 finding(s) detected (0 blocking)', 'HIGH artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests'. check_deployment_manifest.py:28, :178, :110."
+      }
+    },
+    {
+      "id": "PV-B13",
+      "severity": "P0",
+      "title": "M5 (milestone) — milestone M5 acceptance_tests[2] runs 'python3 skills/admin/change-management-and-deployme",
+      "detail": "[testability lens] milestone M5 acceptance_tests[2] runs 'python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05' — the same command as M5-S05[0] — and cannot exit 0 for the same reason: SharingRules is in RISKY_TYPES and emit_result() returns 1 on any finding. FIX: Apply the same fix as M5-S05 acceptance_tests[0].",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "fixture -> exit 1, score 90, HIGH 'manifest includes SharingRules'"
+      }
+    },
+    {
+      "id": "PV-W01",
+      "severity": "P2",
+      "title": "M2-S01 — acceptance_tests[0] description claims 'The custom permission is granted by exactly one pe",
+      "detail": "[testability lens] acceptance_tests[0] description claims 'The custom permission is granted by exactly one permission set and every consumer reference resolves', but the exit code does not carry that. Removing the <customPermissions> grant entirely produced only 'INFO: ... granted by no permission set or profile in this tree' and exit 0. FIX: Reword the description to what the exit code proves, or run the checker with --strict.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W02",
+      "severity": "P2",
+      "title": "M2-S04 — acceptance_tests[3] bundles three separate assertions (per-queue email posture, group memb",
+      "detail": "[testability lens] acceptance_tests[3] bundles three separate assertions (per-queue email posture, group membership matching the roster, no named user hard-coded) into one tick, so a partial pass cannot be recorded. FIX: Split into one manual test per assertion.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W03",
+      "severity": "P2",
+      "title": "M3-S01 — inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in",
+      "detail": "[grounding lens] inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in the note prose only; inputs{} carries no structured 'assumptions' key, unlike the ten other steps that do. M5-S04's manual test [4] asserts all 25 deferrals appear as named rows, which is compiled from structure. FIX: Add \"assumptions\": [\"A11\",\"A12\",\"A13\"] to inputs{}.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W04",
+      "severity": "P2",
+      "title": "M3-S03 — inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{",
+      "detail": "[grounding lens] inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{} carries no structured 'assumptions' key. FIX: Add \"assumptions\": [\"A3\"] to inputs{}.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W05",
+      "severity": "P2",
+      "title": "M4-S05 — apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.",
+      "detail": "[grounding lens] apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.md and references/llm-anti-patterns.md carry fenced Apex). That is right for an Apex step, but outputs[] includes .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documents. FIX: Either cite a skill that documents the ApexClass/ApexTrigger meta shape, or record in the step note that the meta XML comes from the Metadata API guide directly.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W06",
+      "severity": "P2",
+      "title": "M5-S02 — acceptance_tests[0] description says the environment inventory table must carry a 'purpose",
+      "detail": "[testability lens] acceptance_tests[0] description says the environment inventory table must carry a 'purpose' column. check_sandbox_plan.py requires three: type, purpose AND owner (check_sandbox_plan.py:187). A fixture carrying all five sections with type and purpose but no owner scored 90 and exited 1 on 'environment inventory table has no `owner` column'. The planner's B10 disposition, which corrected the v2 evidence, is itself incomplete. FIX: Name all three required columns in the description.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W07",
+      "severity": "P2",
+      "title": "M5-S03 — inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in t",
+      "detail": "[testability lens] inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in the step says whether it resolves against the repo root or the build directory. The file exists only at the build root. FIX: Write it as the build-relative path the runner will pass.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W08",
+      "severity": "P2",
+      "title": "M5-S04 — acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keepe",
+      "detail": "[testability lens] acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keeper/AGENT.md Step 10 instructs the agent to lint the pack with --file <declared path>. The plan's form is the stronger one (it cross-checks ac_id), but the agent's own playbook and the plan now say different things. FIX: Update build-doc-keeper Step 10 to the --manifest-dir form so the agent and the plan agree.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W09",
+      "severity": "P2",
+      "title": "(plan) — 20 of the 45 declared checker tests exit 0 against an empty artefacts/<step-id>/. No step ",
+      "detail": "[testability lens] 20 of the 45 declared checker tests exit 0 against an empty artefacts/<step-id>/. No step is fully vacuous — the always-on manifest check fails on a metadata step with no package.xml, so the AGENT.md 'test can fail' rule is not tripped at step level — but a reader of PLAN.md cannot tell which checker exit codes carry an assertion and which are discovery no-ops. FIX: State in each such description what the checker prints when it finds nothing, the way M4-S03's and M4-S04's descriptions now do.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W10",
+      "severity": "P2",
+      "title": "(plan) — All 18 scope.fit_gap[] rows carry a tier from the five-tier enum, but none carries the eff",
+      "detail": "[grounding lens] All 18 scope.fit_gap[] rows carry a tier from the five-tier enum, but none carries the effort tier (S/M/L/XL) or the risk_tag that skills/admin/fit-gap-analysis-against-org requires of every row in its own verification checklist. build-plan.schema.json requires only requirement and verdict, so validate is silent. FIX: Add effort and risk_tag per row, or record in the plan why the build layer carries a reduced fit-gap row.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W11",
+      "severity": "P2",
+      "title": "(plan) — None of the 11 milestone checker tests declares a scope, and two of them address a single ",
+      "detail": "[testability lens] None of the 11 milestone checker tests declares a scope, and two of them address a single step's directory (milestone M5 acceptance_tests[0] and [2]). build-plan.schema.json defines scope on acceptanceTest without saying what it means at milestone level, so a reader cannot tell from plan.json which tree a milestone checker sees. FIX: Declare scope on milestone checker tests too, or record in the contract that milestone tests are build-scoped by definition.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    },
+    {
+      "id": "PV-W12",
+      "severity": "P2",
+      "title": "M5-S05 — acceptance_tests[3] bundles three separate confirmations (no deploy command in the note, b",
+      "detail": "[testability lens] acceptance_tests[3] bundles three separate confirmations (no deploy command in the note, both blocked steps listed as excluded, the deploy order matching case-management-setup section 5) into one tick. FIX: Split into one manual test per confirmation.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "recorded as non-blocking"
+      }
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Verification block handed to set-verification",
+      "target_path": ".sfskills/builds/case-onboarding/inputs/verification/verification-v3.json",
+      "content": "{\"status\": \"plan-rejected\", \"verified_at\": \"2026-09-05T22:10:00Z\", \"by\": \"plan-verifier 1.0.0\", \"plan_version\": 3, \"build_mode\": \"design-only\", \"lenses\": [{\"lens\": \"executability\", \"verdict\": \"fail\", \"notes\": \"21/22 steps pass; M4-S05 refuted (declares an output apex-builder's Output Contract does not produce)\"}, {\"lens\": \"grounding\", \"verdict\": \"pass\", \"notes\": \"22/22 steps pass; all 33 cited skills resolve, all 9 tree-grounded decision branch quotes matched verbatim, D10's source_reference resolves, all 3 cited templates and all 7 cited trees exist, 0 deploy commands\"}, {\"lens\": \"testability\", \"verdict\": \"fail\", \"notes\": \"12/22 steps pass; 10 refuted. 45 checker tests were run against fixtures built from the cited skills' metadata examples: 39 exit 0 on correct artefacts, 6 cannot\"}], \"steps\": [{\"step_id\": \"M1-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M1-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M1-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M1-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01 -> exit 0, '2 record type(s), 0 layout(s); 0 finding(s)'\", \"python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01 -> exit 0, 'No issues found.'\", \"python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01 -> exit 0\", \"python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01 -> exit 0\"]}]}, {\"step_id\": \"M1-S02\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M1-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M1-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M1-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_record_type_layouts.py --manifest-dir artefacts/M1-S02 -> exit 0, '0 record type(s), 2 layout(s); 0 finding(s)'\"]}]}, {\"step_id\": \"M2-S01\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M2-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M2-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M2-S01\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned only to the integration/automated-process identity and to no human user'. PermissionSetAssignment is record data, not metadata; nothing in outputs[] records an assignment, and confirming one requires an org. In a design-only build the test cannot be ticked at the M2 gate.\", \"evidence\": \"plan.json steps[M2-S01].outputs[] = customPermissions/..., permissionsets/Case_Intake_Integration.permissionset-meta.xml, package.xml; plan.build_mode = design-only\", \"fix\": \"Rewrite as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) and move the assignment instruction into the step's deploy-order note.\"}], \"warnings\": [{\"problem\": \"acceptance_tests[0] description claims 'The custom permission is granted by exactly one permission set and every consumer reference resolves', but the exit code does not carry that. Removing the <customPermissions> grant entirely produced only 'INFO: ... granted by no permission set or profile in this tree' and exit 0.\", \"fix\": \"Reword the description to what the exit code proves, or run the checker with --strict.\"}], \"evidence\": [\"check_custom_permissions.py --manifest-dir artefacts/M2-S01 -> exit 0\", \"check_access_model.py --manifest-dir artefacts/M2-S01 -> exit 0\", \"NEGATIVE: same fixture with the customPermissions grant deleted -> exit 0 (INFO only)\"]}]}, {\"step_id\": \"M2-S02\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M2-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M2-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M2-S02\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition.py exits 1 on any WARN (its own module docstring: 'Exits 1 on any WARN finding, 0 if only GOOD findings') and PSG_NAME_RE = ^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$ rejects all three PSG names this step itself declares.\", \"evidence\": \"fixture at the step's declared paths -> exit 1, 'Summary: 1 good, 3 warn'; three WARNs, one per PSG: \\\"PSG name 'Support_Tier1' does not match convention PSG_<persona>_<env>\\\". The same three PSGs renamed PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod -> 'Summary: 1 good, 0 warn', exit 0.\", \"fix\": \"Rename the three PSGs in outputs[] to the PSG_<persona>_<env> form, or drop this checker and carry the composition assertion in a manual test the way X01 and X03 did.\"}], \"warnings\": [], \"evidence\": [\"check_permission_set_architecture.py --manifest-dir artefacts (scope build) -> exit 0, 'No issues found.'\", \"check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02 -> exit 1\", \"check_access_model.py --manifest-dir artefacts/M2-S02 -> exit 0\"]}]}, {\"step_id\": \"M2-S03\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M2-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M2-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M2-S03\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[1] description claims \\\"Every profile's record-type and layout assignment names a record type and layout that exist\\\". At step scope the checker sees no record types and no layouts (both are M1-S01's and M1-S02's artefacts), so the cross-reference is never made and the exit code carries nothing.\", \"evidence\": \"fixture -> exit 0, 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s); 0 finding(s)'. NEGATIVE fixture: 'Acme Support Tier 1.profile-meta.xml' rewritten to name Case.Nonexistent and Case-Ghost Layout -> still exit 0, still '0 record type(s), 0 layout(s); 0 finding(s)'.\", \"fix\": \"Declare \\\"scope\\\": \\\"build\\\" with --manifest-dir artefacts, or reword to what step scope proves and move the cross-reference to an M2 milestone test.\"}], \"warnings\": [], \"evidence\": [\"check_access_model.py --manifest-dir artefacts/M2-S03 -> exit 0\", \"check_record_type_layouts.py --manifest-dir artefacts/M2-S03 -> exit 0 on a deliberately broken profile\"]}]}, {\"step_id\": \"M2-S04\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M2-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M2-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M2-S04\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"acceptance_tests[3] bundles three separate assertions (per-queue email posture, group membership matching the roster, no named user hard-coded) into one tick, so a partial pass cannot be recorded.\", \"fix\": \"Split into one manual test per assertion.\"}], \"evidence\": [\"step declares no checker test (X01 dropped check_queues.py); xml + manifest + 2 manual remain\"]}]}, {\"step_id\": \"M2-S05\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M2-S05\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M2-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M2-S05\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M2 gate'. A manual test that cannot be ticked at its own milestone stops the step reaching 'tested', because set-status <step> tested requires tests/M2-S05/results.json with \\\"passed\\\": true; the step therefore never reaches 'documented', and standards/build-orchestration.md section 3 refuses 'gate milestone:M2 approve' unless every step in M2 is documented or blocked with a recorded reason. M2-S05 is neither. Milestone M2 deadlocks.\", \"evidence\": \"scripts/build_plan.py:954 — 'records passed=... — only a passing test run moves a step to tested'; STATUS graph at scripts/build_plan.py:134-135; contract section 3 milestone-gate rule\", \"fix\": \"Move the sandbox-proof assertion to an M5 milestone acceptance test and leave M2-S05 with a manual test tickable from the artefacts at the M2 gate.\"}], \"warnings\": [], \"evidence\": [\"check_sharing_model.py --manifest-dir artefacts/M2-S05 -> exit 0 once the criteria rule carries includeRecordsOwnedByAll\"]}]}, {\"step_id\": \"M3-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M3-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in the note prose only; inputs{} carries no structured 'assumptions' key, unlike the ten other steps that do. M5-S04's manual test [4] asserts all 25 deferrals appear as named rows, which is compiled from structure.\", \"fix\": \"Add \\\"assumptions\\\": [\\\"A11\\\",\\\"A12\\\",\\\"A13\\\"] to inputs{}.\"}], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M3-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_validation_rules.py --manifest-dir artefacts/M3-S01 -> exit 0, '2 validation rule(s) across 2 file(s); 0 finding(s)'\"]}]}, {\"step_id\": \"M3-S02\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M3-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M3-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M3-S02\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py artefacts/M3-S02' cannot exit 0 on this step's own correct artefacts. TEXT_SUFFIXES = ('.html','.htm','.txt','.email','.md') and the checker rglobs the directory, so the declared output sender-identity-note.md is linted as an email template; emit_result() returns 1 on any finding, REVIEW included.\", \"evidence\": \"fixture -> exit 1, score 100, 3 REVIEW findings, all three on artefacts/M3-S02/sender-identity-note.md: 'hardcoded email address `support@acme.example` found in template content', 'no obvious merge fields found', 'subject line is not documented'. check_email_templates.py:13 and :45.\", \"fix\": \"Pass the two .email files as positional paths instead of the directory, or move sender-identity-note.md out of the scanned directory.\"}, {\"problem\": \"acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M3 gate' — the same deadlock as M2-S05: the step cannot reach 'tested', so it cannot reach 'documented', so 'gate milestone:M3 approve' is refused.\", \"evidence\": \"scripts/build_plan.py:954; contract section 3 milestone-gate rule\", \"fix\": \"Move the sandbox loop-test assertion to an M5 milestone acceptance test.\"}], \"warnings\": [], \"evidence\": [\"check_email_templates.py artefacts/M3-S02 -> exit 1 (3 REVIEW findings on the declared .md output)\", \"check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02 -> exit 0 with 3 WARNs\"]}]}, {\"step_id\": \"M3-S03\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M3-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{} carries no structured 'assumptions' key.\", \"fix\": \"Add \\\"assumptions\\\": [\\\"A3\\\"] to inputs{}.\"}], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M3-S03\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_case_management_setup.py --manifest-dir artefacts/M3-S03 -> exit 0, 'No case management setup issues found.' (routing addresses must carry <emailAddress>, which is the element the checker reads at check_case_management_setup.py:372 and the element admin/email-to-case-configuration/references/metadata-examples.md uses)\"]}]}, {\"step_id\": \"M3-S04\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M3-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M3-S04\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"step declares no checker test (X03 dropped check_assignment_rules.py); xml + manifest + 2 manual remain\"]}]}, {\"step_id\": \"M3-S05\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M3-S05\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M3-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M3-S05\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares. check_omni_channel_routing_setup.py raises ERROR E2 when a ServiceChannel is present and the manifest holds no ServicePresenceStatus, and no step in the plan declares a servicePresenceStatuses/ artefact. The planner's W05 disposition recorded that E2 is an ERROR but did not add the artefact.\", \"evidence\": \"fixture over the whole corrected tree -> exit 1: \\\"ERROR E2 [M3-S05/serviceChannels/Case_Channel.serviceChannel-meta.xml] ServiceChannel 'Case_Channel': this manifest contains no ServicePresenceStatus at all\\\". check_omni_channel_routing_setup.py:251-258. grep of plan.json outputs[] for 'servicePresenceStatus' -> no match.\", \"fix\": \"Add artefacts/M3-S05/servicePresenceStatuses/<name>.servicePresenceStatus-meta.xml to outputs[] — acceptance_tests[4] already asserts that Tier_1_Presence names a presence status — or drop the checker and carry the assertion manually.\"}], \"warnings\": [], \"evidence\": [\"check_omni_channel_routing_setup.py --manifest-dir artefacts -> exit 1 (E2) after E4 and E5 were cleared by correcting <relatedEntityType> and routingModel LEAST_ACTIVE in the fixture\"]}]}, {\"step_id\": \"M4-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M4-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M4-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M4-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01 -> exit 0, 'No business hours issues found.' on three calendars, one default, one future holiday\"]}]}, {\"step_id\": \"M4-S02\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M4-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M4-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M4-S02\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitlement process references are the ones M4-S01 produced', but settings/BusinessHours.settings-meta.xml is M4-S01's artefact, so at artefacts/M4-S02 the checker prints 'INFO: No BusinessHours settings file found' and exits 0 whatever the process says. This is the identical defect the planner found and fixed on M4-S03 (X05) and M4-S04 (W07) and left standing here.\", \"evidence\": \"fixture -> exit 0, 'INFO: No BusinessHours settings file found under artefacts/M4-S02.' NEGATIVE fixture: First_Response_Premier rewritten to name 'Ghost Calendar' -> still exit 0, same INFO line.\", \"fix\": \"Drop the test (M4's milestone test already runs the same checker at --manifest-dir artefacts), or declare \\\"scope\\\": \\\"build\\\" with --manifest-dir artefacts.\"}], \"warnings\": [], \"evidence\": [\"check_entitlements_and_milestones.py --manifest-dir artefacts/M4-S02 -> exit 0, 2 INFO I2 notes\", \"check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S02 -> exit 0 vacuously\"]}]}, {\"step_id\": \"M4-S03\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M4-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M4-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M4-S03\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03 -> exit 0, 'No issues found.' on a RecordBeforeSave/Create flow with a fault-connected Get Records (confirms the B07 disposition)\", \"check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03 -> exit 0, '0 error(s), 2 warning(s), 1 info' (confirms the B06 disposition: WARNs do not fail the step)\"]}]}, {\"step_id\": \"M4-S04\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M4-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M4-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M4-S04\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_escalation_rules.py --manifest-dir artefacts (scope build) -> exit 0, 'OK: no ERROR findings (1 warning(s))' — W1 'no rule in this file is active' is the expected inactive-deploy state the step's manual test already names\"]}]}, {\"step_id\": \"M4-S05\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M4-S05\", \"lens\": \"executability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name. Its nine numbered outputs are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations — no manifest. standards/build-orchestration.md section 4 borrowed-agent condition 2: 'a path in outputs[] with no counterpart there is an artefact nobody writes, check-outputs never confirms it, and the step cannot reach built.' Section 5 nonetheless requires every metadata-type step to declare it, so the step is caught between the two rules.\", \"evidence\": \"agents/apex-builder/AGENT.md '## Output Contract' (items 1-9, no package.xml anywhere in the file); standards/build-orchestration.md section 4 condition 2 and section 5 'Every metadata step declares artefacts/<step-id>/package.xml in its outputs[]'\", \"fix\": \"Re-own the manifest: fold M4-S05's Apex members into M5-S05's build-level package.xml (metadata-builder writes it) and drop the path from M4-S05's outputs[], or split the manifest onto a metadata-builder step that depends on M4-S05.\"}], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M4-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.md and references/llm-anti-patterns.md carry fenced Apex). That is right for an Apex step, but outputs[] includes .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documents.\", \"fix\": \"Either cite a skill that documents the ApexClass/ApexTrigger meta shape, or record in the step note that the meta XML comes from the Metadata API guide directly.\"}], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M4-S05\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 -> exit 0, 'No issues found.' on a bulk-safe CompletionDate writer\"]}]}, {\"step_id\": \"M5-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M5-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M5-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M5-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"check_list_views_and_compact_layouts.py --manifest-dir artefacts (scope build) -> exit 0, 'No issues found.' (confirms the X06 disposition)\", \"check_report_inventory.py --manifest-dir artefacts/M5-S01 -> exit 0\"]}]}, {\"step_id\": \"M5-S02\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M5-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M5-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M5-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"acceptance_tests[0] description says the environment inventory table must carry a 'purpose' column. check_sandbox_plan.py requires three: type, purpose AND owner (check_sandbox_plan.py:187). A fixture carrying all five sections with type and purpose but no owner scored 90 and exited 1 on 'environment inventory table has no `owner` column'. The planner's B10 disposition, which corrected the v2 evidence, is itself incomplete.\", \"fix\": \"Name all three required columns in the description.\"}], \"evidence\": [\"check_sandbox_plan.py artefacts/M5-S02/sandbox-proof-plan.md, five REQUIRED_SECTIONS plus type/purpose/owner columns -> exit 0, score 100\", \"same fixture without the owner column -> exit 1, score 90, one HIGH\"]}]}, {\"step_id\": \"M5-S03\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M5-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M5-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M5-S03\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares. check_invest.py split_stories() treats every '#' or '##' heading as a story, and main() returns 1 if any story fails. story-drafter emits ONE markdown document with seven top-level sections (Summary, Persona anchors, Story backlog, Requirements Traceability Matrix, MoSCoW capacity check, Process Observations, Citations); the six that are not stories each fail the As-a / I-want / So-that / Given-When-Then / Complexity lint.\", \"evidence\": \"fixture in exactly story-drafter's seven-section shape with one fully compliant story -> exit 1, 'Summary: 1/9 stories passed (8 failed)'. The skill's own references/examples.md also exits 1 ('0/8 stories passed'). check_invest.py:117-145 and :331-375; agents/story-drafter/AGENT.md '## Output Contract'.\", \"fix\": \"Declare a stories-only artefact for the checker to lint (e.g. artefacts/M5-S03/stories.md alongside story-backlog.md), or drop the checker and carry the INVEST assertion in the step's manual test.\"}], \"warnings\": [{\"problem\": \"inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in the step says whether it resolves against the repo root or the build directory. The file exists only at the build root.\", \"fix\": \"Write it as the build-relative path the runner will pass.\"}], \"evidence\": [\"check_invest.py artefacts/M5-S03/story-backlog.md -> exit 1 on a story-drafter-shaped document\", \"check_invest.py skills/admin/user-story-writing-for-salesforce/references/examples.md -> exit 1, '0/8 stories passed'\"]}]}, {\"step_id\": \"M5-S04\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M5-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M5-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M5-S04\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose acceptanceTest.scope description reads \\\"'step' runs the checker over the one step's artefacts (artefacts/<step-id>/)\\\" — while the command literally passes --manifest-dir artefacts, the build scope. The declared scope and the declared path disagree, so what the tester runs is undefined: section 5 also says the tester runs the command verbatim and substitutes no path.\", \"evidence\": \"plan.json steps[M5-S04].acceptance_tests[1] has no 'scope' key; command = 'python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts'; agents/_shared/schemas/build-plan.schema.json:400-403\", \"fix\": \"Add \\\"scope\\\": \\\"build\\\" to the test.\"}], \"warnings\": [{\"problem\": \"acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keeper/AGENT.md Step 10 instructs the agent to lint the pack with --file <declared path>. The plan's form is the stronger one (it cross-checks ac_id), but the agent's own playbook and the plan now say different things.\", \"fix\": \"Update build-doc-keeper Step 10 to the --manifest-dir form so the agent and the plan agree.\"}], \"evidence\": [\"check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md -> exit 0 once the ten canonical sections carry rows with the eight required fields and the Sharing/Automation rows cite their decision tree\", \"check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts -> exit 0 on a build-schema matrix (1 WARN: 55 orphan artefacts)\", \"check_uat_case.py --manifest-dir artefacts/M5-S04 -> exit 0, 'OK — 5 case(s), 0 run-sheet row(s), 21 criterion id(s) cross-checked' (confirms the B11 disposition)\", \"check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md -> exit 0, '3 document(s) checked — 0 error(s), 0 warning(s)' (confirms the X09 disposition)\"]}]}, {\"step_id\": \"M5-S05\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M5-S05\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps\"]}, {\"step_id\": \"M5-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file\"]}, {\"step_id\": \"M5-S05\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_manifest.py has RISKY_TYPES = {'SharingRules','ConnectedApp','ExternalCredential','NamedCredential'} and raises a HIGH finding for each; emit_result() returns 1 on any finding, blocking or not. M2-S05 declares sharingRules/Case.sharingRules-meta.xml, so the build-level package.xml this step writes must name SharingRules.\", \"evidence\": \"fixture -> exit 1, score 90, '1 finding(s) detected (0 blocking)', 'HIGH artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests'. check_deployment_manifest.py:28, :178, :110.\", \"fix\": \"Change expected to name the HIGH SharingRules finding as the known state and assert on the score, or drop the checker and let the always-on manifest checks plus the step's manual test carry the assertion.\"}], \"warnings\": [], \"evidence\": [\"check_deployment_manifest.py --manifest-dir artefacts/M5-S05 -> exit 1 on a build-level package.xml carrying SharingRules\"]}]}], \"blockers\": [{\"step\": \"M2-S01\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned only to the integration/automated-process identity and to no human user'. PermissionSetAssignment is record data, not metadata; nothing in outputs[] records an assignment, and confirming one requires an org. In a design-only build the test cannot be ticked at the M2 gate.\", \"evidence\": \"plan.json steps[M2-S01].outputs[] = customPermissions/..., permissionsets/Case_Intake_Integration.permissionset-meta.xml, package.xml; plan.build_mode = design-only\", \"fix\": \"Rewrite as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) and move the assignment instruction into the step's deploy-order note.\"}, {\"step\": \"M2-S02\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition.py exits 1 on any WARN (its own module docstring: 'Exits 1 on any WARN finding, 0 if only GOOD findings') and PSG_NAME_RE = ^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$ rejects all three PSG names this step itself declares.\", \"evidence\": \"fixture at the step's declared paths -> exit 1, 'Summary: 1 good, 3 warn'; three WARNs, one per PSG: \\\"PSG name 'Support_Tier1' does not match convention PSG_<persona>_<env>\\\". The same three PSGs renamed PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod -> 'Summary: 1 good, 0 warn', exit 0.\", \"fix\": \"Rename the three PSGs in outputs[] to the PSG_<persona>_<env> form, or drop this checker and carry the composition assertion in a manual test the way X01 and X03 did.\"}, {\"step\": \"M2-S03\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[1] description claims \\\"Every profile's record-type and layout assignment names a record type and layout that exist\\\". At step scope the checker sees no record types and no layouts (both are M1-S01's and M1-S02's artefacts), so the cross-reference is never made and the exit code carries nothing.\", \"evidence\": \"fixture -> exit 0, 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s); 0 finding(s)'. NEGATIVE fixture: 'Acme Support Tier 1.profile-meta.xml' rewritten to name Case.Nonexistent and Case-Ghost Layout -> still exit 0, still '0 record type(s), 0 layout(s); 0 finding(s)'.\", \"fix\": \"Declare \\\"scope\\\": \\\"build\\\" with --manifest-dir artefacts, or reword to what step scope proves and move the cross-reference to an M2 milestone test.\"}, {\"step\": \"M2-S05\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M2 gate'. A manual test that cannot be ticked at its own milestone stops the step reaching 'tested', because set-status <step> tested requires tests/M2-S05/results.json with \\\"passed\\\": true; the step therefore never reaches 'documented', and standards/build-orchestration.md section 3 refuses 'gate milestone:M2 approve' unless every step in M2 is documented or blocked with a recorded reason. M2-S05 is neither. Milestone M2 deadlocks.\", \"evidence\": \"scripts/build_plan.py:954 — 'records passed=... — only a passing test run moves a step to tested'; STATUS graph at scripts/build_plan.py:134-135; contract section 3 milestone-gate rule\", \"fix\": \"Move the sandbox-proof assertion to an M5 milestone acceptance test and leave M2-S05 with a manual test tickable from the artefacts at the M2 gate.\"}, {\"step\": \"M3-S02\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py artefacts/M3-S02' cannot exit 0 on this step's own correct artefacts. TEXT_SUFFIXES = ('.html','.htm','.txt','.email','.md') and the checker rglobs the directory, so the declared output sender-identity-note.md is linted as an email template; emit_result() returns 1 on any finding, REVIEW included.\", \"evidence\": \"fixture -> exit 1, score 100, 3 REVIEW findings, all three on artefacts/M3-S02/sender-identity-note.md: 'hardcoded email address `support@acme.example` found in template content', 'no obvious merge fields found', 'subject line is not documented'. check_email_templates.py:13 and :45.\", \"fix\": \"Pass the two .email files as positional paths instead of the directory, or move sender-identity-note.md out of the scanned directory.\"}, {\"step\": \"M3-S02\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M3 gate' — the same deadlock as M2-S05: the step cannot reach 'tested', so it cannot reach 'documented', so 'gate milestone:M3 approve' is refused.\", \"evidence\": \"scripts/build_plan.py:954; contract section 3 milestone-gate rule\", \"fix\": \"Move the sandbox loop-test assertion to an M5 milestone acceptance test.\"}, {\"step\": \"M3-S05\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares. check_omni_channel_routing_setup.py raises ERROR E2 when a ServiceChannel is present and the manifest holds no ServicePresenceStatus, and no step in the plan declares a servicePresenceStatuses/ artefact. The planner's W05 disposition recorded that E2 is an ERROR but did not add the artefact.\", \"evidence\": \"fixture over the whole corrected tree -> exit 1: \\\"ERROR E2 [M3-S05/serviceChannels/Case_Channel.serviceChannel-meta.xml] ServiceChannel 'Case_Channel': this manifest contains no ServicePresenceStatus at all\\\". check_omni_channel_routing_setup.py:251-258. grep of plan.json outputs[] for 'servicePresenceStatus' -> no match.\", \"fix\": \"Add artefacts/M3-S05/servicePresenceStatuses/<name>.servicePresenceStatus-meta.xml to outputs[] — acceptance_tests[4] already asserts that Tier_1_Presence names a presence status — or drop the checker and carry the assertion manually.\"}, {\"step\": \"M4-S02\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitlement process references are the ones M4-S01 produced', but settings/BusinessHours.settings-meta.xml is M4-S01's artefact, so at artefacts/M4-S02 the checker prints 'INFO: No BusinessHours settings file found' and exits 0 whatever the process says. This is the identical defect the planner found and fixed on M4-S03 (X05) and M4-S04 (W07) and left standing here.\", \"evidence\": \"fixture -> exit 0, 'INFO: No BusinessHours settings file found under artefacts/M4-S02.' NEGATIVE fixture: First_Response_Premier rewritten to name 'Ghost Calendar' -> still exit 0, same INFO line.\", \"fix\": \"Drop the test (M4's milestone test already runs the same checker at --manifest-dir artefacts), or declare \\\"scope\\\": \\\"build\\\" with --manifest-dir artefacts.\"}, {\"step\": \"M4-S05\", \"lens\": \"executability\", \"problem\": \"outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name. Its nine numbered outputs are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations — no manifest. standards/build-orchestration.md section 4 borrowed-agent condition 2: 'a path in outputs[] with no counterpart there is an artefact nobody writes, check-outputs never confirms it, and the step cannot reach built.' Section 5 nonetheless requires every metadata-type step to declare it, so the step is caught between the two rules.\", \"evidence\": \"agents/apex-builder/AGENT.md '## Output Contract' (items 1-9, no package.xml anywhere in the file); standards/build-orchestration.md section 4 condition 2 and section 5 'Every metadata step declares artefacts/<step-id>/package.xml in its outputs[]'\", \"fix\": \"Re-own the manifest: fold M4-S05's Apex members into M5-S05's build-level package.xml (metadata-builder writes it) and drop the path from M4-S05's outputs[], or split the manifest onto a metadata-builder step that depends on M4-S05.\"}, {\"step\": \"M5-S03\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares. check_invest.py split_stories() treats every '#' or '##' heading as a story, and main() returns 1 if any story fails. story-drafter emits ONE markdown document with seven top-level sections (Summary, Persona anchors, Story backlog, Requirements Traceability Matrix, MoSCoW capacity check, Process Observations, Citations); the six that are not stories each fail the As-a / I-want / So-that / Given-When-Then / Complexity lint.\", \"evidence\": \"fixture in exactly story-drafter's seven-section shape with one fully compliant story -> exit 1, 'Summary: 1/9 stories passed (8 failed)'. The skill's own references/examples.md also exits 1 ('0/8 stories passed'). check_invest.py:117-145 and :331-375; agents/story-drafter/AGENT.md '## Output Contract'.\", \"fix\": \"Declare a stories-only artefact for the checker to lint (e.g. artefacts/M5-S03/stories.md alongside story-backlog.md), or drop the checker and carry the INVEST assertion in the step's manual test.\"}, {\"step\": \"M5-S04\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose acceptanceTest.scope description reads \\\"'step' runs the checker over the one step's artefacts (artefacts/<step-id>/)\\\" — while the command literally passes --manifest-dir artefacts, the build scope. The declared scope and the declared path disagree, so what the tester runs is undefined: section 5 also says the tester runs the command verbatim and substitutes no path.\", \"evidence\": \"plan.json steps[M5-S04].acceptance_tests[1] has no 'scope' key; command = 'python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts'; agents/_shared/schemas/build-plan.schema.json:400-403\", \"fix\": \"Add \\\"scope\\\": \\\"build\\\" to the test.\"}, {\"step\": \"M5-S05\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_manifest.py has RISKY_TYPES = {'SharingRules','ConnectedApp','ExternalCredential','NamedCredential'} and raises a HIGH finding for each; emit_result() returns 1 on any finding, blocking or not. M2-S05 declares sharingRules/Case.sharingRules-meta.xml, so the build-level package.xml this step writes must name SharingRules.\", \"evidence\": \"fixture -> exit 1, score 90, '1 finding(s) detected (0 blocking)', 'HIGH artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests'. check_deployment_manifest.py:28, :178, :110.\", \"fix\": \"Change expected to name the HIGH SharingRules finding as the known state and assert on the score, or drop the checker and let the always-on manifest checks plus the step's manual test carry the assertion.\"}, {\"step\": \"M5 (milestone)\", \"lens\": \"testability\", \"problem\": \"milestone M5 acceptance_tests[2] runs 'python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05' — the same command as M5-S05[0] — and cannot exit 0 for the same reason: SharingRules is in RISKY_TYPES and emit_result() returns 1 on any finding.\", \"evidence\": \"fixture -> exit 1, score 90, HIGH 'manifest includes SharingRules'\", \"fix\": \"Apply the same fix as M5-S05 acceptance_tests[0].\"}], \"warnings\": [{\"step\": \"M2-S01\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] description claims 'The custom permission is granted by exactly one permission set and every consumer reference resolves', but the exit code does not carry that. Removing the <customPermissions> grant entirely produced only 'INFO: ... granted by no permission set or profile in this tree' and exit 0.\", \"fix\": \"Reword the description to what the exit code proves, or run the checker with --strict.\"}, {\"step\": \"M2-S04\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[3] bundles three separate assertions (per-queue email posture, group membership matching the roster, no named user hard-coded) into one tick, so a partial pass cannot be recorded.\", \"fix\": \"Split into one manual test per assertion.\"}, {\"step\": \"M3-S01\", \"lens\": \"grounding\", \"problem\": \"inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in the note prose only; inputs{} carries no structured 'assumptions' key, unlike the ten other steps that do. M5-S04's manual test [4] asserts all 25 deferrals appear as named rows, which is compiled from structure.\", \"fix\": \"Add \\\"assumptions\\\": [\\\"A11\\\",\\\"A12\\\",\\\"A13\\\"] to inputs{}.\"}, {\"step\": \"M3-S03\", \"lens\": \"grounding\", \"problem\": \"inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{} carries no structured 'assumptions' key.\", \"fix\": \"Add \\\"assumptions\\\": [\\\"A3\\\"] to inputs{}.\"}, {\"step\": \"M4-S05\", \"lens\": \"grounding\", \"problem\": \"apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.md and references/llm-anti-patterns.md carry fenced Apex). That is right for an Apex step, but outputs[] includes .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documents.\", \"fix\": \"Either cite a skill that documents the ApexClass/ApexTrigger meta shape, or record in the step note that the meta XML comes from the Metadata API guide directly.\"}, {\"step\": \"M5-S02\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[0] description says the environment inventory table must carry a 'purpose' column. check_sandbox_plan.py requires three: type, purpose AND owner (check_sandbox_plan.py:187). A fixture carrying all five sections with type and purpose but no owner scored 90 and exited 1 on 'environment inventory table has no `owner` column'. The planner's B10 disposition, which corrected the v2 evidence, is itself incomplete.\", \"fix\": \"Name all three required columns in the description.\"}, {\"step\": \"M5-S03\", \"lens\": \"testability\", \"problem\": \"inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in the step says whether it resolves against the repo root or the build directory. The file exists only at the build root.\", \"fix\": \"Write it as the build-relative path the runner will pass.\"}, {\"step\": \"M5-S04\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keeper/AGENT.md Step 10 instructs the agent to lint the pack with --file <declared path>. The plan's form is the stronger one (it cross-checks ac_id), but the agent's own playbook and the plan now say different things.\", \"fix\": \"Update build-doc-keeper Step 10 to the --manifest-dir form so the agent and the plan agree.\"}, {\"step\": \"(plan)\", \"lens\": \"testability\", \"problem\": \"20 of the 45 declared checker tests exit 0 against an empty artefacts/<step-id>/. No step is fully vacuous — the always-on manifest check fails on a metadata step with no package.xml, so the AGENT.md 'test can fail' rule is not tripped at step level — but a reader of PLAN.md cannot tell which checker exit codes carry an assertion and which are discovery no-ops.\", \"fix\": \"State in each such description what the checker prints when it finds nothing, the way M4-S03's and M4-S04's descriptions now do.\"}, {\"step\": \"(plan)\", \"lens\": \"grounding\", \"problem\": \"All 18 scope.fit_gap[] rows carry a tier from the five-tier enum, but none carries the effort tier (S/M/L/XL) or the risk_tag that skills/admin/fit-gap-analysis-against-org requires of every row in its own verification checklist. build-plan.schema.json requires only requirement and verdict, so validate is silent.\", \"fix\": \"Add effort and risk_tag per row, or record in the plan why the build layer carries a reduced fit-gap row.\"}, {\"step\": \"(plan)\", \"lens\": \"testability\", \"problem\": \"None of the 11 milestone checker tests declares a scope, and two of them address a single step's directory (milestone M5 acceptance_tests[0] and [2]). build-plan.schema.json defines scope on acceptanceTest without saying what it means at milestone level, so a reader cannot tell from plan.json which tree a milestone checker sees.\", \"fix\": \"Declare scope on milestone checker tests too, or record in the contract that milestone tests are build-scoped by definition.\"}, {\"step\": \"M5-S05\", \"lens\": \"testability\", \"problem\": \"acceptance_tests[3] bundles three separate confirmations (no deploy command in the note, both blocked steps listed as excluded, the deploy order matching case-management-setup section 5) into one tick.\", \"fix\": \"Split into one manual test per confirmation.\"}], \"cross_step_results\": [{\"check\": \"Every scope.fit_gap[] requirement reaches at least one step, and every such step carries at least one acceptance test\", \"result\": \"pass\", \"detail\": \"18 rows, 0 with an empty steps[], 0 naming a step id that does not exist, 0 naming a step with no acceptance_tests[]\"}, {\"check\": \"No two steps write the same output path\", \"result\": \"pass\", \"detail\": \"111 declared output paths across 22 steps, 0 collisions\"}, {\"check\": \"depends_on graph is acyclic and every id exists\", \"result\": \"pass\", \"detail\": \"depth-first walk over all 22 steps: no cycle, no missing id, no dependency on a later milestone\"}, {\"check\": \"Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id\", \"result\": \"pass\", \"detail\": \"M1 2 steps/3 tests, M2 5/4, M3 5/4, M4 5/6, M5 5/5; membership matches in all five\"}, {\"check\": \"Every scope.out item names why it is out\", \"result\": \"pass\", \"detail\": \"21 items, each naming the requirement clause, the answered question, or the deferred question id that put it out\"}, {\"check\": \"Blocked steps have a recorded reason and no dependents\", \"result\": \"pass\", \"detail\": \"M3-S05 'deferred: Q32, Q33, Q34, Q35' and M5-S02 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity'; neither has a dependent step (confirms the X10 fix)\"}, {\"check\": \"Every metadata-type step declares artefacts/<step-id>/package.xml and carries an xml and a manifest test\", \"result\": \"pass\", \"detail\": \"all 19 metadata-type steps\"}, {\"check\": \"Acceptance-test deny-list and command shape\", \"result\": \"pass\", \"detail\": \"0 of 45 checker commands match the section 5 deny-list; 0 command-type tests are declared\"}, {\"check\": \"human_gates[] completeness\", \"result\": \"pass\", \"detail\": \"12 records: clarifications (approved), plan (pending), one per milestone, and a step:<id> gate for each of the five human-gated steps\"}, {\"check\": \"Milestone acceptance tests are runnable\", \"result\": \"fail\", \"detail\": \"milestone M5 acceptance_tests[2] runs the same check_deployment_manifest.py command as M5-S05[0] and fails identically on the SharingRules HIGH finding (exit 1)\"}, {\"check\": \"Milestone gates reachable\", \"result\": \"fail\", \"detail\": \"M2 and M3 cannot be approved: M2-S05 and M3-S02 each carry a manual test whose declared expected value defers the tick to the M5 gate, so neither step can reach 'tested' -> 'documented', and section 3 refuses the milestone gate for a step that is neither documented nor blocked\"}, {\"check\": \"scope field agrees with the literal --manifest-dir path on every checker test\", \"result\": \"fail\", \"detail\": \"M5-S04 acceptance_tests[1] defaults to step scope while passing --manifest-dir artefacts. The other 33 step checker tests agree (or declare no --manifest-dir at all, which is the section 5 non-standard-argument-form case). None of the 11 milestone checker tests declares a scope, and two point inside one step's directory\"}]}"
+    },
+    {
+      "kind": "markdown",
+      "title": "Plan verification report — case-onboarding v3",
+      "target_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-05T22-10-00Z.md",
+      "content": "Rendered verdict matrix, 13 blockers, 12 warnings, 12 cross-step results and the rejection outcome. See the markdown twin at the report_path."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every mechanical cross-step check passed on the first read: 111 declared output paths with no collision, an acyclic depends_on graph with no forward-milestone edge, all 18 fit-gap rows reaching a tested step, exact milestone membership, all 21 scope-out items carrying a reason, and all 19 metadata-type steps declaring package.xml with an xml and a manifest test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "scripted walk of plan.json steps[], milestones[] and scope{}"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Grounding is the strongest lens in this plan. All 33 cited skills resolve, all 3 cited templates and all 7 cited decision-tree files exist, D10's treeless decision carries a source_reference that resolves, and all nine tree-grounded branch quotes were found verbatim in the trees they cite — not paraphrased.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "substring match of each decision's branch_quote against the whitespace-normalised tree file"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Four of the planner's own fixture-backed dispositions reproduced exactly on an independently built fixture: B06 and B07 (both flow checkers exit 0 on this step's flow), B11 (check_uat_case printed 'OK — 5 case(s), 0 run-sheet row(s), 21 criterion id(s) cross-checked'), X09 (check_ac_format printed '3 document(s) checked — 0 error(s), 0 warning(s)'), plus X06 and W07 at build scope.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "45 checker commands run verbatim from a fixture root with skills/ symlinked"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The v3 re-plan found ten checker defects by running fixtures and fixed each one where it found it, but did not sweep the same predicate across the rest of the plan. Five of this round's blockers are the same four failure modes one step over: a checker that exits non-zero on a correct artefact (M2-S02, M3-S02, M5-S05 — the X01/X03 pattern), a checker vacuous at step scope (M4-S02 — the X05/W07 pattern), and a description asserting a cross-reference the scope cannot see (M2-S03 — the W03 pattern).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "planner envelope 2026-09-05T21-05-00Z section 7 versus this run's blocker list"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "Re-plan to v4 and, when fixing these, run each remaining checker at the scope the plan declares rather than fixing only the steps a verifier named."
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Twenty of the 45 declared checker tests exit 0 against an empty artefacts directory. No step is fully vacuous, because the always-on manifest check fails on a metadata step with no package.xml — but the library's checkers overwhelmingly treat 'nothing to scan' as success, so step-scoped exit codes carry much less than their descriptions claim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "every checker command re-run against a tree of empty artefacts/<step-id>/ directories"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Five of the 33 cited skills have no '## Questions to Ask Before Configuring' section — admin/permission-set-group-composition, admin/record-type-id-management, admin/user-story-writing-for-salesforce, apex/entitlement-apex-hooks and flow/flow-decision-element-patterns — so the grounding lens's 'a question the step depends on has no answer in the clarifications' check cannot be made against them at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "grep for the heading across skills/<cited>/SKILL.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two checkers are structurally incompatible with the agent that owns their step rather than merely strict. check_invest.py parses every markdown heading as a story, which no seven-section story-drafter document can survive; check_deployment_manifest.py lists SharingRules in RISKY_TYPES and exits 1 on any finding, which no build-level manifest for a plan with a sharing rule can survive. Both are deepen-a-skill signals, not plan defects the planner can fix inside plan.json alone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "check_invest.py:117-145 and :331-375; check_deployment_manifest.py:28,:110,:178"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The contract says two things about a checker's scope that this plan makes collide. Section 5 says the tester 'executes a declared checker command verbatim ... no path is substituted', while build-plan.schema.json says scope 'step' means the checker runs over artefacts/<step-id>/. M5-S04's RTM test declares no scope and passes --manifest-dir artefacts, so which of the two governs is undefined. It is recorded as a blocker on the instruction that the two must agree, but the underlying ambiguity is the contract's.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "standards/build-orchestration.md section 5; agents/_shared/schemas/build-plan.schema.json:400-403"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether M2-S01's manual test is refutable is a judgment call. It asks a human to confirm a PermissionSetAssignment, which is record data no design-only build produces; a reviewer could equally read it as an intent the human records at the step gate. It is refuted on the conservative side, per this agent's default of disbelief.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "plan.json steps[M2-S01].acceptance_tests[4]; plan.build_mode = design-only"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "M4-S05 sits between two contract rules rather than breaking one. Section 5 requires every metadata-type step to declare artefacts/<step-id>/package.xml; section 4 condition 2 forbids declaring an output the owning agent's Output Contract does not name, and apex-builder's does not name a manifest. The refutation names the collision; which rule bends is the planner's call.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "standards/build-orchestration.md sections 4 and 5; agents/apex-builder/AGENT.md Output Contract"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Send plan v3 back to the planner: thirteen blockers need a v4 body, and set-plan over a plan-rejected plan is the only write that bumps the version to 4.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "plan.status = plan-rejected, version still 3, v3 body archived in history[]"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "Five of this round's blockers are failure modes v3 already fixed one step over, so the re-plan should sweep the predicate rather than patch the named steps."
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "This agent's own AGENT.md Output Contract table says an observations[] entry may carry a suggested_followup key that 'additionally requires suggested_followup_agent and followup_reason'. observation.schema.json sets additionalProperties:false and has no suggested_followup property; suggested_followup is a value of category, and evidence must be an object, not a string. Writing the block as the AGENT.md describes it fails validate_envelope.py with eleven errors.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/_shared/schemas/observation.schema.json",
+        "detail": "additionalProperties:false; required [category, severity, observation, evidence]; evidence type object; allOf gates suggested_followup_agent on category == suggested_followup"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 build_mode, section 3 gates and the milestone-gate rule, section 4 step types + agent eligibility + borrowed-agent conditions, section 5 acceptance tests and checker scope, section 7 fan-out shape"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "never invent a skill path; decision-tree citation rule; run-time agent obligations"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "eight-section shape, Process Observations, confidence rubric, citation shape"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "acceptanceTest.scope semantics; fit_gap required fields; verification block shape"
+    },
+    {
+      "type": "standard",
+      "id": "agent-frontmatter-schema",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "the status enum the eligibility rule's non-deprecated is measured against"
+    },
+    {
+      "type": "standard",
+      "id": "runtime-vs-build",
+      "path": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "used_for": "the roster the plan's five agent assignments were checked against"
+    },
+    {
+      "type": "standard",
+      "id": "agent-disambiguation",
+      "path": "agents/_shared/AGENT_DISAMBIGUATION.md",
+      "used_for": "confirming no step names a Wave-3b auditor"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the bar a manual acceptance test is judged against, and the shape check_ac_format.py lints"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the precondition/data-setup/expected-result bar for a manual test; its worked-examples yaml was the check_uat_case fixture"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "re-tiering the 18 fit_gap rows against the five-tier rubric and finding the missing effort tier and risk_tag"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the cross-step check that every requirement reaches a step and a test; its checker's two schemas"
+    },
+    {
+      "type": "skill",
+      "id": "admin/user-story-writing-for-salesforce",
+      "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md",
+      "used_for": "the canonical story shape check_invest.py lints, and the examples.md that also fails it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections and per-row schema a passing workbook fixture had to carry"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "where a request for this report as a spreadsheet is sent"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2, Q13, Q14, Q15",
+      "used_for": "verifying D1, D3, D4, D6 and D7 branch quotes verbatim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "flow-pattern-selector",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3",
+      "used_for": "verifying D2's before-save claim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q3",
+      "used_for": "verifying D5's criteria-based sharing rule"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q1",
+      "used_for": "verifying D8's nothing-runs-async claim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "performance-tuning",
+      "path": "standards/decision-trees/performance-tuning.md",
+      "branch": "Q10",
+      "used_for": "verifying D9's ordinary-object claim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "cited on M3-S03; file resolved, no decision claims a branch in it",
+      "used_for": "confirming the step's cited tree exists"
+    },
+    {
+      "type": "decision_tree",
+      "id": "agentforce-capability-selector",
+      "path": "standards/decision-trees/agentforce-capability-selector.md",
+      "branch": "not reached — no step or decision cites it",
+      "used_for": "confirming no Agentforce decision was smuggled into the plan"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-planner",
+      "because": "the plan is rejected; the thirteen blockers need a v4 body, and set-plan over a plan-rejected plan is what bumps the version to 4"
+    },
+    {
+      "agent": "metadata-builder",
+      "because": "three of the blockers are checker/artefact-name collisions this agent would hit at build time, so its skill-gap signal is the place the two remaining library defects get recorded"
+    }
+  ],
+  "extensions": {
+    "plan_path": ".sfskills/builds/case-onboarding/plan.json",
+    "plan_version": 3,
+    "resulting_status": "plan-rejected",
+    "verification": {
+      "status": "plan-rejected",
+      "verified_at": "2026-09-05T22:10:00Z",
+      "by": "plan-verifier 1.0.0",
+      "plan_version": 3,
+      "build_mode": "design-only",
+      "lenses": [
+        {
+          "lens": "executability",
+          "verdict": "fail",
+          "notes": "21/22 steps pass; M4-S05 refuted (declares an output apex-builder's Output Contract does not produce)"
+        },
+        {
+          "lens": "grounding",
+          "verdict": "pass",
+          "notes": "22/22 steps pass; all 33 cited skills resolve, all 9 tree-grounded decision branch quotes matched verbatim, D10's source_reference resolves, all 3 cited templates and all 7 cited trees exist, 0 deploy commands"
+        },
+        {
+          "lens": "testability",
+          "verdict": "fail",
+          "notes": "12/22 steps pass; 10 refuted. 45 checker tests were run against fixtures built from the cited skills' metadata examples: 39 exit 0 on correct artefacts, 6 cannot"
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "M1-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01 -> exit 0, '2 record type(s), 0 layout(s); 0 finding(s)'",
+                "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01 -> exit 0, 'No issues found.'",
+                "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01 -> exit 0",
+                "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01 -> exit 0"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_record_type_layouts.py --manifest-dir artefacts/M1-S02 -> exit 0, '0 record type(s), 2 layout(s); 0 finding(s)'"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S01",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M2-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M2-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M2-S01",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned only to the integration/automated-process identity and to no human user'. PermissionSetAssignment is record data, not metadata; nothing in outputs[] records an assignment, and confirming one requires an org. In a design-only build the test cannot be ticked at the M2 gate.",
+                  "evidence": "plan.json steps[M2-S01].outputs[] = customPermissions/..., permissionsets/Case_Intake_Integration.permissionset-meta.xml, package.xml; plan.build_mode = design-only",
+                  "fix": "Rewrite as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) and move the assignment instruction into the step's deploy-order note."
+                }
+              ],
+              "warnings": [
+                {
+                  "problem": "acceptance_tests[0] description claims 'The custom permission is granted by exactly one permission set and every consumer reference resolves', but the exit code does not carry that. Removing the <customPermissions> grant entirely produced only 'INFO: ... granted by no permission set or profile in this tree' and exit 0.",
+                  "fix": "Reword the description to what the exit code proves, or run the checker with --strict."
+                }
+              ],
+              "evidence": [
+                "check_custom_permissions.py --manifest-dir artefacts/M2-S01 -> exit 0",
+                "check_access_model.py --manifest-dir artefacts/M2-S01 -> exit 0",
+                "NEGATIVE: same fixture with the customPermissions grant deleted -> exit 0 (INFO only)"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S02",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M2-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M2-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M2-S02",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition.py exits 1 on any WARN (its own module docstring: 'Exits 1 on any WARN finding, 0 if only GOOD findings') and PSG_NAME_RE = ^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$ rejects all three PSG names this step itself declares.",
+                  "evidence": "fixture at the step's declared paths -> exit 1, 'Summary: 1 good, 3 warn'; three WARNs, one per PSG: \"PSG name 'Support_Tier1' does not match convention PSG_<persona>_<env>\". The same three PSGs renamed PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod -> 'Summary: 1 good, 0 warn', exit 0.",
+                  "fix": "Rename the three PSGs in outputs[] to the PSG_<persona>_<env> form, or drop this checker and carry the composition assertion in a manual test the way X01 and X03 did."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_permission_set_architecture.py --manifest-dir artefacts (scope build) -> exit 0, 'No issues found.'",
+                "check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02 -> exit 1",
+                "check_access_model.py --manifest-dir artefacts/M2-S02 -> exit 0"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S03",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M2-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M2-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M2-S03",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[1] description claims \"Every profile's record-type and layout assignment names a record type and layout that exist\". At step scope the checker sees no record types and no layouts (both are M1-S01's and M1-S02's artefacts), so the cross-reference is never made and the exit code carries nothing.",
+                  "evidence": "fixture -> exit 0, 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s); 0 finding(s)'. NEGATIVE fixture: 'Acme Support Tier 1.profile-meta.xml' rewritten to name Case.Nonexistent and Case-Ghost Layout -> still exit 0, still '0 record type(s), 0 layout(s); 0 finding(s)'.",
+                  "fix": "Declare \"scope\": \"build\" with --manifest-dir artefacts, or reword to what step scope proves and move the cross-reference to an M2 milestone test."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_access_model.py --manifest-dir artefacts/M2-S03 -> exit 0",
+                "check_record_type_layouts.py --manifest-dir artefacts/M2-S03 -> exit 0 on a deliberately broken profile"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M2-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M2-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "acceptance_tests[3] bundles three separate assertions (per-queue email posture, group membership matching the roster, no named user hard-coded) into one tick, so a partial pass cannot be recorded.",
+                  "fix": "Split into one manual test per assertion."
+                }
+              ],
+              "evidence": [
+                "step declares no checker test (X01 dropped check_queues.py); xml + manifest + 2 manual remain"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S05",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M2-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M2-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M2-S05",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M2 gate'. A manual test that cannot be ticked at its own milestone stops the step reaching 'tested', because set-status <step> tested requires tests/M2-S05/results.json with \"passed\": true; the step therefore never reaches 'documented', and standards/build-orchestration.md section 3 refuses 'gate milestone:M2 approve' unless every step in M2 is documented or blocked with a recorded reason. M2-S05 is neither. Milestone M2 deadlocks.",
+                  "evidence": "scripts/build_plan.py:954 — 'records passed=... — only a passing test run moves a step to tested'; STATUS graph at scripts/build_plan.py:134-135; contract section 3 milestone-gate rule",
+                  "fix": "Move the sandbox-proof assertion to an M5 milestone acceptance test and leave M2-S05 with a manual test tickable from the artefacts at the M2 gate."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_sharing_model.py --manifest-dir artefacts/M2-S05 -> exit 0 once the criteria rule carries includeRecordsOwnedByAll"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M3-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in the note prose only; inputs{} carries no structured 'assumptions' key, unlike the ten other steps that do. M5-S04's manual test [4] asserts all 25 deferrals appear as named rows, which is compiled from structure.",
+                  "fix": "Add \"assumptions\": [\"A11\",\"A12\",\"A13\"] to inputs{}."
+                }
+              ],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M3-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_validation_rules.py --manifest-dir artefacts/M3-S01 -> exit 0, '2 validation rule(s) across 2 file(s); 0 finding(s)'"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S02",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M3-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M3-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M3-S02",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py artefacts/M3-S02' cannot exit 0 on this step's own correct artefacts. TEXT_SUFFIXES = ('.html','.htm','.txt','.email','.md') and the checker rglobs the directory, so the declared output sender-identity-note.md is linted as an email template; emit_result() returns 1 on any finding, REVIEW included.",
+                  "evidence": "fixture -> exit 1, score 100, 3 REVIEW findings, all three on artefacts/M3-S02/sender-identity-note.md: 'hardcoded email address `support@acme.example` found in template content', 'no obvious merge fields found', 'subject line is not documented'. check_email_templates.py:13 and :45.",
+                  "fix": "Pass the two .email files as positional paths instead of the directory, or move sender-identity-note.md out of the scanned directory."
+                },
+                {
+                  "problem": "acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M3 gate' — the same deadlock as M2-S05: the step cannot reach 'tested', so it cannot reach 'documented', so 'gate milestone:M3 approve' is refused.",
+                  "evidence": "scripts/build_plan.py:954; contract section 3 milestone-gate rule",
+                  "fix": "Move the sandbox loop-test assertion to an M5 milestone acceptance test."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_email_templates.py artefacts/M3-S02 -> exit 1 (3 REVIEW findings on the declared .md output)",
+                "check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02 -> exit 0 with 3 WARNs"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M3-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{} carries no structured 'assumptions' key.",
+                  "fix": "Add \"assumptions\": [\"A3\"] to inputs{}."
+                }
+              ],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M3-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_case_management_setup.py --manifest-dir artefacts/M3-S03 -> exit 0, 'No case management setup issues found.' (routing addresses must carry <emailAddress>, which is the element the checker reads at check_case_management_setup.py:372 and the element admin/email-to-case-configuration/references/metadata-examples.md uses)"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M3-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M3-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "step declares no checker test (X03 dropped check_assignment_rules.py); xml + manifest + 2 manual remain"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S05",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M3-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M3-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M3-S05",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares. check_omni_channel_routing_setup.py raises ERROR E2 when a ServiceChannel is present and the manifest holds no ServicePresenceStatus, and no step in the plan declares a servicePresenceStatuses/ artefact. The planner's W05 disposition recorded that E2 is an ERROR but did not add the artefact.",
+                  "evidence": "fixture over the whole corrected tree -> exit 1: \"ERROR E2 [M3-S05/serviceChannels/Case_Channel.serviceChannel-meta.xml] ServiceChannel 'Case_Channel': this manifest contains no ServicePresenceStatus at all\". check_omni_channel_routing_setup.py:251-258. grep of plan.json outputs[] for 'servicePresenceStatus' -> no match.",
+                  "fix": "Add artefacts/M3-S05/servicePresenceStatuses/<name>.servicePresenceStatus-meta.xml to outputs[] — acceptance_tests[4] already asserts that Tier_1_Presence names a presence status — or drop the checker and carry the assertion manually."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_omni_channel_routing_setup.py --manifest-dir artefacts -> exit 1 (E2) after E4 and E5 were cleared by correcting <relatedEntityType> and routingModel LEAST_ACTIVE in the fixture"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M4-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M4-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01 -> exit 0, 'No business hours issues found.' on three calendars, one default, one future holiday"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S02",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M4-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M4-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M4-S02",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitlement process references are the ones M4-S01 produced', but settings/BusinessHours.settings-meta.xml is M4-S01's artefact, so at artefacts/M4-S02 the checker prints 'INFO: No BusinessHours settings file found' and exits 0 whatever the process says. This is the identical defect the planner found and fixed on M4-S03 (X05) and M4-S04 (W07) and left standing here.",
+                  "evidence": "fixture -> exit 0, 'INFO: No BusinessHours settings file found under artefacts/M4-S02.' NEGATIVE fixture: First_Response_Premier rewritten to name 'Ghost Calendar' -> still exit 0, same INFO line.",
+                  "fix": "Drop the test (M4's milestone test already runs the same checker at --manifest-dir artefacts), or declare \"scope\": \"build\" with --manifest-dir artefacts."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_entitlements_and_milestones.py --manifest-dir artefacts/M4-S02 -> exit 0, 2 INFO I2 notes",
+                "check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S02 -> exit 0 vacuously"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M4-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M4-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03 -> exit 0, 'No issues found.' on a RecordBeforeSave/Create flow with a fault-connected Get Records (confirms the B07 disposition)",
+                "check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03 -> exit 0, '0 error(s), 2 warning(s), 1 info' (confirms the B06 disposition: WARNs do not fail the step)"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M4-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M4-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_escalation_rules.py --manifest-dir artefacts (scope build) -> exit 0, 'OK: no ERROR findings (1 warning(s))' — W1 'no rule in this file is active' is the expected inactive-deploy state the step's manual test already names"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S05",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M4-S05",
+              "lens": "executability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name. Its nine numbered outputs are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations — no manifest. standards/build-orchestration.md section 4 borrowed-agent condition 2: 'a path in outputs[] with no counterpart there is an artefact nobody writes, check-outputs never confirms it, and the step cannot reach built.' Section 5 nonetheless requires every metadata-type step to declare it, so the step is caught between the two rules.",
+                  "evidence": "agents/apex-builder/AGENT.md '## Output Contract' (items 1-9, no package.xml anywhere in the file); standards/build-orchestration.md section 4 condition 2 and section 5 'Every metadata step declares artefacts/<step-id>/package.xml in its outputs[]'",
+                  "fix": "Re-own the manifest: fold M4-S05's Apex members into M5-S05's build-level package.xml (metadata-builder writes it) and drop the path from M4-S05's outputs[], or split the manifest onto a metadata-builder step that depends on M4-S05."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M4-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.md and references/llm-anti-patterns.md carry fenced Apex). That is right for an Apex step, but outputs[] includes .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documents.",
+                  "fix": "Either cite a skill that documents the ApexClass/ApexTrigger meta shape, or record in the step note that the meta XML comes from the Metadata API guide directly."
+                }
+              ],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M4-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 -> exit 0, 'No issues found.' on a bulk-safe CompletionDate writer"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M5-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M5-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "check_list_views_and_compact_layouts.py --manifest-dir artefacts (scope build) -> exit 0, 'No issues found.' (confirms the X06 disposition)",
+                "check_report_inventory.py --manifest-dir artefacts/M5-S01 -> exit 0"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M5-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M5-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "acceptance_tests[0] description says the environment inventory table must carry a 'purpose' column. check_sandbox_plan.py requires three: type, purpose AND owner (check_sandbox_plan.py:187). A fixture carrying all five sections with type and purpose but no owner scored 90 and exited 1 on 'environment inventory table has no `owner` column'. The planner's B10 disposition, which corrected the v2 evidence, is itself incomplete.",
+                  "fix": "Name all three required columns in the description."
+                }
+              ],
+              "evidence": [
+                "check_sandbox_plan.py artefacts/M5-S02/sandbox-proof-plan.md, five REQUIRED_SECTIONS plus type/purpose/owner columns -> exit 0, score 100",
+                "same fixture without the owner column -> exit 1, score 90, one HIGH"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S03",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M5-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M5-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M5-S03",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares. check_invest.py split_stories() treats every '#' or '##' heading as a story, and main() returns 1 if any story fails. story-drafter emits ONE markdown document with seven top-level sections (Summary, Persona anchors, Story backlog, Requirements Traceability Matrix, MoSCoW capacity check, Process Observations, Citations); the six that are not stories each fail the As-a / I-want / So-that / Given-When-Then / Complexity lint.",
+                  "evidence": "fixture in exactly story-drafter's seven-section shape with one fully compliant story -> exit 1, 'Summary: 1/9 stories passed (8 failed)'. The skill's own references/examples.md also exits 1 ('0/8 stories passed'). check_invest.py:117-145 and :331-375; agents/story-drafter/AGENT.md '## Output Contract'.",
+                  "fix": "Declare a stories-only artefact for the checker to lint (e.g. artefacts/M5-S03/stories.md alongside story-backlog.md), or drop the checker and carry the INVEST assertion in the step's manual test."
+                }
+              ],
+              "warnings": [
+                {
+                  "problem": "inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in the step says whether it resolves against the repo root or the build directory. The file exists only at the build root.",
+                  "fix": "Write it as the build-relative path the runner will pass."
+                }
+              ],
+              "evidence": [
+                "check_invest.py artefacts/M5-S03/story-backlog.md -> exit 1 on a story-drafter-shaped document",
+                "check_invest.py skills/admin/user-story-writing-for-salesforce/references/examples.md -> exit 1, '0/8 stories passed'"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S04",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M5-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M5-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M5-S04",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose acceptanceTest.scope description reads \"'step' runs the checker over the one step's artefacts (artefacts/<step-id>/)\" — while the command literally passes --manifest-dir artefacts, the build scope. The declared scope and the declared path disagree, so what the tester runs is undefined: section 5 also says the tester runs the command verbatim and substitutes no path.",
+                  "evidence": "plan.json steps[M5-S04].acceptance_tests[1] has no 'scope' key; command = 'python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts'; agents/_shared/schemas/build-plan.schema.json:400-403",
+                  "fix": "Add \"scope\": \"build\" to the test."
+                }
+              ],
+              "warnings": [
+                {
+                  "problem": "acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keeper/AGENT.md Step 10 instructs the agent to lint the pack with --file <declared path>. The plan's form is the stronger one (it cross-checks ac_id), but the agent's own playbook and the plan now say different things.",
+                  "fix": "Update build-doc-keeper Step 10 to the --manifest-dir form so the agent and the plan agree."
+                }
+              ],
+              "evidence": [
+                "check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md -> exit 0 once the ten canonical sections carry rows with the eight required fields and the Sharing/Automation rows cite their decision tree",
+                "check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts -> exit 0 on a build-schema matrix (1 WARN: 55 orphan artefacts)",
+                "check_uat_case.py --manifest-dir artefacts/M5-S04 -> exit 0, 'OK — 5 case(s), 0 run-sheet row(s), 21 criterion id(s) cross-checked' (confirms the B11 disposition)",
+                "check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md -> exit 0, '3 document(s) checked — 0 error(s), 0 warning(s)' (confirms the X09 disposition)"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S05",
+          "verdict": "refuted",
+          "lenses": [
+            {
+              "step_id": "M5-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/<agent>/AGENT.md read for class/status/requires_org; depends_on + output-collision graph walked over all 22 steps"
+              ]
+            },
+            {
+              "step_id": "M5-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skills/<domain>/<slug>/SKILL.md resolved; cited decision-tree branch quotes matched verbatim against the tree file"
+              ]
+            },
+            {
+              "step_id": "M5-S05",
+              "lens": "testability",
+              "verdict": "refuted",
+              "blockers": [
+                {
+                  "problem": "acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_manifest.py has RISKY_TYPES = {'SharingRules','ConnectedApp','ExternalCredential','NamedCredential'} and raises a HIGH finding for each; emit_result() returns 1 on any finding, blocking or not. M2-S05 declares sharingRules/Case.sharingRules-meta.xml, so the build-level package.xml this step writes must name SharingRules.",
+                  "evidence": "fixture -> exit 1, score 90, '1 finding(s) detected (0 blocking)', 'HIGH artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests'. check_deployment_manifest.py:28, :178, :110.",
+                  "fix": "Change expected to name the HIGH SharingRules finding as the known state and assert on the score, or drop the checker and let the always-on manifest checks plus the step's manual test carry the assertion."
+                }
+              ],
+              "warnings": [],
+              "evidence": [
+                "check_deployment_manifest.py --manifest-dir artefacts/M5-S05 -> exit 1 on a build-level package.xml carrying SharingRules"
+              ]
+            }
+          ]
+        }
+      ],
+      "blockers": [
+        {
+          "step": "M2-S01",
+          "lens": "testability",
+          "problem": "acceptance_tests[4] (manual) asks an admin to confirm 'the bypass permission is assigned only to the integration/automated-process identity and to no human user'. PermissionSetAssignment is record data, not metadata; nothing in outputs[] records an assignment, and confirming one requires an org. In a design-only build the test cannot be ticked at the M2 gate.",
+          "evidence": "plan.json steps[M2-S01].outputs[] = customPermissions/..., permissionsets/Case_Intake_Integration.permissionset-meta.xml, package.xml; plan.build_mode = design-only",
+          "fix": "Rewrite as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) and move the assignment instruction into the step's deploy-order note."
+        },
+        {
+          "step": "M2-S02",
+          "lens": "testability",
+          "problem": "acceptance_tests[1] declares expected 'exit 0', but check_permission_set_group_composition.py exits 1 on any WARN (its own module docstring: 'Exits 1 on any WARN finding, 0 if only GOOD findings') and PSG_NAME_RE = ^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$ rejects all three PSG names this step itself declares.",
+          "evidence": "fixture at the step's declared paths -> exit 1, 'Summary: 1 good, 3 warn'; three WARNs, one per PSG: \"PSG name 'Support_Tier1' does not match convention PSG_<persona>_<env>\". The same three PSGs renamed PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod -> 'Summary: 1 good, 0 warn', exit 0.",
+          "fix": "Rename the three PSGs in outputs[] to the PSG_<persona>_<env> form, or drop this checker and carry the composition assertion in a manual test the way X01 and X03 did."
+        },
+        {
+          "step": "M2-S03",
+          "lens": "testability",
+          "problem": "acceptance_tests[1] description claims \"Every profile's record-type and layout assignment names a record type and layout that exist\". At step scope the checker sees no record types and no layouts (both are M1-S01's and M1-S02's artefacts), so the cross-reference is never made and the exit code carries nothing.",
+          "evidence": "fixture -> exit 0, 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s); 0 finding(s)'. NEGATIVE fixture: 'Acme Support Tier 1.profile-meta.xml' rewritten to name Case.Nonexistent and Case-Ghost Layout -> still exit 0, still '0 record type(s), 0 layout(s); 0 finding(s)'.",
+          "fix": "Declare \"scope\": \"build\" with --manifest-dir artefacts, or reword to what step scope proves and move the cross-reference to an M2 milestone test."
+        },
+        {
+          "step": "M2-S05",
+          "lens": "testability",
+          "problem": "acceptance_tests[3] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M2 gate'. A manual test that cannot be ticked at its own milestone stops the step reaching 'tested', because set-status <step> tested requires tests/M2-S05/results.json with \"passed\": true; the step therefore never reaches 'documented', and standards/build-orchestration.md section 3 refuses 'gate milestone:M2 approve' unless every step in M2 is documented or blocked with a recorded reason. M2-S05 is neither. Milestone M2 deadlocks.",
+          "evidence": "scripts/build_plan.py:954 — 'records passed=... — only a passing test run moves a step to tested'; STATUS graph at scripts/build_plan.py:134-135; contract section 3 milestone-gate rule",
+          "fix": "Move the sandbox-proof assertion to an M5 milestone acceptance test and leave M2-S05 with a manual test tickable from the artefacts at the M2 gate."
+        },
+        {
+          "step": "M3-S02",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] 'python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py artefacts/M3-S02' cannot exit 0 on this step's own correct artefacts. TEXT_SUFFIXES = ('.html','.htm','.txt','.email','.md') and the checker rglobs the directory, so the declared output sender-identity-note.md is linted as an email template; emit_result() returns 1 on any finding, REVIEW included.",
+          "evidence": "fixture -> exit 1, score 100, 3 REVIEW findings, all three on artefacts/M3-S02/sender-identity-note.md: 'hardcoded email address `support@acme.example` found in template content', 'no obvious merge fields found', 'subject line is not documented'. check_email_templates.py:13 and :45.",
+          "fix": "Pass the two .email files as positional paths instead of the directory, or move sender-identity-note.md out of the scanned directory."
+        },
+        {
+          "step": "M3-S02",
+          "lens": "testability",
+          "problem": "acceptance_tests[4] declares expected 'ticked at the M5 milestone gate; carried forward as outstanding at the M3 gate' — the same deadlock as M2-S05: the step cannot reach 'tested', so it cannot reach 'documented', so 'gate milestone:M3 approve' is refused.",
+          "evidence": "scripts/build_plan.py:954; contract section 3 milestone-gate rule",
+          "fix": "Move the sandbox loop-test assertion to an M5 milestone acceptance test."
+        },
+        {
+          "step": "M3-S05",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] at scope 'build' cannot exit 0 on any artefact set this plan declares. check_omni_channel_routing_setup.py raises ERROR E2 when a ServiceChannel is present and the manifest holds no ServicePresenceStatus, and no step in the plan declares a servicePresenceStatuses/ artefact. The planner's W05 disposition recorded that E2 is an ERROR but did not add the artefact.",
+          "evidence": "fixture over the whole corrected tree -> exit 1: \"ERROR E2 [M3-S05/serviceChannels/Case_Channel.serviceChannel-meta.xml] ServiceChannel 'Case_Channel': this manifest contains no ServicePresenceStatus at all\". check_omni_channel_routing_setup.py:251-258. grep of plan.json outputs[] for 'servicePresenceStatus' -> no match.",
+          "fix": "Add artefacts/M3-S05/servicePresenceStatuses/<name>.servicePresenceStatus-meta.xml to outputs[] — acceptance_tests[4] already asserts that Tier_1_Presence names a presence status — or drop the checker and carry the assertion manually."
+        },
+        {
+          "step": "M4-S02",
+          "lens": "testability",
+          "problem": "acceptance_tests[1] is a vacuous pass. Its description claims 'The calendars the entitlement process references are the ones M4-S01 produced', but settings/BusinessHours.settings-meta.xml is M4-S01's artefact, so at artefacts/M4-S02 the checker prints 'INFO: No BusinessHours settings file found' and exits 0 whatever the process says. This is the identical defect the planner found and fixed on M4-S03 (X05) and M4-S04 (W07) and left standing here.",
+          "evidence": "fixture -> exit 0, 'INFO: No BusinessHours settings file found under artefacts/M4-S02.' NEGATIVE fixture: First_Response_Premier rewritten to name 'Ghost Calendar' -> still exit 0, same INFO line.",
+          "fix": "Drop the test (M4's milestone test already runs the same checker at --manifest-dir artefacts), or declare \"scope\": \"build\" with --manifest-dir artefacts."
+        },
+        {
+          "step": "M4-S05",
+          "lens": "executability",
+          "problem": "outputs[] declares artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name. Its nine numbered outputs are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations — no manifest. standards/build-orchestration.md section 4 borrowed-agent condition 2: 'a path in outputs[] with no counterpart there is an artefact nobody writes, check-outputs never confirms it, and the step cannot reach built.' Section 5 nonetheless requires every metadata-type step to declare it, so the step is caught between the two rules.",
+          "evidence": "agents/apex-builder/AGENT.md '## Output Contract' (items 1-9, no package.xml anywhere in the file); standards/build-orchestration.md section 4 condition 2 and section 5 'Every metadata step declares artefacts/<step-id>/package.xml in its outputs[]'",
+          "fix": "Re-own the manifest: fold M4-S05's Apex members into M5-S05's build-level package.xml (metadata-builder writes it) and drop the path from M4-S05's outputs[], or split the manifest onto a metadata-builder step that depends on M4-S05."
+        },
+        {
+          "step": "M5-S03",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] cannot exit 0 on the document story-drafter's Output Contract declares. check_invest.py split_stories() treats every '#' or '##' heading as a story, and main() returns 1 if any story fails. story-drafter emits ONE markdown document with seven top-level sections (Summary, Persona anchors, Story backlog, Requirements Traceability Matrix, MoSCoW capacity check, Process Observations, Citations); the six that are not stories each fail the As-a / I-want / So-that / Given-When-Then / Complexity lint.",
+          "evidence": "fixture in exactly story-drafter's seven-section shape with one fully compliant story -> exit 1, 'Summary: 1/9 stories passed (8 failed)'. The skill's own references/examples.md also exits 1 ('0/8 stories passed'). check_invest.py:117-145 and :331-375; agents/story-drafter/AGENT.md '## Output Contract'.",
+          "fix": "Declare a stories-only artefact for the checker to lint (e.g. artefacts/M5-S03/stories.md alongside story-backlog.md), or drop the checker and carry the INVEST assertion in the step's manual test."
+        },
+        {
+          "step": "M5-S04",
+          "lens": "testability",
+          "problem": "acceptance_tests[1] declares no scope — so 'step' by build-plan.schema.json, whose acceptanceTest.scope description reads \"'step' runs the checker over the one step's artefacts (artefacts/<step-id>/)\" — while the command literally passes --manifest-dir artefacts, the build scope. The declared scope and the declared path disagree, so what the tester runs is undefined: section 5 also says the tester runs the command verbatim and substitutes no path.",
+          "evidence": "plan.json steps[M5-S04].acceptance_tests[1] has no 'scope' key; command = 'python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts'; agents/_shared/schemas/build-plan.schema.json:400-403",
+          "fix": "Add \"scope\": \"build\" to the test."
+        },
+        {
+          "step": "M5-S05",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] cannot exit 0 on a correct build-level manifest. check_deployment_manifest.py has RISKY_TYPES = {'SharingRules','ConnectedApp','ExternalCredential','NamedCredential'} and raises a HIGH finding for each; emit_result() returns 1 on any finding, blocking or not. M2-S05 declares sharingRules/Case.sharingRules-meta.xml, so the build-level package.xml this step writes must name SharingRules.",
+          "evidence": "fixture -> exit 1, score 90, '1 finding(s) detected (0 blocking)', 'HIGH artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests'. check_deployment_manifest.py:28, :178, :110.",
+          "fix": "Change expected to name the HIGH SharingRules finding as the known state and assert on the score, or drop the checker and let the always-on manifest checks plus the step's manual test carry the assertion."
+        },
+        {
+          "step": "M5 (milestone)",
+          "lens": "testability",
+          "problem": "milestone M5 acceptance_tests[2] runs 'python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05' — the same command as M5-S05[0] — and cannot exit 0 for the same reason: SharingRules is in RISKY_TYPES and emit_result() returns 1 on any finding.",
+          "evidence": "fixture -> exit 1, score 90, HIGH 'manifest includes SharingRules'",
+          "fix": "Apply the same fix as M5-S05 acceptance_tests[0]."
+        }
+      ],
+      "warnings": [
+        {
+          "step": "M2-S01",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] description claims 'The custom permission is granted by exactly one permission set and every consumer reference resolves', but the exit code does not carry that. Removing the <customPermissions> grant entirely produced only 'INFO: ... granted by no permission set or profile in this tree' and exit 0.",
+          "fix": "Reword the description to what the exit code proves, or run the checker with --strict."
+        },
+        {
+          "step": "M2-S04",
+          "lens": "testability",
+          "problem": "acceptance_tests[3] bundles three separate assertions (per-queue email posture, group membership matching the roster, no named user hard-coded) into one tick, so a partial pass cannot be recorded.",
+          "fix": "Split into one manual test per assertion."
+        },
+        {
+          "step": "M3-S01",
+          "lens": "grounding",
+          "problem": "inputs.answers records Q54, Q55 and Q57 as DEFERRED and names assumptions A11, A12, A13 in the note prose only; inputs{} carries no structured 'assumptions' key, unlike the ten other steps that do. M5-S04's manual test [4] asserts all 25 deferrals appear as named rows, which is compiled from structure.",
+          "fix": "Add \"assumptions\": [\"A11\",\"A12\",\"A13\"] to inputs{}."
+        },
+        {
+          "step": "M3-S03",
+          "lens": "grounding",
+          "problem": "inputs.answers records Q20 as DEFERRED and names assumption A3 in note prose only; inputs{} carries no structured 'assumptions' key.",
+          "fix": "Add \"assumptions\": [\"A3\"] to inputs{}."
+        },
+        {
+          "step": "M4-S05",
+          "lens": "grounding",
+          "problem": "apex/entitlement-apex-hooks carries no fenced XML anywhere (SKILL.md, references/examples.md and references/llm-anti-patterns.md carry fenced Apex). That is right for an Apex step, but outputs[] includes .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documents.",
+          "fix": "Either cite a skill that documents the ApexClass/ApexTrigger meta shape, or record in the step note that the meta XML comes from the Metadata API guide directly."
+        },
+        {
+          "step": "M5-S02",
+          "lens": "testability",
+          "problem": "acceptance_tests[0] description says the environment inventory table must carry a 'purpose' column. check_sandbox_plan.py requires three: type, purpose AND owner (check_sandbox_plan.py:187). A fixture carrying all five sections with type and purpose but no owner scored 90 and exited 1 on 'environment inventory table has no `owner` column'. The planner's B10 disposition, which corrected the v2 evidence, is itself incomplete.",
+          "fix": "Name all three required columns in the description."
+        },
+        {
+          "step": "M5-S03",
+          "lens": "testability",
+          "problem": "inputs.discovery_artifact_path is the bare relative path 'CLARIFICATIONS.md'; nothing in the step says whether it resolves against the repo root or the build directory. The file exists only at the build root.",
+          "fix": "Write it as the build-relative path the runner will pass."
+        },
+        {
+          "step": "M5-S04",
+          "lens": "testability",
+          "problem": "acceptance_tests[2] declares check_uat_case.py with --manifest-dir; agents/build-doc-keeper/AGENT.md Step 10 instructs the agent to lint the pack with --file <declared path>. The plan's form is the stronger one (it cross-checks ac_id), but the agent's own playbook and the plan now say different things.",
+          "fix": "Update build-doc-keeper Step 10 to the --manifest-dir form so the agent and the plan agree."
+        },
+        {
+          "step": "(plan)",
+          "lens": "testability",
+          "problem": "20 of the 45 declared checker tests exit 0 against an empty artefacts/<step-id>/. No step is fully vacuous — the always-on manifest check fails on a metadata step with no package.xml, so the AGENT.md 'test can fail' rule is not tripped at step level — but a reader of PLAN.md cannot tell which checker exit codes carry an assertion and which are discovery no-ops.",
+          "fix": "State in each such description what the checker prints when it finds nothing, the way M4-S03's and M4-S04's descriptions now do."
+        },
+        {
+          "step": "(plan)",
+          "lens": "grounding",
+          "problem": "All 18 scope.fit_gap[] rows carry a tier from the five-tier enum, but none carries the effort tier (S/M/L/XL) or the risk_tag that skills/admin/fit-gap-analysis-against-org requires of every row in its own verification checklist. build-plan.schema.json requires only requirement and verdict, so validate is silent.",
+          "fix": "Add effort and risk_tag per row, or record in the plan why the build layer carries a reduced fit-gap row."
+        },
+        {
+          "step": "(plan)",
+          "lens": "testability",
+          "problem": "None of the 11 milestone checker tests declares a scope, and two of them address a single step's directory (milestone M5 acceptance_tests[0] and [2]). build-plan.schema.json defines scope on acceptanceTest without saying what it means at milestone level, so a reader cannot tell from plan.json which tree a milestone checker sees.",
+          "fix": "Declare scope on milestone checker tests too, or record in the contract that milestone tests are build-scoped by definition."
+        },
+        {
+          "step": "M5-S05",
+          "lens": "testability",
+          "problem": "acceptance_tests[3] bundles three separate confirmations (no deploy command in the note, both blocked steps listed as excluded, the deploy order matching case-management-setup section 5) into one tick.",
+          "fix": "Split into one manual test per confirmation."
+        }
+      ],
+      "cross_step_results": [
+        {
+          "check": "Every scope.fit_gap[] requirement reaches at least one step, and every such step carries at least one acceptance test",
+          "result": "pass",
+          "detail": "18 rows, 0 with an empty steps[], 0 naming a step id that does not exist, 0 naming a step with no acceptance_tests[]"
+        },
+        {
+          "check": "No two steps write the same output path",
+          "result": "pass",
+          "detail": "111 declared output paths across 22 steps, 0 collisions"
+        },
+        {
+          "check": "depends_on graph is acyclic and every id exists",
+          "result": "pass",
+          "detail": "depth-first walk over all 22 steps: no cycle, no missing id, no dependency on a later milestone"
+        },
+        {
+          "check": "Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id",
+          "result": "pass",
+          "detail": "M1 2 steps/3 tests, M2 5/4, M3 5/4, M4 5/6, M5 5/5; membership matches in all five"
+        },
+        {
+          "check": "Every scope.out item names why it is out",
+          "result": "pass",
+          "detail": "21 items, each naming the requirement clause, the answered question, or the deferred question id that put it out"
+        },
+        {
+          "check": "Blocked steps have a recorded reason and no dependents",
+          "result": "pass",
+          "detail": "M3-S05 'deferred: Q32, Q33, Q34, Q35' and M5-S02 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity'; neither has a dependent step (confirms the X10 fix)"
+        },
+        {
+          "check": "Every metadata-type step declares artefacts/<step-id>/package.xml and carries an xml and a manifest test",
+          "result": "pass",
+          "detail": "all 19 metadata-type steps"
+        },
+        {
+          "check": "Acceptance-test deny-list and command shape",
+          "result": "pass",
+          "detail": "0 of 45 checker commands match the section 5 deny-list; 0 command-type tests are declared"
+        },
+        {
+          "check": "human_gates[] completeness",
+          "result": "pass",
+          "detail": "12 records: clarifications (approved), plan (pending), one per milestone, and a step:<id> gate for each of the five human-gated steps"
+        },
+        {
+          "check": "Milestone acceptance tests are runnable",
+          "result": "fail",
+          "detail": "milestone M5 acceptance_tests[2] runs the same check_deployment_manifest.py command as M5-S05[0] and fails identically on the SharingRules HIGH finding (exit 1)"
+        },
+        {
+          "check": "Milestone gates reachable",
+          "result": "fail",
+          "detail": "M2 and M3 cannot be approved: M2-S05 and M3-S02 each carry a manual test whose declared expected value defers the tick to the M5 gate, so neither step can reach 'tested' -> 'documented', and section 3 refuses the milestone gate for a step that is neither documented nor blocked"
+        },
+        {
+          "check": "scope field agrees with the literal --manifest-dir path on every checker test",
+          "result": "fail",
+          "detail": "M5-S04 acceptance_tests[1] defaults to step scope while passing --manifest-dir artefacts. The other 33 step checker tests agree (or declare no --manifest-dir at all, which is the section 5 non-standard-argument-form case). None of the 11 milestone checker tests declares a scope, and two point inside one step's directory"
+        }
+      ]
+    },
+    "validate_baseline": {
+      "command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 6
+    },
+    "validate_after_set_verification": {
+      "command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 6
+    },
+    "validate_diff": "identical: the same six non-standard-argument-form WARNs before and after, so every finding in this report is the plan's and none is this run's write",
+    "checker_runs": {
+      "declared": 45,
+      "run": 45,
+      "exit_0_on_correct_artefacts": 39,
+      "cannot_exit_0": 6,
+      "exit_0_on_empty_artefacts": 20
+    },
+    "lens_counts": {
+      "executability": {
+        "pass": 21,
+        "refuted": 1
+      },
+      "grounding": {
+        "pass": 22,
+        "refuted": 0
+      },
+      "testability": {
+        "pass": 12,
+        "refuted": 10
+      }
+    }
+  }
+}

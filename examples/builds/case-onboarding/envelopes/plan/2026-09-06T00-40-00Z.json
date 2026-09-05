@@ -1,0 +1,624 @@
+{
+  "agent": "build-planner",
+  "mode": "single",
+  "run_id": "2026-09-06T00-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/plan/2026-09-06T00-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/plan/2026-09-06T00-40-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding"
+  },
+  "outcome": "completed",
+  "summary": "Re-planned case-onboarding from plan-rejected v4 to v5 (design-only, 5 milestones, 22 steps, 2 blocked, 130 acceptance tests, 48 of them checker tests). The single v4 blocker is closed exactly as the verifier prescribed: the Case org-wide default moves off a settings file that cannot carry it and onto M1-S01's objects/Case/Case.object-meta.xml as <sharingModel>Private</sharingModel> plus <externalSharingModel>Private</externalSharingModel>, M1-S01 joins M2-S05's depends_on, M2-S05's sharing checker is widened to --manifest-dir artefacts with scope 'build' declared to match, and its manual test reads the default from the object file. settings/Sharing.settings-meta.xml is dropped rather than kept, because neither cited skill documents such a file at all. All six warnings are dispositioned: W01 closed by declaring --strict on both check_validation_rules commands (the stronger remedy — the blank guard the step depends on is a REVIEW finding, so accepting advisories would have left the test passing on the formulas the step forbids); W02 closed after re-running the repaired check_case_management_setup.py on a fixture holding both M3-S03 and M3-S04, which exits 0 with M3-S04 present and absent alike; W03 closed by rewording all three M5 tests off M5-S02's absent proof sandbox; W04 closed by quoting the whole Q13 block verbatim; W05 closed by dropping the stale W08 observation; W06 acknowledged as a CLI defect already fixed and outside this agent's writes. Verifying W02 surfaced three further passages that asserted the now-repaired checker behaviour and would have shipped false statements — M3's milestone manual test, M3-S04's note and scope.out[20]; all three are corrected, and M3-S04 gains its first checker test as a result. validate exits 0 with exactly the three documented non-standard-argument-form warnings. No gate approved, nothing deployed, nothing written outside the build directory.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM by this agent's own rubric and it cannot be higher: two steps remain blocked (M3-S05 on deferred Q32-Q35, M5-S02 on four sandbox-strategy inputs that exist in no answer, requirement or upstream step), one decision (D10) is resolved from a source_reference with adr_required true, and 25 blocking clarifications were deferred rather than answered at G1 — each of the three MEDIUM conditions on its own. Not LOW: 2 of 22 steps are blocked, well under the quarter that would force it; no two answers contradict; every path was checked on disk; validate exits 0. Not HIGH for one further reason worth naming: the nine checker invocations re-run this round are against this agent's reconstruction of correct artefacts from the cited skills' own metadata examples, so a checker that passed here could still fail on what metadata-builder actually writes.",
+  "extensions": {
+    "plan_path": ".sfskills/builds/case-onboarding/plan.json",
+    "plan_version": 5,
+    "plan_status": "planned",
+    "build_mode": "design-only",
+    "replans_version": 4,
+    "responds_to_verification": ".sfskills/builds/case-onboarding/inputs/verification/verification-v4.json",
+    "plan_body_written": ".sfskills/builds/case-onboarding/inputs/plan/plan-body-v5.json",
+    "validate_result": {
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 3,
+      "warning_detail": [
+        "M5-S02 acceptance_tests[0] — check_sandbox_plan.py takes a positional path",
+        "M5-S04 acceptance_tests[0] — check_workbook.py takes --workbook",
+        "M5-S04 acceptance_tests[3] — check_ac_format.py takes --file"
+      ],
+      "note": "All three are the contract's own documented follow-up (standards/build-orchestration.md § 5, 'converge checker argument forms'). No other WARN and no ERROR."
+    },
+    "counts": {
+      "milestones": 5,
+      "steps": 22,
+      "steps_by_type": {
+        "object-model": 1,
+        "ui": 3,
+        "access": 5,
+        "validation": 1,
+        "routing": 3,
+        "sla": 3,
+        "automation": 2,
+        "custom": 1,
+        "docs": 3
+      },
+      "blocked_steps": 2,
+      "human_gated_steps": 6,
+      "acceptance_tests_total": 130,
+      "checker_tests": 48,
+      "decisions": 10,
+      "assumptions": 28,
+      "fit_gap_rows": 18
+    },
+    "changes_from_v4": [
+      "M1-S01 — inputs.owd added (Case sharingModel/externalSharingModel Private); note extended with the B01 grounding; a manual acceptance test added asserting both elements on Case.object-meta.xml; human_gate false -> true (Step 6 lists org-wide defaults), which added the step:M1-S01 pending gate.",
+      "M2-S05 — settings/Sharing.settings-meta.xml removed from outputs[]; M1-S01 added to depends_on; acceptance_tests[0] widened to --manifest-dir artefacts with scope 'build'; acceptance_tests[2] (manifest) description says why there is no Settings member; acceptance_tests[3] (manual) reads the OWD from the object file; inputs.owd and note record the move.",
+      "M3-S01 — acceptance_tests[0] command gains --strict and declares scope 'step'; its description and acceptance_tests[3] rewritten from the corrected emit_result behaviour; inputs.note's S1 passage corrected and extended with the re-run evidence.",
+      "M3-S03 — acceptance_tests[0] description rewritten: the order dependence is gone, with the repaired functions cited by line and the re-run recorded both ways.",
+      "M3-S04 — a build-scoped check_case_management_setup.py test added as acceptance_tests[0] (the step had no checker test at all); inputs.note's claim that the checker 'is not a substitute here either' corrected; the assignment-rule manual test reworded to carry only what the exit code cannot see.",
+      "M3 milestone — acceptance_tests[0] gains --strict with a corrected description; acceptance_tests[4] replaced: a manual test whose whole content was the now-false <active> claim becomes the real build-scoped check_case_management_setup.py test.",
+      "M5 milestone — acceptance_tests[3], [4] and [5] reworded off M5-S02's absent proof sandbox.",
+      "D4 — branch_quote replaced with the whole Q13 block verbatim; rationale rewritten to name both leaves this build takes and why the tree permits it.",
+      "scope.out[20] — the case-management sweep is no longer scoped out; the row now names two unpassable checkers instead of three."
+    ],
+    "blocker_disposition": [
+      {
+        "id": "B01",
+        "step": "M2-S05",
+        "lens": "grounding + testability",
+        "verdict": "CLOSED as prescribed",
+        "what_v4_did": "Declared artefacts/M2-S05/settings/Sharing.settings-meta.xml as the artefact carrying the Case org-wide default, and asserted the OWD from it in acceptance_tests[3]. sharingModel appeared nowhere in plan.json.",
+        "fix": "The OWD moves onto objects/Case/Case.object-meta.xml — M1-S01's existing output — as <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel>, recorded in M1-S01's inputs.owd and asserted by a new manual test on M1-S01. settings/Sharing.settings-meta.xml is REMOVED from M2-S05's outputs[] rather than kept: grep -rn 'Sharing.settings|SharingSettings' over both cited skills (admin/sharing-and-visibility, admin/queues-and-public-groups) returns nothing, so the file was ungrounded as well as unreadable and would have fired metadata-builder Step 3's gap rule. M1-S01 is added to M2-S05's depends_on. M2-S05 acceptance_tests[0] is widened from --manifest-dir artefacts/M2-S05 to --manifest-dir artefacts with scope 'build' declared to match, and acceptance_tests[3] is reworded to read the default from the object file. M2-S05's manifest test description now says why it carries no Settings member.",
+        "evidence": "skills/admin/sharing-and-visibility/references/metadata-examples.md:11 — 'Both live on the CustomObject file, not in a separate settings file.' check_sharing_model.py SUFFIXES (:39-45) has no .settings-meta.xml; collect_sharing_models (:161-177) resolves an OWD only from a CustomObject file's <sharingModel>. Fixture run this session: at --manifest-dir artefacts/M2-S05, 'Scanned 1 sharing-model metadata file(s) (0 object OWD(s) resolved); 0 finding(s) detected.' exit 0 — a vacuous pass; at --manifest-dir artefacts, 'Scanned 2 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected.' exit 0. Matched negative at build scope with sharingModel ReadWrite: exit 1, HIGH 'criteria-based rule Support_Cases_To_Tier_2 grants Edit but Case has sharingModel ReadWrite - the grant is not above the object's default, so it adds no access', plus a REVIEW on the object file.",
+        "consequence_accepted": "M1-S01 now declares an org-wide default, so its human_gate flips false -> true per agents/build-planner/AGENT.md Step 6, which names org-wide defaults among the changes that require one. set-plan added the step:M1-S01 pending gate on the same write. This is the one change in v5 to a step the v4 verification passed, and it is a direct consequence of moving the OWD there rather than an unrelated edit."
+      }
+    ],
+    "warning_disposition": [
+      {
+        "id": "W01",
+        "targets": [
+          "M3-S01 acceptance_tests[0]",
+          "M3 acceptance_tests[0]",
+          "M3-S01 inputs.note"
+        ],
+        "verdict": "CLOSED by declaring --strict (the stronger of the two remedies the verifier offered)",
+        "detail": "Both descriptions and the M3-S01 step note claimed check_validation_rules.py 'returns 1 on ANY finding including REVIEW'. emit_result (:102-119) returns 1 only on CRITICAL/HIGH, or on any finding under --strict; its docstring says 'MEDIUM/LOW/REVIEW are advisory and exit 0 so a build that produced correct rules with natural formulas stays green.' The blank guard this step depends on is a REVIEW finding, so advisories-are-accepted would have left the test passing on exactly the formulas the step forbids. --strict is the checker's own documented flag, so the tester still runs a declared form verbatim. Both commands now carry it and all three prose passages are rewritten.",
+        "evidence": "Fixture re-run this session: guarded rules (ISBLANK(TEXT(...))) 'Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.' exit 0 under --strict at step and build scope. One formula changed to ISPICKVAL(Priority, \"\"): one REVIEW 'picklist logic has no explicit blank guard', \"blocking\": 0, exit 1 under --strict, exit 0 without it."
+      },
+      {
+        "id": "W02",
+        "targets": [
+          "M3-S03 acceptance_tests[0]",
+          "M3 acceptance_tests[4]",
+          "M3-S04 (new acceptance_tests[0])",
+          "M3-S04 inputs.note",
+          "scope.out[20]"
+        ],
+        "verdict": "CLOSED — the checker is repaired and the repair was reproduced before being declared",
+        "detail": "check_case_management_setup.py find_xml_files (:62-76) now walks '[base / subdir, *base.rglob(subdir)]', recursing into every assignmentRules/, escalationRules/ and autoResponseRules/ directory at any depth — its docstring names artefacts/M3-S04/assignmentRules/ as the case — and rule_elements (:78-90) reads <active> and <ruleEntry> from the inner <assignmentRule>/<escalationRule>/<autoResponseRule> elements, with escalation actions from <escalationAction> children. So M3-S03's build-scoped command is no longer order-dependent. Three further passages in the plan asserted the pre-repair behaviour and would have shipped a false statement: M3's milestone acceptance_tests[4] was a manual test whose entire content was that claim, M3-S04's note said the checker 'is not a substitute here either', and scope.out[20] scoped the milestone sweep out over it. All three are corrected: the M3 manual becomes a real build-scoped checker test, M3-S04 gains its first checker test (build scope), and the scope-out row now names two unpassable checkers instead of three.",
+        "evidence": "Fixture run this session over a tree holding M1-S01's CaseOrigin standardValueSet, M3-S03's Case.settings-meta.xml and M3-S04's active assignment + auto-response rules: 'No case management setup issues found.' exit 0. Identical command with M3-S04 removed: same output, exit 0 — the order dependence is gone. Matched negatives, both exit 1: M3-S04's <active> flipped to false gives 'No active case assignment rule found in metadata'; M3-S03's webToCase/caseOrigin changed to 'WebPortal' gives 'that value is not in CaseOrigin.standardValueSet-meta.xml (Email-Support, Email-Billing, Web)'. The first negative is the proof the inner-element read works, because on the pre-repair code that finding fired on a correct file and could not fire on a broken one."
+      },
+      {
+        "id": "W03",
+        "targets": [
+          "M5 acceptance_tests[3]",
+          "M5 acceptance_tests[4]",
+          "M5 acceptance_tests[5]"
+        ],
+        "verdict": "CLOSED by rewording all three",
+        "detail": "[4] and [5] named 'M5-S02's proof sandbox' while M5-S02 is blocked and ships nothing; [3] required signed proof results from a document nobody writes. [4] and [5] now name 'the sandbox the release owner stands up for UAT' and each states that where no such sandbox exists at the gate the check is recorded outstanding rather than ticked, with the metadata half of the M2-S05 assertion pointed at M2-S05's own build-scoped checker and manual test, which pass on artefacts alone. [3] now requires the release owner to record the sandbox proof plan as OUTSTANDING because M5-S02 is blocked, and to name owners and due dates for the four missing sandbox-strategy inputs alongside the 25 deferred clarifications.",
+        "evidence": "standards/build-orchestration.md § 3 — 'gate milestone:Mk approve is refused unless … every step in Mk is documented, or is blocked with a recorded reason', so the M5 gate stays approvable; what it never permitted was a tick against an artefact the plan does not produce."
+      },
+      {
+        "id": "W04",
+        "targets": [
+          "D4 branch_quote",
+          "D4 rationale"
+        ],
+        "verdict": "CLOSED — the whole branch is quoted verbatim, unspliced",
+        "detail": "branch_quote is now standards/decision-trees/automation-selection.md lines 132-142 copied whole, with no row elided and no ellipsis needed. The v4 quote joined the Q13 heading to the Omni-Channel row and dropped the Assignment Rules row in between, which hid that this build takes two leaves of the same branch. The rationale now says so explicitly: D3 takes the first leaf (ordered criteria table -> Assignment Rules) for the initial owner write and D4 takes the second (already in a queue, reach whoever is online and under capacity -> Omni-Channel) for the push, which is the tree's own reading — its 'Why each leaf' note and line 276 both say Omni-Channel runs on top of an assignment rule rather than instead of it.",
+        "evidence": "Extracted programmatically from the tree file by line range and asserted to start 'Q13.' and to contain both 'Assignment Rules' and 'Omni-Channel' before being written, so the quote cannot drift from the source."
+      },
+      {
+        "id": "W05",
+        "targets": [
+          "this envelope's process_observations"
+        ],
+        "verdict": "CLOSED — the W08 observation is dropped",
+        "detail": "The v4 envelope carried a 'concerning' observation recording the check_uat_case.py --file / --manifest-dir divergence as NOT FIXED because agents/ was outside the planner's mutation scope. agents/build-doc-keeper/AGENT.md Step 10 now instructs the --manifest-dir form and names the plan's agreement explicitly, so there is no divergence and the observation is not carried into v5. Nothing in plan.json changed for this — the plan already declared the --manifest-dir form on M5-S04 acceptance_tests[2].",
+        "evidence": "The v4 verification's own W05 row; the plan's M5-S04 acceptance_tests[2] command is unchanged at --manifest-dir artefacts/M5-S04."
+      },
+      {
+        "id": "W06",
+        "targets": [
+          "(plan history)"
+        ],
+        "verdict": "ACKNOWLEDGED — no plan action, and none is available to this agent",
+        "detail": "history[] held [1, 3] against three rejections because set-verification archived the current body before writing the new block, so the v2 body was never archived and the entry labelled 3 carried a verification block whose plan_version was 2. The verifier records this as a build_plan.py defect already fixed — archived bodies now carry their own verdict — and explicitly as 'not a defect in this plan's content'. plan.version and history[] are the CLI's to write and never this agent's (agents/build-planner/AGENT.md, What This Agent Does NOT Do), so there is nothing here for a re-plan to close. Recorded rather than silently dropped.",
+        "evidence": "Post-write status: version 5, status planned, the v4 body archived by the rejection and this run's set-plan reporting 're-plan after rejection — plan version -> 5'."
+      }
+    ],
+    "checker_fixture_evidence": [
+      {
+        "checker": "check_sharing_model.py",
+        "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+        "printed": "Scanned 2 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected.",
+        "exit": 0,
+        "for": "B01 — the widened build-scope form actually resolves the OWD"
+      },
+      {
+        "checker": "check_sharing_model.py",
+        "command": "same, --manifest-dir artefacts/M2-S05",
+        "printed": "Scanned 1 sharing-model metadata file(s) (0 object OWD(s) resolved); 0 finding(s) detected.",
+        "exit": 0,
+        "for": "B01 — the v4 step-scope form is a vacuous pass"
+      },
+      {
+        "checker": "check_sharing_model.py",
+        "command": "same, build scope, M1-S01 sharingModel set to ReadWrite",
+        "printed": "HIGH criteria-based rule `Support_Cases_To_Tier_2` grants `Edit` but `Case` has sharingModel `ReadWrite` - the grant is not above the object's default, so it adds no access; plus REVIEW on the object file",
+        "exit": 1,
+        "for": "B01 — matched negative"
+      },
+      {
+        "checker": "check_case_management_setup.py",
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "printed": "No case management setup issues found.",
+        "exit": 0,
+        "for": "W02 — with M3-S04's active rules present"
+      },
+      {
+        "checker": "check_case_management_setup.py",
+        "command": "same, M3-S04 directory removed",
+        "printed": "No case management setup issues found.",
+        "exit": 0,
+        "for": "W02 — the order dependence is gone"
+      },
+      {
+        "checker": "check_case_management_setup.py",
+        "command": "same, M3-S04 <active> flipped to false",
+        "printed": "ISSUE: No active case assignment rule found in metadata. Auto-response rules depend on the assignment rule firing — without an active rule, auto-responses will not send.",
+        "exit": 1,
+        "for": "W02 — matched negative; proves the inner-element read works"
+      },
+      {
+        "checker": "check_case_management_setup.py",
+        "command": "same, M3-S03 webToCase/caseOrigin changed to WebPortal",
+        "printed": "ISSUE: webToCase/caseOrigin is 'WebPortal' but that value is not in CaseOrigin.standardValueSet-meta.xml (Email-Support, Email-Billing, Web).",
+        "exit": 1,
+        "for": "W02 — matched negative on the cross-step value-set reference"
+      },
+      {
+        "checker": "check_validation_rules.py",
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01 --strict",
+        "printed": "Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.",
+        "exit": 0,
+        "for": "W01 — guarded formulas pass under --strict"
+      },
+      {
+        "checker": "check_validation_rules.py",
+        "command": "same, one formula as ISPICKVAL(Priority, \"\")",
+        "printed": "REVIEW picklist logic has no explicit blank guard; \"blocking\": 0",
+        "exit": 1,
+        "for": "W01 — matched negative under --strict; the identical run without --strict exits 0"
+      }
+    ],
+    "v3_closures_carried_forward": "All thirteen v3 blockers and the eleven fixed v3 warnings that the v4 verification confirmed closed are carried into v5 unchanged. v5 touches nine records only — M1-S01, M2-S05, M3-S01, M3-S03, M3-S04, the M3 and M5 milestones, D4 and scope.out[20] — and the cross-step results the v4 verification passed (no duplicate output paths, acyclic depends_on, exact milestone membership, assumption linkage both ways, effort and risk_tag on all 18 fit-gap rows, scope agreeing with every literal --manifest-dir, the Apex exception on M4-S05) are unaffected by all nine.",
+    "blocked_steps": [
+      {
+        "id": "M3-S05",
+        "reason": "deferred: Q32, Q33, Q34, Q35",
+        "title": "Omni-Channel push for Tier 1: service channel, routing configuration, presence configuration and statuses"
+      },
+      {
+        "id": "M5-S02",
+        "reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity",
+        "title": "Sandbox proof plan for the Partial Copy environment (BLOCKED: five sandbox-strategy inputs are not on file)"
+      }
+    ],
+    "next_command": "python3 scripts/build_plan.py status .sfskills/builds/case-onboarding/plan.json  # then: /verify-plan .sfskills/builds/case-onboarding"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "library-depth",
+      "observation": "Both closable defects this round were closed by library repairs rather than by plan workarounds. check_case_management_setup.py grew recursive discovery and inner-element rule reads this session, which turned M3's milestone case-management sweep from a scoped-out impossibility into a declarable test and gave M3-S04 its first checker. check_validation_rules.py's severity model, which the v4 plan got backwards, turned out to have the exact flag the step needed. A plan that had worked around either would have shipped a weaker test surface than the library could support.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_case_management_setup.py find_xml_files/rule_elements; check_validation_rules.py emit_result",
+        "detail": "find_xml_files (:62-76), rule_elements (:78-90), emit_result (:102-119)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-surface",
+      "observation": "A repaired checker leaves stale prose behind, and the stale prose is worse than the original defect. Fixing W02 meant checking every passage in the plan that asserted the pre-repair behaviour, and there were three beyond the step the verifier named: M3's milestone acceptance_tests[4] was a manual test whose whole content was the false claim, M3-S04's note used it to justify declaring no checker, and scope.out[20] used it to scope the sweep out. Each would have read at G2 as a documented library limitation rather than as a sentence nobody re-checked. The lesson generalises: when a checker changes, grep the plan for the claim, not for the step id.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep 'reads <active> as a direct child' over plan-body-v5.json",
+        "detail": "3 occurrences outside the step the v4 verification named"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-surface",
+      "observation": "Two of the six v4 findings were the same failure: a test description written from the checker's name rather than from a run. W01's 'returns 1 on ANY finding' and W02's non-recursive discovery both survived three verification rounds because the descriptions sounded right and the exit codes happened to agree on the fixtures anyone tried. The nine invocations re-run this round were run before anything was declared, and two of them changed what got written. Fixture-first is not a nicety in this loop; it is the only thing that separates a description from a guess.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "9 checker invocations re-run against purpose-built fixtures this session",
+        "detail": "3 for B01, 4 for W02, 2 for W01; 5 of the 9 are matched negatives"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-surface",
+      "observation": "Three validate WARNs remain and all three are the contract's own documented follow-up: check_sandbox_plan.py takes a positional path, check_workbook.py takes --workbook, check_ac_format.py takes --file. Unchanged from v4 and correct rather than worked around — declaring --manifest-dir on any of the three would name a flag its parser does not define, which step-tester runs verbatim and which exits on a usage error that reads as a failing step.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+        "detail": "exit 0, 0 errors, 3 warnings"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access-model",
+      "observation": "Flipping M1-S01's human_gate to true is the one v5 change to a step the v4 verification passed, and it could reasonably have gone the other way. The step is type object-model, not access, and a Private OWD restricts rather than broadens. But Step 6's list of gate triggers names org-wide defaults categorically, and an OWD landing inside an ungated step is the shape that rule exists to catch. It was flipped, and the reasoning is written into the step note so a reviewer can overturn it deliberately rather than notice it late.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "agents/build-planner/AGENT.md Step 6 — Human gate",
+        "detail": "set-plan reported 'gates added: step:M1-S01'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "test-surface",
+      "observation": "check_case_management_setup.py is now declared three times at --manifest-dir artefacts — on M3-S03, on M3-S04 and as M3's milestone test. That is defensible (each runs at a different point in the milestone, so M3-S03's runs before the rules exist, M3-S04's after, and the milestone's once every step is documented) but it is also three identical commands, and a reader could reasonably call two of them redundant. The alternative — one milestone test only — would leave M3-S04 with no checker at all, which is what v4 had and what the false note justified.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "checker commands declared at --manifest-dir artefacts in plan v5",
+        "detail": "M3-S03[0], M3-S04[0], M3[4]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "scope",
+      "observation": "Dropping settings/Sharing.settings-meta.xml rather than keeping it went beyond the verifier's own wording, which said M2-S05 'keeps … the settings file if the org-level sharing switches are wanted'. Nothing in the requirement or the answers asks for an org-level sharing switch, and neither cited skill documents the file, so keeping it would have declared an output nothing grounds and nothing reads. If a later answer does ask for one, it is a new output on this step and a new manifest member, not a re-plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn 'Sharing.settings|SharingSettings' skills/admin/sharing-and-visibility/ skills/admin/queues-and-public-groups/",
+        "detail": "0 matches"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "Send plan v5 to the verifier. One blocker closed as prescribed, six warnings dispositioned, three further stale claims found and corrected while closing W02; nothing here is a gate approval and the plan is still a proposal at status planned.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "plan.json status after set-plan",
+        "detail": "status planned, version 5, plan gate pending"
+      },
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "the plan is a proposal at status planned; the verifier is the stage between it and the G2 human gate, and it is the only thing that reads plan v5 before a human does"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "library-depth",
+      "observation": "One deepen-a-skill signal survives this round and it is not a plan defect: check_flow_governance.py globs the metadata-format file name Flow.settings and does not recognise the DX source-format settings/Flow.settings-meta.xml this build declares, so it reports an advisory against a tree that has one. Recorded on M4-S03's test description rather than worked around.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_flow_governance.py Flow.settings glob",
+        "detail": "line 711; the advisory is documented in M4-S03 acceptance_tests[2]"
+      },
+      "suggested_followup_agent": "flow-analyzer",
+      "followup_reason": "the surviving signal is about Flow settings discovery in check_flow_governance.py, which is the checker M4-S03's automation step depends on"
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 build_mode and the directory layout; § 3 the milestone-gate rule that B04 and B06 broke; § 4 the step-type table, design-only owners and the two borrowed-agent conditions; § 5 acceptance-test types, the checker-scope table, the cross-referential list, the Apex exception that settles B09, and the non-standard-argument-form follow-up that explains the three remaining WARNs"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations, the confidence rubric, the citation shape, and the Apex security idiom by API version named in M4-S05's note"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "never invent a skill or template path; cite the decision-tree branch; no freestyle Salesforce claims"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, atomic write and the scope guardrails that kept this run out of skills/, agents/, standards/ and scripts/"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking the two refusal conditions at Step 1; neither fired — the plan is at plan-rejected, which is the re-plan case"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the six top-level set-plan keys, additionalProperties:false on step and milestone objects, and acceptanceTest.scope semantics behind B11"
+    },
+    {
+      "type": "standard",
+      "id": "agent-frontmatter-schema",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "the status enum the agent-eligibility check is measured against for the five agents this plan assigns"
+    },
+    {
+      "type": "standard",
+      "id": "runtime-vs-build",
+      "path": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "used_for": "the active roster the five step owners were checked against"
+    },
+    {
+      "type": "standard",
+      "id": "agent-disambiguation",
+      "path": "agents/_shared/AGENT_DISAMBIGUATION.md",
+      "used_for": "confirming no step names a Wave-3b deprecated auditor"
+    },
+    {
+      "type": "standard",
+      "id": "skill-map",
+      "path": "agents/_shared/SKILL_MAP.md",
+      "used_for": "checking that the skills added to M2-S04, M4-S03 and M4-S05 are ones their owning agents already read"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "the five-tier rubric, the effort formula base(tier)+scope_multiplier+risk_multiplier and the five-tag risk taxonomy behind the W10 fix on all 18 rows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the deployment order the five milestones follow, and the ten canonical sections M5-S04 compiles"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "every fit_gap row reaching a step through steps[], and the B11 scope fix on M5-S04's RTM test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape every rewritten manual test takes, including the four moved or split under B01, B04, B06, W02 and W12"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-gathering-for-sf",
+      "path": "skills/admin/requirements-gathering-for-sf/SKILL.md",
+      "used_for": "reading objects, automation tier, sharing layer, volume and licence off each answer before choosing a step type"
+    },
+    {
+      "type": "skill",
+      "id": "architect/architecture-decision-records",
+      "path": "skills/architect/architecture-decision-records/SKILL.md",
+      "used_for": "the decisions[] record shape, carried unchanged from v3 where the verifier passed grounding 22/22"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "where a request for this plan as a spreadsheet is sent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/SKILL.md",
+      "used_for": "the PSG_<persona>_<env> convention the three PSGs are renamed to, and the checker invocation line with --strict (B02)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the --manifest-dir invocation line and the REVIEW-exits-0 / --strict-exits-1 rule behind B05"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the invocation line's 'point it at a tree that carries the objects, the layouts and the profiles' instruction, which is B03's fix"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the recursing --manifest-dir invocation line and the RISKY_TYPES-as-WARN behaviour behind B12 and B13"
+    },
+    {
+      "type": "skill",
+      "id": "admin/user-story-writing-for-salesforce",
+      "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md",
+      "used_for": "the story-shaped-heading rule and the --manifest-dir form behind B10"
+    },
+    {
+      "type": "skill",
+      "id": "admin/omni-channel-routing-setup",
+      "path": "skills/admin/omni-channel-routing-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md § 2 for the ServicePresenceStatus artefact B07 adds, and the E2/W4 distinction"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "the --manifest-dir invocation line, the W3/W6 distinction and the ERROR-only exit rule behind B08"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "the recursing invocation line and the WARN-exits-0 rule that let S2 declare check_queues on M2-S04"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md § 1 CaseOrigin, § 3 the CaseSettings webToCase block and its three documented children, § 5 the deploy order — the Web-to-Case metadata source S5 moves to build scope"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the rule set behind S1's ISBLANK blank-guard constraint on both errorConditionFormula values"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "the ERROR/WARN/INFO severity model behind W01's split between M2-S01's step test and M3's milestone test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/SKILL.md",
+      "used_for": "SKILL.md:88, ownership skew at 10,000 records owned by one user or queue — the grounding for S4's data-skew tag on two fit_gap rows and for M2-S04's runbook test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sandbox-strategy",
+      "path": "skills/admin/sandbox-strategy/SKILL.md",
+      "used_for": "check_sandbox_plan.py's three required environment-inventory columns behind the W06 correction"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "references/examples.md for the BusinessHoursSettings fixture the B08 evidence was built on"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-governance",
+      "path": "skills/flow/flow-governance/SKILL.md",
+      "used_for": "references/metadata-examples.md § 6 for the policy file and § Flow.settings for enableFlowDeployAsActiveEnabled — the S3 addition on M4-S03"
+    },
+    {
+      "type": "skill",
+      "id": "flow/record-triggered-flow-patterns",
+      "path": "skills/flow/record-triggered-flow-patterns/SKILL.md",
+      "used_for": "references/metadata-examples.md:621 for the FlowTest shape S3 declares as an artefact"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-design-patterns",
+      "path": "skills/apex/apex-design-patterns/SKILL.md",
+      "used_for": "references/code-examples.md:781 for the ApexTrigger meta XML shape, which closes W05"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/SKILL.md",
+      "used_for": "the CompletionDate-not-IsCompleted completion mechanism M4-S05 builds, carried unchanged from v3"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/TriggerHandler.cls-meta.xml",
+      "path": "templates/apex/TriggerHandler.cls-meta.xml",
+      "used_for": "the ApexClass meta XML shape M4-S05's outputs need, which closes the other half of W05"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "the trigger handler idiom M4-S05 builds against, carried from v3"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "used_for": "the before-save flow skeleton M4-S03 builds from, and the base of the S3 flow-governance fixture"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2, Q13, Q14, Q15",
+      "used_for": "D1, D3, D4, D6 and D7 branch quotes (Q2, Q13, Q14, Q15), carried unchanged from v3 where every quote matched verbatim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "flow-pattern-selector",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3",
+      "used_for": "D2's before-save branch (Q3), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q3",
+      "used_for": "D5's criteria-based sharing rule (Q3), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q1",
+      "used_for": "D8's nothing-runs-async claim (Q1), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "performance-tuning",
+      "path": "standards/decision-trees/performance-tuning.md",
+      "branch": "Q10",
+      "used_for": "D9's ordinary-object claim (Q10), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q5",
+      "used_for": "the volume band that keeps Web-to-Case native on M3-S03"
+    },
+    {
+      "type": "decision_tree",
+      "id": "agentforce-capability-selector",
+      "path": "standards/decision-trees/agentforce-capability-selector.md",
+      "branch": "not reached",
+      "used_for": "read and not reached — no requirement in this build is phrased as AI, so no decision cites it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "decision-trees-readme",
+      "path": "standards/decision-trees/README.md",
+      "branch": "routing table",
+      "used_for": "the authoritative table consulted where a choice straddled two trees"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "plan-verifier",
+      "because": "the plan is a proposal at status planned; the verifier is the stage between it and the G2 human gate"
+    },
+    {
+      "agent": "waf-assessor",
+      "because": "D10 is recorded with adr_required true — the only Custom-tier decision in the plan"
+    }
+  ]
+}

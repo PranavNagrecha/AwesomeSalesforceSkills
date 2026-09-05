@@ -1,0 +1,21 @@
+manifest: artefacts/M1-S02/package.xml
+
+--- declared in package.xml ---
+  Layout: Case-Case Support Layout
+  Layout: Case-Case Billing Layout
+
+--- file -> manifest (every derived member must be covered) ---
+  Layout:Case-Case Billing Layout  <- artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml  covered_by=explicit member
+  Layout:Case-Case Support Layout  <- artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml  covered_by=explicit member
+
+--- manifest -> file (every explicit member must have a file) ---
+  Layout:Case-Case Support Layout: file found
+  Layout:Case-Case Billing Layout: file found
+
+--- excluded from both directions ---
+  artefacts/M1-S02/deploy-order.md
+      reason: not a source-format metadata file (no metadata-type folder + suffix pair); carries no manifest member
+  artefacts/M1-S02/package.xml
+      reason: the manifest itself
+
+verdict: consistent | failures: 0

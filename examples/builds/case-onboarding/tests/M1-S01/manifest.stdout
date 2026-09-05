@@ -1,0 +1,31 @@
+manifest: artefacts/M1-S01/package.xml | exists: True
+
+--- FILE -> MANIFEST ---
+  skip     artefacts/M1-S01/deploy-order.md  (non-metadata file (not a manifest member))
+  ok       CustomField      'Account.Region__c'          <- artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml
+  ok       CustomField      'Account.Support_Tier__c'    <- artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml
+  ok       CustomObject     'Case'                       <- artefacts/M1-S01/objects/Case/Case.object-meta.xml
+  ok       BusinessProcess  'Case.Billing Process'       <- artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml
+  ok       BusinessProcess  'Case.Support Process'       <- artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
+  ok       CompactLayout    'Case_Intake'                <- artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml
+  ok       CustomField      'Case.Severity__c'           <- artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml
+  ok       RecordType       'Case.Billing'               <- artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml
+  ok       RecordType       'Case.Support'               <- artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml
+  skip     artefacts/M1-S01/record-type-decision.md  (non-metadata file (not a manifest member))
+  ok       StandardValueSet 'CaseOrigin'                 <- artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml
+
+--- MANIFEST -> FILE ---
+  ok       StandardValueSet 'CaseOrigin'
+  ok       CustomObject     'Case'
+  ok       CustomField      'Account.Region__c'
+  ok       CustomField      'Account.Support_Tier__c'
+  ok       CustomField      'Case.Severity__c'
+  ok       BusinessProcess  'Case.Billing Process'
+  ok       BusinessProcess  'Case.Support Process'
+  ok       RecordType       'Case.Billing'
+  ok       RecordType       'Case.Support'
+  ok       CompactLayout    'Case_Intake'
+
+excluded coverage-gap types: none (all 6 types present have standalone source files)
+wildcard members: none
+findings: 0

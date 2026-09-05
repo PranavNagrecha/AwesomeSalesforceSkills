@@ -2283,3 +2283,16 @@ def test_init_links_skills_into_the_build_dir(tmp_path, fixture_repo, requiremen
     capsys.readouterr()
     assert run("ensure-gates", str(build_dir / "plan.json"), "--repo-root", str(fixture_repo)) == 0
     assert link.is_symlink(), "ensure-gates recreates a missing skills link"
+
+
+def test_export_skips_the_skills_symlink(tmp_path, fixture_repo, requirement, capsys):
+    """Section 5/9: the build dir's skills link points into the repo and must not be exported."""
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Build B", "--requirement", str(requirement),
+               "--repo-root", str(fixture_repo), "--now", "2026-09-05T09:00:00Z") == 0
+    assert (build_dir / "skills").is_symlink()
+    dest = tmp_path / "out"
+    capsys.readouterr()
+    assert run("export", str(build_dir / "plan.json"), str(dest), "--repo-root", str(fixture_repo)) == 0
+    assert not (dest / "skills").exists() and not (dest / "skills").is_symlink()
+    assert (dest / "plan.json").is_file() and (dest / "requirement.md").is_file()

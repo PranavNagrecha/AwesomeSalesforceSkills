@@ -1,0 +1,18 @@
+root tag: {http://soap.sforce.com/2006/04/metadata}CustomObject
+direct children: {'compactLayoutAssignment': 'Case_Intake', 'externalSharingModel': 'Private', 'sharingModel': 'Private'}
+sharingModel==Private        : True
+externalSharingModel==Private: True
+
+--- settings files anywhere under artefacts/ claiming an OWD? ---
+*.settings-meta.xml found: none
+
+--- other files containing <sharingModel> under artefacts/ ---
+   artefacts/M1-S01/record-type-decision.md
+   artefacts/M1-S01/deploy-order.md
+   artefacts/M1-S01/objects/Case/Case.object-meta.xml
+
+--- manual test 6 evidence ---
+  Support.recordType businessProcess = 'Support Process'  bare(no Case. prefix): True
+  Billing.recordType businessProcess = 'Billing Process'  bare(no Case. prefix): True
+  businessProcess files: ['Billing_Process.businessProcess-meta.xml', 'Support_Process.businessProcess-meta.xml']
+  recordType files     : ['Billing.recordType-meta.xml', 'Support.recordType-meta.xml']

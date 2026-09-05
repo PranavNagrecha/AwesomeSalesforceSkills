@@ -1,0 +1,357 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-05T19-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-40-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "api_version": "62.0 (DEFAULTED \u2014 plan.json carries no api_version key; agent default per agents/metadata-builder/AGENT.md Inputs)"
+  },
+  "summary": "Built M1-S01 (object-model) as deploy-ready source-format metadata under artefacts/M1-S01/: the CaseOrigin StandardValueSet defining Email-Support / Email-Billing / Web, the Case object file carrying sharingModel and externalSharingModel Private plus the object-level compactLayoutAssignment, two Support Processes, two Case record types each naming its bare process name and the Case_Intake compact layout, the Case_Intake compact layout itself, three custom fields (Case.Severity__c, Account.Region__c, Account.Support_Tier__c), the record-type decision record, package.xml and a deploy-order note. All five cited skills' checkers exited 0 on the first pass with no repair, every XML file parses, and check-outputs returned ok for all twelve declared outputs.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM: two Questions-to-Ask rows were answered from a worked example rather than from the plan \u2014 the per-record-type Status subsets (Q1 answered 'differing on Status/Reason' but enumerated no values; A28 records the same gap) and the Severity__c value scale, which the requirement names only one level of. Everything else traced to the Step 3 inventory and every checker exited 0 on pass 1.",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "The CompactLayout package.xml member form is documented in the cited skill only as the prose 'compact layout name'; that skill's own manifest sample uses a wildcard, so no non-wildcard example existed to copy and the member Case_Intake could not be traced to a literal example."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All five cited skills' checkers exited 0 on the first pass, with no repair pass needed.",
+      "domain": "checker-pass",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan's step note predicted each checker's exact output, and every prediction matched what the checkers actually printed against the built artefacts.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The declared output path Support_Process.businessProcess-meta.xml does not match the process name the same step's inputs fix, 'Support Process' with a space, so the file name and the fullName inside it diverge.",
+      "domain": "naming",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M1-S01].outputs[] vs steps[M1-S01].inputs.business_processes"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "deploy-order.md is written by this agent on every run per its Step 7 but is not listed in the step's outputs[], so check-outputs never confirms it.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Q1's answer says the two record types differ on Status and Reason but enumerates no values, so the Status subsets written into the two Support Processes are the smallest split consistent with the requirement rather than a customer-confirmed one.",
+      "domain": "question-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "clarifications[Q1].answer; assumptions[A28]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Case.Severity__c is written with exactly one picklist value, 'Severity 1', because that is the only level the requirement names and no clarification enumerates the rest of the scale.",
+      "domain": "question-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/requirement.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "No picklistValues block for Case.Reason was written, although Q1's answer names Reason as one of the two fields the record types differ on, because no clarification enumerates any Reason value.",
+      "domain": "question-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "clarifications[Q1].answer"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step's declared acceptance tests have not been run by this agent; the tester owns them.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because standards/build-orchestration.md section 5 gives the acceptance tests and tests/M1-S01/results.json to step-tester, not to the builder."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "step_type": "object-model",
+    "status_path_taken": "invoked under agents/build-step-runner \u2014 this agent ran neither set-status command; the runner sets the terminal status",
+    "artefacts": [
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/record-type-decision.md",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/package.xml",
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md"
+    ],
+    "undeclared_artefacts": [
+      ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md"
+    ],
+    "decision_record": [
+      {
+        "question": "Q1 \u2014 which picklist values differ between the support and finance case processes?",
+        "answer": "Two Case record types, Support and Billing; A26 resolves Q1's conditional in favour of two because D5's sharing rule keys on RecordTypeId.",
+        "source": "step inputs + assumption A26",
+        "element": "objects/Case/recordTypes/Support.recordType-meta.xml, Billing.recordType-meta.xml"
+      },
+      {
+        "question": "Q2 \u2014 is this object Lead, Opportunity, Solution or Case?",
+        "answer": "Case, so a BusinessProcess is required on every record type.",
+        "source": "clarification answer",
+        "element": "RecordType.businessProcess on both record types; two businessProcess-meta.xml files"
+      },
+      {
+        "question": "Q4 \u2014 do Cases already exist on any record type?",
+        "answer": "None; greenfield Case model.",
+        "source": "clarification answer",
+        "element": "no reassignment or value-mapping artefact was needed"
+      },
+      {
+        "question": "Q5 \u2014 is layout-Required meant to be enforced everywhere?",
+        "answer": "Priority and Origin enforced at field or validation-rule level, not by layout.",
+        "source": "clarification answer",
+        "element": "no Required behaviour authored here; layouts are M1-S02's"
+      },
+      {
+        "question": "Q6 \u2014 are Person Accounts enabled?",
+        "answer": "No; B2B.",
+        "source": "clarification answer",
+        "element": "no personAccountDefault element written"
+      },
+      {
+        "question": "Q19 \u2014 is the Case.Origin value for each channel already active?",
+        "answer": "Add Email-Support, Email-Billing and Web as active Case.Origin values.",
+        "source": "step inputs + clarification answer",
+        "element": "standardValueSets/CaseOrigin.standardValueSet-meta.xml"
+      },
+      {
+        "question": "Q40 \u2014 how do we know a Case's region at creation?",
+        "answer": "From the account's Region__c; unknown accounts default to US, applied by the flow rather than by a field default.",
+        "source": "clarification answer",
+        "element": "objects/Account/fields/Region__c.field-meta.xml (EMEA, US, no default)"
+      },
+      {
+        "question": "Q38 \u2014 what are the first-response targets?",
+        "answer": "Premier 4 business hours, Standard 1 business day.",
+        "source": "clarification answer",
+        "element": "objects/Account/fields/Support_Tier__c.field-meta.xml (Premier, Standard)"
+      },
+      {
+        "question": "Which Status values does each Support Process expose?",
+        "answer": "Support: New, Escalated, Closed. Billing: New, Closed. DEFAULTED from the Object Reference quote carried in admin/record-types-and-page-layouts (Case.Status 'such as New, Closed, or Escalated') \u2014 Q1 enumerated none and A28 records that.",
+        "source": "skill worked example (default, not a plan decision)",
+        "element": "objects/Case/businessProcesses/*.businessProcess-meta.xml"
+      },
+      {
+        "question": "Which severity levels exist?",
+        "answer": "One value only, 'Severity 1', the sole level the requirement names. AMBIGUITY recorded rather than filled.",
+        "source": "requirement.md",
+        "element": "objects/Case/fields/Severity__c.field-meta.xml"
+      },
+      {
+        "question": "What is the Case org-wide default? (Q13, deferred)",
+        "answer": "Private internal and external, per assumption A1 and the step's inputs.owd.",
+        "source": "step inputs",
+        "element": "objects/Case/Case.object-meta.xml sharingModel + externalSharingModel"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "2 record type(s), 0 layout(s); 0 finding(s) detected."
+      },
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found across 1 object file(s)."
+      },
+      {
+        "command": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No record-type ID anti-patterns detected."
+      },
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No case management setup issues found."
+      },
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found."
+      }
+    ],
+    "xml_parse": "all 10 *.xml / *-meta.xml files under artefacts/M1-S01/ parse with xml.etree.ElementTree",
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/Case.object-meta.xml"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Confirm the per-record-type Status subsets and that New, Escalated and Closed are live CaseStatus values in the target org.",
+      "Confirm the full Severity scale; Case.Severity__c currently carries one value.",
+      "Planner: reconcile the Support_Process.businessProcess-meta.xml file name with the 'Support Process' process name, and declare deploy-order.md in the step's outputs[]."
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "RecordType and BusinessProcess element sets, the bare-vs-object-qualified name rule, and the package.xml member forms for both types"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+      "used_for": "the CustomObject sharingModel / externalSharingModel enums and the CustomField picklist valueSet shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "the StandardValueSet:CaseOrigin shape, the CaseOrigin to Case.Origin mapping, and the section 5 deploy-order table"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/gotchas.md",
+      "used_for": "gotcha 10 \u2014 every support process needs a closed status, and processes must be authored against the deployed CaseStatus value set"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/metadata-examples.md",
+      "used_for": "the CompactLayout element set, the four unsupported field types, the two compactLayoutAssignment scopes and the CompactLayout member form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-type-id-management",
+      "path": "skills/admin/record-type-id-management/references/examples.md",
+      "used_for": "confirming no hard-coded record-type Id literal enters the emitted metadata"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/examples.md",
+      "used_for": "the CustomField package.xml member form Object.Field__c and the explicit-members-over-wildcard rule"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table and status machine, section 5 who runs the acceptance tests, section 8 the deepen-a-skill rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] this agent reads and the fields it must leave alone"
+    },
+    {
+      "type": "probe",
+      "id": "check_record_type_layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "validating the record types and their businessProcess elements"
+    },
+    {
+      "type": "probe",
+      "id": "check_list_views_and_compact_layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+      "used_for": "validating the compact layout, its assignments and its field types"
+    },
+    {
+      "type": "probe",
+      "id": "check_object_creation_and_design",
+      "path": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+      "used_for": "validating the object file"
+    },
+    {
+      "type": "probe",
+      "id": "check_record_type_id_management",
+      "path": "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py",
+      "used_for": "scanning the emitted metadata for record-type Id literals"
+    },
+    {
+      "type": "probe",
+      "id": "check_case_management_setup",
+      "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+      "used_for": "validating the CaseOrigin value set and the support-process to record-type wiring"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S01 is built; the four declared checker tests plus the always-on xml and manifest checks are step-tester's to run and record in tests/M1-S01/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M1-S01 is tested, the record-type decision, the Status-subset ambiguity and the Severity__c open item belong in decisions.md and the traceability matrix."
+    }
+  ]
+}

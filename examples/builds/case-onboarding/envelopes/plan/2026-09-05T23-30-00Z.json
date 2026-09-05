@@ -1,0 +1,3121 @@
+{
+  "agent": "build-planner",
+  "mode": "single",
+  "run_id": "2026-09-05T23-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/plan/2026-09-05T23-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/plan/2026-09-05T23-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding"
+  },
+  "outcome": "completed",
+  "summary": "Re-planned case-onboarding from plan-rejected v3 to v4 (design-only, 5 milestones, 22 steps, 2 blocked, 128 acceptance tests). All 13 v3 blockers are closed — none is rebutted — and all 12 warnings are dispositioned, 11 fixed and one (W08, the build-doc-keeper --file/--manifest-dir divergence) recorded rather than fixed because agents/ is outside the paths this run may mutate. Eight of the 13 were closed by checker fixes landed in the library this session: five needed only a rewritten description, two needed a scope and a --strict flag, and B07 needed a declared servicePresenceStatuses artefact. The two structural blockers were fixed structurally — the two deferred-tick manual tests (B04, B06) that deadlocked milestones M2 and M3 moved to M5's acceptance tests where the proof sandbox exists, and M4-S05's package.xml (B09) moved to M5-S05, which now depends_on it. Acting on the verifier's own instruction to sweep the predicate rather than patch the named steps, this run rebuilt fixtures for 27 checker invocations including 8 matched negatives, and found five things nobody had flagged: a live exit-1 on M3-S01's validation rules (check_validation_rules returns 1 on any REVIEW finding, and its ISPICKVAL-without-ISBLANK rule fires on the natural formula), a checker M2-S04 could now declare, a flow-governance policy that turns a vacuous flow test into a real one, a grounded ownership-skew risk tag, and a build-scope move that makes M3-S03's Web-to-Case caseOrigin cross-reference real. validate exits 0 with 3 warnings, all of the non-standard-argument-form kind the contract's own § 5 follow-up note documents — down from 6 in v3. No gate was approved, nothing was deployed, and nothing outside the build directory was written.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM by the agent's own rubric, and it cannot be higher: two steps are blocked (M3-S05 on deferred Q32-Q35, M5-S02 on four sandbox-strategy inputs that exist in no answer, requirement or upstream step), one decision (D10) is resolved from a source_reference with adr_required true, and 25 blocking clarifications were deferred rather than answered at G1 — each of the three MEDIUM conditions on its own. Not LOW: 2 of 22 steps are blocked, well under the quarter that would force it; no two answers contradict each other on a decision the plan had to make; every step's agent, skill, template and checker path was checked on disk; and validate exits 0. Not HIGH for one further reason worth naming: 27 checker invocations were fixture-run this round, but the fixtures are this agent's reconstruction of correct artefacts from each skill's metadata examples, so a checker that passed here could still fail on what metadata-builder actually writes.",
+  "extensions": {
+    "plan_path": ".sfskills/builds/case-onboarding/plan.json",
+    "plan_version": 4,
+    "plan_status": "planned",
+    "build_mode": "design-only",
+    "replans_version": 3,
+    "responds_to_verification": {
+      "path": ".sfskills/builds/case-onboarding/inputs/verification/verification-v3.json",
+      "envelope": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-05T22-10-00Z.json",
+      "blockers": 13,
+      "warnings": 12,
+      "blockers_closed": 13,
+      "blockers_rebutted": 0,
+      "warnings_fixed": 11,
+      "warnings_recorded_not_fixed": 1
+    },
+    "validate_result": {
+      "command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 3,
+      "warning_lines": [
+        "step M5-S02 acceptance_tests[0]: checker declares a non-standard argument form; step-tester will run it verbatim — check_sandbox_plan.py takes a positional path (§ 5 follow-up note)",
+        "step M5-S04 acceptance_tests[0]: checker declares a non-standard argument form; step-tester will run it verbatim — check_workbook.py takes --workbook (§ 5 follow-up note)",
+        "step M5-S04 acceptance_tests[3]: checker declares a non-standard argument form; step-tester will run it verbatim — check_ac_format.py takes --file (§ 5 follow-up note)"
+      ],
+      "diff_from_v3": "v3 carried 6 of these; 3 are cleared. check_email_templates.py and check_invest.py both grew --manifest-dir this session, so M3-S02[0] and M5-S03[0] now use the standard form, and milestone M5's duplicate check_workbook test was deleted under W11. No stub-checker, cross-referential-scope, scope/manifest-dir-disagreement or ungrounded-decision-tree warning is raised on v4.",
+      "unfixable_reason": "All three name a checker whose own argument parser does not define --manifest-dir. The contract's § 5 follow-up note lists exactly these three and says validate WARNs rather than errors on them; the WARN is correct and clears only when those checkers converge on --manifest-dir."
+    },
+    "counts": {
+      "milestones": 5,
+      "steps": 22,
+      "steps_by_type": {
+        "access": 5,
+        "automation": 2,
+        "custom": 1,
+        "docs": 3,
+        "object-model": 1,
+        "routing": 3,
+        "sla": 3,
+        "ui": 3,
+        "validation": 1
+      },
+      "steps_by_agent": {
+        "apex-builder": 1,
+        "build-doc-keeper": 1,
+        "metadata-builder": 18,
+        "sandbox-strategy-designer": 1,
+        "story-drafter": 1
+      },
+      "blocked_steps": 2,
+      "human_gated_steps": 5,
+      "decisions": 10,
+      "assumptions": 28,
+      "fit_gap_rows": 18,
+      "declared_output_paths": 108,
+      "acceptance_tests_step": 104,
+      "acceptance_tests_milestone": 24,
+      "acceptance_tests_total": 128,
+      "distinct_checker_commands": 43,
+      "checker_invocations_fixture_run_this_round": 27,
+      "negative_fixtures_run_this_round": 8
+    },
+    "scope": {
+      "in": [
+        "Case data model: two record types (Support, Billing) with their Support Processes as files of their own, the Email-Support / Email-Billing / Web Origin values DEFINED by standardValueSets/CaseOrigin.standardValueSet-meta.xml, the Case compact layout and its assignment, and the Account fields the routing and SLA layers read (Region__c, Support_Tier__c) [Q1, Q2, Q4, Q5, Q6, Q19, Q83, Q85]",
+        "Page layouts per Case record type, with 'Assign using active assignment rule' defaulted on for manual entry [Q3, Q24, Q83] — the compact layout sits with the object model in M1-S01, not here",
+        "Access model: a minimal base profile per team over permission set groups for Tier 1, Tier 2 and Billing, covering Case, Account, Contact, EmailMessage, Entitlement and the Service app [Q3, Q7, Q8, Q9, Q10, Q11, Q12, Q86, Q87]",
+        "An intake-bypass Custom Permission on an integration permission set, so API-created cases are never blocked by a rule aimed at agents [Q56]",
+        "Three Case queues (Tier 1 General, Tier 2 Engineering, Billing) with role-and-public-group membership and no named users [Q26, Q29, Q30, Q88, Q89]",
+        "Case org-wide default Private plus a criteria-based sharing rule opening Support cases to Tier 2; nothing opens Billing cases to Tier 1 [Q13 (deferred, conservative reading), Q80]",
+        "Case validation rules with the intake bypass, component-field formulas and final message text written at design time [Q5, Q56, Q58, Q59, Q93]",
+        "Email-to-Case for support@acme.example and billing@acme.example with per-address Origin stamping, bounce-on-unauthorised-sender, requeue-on-over-limit and saveEmailHeaders on [Q15, Q17, Q18, Q19, Q21, Q23, Q74]",
+        "Web-to-Case intake for the website form at ~60 submissions a day: the CaseSettings.webToCase block (enableWebToCase, caseOrigin) in the same physical settings/Case.settings-meta.xml as the Email-to-Case block. The HTML form itself is not metadata and is authored outside this build [Q15, Q66]",
+        "Case assignment rules routing on Origin and account support tier with a Tier 1 General catch-all, plus auto-response rules [Q24, Q25, Q26, Q27]",
+        "Classic acknowledgement and escalation email templates sent from support@ and billing@ as verified org-wide addresses, carrying the case number and the thread token [Q22, Q28, Q60, Q61, Q62, Q63, Q64, Q78]",
+        "Queue-based Omni-Channel push for Tier 1 is the chosen mechanism (D4, automation-selection Q13) but its configuration is BLOCKED on deferred Q32-Q35; only the pull surface ships in this phase, and Tier 1 works the Tier 1 General queue list view in the interim [Q31, Q36, Q37]",
+        "Business Hours for EMEA (London 08:00-18:00), the US (New York 08:00-20:00, org default) and a 24/7 Severity 1 calendar, plus regional holidays and a named yearly maintenance owner [Q38, Q39, Q40, Q90]",
+        "Entitlement process for Premier (4 business hours) and Standard (1 business day) over one shared First Response milestone type, with the Case's calendar as the explicit authority, plus the after-update Apex trigger that writes CaseMilestone.CompletionDate so the milestone can actually close [Q38, Q50, Q51, Q53]",
+        "A before-save record-triggered Flow stamping EntitlementId, BusinessHoursId and the Priority default, with a documented no-matching-account fallback [Q16, Q40, Q48]",
+        "Case escalation rules: an 8-business-hour Tier 2 entry on the Case calendar (480 minutes, from CaseCreation) and a 24/7 Severity 1 entry, both deployed inactive [Q42, Q43, Q44, Q45, Q46, Q47, Q91]",
+        "Pull list views for Tier 2 and Billing plus a saved report on escalated, still-open Cases in a shared folder [Q31, Q91]",
+        "A sandbox proof: Partial Copy object selection (Account, Contact, Case, Entitlement, EmailMessage) and post-refresh re-pointing of the routing addresses and the form endpoint — BLOCKED. sandbox-strategy-designer requires team_size, concurrent_workstreams, release_cadence and data_sensitivity for a design run and refuses without team size or cadence; none of the four is in requirement.md, in the 97 clarifications, or in a depends_on step's outputs [Q68, Q72, Q74, Q76]",
+        "Documentation, all of it from build-doc-keeper's compile run except the backlog: the ten-section configuration workbook, the traceability matrix, the compiled deploy order, the UAT test-case pack (uat-test-cases.yaml) and the compiled acceptance-criteria document; the INVEST story backlog with its per-story criteria from story-drafter; and the build-level package.xml and deploy-order note from metadata-builder [Q77, Q80, Q84, Q87, Q89, Q90, Q94, Q96, Q97]"
+      ],
+      "out": [
+        "Phone / telephony, chat, knowledge base and customer portal — named out of scope by the requirement itself and reinforced by Q30 (Case is the only queue-supported object) and Q12 (employees only)",
+        "Skills-based Omni-Channel routing — descoped by Q37: the requirement describes three team queues and no skill dimension",
+        "Person Accounts — descoped by Q6: Acme is B2B, so Cases hang off Business Accounts and Contacts",
+        "Lead routing, Lead queues and lead-convert ownership — descoped by Q30: no Lead work item is described",
+        "Migration of historical cases from the shared mailbox — descoped by Q4 and Q58: no Salesforce Case records exist and none are being loaded",
+        "Field-level masking of billing data on a shared Case record — blocked on deferred Q13; the plan takes the record-level reading instead (assumption A1) and this alternative shape is out until Q13 is answered",
+        "An elapsed-working-time field for reports or code — blocked on deferred Q41 (assumption A8)",
+        "Milestone clock stop / pause (isStopped) and who may stop it — blocked on deferred Q52 (assumption A10)",
+        "Entitlement versioning and its owner — blocked on deferred Q92 (assumption A24)",
+        "A milestone end-condition other than case closure — blocked on deferred Q49 (assumption A9)",
+        "The sandbox ladder itself: allocation, refresh floors, which environments hold copied production records, and post-copy automation — blocked on deferred Q69, Q70, Q71, Q73 and Q75 (assumptions A17-A21). Only the single proof sandbox from Q68 and Q72 is planned",
+        "Test-data creation mechanism (UI vs Data Loader vs Bulk API vs REST) — blocked on deferred Q79 (assumption A22)",
+        "The reporting backlog beyond the escalation monitoring report — blocked on deferred Q65 (assumption A14)",
+        "An as-is process map of what the support team does today — blocked on deferred Q67 (assumption A16)",
+        "Per-expected-result evidence design and the deny-case pre-condition audit — blocked on deferred Q81 and Q82 (assumptions A23 and A15); the UAT pack build-doc-keeper compiles in M5-S04 carries placeholders a human closes",
+        "A defined rule for what must NOT happen automatically, and who repairs a wrong automation — blocked on deferred Q14 (assumption A2). Until it is answered the stamping flow writes only into null fields",
+        "Deployment to any org — out of scope for this layer by contract: the plan produces deploy-ready artefacts, a deploy order and a validate-only command, and a human deploys",
+        "Omni-Channel configuration itself — the objects pushed and capacity release, the agent capacity model and per-case weight, the routing model and tie-breaker, and the push-timeout behaviour — blocked on deferred Q32, Q33, Q34 and Q35 (assumptions A4-A7). M3-S05 is written blocked rather than shipping invented numbers; D4 records the mechanism the tree does settle",
+        "Milestone violation polling and any scheduled SLA sweep — the library's mechanism (skills/apex/entitlement-apex-hooks MilestoneViolationScheduler) is Schedulable, which D8 rules out for this phase; M4-S05 builds completion only",
+        "The sandbox proof plan document itself — BLOCKED, not descoped: sandbox-strategy-designer's four design-mandatory inputs (team_size, concurrent_workstreams, release_cadence, data_sensitivity) exist nowhere on file, so M5-S02 is written blocked rather than handed a partial map. Closing them is a clarification round, not a re-plan of this build.",
+        "A mechanical checker on M2-S04's queues, M3-S04's assignment rules, and the M3 milestone's case-management sweep — three library checkers cannot pass on this build's correct artefacts (check_queues.py fails any queue with no queueEmail, which Q88 requires of Tier 1 General; check_assignment_rules.py fails a target named by more than one entry, which Q18 plus Q26 require; check_case_management_setup.py reads <active> as a direct child of <AssignmentRules>, where it never sits). Those assertions are carried by manual tests and the findings are recorded as deepen-a-skill signals rather than worked around."
+      ],
+      "fit_gap": [
+        {
+          "requirement": "Two Case processes (support and finance) with different status and reason values",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Record types plus Support Processes are point-and-click configuration on Case. Two metadata sources now carry the deployable shape: admin/record-types-and-page-layouts/references/metadata-examples.md for the decomposed recordType / businessProcess files and the four-object businessProcess rule, and admin/case-management-setup/references/metadata-examples.md § 1-2 for the CaseOrigin / CaseStatus value sets the processes select from. Steps[] is M1-S01 and M1-S02 and neither contains a Flow or a formula, so the tier stays Configuration. W10 — effort M: Configuration base S, +1 because the row serves two persona classes (support agents and billing specialists) with different record types and layouts.",
+          "skills": [
+            "admin/record-types-and-page-layouts",
+            "admin/object-creation-and-design",
+            "admin/case-management-setup"
+          ],
+          "steps": [
+            "M1-S01",
+            "M1-S02"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Three teams with different object, field and app access, membership changing monthly",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Permission set groups over a minimal base profile; admin/permission-set-architecture and admin/permission-set-group-composition give the composition and muting rules. W10 — effort M: Configuration base S, +1 for three persona classes.",
+          "skills": [
+            "admin/permission-set-architecture",
+            "admin/permission-sets-vs-profiles",
+            "admin/permission-set-group-composition"
+          ],
+          "steps": [
+            "M2-S02",
+            "M2-S03"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Work pools per team whose membership list changes monthly without a deploy",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Queues whose members are public groups and roles, per admin/queues-and-public-groups; usernames never enter the metadata (Q29). W10 — effort L: Configuration base S, +1 for three persona classes, +1 for the data-skew tag: Tier_1_General is the catch-all owner for roughly 480 cases a day and skills/admin/data-skew-and-sharing-performance SKILL.md:88 puts ownership skew at 10,000 records owned by one user or queue.",
+          "skills": [
+            "admin/queues-and-public-groups",
+            "admin/data-skew-and-sharing-performance"
+          ],
+          "steps": [
+            "M2-S04"
+          ],
+          "effort": "L",
+          "risk_tag": [
+            "data-skew"
+          ]
+        },
+        {
+          "requirement": "Finance queries worked only by Finance",
+          "verdict": "partial",
+          "tier": "Configuration",
+          "note": "Case OWD Private plus a criteria-based sharing rule is standard sharing (sharing-selection Q3). Tiered Configuration and not Low-Code: the rubric's Configuration row is 'Point-and-click only — no formula language, no Flow, no code' and its Low-Code row is Flow / Dynamic Forms / formula fields / validation rules; this row's only step is M2-S05, which contains no Flow and no formula, so the criteria filter is declarative Setup rather than conditional logic authoring. The requirement never says whether the restriction is record-level or field-level — Q13 is deferred, so half of this is unresolved and the conservative record-level reading is planned (assumption A1). W10 — effort M: Configuration base S, +1 because two persona classes are separated by the rule (Tier 1 excluded, Billing included). No taxonomy risk tag applies; the real exposure is assumption A1 resting on deferred Q13, which is carried as an assumption row rather than as a risk tag the taxonomy does not define.",
+          "skills": [
+            "admin/sharing-and-visibility",
+            "admin/queues-and-public-groups"
+          ],
+          "steps": [
+            "M2-S05"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Cases arrive by email to two addresses at ~400 a day",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Email-to-Case routing addresses with per-address Origin, bounce and requeue behaviour and saveEmailHeaders, per admin/email-to-case-configuration. M2-S01 is in this row's steps[] because the intake-bypass Custom Permission is what keeps an API-created case from being blocked by a rule aimed at agents; without it neither channel closes the requirement. The emailToCase and webToCase blocks go in the SAME physical settings/Case.settings-meta.xml, which is why one file is declared on M3-S03 and the two channels are one step rather than two. W10 — effort M: Configuration base S, +1 because the two routing addresses feed two persona classes. The volume's ownership consequence is tagged on the work-pool row rather than double-counted here.",
+          "skills": [
+            "admin/email-to-case-configuration",
+            "admin/case-management-setup"
+          ],
+          "steps": [
+            "M2-S01",
+            "M3-S03"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Cases arrive from a website form at ~60 a day",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Native Web-to-Case covers the band (integration-pattern-selection Q5 rules out Bulk and iPaaS by volume) and the library now carries the deployable shape: admin/case-management-setup/references/metadata-examples.md § 3 gives CaseSettings.webToCase (enableWebToCase, caseOrigin, defaultResponseTemplate — 'exactly three children') and § 4 sets out what is metadata and what is not. Raised from 'partial' to 'fit' on that basis; the v2 verification's B04 skill gap is closed. The form markup itself is not metadata and has no metadata type, which is a scope boundary rather than a gap, and Q66's answer still asks a human to confirm whether the form posts directly or through middleware — that confirmation is M3-S03's manual test, not a step. M2-S01 is in steps[] because the intake-bypass Custom Permission is what keeps an API-created case from being blocked by a rule aimed at agents. W10 — effort S: Configuration base S with no multiplier: one sObject, one layout, one persona class.",
+          "skills": [
+            "admin/email-to-case-configuration",
+            "admin/case-management-setup"
+          ],
+          "steps": [
+            "M2-S01",
+            "M3-S03"
+          ],
+          "effort": "S",
+          "risk_tag": []
+        },
+        {
+          "requirement": "An owner within the first minute of case creation",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Case assignment rules fire synchronously at create on all three channels; admin/assignment-rules references/routing-selector.md row 1 is the mechanism, and decision D3 records that no tree covers it. W10 — effort L: Configuration base S, +1 for three persona classes across three queues, +1 for the data-skew tag: the catch-all assignment entry sends every unmatched case to Tier_1_General.",
+          "skills": [
+            "admin/assignment-rules",
+            "admin/case-management-setup",
+            "admin/data-skew-and-sharing-performance"
+          ],
+          "steps": [
+            "M3-S04"
+          ],
+          "effort": "L",
+          "risk_tag": [
+            "data-skew"
+          ]
+        },
+        {
+          "requirement": "An acknowledgement carrying the case number within the first minute",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Case auto-response rules with a Classic template that merges CaseNumber and keeps the thread token, per admin/email-templates-and-alerts (Q61, Q62, Q64). W10 — effort S: Configuration base S with no multiplier: one template pair, one auto-response rule, one persona class (the customer is not an internal persona).",
+          "skills": [
+            "admin/email-templates-and-alerts",
+            "admin/email-deliverability-strategy"
+          ],
+          "steps": [
+            "M3-S02",
+            "M3-S04"
+          ],
+          "effort": "S",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Priority set from what the form or email tells us, within the first minute",
+          "verdict": "partial",
+          "tier": "Low-Code",
+          "note": "Web-to-Case can map a form field straight to Priority, but email carries no structured priority, so the before-save flow can only apply a default into a null field. Q16 asks for priority 'from what the form or email tells us' and no answer says how an email conveys it — the email half of this requirement is not closed by any step. W10 — effort L: Low-Code base M, +1 because the validation rules and their bypass separate the integration identity from all three human persona classes.",
+          "skills": [
+            "flow/record-triggered-flow-patterns",
+            "admin/validation-rules"
+          ],
+          "steps": [
+            "M3-S01",
+            "M4-S03"
+          ],
+          "effort": "L",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Pushed work for Tier 1 when agents are available; pull for Tier 2 and Billing",
+          "verdict": "partial",
+          "tier": "Configuration",
+          "note": "Queue-based Omni-Channel push is the mechanism D4 chose from automation-selection Q13, but its configuration is blocked: Q32-Q35 were all deferred at G1 and three of the four have no documented skill default, so M3-S05 is written blocked and only the pull half ships in this phase. M5-S01's queue list views — including a Tier 1 General view added for this reason — are Tier 1's interim surface. The two manual tests that referenced provisional values and signed answers are removed (v2 blocker B05): a blocked step is gated on who closes Q32-Q35 and by when, not on values nobody has. W10 — effort M: Configuration base S, +1 for three persona classes. No taxonomy risk tag fits 'blocked on four deferred questions'; that exposure is carried by assumptions A4-A7 and by the blocked status of M3-S05.",
+          "skills": [
+            "admin/omni-channel-routing-setup",
+            "admin/queues-and-public-groups"
+          ],
+          "steps": [
+            "M3-S05",
+            "M5-S01"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "The SLA clock running on the right regional calendar within the first minute",
+          "verdict": "fit",
+          "tier": "Low-Code",
+          "note": "Business Hours per region plus a before-save flow that resolves Account.Region__c to a calendar with the US as default (Q40); admin/business-hours-and-holidays carries the default-calendar and holiday rules. W10 — effort L: Low-Code base M, +1 because EMEA and US agents are two persona classes on different calendars.",
+          "skills": [
+            "admin/business-hours-and-holidays",
+            "flow/record-triggered-flow-patterns"
+          ],
+          "steps": [
+            "M4-S01",
+            "M4-S03"
+          ],
+          "effort": "L",
+          "risk_tag": []
+        },
+        {
+          "requirement": "First response within 4 business hours (Premier) or 1 business day (Standard), pausing on weekends and regional holidays",
+          "verdict": "fit",
+          "tier": "Low-Code",
+          "note": "Entitlement process plus First Response milestone types with the Case's calendar as the explicit authority (Q51); admin/entitlements-and-milestones covers the two-milestone-type question Q53 raises. Tiered Low-Code and not Configuration: this row's steps[] includes M4-S03, a before-save record-triggered Flow, and the rubric puts anything requiring a Flow at Low-Code. That now agrees with the two other rows that also point at M4-S03. W10 — effort M: Low-Code base M with no multiplier: Premier and Standard are account classes, not user persona classes, and the row touches Case and Entitlement only.",
+          "skills": [
+            "admin/entitlements-and-milestones",
+            "admin/business-hours-and-holidays"
+          ],
+          "steps": [
+            "M4-S02",
+            "M4-S03"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Severity 1 outages tracked 24/7 with a clock that never pauses",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "A 24/7 BusinessHours record plus an escalation entry with businessHoursSource = None (Q43); admin/escalation-rules documents the None-source behaviour. W10 — effort M: Configuration base S, +1 because the Severity 1 path spans Tier 1 and Tier 2.",
+          "skills": [
+            "admin/escalation-rules",
+            "admin/business-hours-and-holidays"
+          ],
+          "steps": [
+            "M4-S01",
+            "M4-S04"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Anything untouched for 8 business hours escalates to Tier 2",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Case escalation rule, 480 minutes from CaseCreation, businessHoursSource = Case, action = reassign to the Tier 2 queue plus notify (Q42, Q45, Q46). Decision D7 records that no tree covers the engine choice. W10 — effort M: Configuration base S, +1 because the escalation hands work from Tier 1 to Tier 2.",
+          "skills": [
+            "admin/escalation-rules",
+            "admin/queues-and-public-groups"
+          ],
+          "steps": [
+            "M4-S04",
+            "M5-S01"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Replies to customers go from support@ for general cases and billing@ for finance cases",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "Verified org-wide email addresses restricted to the profiles that need them (Q60), with the acknowledgement itself sent from support@ on both channels per Q22 and Q28. W10 — effort M: Configuration base S, +1 because two persona classes send from two different org-wide addresses.",
+          "skills": [
+            "admin/email-templates-and-alerts",
+            "admin/email-deliverability-strategy"
+          ],
+          "steps": [
+            "M3-S02",
+            "M2-S03"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Prove it works in a sandbox before customers see it",
+          "verdict": "partial",
+          "tier": "Configuration",
+          "note": "A Partial Copy proof sandbox with the five objects Q72 names, the post-refresh re-pointing Q74 demands and per-channel UAT cases Q84 requires is buildable. It is partial because Q69-Q71, Q73, Q75 and Q79 are deferred, so the environment ladder and the test-data mechanism behind the proof are undefined. W10 — effort M: Configuration base S, +1 because all three tester persona classes run their own channel. No taxonomy risk tag applies; the exposure is that four sandbox-strategy inputs are unanswered, which is why M5-S02 is blocked.",
+          "skills": [
+            "admin/sandbox-strategy",
+            "admin/uat-test-case-design",
+            "admin/uat-and-acceptance-criteria",
+            "admin/acceptance-criteria-given-when-then"
+          ],
+          "steps": [
+            "M5-S02"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "A deployable, reviewable record of the whole configuration",
+          "verdict": "fit",
+          "tier": "Configuration",
+          "note": "The ten-section configuration workbook plus an RTM and package.xml; admin/configuration-workbook-authoring fixes the sections and the one-agent-per-row rule. W10 — effort M: Configuration base S, +1 because the workbook and traceability set cover every persona class in the build.",
+          "skills": [
+            "admin/configuration-workbook-authoring",
+            "admin/requirements-traceability-matrix",
+            "admin/user-story-writing-for-salesforce",
+            "admin/change-management-and-deployment"
+          ],
+          "steps": [
+            "M5-S03",
+            "M5-S04",
+            "M5-S05"
+          ],
+          "effort": "M",
+          "risk_tag": []
+        },
+        {
+          "requirement": "Knowing the first-response target was actually met — something has to mark the milestone complete when the agent replies",
+          "verdict": "partial",
+          "tier": "Custom",
+          "note": "Nothing on the platform completes a milestone: CaseMilestone supports only update() and CompletionDate is one of its two updateable fields (skills/admin/entitlements-and-milestones/references/gotchas.md gotcha 8). D10 chose the after-update Apex trigger that skills/apex/entitlement-apex-hooks declares as its own output, which puts Apex in the delivery path and therefore tiers this row Custom. Verdict is partial rather than fit because the platform tracks and reports the target but does not close it. W10 — effort L: Custom base L with no multiplier: the trigger changes no persona's access or UI, touches Case and CaseMilestone only, and adds no layout.",
+          "skills": [
+            "apex/entitlement-apex-hooks",
+            "admin/entitlements-and-milestones"
+          ],
+          "steps": [
+            "M4-S05"
+          ],
+          "effort": "L",
+          "risk_tag": []
+        }
+      ]
+    },
+    "fit_gap": [
+      {
+        "requirement": "Two Case processes (support and finance) with different status and reason values",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Record types plus Support Processes are point-and-click configuration on Case. Two metadata sources now carry the deployable shape: admin/record-types-and-page-layouts/references/metadata-examples.md for the decomposed recordType / businessProcess files and the four-object businessProcess rule, and admin/case-management-setup/references/metadata-examples.md § 1-2 for the CaseOrigin / CaseStatus value sets the processes select from. Steps[] is M1-S01 and M1-S02 and neither contains a Flow or a formula, so the tier stays Configuration. W10 — effort M: Configuration base S, +1 because the row serves two persona classes (support agents and billing specialists) with different record types and layouts.",
+        "skills": [
+          "admin/record-types-and-page-layouts",
+          "admin/object-creation-and-design",
+          "admin/case-management-setup"
+        ],
+        "steps": [
+          "M1-S01",
+          "M1-S02"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Three teams with different object, field and app access, membership changing monthly",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Permission set groups over a minimal base profile; admin/permission-set-architecture and admin/permission-set-group-composition give the composition and muting rules. W10 — effort M: Configuration base S, +1 for three persona classes.",
+        "skills": [
+          "admin/permission-set-architecture",
+          "admin/permission-sets-vs-profiles",
+          "admin/permission-set-group-composition"
+        ],
+        "steps": [
+          "M2-S02",
+          "M2-S03"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Work pools per team whose membership list changes monthly without a deploy",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Queues whose members are public groups and roles, per admin/queues-and-public-groups; usernames never enter the metadata (Q29). W10 — effort L: Configuration base S, +1 for three persona classes, +1 for the data-skew tag: Tier_1_General is the catch-all owner for roughly 480 cases a day and skills/admin/data-skew-and-sharing-performance SKILL.md:88 puts ownership skew at 10,000 records owned by one user or queue.",
+        "skills": [
+          "admin/queues-and-public-groups",
+          "admin/data-skew-and-sharing-performance"
+        ],
+        "steps": [
+          "M2-S04"
+        ],
+        "effort": "L",
+        "risk_tag": [
+          "data-skew"
+        ]
+      },
+      {
+        "requirement": "Finance queries worked only by Finance",
+        "verdict": "partial",
+        "tier": "Configuration",
+        "note": "Case OWD Private plus a criteria-based sharing rule is standard sharing (sharing-selection Q3). Tiered Configuration and not Low-Code: the rubric's Configuration row is 'Point-and-click only — no formula language, no Flow, no code' and its Low-Code row is Flow / Dynamic Forms / formula fields / validation rules; this row's only step is M2-S05, which contains no Flow and no formula, so the criteria filter is declarative Setup rather than conditional logic authoring. The requirement never says whether the restriction is record-level or field-level — Q13 is deferred, so half of this is unresolved and the conservative record-level reading is planned (assumption A1). W10 — effort M: Configuration base S, +1 because two persona classes are separated by the rule (Tier 1 excluded, Billing included). No taxonomy risk tag applies; the real exposure is assumption A1 resting on deferred Q13, which is carried as an assumption row rather than as a risk tag the taxonomy does not define.",
+        "skills": [
+          "admin/sharing-and-visibility",
+          "admin/queues-and-public-groups"
+        ],
+        "steps": [
+          "M2-S05"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Cases arrive by email to two addresses at ~400 a day",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Email-to-Case routing addresses with per-address Origin, bounce and requeue behaviour and saveEmailHeaders, per admin/email-to-case-configuration. M2-S01 is in this row's steps[] because the intake-bypass Custom Permission is what keeps an API-created case from being blocked by a rule aimed at agents; without it neither channel closes the requirement. The emailToCase and webToCase blocks go in the SAME physical settings/Case.settings-meta.xml, which is why one file is declared on M3-S03 and the two channels are one step rather than two. W10 — effort M: Configuration base S, +1 because the two routing addresses feed two persona classes. The volume's ownership consequence is tagged on the work-pool row rather than double-counted here.",
+        "skills": [
+          "admin/email-to-case-configuration",
+          "admin/case-management-setup"
+        ],
+        "steps": [
+          "M2-S01",
+          "M3-S03"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Cases arrive from a website form at ~60 a day",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Native Web-to-Case covers the band (integration-pattern-selection Q5 rules out Bulk and iPaaS by volume) and the library now carries the deployable shape: admin/case-management-setup/references/metadata-examples.md § 3 gives CaseSettings.webToCase (enableWebToCase, caseOrigin, defaultResponseTemplate — 'exactly three children') and § 4 sets out what is metadata and what is not. Raised from 'partial' to 'fit' on that basis; the v2 verification's B04 skill gap is closed. The form markup itself is not metadata and has no metadata type, which is a scope boundary rather than a gap, and Q66's answer still asks a human to confirm whether the form posts directly or through middleware — that confirmation is M3-S03's manual test, not a step. M2-S01 is in steps[] because the intake-bypass Custom Permission is what keeps an API-created case from being blocked by a rule aimed at agents. W10 — effort S: Configuration base S with no multiplier: one sObject, one layout, one persona class.",
+        "skills": [
+          "admin/email-to-case-configuration",
+          "admin/case-management-setup"
+        ],
+        "steps": [
+          "M2-S01",
+          "M3-S03"
+        ],
+        "effort": "S",
+        "risk_tag": []
+      },
+      {
+        "requirement": "An owner within the first minute of case creation",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Case assignment rules fire synchronously at create on all three channels; admin/assignment-rules references/routing-selector.md row 1 is the mechanism, and decision D3 records that no tree covers it. W10 — effort L: Configuration base S, +1 for three persona classes across three queues, +1 for the data-skew tag: the catch-all assignment entry sends every unmatched case to Tier_1_General.",
+        "skills": [
+          "admin/assignment-rules",
+          "admin/case-management-setup",
+          "admin/data-skew-and-sharing-performance"
+        ],
+        "steps": [
+          "M3-S04"
+        ],
+        "effort": "L",
+        "risk_tag": [
+          "data-skew"
+        ]
+      },
+      {
+        "requirement": "An acknowledgement carrying the case number within the first minute",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Case auto-response rules with a Classic template that merges CaseNumber and keeps the thread token, per admin/email-templates-and-alerts (Q61, Q62, Q64). W10 — effort S: Configuration base S with no multiplier: one template pair, one auto-response rule, one persona class (the customer is not an internal persona).",
+        "skills": [
+          "admin/email-templates-and-alerts",
+          "admin/email-deliverability-strategy"
+        ],
+        "steps": [
+          "M3-S02",
+          "M3-S04"
+        ],
+        "effort": "S",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Priority set from what the form or email tells us, within the first minute",
+        "verdict": "partial",
+        "tier": "Low-Code",
+        "note": "Web-to-Case can map a form field straight to Priority, but email carries no structured priority, so the before-save flow can only apply a default into a null field. Q16 asks for priority 'from what the form or email tells us' and no answer says how an email conveys it — the email half of this requirement is not closed by any step. W10 — effort L: Low-Code base M, +1 because the validation rules and their bypass separate the integration identity from all three human persona classes.",
+        "skills": [
+          "flow/record-triggered-flow-patterns",
+          "admin/validation-rules"
+        ],
+        "steps": [
+          "M3-S01",
+          "M4-S03"
+        ],
+        "effort": "L",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Pushed work for Tier 1 when agents are available; pull for Tier 2 and Billing",
+        "verdict": "partial",
+        "tier": "Configuration",
+        "note": "Queue-based Omni-Channel push is the mechanism D4 chose from automation-selection Q13, but its configuration is blocked: Q32-Q35 were all deferred at G1 and three of the four have no documented skill default, so M3-S05 is written blocked and only the pull half ships in this phase. M5-S01's queue list views — including a Tier 1 General view added for this reason — are Tier 1's interim surface. The two manual tests that referenced provisional values and signed answers are removed (v2 blocker B05): a blocked step is gated on who closes Q32-Q35 and by when, not on values nobody has. W10 — effort M: Configuration base S, +1 for three persona classes. No taxonomy risk tag fits 'blocked on four deferred questions'; that exposure is carried by assumptions A4-A7 and by the blocked status of M3-S05.",
+        "skills": [
+          "admin/omni-channel-routing-setup",
+          "admin/queues-and-public-groups"
+        ],
+        "steps": [
+          "M3-S05",
+          "M5-S01"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "The SLA clock running on the right regional calendar within the first minute",
+        "verdict": "fit",
+        "tier": "Low-Code",
+        "note": "Business Hours per region plus a before-save flow that resolves Account.Region__c to a calendar with the US as default (Q40); admin/business-hours-and-holidays carries the default-calendar and holiday rules. W10 — effort L: Low-Code base M, +1 because EMEA and US agents are two persona classes on different calendars.",
+        "skills": [
+          "admin/business-hours-and-holidays",
+          "flow/record-triggered-flow-patterns"
+        ],
+        "steps": [
+          "M4-S01",
+          "M4-S03"
+        ],
+        "effort": "L",
+        "risk_tag": []
+      },
+      {
+        "requirement": "First response within 4 business hours (Premier) or 1 business day (Standard), pausing on weekends and regional holidays",
+        "verdict": "fit",
+        "tier": "Low-Code",
+        "note": "Entitlement process plus First Response milestone types with the Case's calendar as the explicit authority (Q51); admin/entitlements-and-milestones covers the two-milestone-type question Q53 raises. Tiered Low-Code and not Configuration: this row's steps[] includes M4-S03, a before-save record-triggered Flow, and the rubric puts anything requiring a Flow at Low-Code. That now agrees with the two other rows that also point at M4-S03. W10 — effort M: Low-Code base M with no multiplier: Premier and Standard are account classes, not user persona classes, and the row touches Case and Entitlement only.",
+        "skills": [
+          "admin/entitlements-and-milestones",
+          "admin/business-hours-and-holidays"
+        ],
+        "steps": [
+          "M4-S02",
+          "M4-S03"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Severity 1 outages tracked 24/7 with a clock that never pauses",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "A 24/7 BusinessHours record plus an escalation entry with businessHoursSource = None (Q43); admin/escalation-rules documents the None-source behaviour. W10 — effort M: Configuration base S, +1 because the Severity 1 path spans Tier 1 and Tier 2.",
+        "skills": [
+          "admin/escalation-rules",
+          "admin/business-hours-and-holidays"
+        ],
+        "steps": [
+          "M4-S01",
+          "M4-S04"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Anything untouched for 8 business hours escalates to Tier 2",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Case escalation rule, 480 minutes from CaseCreation, businessHoursSource = Case, action = reassign to the Tier 2 queue plus notify (Q42, Q45, Q46). Decision D7 records that no tree covers the engine choice. W10 — effort M: Configuration base S, +1 because the escalation hands work from Tier 1 to Tier 2.",
+        "skills": [
+          "admin/escalation-rules",
+          "admin/queues-and-public-groups"
+        ],
+        "steps": [
+          "M4-S04",
+          "M5-S01"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Replies to customers go from support@ for general cases and billing@ for finance cases",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "Verified org-wide email addresses restricted to the profiles that need them (Q60), with the acknowledgement itself sent from support@ on both channels per Q22 and Q28. W10 — effort M: Configuration base S, +1 because two persona classes send from two different org-wide addresses.",
+        "skills": [
+          "admin/email-templates-and-alerts",
+          "admin/email-deliverability-strategy"
+        ],
+        "steps": [
+          "M3-S02",
+          "M2-S03"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Prove it works in a sandbox before customers see it",
+        "verdict": "partial",
+        "tier": "Configuration",
+        "note": "A Partial Copy proof sandbox with the five objects Q72 names, the post-refresh re-pointing Q74 demands and per-channel UAT cases Q84 requires is buildable. It is partial because Q69-Q71, Q73, Q75 and Q79 are deferred, so the environment ladder and the test-data mechanism behind the proof are undefined. W10 — effort M: Configuration base S, +1 because all three tester persona classes run their own channel. No taxonomy risk tag applies; the exposure is that four sandbox-strategy inputs are unanswered, which is why M5-S02 is blocked.",
+        "skills": [
+          "admin/sandbox-strategy",
+          "admin/uat-test-case-design",
+          "admin/uat-and-acceptance-criteria",
+          "admin/acceptance-criteria-given-when-then"
+        ],
+        "steps": [
+          "M5-S02"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "A deployable, reviewable record of the whole configuration",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "note": "The ten-section configuration workbook plus an RTM and package.xml; admin/configuration-workbook-authoring fixes the sections and the one-agent-per-row rule. W10 — effort M: Configuration base S, +1 because the workbook and traceability set cover every persona class in the build.",
+        "skills": [
+          "admin/configuration-workbook-authoring",
+          "admin/requirements-traceability-matrix",
+          "admin/user-story-writing-for-salesforce",
+          "admin/change-management-and-deployment"
+        ],
+        "steps": [
+          "M5-S03",
+          "M5-S04",
+          "M5-S05"
+        ],
+        "effort": "M",
+        "risk_tag": []
+      },
+      {
+        "requirement": "Knowing the first-response target was actually met — something has to mark the milestone complete when the agent replies",
+        "verdict": "partial",
+        "tier": "Custom",
+        "note": "Nothing on the platform completes a milestone: CaseMilestone supports only update() and CompletionDate is one of its two updateable fields (skills/admin/entitlements-and-milestones/references/gotchas.md gotcha 8). D10 chose the after-update Apex trigger that skills/apex/entitlement-apex-hooks declares as its own output, which puts Apex in the delivery path and therefore tiers this row Custom. Verdict is partial rather than fit because the platform tracks and reports the target but does not close it. W10 — effort L: Custom base L with no multiplier: the trigger changes no persona's access or UI, touches Case and CaseMilestone only, and adds no layout.",
+        "skills": [
+          "apex/entitlement-apex-hooks",
+          "admin/entitlements-and-milestones"
+        ],
+        "steps": [
+          "M4-S05"
+        ],
+        "effort": "L",
+        "risk_tag": []
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "A1",
+        "text": "Billing-case confidentiality is a record-level restriction: a Tier 1 agent cannot open a Billing case at all, rather than opening it with a field hidden.",
+        "because": "Q13 was deferred; the conservative option is the more restrictive one, because a wrongly-open record cannot be un-seen while a wrongly-hidden field is a one-line fix. (source: deferred clarification Q13)",
+        "risk": "high",
+        "steps": [
+          "M2-S05"
+        ]
+      },
+      {
+        "id": "A2",
+        "text": "No automation overwrites a value a human has already set: the stamping flow writes only into null fields, and the support manager repairs a wrong automation result by hand.",
+        "because": "Q14 was deferred; writing only into nulls is the option that cannot destroy an agent's work. (source: deferred clarification Q14)",
+        "risk": "medium",
+        "steps": [
+          "M4-S03"
+        ]
+      },
+      {
+        "id": "A3",
+        "text": "The org is on Lightning Threading (Email-to-Case thread identifier in the headers), and every customer-facing template still carries the visible thread token as a belt-and-braces fallback.",
+        "because": "Q20 was deferred; Q64's answer already requires the token, so keeping it costs nothing and covers the legacy-threading case too. (source: deferred clarification Q20)",
+        "risk": "medium",
+        "steps": [
+          "M3-S02",
+          "M3-S03"
+        ]
+      },
+      {
+        "id": "A4",
+        "text": "The plan takes no position on which objects Omni-Channel pushes or when capacity is released: M3-S05 is written blocked rather than shipping a capacityModel nobody chose.",
+        "because": "Q32 was deferred; no cited skill documents a default for it, so the step takes the blocked exit (build-planner Step 6) instead of a guess.",
+        "risk": "high",
+        "steps": [
+          "M3-S05"
+        ]
+      },
+      {
+        "id": "A5",
+        "text": "The plan takes no position on agent capacity or per-case capacityWeight. skills/admin/omni-channel-routing-setup SKILL.md:177 documents a service-channel capacity weight default but no agent-capacity default, which is the half Q33 actually decides, so M3-S05 is written blocked rather than carrying a provisional number into a deployable file.",
+        "because": "Q33 was deferred and no skill supplies a defensible default; no cited skill documents a default for it, so the step takes the blocked exit (build-planner Step 6) instead of a guess.",
+        "risk": "high",
+        "steps": [
+          "M3-S05"
+        ]
+      },
+      {
+        "id": "A6",
+        "text": "The plan takes no position on routingModel or the secondary tie-breaker field: M3-S05 is written blocked.",
+        "because": "Q34 was deferred; no cited skill documents a default for it, so the step takes the blocked exit (build-planner Step 6) instead of a guess.",
+        "risk": "medium",
+        "steps": [
+          "M3-S05"
+        ]
+      },
+      {
+        "id": "A7",
+        "text": "The plan takes no position on pushTimeout or presenceStatusOnPushTimeout: M3-S05 is written blocked, and Tier 1 works the Tier 1 General queue list view (M5-S01) until Q32-Q35 are answered. M5-S01's Tier 1 General queue list view is the interim pull surface this assumption commits the plan to, so it is listed here as well as M3-S05.",
+        "because": "Q35 was deferred; no cited skill documents a default for it, so the step takes the blocked exit (build-planner Step 6) instead of a guess.",
+        "risk": "high",
+        "steps": [
+          "M3-S05",
+          "M5-S01"
+        ]
+      },
+      {
+        "id": "A8",
+        "text": "No report or code needs elapsed working time, so no working-time field is built in this phase.",
+        "because": "Q41 was deferred; building a field nobody asked for is the more expensive error here, and adding one later is additive. (source: deferred clarification Q41)",
+        "risk": "low",
+        "steps": [
+          "M4-S01"
+        ]
+      },
+      {
+        "id": "A9",
+        "text": "The first-response commitment ends when the milestone is completed, and the entitlement process ends when the case is closed.",
+        "because": "Q49 was deferred; case closure is the platform default and the only end condition the requirement names. (source: deferred clarification Q49)",
+        "risk": "medium",
+        "steps": [
+          "M4-S02"
+        ]
+      },
+      {
+        "id": "A10",
+        "text": "The SLA clock is never stopped in this phase; no stop reason and no stop permission is configured.",
+        "because": "Q52 was deferred; a clock that cannot be stopped cannot be stopped wrongly, and adding stop reasons later is additive. (source: deferred clarification Q52)",
+        "risk": "medium",
+        "steps": [
+          "M4-S02"
+        ]
+      },
+      {
+        "id": "A11",
+        "text": "Every validation rule fires on a field the user edits on the Case itself; no rule reaches into a child record.",
+        "because": "Q54 was deferred; a rule scoped to the Case is the one that cannot fire on a save the user did not make. (source: deferred clarification Q54)",
+        "risk": "low",
+        "steps": [
+          "M3-S01"
+        ]
+      },
+      {
+        "id": "A12",
+        "text": "No automation writes the fields the validation rules guard after save; the before-save stamping flow is the only writer and it runs before validation.",
+        "because": "Q55 was deferred; this is consistent with D1 and with Q27's single-owner-writer answer, and it is the assumption the artefacts must be checked against. (source: deferred clarification Q55)",
+        "risk": "medium",
+        "steps": [
+          "M3-S01",
+          "M4-S03"
+        ]
+      },
+      {
+        "id": "A13",
+        "text": "Every field a validation rule attaches its error to is present on both Case layouts.",
+        "because": "Q57 was deferred; the alternative produces an error the user cannot see, so the plan assumes the layouts carry the field. M1-S02's checker does not prove it at step scope — it sees layouts and no record types — so the assertion sits in M1-S02's manual test and in M1's milestone checker at --manifest-dir artefacts.",
+        "risk": "medium",
+        "steps": [
+          "M1-S02",
+          "M3-S01"
+        ]
+      },
+      {
+        "id": "A14",
+        "text": "The only reporting requirement in this phase is the escalation monitoring report Q91 names.",
+        "because": "Q65 was deferred; building one named report is smaller than guessing a reporting backlog. (source: deferred clarification Q65)",
+        "risk": "low",
+        "steps": [
+          "M5-S01"
+        ]
+      },
+      {
+        "id": "A15",
+        "text": "For every deny case, the persona is set up without the granting permission set and nothing else is already blocking the path.",
+        "because": "Q82 was deferred; assuming a second blocker would let a test pass for the wrong reason, so the plan assumes the single-cause case and makes the tester record what they saw. (source: deferred clarification Q82)",
+        "risk": "medium",
+        "steps": [
+          "M5-S03"
+        ]
+      },
+      {
+        "id": "A16",
+        "text": "The as-is process is the shared mailbox described in the requirement and nothing more; no as-is map is produced.",
+        "because": "Q67 was deferred; the requirement's own first line is the only as-is evidence available. (source: deferred clarification Q67)",
+        "risk": "low",
+        "steps": [
+          "M5-S04"
+        ]
+      },
+      {
+        "id": "A17",
+        "text": "One sandbox is available for the proof and its refresh is not contended.",
+        "because": "Q69 was deferred; the plan needs exactly one environment and assumes no more than that. (source: deferred clarification Q69)",
+        "risk": "medium",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A18",
+        "text": "The proof sandbox holds copied production Account and Contact records and is readable only by the named testers and the admin lead.",
+        "because": "Q70 was deferred; Q72 already requires Account and Contact to be seeded, so the restrictive readership is the conservative pairing. (source: deferred clarification Q70)",
+        "risk": "high",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A19",
+        "text": "No environment in the ladder has a refresh floor that blocks the proof window.",
+        "because": "Q71 was deferred; the plan does not schedule a refresh, so the assumption is only that none is forced on it. (source: deferred clarification Q71)",
+        "risk": "low",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A20",
+        "text": "Post-copy automation does exactly what Q74 requires: re-point the Email-to-Case routing addresses and the website form endpoint, and nothing else.",
+        "because": "Q73 was deferred; the narrowest post-copy job is the one least likely to touch production-shaped data. (source: deferred clarification Q73)",
+        "risk": "medium",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A21",
+        "text": "UAT runs in the same proof sandbox, and no refresh is booked inside the UAT window.",
+        "because": "Q75 was deferred; a refresh mid-UAT would invalidate the run, so the plan assumes it does not happen and the sandbox proof plan records it as a precondition. (source: deferred clarification Q75)",
+        "risk": "medium",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A22",
+        "text": "Test data is created through the UI by the named testers, not by a bulk load.",
+        "because": "Q79 was deferred; UI creation is the path the personas actually use (Q84) and needs no additional tooling decision. (source: deferred clarification Q79)",
+        "risk": "low",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A23",
+        "text": "Each expected result is evidenced by a screen the tester can point at, plus the case record itself; no query or file evidence is designed in this phase.",
+        "because": "Q81 was deferred; screen-plus-record is the evidence a non-technical tester can actually produce. (source: deferred clarification Q81)",
+        "risk": "medium",
+        "steps": [
+          "M5-S03"
+        ]
+      },
+      {
+        "id": "A24",
+        "text": "Entitlement versioning is off and no next version is owned.",
+        "because": "Q92 was deferred; versioning off is the platform default and the state the first release should ship in. (source: deferred clarification Q92)",
+        "risk": "low",
+        "steps": [
+          "M4-S02"
+        ]
+      },
+      {
+        "id": "A25",
+        "text": "The validation deploy runs before sign-off, and the QA or BA lead named in Q97 accepts any deferred defect.",
+        "because": "Q95 was deferred; running validation before sign-off is the ordering that cannot sign off an unvalidated build. (source: deferred clarification Q95)",
+        "risk": "medium",
+        "steps": [
+          "M5-S02"
+        ]
+      },
+      {
+        "id": "A26",
+        "text": "Case carries exactly two record types, Support and Billing — the conditional in Q1's answer ('if only the reply address and queue differ, use one record type') is resolved in favour of two.",
+        "because": "Q1 answered; the conditional is settled by D5, whose sharing-selection Q3 branch keys the criteria-based sharing rule on a field on the record itself. RecordTypeId is that field, so a single record type would leave no record-level criterion to keep Billing cases away from Tier 1 (assumption A1).",
+        "risk": "low",
+        "steps": [
+          "M1-S01",
+          "M1-S02",
+          "M2-S03",
+          "M2-S05"
+        ]
+      },
+      {
+        "id": "A27",
+        "text": "One MilestoneType ('First Response') serves both tiers, and the differing 4-business-hour / 1-business-day targets live as minutesToComplete on two EntitlementProcess files. The count is therefore two entitlement processes and one milestone type.",
+        "because": "Q53 asked whether the differing time triggers force two milestone types; skills/admin/entitlements-and-milestones/references/metadata-examples.md § 1 answers it — 'the process file carries the timing, the milestone type carries the identity and recurrence'. Recorded as a documented skill default, not a guess.",
+        "risk": "low",
+        "steps": [
+          "M4-S02",
+          "M4-S05"
+        ]
+      },
+      {
+        "id": "A28",
+        "text": "The two Case Support Processes select from the CaseStatus value set as it already stands; no new Status value is added and no StandardValueSet:CaseStatus file is deployed.",
+        "because": "Q1 answered — the two record types differ 'on Status/Reason', which reads as two subsets of one value set rather than new values. Recorded as an assumption rather than a fact because the answer enumerates no values. admin/case-management-setup/references/metadata-examples.md § 2 makes the dependency explicit ('The process is a subset of the CaseStatus values deployed in §1, so §1 lands first'), so if the builder finds a required Status value missing, M1-S01 blocks rather than inventing one.",
+        "risk": "medium",
+        "steps": [
+          "M1-S01"
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D1",
+        "decision": "Stamp Case.EntitlementId, Case.BusinessHoursId and the Priority default in one before-save record-triggered Flow rather than in Apex or an after-save Flow.",
+        "decision_tree": "standards/decision-trees/automation-selection.md",
+        "branch": "Q2",
+        "branch_quote": "Q2. Does the logic run in under ~10s and touch only fields on the record itself?\n    ├── Yes, but the field is OwnerId (or an acknowledgement, or an SLA\n    │        clock) on a Case or a Lead                               → Q13\n    ├── Yes  → Before-save record-triggered Flow\n    └── No   → Q3",
+        "rationale": "All three writes land on the triggering Case and the Account/Entitlement reads are lookups, not DML, so Q1's record-change branch reaches Q2. Q2's first branch redirects the Case-specific engine choices to Q13, and this plan takes that redirect elsewhere: the owner write is D3 (Q13), the acknowledgement is the auto-response rule in M3-S04 (Q13), and the SLA engine itself is the entitlement process in M4-S02 (Q15). What is left at Q2's plain 'Yes' leaf is exactly this step — the same-record field write that puts the Case into that engine. The Q15 leaf note is why the step has to exist at all: 'neither Email-to-Case nor Web-to-Case supplies an entitlement, so a case-intake design that stops at the channel tracks nothing until something assigns one.'",
+        "alternatives_rejected": [
+          "Apex before-insert trigger",
+          "After-save record-triggered Flow",
+          "three separate flows, one per field"
+        ],
+        "consequences": "No Apex means no coverage gate and no deploy-time test dependency, but also no custom exception handling: a Case whose Account has no entitlement must fall through to a documented default rather than throw (Q48).",
+        "adr_required": false,
+        "answers": [
+          "Q16",
+          "Q40",
+          "Q48"
+        ],
+        "steps": [
+          "M4-S03"
+        ]
+      },
+      {
+        "id": "D2",
+        "decision": "The stamping flow is before-save, not after-save: the Account and Entitlement lookups are read-only Get Records, which a before-save flow supports.",
+        "decision_tree": "standards/decision-trees/flow-pattern-selector.md",
+        "branch": "Q3",
+        "branch_quote": "Q3. Do you need any DML, an Action/callout, or an email — anything beyond\n    writing fields on the triggering record?\n    ├── No   → Before-Save record-triggered flow. Its element set is\n                Assignment, Decision, Get Records, Loop — so a read-only\n                cross-object lookup is fine here; a write is not.",
+        "rationale": "Q1 'record INSERT or UPDATE' → Q2 'only set fields on the SAME record' → Q3 'no DML, no action, no email' → before-save. The branch text settles the one thing that looked like an obstacle: the cross-object read is allowed.",
+        "alternatives_rejected": [
+          "After-save record-triggered flow",
+          "After-save with a scheduled path"
+        ],
+        "consequences": "The customer acknowledgement (an email) cannot live in this flow; it stays in the auto-response rule (M3-S04), which is what Q63 asked for anyway.",
+        "adr_required": false,
+        "answers": [
+          "Q16",
+          "Q48",
+          "Q63"
+        ],
+        "steps": [
+          "M4-S03"
+        ]
+      },
+      {
+        "id": "D3",
+        "decision": "Case ownership at creation is set by Case Assignment Rules, and the assignment rule is the sole authoritative OwnerId writer at create time.",
+        "rationale": "automation-selection Q2's first branch redirects an OwnerId write on a Case to Q13, and Q13's first leaf is this decision verbatim: the first owner is a function of field values (Origin, Account support tier) held in an ordered criteria table. The tree's own 'Why each leaf' note adds the reason a Flow is wrong here: assignment rules run at save-order position 9, after all after triggers and before after-save record-triggered flows at position 14, so a before-save Flow that sets OwnerId is simply overwritten. skills/admin/assignment-rules/references/routing-selector.md row 1 says the same thing and is recorded as the corroborating source.",
+        "alternatives_rejected": [
+          "Before-save record-triggered Flow setting OwnerId",
+          "Apex trigger with round-robin counter",
+          "Omni-Channel alone with no queue-landing rule"
+        ],
+        "consequences": "Two by-design post-save OwnerId writers remain (Omni-Channel push in M3-S05 and the escalation rule in M4-S04). Q27 already flagged this; owner-writer-map.md in M3-S04 is the artefact that has to reconcile all three.",
+        "adr_required": true,
+        "answers": [
+          "Q24",
+          "Q25",
+          "Q26",
+          "Q27"
+        ],
+        "steps": [
+          "M3-S04"
+        ],
+        "decision_tree": "standards/decision-trees/automation-selection.md",
+        "branch": "Q13",
+        "branch_quote": "Q13. Which native rule engine on Case or Lead owns this write?\n     ├── The first owner comes from an ordered criteria table\n     │   of field values                                          → Assignment Rules · `admin/assignment-rules`",
+        "source_reference": "skills/admin/assignment-rules/references/routing-selector.md"
+      },
+      {
+        "id": "D4",
+        "decision": "Tier 1 receives pushed work through queue-based Omni-Channel granted by profile; Tier 2 and Billing pull from queue list views.",
+        "rationale": "Q13's second leaf is the decision: the question is who is free, not which team, and the tree's 'Why each leaf' note states that Omni-Channel sits on top of the assignment rule rather than instead of it — the rule lands the Case in the queue, Omni-Channel pushes it to an agent. That settles the mechanism. It does not settle the configuration: Q32-Q35 (objects pushed and capacity release, capacity model and weight, routing model and tie-breaker, push timeout) were all deferred at G1 and no cited skill documents a default for three of the four, so M3-S05 is written blocked rather than carrying invented numbers.",
+        "alternatives_rejected": [
+          "Skills-based routing (Q37: no skill dimension in the requirement)",
+          "Per-user presence assignment (Q36: Tier 1 membership changes monthly)",
+          "Apex round-robin (ignores presence and capacity)"
+        ],
+        "consequences": "Omni-Channel writes OwnerId after save, which is the second of the three owner writers D3 has to reconcile. M3-S05 is blocked on Q32-Q35, so nothing in this build configures the push half; Tier 1 works the Tier 1 General queue list view produced by M5-S01 until those four questions are answered.",
+        "adr_required": true,
+        "answers": [
+          "Q31",
+          "Q36",
+          "Q37",
+          "Q32",
+          "Q33",
+          "Q34",
+          "Q35"
+        ],
+        "steps": [
+          "M3-S05"
+        ],
+        "decision_tree": "standards/decision-trees/automation-selection.md",
+        "branch": "Q13",
+        "branch_quote": "Q13. Which native rule engine on Case or Lead owns this write?\n     ├── The record is already in a queue and must reach whichever\n     │   agent is online and under capacity                       → Omni-Channel · `admin/omni-channel-routing-setup`",
+        "source_reference": "skills/admin/assignment-rules/references/routing-selector.md"
+      },
+      {
+        "id": "D5",
+        "decision": "Case org-wide default stays Private and Tier 2 reaches Support cases through a criteria-based sharing rule on record type; nothing extends Billing cases to Tier 1.",
+        "decision_tree": "standards/decision-trees/sharing-selection.md",
+        "branch": "Q3",
+        "branch_quote": "Q3. Can the access be described by \"anyone who matches criteria X should see records matching criteria Y\"?\n    ├── Yes, criteria are on the record itself          → Criteria-Based Sharing Rule",
+        "rationale": "Q1 'Private → Q2'; the three teams are peers, not a hierarchy, so Q2's 'No' branch leads to Q3; the access is exactly 'the Tier 2 group should see cases whose RecordType is Support', and RecordTypeId is on the record itself.",
+        "alternatives_rejected": [
+          "Public Read-Only OWD",
+          "Role-hierarchy grant",
+          "Case Teams",
+          "Manual sharing",
+          "Apex managed sharing"
+        ],
+        "consequences": "Deferred Q13 asked whether the Billing restriction is record-level or field-level. The plan takes the record-level (more restrictive) reading as assumption A1. If the answer turns out to be field-level masking, M2-S05 is re-planned, not patched.",
+        "adr_required": false,
+        "answers": [
+          "Q13",
+          "Q80"
+        ],
+        "steps": [
+          "M2-S05"
+        ]
+      },
+      {
+        "id": "D6",
+        "decision": "The website form posts to native Web-to-Case; no middleware, no Bulk API and no custom REST endpoint is introduced.",
+        "decision_tree": "standards/decision-trees/automation-selection.md",
+        "branch": "Q14",
+        "branch_quote": "Q14. Which intake channel creates the Case?\n     ├── Customer email to a monitored routing address            → Email-to-Case · `admin/email-to-case-configuration`\n     ├── An HTML form posted from a public website                → Web-to-Case · `admin/case-management-setup`",
+        "rationale": "Q13's fourth leaf ('The record arrives from an inbound intake channel') routes to Q14, whose second leaf is native Web-to-Case for an HTML form posted from a public website and whose first is Email-to-Case for a monitored routing address. That is the positive half of this decision, and it is what the v1 plan was missing. integration-pattern-selection Q5 was also read and settles the negative half by volume: 60 web submissions plus 400 emails a day sit in its lowest band, so Bulk API 2.0 and an iPaaS are ruled out. The tree's Q14 'Why each leaf' note adds the constraint the plan follows in M3-S03 and M3-S04: ownership belongs in the assignment rule reading Case.Origin per address, not in the channel's own owner field.",
+        "alternatives_rejected": [
+          "Bulk API 2.0",
+          "Middleware / iPaaS",
+          "Custom @RestResource endpoint"
+        ],
+        "consequences": "Q66 left open whether the form posts directly or through middleware. If middleware turns out to sit in front, the Origin stamping in M3-S03 and the assignment criteria in M3-S04 both change. Assumption A26 is not recorded because Q66 is answered — the answer itself says 'confirm', so the confirmation is a manual test on M3-S03.",
+        "adr_required": false,
+        "answers": [
+          "Q15",
+          "Q66"
+        ],
+        "steps": [
+          "M3-S03"
+        ]
+      },
+      {
+        "id": "D7",
+        "decision": "The 8-business-hour Tier 2 handoff is a Case Escalation Rule, not a scheduled Flow or a time-based Apex job.",
+        "rationale": "Q13's fifth leaf ('Something must happen because time has passed') routes to Q15, whose first leaf is this decision: re-route or notify when an open Case ages past a threshold. The tree's 'Why each leaf' note is the reason a scheduled Flow is wrong: escalation rules run at save-order position 12 and then on their own timer against business hours, and a polling Flow 'will not honour the per-entry businessHoursSource or the escalationStartTime choice between case creation and last modification' — both of which Q42 and Q43 answered explicitly. automation-selection Q10 and async-selection were both read and route only between Batch, Queueable and Schedule-triggered Flow, all of which re-implement the engine.",
+        "alternatives_rejected": [
+          "Schedule-triggered Flow polling open Cases",
+          "After-save Flow with a scheduled path",
+          "Batch Apex"
+        ],
+        "consequences": "The escalation engine batches, so the 480-minute threshold is not a to-the-second promise (Q46 asked for headroom to be agreed). The rule also writes OwnerId, which is the third owner writer D3 has to reconcile.",
+        "adr_required": true,
+        "answers": [
+          "Q42",
+          "Q43",
+          "Q45",
+          "Q46",
+          "Q47"
+        ],
+        "steps": [
+          "M4-S04"
+        ],
+        "decision_tree": "standards/decision-trees/automation-selection.md",
+        "branch": "Q15",
+        "branch_quote": "Q15. What does the passage of time have to do?\n     ├── Re-route or notify when an open Case ages past a\n     │   threshold                                                → Escalation Rules · `admin/escalation-rules`",
+        "source_reference": "skills/admin/assignment-rules/references/routing-selector.md"
+      },
+      {
+        "id": "D8",
+        "decision": "Nothing in this build runs asynchronously: no @future, no Queueable, no Batch, no Schedulable and no Platform Event.",
+        "decision_tree": "standards/decision-trees/async-selection.md",
+        "branch": "Q1",
+        "branch_quote": "Q1. How many records / how long?\n    ├── < 2,000 records, < 60s          → Q2\n    ├── 2k – 50k, < 5 min                → Q5 (Queueable)\n    ├── > 50k OR > 5 min                 → Q8 (Batch Apex)\n    └── Truly massive, one-off ETL       → Bulk API 2.0 (async SOQL / external job)",
+        "rationale": "The worst case anyone described is the daily email peak of ~400 cases (Q15), and those arrive as individual API inserts, never as one 2,000-record transaction. Q1's first band applies and the tree never reaches an async tier.",
+        "alternatives_rejected": [
+          "Queueable entitlement stamping",
+          "Batch Apex nightly SLA sweep",
+          "Platform Event fan-out to Tier 2"
+        ],
+        "consequences": "Every automation in the plan runs inside the creating transaction, so the before-save flow in M4-S03 is on the critical path of every intake. If volume grows past the Q1 first band, this decision is the one to revisit.",
+        "adr_required": false,
+        "answers": [
+          "Q15",
+          "Q76"
+        ],
+        "steps": [
+          "M4-S03"
+        ]
+      },
+      {
+        "id": "D9",
+        "decision": "Case is treated as an ordinary object: no skinny table, no custom index request and no archival design in this phase.",
+        "decision_tree": "standards/decision-trees/performance-tuning.md",
+        "branch": "Q10",
+        "branch_quote": "Q10. What stage of LDV are you in?\n    ├── Designing a new high-volume object           → architect/large-data-volume-architecture (skinny + indexes from day one)",
+        "rationale": "The tree was entered because the requirement names a volume (Q15: ~480 cases/day). Q1's symptom router has no branch for a greenfield design with no reported symptom, so Q10's design-stage branch is the only reachable entry. ~480/day is roughly 175k Cases a year, well below the thresholds that branch exists for, so the answer is 'not this'.",
+        "alternatives_rejected": [
+          "Skinny table on Case from day one",
+          "Custom index request on Origin",
+          "Big Object archival of closed cases"
+        ],
+        "consequences": "The escalation monitoring report (M5-S01) and the queue list views (M5-S01) are unindexed selective queries today. Q76 already asked which acceptance criteria depend on volume; if the report degrades, this decision is where the revisit starts.",
+        "adr_required": false,
+        "answers": [
+          "Q15",
+          "Q76"
+        ],
+        "steps": [
+          "M5-S01"
+        ]
+      },
+      {
+        "id": "D10",
+        "decision": "Mark the First Response milestone complete with an after-update Apex trigger on Case that stamps CaseMilestone.CompletionDate, not with entitlement-process completion criteria and not with a Flow.",
+        "source_reference": "skills/apex/entitlement-apex-hooks/SKILL.md",
+        "rationale": "automation-selection was read end to end before this was called treeless. Q2's first branch sends an SLA clock on a Case to Q13, and Q13's fifth leaf sends it to Q15, whose second leaf selects Entitlement milestones as the engine — that is D-level ground for M4-S02 and nothing more; no leaf in Q13, Q14 or Q15 says who writes CompletionDate. Q3's Apex list does not name it either. The skill is the source: skills/admin/entitlements-and-milestones/references/gotchas.md gotcha 8 states that a milestone stays open until something writes CompletionDate and that the mechanism must ship with the process, and references/metadata-examples.md § 9 shows CaseMilestone supports only update() with CompletionDate and StartDate as its two updateable fields. skills/apex/entitlement-apex-hooks declares exactly this artefact as its output — an after-update trigger on Case that writes CompletionDate to open CaseMilestone records, plus its test class — so the Apex path is the one the library documents end to end. The declarative alternative is not chosen because no cited reference documents an EntitlementProcess completion-criteria element; milestoneCriteriaFilterItems is a start criterion (api_meta.txt:59198-59201), not a completion one.",
+        "alternatives_rejected": [
+          "Satisfiable completion criteria on the entitlement process (no completion-criteria element is documented in the skill's metadata reference)",
+          "A record-triggered Flow stamping CompletionDate directly (metadata-examples § 9 documents the Flow path as an invocable wrapper around this same Apex, so it adds a component without removing the Apex)",
+          "Leaving completion manual (gotcha 8: every first-response milestone then reports violated on cases the agent demonstrably answered)"
+        ],
+        "consequences": "This is the only Apex in the build, so M4-S05 is the only step under the 75% coverage gate and the only one whose artefacts a deploy will compile. Violation polling is deliberately not built: the same skill's MilestoneViolationScheduler is Schedulable, which D8 rules out for this phase.",
+        "adr_required": true,
+        "answers": [
+          "Q50",
+          "Q53"
+        ],
+        "steps": [
+          "M4-S05"
+        ]
+      }
+    ],
+    "milestones": [
+      {
+        "id": "M1",
+        "title": "Case data model and record-type layouts",
+        "goal": "Given a greenfield org with no existing Case records (Q4), when the Case model is deployed, then two record types with their Support Processes, the three active Origin values and one layout per record type exist, and every field the routing and SLA milestones reference resolves.",
+        "steps": [
+          "M1-S01",
+          "M1-S02"
+        ],
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2",
+        "title": "Access, work pools and Case visibility",
+        "goal": "Given the 18 internal users split 12 Tier 1 / 4 Tier 2 / 2 Billing (Q8), when the access model is deployed, then each team holds a permission set group over a minimal base profile, the three Case queues exist with role-and-group membership, and a Tier 1 agent cannot open a Billing case.",
+        "steps": [
+          "M2-S01",
+          "M2-S02",
+          "M2-S03",
+          "M2-S04",
+          "M2-S05"
+        ],
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3",
+        "title": "Validation, intake and routing",
+        "goal": "Given a case arriving on any of the three channels (Q15), when it is created, then it has an owner from the assignment rule, the customer has an acknowledgement carrying the case number sent from support@, and no validation rule blocked the API-created record.",
+        "steps": [
+          "M3-S01",
+          "M3-S02",
+          "M3-S03",
+          "M3-S04",
+          "M3-S05"
+        ],
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts --strict",
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4",
+        "title": "SLA clocks, entitlements and escalation",
+        "goal": "Given a Premier case created at 17:00 London time on a Friday (Q39), when the first-response clock is read, then it is running on the EMEA calendar, shows 4 business hours remaining, does not tick over the weekend, and the 8-business-hour Tier 2 escalation is present but inactive (Q47). And given the agent replies, when the first outbound reply is saved, then CaseMilestone.CompletionDate is written by the M4-S05 trigger rather than the milestone reporting violated on a case that was answered.",
+        "steps": [
+          "M4-S01",
+          "M4-S02",
+          "M4-S03",
+          "M4-S04",
+          "M4-S05"
+        ],
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5",
+        "title": "Agent surfaces, sandbox proof and the deploy package",
+        "goal": "Given the whole configuration is built, when the sandbox proof runs (Q68), then each of the three intake channels has been tested separately by a named tester on a real profile, the deny cases fail closed, and a package.xml plus deploy-order note exist that a human can validate without this layer deploying anything.",
+        "steps": [
+          "M5-S01",
+          "M5-S02",
+          "M5-S03",
+          "M5-S04",
+          "M5-S05"
+        ],
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "M1-S01",
+        "milestone": "M1",
+        "type": "object-model",
+        "agent": "metadata-builder",
+        "title": "Case record types, Support Processes, the CaseOrigin value set, the Case compact layout and the intake/SLA fields they reference",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [],
+        "outputs": 12,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M1-S02",
+        "milestone": "M1",
+        "type": "ui",
+        "agent": "metadata-builder",
+        "title": "Page layouts per Case record type",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01"
+        ],
+        "outputs": 3,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+            "scope": "step"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2-S01",
+        "milestone": "M2",
+        "type": "access",
+        "agent": "metadata-builder",
+        "title": "Intake bypass Custom Permission and the integration permission set that carries it",
+        "status": "pending",
+        "human_gate": true,
+        "depends_on": [],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2-S02",
+        "milestone": "M2",
+        "type": "access",
+        "agent": "metadata-builder",
+        "title": "Permission sets and permission set groups for Tier 1, Tier 2 and Billing",
+        "status": "pending",
+        "human_gate": true,
+        "depends_on": [
+          "M1-S01"
+        ],
+        "outputs": 8,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2-S03",
+        "milestone": "M2",
+        "type": "access",
+        "agent": "metadata-builder",
+        "title": "Minimal base profiles carrying only default app, default record type and layout assignment",
+        "status": "pending",
+        "human_gate": true,
+        "depends_on": [
+          "M1-S02",
+          "M2-S02"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+            "scope": "build"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2-S04",
+        "milestone": "M2",
+        "type": "access",
+        "agent": "metadata-builder",
+        "title": "Case queues and public groups for Tier 1 General, Tier 2 and Billing",
+        "status": "pending",
+        "human_gate": true,
+        "depends_on": [
+          "M2-S02"
+        ],
+        "outputs": 8,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
+            "scope": "step"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M2-S05",
+        "milestone": "M2",
+        "type": "access",
+        "agent": "metadata-builder",
+        "title": "Case org-wide default Private plus the criteria-based sharing rule that opens Support cases to Tier 2",
+        "status": "pending",
+        "human_gate": true,
+        "depends_on": [
+          "M2-S04"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts/M2-S05",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3-S01",
+        "milestone": "M3",
+        "type": "validation",
+        "agent": "metadata-builder",
+        "title": "Case validation rules with the intake bypass and component-field formulas",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01",
+          "M2-S01"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3-S02",
+        "milestone": "M3",
+        "type": "ui",
+        "agent": "metadata-builder",
+        "title": "Classic acknowledgement and escalation email templates plus the org-wide sender addresses",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01"
+        ],
+        "outputs": 7,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02 --strict",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3-S03",
+        "milestone": "M3",
+        "type": "routing",
+        "agent": "metadata-builder",
+        "title": "Email-to-Case routing addresses for support@ and billing@, Web-to-Case intake and Case settings",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01",
+          "M2-S04",
+          "M3-S02"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3-S04",
+        "milestone": "M3",
+        "type": "routing",
+        "agent": "metadata-builder",
+        "title": "Case assignment rules and auto-response rules driven by Origin and account support tier",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M2-S04",
+          "M3-S02",
+          "M3-S03"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M3-S05",
+        "milestone": "M3",
+        "type": "routing",
+        "agent": "metadata-builder",
+        "title": "Omni-Channel push for Tier 1: service channel, routing configuration, presence configuration and statuses",
+        "status": "blocked",
+        "human_gate": false,
+        "depends_on": [
+          "M2-S04",
+          "M3-S04"
+        ],
+        "outputs": 7,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4-S01",
+        "milestone": "M4",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "title": "Business Hours for EMEA (London 08:00-18:00), US (New York 08:00-20:00) and the 24/7 Severity 1 calendar, plus holidays",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [],
+        "outputs": 3,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4-S02",
+        "milestone": "M4",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "title": "Entitlement process and First Response milestone types for Premier (4 business hours) and Standard (1 business day)",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M4-S01",
+          "M1-S01"
+        ],
+        "outputs": 5,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+            "scope": "build"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4-S03",
+        "milestone": "M4",
+        "type": "automation",
+        "agent": "metadata-builder",
+        "title": "Before-save record-triggered Flow stamping EntitlementId, BusinessHoursId and the Priority default on Case create",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M4-S02",
+          "M1-S01"
+        ],
+        "outputs": 6,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03",
+            "scope": "step"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/flow/flow-governance/scripts/check_flow_governance.py --manifest-dir artefacts/M4-S03",
+            "scope": "step"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4-S04",
+        "milestone": "M4",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "title": "Case escalation rules: 8 business hours to Tier 2 on the Case calendar, plus a 24/7 Severity 1 entry, deployed inactive",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M4-S01",
+          "M2-S04",
+          "M3-S02",
+          "M3-S04"
+        ],
+        "outputs": 4,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5-S01",
+        "milestone": "M5",
+        "type": "ui",
+        "agent": "metadata-builder",
+        "title": "Pull list views for Tier 2 and Billing plus the escalation monitoring report and its folder",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M2-S04",
+          "M4-S04"
+        ],
+        "outputs": 6,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M4-S05",
+        "milestone": "M4",
+        "type": "automation",
+        "agent": "apex-builder",
+        "title": "After-update Apex trigger on Case that completes the First Response milestone, plus its test class",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M4-S02"
+        ],
+        "outputs": 6,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+            "scope": null
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5-S02",
+        "milestone": "M5",
+        "type": "custom",
+        "agent": "sandbox-strategy-designer",
+        "title": "Sandbox proof plan for the Partial Copy environment (BLOCKED: five sandbox-strategy inputs are not on file)",
+        "status": "blocked",
+        "human_gate": false,
+        "depends_on": [
+          "M4-S04",
+          "M2-S05"
+        ],
+        "outputs": 1,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py artefacts/M5-S02/sandbox-proof-plan.md",
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5-S03",
+        "milestone": "M5",
+        "type": "docs",
+        "agent": "story-drafter",
+        "title": "INVEST story backlog with per-story acceptance criteria for the three intake channels",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M5-S01"
+        ],
+        "outputs": 1,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+            "scope": "step"
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5-S04",
+        "milestone": "M5",
+        "type": "docs",
+        "agent": "build-doc-keeper",
+        "title": "Compile the ten-section configuration workbook, the traceability matrix, the build-wide deploy order, the UAT test-case pack and the acceptance-criteria document",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M5-S03"
+        ],
+        "outputs": 5,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+            "scope": "build"
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M5-S04",
+            "scope": null
+          },
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md",
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      },
+      {
+        "id": "M5-S05",
+        "milestone": "M5",
+        "type": "docs",
+        "agent": "metadata-builder",
+        "title": "Build-level package.xml and the deploy-order note across all five milestones",
+        "status": "pending",
+        "human_gate": false,
+        "depends_on": [
+          "M5-S04",
+          "M4-S05"
+        ],
+        "outputs": 2,
+        "acceptance_tests": [
+          {
+            "type": "checker",
+            "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+            "scope": "step"
+          },
+          {
+            "type": "xml",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manifest",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          },
+          {
+            "type": "manual",
+            "command": null,
+            "scope": null
+          }
+        ]
+      }
+    ],
+    "blocked_steps": [
+      {
+        "id": "M3-S05",
+        "blocked_reason": "deferred: Q32, Q33, Q34, Q35",
+        "searched": "Omni-Channel push for Tier 1: service channel, routing configuration, presence configuration and statuses"
+      },
+      {
+        "id": "M5-S02",
+        "blocked_reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity",
+        "searched": "Sandbox proof plan for the Partial Copy environment (BLOCKED: five sandbox-strategy inputs are not on file)"
+      }
+    ],
+    "blocker_disposition": [
+      {
+        "id": "B01",
+        "step": "M2-S01",
+        "lens": "testability",
+        "problem": "manual test asked an admin to confirm a PermissionSetAssignment, which is record data no design-only build produces",
+        "disposition": "CLOSED by rewriting the test as an assertion over permissionsets/Case_Intake_Integration.permissionset-meta.xml (it grants the custom permission and nothing else) plus a new declared output artefacts/M2-S01/deploy-order.md carrying the assignment instruction and its owner. Tickable at the M2 gate from files on disk."
+      },
+      {
+        "id": "B02",
+        "step": "M2-S02",
+        "lens": "testability",
+        "problem": "check_permission_set_group_composition.py exited 1 on any WARN and its PSG_<persona>_<env> regex rejected all three PSG names the step declared",
+        "disposition": "CLOSED twice over. The checker was rebuilt this session (fa3cad053): naming violations are WARN and exit 0; ERROR is reserved for platform facts. The three PSGs are also renamed in outputs[] to PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod, and M5-S03's personas_supplied updated to match. Fixture over exactly the step's eight files: 'Summary: 1 good, 0 error, 0 warn, 0 info, scanned 3 PSG file(s)', exit 0. The pre-rename fixture printed 3 WARNs and still exited 0, so either half alone would have closed it."
+      },
+      {
+        "id": "B03",
+        "step": "M2-S03",
+        "lens": "testability",
+        "problem": "the record-type/layout checker at step scope saw 0 record types and 0 layouts, so the cross-reference its description claimed was never made; a profile naming Case.Nonexistent still exited 0",
+        "disposition": "CLOSED at scope build with --manifest-dir artefacts --strict, which is the fact the task named. Fixture: at artefacts/M2-S03 the checker printed two INFO lines, 'N reference(s) unresolvable at this scope'. Over the whole tree it printed 'Scanned 14 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s)' and exited 0; the same tree with a ghost record type and layout produced one MEDIUM and two LOW findings — which exit 0 without --strict, and 1 with it. --strict is therefore what makes the exit code carry the cross-reference."
+      },
+      {
+        "id": "B04",
+        "step": "M2-S05",
+        "lens": "testability",
+        "problem": "a manual test whose expected value deferred the tick to the M5 gate stopped the step reaching tested, then documented, deadlocking milestone M2",
+        "disposition": "CLOSED by moving the live Billing-denial assertion to milestone M5's acceptance_tests, where the proof sandbox exists, and rewriting M2-S05's manual test as an assertion over settings/Sharing.settings-meta.xml, sharingRules/Case.sharingRules-meta.xml and case-visibility-model.md that a human ticks at the M2 gate from files on disk."
+      },
+      {
+        "id": "B05",
+        "step": "M3-S02",
+        "lens": "testability",
+        "problem": "check_email_templates.py rglobbed the declared sender-identity-note.md as a template and returned three REVIEW findings; emit_result returned 1 on any finding",
+        "disposition": "CLOSED by the rebuilt checker plus the standard argument form. It now lints only *.email, *.email-meta.xml and bodies under an email/ directory and never a *.md — its own docstring records the exact three phantom findings. Command is now --manifest-dir artefacts/M3-S02 --strict. Fixture: 'Scanned 4 email template file(s); 0 finding(s) detected.', exit 0. Deleting a <subject> made the same command exit 1. Also clears one of v3's non-standard-argument-form validate WARNs."
+      },
+      {
+        "id": "B06",
+        "step": "M3-S02",
+        "lens": "testability",
+        "problem": "the same deferred-tick deadlock as B04, on milestone M3",
+        "disposition": "CLOSED by moving the sandbox loop test to milestone M5's acceptance_tests and rewriting M3-S02's manual test as an assertion over sender-identity-note.md and the two .email bodies — the address each template sends from, the self-addressed-loop risk, and the control — tickable at the M3 gate."
+      },
+      {
+        "id": "B07",
+        "step": "M3-S05",
+        "lens": "testability",
+        "problem": "check_omni_channel_routing_setup.py raised E2 because no step declared a servicePresenceStatuses/ artefact",
+        "disposition": "CLOSED by declaring the artefact, which is the stronger of the two options the task offered. artefacts/M3-S05/servicePresenceStatuses/Available_For_Cases.servicePresenceStatus-meta.xml is added from the skill's references/metadata-examples.md § 2, with <channels> naming Case_Channel. The rebuilt checker also downgraded the no-status case from E2 to W4. Fixture over the whole tree: without the file, 'WARN W4 ... contains no ServicePresenceStatus at all', exit 0; with it, 'OK: no ERROR findings (0 warning(s))', exit 0. Declaring the artefact is what turns W4 back into the live E2 check rather than accepting a scope warning as the outcome."
+      },
+      {
+        "id": "B08",
+        "step": "M4-S02",
+        "lens": "testability",
+        "problem": "acceptance_tests[1] ran check_business_hours_and_holidays.py at step scope and claimed the entitlement processes name M4-S01's calendars; the settings file is M4-S01's artefact, so it printed 'INFO: No BusinessHours settings file found' and exited 0 on a ghost calendar",
+        "disposition": "CLOSED by deleting that test and moving the assertion onto the entitlements checker at scope build with --strict. The rebuilt checker distinguishes W3 (calendar named but not in the settings file present in the tree) from the new W6 (no settings file in the tree at all). Fixture, three runs: at artefacts/M4-S02, two W6 warnings, exit 0; at --manifest-dir artefacts, '0 error(s), 0 warning(s), 4 info note(s)', exit 0; with businessHours rewritten to 'Ghost Calendar', the W3 line and exit 1 under --strict. M4's milestone test carries the same command for the same reason."
+      },
+      {
+        "id": "B09",
+        "step": "M4-S05",
+        "lens": "executability",
+        "problem": "outputs[] declared artefacts/M4-S05/package.xml, which apex-builder's Output Contract does not name — caught between § 4 condition 2 and § 5's declare-a-manifest rule",
+        "disposition": "CLOSED on the side § 5 'The Apex exception' settles. package.xml is removed from M4-S05's outputs[]; M5-S05 (type docs, metadata-builder) now depends_on M4-S05 and aggregates the ApexClass and ApexTrigger members into the build-level manifest. M4-S05's always-on manifest test now declares expected 'skipped-not-applicable' and names M5-S05, and a new M5-S05 manual test asserts the two members are present there."
+      },
+      {
+        "id": "B10",
+        "step": "M5-S03",
+        "lens": "testability",
+        "problem": "check_invest.py treated every markdown heading as a story, so story-drafter's seven-section document could never pass",
+        "disposition": "CLOSED by the rebuilt checker: only a heading carrying a story id, a 'Story:' heading, or the As-a stem opens a story, and its docstring records exactly this failure. It also now takes --manifest-dir, so the command moves to the standard form and clears a validate WARN. Fixture: a document in story-drafter's seven-section shape with three US-CASE-nnn stories printed '[PASS]' for each and 'Summary: 3/3 stories passed (0 failed)', exit 0 under both --file and --manifest-dir. A tree with no story-shaped heading is still exit 1, so an empty backlog fails."
+      },
+      {
+        "id": "B11",
+        "step": "M5-S04",
+        "lens": "testability",
+        "problem": "acceptance_tests[1] declared no scope (so step) while the command passed --manifest-dir artefacts (build)",
+        "disposition": "CLOSED by adding \"scope\": \"build\", which is the correct intent: the RTM is checked against every step's artefacts. The --file half is kept because under --file a missing matrix is an ERROR and exit 1, while under --manifest-dir discovery alone it is an INFO and exit 0."
+      },
+      {
+        "id": "B12",
+        "step": "M5-S05",
+        "lens": "testability",
+        "problem": "check_deployment_manifest.py listed SharingRules in RISKY_TYPES as a HIGH finding and emit_result returned 1 on any finding, so no build-level manifest for a plan with a sharing rule could exit 0",
+        "disposition": "CLOSED by the rebuilt checker: RISKY_TYPES findings are WARN and exit 0, and --manifest-dir now recurses. Fixture over a manifest naming all fourteen types this build deploys: 'score 95', '1 finding(s) detected (0 blocking)', 'WARN ... manifest includes SharingRules; require explicit review and smoke tests', exit 0. --strict is deliberately not passed (the same fixture exits 1 under it) and the WARN is named in the test description as the documented expected state."
+      },
+      {
+        "id": "B13",
+        "step": "M5 (milestone)",
+        "lens": "testability",
+        "problem": "milestone M5 acceptance_tests[2] ran the same failing check_deployment_manifest command as M5-S05[0]",
+        "disposition": "CLOSED by the same checker fix, plus the command is repointed from artefacts/M5-S05 to artefacts. The rebuilt checker recurses over every package.xml, so the milestone test now reads the whole tree rather than one step's directory — which § 5 says a milestone test must, since a milestone test aimed inside one step's directory is a step test filed at the wrong level."
+      }
+    ],
+    "warning_disposition": [
+      {
+        "id": "W01",
+        "step": "M2-S01",
+        "problem": "description claimed the custom permission is granted by exactly one permission set and every consumer reference resolves; the exit code carried neither",
+        "disposition": "FIXED. The step test's description is rewritten to what step scope proves (the grant is not dangling; consumers are 0 because no validation rule is in scope yet), and the consumer half becomes a new M3 milestone test running the same checker at --manifest-dir artefacts --strict. Fixture: over the tree with M3-S01's rules, coverage row 'Bypass_Case_Intake_Validation  2  permission set Case_Intake_Integration', exit 0; with one rule's $Permission renamed, one WARN, exit 0 plain and 1 under --strict."
+      },
+      {
+        "id": "W02",
+        "step": "M2-S04",
+        "problem": "acceptance_tests[3] bundled three assertions into one tick",
+        "disposition": "FIXED. Split into three manual tests: per-queue email posture (Q88), no named user in any queue or group with the rosters confirmed (Q29), and the queue ownership-volume record (S4)."
+      },
+      {
+        "id": "W03",
+        "step": "M3-S01",
+        "problem": "Q54/Q55/Q57 recorded DEFERRED with assumptions named in prose only",
+        "disposition": "FIXED. inputs{} now carries \"assumptions\": [\"A11\",\"A12\",\"A13\"], and each of those rows already lists M3-S01 in its own steps[]. Verified by a script that joins every step's inputs.assumptions against assumptions[].steps[] in both directions."
+      },
+      {
+        "id": "W04",
+        "step": "M3-S03",
+        "problem": "Q20 recorded DEFERRED with assumption A3 in prose only",
+        "disposition": "FIXED. inputs{} now carries \"assumptions\": [\"A3\"]."
+      },
+      {
+        "id": "W05",
+        "step": "M4-S05",
+        "problem": "outputs[] included .cls-meta.xml and .trigger-meta.xml whose shape no cited skill documented",
+        "disposition": "FIXED with two real sources rather than a note. templates/apex/TriggerHandler.cls-meta.xml is added to templates[] and carries the ApexClass meta shape verbatim; apex/apex-design-patterns is added to skills[] because references/code-examples.md:781 carries the ApexTrigger meta shape. Both were checked on disk."
+      },
+      {
+        "id": "W06",
+        "step": "M5-S02",
+        "problem": "the description named one required column ('purpose'); check_sandbox_plan.py:187 requires three",
+        "disposition": "FIXED. The description now names type, purpose AND owner, and repeats the verifier's fixture evidence (all five sections with type and purpose but no owner scored 90 and exited 1)."
+      },
+      {
+        "id": "W07",
+        "step": "M5-S03",
+        "problem": "discovery_artifact_path was the bare relative 'CLARIFICATIONS.md'",
+        "disposition": "FIXED. It is now .sfskills/builds/case-onboarding/CLARIFICATIONS.md, the path the runner will pass."
+      },
+      {
+        "id": "W08",
+        "step": "M5-S04",
+        "problem": "the plan declares check_uat_case.py with --manifest-dir while agents/build-doc-keeper/AGENT.md Step 10 instructs --file",
+        "disposition": "NOT FIXED, and deliberately so: agents/ is outside the paths this run may mutate. The plan keeps the stronger --manifest-dir form (it cross-checks ac_id across the pack and the criteria document, which --file cannot), and the divergence is carried as a Process Observation with build-doc-keeper named as the file to change."
+      },
+      {
+        "id": "W09",
+        "step": "(plan)",
+        "problem": "20 of 45 checker tests exited 0 against an empty artefacts/<step-id>/ and no description said so",
+        "disposition": "FIXED for every checker this run re-ran. Each such description now states what the checker prints when it finds nothing, from an actual empty-directory run: check_object_creation_and_design ('No .object-meta.xml files found'), check_record_type_id_management ('WARN: no .cls, .trigger, .js, .xml files found'), check_business_hours_and_holidays ('INFO: No BusinessHours settings file found'), check_escalation_rules ('WARN W0 ... Nothing was checked'), check_entitlement_apex_hooks ('No issues found.'), check_case_management_setup ('No case management setup issues found.'), check_email_deliverability_strategy (three WARNs, exit 0). The four that are NOT discovery no-ops are named as such: check_access_model, check_sharing_model and check_report_inventory all exit 1 on an empty directory."
+      },
+      {
+        "id": "W10",
+        "step": "(plan)",
+        "problem": "all 18 fit_gap rows carried a tier but no effort tier and no risk_tag, which the cited rubric makes mandatory",
+        "disposition": "FIXED. Every row now carries effort from base(tier) + scope_multiplier + risk_multiplier capped at XL, with the arithmetic stated in the row's own note, and a risk_tag array. Two rows carry data-skew and cite admin/data-skew-and-sharing-performance (SKILL.md:88, ownership skew at 10,000 records owned by one user or queue) because Tier_1_General is the catch-all owner for roughly 480 cases a day; the other sixteen carry [], and the rows where the real exposure is a deferral say so in the note rather than borrowing a tag the taxonomy does not define."
+      },
+      {
+        "id": "W11",
+        "step": "(plan)",
+        "problem": "no milestone checker test declared a scope and two pointed inside one step's directory",
+        "disposition": "FIXED structurally rather than by declaring the field. § 5 says milestone scope is build by definition and declaring it is redundant, so the fix is to stop pointing milestone tests inside step directories: M5's check_workbook test is deleted (it duplicated M5-S04's own test[0] verbatim) and M5's deployment-manifest test is repointed to artefacts. Every remaining milestone checker command now reads artefacts."
+      },
+      {
+        "id": "W12",
+        "step": "M5-S05",
+        "problem": "acceptance_tests[3] bundled three confirmations into one tick",
+        "disposition": "FIXED. Split into three manual tests: no deploy command in the note, both blocked steps listed as excluded, and the deploy order following case-management-setup § 5 with the M4-S05 Apex members present."
+      }
+    ],
+    "sweep_findings_this_round": [
+      {
+        "id": "S1",
+        "where": "M3-S01",
+        "finding": "check_validation_rules.py returns 1 on ANY finding including REVIEW, and one REVIEW rule fires on a formula using ISPICKVAL( with no ISBLANK(. A fixture of exactly this step's two rules, written the natural way, exited 1 with two 'picklist logic has no explicit blank guard' findings. Rewritten with ISBLANK(TEXT(Origin)) and ISBLANK(TEXT(Priority)): 'Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.', exit 0. This is exactly the failure predicate the verifier said v3 had fixed elsewhere and not swept for; it was live on a step nobody had flagged. The blank guard is now a plan constraint stated in the test description, in a new manual test and in the M3 milestone test's note."
+      },
+      {
+        "id": "S2",
+        "where": "M2-S04",
+        "finding": "check_queues.py is declared for the first time. v3 left it off with a documented reason that is no longer true — it exited 1 on any finding, and Tier_1_General has no queue email on purpose. The rebuilt checker (fa3cad053) makes queue findings WARNs that exit 0, recurses into queues/ and groups/ at any depth, and reads the real element names. Fixture over the step's six files: all three queues listed with 'Objects : Case', all three groups listed, 'Warnings found (1): WARN: [Queue: Tier 1 General] No <email> configured', exit 0. That WARN is named in the description as the expected state; --strict is not passed and the same fixture exits 1 under it."
+      },
+      {
+        "id": "S3",
+        "where": "M4-S03",
+        "finding": "flow/flow-governance was rebuilt (9b237aa53) with a real checker, so the flow step now declares it — but only with the policy file that makes it non-vacuous. Without a policy the checker prints 'WARN No flow-governance-policy.yaml found ... naming, API-version floor, run-mode allow-list and test coverage are NOT being enforced' and exits 0, which would have been another test proving nothing. Three artefacts are added, each from a source checked on disk: flow-governance-policy.yaml (flow-governance references/metadata-examples.md § 6), flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml (flow/record-triggered-flow-patterns references/metadata-examples.md:621, a skill the step already read), and settings/Flow.settings-meta.xml (flow-governance § Flow.settings — enableFlowDeployAsActiveEnabled defaults to false, so an Active flow otherwise lands Draft). The flow is renamed Case_BeforeSave_StampEntitlementAndCalendar because the policy's naming pattern makes the old name an ERROR. Fixture: with policy, Active status and the FlowTest, '0 error(s), 2 advisory', exit 0; removing flowtests/ exits 1 on 'Active with no FlowTest'; renaming the flow exits 1 on the naming pattern."
+      },
+      {
+        "id": "S4",
+        "where": "M2-S04 + two fit_gap rows",
+        "finding": "The data-skew risk tag is grounded, not asserted. skills/admin/data-skew-and-sharing-performance SKILL.md:88 defines ownership data skew as one user or queue owning more than 10,000 records of a single object, and names the unassigned-queue parking lot as the common case. This build routes roughly 480 cases a day through Tier_1_General as the catch-all assignment target. The skill is added to M2-S04's skills[] and to the two fit_gap rows it tags, and the queue-retirement runbook now has to record the threshold, the monitor and the split-into-buckets remedy."
+      },
+      {
+        "id": "S5",
+        "where": "M3-S03",
+        "finding": "The Web-to-Case metadata step moves to build scope, using the fact that admin/case-management-setup now carries CaseSettings.webToCase. Its checker cross-checks webToCase/caseOrigin against the CaseOrigin standardValueSet, which is M1-S01's artefact: at step scope it printed a NOTE and exited 0 whatever the value said; over the tree it exited 0 correct and exited 1 with 'webToCase/caseOrigin is WebPortal but that value is not in CaseOrigin.standardValueSet-meta.xml'. Two further ISSUE rules read from the checker's source are now stated in the step: webToCase enabled needs a <caseOrigin>, and it needs <defaultCaseOwner> because WebToCaseSettings has no owner field of its own."
+      }
+    ],
+    "checker_fixture_evidence": [
+      {
+        "command": "check_permission_set_group_composition.py",
+        "scope": "artefacts/M2-S02",
+        "printed": "1 good, 0 error, 0 warn, 0 info, scanned 3 PSG file(s)",
+        "exit": 0
+      },
+      {
+        "command": "check_record_type_layouts.py --strict",
+        "scope": "artefacts (build)",
+        "printed": "Scanned 14 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s)",
+        "exit": 0
+      },
+      {
+        "command": "check_record_type_layouts.py --strict (negative)",
+        "scope": "artefacts (build)",
+        "printed": "1 MEDIUM + 2 LOW dangling-reference findings",
+        "exit": 1
+      },
+      {
+        "command": "check_email_templates.py --strict",
+        "scope": "artefacts/M3-S02",
+        "printed": "Scanned 4 email template file(s); 0 finding(s) detected",
+        "exit": 0
+      },
+      {
+        "command": "check_email_templates.py --strict (negative: no <subject>)",
+        "scope": "artefacts/M3-S02",
+        "printed": "REVIEW: 1 finding(s) to answer; --strict: failing on REVIEW findings",
+        "exit": 1
+      },
+      {
+        "command": "check_omni_channel_routing_setup.py",
+        "scope": "artefacts (build), with presence status",
+        "printed": "OK: no ERROR findings (0 warning(s))",
+        "exit": 0
+      },
+      {
+        "command": "check_omni_channel_routing_setup.py",
+        "scope": "artefacts (build), without presence status",
+        "printed": "WARN W4 ... contains no ServicePresenceStatus at all",
+        "exit": 0
+      },
+      {
+        "command": "check_entitlements_and_milestones.py --strict",
+        "scope": "artefacts (build)",
+        "printed": "0 error(s), 0 warning(s), 4 info note(s)",
+        "exit": 0
+      },
+      {
+        "command": "check_entitlements_and_milestones.py --strict (negative: Ghost Calendar)",
+        "scope": "artefacts (build)",
+        "printed": "WARN W3 ... not a <name> in the BusinessHours settings file",
+        "exit": 1
+      },
+      {
+        "command": "check_entitlements_and_milestones.py",
+        "scope": "artefacts/M4-S02",
+        "printed": "two W6 warnings: no BusinessHours settings file in this tree",
+        "exit": 0
+      },
+      {
+        "command": "check_invest.py --manifest-dir",
+        "scope": "artefacts/M5-S03",
+        "printed": "Summary: 3/3 stories passed (0 failed)",
+        "exit": 0
+      },
+      {
+        "command": "check_deployment_manifest.py",
+        "scope": "artefacts/M5-S05",
+        "printed": "score 95; WARN manifest includes SharingRules; 1 finding(s) detected (0 blocking)",
+        "exit": 0
+      },
+      {
+        "command": "check_deployment_manifest.py",
+        "scope": "artefacts (build, recurses)",
+        "printed": "no findings across the tree",
+        "exit": 0
+      },
+      {
+        "command": "check_queues.py",
+        "scope": "artefacts/M2-S04",
+        "printed": "3 queues + 3 groups listed; Warnings found (1): Tier 1 General has no <email>",
+        "exit": 0
+      },
+      {
+        "command": "check_custom_permissions.py --strict",
+        "scope": "artefacts (build)",
+        "printed": "coverage: Bypass_Case_Intake_Validation, 2 consumers, granted by Case_Intake_Integration",
+        "exit": 0
+      },
+      {
+        "command": "check_custom_permissions.py --strict (negative: $Permission.Bypass_Ghost)",
+        "scope": "artefacts (build)",
+        "printed": "0 error(s), 1 warning(s)",
+        "exit": 1
+      },
+      {
+        "command": "check_validation_rules.py",
+        "scope": "artefacts/M3-S01, ISPICKVAL with no ISBLANK",
+        "printed": "2 REVIEW: picklist logic has no explicit blank guard",
+        "exit": 1
+      },
+      {
+        "command": "check_validation_rules.py",
+        "scope": "artefacts/M3-S01, with ISBLANK guard",
+        "printed": "Scanned 2 validation rule(s) across 2 file(s); 0 finding(s)",
+        "exit": 0
+      },
+      {
+        "command": "check_case_management_setup.py",
+        "scope": "artefacts (build)",
+        "printed": "No case management setup issues found.",
+        "exit": 0
+      },
+      {
+        "command": "check_case_management_setup.py (negative: caseOrigin WebPortal)",
+        "scope": "artefacts (build)",
+        "printed": "that value is not in CaseOrigin.standardValueSet-meta.xml",
+        "exit": 1
+      },
+      {
+        "command": "check_flow_governance.py",
+        "scope": "artefacts/M4-S03 with policy + FlowTest",
+        "printed": "0 error(s), 2 advisory",
+        "exit": 0
+      },
+      {
+        "command": "check_flow_governance.py (negative: no FlowTest)",
+        "scope": "artefacts/M4-S03",
+        "printed": "ERROR: Active with no FlowTest naming it in <flowApiName>",
+        "exit": 1
+      },
+      {
+        "command": "check_flow_governance.py (negative: flow renamed)",
+        "scope": "artefacts/M4-S03",
+        "printed": "ERROR: API name does not match naming.pattern",
+        "exit": 1
+      },
+      {
+        "command": "check_flow_governance.py (no policy in tree)",
+        "scope": "artefacts/M4-S03",
+        "printed": "WARN No flow-governance-policy.yaml found — checks NOT enforced",
+        "exit": 0
+      },
+      {
+        "command": "check_record_triggered_flow_patterns.py",
+        "scope": "artefacts/M4-S03",
+        "printed": "No issues found.",
+        "exit": 0
+      },
+      {
+        "command": "check_flow_element_naming_conventions.py",
+        "scope": "artefacts/M4-S03",
+        "printed": "0 error(s), 1 warning(s), 0 info",
+        "exit": 0
+      },
+      {
+        "command": "check_access_model.py / check_sharing_model.py / check_report_inventory.py",
+        "scope": "empty directory",
+        "printed": "Scanned 0 ... file(s); nothing matched",
+        "exit": 1
+      },
+      {
+        "command": "seven other checkers",
+        "scope": "empty directory",
+        "printed": "discovery no-ops: they print a nothing-found line and exit 0",
+        "exit": 0
+      }
+    ],
+    "checker_commands_declared": [
+      "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md",
+      "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts",
+      "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01",
+      "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+      "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+      "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+      "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md",
+      "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts --strict",
+      "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+      "python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02",
+      "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02 --strict",
+      "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+      "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+      "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts",
+      "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+      "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+      "python3 skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py --manifest-dir artefacts",
+      "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+      "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+      "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts",
+      "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
+      "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+      "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+      "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
+      "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+      "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+      "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+      "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+      "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01",
+      "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+      "python3 skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py artefacts/M5-S02/sandbox-proof-plan.md",
+      "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+      "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts/M2-S05",
+      "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M5-S04",
+      "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+      "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+      "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01",
+      "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts",
+      "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+      "python3 skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03",
+      "python3 skills/flow/flow-governance/scripts/check_flow_governance.py --manifest-dir artefacts/M4-S03",
+      "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03"
+    ]
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "library-depth",
+      "observation": "Eight of the thirteen blockers were closed by checker fixes landed in the library this session rather than by plan workarounds. Five of them (B02, B05, B10, B12, B13) needed no plan change at all beyond a rewritten description, and two more (B03, B08) needed only a scope and a flag. That is the library absorbing the defect rather than every plan routing around it.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "git show --stat fa3cad053; then --help and a fixture run per checker",
+        "count": 8,
+        "path": "skills/admin/{permission-set-group-composition,email-templates-and-alerts,record-types-and-page-layouts,change-management-and-deployment,user-story-writing-for-salesforce,omni-channel-routing-setup,entitlements-and-milestones,queues-and-public-groups}/scripts/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-surface",
+      "observation": "The --strict flag turned out to be the lever four separate tests needed. check_record_type_layouts, check_entitlements_and_milestones, check_custom_permissions and check_email_templates all report their cross-reference findings at WARN/REVIEW/LOW and exit 0 without it, so a description claiming the cross-reference was true of the output and false of the exit code. Each was verified with a matched negative fixture before the flag was written into the command.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "positive and negative fixture per checker, run with and without --strict",
+        "count": 4,
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "test-surface",
+      "observation": "The sweep the verifier asked for found one live blocker nobody had flagged. check_validation_rules.py returns 1 on any finding including REVIEW, and its ISPICKVAL-without-ISBLANK rule fires on the natural way to write both of M3-S01's rules. The verifier's own fixture happened to include a blank guard, so the step read as passing on both rounds. The lesson generalises past this plan: a checker's severity model and its exit rule are separate facts, and reading one without the other is how a test looks green.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01, both formula shapes",
+        "count": 2,
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py:99-105,199-201"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "library-depth",
+      "observation": "check_flow_governance.py globs the metadata-format file name Flow.settings (line 711) and does not recognise the DX source-format settings/Flow.settings-meta.xml this build declares, so it reports 'the manifest carries Active flows but no settings/Flow.settings' against a tree that has one. The artefact keeps the build's naming convention and the advisory is documented as the expected outcome, but the checker cannot see a correctly-named DX file.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -n 'Flow.settings' skills/flow/flow-governance/scripts/check_flow_governance.py",
+        "count": 1,
+        "path": "skills/flow/flow-governance/scripts/check_flow_governance.py:711"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "contract-drift",
+      "observation": "W08 is not fixed and cannot be fixed from here. The plan declares check_uat_case.py with --manifest-dir while agents/build-doc-keeper/AGENT.md Step 10 tells that agent to lint the pack with --file. The plan's form is the stronger one because it reads the case file and the criteria document together and cross-checks criterion ids, but the agent's own playbook and the plan it executes now say different things, and agents/ is outside the paths this run may mutate.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -n 'check_uat_case' agents/build-doc-keeper/AGENT.md",
+        "count": 1,
+        "path": "agents/build-doc-keeper/AGENT.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-surface",
+      "observation": "Three validate WARNs remain and all three are the contract's own documented follow-up: check_sandbox_plan.py takes a positional path, check_workbook.py takes --workbook, check_ac_format.py takes --file. v3 carried six of these; three are now cleared because check_email_templates.py and check_invest.py grew --manifest-dir this session and one duplicate milestone test was deleted. The remaining three converge only when those three checkers do.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+        "count": 3,
+        "path": "standards/build-orchestration.md § 5 follow-up note"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "scope",
+      "observation": "Whether M4-S03 should carry a flow-governance policy at all is a judgment call. The requirement asks for no governance standard and the build has exactly one flow, so the co-residency and triggerOrder checks the policy exists for are moot today. It was added because the checker without a policy is a test that proves nothing, and because two of the checks it does enable — a FlowTest for an Active flow, and a naming pattern — are real. A reviewer could reasonably say the policy is scope the requirement did not buy.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_flow_governance.py with and without a policy file in the tree",
+        "count": 2,
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "fit-gap",
+      "observation": "The effort tiers are mechanical arithmetic over a judgment. base(tier) and risk_multiplier are determined, but scope_multiplier turns on 'more than 1 user persona class', and whether a row touches one persona class or three is a reading. Sixteen of eighteen rows took the multiplier; the two that did not (the web-form row and the Apex milestone-completion row) are the ones where the reading is most arguable in the other direction. Each row's note states the arithmetic so a reviewer can disagree with the input rather than with the number.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "skills/admin/fit-gap-analysis-against-org/SKILL.md, The Effort Tier Formula",
+        "count": 18,
+        "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md:81-99"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "risk-taxonomy",
+      "observation": "The fit-gap risk taxonomy has five tags and none of them means 'this row rests on a question nobody answered'. Three rows carry that exposure — Omni-Channel push blocked on Q32-Q35, the Billing visibility reading of deferred Q13, and the sandbox proof missing four of sandbox-strategy-designer's required inputs — and all three carry risk_tag []. The exposure is real and is carried by assumptions A1 and A4-A7 and by two blocked steps; inventing a sixth tag would have made the rows look scored rather than honest.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "skills/admin/fit-gap-analysis-against-org/SKILL.md, The Risk-Tag Taxonomy",
+        "count": 3,
+        "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md:100-112"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "Send plan v4 to the verifier. Thirteen blockers are answered, twelve warnings dispositioned, and five sweep findings this run made with its own fixtures are folded in; nothing here is a gate approval and the plan is still a proposal at status planned.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 scripts/build_plan.py status .sfskills/builds/case-onboarding/plan.json",
+        "count": 1,
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "the plan is a proposal at status planned and G2 is the next human gate; the verifier is what stands between them."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "library-depth",
+      "observation": "Two deepen-a-skill signals came out of this round and neither is a plan defect: check_flow_governance.py should accept the DX settings/Flow.settings-meta.xml name alongside the metadata-format one, and check_validation_rules.py's exit-on-any-REVIEW rule is worth a severity model of the kind the eight checkers fixed this session now have.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_flow_governance.py:711; check_validation_rules.py:99-105",
+        "count": 2,
+        "path": "skills/flow/flow-governance/scripts/check_flow_governance.py"
+      },
+      "suggested_followup_agent": "audit-router",
+      "followup_reason": "the two checker gaps are library work rather than build work, and belong in a skill-depth pass rather than in the next plan version."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 build_mode and the directory layout; § 3 the milestone-gate rule that B04 and B06 broke; § 4 the step-type table, design-only owners and the two borrowed-agent conditions; § 5 acceptance-test types, the checker-scope table, the cross-referential list, the Apex exception that settles B09, and the non-standard-argument-form follow-up that explains the three remaining WARNs"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations, the confidence rubric, the citation shape, and the Apex security idiom by API version named in M4-S05's note"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "never invent a skill or template path; cite the decision-tree branch; no freestyle Salesforce claims"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, atomic write and the scope guardrails that kept this run out of skills/, agents/, standards/ and scripts/"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking the two refusal conditions at Step 1; neither fired — the plan is at plan-rejected, which is the re-plan case"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the six top-level set-plan keys, additionalProperties:false on step and milestone objects, and acceptanceTest.scope semantics behind B11"
+    },
+    {
+      "type": "standard",
+      "id": "agent-frontmatter-schema",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "the status enum the agent-eligibility check is measured against for the five agents this plan assigns"
+    },
+    {
+      "type": "standard",
+      "id": "runtime-vs-build",
+      "path": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "used_for": "the active roster the five step owners were checked against"
+    },
+    {
+      "type": "standard",
+      "id": "agent-disambiguation",
+      "path": "agents/_shared/AGENT_DISAMBIGUATION.md",
+      "used_for": "confirming no step names a Wave-3b deprecated auditor"
+    },
+    {
+      "type": "standard",
+      "id": "skill-map",
+      "path": "agents/_shared/SKILL_MAP.md",
+      "used_for": "checking that the skills added to M2-S04, M4-S03 and M4-S05 are ones their owning agents already read"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "the five-tier rubric, the effort formula base(tier)+scope_multiplier+risk_multiplier and the five-tag risk taxonomy behind the W10 fix on all 18 rows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the deployment order the five milestones follow, and the ten canonical sections M5-S04 compiles"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "every fit_gap row reaching a step through steps[], and the B11 scope fix on M5-S04's RTM test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape every rewritten manual test takes, including the four moved or split under B01, B04, B06, W02 and W12"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-gathering-for-sf",
+      "path": "skills/admin/requirements-gathering-for-sf/SKILL.md",
+      "used_for": "reading objects, automation tier, sharing layer, volume and licence off each answer before choosing a step type"
+    },
+    {
+      "type": "skill",
+      "id": "architect/architecture-decision-records",
+      "path": "skills/architect/architecture-decision-records/SKILL.md",
+      "used_for": "the decisions[] record shape, carried unchanged from v3 where the verifier passed grounding 22/22"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "where a request for this plan as a spreadsheet is sent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/SKILL.md",
+      "used_for": "the PSG_<persona>_<env> convention the three PSGs are renamed to, and the checker invocation line with --strict (B02)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the --manifest-dir invocation line and the REVIEW-exits-0 / --strict-exits-1 rule behind B05"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the invocation line's 'point it at a tree that carries the objects, the layouts and the profiles' instruction, which is B03's fix"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the recursing --manifest-dir invocation line and the RISKY_TYPES-as-WARN behaviour behind B12 and B13"
+    },
+    {
+      "type": "skill",
+      "id": "admin/user-story-writing-for-salesforce",
+      "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md",
+      "used_for": "the story-shaped-heading rule and the --manifest-dir form behind B10"
+    },
+    {
+      "type": "skill",
+      "id": "admin/omni-channel-routing-setup",
+      "path": "skills/admin/omni-channel-routing-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md § 2 for the ServicePresenceStatus artefact B07 adds, and the E2/W4 distinction"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "the --manifest-dir invocation line, the W3/W6 distinction and the ERROR-only exit rule behind B08"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "the recursing invocation line and the WARN-exits-0 rule that let S2 declare check_queues on M2-S04"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md § 1 CaseOrigin, § 3 the CaseSettings webToCase block and its three documented children, § 5 the deploy order — the Web-to-Case metadata source S5 moves to build scope"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the rule set behind S1's ISBLANK blank-guard constraint on both errorConditionFormula values"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "the ERROR/WARN/INFO severity model behind W01's split between M2-S01's step test and M3's milestone test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/SKILL.md",
+      "used_for": "SKILL.md:88, ownership skew at 10,000 records owned by one user or queue — the grounding for S4's data-skew tag on two fit_gap rows and for M2-S04's runbook test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sandbox-strategy",
+      "path": "skills/admin/sandbox-strategy/SKILL.md",
+      "used_for": "check_sandbox_plan.py's three required environment-inventory columns behind the W06 correction"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "references/examples.md for the BusinessHoursSettings fixture the B08 evidence was built on"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-governance",
+      "path": "skills/flow/flow-governance/SKILL.md",
+      "used_for": "references/metadata-examples.md § 6 for the policy file and § Flow.settings for enableFlowDeployAsActiveEnabled — the S3 addition on M4-S03"
+    },
+    {
+      "type": "skill",
+      "id": "flow/record-triggered-flow-patterns",
+      "path": "skills/flow/record-triggered-flow-patterns/SKILL.md",
+      "used_for": "references/metadata-examples.md:621 for the FlowTest shape S3 declares as an artefact"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-design-patterns",
+      "path": "skills/apex/apex-design-patterns/SKILL.md",
+      "used_for": "references/code-examples.md:781 for the ApexTrigger meta XML shape, which closes W05"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/SKILL.md",
+      "used_for": "the CompletionDate-not-IsCompleted completion mechanism M4-S05 builds, carried unchanged from v3"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/TriggerHandler.cls-meta.xml",
+      "path": "templates/apex/TriggerHandler.cls-meta.xml",
+      "used_for": "the ApexClass meta XML shape M4-S05's outputs need, which closes the other half of W05"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "the trigger handler idiom M4-S05 builds against, carried from v3"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "used_for": "the before-save flow skeleton M4-S03 builds from, and the base of the S3 flow-governance fixture"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2, Q13, Q14, Q15",
+      "used_for": "D1, D3, D4, D6 and D7 branch quotes (Q2, Q13, Q14, Q15), carried unchanged from v3 where every quote matched verbatim"
+    },
+    {
+      "type": "decision_tree",
+      "id": "flow-pattern-selector",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3",
+      "used_for": "D2's before-save branch (Q3), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q3",
+      "used_for": "D5's criteria-based sharing rule (Q3), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q1",
+      "used_for": "D8's nothing-runs-async claim (Q1), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "performance-tuning",
+      "path": "standards/decision-trees/performance-tuning.md",
+      "branch": "Q10",
+      "used_for": "D9's ordinary-object claim (Q10), carried unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q5",
+      "used_for": "the volume band that keeps Web-to-Case native on M3-S03"
+    },
+    {
+      "type": "decision_tree",
+      "id": "agentforce-capability-selector",
+      "path": "standards/decision-trees/agentforce-capability-selector.md",
+      "branch": "not reached",
+      "used_for": "read and not reached — no requirement in this build is phrased as AI, so no decision cites it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "decision-trees-readme",
+      "path": "standards/decision-trees/README.md",
+      "branch": "routing table",
+      "used_for": "the authoritative table consulted where a choice straddled two trees"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "plan-verifier",
+      "because": "the plan is a proposal at status planned; the verifier is the stage between it and the G2 human gate"
+    },
+    {
+      "agent": "waf-assessor",
+      "because": "D10 is recorded with adr_required true — the only Custom-tier decision in the plan"
+    }
+  ]
+}

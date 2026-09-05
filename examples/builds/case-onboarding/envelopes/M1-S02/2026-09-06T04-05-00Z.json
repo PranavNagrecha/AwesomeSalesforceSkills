@@ -1,0 +1,281 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-06T04-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T04-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T04-05-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (defaulted — plan.json carries no api_version; matches M1-S01's package.xml)"
+  },
+  "summary": "Built step M1-S02 (type ui) of build case-onboarding: two Case page layouts in DX source format plus the step's package.xml fragment and a deploy-order note. Every element name, enum value and manifest member form was copied from skills/admin/record-types-and-page-layouts/references/metadata-examples.md or from skills/admin/change-management-and-deployment/references/metadata-examples.md section 1. The cited skill's checker exits 0 on the first pass with two INFO findings that Q5's answer predicts. check-outputs is ok over all three declared outputs. Four elements the step arguably wanted could not be grounded in the cited skill and were deliberately not written; they are named in deploy-order.md rather than invented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM: the one optional input api_version resolved from no source and took this agent's documented 62.0 default, and Q24's 'defaulted on' half has no element in the cited skill's inventory, so the question is answered only in part. Everything else meets HIGH: every element traced to the Step 3 inventory, the cited checker exited 0 on pass 1 with no repair pass, check-outputs returned ok, all three declared outputs were written, and nothing landed outside artefacts/M1-S02/.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q24 asks for the 'Assign using active assignment rule' checkbox to be defaulted on. The cited skill documents <showRunAssignmentRulesCheckbox> as controlling whether the checkbox is shown on Case, Lead and Account layouts, and documents no element that pre-checks it. The show half is written; the default-on half is not, and inventing an element name for it is what this agent refuses to do.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Deepen skills/admin/record-types-and-page-layouts with the Layout element (if one exists in the Metadata API guide) that selects the assignment-rule checkbox by default, or record the Setup step for the human in the M1 acceptance report."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "invoked_by": "agents/build-step-runner (inline, no nested Agent tool available) — per AGENT.md Step 9 this agent therefore ran neither set-status command; the runner owns the terminal transition",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml",
+        "metadata_type": "Layout",
+        "element_source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md, 'Page layout with two sections and one required field'",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml",
+        "metadata_type": "Layout",
+        "element_source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md, 'Page layout with two sections and one required field'",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "metadata_type": "Package",
+        "element_source": "skills/admin/change-management-and-deployment/references/metadata-examples.md section 1; Layout member form 'Case-Case Layout' quoted there from api_meta L82285-L82289",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "metadata_type": "(not metadata — AGENT.md Step 7 note)",
+        "element_source": "skills/admin/change-management-and-deployment plus record-types-and-page-layouts/references/gotchas.md #6, #7, #8, #11",
+        "declared": false
+      }
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Is this object Lead, Opportunity, Solution, or Case?",
+        "answer": "Case — but this step writes no RecordType, so the businessProcess rule does not apply here. M1-S01 already satisfied it: both record types name a business process.",
+        "source": "upstream artefacts (artefacts/M1-S01/objects/Case/recordTypes/*.recordType-meta.xml)",
+        "element": "none in this step; recorded so the checker's four-object rule is visibly accounted for"
+      },
+      {
+        "question": "Which profile does each affected user actually hold?",
+        "answer": "Q3: three profiles matching Tier 1, Tier 2 and Billing, each with an explicit default record type and layout assignment.",
+        "source": "clarification answers (Q3)",
+        "element": "No element in this step. layoutAssignments and recordTypeVisibilities live only on Profile (metadata-examples.md, 'Making the record type visible and assigning the page'), and Profile is M2's. The layout file-name forms the M2 step must use are recorded in deploy-order.md instead."
+      },
+      {
+        "question": "Is a field being marked Required on the layout meant to be enforced everywhere?",
+        "answer": "Q5: no. Priority and Origin are enforced at field or validation-rule level because Email-to-Case and Web-to-Case create through the API, where layout Required does not bind (gotchas #11).",
+        "source": "clarification answers (Q5)",
+        "element": "Every layoutItems/behavior on both layouts is Edit or Readonly; no Required anywhere. This is what produces the checker's two INFO findings, which are the correct output for this design."
+      },
+      {
+        "question": "How do Cases arrive: web form, email, UI, API, Data Loader, Flow?",
+        "answer": "Q24: Email-to-Case and Web-to-Case invoke the assignment rule by default; manual UI creation (~20/day) needs the checkbox defaulted on for the Case layouts.",
+        "source": "clarification answers (Q24) and requirement.md",
+        "element": "<showRunAssignmentRulesCheckbox>true</showRunAssignmentRulesCheckbox> on both layouts — metadata-examples.md line 198, allowed on Case, Lead and Account (line 210). The 'defaulted on' half has no element in the inventory and was not written; see dimensions_skipped."
+      },
+      {
+        "question": "Which UI does each persona actually use — Lightning desktop, the mobile app, or Classic?",
+        "answer": "Q83: Lightning desktop for all three teams; no mobile requirement in this phase.",
+        "source": "clarification answers (Q83)",
+        "element": "No element. Confirms a classic Layout is the right artefact and that no FlexiPage or formFactor override is in scope for this step."
+      },
+      {
+        "question": "Which fields must a validation rule be able to attach its error to? (assumption A13)",
+        "answer": "M3-S01 declares two rules, Priority_Required_On_Agent_Save and Origin_Must_Be_Known. Both Priority and Origin are placed on both layouts.",
+        "source": "upstream/downstream step record (M3-S01 outputs[]) and assumption A13",
+        "element": "layoutItems/field Priority and layoutItems/field Origin in the Case Information section of both layouts"
+      },
+      {
+        "question": "Which picklist values differ between these processes, field by field? (assumption A26)",
+        "answer": "A26: exactly two record types, Support and Billing. Support exposes Origin values Email-Support and Web; Billing exposes Email-Billing. Severity__c is an outage concept and appears on the Support layout only.",
+        "source": "upstream artefacts (artefacts/M1-S01/objects/Case/recordTypes/*) and assumption A26",
+        "element": "Severity__c present on Case-Case Support Layout, absent from Case-Case Billing Layout"
+      },
+      {
+        "question": "Which layout sections and style?",
+        "answer": "Two sections, Case Information (customLabel true) and System Information (customLabel false, built-in label), both TwoColumnsTopToBottom with two layoutColumns.",
+        "source": "skill default — the structure of metadata-examples.md's own layout example, adapted per AGENT.md Step 5 rule 3",
+        "element": "layoutSections/style, customLabel, detailHeading, editHeading, layoutColumns, emptySpace"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 2 finding(s) detected. score 100. Both findings INFO: \"layout '<name>' marks no field behavior=Required\".",
+        "note": "This is the step's one declared checker acceptance test, run here as this agent's Step 8 self-check. The plan's test description predicts '0 finding(s)'; the actual run reports 2 INFO. Exit code 0 either way, so the declared expectation 'exit 0' holds. The two INFO findings are the checker's check 4 firing exactly as Q5's answer requires — fixing them would mean adding a layout-level Required that Q5 rules out, so the artefact was not changed."
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 4 manifest or metadata file(s); 0 finding(s) detected. score 100.",
+        "note": "Not a declared acceptance test. Run because change-management-and-deployment is entry 8 of this agent's Mandatory Reads and owns the package.xml shape written here."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M1-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "all parse",
+        "note": "AGENT.md Step 8 pre-emptive ElementTree parse of every emitted XML file."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "elements_not_grounded_and_not_written": [
+      "The select-by-default state of the assignment-rule checkbox (Q24). Only <showRunAssignmentRulesCheckbox> exists in the inventory and it controls visibility.",
+      "AccountId / ContactId lookups on either layout. Account-centric though the requirement is, no cited source for this step names either as a Case layout field and no answer supplies a field list.",
+      "quickActionList members and relatedLists. The elements exist in the skill's example but its members are that example's content; nothing in requirement.md or the answers selects any, and metadata-examples.md warns that relatedLists/fields for standard fields use retrieval aliases rather than API names."
+    ]
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every field placed on both layouts resolves to something the build already owns or to a standard Case field the cited skill's own example names, so the layouts carry no forward reference that could fail at deploy.",
+      "domain": "metadata-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S02/layouts/",
+        "count": 8
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step's declared checker test description predicts 'Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 0 finding(s)' but the checker reports 2 findings, both INFO, because check 4 fires on any layout with no behavior=Required item; the description's exit-code expectation still holds.",
+      "domain": "plan-accuracy",
+      "evidence": {
+        "source": "input",
+        "query": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Q24 asks for a layout behaviour — the assignment-rule checkbox selected by default — that the cited skill's element inventory cannot express, so half of an answered blocking clarification is unbuilt and the gap is visible only in deploy-order.md and this envelope.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+        "query": "grep -rn showRunAssignmentRulesCheckbox skills/",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "No answered clarification supplies a field list for either Case layout, so the field set was derived from the union of the cited skill's own example, M1-S01's compact layout and A13's validation-rule fields; a human who expects Account or Contact on the intake page will find them absent.",
+      "domain": "requirements-coverage",
+      "evidence": {
+        "source": "input",
+        "query": "clarifications matching /layout|Subject|field/",
+        "count": 6
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's manual acceptance test reads 'layoutSections is preceded by the assignment-rule checkbox', but the cited skill's example places showEmailCheckbox, showRunAssignmentRulesCheckbox and showKnowledgeComponent after the layoutSections blocks; the emitted files follow the skill's ordering, so the human ticking that test should read it as 'the checkbox element is present', not as an ordering assertion.",
+      "domain": "test-authoring",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M1-S02].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step's declared acceptance tests have not been run by their owner; this agent ran the checker only as its own Step 8 self-check.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Section 5 assigns the step's checker, xml, manifest and manual acceptance tests to step-tester, which writes tests/M1-S02/results.json and is the only run that can move the step to tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The step's one declared skill: Questions-to-Ask table, and the Do-you-actually-need-a-record-type framing that keeps layout differences out of the record-type decision"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The whole Layout element inventory: layoutSections, customLabel, detailHeading, editHeading, layoutColumns, layoutItems, behavior, field, emptySpace, style, showEmailCheckbox, showRunAssignmentRulesCheckbox, showKnowledgeComponent, and the Layout member form and file path"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#11 (layout Required binds to the layout only) settles Q5's element consequence; #7 and #8 supply the retrieve-time warnings in deploy-order.md"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "package.xml shape and the Layout member form 'Case-Case Layout' quoted from the Metadata API guide's Idea-Idea Layout example"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "Confirming that UI-created Cases require the checkbox while Email-to-Case and Web-to-Case fire the rule automatically, which is what makes Q24 a layout element at all"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step-type table (ui row: Layout is this agent's in design-only mode), section 5 (the tester owns acceptance tests), section 8 (a gap is a signal to deepen a skill, never licence to invent an element)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + markdown twin, atomic write, and the dimensions_skipped state vocabulary"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns the four declared acceptance tests on M1-S02 and writes tests/M1-S02/results.json, which is the precondition for the tested transition."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M1-S02 is tested it carries the layout rows into the workbook and traceability matrix, and records the unbuilt half of Q24 in decisions.md."
+    }
+  ]
+}

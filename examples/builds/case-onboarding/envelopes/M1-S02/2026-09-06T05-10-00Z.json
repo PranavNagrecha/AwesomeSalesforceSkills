@@ -1,0 +1,509 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-06T05-10-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T05-10-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T05-10-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S02",
+    "persist": "--no-persist (the caller restricted writes to the build directory, so the docs/reports/build-doc-keeper/ pair required by the Wave 10 persistence contract was not written; this envelope pair under envelopes/M1-S02/ is the run's record)"
+  },
+  "summary": "Documented M1-S02 (ui, owner metadata-builder, status tested). Re-rendered PLAN.md, appended four decision entries and two planner open items to decisions.md, wrote four workbook rows (two in a new Section 2 file, two in the Other configuration default) and four traceability rows (REQ-011 to REQ-014, minted and anchored in this run), compiled the step's one manual acceptance test into a UAT case with two Given/When/Then criteria records, and set the step documented. Every sentence is sourced from plan.json, the step's three envelopes, tests/M1-S02/results.json or the two layout files read read-only for the target_value cells.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM on two of its three named conditions, the same two M1-S01 hit. (1) package.xml and deploy-order.md could not be placed in a numbered section without judgment and fell to the Other configuration artefact-level default; the two layouts placed cleanly in Section 2 from the step's ui type. (2) The four REQ ids were minted in this run and anchored to requirement.md line ranges plus the clarification or assumption that settled each, because this build still carries no requirement register. Not LOW: no row has an empty source_req_id, no verification cell is empty (CWB-OTHER-005 names its gap explicitly per Step 6), the test results were readable, and re-running produces no duplicates.",
+  "dimensions_compared": [
+    "workbook-rows",
+    "traceability-rows",
+    "decisions",
+    "deploy-order",
+    "verification-coverage",
+    "manual-test-compilation"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "record-type-to-layout-cross-reference",
+      "state": "not-run",
+      "reason": "check_record_type_layouts.py at --manifest-dir artefacts/M1-S02 sees 0 record type(s) and 2 layout(s), the mirror image of M1-S01's 2 and 0. Neither step-scope exit code says anything about a record type's layout existing or its fields resolving. Documented as a named gap in both Section 2 rows and in both traceability rows rather than reported as covered.",
+      "confidence_impact": "NONE",
+      "retry_hint": "M1's milestone acceptance test runs the same checker at --manifest-dir artefacts, where the plan's fixture predicts 2 record type(s), 2 layout(s); 0 finding(s). That is milestone-verifier's run, not this agent's."
+    },
+    {
+      "dimension": "A13-verification",
+      "state": "partial",
+      "reason": "Half of the step's single manual test asserts that every field a validation rule attaches its error to is present on both layouts. No ValidationRule metadata exists anywhere under artefacts/ because M3-S01 is pending, so there is no errorDisplayField to resolve. Compiled into TC-M1S02-01 step 6 with 'no verdict at M1-S02 time' in its expected-result field rather than padded out into a step that would appear to pass.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run TC-M1S02-01 step 6 at the M3 gate once M3-S01 has written its two rules. Carry-forward already recorded: Severity__c is on the Support layout only, so a Case rule attaching its error to that field fails A13 on the Billing layout."
+    },
+    {
+      "dimension": "workbook-row-lint-of-the-default-section",
+      "state": "not-run",
+      "reason": "check_workbook.py recognises a section only from a '## Section <n> — <name>' heading, so the five rows now in workbook/99-other-configuration.md — three M1-S01's, two this run's — are parsed into no section and row-checked by nothing. Numbering the heading would invent an eleventh canonical section the workbook skill forbids.",
+      "confidence_impact": "NONE",
+      "retry_hint": "M5-S04's compile run places these rows in a document a parser reads; lint them there, and fix the three M1-S01 rows' escaped-pipe delimiters at the same time."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both of the step's manifest members are named by a traceability row, and at --manifest-dir artefacts all fourteen rows resolve their artefact against a real component with 0 coverage gaps.",
+      "domain": "traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "count": 14
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M1-S02 introduces no new RTM orphan: the Layout member form 'Case-Case Support Layout' is byte-identical to its file stem, so check_rtm.py's two index keys agree and the divergence that produced M1-S01's three orphans cannot occur for layouts.",
+      "domain": "metadata-naming",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/manifest.stdout",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The tester had already captured disk evidence for both halves of the manual test, including the per-layout field listings, so the UAT case was compiled from values a reviewer will actually read rather than from the test text restated.",
+      "domain": "acceptance-evidence",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/manual-evidence.stdout"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Assumptions A13 and A26 both already list M1-S02 in their steps[], so this step needed no counterpart to M1-S01's W03 assumption-linkage gap.",
+      "domain": "plan-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "assumptions[A13].steps, assumptions[A26].steps",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Half of an answered blocking clarification is unbuilt and unbuildable from the cited skill: Q24 asks for the assignment-rule checkbox defaulted on, and the only element in the skill's inventory governs whether it is shown. Recorded as decisions.md D-M1S02-03 with the § 8 deepen-a-skill signal.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+        "query": "showRunAssignmentRulesCheckbox at L198 and L210",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step's checker acceptance test description predicts '0 finding(s)'; the checker prints 2, both INFO, and the declared expected 'exit 0' still holds. Reproduced in this run and recorded as planner open item O-M1S02-01.",
+      "domain": "plan-accuracy",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/check_record_type_layouts.stdout",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The manual test's positional wording ('<layoutSections> is preceded by the assignment-rule checkbox') describes the inverse of the element order the cited skill's own example documents, so a reviewer ticking it literally would reject correct metadata. The presence reading was carried into the compiled case as its own step rather than silently adopted.",
+      "domain": "test-authoring",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M1-S02].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "CWB-OTHER-005 is the second workbook row in this build whose verification cell names no test, for the same reason as CWB-OTHER-002: deploy-order.md is undeclared in outputs[] on both M1 steps. Recorded once as planner open item O-M1S02-02 rather than a third time per row.",
+      "domain": "verification-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_workbook.py splits a table row on every bare pipe with no escape handling (L330), so an RTM-style escaped pipe inside a cell shifts every later column and the linter reads source_req_id as recommended_agent. The two new Section 2 rows were written with ';' and produce zero per-row findings; M1-S01's three rows in the Other configuration file keep the escaped pipe and are caught by nothing, because that heading is not a canonical section and the parser skips its rows entirely.",
+      "domain": "tooling",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py",
+        "query": "L330 cell split; SECTION_HEADING_RE",
+        "count": 5
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The layouts' field set is a builder default assembled from the skill's own example, M1-S01's compact layout and assumption A13; no clarification supplies a field list, and a reviewer expecting AccountId or ContactId on an account-centric intake page will find neither.",
+      "domain": "requirements-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T04-05-00Z.json",
+        "query": "extensions.elements_not_grounded_and_not_written",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "REQ-014's source is Q57, a deferred question, so the row rests on assumption A13 at risk medium rather than on an answer. REQ-010 is the only other row in the matrix in that position.",
+      "domain": "requirements-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "clarifications[Q57].status, assumptions[A13]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "One manual test line covers two requirements with two different earliest verification dates, so TC-M1S02-01 is the first case in this build that is only partly tickable at its own gate. Compiled as one case per Step 10's rule, with the gap named in step 6's expected-result field.",
+      "domain": "acceptance-evidence",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M1-S02].acceptance_tests[3]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The workbook row schema requires a named human as owner and explicitly not a team alias, but no source in this build names a person; the cells carry the clarification's owner_role with the substitution stated in the cell, unchanged from M1-S01.",
+      "domain": "workbook-schema",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "clarifications[].owner_role"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Every step in milestone M1 is now documented, so the milestone's cross-step checks and acceptance report are due — including the record-type-to-layout assertion both step scopes left vacuous.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "milestones[M1].steps",
+        "count": 2
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "standards/build-orchestration.md § 3 makes the milestone verifier the stage that runs after every step in a milestone is documented, and its checker at --manifest-dir artefacts is the only run in the build that sees record types and layouts together."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-LAYOUT-001",
+        "section": "2 — Page Layouts + Lightning Pages",
+        "artefact": "Layout:Case-Case Support Layout",
+        "source_req_id": "REQ-011; REQ-013; REQ-014",
+        "deploy_position": "5 of 10 (layouts); 1 inside the step",
+        "verified_by": "check_record_type_layouts.py exit 0 (2 INFO, correct per Q5) + manifest two-way + xml parse; manual TC-M1S02-01 outstanding; record-type cross-reference gap named",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-LAYOUT-002",
+        "section": "2 — Page Layouts + Lightning Pages",
+        "artefact": "Layout:Case-Case Billing Layout",
+        "source_req_id": "REQ-012; REQ-013; REQ-014",
+        "deploy_position": "5 of 10 (layouts); 2 inside the step",
+        "verified_by": "same checker run + manifest two-way + xml parse; manual TC-M1S02-01 outstanding; A13 carry-forward on Severity__c named",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-OTHER-004",
+        "section": "Other configuration",
+        "artefact": "artefacts/M1-S02/package.xml",
+        "source_req_id": "REQ-011; REQ-012; REQ-013; REQ-014",
+        "deploy_position": "not a component — the manifest the two layout rows deploy through",
+        "verified_by": "always-on manifest test two-way, 2 members to 2 files, 0 failures; xml parse; check_deployment_manifest.py exit 0 as the builder's self-check",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-OTHER-005",
+        "section": "Other configuration",
+        "artefact": "artefacts/M1-S02/deploy-order.md",
+        "source_req_id": "REQ-011; REQ-012; REQ-013; REQ-014",
+        "deploy_position": "not a component",
+        "verified_by": "nothing — undeclared in outputs[], so check-outputs never confirmed it and the manifest test excluded it by name; gap stated in the cell, planner open item O-M1S02-02",
+        "status": "executed"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-011",
+        "source": "Q5",
+        "artefact": "Layout:Case-Case Support Layout",
+        "test_id": "M1-S02-T1",
+        "test_type": "checker",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-012",
+        "source": "Q5",
+        "artefact": "Layout:Case-Case Billing Layout",
+        "test_id": "M1-S02-T1",
+        "test_type": "checker",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-013",
+        "source": "Q24",
+        "artefact": "Layout:Case-Case Support Layout",
+        "test_id": "TC-M1S02-01",
+        "test_type": "manual",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-014",
+        "source": "Q57",
+        "artefact": "Layout:Case-Case Billing Layout",
+        "test_id": "TC-M1S02-01",
+        "test_type": "manual",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [
+      {
+        "id": "D-M1S02-01",
+        "date": "2026-09-06",
+        "kind": "design trade-off recorded as a default",
+        "decision": "The two layouts' field set is a builder default assembled from the cited skill's example structure, M1-S01's Case_Intake compact layout and assumption A13",
+        "alternative_rejected": "waiting for a customer-supplied field list (none exists in any answered clarification), and copying the skill example's field members wholesale",
+        "grounded_in": "admin/record-types-and-page-layouts references/metadata-examples.md; artefacts/M1-S01 compact layout; plan.json assumptions[A13]"
+      },
+      {
+        "id": "D-M1S02-02",
+        "date": "2026-09-06",
+        "kind": "design trade-off",
+        "decision": "Case.Severity__c is placed on the Support layout only, giving Support nine fields and Billing eight",
+        "alternative_rejected": "placing it on both layouts for symmetry — rejected because A26 makes the two record types genuinely different processes and requirement.md L18 names severity as an outage concept",
+        "grounded_in": "plan.json assumptions[A26]; requirement.md L18; decisions.md D-M1S01-02; carry-forward for M3-S01 recorded"
+      },
+      {
+        "id": "D-M1S02-03",
+        "date": "2026-09-06",
+        "kind": "skill gap per standards/build-orchestration.md § 8",
+        "decision": "Q24 is answered in half: showRunAssignmentRulesCheckbox is set true on both layouts, and the select-by-default half is not written",
+        "alternative_rejected": "inventing an element name that pre-checks the box — no such element appears in the cited skill's inventory, which documents this one as governing where the checkbox may appear",
+        "grounded_in": "metadata-examples.md L198 and L210; artefacts/M1-S02/deploy-order.md; builder dimensions_skipped[0]; decision required from the human at the M1 gate"
+      },
+      {
+        "id": "D-M1S02-04",
+        "date": "2026-09-06",
+        "kind": "design trade-off",
+        "decision": "AccountId / ContactId, quickActionList and relatedLists are omitted from both layouts",
+        "alternative_rejected": "adding them because they are conventional on a Case page — no cited source names either lookup and the skill example's quick-action and related-list members are that example's content, with metadata-examples.md warning that relatedLists/fields use retrieval aliases",
+        "grounded_in": "builder envelope extensions.elements_not_grounded_and_not_written[1] and [2]; artefacts/M1-S02/deploy-order.md"
+      }
+    ],
+    "planner_open_items_recorded": [
+      {
+        "id": "O-M1S02-01",
+        "where": "decisions.md § Open items for the planner — raised by the M1-S02 build and test runs",
+        "item": "steps[M1-S02].acceptance_tests[0].description predicts '0 finding(s)'; the checker prints 2, both INFO. The declared expected 'exit 0' holds; the supporting sentence is false. Reword at v6.",
+        "why_not_fixed_here": "step-note text is plan state and only set-plan writes it"
+      },
+      {
+        "id": "O-M1S02-02",
+        "where": "decisions.md, same section; per-row in CWB-OTHER-002 and CWB-OTHER-005",
+        "item": "deploy-order.md is undeclared in outputs[] on both M1 steps, so no gate confirms a file M5-S04's compiled build-wide deploy order is built from. Declare it on every metadata-builder step at v6.",
+        "why_not_fixed_here": "outputs[] is plan state and only set-plan writes it"
+      }
+    ],
+    "manual_tests_compiled": {
+      "shape": "skills/admin/uat-test-case-design/references/worked-examples.md § 4 (case record) + skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md § 5 (criteria records)",
+      "cases": [
+        "TC-M1S02-01"
+      ],
+      "criteria": [
+        "AC-M1S02.1",
+        "AC-M1S02.2"
+      ],
+      "note": "One case per manual test, per Step 10. The single test line is a conjunction of two assertions with different sources, verdicts and earliest verification dates, so it is compiled as one case against two criteria records; REQ-014's coverage rides inside the case's steps 5 and 6, and the case says so in source_acceptance_test.",
+      "written_to": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-06T05-10-00Z.md § 'The manual test compiled into the UAT case shape'",
+      "not_written_to": "uat-test-cases.yaml — that path is M5-S04's declared output; a per-step run may not write under artefacts/<step-id>/",
+      "lint": "check_uat_case.py --manifest-dir <staging>/uat/ → OK, 3 case(s), 0 run-sheet row(s), 4 criterion id(s) cross-checked, exit 0; check_ac_format.py --manifest-dir <staging>/uat/ → 2 document(s), 0 error(s), 4 warning(s), exit 0. All four warnings read 'persona names a job title but no permission construct' and are inherent to a design-only build with no profile or permission set yet."
+    },
+    "rows_replaced": [],
+    "checker_results": [
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json",
+        "exit": 0,
+        "result": "PLAN.md changed (stale relative to plan v5); CLARIFICATIONS.md byte-identical. Re-run after the status transition."
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+        "exit": 0,
+        "result": "14 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 1 warning(s) — every row's artefact resolves; the three orphans are M1-S01's file-stem keys, unchanged"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts/M1-S02 --repo-root ../../..",
+        "exit": 0,
+        "result": "14 row(s), 0 coverage gap(s), 0 orphan(s), 0 error(s), 10 warning(s) — the ten M1-S01 rows are out of scope at this manifest dir, not broken"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/02-page-layouts-and-lightning-pages.md --repo-root ../../.. --allow-empty-section",
+        "exit": 0,
+        "result": "9 issue(s), every one 'Missing canonical section' — zero per-row findings after the delimiter fix"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/99-other-configuration.md --repo-root ../../.. --allow-empty-section",
+        "exit": 0,
+        "result": "10 issue(s), all 'Missing canonical section'; this file's rows are parsed into no section and are row-checked by nothing"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook <staging>/wb/cwb.md --repo-root <repo>",
+        "exit": 0,
+        "result": "OK: workbook passes all checks — the twelve real rows (9 Section 1, 2 Section 2, 1 Section 4) inside a full ten-section harness"
+      },
+      {
+        "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir <staging>/uat/",
+        "exit": 0,
+        "result": "OK — 3 case(s), 0 run-sheet row(s), 4 criterion id(s) cross-checked"
+      },
+      {
+        "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir <staging>/uat/",
+        "exit": 0,
+        "result": "2 document(s) checked — 0 error(s), 4 warning(s), all the inherent persona warning"
+      },
+      {
+        "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S02 documented --run-agent build-doc-keeper --envelope envelopes/M1-S02/2026-09-06T05-10-00Z.json --result \"workbook rows 4; traceability rows 4; decisions appended 4\" --started 2026-09-06T05:10:00Z",
+        "exit": 0,
+        "result": "M1-S02: tested -> documented (run appended: build-doc-keeper)"
+      },
+      {
+        "command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+        "exit": 0,
+        "result": "OK: 5 milestone(s), 22 step(s), 3 warning(s) — all three pre-existing, on M5 steps"
+      }
+    ],
+    "workflow_return": {
+      "step_id": "M1-S02",
+      "status": "documented",
+      "files_updated": [
+        ".sfskills/builds/case-onboarding/PLAN.md",
+        ".sfskills/builds/case-onboarding/decisions.md",
+        ".sfskills/builds/case-onboarding/traceability.md",
+        ".sfskills/builds/case-onboarding/workbook/02-page-layouts-and-lightning-pages.md",
+        ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+      ],
+      "notes": "4 workbook rows across 2 sections; 4 traceability rows (REQ-011..REQ-014, minted and anchored); 4 decisions appended plus 2 planner open items; 0 rows replaced (first documentation run on this step). Every step in M1 is now documented."
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 step types, the design-only owner map and the ui row; § 5 the five test runners, check-outputs and the declare-a-manifest rule; § 6 this agent's per-step job; § 8 a skill gap recorded in decisions.md as the signal to deepen a skill"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the --no-persist opt-out invoked here"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against the four refusal triggers; none fired"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields this agent reads and the ones it leaves alone, including the type enum Step 4 maps to workbook sections"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concept 1 row schema, Concept 2 the ten sections (Section 2 is Page Layouts + Lightning Pages), Concept 3 one agent per row and its Section 2 default, the status enum"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set, the REQ-XXX key convention, artefact as <MetadataType>:<fullName>, and the limits of the pipe convention in check_rtm.py"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "§ Org-level design standards — an entry recording the alternative rejected and the source it rests on, rather than a sentence asserting the outcome"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result becomes acceptance evidence, so each test_result cell says what was verified"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/references/worked-examples.md",
+      "used_for": "§ 4 the lintable case-record shape and the --manifest-dir invocation Step 10 requires"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md",
+      "used_for": "§ 5 the criteria-record shape, so both ac_id references resolve"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "read read-only for the target_value cells: the Layout element inventory, showRunAssignmentRulesCheckbox at L198 and L210, the show* element ordering, and gotchas.md #11 on layout Required"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Every step in M1 is now documented, so the milestone's cross-step checks and acceptance report are due — including the record-type-to-layout assertion neither step scope could carry."
+    },
+    {
+      "agent": "build-planner",
+      "because": "Six open items now sit in decisions.md and traceability.md awaiting a v6 re-plan; all six are set-plan writes."
+    }
+  ]
+}

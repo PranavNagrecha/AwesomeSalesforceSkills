@@ -1,0 +1,380 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-05T19-45-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-45-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-45-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "reason": "(absent \u2014 first run of a pending step)"
+  },
+  "summary": "Executed step M1-S01 of build case-onboarding by invoking its owning agent metadata-builder inline. The step was in `next`, its step:M1-S01 human gate was already approved by a human, and it was claimed with set-status running before any agent work. The owning agent returned an envelope with no refusal block and check-outputs exited 0 over all twelve declared outputs, so the step was set built. One undeclared artefact appeared, deploy-order.md, which the owning agent's contract makes it write on every run; nothing was written outside artefacts/M1-S01/.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 MEDIUM: an undeclared artefact appeared (deploy-order.md), and the owning agent's one optional input, api_version, resolved from none of the three sources and was defaulted by that agent to 62.0. Every other HIGH condition held \u2014 the step was in `next`, both envelopes validate, check-outputs exited 0, and nothing landed outside the step's artefact directory.",
+  "dimensions_compared": [
+    "runnability",
+    "input-mapping",
+    "artefact-capture",
+    "envelope-validation",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "standards/build-orchestration.md section 5 assigns the step's acceptance tests to step-tester, not to this agent; the four declared checker commands were nevertheless executed verbatim as evidence and recorded under extensions.declared_checker_commands_observed, which is not a substitute for the tester's run."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step appeared in build_plan.py next with its step:M1-S01 human gate already approved, so no gate was reached around and set-status running was accepted.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The owning agent has a build-layer contract, so no relocation was needed and every file it wrote landed under artefacts/M1-S01/.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "deploy-order.md exists under artefacts/M1-S01/ but is not in the step's outputs[], so check-outputs never confirms a file the owning agent's contract makes mandatory on every run.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The four declared checker commands are written with --manifest-dir artefacts/M1-S01, which resolves only when the working directory is the build directory, while agents/step-tester/AGENT.md says checker commands are run from the repo root.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md",
+        "query": "line 111: 'run the command string exactly as the plan declared it, from the repo root'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The owning agent flagged that the step's declared business-process file names use underscores while the step's inputs.business_processes name the processes with spaces, so file name and fullName diverge in both business-process artefacts.",
+      "domain": "naming",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M1-S01].outputs[] vs steps[M1-S01].inputs.business_processes"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The owning agent recorded two content ambiguities it could not resolve from the plan \u2014 the per-record-type Status subsets and the Severity__c value scale \u2014 and wrote the minimum grounded set rather than blocking, which the runner carried through rather than re-deciding.",
+      "domain": "question-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-40-00Z.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "plan.json carries no api_version key, so the owning agent's optional api_version input resolved from none of the three Step 5 sources and it applied its own documented default of 62.0.",
+      "domain": "input-mapping",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S01 is built and has not been tested.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the step's acceptance tests and tests/M1-S01/results.json belong to step-tester, and built cannot advance to tested without them."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-05T19-40-00Z.json",
+    "invocation_form": "inline \u2014 this runner executed agents/metadata-builder/AGENT.md end to end itself, having no nested Agent tool available as a subagent (AGENT.md Step 6, 'in any other host' branch)",
+    "input_map": [
+      {
+        "input": "build_dir",
+        "required": true,
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller"
+      },
+      {
+        "input": "step_id",
+        "required": true,
+        "value": "M1-S01",
+        "source": "caller"
+      },
+      {
+        "input": "api_version",
+        "required": false,
+        "value": "(absent \u2014 defaulted by the owning agent to 62.0)",
+        "source": "none of the three Step 5 sources"
+      }
+    ],
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/record-type-decision.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": [
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "files_outside_step_artefact_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-05T19-40-00Z.json --result \"built: 12 declared outputs + deploy-order.md; 5/5 cited skill checkers exit 0 on pass 1; check-outputs ok\" --started 2026-09-05T19:37:45Z",
+    "terminal_status": "built",
+    "declared_checker_commands_observed": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "stdout_head": "2 record type(s), 0 layout(s); 0 finding(s) detected."
+      },
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "stdout_head": "No issues found."
+      },
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "stdout_head": "No issues found across 1 object file(s)."
+      },
+      {
+        "command": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "stdout_head": "No record-type ID anti-patterns detected."
+      }
+    ],
+    "declared_checker_run_note": "Run verbatim from a scratch directory holding a symlink `skills` to the repo's skills/ and a symlink `artefacts` to the build's artefacts/, which is the only cwd where both halves of each declared command resolve as written. No flag was appended, removed or re-ordered and no path was substituted. These are evidence, not the tester's run: standards/build-orchestration.md section 5 gives the acceptance tests to step-tester.",
+    "requirement_ids": {
+      "note": "the step carries no source_req_id; its traceability keys are the clarification ids Q1, Q2, Q4, Q5, Q6, Q19, Q83, Q85 and the assumptions A26, A28, A1 (via the deferred Q13)"
+    },
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/record-type-decision.md",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/package.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md"
+      ],
+      "notes": "one undeclared artefact (deploy-order.md), written by the owning agent's contract on every run"
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the repo-wide run-time rules, including the ban on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape and the Process Observations requirement this envelope satisfies"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, atomic writes and the redaction rule on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum \u2014 none was triggered on this run"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 build_mode and the no-hand-edit rule, section 3 the step gate, section 4 the status machine, section 5 who runs the tests and the check-outputs precondition on built, section 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[]"
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the owning agent's Inputs table, Output Contract and Plan, executed inline as Step 6's non-Claude-Code branch"
+    },
+    {
+      "type": "standard",
+      "id": "agents/step-tester/AGENT.md",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "confirming the acceptance tests and the always-on manifest check belong to the tester, and the cwd it runs checker commands from"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format directory layout the artefacts under artefacts/M1-S01/ had to obey"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/examples.md",
+      "used_for": "confirming every declared output is a component type the Metadata API carries, and the CustomField member form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the planned step derives from, mapped onto the owning agent's Inputs rather than paraphrased"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the id conventions echoed into the envelope so the doc keeper can join step to requirement"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "screening the step inputs for credential shapes before echoing them \u2014 none was present, so nothing was redacted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's citations"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's citations"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's citations"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's citations"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-type-id-management",
+      "path": "skills/admin/record-type-id-management/references/examples.md",
+      "used_for": "carried through from the owning agent's citations"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S01 is built; the four declared checker tests plus the always-on xml and manifest checks are the tester's, and built cannot reach tested without tests/M1-S01/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M1-S01 is tested, the record-type decision and the two open ambiguities belong in decisions.md and traceability.md."
+    }
+  ]
+}

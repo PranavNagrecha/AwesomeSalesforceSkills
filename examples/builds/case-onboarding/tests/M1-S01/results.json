@@ -1,0 +1,18 @@
+{
+  "step_id": "M1-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+    "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+    "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+    "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given B01, when artefacts/M1-S01/ is listed, then two businessProcess-meta.xml files exist beside the two recordType-meta.xml files, each record type's <businessProcess> carries the BARE process name (not Case.Support Process), and package.xml lists BusinessProcess with object-qualified members.",
+    "B01: given the Case org-wide default is what makes 'a Tier 1 agent cannot open a Billing case' true, when artefacts/M1-S01/objects/Case/Case.object-meta.xml is read, then it carries <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> as direct children of <CustomObject>, and no separate settings file anywhere in the build claims to carry the OWD. Tickable from this step's own artefacts at the M1 gate; the machine assertion that the OWD is not looser than the sharing rule's grant is M2-S05's build-scoped check_sharing_model.py test, which needs both files."
+  ]
+}

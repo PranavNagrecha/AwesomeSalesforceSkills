@@ -2063,7 +2063,18 @@ def cmd_set_milestone(args: argparse.Namespace) -> int:
 
 # Never worth exporting: the atomic-write temp files this script leaves behind
 # if a process dies mid-write, and editor/interpreter droppings.
-EXPORT_IGNORE = shutil.ignore_patterns(".*.tmp*", "__pycache__", "*.pyc", ".DS_Store")
+_EXPORT_IGNORE_PATTERNS = shutil.ignore_patterns(".*.tmp*", "__pycache__", "*.pyc", ".DS_Store")
+
+
+def EXPORT_IGNORE(directory: str, names: list[str]) -> set[str]:
+    """Never export the build directory's `skills` symlink (contract section 5):
+    it points back into the repo, and copying through it would drag every skill
+    package into the example (7,608 files in the first dry-run export)."""
+    ignored = set(_EXPORT_IGNORE_PATTERNS(directory, names))
+    for name in names:
+        if name == "skills" and os.path.islink(os.path.join(directory, name)):
+            ignored.add(name)
+    return ignored
 
 
 def cmd_export(args: argparse.Namespace) -> int:
@@ -2104,7 +2115,7 @@ def cmd_export(args: argparse.Namespace) -> int:
         shutil.rmtree(dest)
 
     dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(build_dir, dest, ignore=EXPORT_IGNORE)
+    shutil.copytree(build_dir, dest, ignore=EXPORT_IGNORE, symlinks=True)
     files = sorted(path for path in dest.rglob("*") if path.is_file())
     print(f"exported {build_dir} -> {dest}")
     print(f"  {len(files)} file(s)")

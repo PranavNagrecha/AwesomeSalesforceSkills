@@ -1,0 +1,1438 @@
+{
+  "agent": "plan-verifier",
+  "mode": "single",
+  "run_id": "2026-09-06T02-10-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-06T02-10-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-06T02-10-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "plan_version": 5,
+    "read_at_status": "planned",
+    "build_mode": "design-only",
+    "step_id": null,
+    "lens": null
+  },
+  "summary": "Verified plan v5 (design-only, 5 milestones, 22 steps, 2 blocked, 130 acceptance tests of which 48 are checkers) on all three lenses across all 22 steps and verified it: 0 blockers, 6 warnings. The single v4 blocker B01 is closed and reproduced -- the Case org-wide default now lives on M1-S01's objects/Case/Case.object-meta.xml as <sharingModel>Private</sharingModel> plus <externalSharingModel>Private</externalSharingModel>, M2-S05's check_sharing_model.py runs at --manifest-dir artefacts with scope 'build' declared to match, and a fixture run resolves 1 object OWD where the v4 form resolved 0. All six v4 warnings are dispositioned and the four closable ones were reproduced rather than accepted: --strict now makes the REVIEW blank-guard finding blocking on both check_validation_rules.py commands (guarded exits 0, unguarded exits 1 with --strict and 0 without); the check_case_management_setup.py order dependence is gone, confirmed by running the identical build-scope command with M3-S04 present and absent and getting exit 0 both ways, with two matched negatives at exit 1; D4's Q13 branch quote is now the whole block, verbatim. M1-S01's human_gate flip to true is correct and mandated -- agents/build-planner/AGENT.md:274 lists org-wide defaults among the changes that require a gate, and this agent's own testability table refutes an access-changing step without one; set-plan added the pending step:M1-S01 record on the same write. The six warnings are documentation defects that break no step: four false library-state claims about two checkers (each contradicted by another passage in the same plan), one assumption link the B01 move left behind, and one milestone goal left standing beside three tests that were reworded away from it. 22 checker commands, 8 matched negatives and 4 controls were executed this session against a fixture built from the cited skills' own metadata examples. validate exits 0 with the same three documented non-standard-argument-form warnings before and after this run's write. No gate approved, nothing deployed, nothing written outside the build directory.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "All three lenses ran on all 22 steps and every verdict names a file read or a command run; no verdict rests on a missing file. MEDIUM rather than HIGH for two reasons. The grounding lens's Questions-to-Ask and gotchas checks were targeted -- the skills every v5 change touches, plus the source of every checker whose behaviour the plan asserts -- rather than exhaustive across all 36 cited skills. And every checker verdict rests on this agent's own reconstruction of correct artefacts from references/metadata-examples.md, so a checker that passed here could still fail on what metadata-builder actually writes. Not LOW: build_plan.py and the schema were available, mechanics validate at exit 0 identically before and after the write, and every one of the six warnings rests on a reproduced command output or a quoted line of source rather than on an absent file.",
+  "findings": [
+    {
+      "id": "P01",
+      "severity": "P1",
+      "title": "M3-S04 and M5-S05 justify omitting admin/case-management-setup from skills[] with a false claim that it carries no fenced XML",
+      "detail": "grounding lens. references/metadata-examples.md carries 6 fenced XML blocks and M3-S03's note in this same plan says so. On M5-S05 it also leaves the only documented source of the no-wildcard-on-feature-settings rule uncited, while acceptance_tests[5] grades the step against it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+        "detail": "grep -c '```xml' -> 6; the same grep over SKILL.md and the other five references files -> 0. Plan hits at M3-S04.inputs.note and M5-S05.inputs.note."
+      }
+    },
+    {
+      "id": "P02",
+      "severity": "P1",
+      "title": "M3-S05 and M5-S01 state that check_queues.py does not recurse; it does",
+      "detail": "grounding lens. Used as the reason check_queues stays undeclared on M3-S05 and as the reason M5-S01 carries the queue-name assertion in a manual test. Both conclusions survive on other grounds; the stated reason is false and M2-S04's own note in this plan states the correct behaviour.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+        "detail": "line 94 'candidates.extend(sorted(p for p in base.rglob(dir_name) if p.is_dir()))'; docstring names artefacts/M2-S04/queues/. Run at --manifest-dir artefacts: 'Queues found (3)' plus 3 public groups, exit 0."
+      }
+    },
+    {
+      "id": "P03",
+      "severity": "P2",
+      "title": "Assumption A1 was not extended to M1-S01 when B01 moved the org-wide default there",
+      "detail": "grounding lens. A1 is the conservative reading of deferred blocking Q13 at risk 'high'. Its steps[] still names only M2-S05, and M5-S04's acceptance_tests[4] compiles the assumptions section from assumptions[].steps[], so the traceability document will not name the step that now carries the restriction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "assumptions[A1].steps == ['M2-S05']; steps[M1-S01].inputs.assumptions == ['A26','A28'] and its inputs.answers does not list Q13, while its inputs.owd and acceptance_tests[7] carry the Private default."
+      }
+    },
+    {
+      "id": "P04",
+      "severity": "P2",
+      "title": "The M5 milestone goal still asserts the sandbox proof runs, after tests [3][4][5] were reworded to permit 'recorded outstanding'",
+      "detail": "testability lens. W03 was closed correctly on the three tests but the goal beside them was not revisited, so M5's stated goal now asserts more than any test on it can deliver while M5-S02 is blocked.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "milestones[M5].goal reads 'when the sandbox proof runs (Q68), then each of the three intake channels has been tested separately by a named tester on a real profile, the deny cases fail closed'; acceptance_tests[3],[4],[5] each end 'recorded outstanding rather than ticked'."
+      }
+    },
+    {
+      "id": "P05",
+      "severity": "INFO",
+      "title": "check_deployment_manifest.py does not distinguish a Settings wildcard from named members",
+      "detail": "Library signal, not a plan defect. It makes M5-S05's acceptance_tests[5] manual tick the only thing standing between the build and a package.xml that will not deploy.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "detail": "A manifest with <members>*</members> under Settings and the same manifest with Settings named Case and Flow both print 'score 95', the single SharingRules WARN, and exit 0."
+      }
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Verification block written to plan.json",
+      "target_path": ".sfskills/builds/case-onboarding/inputs/verification/verification.json",
+      "content": "The verification block as written by build_plan.py set-verification --outcome verified: status verified, plan_version 5, three lens roll-ups all pass, 22 step objects each carrying three per-lens verdict objects with evidence, 0 blockers, 6 warnings, 12 cross-step results."
+    },
+    {
+      "kind": "markdown",
+      "title": "Plan Verifier report -- case-onboarding, plan v5",
+      "target_path": ".sfskills/builds/case-onboarding/envelopes/verification/2026-09-06T02-10-00Z.md",
+      "content": "Summary, confidence, verdict matrix (22 steps x 3 lenses, all pass), the six warnings with step, lens, reproduced evidence and remedy, twelve cross-step results, the checker evidence table (22 commands, 8 matched negatives, 4 controls), and the G2 gate command for a human to run."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-surface",
+      "observation": "Every claim the v5 re-plan makes about a repaired checker was reproducible from source and from a run, in both directions, including the two matched negatives the planner reported.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+        "detail": "find_xml_files:62-76 walks '[base / subdir, *base.rglob(subdir)]' and rule_elements:78-90 reads <active>/<ruleEntry> from the inner rule element; the build-scope command exits 0 with M3-S04 present and absent alike and exits 1 on <active>false and on a caseOrigin outside the value set."
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-model",
+      "observation": "Moving the org-wide default onto M1-S01 broke none of that step's four existing checker tests, which were re-run rather than assumed.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "check_record_type_layouts, check_list_views_and_compact_layouts, check_object_creation_and_design and check_record_type_id_management all exit 0 at --manifest-dir artefacts/M1-S01 with <sharingModel> and <externalSharingModel> present on Case.object-meta.xml."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-surface",
+      "observation": "The re-plan's own lesson -- when a checker changes, grep the plan for the claim rather than for the step id -- was applied to one checker and not to the other two, leaving four false statements that each contradict another passage in the same plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "M3-S04 and M5-S05 say admin/case-management-setup carries no fenced XML while M3-S03 says it carries six; M3-S05 and M5-S01 say check_queues.py does not recurse while M2-S04 says it recurses at any depth."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "Closing a blocker by moving an artefact between steps moved the metadata and the tests but not the assumption link, so the compiled traceability document will under-report the blast radius of the one deferred blocking question the plan rates high risk.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "A1 (deferred Q13, risk high) still lists steps ['M2-S05'] while M1-S01 now carries inputs.owd and the manual test asserting <sharingModel>Private</sharingModel>."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "test-surface",
+      "observation": "check_case_management_setup.py is now declared three times at the identical --manifest-dir artefacts, and each of the three was confirmed capable of failing at the point in the milestone where it runs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "M3-S03[0] runs before M3-S04 exists and carries the caseOrigin-to-value-set cross-reference; M3-S04[0] runs after and carries the active-rule assertion; M3[4] runs once every M3 step is documented. Verified separately that the step-scope form of M3-S03's command exits 0 on a broken caseOrigin, so build scope is required rather than preferred."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "test-surface",
+      "observation": "Three build-scope case-management commands now grade M1-S01's business processes and record types as a side effect, which is useful coverage the plan does not claim and no reader would predict from the step titles.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+        "detail": "With a businessProcess stripped of <values> the build-scope run exits 1; with a record type's <businessProcess> written object-qualified it exits 1 on two findings. Both are M1-S01 artefacts failing an M3 step's test."
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "The plan is verified and stops at G2; the six warnings are documentation defects a human may accept at the gate or send back for a v6 that closes them in one edit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "status verified, version 5, plan gate pending; none of the six warnings touches an output path, a checker command, a dependency edge or a gate."
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "All six warnings are edits to step notes, one assumption's steps[] and one milestone goal -- the planner's fields, and none of this agent's."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 build_mode and the directory layout; section 3 the G2 rule that agents never approve a gate and the blocked-step allowance at a milestone gate; section 4 the step-type table, design-only owner column, agent eligibility and the two borrowed-agent conditions; section 5 the acceptance-test types, the Checker scope table (the literal --manifest-dir governs, scope is declared intent), the cross-referential checker list, the Apex exception and the three documented non-standard-argument-form follow-ups"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and its four categories, the confidence rubric, and the citation shape"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "never invent a skill or template path; cite the decision-tree branch actually checked"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, atomic write and the scope guardrails that kept this run out of skills/, agents/, standards/ and scripts/"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking the refusal conditions at Step 1; none fired -- the plan was read at status planned with build_mode design-only"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the verification block shape -- lenses[] as objects with lens and a pass/fail verdict, blockers[] requiring step and problem -- and the acceptanceTest.scope semantics behind the scope-agreement check"
+    },
+    {
+      "type": "standard",
+      "id": "agent-frontmatter-schema",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "the status enum the non-deprecated eligibility test is measured against for the five agents this plan assigns"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the required top-level keys, additionalProperties false, and the envelope path pattern for a build-directory verification stage"
+    },
+    {
+      "type": "standard",
+      "id": "observation-schema",
+      "path": "agents/_shared/schemas/observation.schema.json",
+      "used_for": "the four required observation keys, the category enum and the object-shaped evidence field"
+    },
+    {
+      "type": "standard",
+      "id": "runtime-vs-build",
+      "path": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "used_for": "the active roster the five step owners were checked against"
+    },
+    {
+      "type": "standard",
+      "id": "agent-disambiguation",
+      "path": "agents/_shared/AGENT_DISAMBIGUATION.md",
+      "used_for": "confirming no step names a Wave-3b deprecated auditor"
+    },
+    {
+      "type": "standard",
+      "id": "build-planner-agent",
+      "path": "agents/build-planner/AGENT.md",
+      "used_for": "line 274, the human_gate rule that lists org-wide defaults among the changes requiring a gate -- the basis for judging the M1-S01 flip correct; and Step 4 plus the source_reference field description, the real home of the treeless-decision rule that validate's WARN misdirects to a contract section 1.2 that does not exist"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder-agent",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Inputs section -- build_dir, step_id, api_version only, with everything else read from the step record -- which is why the new inputs.owd key is not an unaccepted input"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-agent",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "the Output Contract's nine numbered outputs, none of them a manifest, which is what makes M4-S05's absent package.xml correct rather than a gap"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then bar every manual acceptance test was measured against, including the three reworded M5 milestone tests and M1-S01's new OWD test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the precondition / data-setup / expected-result bar for judging a manual test runnable by someone who was not in the planning session"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "re-tiering the 18 fit_gap rows and confirming every one carries tier, effort and risk_tag"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the cross-step check that every requirement reaches a step and every such step carries a test, and the assumption-linkage check that found the A1 gap"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "where a request for this verification report as a spreadsheet is sent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility",
+      "path": "skills/admin/sharing-and-visibility/SKILL.md",
+      "used_for": "references/metadata-examples.md:11 -- sharingModel and externalSharingModel both live on the CustomObject file, not in a separate settings file -- the line that settles B01, plus check_sharing_model.py's SUFFIXES and collect_sharing_models"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md section 1 CaseOrigin, section 3 CaseSettings and its webToCase children, section 5 the deploy order and the no-wildcard-on-feature-settings rule; and check_case_management_setup.py's repaired find_xml_files and rule_elements"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "check_validation_rules.py emit_result:102-119 and the --strict flag its own --help documents, behind the W01 disposition"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "check_queues.py:94 and its docstring, which refute the non-recursion claim on M3-S05 and M5-S01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "references/metadata-examples.md for the Case AssignmentRules and AutoResponseRules shapes M3-S04 builds, references/routing-selector.md as D3's and D4's source_reference, and check_assignment_rules.py main():177-189 behind the duplicate-target justification"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/SKILL.md",
+      "used_for": "check_email_to_case_configuration.py main():516-531, which returns 1 on warnings as well as errors -- the reproduced basis for M3-S03's test swap"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/SKILL.md",
+      "used_for": "check_list_views_and_compact_layouts.py, whose step-scope and build-scope behaviour was reproduced in both directions for M1-S01[1] and M5-S01[0]"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "check_deployment_manifest.py, which was shown not to distinguish a Settings wildcard from named members, and the skill's own wildcard coverage, which does not include feature settings"
+    },
+    {
+      "type": "skill",
+      "id": "admin/omni-channel-routing-setup",
+      "path": "skills/admin/omni-channel-routing-setup/SKILL.md",
+      "used_for": "check_omni_channel_routing_setup.py's E1-E6 rule list, which confirms M3-S05[4]'s claim that no library checker resolves a routing configuration's queue name at any scope"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "check_record_type_layouts.py at both scopes for M1-S01[0], M1-S02[0], M2-S03[1] and M1's milestone test"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/SKILL.md",
+      "used_for": "D10's source_reference, which resolves on disk and is what makes the one treeless decision grounded rather than refuted"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q13",
+      "used_for": "verifying D3's and D4's branch quotes; D4's v5 quote is lines 132-142 whole and unspliced, and line 276 corroborates its rationale that Omni-Channel runs on top of an assignment rule rather than instead of it. Q2 (D1), Q14 (D6) and Q15 (D7) were matched in the same file."
+    },
+    {
+      "type": "decision_tree",
+      "id": "flow-pattern-selector",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3",
+      "used_for": "verifying D2's quote that a before-save flow permits a read-only cross-object lookup"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q3",
+      "used_for": "verifying D5's criteria-based sharing rule branch, the decision the B01 fix carries"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q1",
+      "used_for": "verifying D8's volume-band quote behind the no-async decision"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q5",
+      "used_for": "the volume-band half of D6, cited on M3-S03's decision_trees[]"
+    },
+    {
+      "type": "decision_tree",
+      "id": "performance-tuning",
+      "path": "standards/decision-trees/performance-tuning.md",
+      "branch": "Q10",
+      "used_for": "verifying D9's LDV design-stage quote"
+    },
+    {
+      "type": "decision_tree",
+      "id": "agentforce-capability-selector",
+      "path": "standards/decision-trees/agentforce-capability-selector.md",
+      "branch": "n/a",
+      "used_for": "opened to confirm no decision in this plan claims an Agentforce capability branch; none does"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-planner",
+      "because": "The six warnings are all edits to fields the planner owns -- four step notes, one assumption's steps[] and one milestone goal -- and none of them is this agent's to write."
+    },
+    {
+      "agent": "flow-analyzer",
+      "because": "The surviving deepen-a-skill signal is check_flow_governance.py globbing the metadata-format name Flow.settings rather than the DX settings/Flow.settings-meta.xml this build declares, which is the checker M4-S03's automation step depends on."
+    }
+  ],
+  "extensions": {
+    "verification": {
+      "status": "verified",
+      "verified_at": "2026-09-06T02:10:00Z",
+      "by": "plan-verifier 1.0.0",
+      "plan_version": 5,
+      "lenses": [
+        {
+          "lens": "executability",
+          "verdict": "pass",
+          "notes": "22/22 steps. Five distinct owning agents (metadata-builder, apex-builder, sandbox-strategy-designer, story-drafter, build-doc-keeper); every one class: runtime, status stable or beta, requires_org: false, so all are eligible under build_mode design-only. 107 output paths, 0 collisions, all under artefacts/<step-id>/. depends_on acyclic with no forward-milestone edge."
+        },
+        {
+          "lens": "grounding",
+          "verdict": "pass",
+          "notes": "22/22 steps. All cited skills, templates and trees resolve; all 9 tree-cited decisions quote their branch verbatim (D4's Q13 block now whole and unspliced, closing v4 W04); D10 is treeless with a source_reference that resolves. 5 warnings: four false library-state claims about two checkers, and one assumption link the B01 move left behind."
+        },
+        {
+          "lens": "testability",
+          "verdict": "pass",
+          "notes": "22/22 steps. 130 acceptance tests, 48 checker; every checker script exists, every flag appears in its own --help, 0 deny-list matches, scope agrees with every literal --manifest-dir (3 exempt argument forms). 22 checker runs and 8 matched negatives executed this session against a fixture built from the cited skills' own metadata examples."
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "M1-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "ls agents/metadata-builder/AGENT.md -> exists; frontmatter class: runtime, status: beta, requires_org: false -> eligible in a design-only plan per standards/build-orchestration.md section 4",
+                "agents/metadata-builder/AGENT.md '## Inputs' -> accepts build_dir, step_id, api_version only, and states 'Everything else the build needs comes from the step record itself' -> the new inputs.owd key is read from the step record, not an unaccepted input",
+                "type object-model + design-only owner column -> metadata-builder; 12 outputs all under artefacts/M1-S01/; depends_on [] (no forward edge)"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "The v5 move put the Private org-wide default on this step, but assumption A1 -- the conservative reading of deferred blocking Q13, risk 'high' -- still lists only M2-S05 in its steps[], and this step records nothing about Q13. M5-S04's acceptance_tests[4] compiles the assumptions section from assumptions[].steps[], so the traceability document will not name the step that carries the restriction.",
+                  "fix": "Add M1-S01 to A1's steps[] and note Q13 in M1-S01's inputs, so the blast radius of Q13 reaches G2 complete."
+                }
+              ],
+              "evidence": [
+                "skills/admin/sharing-and-visibility/references/metadata-examples.md:11 -> 'Both live on the CustomObject file, not in a separate settings file.' -> the v5 placement of sharingModel/externalSharingModel on Case.object-meta.xml is the shape the cited skill documents",
+                "all 5 cited skills resolve; each carries a ```xml fence under references/ or SKILL.md",
+                "grep 'Sharing.settings|SharingSettings' skills/admin/sharing-and-visibility skills/admin/queues-and-public-groups -> no match (exit 1), confirming the planner's grounding for dropping the settings file"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "RUN python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01 -> 'Scanned 5 metadata file(s): 2 record type(s), 0 layout(s); 0 finding(s) detected.' exit 0",
+                "RUN check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01 -> 'No issues found.' exit 0",
+                "RUN check_object_creation_and_design.py --manifest-dir artefacts/M1-S01 -> 'No issues found across 1 object file(s).' exit 0",
+                "RUN check_record_type_id_management.py --manifest-dir artefacts/M1-S01 -> 'No record-type ID anti-patterns detected.' exit 0 -- all four unaffected by the added sharingModel/externalSharingModel elements",
+                "acceptance_tests[7] (new manual, B01): expected 'ticked at the M1 milestone gate' -- its own milestone, not deferred; asserts two named elements on a file this step produces; fails if absent",
+                "human_gate true + human_gates[] carries a pending step:M1-S01 record -> the 'Human gate present' row is satisfied, and agents/build-planner/AGENT.md:274 lists org-wide defaults among the changes that require one"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M2-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M2-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M2-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M2-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M2-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M2-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M2-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M2-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M2-S05",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M2-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on now ['M1-S01','M2-S04']; M1-S01 produces objects/Case/Case.object-meta.xml, which acceptance_tests[0] and [3] read -> the ordering row holds",
+                "outputs[] narrowed to 3 paths, all under artefacts/M2-S05/; no collision with any of the other 104 declared paths"
+              ]
+            },
+            {
+              "step_id": "M2-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "settings/Sharing.settings-meta.xml no longer appears in any outputs[] anywhere in the plan (3 residual mentions are all prose explaining the removal)",
+                "check_sharing_model.py:39-45 SUFFIXES has no .settings-meta.xml; collect_sharing_models(:161-177) resolves an OWD only from a CustomObject file -> the v4 artefact was unreadable by the step's own checker, and the v5 placement is readable",
+                "decision_trees ['standards/decision-trees/sharing-selection.md']; D5 branch Q3 quote matched verbatim in that file"
+              ]
+            },
+            {
+              "step_id": "M2-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "RUN python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts -> 'Scanned 2 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected.' exit 0",
+                "CONTROL at the v4 step scope --manifest-dir artefacts/M2-S05 -> '(0 object OWD(s) resolved)' exit 0, a vacuous pass -- build scope is required, and scope:'build' matches the literal --manifest-dir",
+                "MATCHED NEGATIVE, M1-S01 sharingModel set to ReadWrite, build scope -> exit 1, HIGH 'criteria-based rule `Support_Cases_To_Tier_2` grants `Edit` but `Case` has sharingModel `ReadWrite` - the grant is not above the object's default, so it adds no access' plus a REVIEW on the object file",
+                "acceptance_tests[3] manual: expected 'ticked at the M2 milestone gate from the artefacts on disk'; both files it reads (M1-S01's object file, M2-S05's sharing rule) exist by the M2 gate -> tickable at its own gate"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on ['M1-S01','M2-S01']; the bypass custom permission the formulas name is M2-S01's output"
+              ]
+            },
+            {
+              "step_id": "M3-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "skills/admin/validation-rules and skills/admin/custom-permissions both resolve and carry ```xml fences"
+              ]
+            },
+            {
+              "step_id": "M3-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "skills/admin/validation-rules/scripts/check_validation_rules.py:102-119 emit_result -> 'Exit 1 only on CRITICAL/HIGH... pass --strict to promote every finding to a failure'; --help confirms '--strict Exit 1 on any finding, including MEDIUM/LOW/REVIEW advisories' -> the v5 flag is the checker's own documented form",
+                "RUN ... --manifest-dir artefacts/M3-S01 --strict on ISBLANK(TEXT(...)) guarded rules -> 'Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.' exit 0",
+                "MATCHED NEGATIVE one formula rewritten ISPICKVAL(Priority, \"\") -> REVIEW 'picklist logic has no explicit blank guard', \"blocking\": 0, exit 1 under --strict",
+                "CONTROL the identical negative WITHOUT --strict -> exit 0, which is exactly the v4 W01 defect and is now closed",
+                "scope 'step' declared and the command carries --manifest-dir artefacts/M3-S01 -> intent and command agree"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M3-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M3-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on ['M1-S01','M2-S04','M3-S02']; the checker's cross-reference reads M1-S01's CaseOrigin value set"
+              ]
+            },
+            {
+              "step_id": "M3-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "skills/admin/case-management-setup/references/metadata-examples.md section 3 documents settings/Case.settings-meta.xml with the webToCase block and its 'exactly three children'; section 1 documents the CaseOrigin standardValueSet",
+                "check_email_to_case_configuration.py main() (:516-531) returns 1 whenever findings is non-empty, errors and warnings alike -> the step's justification for swapping it out is true; RUN on the fixture settings file -> 'Findings: 0 error(s), 3 warning(s).' exit 1"
+              ]
+            },
+            {
+              "step_id": "M3-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "find_xml_files (:62-76) now walks '[base / subdir, *base.rglob(subdir)]' and rule_elements (:78-90) reads <active>/<ruleEntry> from the inner rule element -- read in source, then reproduced",
+                "RUN python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts WITH M3-S04 present -> 'No case management setup issues found.' exit 0",
+                "RUN the identical command with artefacts/M3-S04 REMOVED -> same output, exit 0 -> the v4 W02 order dependence is gone, reproduced both ways",
+                "MATCHED NEGATIVE webToCase/caseOrigin -> 'WebPortal' -> exit 1, \"webToCase/caseOrigin is 'WebPortal' but that value is not in CaseOrigin.standardValueSet-meta.xml (Email-Support, Email-Billing, Web)\"",
+                "CONTROL at step scope --manifest-dir artefacts/M3-S03 --verbose with the same broken value -> 'NOTE: ... no CaseOrigin standardValueSet in this manifest to verify it against' exit 0 -> build scope is genuinely required, and scope 'build' matches the literal --manifest-dir"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on ['M2-S04','M3-S02','M3-S03']; every queue developer name the rule entries assign to is an M2-S04 output"
+              ]
+            },
+            {
+              "step_id": "M3-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.note states that skills/admin/case-management-setup 'carries no fenced XML anywhere under references/, SKILL.md or templates/', and uses that to justify leaving the skill out of skills[]. The claim is false: references/metadata-examples.md carries 6 fenced XML blocks, and M3-S03's note in this same plan says so.",
+                  "fix": "Delete the sentence. The step's real reason for not citing it -- the deployable AssignmentRules/AutoResponseRules shapes come from admin/assignment-rules -- stands on its own."
+                }
+              ],
+              "evidence": [
+                "skills/admin/assignment-rules/references/metadata-examples.md carries the Case AssignmentRules and AutoResponseRules shapes this step builds -> the deployable artefacts are grounded in a cited skill",
+                "check_assignment_rules.py main() (:177-189) returns 1 on any issue; RUN on the plan's own design (Tier_1_General in two entries per Q18 + Q26) -> exit 1, \"target 'Tier_1_General' appears in multiple rule entries\" -> the step's reason for leaving it undeclared is true and reproduced",
+                "WARNING: inputs.note asserts 'skills/admin/case-management-setup carries no fenced XML anywhere under references/, SKILL.md or templates/'. grep -c '```xml' on references/metadata-examples.md returns 6. M3-S03's note in this same plan states the correct figure."
+              ]
+            },
+            {
+              "step_id": "M3-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "RUN the new acceptance_tests[0] python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts -> 'No case management setup issues found.' exit 0",
+                "MATCHED NEGATIVE this step's <active> flipped to false -> exit 1, 'No active case assignment rule found in metadata. Auto-response rules depend on the assignment rule firing' -> the inner-element read works, so the test can fail on this step's own artefact",
+                "the same command at step scope artefacts/M3-S04 also exits 0, but build scope is what carries the M3-S03 caseOrigin cross-reference; scope 'build' matches the literal --manifest-dir"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M3-S05",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M3-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "status blocked with blocked_reason 'deferred: Q32, Q33, Q34, Q35'; assumptions A4-A7 each list M3-S05 in steps[]"
+              ]
+            },
+            {
+              "step_id": "M3-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.note states that check_queues.py 'does not recurse, so at artefacts/ it finds no queue files at all, prints No queue metadata files found in known locations and exits 0'. Reproduced the opposite: at --manifest-dir artefacts it lists all three queues and all three public groups and exits 0. M2-S04's note in this same plan states the correct behaviour and cites the same commit.",
+                  "fix": "Reword to the real reason check_queues stays undeclared here: it lints queue and group files and resolves no reference from a queueRoutingConfig, so it cannot carry this step's assertion at any scope."
+                }
+              ],
+              "evidence": [
+                "check_omni_channel_routing_setup.py E3 asserts a QueueRoutingConfig has a PresenceUserConfig, not that a queue developer name resolves -> acceptance_tests[4]'s claim that no library checker can make the queue-name assertion at any scope is TRUE",
+                "WARNING: inputs.note asserts check_queues.py 'looks only at <manifest-dir>/queues and <manifest-dir>/force-app/main/default/queues and does not recurse, so at artefacts/ it finds no queue files at all'. check_queues.py:94 is 'candidates.extend(sorted(p for p in base.rglob(dir_name) ...))' and its docstring names artefacts/M2-S04/queues/. RUN --manifest-dir artefacts -> 'Queues found (3)' plus 3 public groups, exit 0. M2-S04's note in this same plan states the correct behaviour."
+              ]
+            },
+            {
+              "step_id": "M3-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "a blocked step still carries 5 tests; acceptance_tests[3] is tickable at the M3 gate from the gate record itself (owner + due date per deferred question), acceptance_tests[4] is explicitly scoped to a later phase when the step is unblocked"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M4-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M4-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M4-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M4-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M4-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M4-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M4-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M4-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on ['M2-S04','M4-S04']"
+              ]
+            },
+            {
+              "step_id": "M5-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "acceptance_tests[0].description repeats the same false check_queues.py non-recursion claim as the reason the queue-name assertion sits in the manual test.",
+                  "fix": "Reword to: check_queues.py does not resolve a listView's <queue> reference, at any scope."
+                }
+              ],
+              "evidence": [
+                "WARNING: acceptance_tests[0].description repeats the false check_queues.py non-recursion claim as the reason the queue-name half sits in a manual test. The conclusion survives (check_queues does not resolve a listView's <queue> at any scope) but the stated reason is false."
+              ]
+            },
+            {
+              "step_id": "M5-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "RUN check_list_views_and_compact_layouts.py --manifest-dir artefacts/M5-S01 (list views, no compact layout in the same directory) -> 'ISSUE: INFO Case: has 3 list views but no compact layout in source' exit 1",
+                "RUN the declared build-scope form --manifest-dir artefacts -> 'No issues found.' exit 0 -> the scope claim is reproduced in both directions"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M4-S05",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M4-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agents/apex-builder/AGENT.md class: runtime, status: stable, requires_org: false -> eligible; inputs kind/primary_sobject/feature_summary are mapped per its Inputs table",
+                "outputs[] declares .cls/.trigger and their meta XML and NO package.xml -> standards/build-orchestration.md section 4 condition 2 and section 5 'The Apex exception' both satisfied; M5-S05 depends_on this step"
+              ]
+            },
+            {
+              "step_id": "M4-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "templates/apex/TriggerHandler.cls and TriggerHandler.cls-meta.xml both exist; skills/apex/entitlement-apex-hooks and apex/apex-design-patterns both carry ```apex fences",
+                "D10 is treeless but carries source_reference skills/apex/entitlement-apex-hooks/SKILL.md, which resolves -> the 'Treeless decision grounded' row holds"
+              ]
+            },
+            {
+              "step_id": "M4-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "acceptance_tests[2] is a manifest test expecting 'skipped-not-applicable, naming M5-S05' -> the section 5 Apex carve-out, and refuting it for omitting a manifest would be the false blocker that clause exists to prevent"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M5-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M5-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M5-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M5-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "agent resolves to a real agents/<id>/AGENT.md with class runtime, a non-deprecated status and requires_org false; step type matches its standards/build-orchestration.md section 4 design-only owner column",
+                "every outputs[] path is under artefacts/<step-id>/, no path is written by a second step, depends_on resolves with no cycle and no forward-milestone edge"
+              ]
+            },
+            {
+              "step_id": "M5-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every cited skill resolves to a real skills/<domain>/<slug>/SKILL.md and carries the fence its owner needs; every cited template path exists; every decision this step names quotes a branch matched verbatim in the tree it cites",
+                "every deferred clarification the step records reaches an assumptions[] row whose because names the Qn and whose steps[] names this step"
+              ]
+            },
+            {
+              "step_id": "M5-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "every checker command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py, the script exists on disk, and every flag it passes appears in that script's own --help",
+                "no command matches the section 5 deploy deny-list; the declared scope agrees with the literal --manifest-dir in the same command; the step's metadata-type tests (xml + manifest + a declared package.xml) are present"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M5-S05",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M5-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "depends_on ['M5-S04','M4-S05']; M4-S05 declares no package.xml, so this step aggregates its ApexClass and ApexTrigger members per standards/build-orchestration.md section 5 'The Apex exception'"
+              ]
+            },
+            {
+              "step_id": "M5-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.note repeats the false 'admin/case-management-setup carries no fenced XML' claim as the reason that skill is absent from skills[], while acceptance_tests[5] asserts conformance to that skill's references/metadata-examples.md section 5 -- the only place the no-wildcard-on-feature-settings rule is documented. Reproduced: check_deployment_manifest.py scores a manifest with <members>*</members> under Settings identically to the correct one (score 95, exit 0), so nothing but that manual tick catches the wildcard.",
+                  "fix": "Delete the false sentence and add admin/case-management-setup to this step's skills[], so the agent that writes the manifest is told to read the section the test grades it against."
+                }
+              ],
+              "evidence": [
+                "WARNING: inputs.note repeats the false 'admin/case-management-setup carries no fenced XML anywhere' claim, and it is the stated reason the skill is absent from skills[]. acceptance_tests[5] nevertheless asserts conformance to that file's section 5 deploy order and its no-wildcard-on-feature-settings rule, which admin/change-management-and-deployment (the only cited skill) does not document."
+              ]
+            },
+            {
+              "step_id": "M5-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "RUN check_deployment_manifest.py --manifest-dir artefacts/M5-S05 with <members>*</members> under Settings -> 'score 95', the single SharingRules WARN, exit 0; the identical run with Settings named Case and Flow -> byte-identical output, exit 0 -> the checker does not distinguish the two, so acceptance_tests[5]'s manual tick is the only thing that catches a feature-settings wildcard",
+                "the no-wildcard rule is nonetheless stated in this step's own inputs.note, which metadata-builder reads from the step record -> the builder is told the rule even though the skill is uncited"
+              ]
+            }
+          ]
+        }
+      ],
+      "blockers": [],
+      "warnings": [
+        {
+          "step": "M1-S01",
+          "lens": "grounding",
+          "problem": "The v5 move put the Private org-wide default on this step, but assumption A1 -- the conservative reading of deferred blocking Q13, risk 'high' -- still lists only M2-S05 in its steps[], and this step records nothing about Q13. M5-S04's acceptance_tests[4] compiles the assumptions section from assumptions[].steps[], so the traceability document will not name the step that carries the restriction.",
+          "fix": "Add M1-S01 to A1's steps[] and note Q13 in M1-S01's inputs, so the blast radius of Q13 reaches G2 complete."
+        },
+        {
+          "step": "M3-S04",
+          "lens": "grounding",
+          "problem": "inputs.note states that skills/admin/case-management-setup 'carries no fenced XML anywhere under references/, SKILL.md or templates/', and uses that to justify leaving the skill out of skills[]. The claim is false: references/metadata-examples.md carries 6 fenced XML blocks, and M3-S03's note in this same plan says so.",
+          "fix": "Delete the sentence. The step's real reason for not citing it -- the deployable AssignmentRules/AutoResponseRules shapes come from admin/assignment-rules -- stands on its own."
+        },
+        {
+          "step": "M3-S05",
+          "lens": "grounding",
+          "problem": "inputs.note states that check_queues.py 'does not recurse, so at artefacts/ it finds no queue files at all, prints No queue metadata files found in known locations and exits 0'. Reproduced the opposite: at --manifest-dir artefacts it lists all three queues and all three public groups and exits 0. M2-S04's note in this same plan states the correct behaviour and cites the same commit.",
+          "fix": "Reword to the real reason check_queues stays undeclared here: it lints queue and group files and resolves no reference from a queueRoutingConfig, so it cannot carry this step's assertion at any scope."
+        },
+        {
+          "step": "M5-S01",
+          "lens": "grounding",
+          "problem": "acceptance_tests[0].description repeats the same false check_queues.py non-recursion claim as the reason the queue-name assertion sits in the manual test.",
+          "fix": "Reword to: check_queues.py does not resolve a listView's <queue> reference, at any scope."
+        },
+        {
+          "step": "M5-S05",
+          "lens": "grounding",
+          "problem": "inputs.note repeats the false 'admin/case-management-setup carries no fenced XML' claim as the reason that skill is absent from skills[], while acceptance_tests[5] asserts conformance to that skill's references/metadata-examples.md section 5 -- the only place the no-wildcard-on-feature-settings rule is documented. Reproduced: check_deployment_manifest.py scores a manifest with <members>*</members> under Settings identically to the correct one (score 95, exit 0), so nothing but that manual tick catches the wildcard.",
+          "fix": "Delete the false sentence and add admin/case-management-setup to this step's skills[], so the agent that writes the manifest is told to read the section the test grades it against."
+        },
+        {
+          "step": "M5 (milestone)",
+          "lens": "testability",
+          "problem": "acceptance_tests[3], [4] and [5] were reworded so each may be recorded outstanding rather than ticked while M5-S02 is blocked, but the milestone goal still reads 'when the sandbox proof runs (Q68), then each of the three intake channels has been tested separately by a named tester on a real profile, the deny cases fail closed'. The goal now asserts more than any test on it can deliver in this phase.",
+          "fix": "Reword the M5 goal to carry the same conditional the three tests now carry, or state in the goal that the live-sandbox half is deferred with M5-S02."
+        }
+      ],
+      "cross_step_results": [
+        {
+          "check": "Every scope.fit_gap[] requirement reaches a step, and every such step carries a test",
+          "result": "pass",
+          "detail": "18 rows, 0 empty steps[], 0 unknown step ids, 0 steps without tests; every row carries tier, effort and risk_tag"
+        },
+        {
+          "check": "No two steps write the same output path",
+          "result": "pass",
+          "detail": "107 declared paths across 22 steps, 0 collisions, every path under artefacts/<step-id>/ (M2-S05 is one path lighter than v4)"
+        },
+        {
+          "check": "depends_on acyclic, every id exists, no forward-milestone edge",
+          "result": "pass",
+          "detail": "depth-first walk over 22 steps; the new M1-S01 -> M2-S05 edge is backward in milestone order and closes no cycle"
+        },
+        {
+          "check": "Every milestone has >=1 test, >=1 step, and exact membership",
+          "result": "pass",
+          "detail": "M1 2 steps/3 tests, M2 5/4, M3 5/5, M4 5/6, M5 5/6; declared steps[] equals actual membership on all five"
+        },
+        {
+          "check": "Every scope-out item names why it is out",
+          "result": "pass",
+          "detail": "21 items; scope.out[20] rewritten to name two unpassable checkers instead of three, and both survivors were reproduced this session"
+        },
+        {
+          "check": "Every metadata-type step declares package.xml + xml + manifest tests",
+          "result": "pass",
+          "detail": "17 of 18; M4-S05 correctly declares none per section 5 The Apex exception, expects skipped-not-applicable, and M5-S05 depends_on it"
+        },
+        {
+          "check": "scope agrees with the literal --manifest-dir on every checker test",
+          "result": "pass",
+          "detail": "45 step checker tests agree; 3 carry a positional path / --file / --workbook and are exempt; all milestone commands read artefacts and none points inside a step directory"
+        },
+        {
+          "check": "Assumption linkage in both directions",
+          "result": "pass-with-warning",
+          "detail": "all 25 deferred clarifications reach an assumptions[] row; every row's steps[] names steps that exist; 0 blocking clarifications left open. The warning is that A1's steps[] was not extended to M1-S01 when B01 moved the OWD there."
+        },
+        {
+          "check": "human_gates[] completeness",
+          "result": "pass",
+          "detail": "13 records: clarifications approved, plan pending, 5 milestone gates, and a step:<id> gate for each of the six human-gated steps including the new step:M1-S01 that the human_gate flip added"
+        },
+        {
+          "check": "Deny-list and command shape",
+          "result": "pass",
+          "detail": "0 of 48 checker commands match the section 5 deny-list; every script exists; every flag appears in the script's own --help; 0 command-type tests"
+        },
+        {
+          "check": "Milestone gates reachable",
+          "result": "pass",
+          "detail": "no step or milestone manual test defers its tick to a later milestone's gate; M3-S05 and M5-S02 are blocked with recorded reasons, which section 3 permits at their gates"
+        },
+        {
+          "check": "validate baseline vs post-write",
+          "result": "pending",
+          "detail": "baseline: exit 0, 0 errors, 3 warnings (M5-S02[0], M5-S04[0], M5-S04[3] non-standard argument form, all three the section 5 documented follow-up)"
+        }
+      ],
+      "checker_runs": {
+        "commands_executed": 22,
+        "matched_negatives": 8,
+        "controls": 4,
+        "fixture": "artefacts/<step-id>/ rebuilt this session from the cited skills' own references/metadata-examples.md, with skills/ symlinked at the fixture root so every command ran verbatim as declared"
+      }
+    },
+    "plan_path": ".sfskills/builds/case-onboarding/plan.json",
+    "plan_version": 5,
+    "resulting_status": "verified"
+  }
+}

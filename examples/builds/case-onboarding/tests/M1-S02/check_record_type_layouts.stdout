@@ -1,0 +1,16 @@
+{
+  "score": 100,
+  "findings": [
+    {
+      "severity": "INFO",
+      "location": "artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml",
+      "message": "layout 'Case-Case Billing Layout' marks no field behavior=Required"
+    },
+    {
+      "severity": "INFO",
+      "location": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml",
+      "message": "layout 'Case-Case Support Layout' marks no field behavior=Required"
+    }
+  ],
+  "summary": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 2 finding(s) detected."
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CaseOrigin</members>
+        <name>StandardValueSet</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Account.Region__c</members>
+        <members>Account.Support_Tier__c</members>
+        <members>Case.Severity__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Case.Billing Process</members>
+        <members>Case.Support Process</members>
+        <name>BusinessProcess</name>
+    </types>
+    <types>
+        <members>Case.Billing</members>
+        <members>Case.Support</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>Case_Intake</members>
+        <name>CompactLayout</name>
+    </types>
+    <version>62.0</version>
+</Package>

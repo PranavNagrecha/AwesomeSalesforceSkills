@@ -1,0 +1,955 @@
+{
+  "status": "plan-rejected",
+  "verified_at": "2026-09-05T23:55:00Z",
+  "by": "plan-verifier 1.0.0",
+  "plan_version": 4,
+  "build_mode": "design-only",
+  "lenses": [
+    {
+      "lens": "executability",
+      "verdict": "pass",
+      "notes": "22/22 steps pass. All 5 owning agents resolve, are class runtime, status stable or beta, requires_org false; 108 output paths, 0 collisions; depends_on acyclic with no forward-milestone edge; M4-S05 correctly declares no package.xml (contract section 5 Apex exception) and M5-S05 depends_on it."
+    },
+    {
+      "lens": "grounding",
+      "verdict": "fail",
+      "notes": "21/22 steps pass; M2-S05 refuted. All 36 cited skills, 4 templates and 7 trees resolve; 8 of 9 tree-grounded branch quotes matched verbatim (D4's is a two-fragment splice, both fragments verbatim, raised as a warning); D3/D4/D7/D10 source_references resolve. M2-S05 declares Sharing.settings-meta.xml as the OWD carrier against its own cited skill."
+    },
+    {
+      "lens": "testability",
+      "verdict": "fail",
+      "notes": "21/22 steps pass; M2-S05 refuted. All 46 declared checker commands were run verbatim against fixtures built from the cited skills' metadata examples: 45 exit 0 on correct artefacts and 1 (M3-S03[0]) exits 0 only while M3-S04 is not yet built. 14 matched negatives were run and every one exited non-zero. M2-S05's OWD assertion cannot be carried by its exit code at any scope."
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "M1-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M1-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M1-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M1-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M1-S02",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M1-S02",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M1-S02",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M1-S02",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M2-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M2-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M2-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M2-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M2-S02",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M2-S02",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M2-S02",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M2-S02",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M2-S03",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M2-S03",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M2-S03",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M2-S03",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M2-S04",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M2-S04",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M2-S04",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M2-S04",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M2-S05",
+      "verdict": "refuted",
+      "lenses": [
+        {
+          "step_id": "M2-S05",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M2-S05",
+          "lens": "grounding",
+          "verdict": "refuted",
+          "blockers": [
+            {
+              "problem": "outputs[] declares artefacts/M2-S05/settings/Sharing.settings-meta.xml as the artefact carrying the Case org-wide default, and acceptance_tests[3] asserts the OWD is read from it. The cited skill states the opposite.",
+              "evidence": "skills/admin/sharing-and-visibility/references/metadata-examples.md:11 \u2014 'sharingModel is the internal org-wide default; externalSharingModel is the one for external users. Both live on the CustomObject file, not in a separate settings file.' grep of plan.json for 'sharingModel' -> 0 matches; no step declares it anywhere.",
+              "fix": "Put <sharingModel>Private</sharingModel> (and externalSharingModel) on objects/Case/Case.object-meta.xml \u2014 M1-S01's output \u2014 and add M1-S01 to M2-S05's depends_on, keeping the criteria-based rule here."
+            }
+          ],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/",
+            "grep -c 'sharingModel' .sfskills/builds/case-onboarding/plan.json -> 0"
+          ]
+        },
+        {
+          "step_id": "M2-S05",
+          "lens": "testability",
+          "verdict": "refuted",
+          "blockers": [
+            {
+              "problem": "acceptance_tests[0]'s description claims 'no OWD on Case looser than Private', but check_sharing_model.py resolves object OWDs only from *.object-meta.xml (SUFFIXES, check_sharing_model.py:39-45; collect_sharing_models, :161-177) and never reads *.settings-meta.xml. As the plan declares it, the OWD assertion cannot be carried by the exit code at any scope.",
+              "evidence": "fixture at the step's declared paths -> 'Scanned 1 sharing-model metadata file(s) (0 object OWD(s) resolved); 0 finding(s) detected.', exit 0. Same at --manifest-dir artefacts (M2 milestone test [1]): 'Scanned 10 sharing-model metadata file(s) (0 object OWD(s) resolved)', exit 0. REMEDY PROOF: with <sharingModel>Private</sharingModel> on Case.object-meta.xml -> '(1 object OWD(s) resolved); 0 finding(s)', exit 0; with it set to ReadWrite -> exit 1, 'HIGH criteria-based rule Support_Cases_To_Tier_2 grants Edit but Case has sharingModel ReadWrite'.",
+              "fix": "Same as the grounding fix. Once the OWD is on the object file the checker resolves it and checks 1 and 3 become live at both the step test and the M2 milestone test."
+            }
+          ],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope",
+            "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts/M2-S05 -> exit 0, '(0 object OWD(s) resolved)'",
+            "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts -> exit 0, '(0 object OWD(s) resolved)'"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M3-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M3-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M3-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M3-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M3-S02",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M3-S02",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M3-S02",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M3-S02",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M3-S03",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M3-S03",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M3-S03",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M3-S03",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M3-S04",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M3-S04",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M3-S04",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M3-S04",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M3-S05",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M3-S05",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M3-S05",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M3-S05",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M4-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M4-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M4-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M4-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M4-S02",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M4-S02",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M4-S02",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M4-S02",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M4-S03",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M4-S03",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M4-S03",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M4-S03",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M4-S04",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M4-S04",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M4-S04",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M4-S04",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M5-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M5-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M5-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M5-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M4-S05",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M4-S05",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M4-S05",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M4-S05",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M5-S02",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M5-S02",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M5-S02",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M5-S02",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M5-S03",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M5-S03",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M5-S03",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M5-S03",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M5-S04",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M5-S04",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M5-S04",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M5-S04",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    },
+    {
+      "step_id": "M5-S05",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M5-S05",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "agents/<id>/AGENT.md frontmatter read for class/status/requires_org (all 5 owners runtime, stable|beta, requires_org false against build_mode design-only); 108 declared output paths walked for collisions (0); depends_on graph walked over 22 steps (acyclic, no missing id, no later-milestone dependency); every outputs[] path under artefacts/<step-id>/"
+          ]
+        },
+        {
+          "step_id": "M5-S05",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every skills/<domain>/<slug>/SKILL.md cited by this step resolved on disk; templates[] and decision_trees[] paths resolved; fenced-XML (or fenced-Apex for the apex-builder step) presence confirmed by grep over references/, SKILL.md and templates/"
+          ]
+        },
+        {
+          "step_id": "M5-S05",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "every declared checker command run verbatim from a fixture root with skills/ symlinked, against artefacts built from the cited skills' own references/metadata-examples.md at the step's declared output paths and declared scope"
+          ]
+        }
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "step": "M2-S05",
+      "lens": "grounding, testability",
+      "problem": "The Case org-wide default has no artefact that can carry it. outputs[] declares settings/Sharing.settings-meta.xml and acceptance_tests[3] asserts the OWD is read from it, but skills/admin/sharing-and-visibility/references/metadata-examples.md:11 states that sharingModel and externalSharingModel 'live on the CustomObject file, not in a separate settings file', and check_sharing_model.py reads object OWDs only from *.object-meta.xml. 'sharingModel' appears zero times in plan.json, so no step sets it. Reproduced: the step test and the M2 milestone test both print '(0 object OWD(s) resolved)' and exit 0 whatever the OWD is; with <sharingModel> on Case.object-meta.xml the same command resolves it and exits 1 on ReadWrite. D5, the M2 milestone goal 'a Tier 1 agent cannot open a Billing case' and the fit-gap row 'Finance queries worked only by Finance' all rest on Private.",
+      "fix": "Declare <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> on objects/Case/Case.object-meta.xml (M1-S01's output), add M1-S01 to M2-S05's depends_on, and reword M2-S05 acceptance_tests[3] to read the OWD from the object file. M2-S05 keeps the sharing rule and the visibility note."
+    }
+  ],
+  "warnings": [
+    {
+      "step": "M3-S01 and M3 (milestone)",
+      "lens": "testability",
+      "problem": "Both tests' descriptions state that check_validation_rules.py 'returns 1 on ANY finding including REVIEW' (the round's S1 sweep finding). It does not. emit_result() at check_validation_rules.py:102-119 returns 1 only on CRITICAL/HIGH, or on any finding under --strict, and its own docstring says why: 'MEDIUM/LOW/REVIEW are advisory and exit 0 so a build that produced correct rules with natural formulas stays green'. Neither command declares --strict. Reproduced: the guarded rules exit 0 ('Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected'), and the unguarded ISPICKVAL(...,'') form prints the two REVIEW 'picklist logic has no explicit blank guard' findings and also exits 0. The ISBLANK constraint is carried by M3-S01's manual test [3], not by either exit code.",
+      "fix": "Add --strict to both commands (verified: guarded exits 0, unguarded exits 1), or reword both descriptions to say the blank guard is carried by the manual test."
+    },
+    {
+      "step": "M3-S03",
+      "lens": "testability",
+      "problem": "acceptance_tests[0] runs check_case_management_setup.py --manifest-dir artefacts at build scope. Its assignment-rule discovery reads only <manifest-dir>/assignmentRules and does not recurse (find_xml_files, check_case_management_setup.py:62-67), while the absence guard that would skip the section does recurse (any(manifest_dir.rglob('assignmentRules'))). At artefacts/ in this layout the two disagree the moment any step writes an assignmentRules/ directory. Reproduced: with M3-S04 absent the command exits 0 ('No case management setup issues found.'); with M3-S04's correct, active rule present the identical command exits 1 on a false 'assignmentRules directory is present but contains no case assignment rule'. The step note anticipates the first state, so the first pass through the loop is green; a re-test or resume after M3-S04 is built fails on a correct build. This is a second bug in the same checker, alongside the <active>-element bug M3's milestone test [4] already records.",
+      "fix": "Record the order dependence in the test description, or deepen admin/case-management-setup so find_xml_files recurses the way its own absence guard does."
+    },
+    {
+      "step": "M5 (milestone)",
+      "lens": "testability",
+      "problem": "acceptance_tests[3], [4] and [5] each require the proof sandbox \u2014 [4] and [5] name 'M5-S02's proof sandbox' explicitly \u2014 while M5-S02 is blocked ('borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity') and ships nothing in this phase. The v3 blockers B04 and B06 were closed by moving those two ticks here, which un-deadlocked M2 and M3 as intended, but their new home names an artefact this plan does not produce. The M5 gate is still mechanically approvable (section 3 accepts a step that is blocked with a reason), so this is a tick a human is asked to make against a precondition the plan says will not exist, not a deadlock.",
+      "fix": "Reword [4] and [5] to name the sandbox the release owner stands up rather than M5-S02's plan, and state in [3] that the proof plan document is outstanding while M5-S02 is blocked."
+    },
+    {
+      "step": "(plan)",
+      "lens": "grounding",
+      "problem": "D4's branch_quote is presented as one quoted block but is a splice: the Q13 heading line and the Omni-Channel branch row, with the intervening Assignment Rules branch elided and no ellipsis. Each fragment is verbatim in standards/decision-trees/automation-selection.md and the branch it names is real, so the decision is grounded; the quote as written is not a contiguous string in the tree. Unchanged since v1, and the v3 verification reported all nine quotes as matching verbatim, which was a fragment-wise check.",
+      "fix": "Quote the two fragments separately, or include the elided row."
+    },
+    {
+      "step": "M5-S04",
+      "lens": "testability",
+      "problem": "The planner's W08 disposition records the check_uat_case.py --file / --manifest-dir divergence as NOT FIXED because agents/ was outside its mutation scope. It is no longer divergent: agents/build-doc-keeper/AGENT.md Step 10 now instructs the --manifest-dir form and names the plan's agreement explicitly. The Process Observation asking a human to change build-doc-keeper is stale.",
+      "fix": "Drop the W08 Process Observation on the next re-plan; the plan and the agent already agree."
+    },
+    {
+      "step": "(plan history)",
+      "lens": "executability",
+      "problem": "history[] holds two entries, versions 1 and 3, while the build has been through three rejections (verification envelopes at plan_version 1, 2 and 3). The v2 plan body was never archived, and the entry labelled version 3 carries a verification block whose plan_version is 2 \u2014 set-verification archives the current body before writing the new block, so an archived body carries the previous round's verdict. Not a defect in this plan's content; recorded so a reader of history[] does not read it as the full record.",
+      "fix": "None for this plan. A build_plan.py change would be needed to archive on every rejection and to stamp the archived body with the verdict that rejected it."
+    }
+  ],
+  "cross_step_results": [
+    {
+      "check": "Every scope.fit_gap[] requirement reaches at least one step, and every such step carries at least one acceptance test",
+      "result": "pass",
+      "detail": "18 rows; 0 with an empty steps[], 0 naming a step id that does not exist, 0 naming a step with no acceptance_tests[]"
+    },
+    {
+      "check": "No two steps write the same output path",
+      "result": "pass",
+      "detail": "108 declared output paths across 22 steps, 0 collisions; every path under artefacts/<step-id>/"
+    },
+    {
+      "check": "depends_on graph is acyclic and every id exists",
+      "result": "pass",
+      "detail": "depth-first walk over all 22 steps: no cycle, no missing id, no dependency on a later milestone"
+    },
+    {
+      "check": "Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id",
+      "result": "pass",
+      "detail": "M1 2 steps/3 tests, M2 5/4, M3 5/5, M4 5/6, M5 5/6; membership matches in all five"
+    },
+    {
+      "check": "Every scope.out item names why it is out",
+      "result": "pass",
+      "detail": "21 items, each naming the requirement clause, the answered question or the deferred question id that put it out"
+    },
+    {
+      "check": "Every metadata-type step declares artefacts/<step-id>/package.xml and carries an xml and a manifest test",
+      "result": "pass",
+      "detail": "17 of 18 metadata-type steps declare it; M4-S05 (automation, apex-builder) correctly declares none per contract section 5 'The Apex exception', its manifest test expects skipped-not-applicable, and M5-S05 depends_on it and carries its ApexClass and ApexTrigger members"
+    },
+    {
+      "check": "scope field agrees with the literal --manifest-dir in every checker command",
+      "result": "pass",
+      "detail": "35 step checker tests: every declared or defaulted scope matches the path in its own command; 4 carry a positional path, --file or --workbook and are exempt. All 11 milestone checker commands read artefacts, none points inside a step directory (v3 W11 closed)"
+    },
+    {
+      "check": "Assumption linkage in both directions",
+      "result": "pass",
+      "detail": "all 25 deferred clarifications reach an assumptions[] row naming them; every step recording a deferral carries a structured inputs.assumptions key; every assumptions[].steps[] id exists and every step's inputs.assumptions id appears in that assumption's steps[] (v3 W03/W04 closed)"
+    },
+    {
+      "check": "fit_gap rows carry the fields the cited rubric makes mandatory",
+      "result": "pass",
+      "detail": "all 18 rows now carry effort (S/M/L/XL) and a risk_tag array; 2 carry data-skew citing admin/data-skew-and-sharing-performance (v3 W10 closed)"
+    },
+    {
+      "check": "human_gates[] completeness",
+      "result": "pass",
+      "detail": "12 records: clarifications (approved), plan (pending), one per milestone, and a step:<id> gate for each of the five human-gated access steps; no access step lacks human_gate"
+    },
+    {
+      "check": "Acceptance-test deny-list and command shape",
+      "result": "pass",
+      "detail": "0 of 46 checker commands match the contract section 5 deny-list; every command matches ^python3 skills/<domain>/<slug>/scripts/check_<name>.py and every script exists; every flag passed is accepted by the checker's own --help; 0 command-type tests are declared"
+    },
+    {
+      "check": "Milestone acceptance tests are runnable",
+      "result": "pass",
+      "detail": "all 11 milestone checker commands exit 0 against the fixture tree, including check_deployment_manifest.py --manifest-dir artefacts (v3 B13 closed) and check_rtm.py --file ... --manifest-dir artefacts"
+    },
+    {
+      "check": "Milestone gates reachable",
+      "result": "pass",
+      "detail": "no step carries a manual test whose expected value defers its tick to a later milestone; the two that did (M2-S05, M3-S02) are rewritten as assertions over files on disk and their live checks moved to M5 (v3 B04/B06 closed). M3-S05 and M5-S02 are blocked with recorded reasons, which section 3 accepts"
+    }
+  ],
+  "checker_evidence": {
+    "declared_checker_tests": 46,
+    "run_verbatim": 46,
+    "exit_0_on_correct_artefacts": 45,
+    "order_dependent": 1,
+    "matched_negatives_run": 14,
+    "matched_negatives_exiting_non_zero": 14,
+    "fixture_root": "a scratch tree with skills/ symlinked to the repo and artefacts/<step-id>/ built from each cited skill's references/metadata-examples.md (or references/examples.md where that file does not exist)"
+  }
+}

@@ -1,0 +1,27 @@
+=== manual test, half 1: assignment-rule checkbox on both layouts ===
+
+  Case-Case Billing Layout.layout-meta.xml
+    child element order      : ['layoutSections', 'layoutSections', 'showEmailCheckbox', 'showRunAssignmentRulesCheckbox', 'showKnowledgeComponent']
+    <showRunAssignmentRulesCheckbox> present : True   value: true
+    index of showRunAssignmentRulesCheckbox: 3; index of LAST layoutSections: 1
+    PRESENCE reading  (element present, value true) : True
+    POSITIONAL reading (checkbox precedes layoutSections): False
+    any element that PRE-CHECKS the box: none present
+
+  Case-Case Support Layout.layout-meta.xml
+    child element order      : ['layoutSections', 'layoutSections', 'showEmailCheckbox', 'showRunAssignmentRulesCheckbox', 'showKnowledgeComponent']
+    <showRunAssignmentRulesCheckbox> present : True   value: true
+    index of showRunAssignmentRulesCheckbox: 3; index of LAST layoutSections: 1
+    PRESENCE reading  (element present, value true) : True
+    POSITIONAL reading (checkbox precedes layoutSections): False
+    any element that PRE-CHECKS the box: none present
+
+=== manual test, half 2: fields a validation rule attaches an error to (A13) ===
+  ValidationRule files anywhere under artefacts/: none
+  -> A13's referenced step M3-S01 (type=validation) is 'pending'; with no
+     ValidationRule metadata on disk there is no errorDisplayField to resolve,
+     so this half is NOT file-checkable at M1-S02 time.
+
+=== fields present on each layout (for the gate's later use) ===
+  Case-Case Billing Layout.layout-meta.xml: ['CaseNumber', 'CreatedById', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Status', 'Subject']
+  Case-Case Support Layout.layout-meta.xml: ['CaseNumber', 'CreatedById', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Severity__c', 'Status', 'Subject']

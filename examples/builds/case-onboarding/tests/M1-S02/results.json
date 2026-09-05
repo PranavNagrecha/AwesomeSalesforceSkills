@@ -1,0 +1,14 @@
+{
+  "step_id": "M1-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q24, when each layout file is read, then <layoutSections> is preceded by the assignment-rule checkbox default set on, and every field a validation rule attaches an error to (assumption A13) is present on both layouts."
+  ]
+}
