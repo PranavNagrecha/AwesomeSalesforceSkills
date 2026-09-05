@@ -340,10 +340,7 @@ def main() -> int:
     root = Path(args.manifest_dir)
 
     if not root.exists() or not root.is_dir():
-        print(
-            f"ERROR: --manifest-dir '{root}' does not exist or is not a directory",
-            file=sys.stderr,
-        )
+        print(f"ERROR: --manifest-dir '{root}' does not exist or is not a directory", file=sys.stderr)
         return 1
 
     files = iter_apex(root)
