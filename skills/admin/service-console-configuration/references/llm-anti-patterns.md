@@ -27,17 +27,26 @@ To enable console navigation for an existing team:
 
 **What the LLM generates:** "Add the History utility to your app's utility bar so agents can quickly see their recently visited records."
 
-**Why it happens:** The History utility exists and is a common utility bar recommendation. LLMs do not differentiate between utility items that are console-only vs available in all app types.
+**Why it happens:** The History utility exists and is a common utility bar recommendation. LLMs do not differentiate between utility items that are console-only vs available in all app types — and then state the restriction as settled fact.
+
+> UNVERIFIED (2026-09-05): the "History is console-only" restriction is Salesforce Help content. Neither
+> `api_meta.txt` nor `object_reference.txt` names a History utility item at all — the Metadata API
+> documents the FlexiPage *structure* but not the catalogue of standard utility components — and
+> help.salesforce.com cannot be fetched to confirm it. The anti-pattern below is that an assistant asserts
+> either answer without checking; the fix is to check, not to assert the opposite.
 
 **Correct pattern:**
 
 ```
-The History utility is only available in Console Navigation apps.
-- For standard-navigation apps, use the "Recent Items" utility instead (available in all app types).
-- For console apps, use History — it tracks the session's visited records within the console workspace.
+Do not state the availability of a named utility item from memory. Instead:
+1. Retrieve a utility bar that already works in the target org:
+   sf project retrieve start --metadata FlexiPage:<ExistingUtilityBar>
+2. Copy the exact <componentName> strings from it.
+3. If a component name is not present in any retrieved bar of that app type,
+   say so and test it in a sandbox rather than claiming it is supported.
 ```
 
-**Detection hint:** Look for History utility recommendations in contexts where the app type has not been confirmed as Console Navigation, or where the app was described as a standard app.
+**Detection hint:** Look for any confident statement about which utility components a given app type supports, or a hand-authored `<componentName>` that was not copied out of a retrieve. Both are guesses presented as facts.
 
 ---
 
@@ -51,13 +60,20 @@ The History utility is only available in Console Navigation apps.
 
 ```
 Use Quick Text for reusable text snippets inserted into email, chat, or feed:
-  - Create Quick Text entries (Setup > Quick Text or via the utility)
-  - Set the Channel correctly (Email, Chat, Phone, etc.)
-  - Agents trigger Quick Text inline with a shortcut character or via the utility panel
+  - QuickText records; Channel is a MULTIPICKLIST, so one record can serve
+    Email and Chat and the portal at once (object_reference L238905-238913)
+  - Channel values come from the QuickTextChannel StandardValueSet, so there is
+    no fixed five-value list to quote (api_meta L142921)
+  - Set IsInsertable explicitly: it defaults true from the Quick Text page and
+    the API, but false for records produced by Einstein Reply Recommendations
 
-Use Macros for multi-step automated record actions:
-  - Update fields, send emails using templates, post to Chatter, save
-  - Macros are NOT text insertion tools; they are action automators
+Use Macros for multi-step record actions driven by quick actions:
+  - A Macro plus ordered MacroInstruction rows, SortOrder 0-based
+  - Operation is only Select / Set / Insert / Submit / Close (+ IF/ELSEIF/ELSE/ENDIF
+    from API 46.0) - there is no "Send Email" or "Post to Chatter" operation
+  - Target follows the grammar Tab.<Entity> > QuickAction.<Entity>.<Name> >
+    Field.<Entity>.<Field>; INSERT into text uses the .cursor / .end suffixes
+  - Macros are NOT text insertion tools; they drive quick actions
 ```
 
 **Detection hint:** Look for instructions to "create a macro to insert text" or "use a macro as a template." Text insertion belongs to Quick Text, not Macros.
@@ -88,28 +104,37 @@ Only after these steps does the Omni-Channel utility widget function for agents.
 
 ---
 
-## Anti-Pattern 5: Configuring Navigation Rules to Open All Objects as Workspace Tabs
+## Anti-Pattern 5: Writing Navigation Rules as a Three-Choice Setting
 
 **What the LLM generates:** "Set all your navigation rules to Workspace Tab so agents can always get back to any record they opened."
 
-**Why it happens:** The default navigation rule for every object is Workspace Tab. LLMs default to recommending the default, and the reasoning ("get back to any record") sounds plausible without understanding how tab bar overload affects usability.
+**Why it happens:** The Setup UI labels the choices "Workspace Tab", "Subtab of current workspace", and "Subtab of the workspace with matching object", and those phrases dominate the blog posts an LLM has read. None of them is a metadata value, so the model reproduces a mental model the API cannot implement — and the unmapped default (primary tab for everything) then looks like the safe answer.
 
 **Correct pattern:**
 
 ```
-Workspace Tab is correct for the PRIMARY object agents work (e.g., Case).
-Related objects (Contact, Account, Knowledge) should open as Subtabs of the current workspace:
-  - Contact → Subtab of current workspace
-  - Account → Subtab of current workspace
-  - Knowledge Article → Subtab of current workspace
+There is no "Subtab of current workspace" setting. The metadata is
+CustomApplication > workspaceConfig > mappings, and each mapping has exactly two
+fields: tab (required) and fieldName (optional). "If not specified, tab opens as
+a primary tab" (api_meta L40044-40046).
 
-Opening everything as a workspace tab fills the tab bar rapidly,
-makes it hard to identify the active case, and defeats the purpose of split view.
-Only promote an object to Workspace Tab if agents independently initiate work on it
-(e.g., a dispatcher who works Cases AND Work Orders as primary records).
+  <workspaceConfig>
+      <mappings><tab>standard-Case</tab></mappings>                          <!-- primary tab -->
+      <mappings><fieldName>AccountId</fieldName><tab>standard-Contact</tab></mappings>
+  </workspaceConfig>
+
+fieldName is a lookup ON the subtab's own object POINTING AT the parent, and the
+parent is resolved from record data - not from whichever tab is focused. So:
+  - "Contact as a subtab of the Account" is buildable: Contact.AccountId exists.
+  - "Contact as a subtab of whatever Case I am on" is NOT buildable: Contact has
+    no lookup to Case. Raise this at design time, not in UAT.
+  - A Contact whose AccountId is null still opens as a primary tab.
+
+mappings is documented as required for each tab in the app, so write an entry for
+every <tabs> value, including the ones that should stay primary.
 ```
 
-**Detection hint:** Look for navigation rule configurations where Contact, Account, or Knowledge are set to Workspace Tab without a stated reason. These are almost always subtab candidates.
+**Detection hint:** Look for the strings "Subtab of current workspace", "Subtab of the workspace with matching object", `navRules`, `consoleComponents`, or "navigation rules section" in generated output. None of these exists in the Metadata API; their presence means the model is describing a UI it has not reconciled with the metadata.
 
 ---
 

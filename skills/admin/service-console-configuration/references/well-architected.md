@@ -28,9 +28,58 @@ Setting `Load on Start = true` on heavy utilities (CTI softphone, Omni-Channel) 
 
 ## Official Sources Used
 
-- Salesforce Help — Features Available in Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_features_available.htm
-- Salesforce Help — Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Salesforce Help — Keyboard Shortcuts for Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_keyboard_shortcuts.htm
-- Salesforce Help — Macros (Service Console Macros): https://help.salesforce.com/s/articleView?id=sf.macros_def.htm
-- Salesforce Help — Quick Text: https://help.salesforce.com/s/articleView?id=sf.quick_text_overview.htm
-- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- **Metadata API Developer Guide — `CustomApplication`** (api_meta.txt L39621–40737) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+  Source for `navType` being "Not updateable" with values `Standard` / `Console` (L39719–39723); for
+  `isServiceCloudConsole` being null on Lightning console apps (L39702–39706); for
+  `isNavTabPersistenceDisabled` clearing workspace tabs per console session (L39697–39701); for
+  `utilityBar` naming a shared FlexiPage (L39788–39794); and for the API 42.0 renames of
+  `WorkspaceMappings` → `AppWorkspaceConfig` and `CustomApplicationComponents` → `AppComponentList`
+  (L40022, L39900–39907).
+
+- **Metadata API Developer Guide — `AppWorkspaceConfig` / `WorkspaceMapping`** (api_meta.txt L40019–40047,
+  worked sample L40701–40724) — same PDF.
+  Source for the whole workspace-tab-vs-subtab mechanism: `mappings` is "Required for each tab specified in
+  the CustomApplication", and `fieldName` is "the name of the field that specifies the primary tab in which
+  to display `tab` as a subtab. If not specified, `tab` opens as a primary tab." The sample keying
+  `standard-Contact` on `AccountId` and `standard-Account` on `ParentId` is what establishes that the
+  lookup lives on the child.
+
+- **Metadata API Developer Guide — `ServiceCloudConsoleConfig`, `ListPlacement`, `TabLimitConfig`,
+  `KeyboardShortcuts`** (api_meta.txt L40211–40232, L40240–40254, L40314–40395) — same PDF.
+  Source for `listPlacement.location` being `full` / `top` / `left` with conditional `width` / `height`;
+  for the closed `tabLimitConfig` value sets (5/10/20/30 and 5/10/15); for the 18-value `DefaultShortcut`
+  action enum; and for custom shortcuts requiring an `addEventListener()` handler in the Console
+  Integration Toolkit before they can exist.
+
+- **Metadata API Developer Guide — `FlexiPage`, `FlexiPageRegionType`, `ComponentInstanceProperty`**
+  (api_meta.txt L66865–68023, specifically L67084–67086, L67286–67290, L67352–67363) — same PDF.
+  Source for the utility bar being a FlexiPage of `type` `UtilityBar` (API 38.0+); for the `Background`
+  region type existing solely for invisible utility items; and for `UtilityBar` being the only page type
+  that supports component decorators — which is where panel width, height, and label actually live, and
+  therefore why the "utility bar auto-load" tradeoff below is a FlexiPage decision, not an app decision.
+
+- **Object Reference — `Macro`, `MacroInstruction`, `MacroUsage`** (object_reference.txt L177852–178396) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+  Source for a macro being a `Macro` plus ordered `MacroInstruction` records with 0-based `SortOrder`
+  ("If there's an incorrect sequence of macro instructions, the macro doesn't execute"); for the five-value
+  `Operation` picklist plus the API 46.0 conditional operations; for the `Target` grammar and hierarchy
+  table; and for the `MacroUsage` telemetry (`ExecutionState`, `FailureReason`, `IsFromBulk`) that turns
+  the "macros vs Flow" tradeoff below into a measurable one.
+
+- **Object Reference — `QuickText` and `AppDefinition`** (object_reference.txt L238878–239050, L34140–34340)
+  — same PDF.
+  Source for `Channel` being a **multipicklist**; for `IsInsertable` defaulting to `false` on records
+  created by Einstein Reply Recommendations; and for `AppDefinition.NavType` / `UtilityBar`, the two fields
+  that let a review verify console configuration by SOQL rather than by clicking through Setup.
+
+- **Salesforce Well-Architected Overview** — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+  Framing for the pillar mapping at the top of this file.
+
+> UNVERIFIED (2026-09-05): the previous revision of this file cited five help.salesforce.com and Trailhead
+> pages (`console2_features_available`, `console2_keyboard_shortcuts`, `macros_def`,
+> `quick_text_overview`). help.salesforce.com cannot be fetched from this environment, so those URLs can be
+> neither confirmed nor corrected. They have been replaced above by the API guides, which ground the same
+> claims at field-table level. Two claims that only Help documents — the History utility being console-only,
+> and the "Macros" / "Manage Macros" user-permission names — are marked UNVERIFIED beside the claims
+> themselves in `SKILL.md` and `references/gotchas.md`.

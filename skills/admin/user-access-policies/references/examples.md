@@ -1,85 +1,106 @@
 # Examples — User Access Policies
 
-## Example 1: Auto-Assign Permission Set Group on User Create by Profile
+Worked scenarios. For the full deployable file shape, package.xml, deploy order, and verification queries, see `references/metadata-examples.md`.
 
-**Context:** A company onboards 50+ new sales reps per quarter. Each rep needs the `Sales_Rep_PSG` permission set group assigned immediately upon account creation. Previously this was handled by an Apex trigger on the User object.
+## Example 1: Auto-Assign a Permission Set Group on User Create by Profile
+
+**Context:** A company onboards 50+ new sales reps per quarter. Each rep needs the `SalesRepPSG` permission set group assigned immediately on user creation. Previously this was handled by an Apex trigger on the User object.
 
 **Problem:** The Apex trigger required developer maintenance, occasionally failed silently in bulk loads, and was not included in change sets by the admin team.
 
-**Solution:**
+**Solution:** One policy, one filter row, one action.
 
 ```text
-Policy Type: Grant
-Filter Criteria:
-  Profile = Sales Rep Profile
+masterLabel:   Sales Rep Onboarding
+booleanFilter: 1                       <- required even for a single row
+order:         100
+status:        Design                  <- activated in Setup after deploy
+triggerType:   Create
 
-Assignments:
-  - Permission Set Group: Sales_Rep_PSG
-
-Status: Active
+filter  1: type=Profile  operation=equals  target=SalesRepCustomProfile
+action  1: action=Grant  type=PermissionSetGroup  target=SalesRepPSG
 ```
 
-Navigate to Setup > User Access Policies > New. Set type to Grant. Add filter: Profile equals "Sales Rep Profile". Add `Sales_Rep_PSG` to the Assignments section. Save and activate. Deactivate the legacy Apex trigger.
+Deploy the `.useraccesspolicy` file, then set the policy to `Active` in **Setup → User Access Policies** — a policy deployed with status `Active` arrives as `Design`. Deactivate the legacy Apex trigger in the same release.
 
-**Why it works:** The platform evaluates all active Grant policies when a new User record is created. Any user created with the "Sales Rep Profile" profile will have `Sales_Rep_PSG` assigned automatically without any code execution.
+**Why it works:** `triggerType` `Create` runs the policy when a user matching the criteria is created. `booleanFilter` `1` selects the single declared filter row. No Apex executes.
 
 ---
 
-## Example 2: Revoke Permission Set When User Moves Out of Department
+## Example 2: Revoke a Permission Set When a User Leaves a Department
 
-**Context:** Users in the Finance department have access to `Finance_Data_Access_PS`. When users transfer to other departments, that permission set should be removed automatically to enforce least-privilege access.
+**Context:** Users in the Finance department hold `Finance_Data_Access_PS`. When users transfer out, that permission set should be removed to enforce least privilege.
 
-**Problem:** Manual permission cleanup after department transfers is frequently missed during offboarding checklists, leaving stale access in place.
+**Problem:** Manual cleanup after department transfers is frequently missed, leaving stale access in place.
 
-**Solution:**
+**Solution:** Filter on the *destination* state and revoke, rather than trying to express "no longer Finance" as a policy that stops matching. A policy that stops matching a user simply does not run for them; it does not undo its previous actions.
 
 ```text
-Policy Type: Revoke
-Filter Criteria:
-  Department = Finance
+masterLabel:   Move Out Of Finance
+booleanFilter: 1 AND 2
+order:         200
+status:        Design
+triggerType:   Update
 
-Assignments (to revoke when filter NO LONGER matches):
-  - Permission Set: Finance_Data_Access_PS
-
-Status: Active
+filter  1: type=User  columnName=Department  operation=notEquals  target=User  value=Finance
+filter  2: type=User  columnName=IsActive    operation=equals     target=User  value=true
+action  1: action=Revoke  type=PermissionSet  target=Finance_Data_Access_PS
 ```
 
-Create a Revoke policy with filter `Department = Finance` and assign `Finance_Data_Access_PS` to the revoke list. When a user's Department field is updated away from "Finance", the platform re-evaluates the Revoke policy and removes the permission set.
+Verify against a real transferred user afterwards. `IsRevoked` distinguishes a policy revocation from a deleted assignment row, and `LastDeletedByChange.Source` names what caused it:
 
-**Why it works:** UAP re-evaluates policies whenever a field referenced in any policy's filter criteria is updated. Changing Department triggers re-evaluation. The Revoke policy no longer matches the user, so the platform removes the listed permission set.
+```sql
+SELECT AssigneeId, PermissionSet.Name, IsActive, IsRevoked,
+       LastDeletedByChange.Source
+FROM PermissionSetAssignment
+WHERE PermissionSet.Name = 'Finance_Data_Access_PS'
+  AND IsRevoked = true
+ORDER BY AssigneeId
+```
+
+Those three UAP-gated fields exist only when `userAccessPoliciesEnabled` is true in the org — the query will not compile elsewhere.
+
+**Why it works:** `type` `User` with `columnName` and `value` is how a raw user field is filtered; `target` is the literal string `User`. `notEquals` matches the population that has already moved out, and `triggerType` `Update` runs the policy on the transfer.
 
 ---
 
-## Example 3: PSL and PSG Co-Assignment for Agentforce Feature Access
+## Example 3: Licence Plus Permission Set Group for a Gated Feature
 
-**Context:** Users in the `Customer Success` department need both the Agentforce PSL and the `Agentforce_User_PSG` permission set group to access an Agentforce-gated feature. Both must be provisioned together.
+**Context:** Users in Customer Success need both a permission set licence and the `Agentforce_User_PSG` permission set group to reach a licence-gated feature.
 
-**Problem:** Admins were assigning the PSL and the PSG separately, leading to tickets where one was assigned but not the other — causing broken feature access.
+**Problem:** Admins were assigning the licence and the group separately, producing tickets where one landed and the other did not — a seat that looks provisioned and does not work.
 
-**Solution:**
+**Solution:** Both actions in one policy, so the winning policy grants both or neither.
 
 ```text
-Policy Type: Grant
-Filter Criteria:
-  Department = Customer Success
+masterLabel:   CS Agentforce Seat
+booleanFilter: 1
+order:         150
+status:        Design
+triggerType:   CreateAndUpdate
 
-Assignments:
-  - Permission Set License: Agentforce PSL
-  - Permission Set Group: Agentforce_User_PSG
-
-Status: Active
+filter  1: type=User  columnName=Department  operation=equals  target=User  value=Customer Success
+action  1: action=Grant  type=PermissionSetLicense  target=<PSL developer name>
+action  2: action=Grant  type=PermissionSetGroup    target=Agentforce_User_PSG
 ```
 
-A single Grant policy can include both PSL and PSG in the same assignment list. Both are provisioned in a single evaluation pass, eliminating the split-assignment problem.
-
-**Why it works:** UAP processes all assignment items in a single policy atomically. Adding both the PSL and PSG to the same policy ensures they are always provisioned together.
+**Why it works:** Every element of `userAccessPolicyActions` is an independent `{action, target, type}` triple, and all of them run when that policy is the one applied. Splitting them across two policies would make the two compete on `order` instead — see the anti-pattern below.
 
 ---
 
-## Anti-Pattern: Creating a Grant and Revoke Policy Targeting the Same Permission Set for the Same User Segment
+## Anti-Pattern: A Narrower Policy That Silently Suppresses a Broader One
 
-**What practitioners do:** A practitioner creates a Grant policy with filter `Department = Engineering` assigning `Eng_Tools_PS`, then later creates a Revoke policy with the same filter `Department = Engineering` also targeting `Eng_Tools_PS`, intending to use the Revoke policy to "clean up" in certain edge cases.
+**What practitioners do:** An org has a working baseline policy — `order` 100, filter `Profile = SalesRepCustomProfile`, granting `SalesRepPSG` **and** the console permission set licence. Later, EMEA needs a regional public group as well, so a second policy is added: `order` 50, filter `Profile = SalesRepCustomProfile AND Country in (Germany, France, United Kingdom)`, granting `SalesRepPSG` and `EMEASalesPublicGroup`. It is written to *add* the group, and it is given a low `order` "so it takes priority".
 
-**What goes wrong:** Both policies evaluate on every qualifying update. The platform runs Grant first, assigns `Eng_Tools_PS`, then runs Revoke, removes `Eng_Tools_PS`. The net result is that users in Engineering never retain `Eng_Tools_PS` — it is granted and immediately revoked in the same pass.
+**What goes wrong:** A German rep matches both policies. Only the active policy with the lowest `order` is applied, so the EMEA policy runs and the baseline policy does not run at all. The rep gets the permission set group and the regional public group — and never gets the console permission set licence, because that action lives only in the suppressed policy. The licence is not deferred or merged in afterwards; it simply never executes for anyone the EMEA policy matches. Nothing fails, nothing logs, and the gap surfaces as a support ticket about a feature that will not open.
 
-**Correct approach:** Grant and Revoke policies should target complementary filter criteria, not the same criteria. Use the Revoke policy with the opposite or excluding filter (e.g., Revoke when `Department != Engineering`) or use separate policies with mutually exclusive filter conditions.
+**Correct approach:** Treat overlapping policies as a ranked list where the winner must be self-sufficient. Either repeat every action the outranked policy contributed:
+
+```text
+Sales Rep Onboarding EMEA   order 50
+  Grant PermissionSetGroup    SalesRepPSG
+  Grant PermissionSetLicense  SalesConsoleUser      <- repeated from the baseline
+  Grant Group                 EMEASalesPublicGroup
+```
+
+or keep one policy and express the regional difference inside it, so nothing competes. Before adding any policy, list which existing policies it will outrank and what each of them was granting. `scripts/check_user_access_policies.py` reports overlapping criteria with differing `order` values and conflicting action sets.

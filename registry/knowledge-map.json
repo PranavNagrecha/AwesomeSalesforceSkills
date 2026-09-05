@@ -11919,6 +11919,9 @@
       "apex/record-locking-and-contention",
       "flow/flow-record-locking-and-contention"
     ],
+    "record-merge": [
+      "admin/standard-object-quirks"
+    ],
     "record-page": [
       "admin/dynamic-forms-and-actions",
       "lwc/lwc-app-builder-config"

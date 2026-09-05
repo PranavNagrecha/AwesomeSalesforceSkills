@@ -17,12 +17,15 @@ public class SandboxPrep implements SandboxPostCopy {
 **Why it happens.** Default Apex access modifier is `public`; the
 LLM emits the safe-looking option.
 
-**Correct pattern.** `global` for both class and method.
-`SandboxPostCopy` is a system interface; implementations need
-`global` to be invokable by the platform.
+**Correct pattern.** `global` for both class and method, matching every Salesforce-authored sample
+(Apex Reference Guide L228952, L228975).
 
-**Detection hint.** Any post-copy class without `global` won't
-satisfy the interface.
+UNVERIFIED (2026-09-05): the guide states nowhere that a `public` implementation is rejected, and its
+interface member-signature line is itself written `public void runApexClass(System.SandboxContext context)`
+(L228926). Treat `global` as the strongly-recommended shape, not a proven hard requirement — and note the
+real cost of being wrong is that a failed refresh gives you no error to read.
+
+**Detection hint.** Any post-copy class without `global`. Flag it; do not claim the platform will reject it.
 
 ---
 
@@ -83,7 +86,7 @@ else if (context.sandboxName() == 'Full') { ... }
 sandboxes; doesn't surface that an admin-renamed or new sandbox
 falls through.
 
-**Correct pattern.** Always include a default branch:
+**Correct pattern.** Always include a default branch (excerpt — the tail of the dispatch `if/else` chain):
 
 ```apex
 } else {
@@ -110,12 +113,14 @@ update nc;
 
 **Why it happens.** Looks like normal SObject DML.
 
-**Correct pattern.** Named Credentials' URL is metadata-only; not
-Apex-mutable. Pre-deploy sandbox-pointing NC metadata via CI
-metadata deploy as a separate post-copy step.
+**Correct pattern.** Named Credentials are a metadata type; deploy sandbox-pointing NC metadata via CI
+as a separate step after the sandbox is unlocked. Custom Settings and Custom Metadata are the
+Apex-mutable alternatives.
 
-**Detection hint.** Any Apex DML against `NamedCredential` for
-the URL field is wrong.
+UNVERIFIED (2026-09-05): no statement about `NamedCredential` URL write-access appears in the guides
+checked for this skill. The recommendation rests on the deployment shape, not a quoted sentence.
+
+**Detection hint.** Any Apex DML against `NamedCredential` for the URL field.
 
 ---
 
@@ -173,3 +178,87 @@ others (with try/catch wrapping).
 **Detection hint.** Any post-copy class with `runApexClass` >
 40 lines is going to be hard to maintain; should refactor into
 helpers.
+
+---
+
+## Anti-Pattern 9: The 4-arg `Test.testSandboxPostCopyScript`
+
+**What the LLM generates.**
+
+```apex
+Test.testSandboxPostCopyScript(
+    new SandboxPrep(), UserInfo.getOrganizationId(), sandboxId, 'MySandbox');
+```
+
+**Why it happens.** It is the older, shorter, more-frequently-quoted signature, and it compiles.
+
+**Correct pattern.** The 5-arg overload with `RunAsAutoProcUser = true`. Salesforce recommends it
+explicitly (Apex Reference Guide L241180–241184) and its own sample test uses it (L229004–229006).
+The 4-arg form runs as the test initiator, so it cannot reproduce the restricted Automated Process
+user's access — the failure mode that actually breaks refreshes.
+
+**Detection hint.** Count the arguments. Four is the tell. A green test suite from a 4-arg call is
+evidence of nothing about refresh-time behaviour.
+
+---
+
+## Anti-Pattern 10: A constructor that takes arguments and nothing else
+
+**What the LLM generates.**
+
+```apex
+global class SandboxPrep implements SandboxPostCopy {
+    private Boolean verbose;
+    global SandboxPrep(Boolean verbose) { this.verbose = verbose; }
+    global void runApexClass(SandboxContext context) { ... }
+}
+```
+
+**Why it happens.** Constructor injection is good Apex style everywhere else, and the LLM is applying a
+correct general habit to the one place it breaks.
+
+**Correct pattern.** Keep a no-arg constructor. The guide's sample says so in a code comment:
+"Implementations of SandboxPostCopy must have a no-arg constructor. This constructor is used during the
+sandbox copy process" (L228955–228956), and constructors with arguments "won't be used by the sandbox
+copy process" (L228958–228960). Parameterised constructors are fine *alongside* the no-arg one — chain
+into them from it, as the guide's sample does.
+
+**Detection hint.** A `SandboxPostCopy` implementation with no zero-argument constructor. It compiles,
+deploys, passes tests that call `new SandboxPrep(true)`, and cannot be instantiated by the copy.
+
+---
+
+## Anti-Pattern 11: The three-state `CronTrigger` filter
+
+**What the LLM generates.**
+
+```apex
+[SELECT Id FROM CronTrigger WHERE State IN ('WAITING', 'ACQUIRED', 'EXECUTING')]
+```
+
+**Why it happens.** Those three states are what almost every blog post and code sample uses, so they
+dominate the training distribution. They are also genuinely the three most common.
+
+**Correct pattern.** Six live states. `PAUSED`, `BLOCKED` and `PAUSED_BLOCKED` all resolve back into
+running jobs (Object Reference L86799–86811); only `COMPLETE`, `ERROR` and `DELETED` are terminal.
+
+**Detection hint.** An `IN` list of exactly three states. Also worth flagging: any job inventory built
+from `AsyncApexJob` instead of `CronTrigger` — "You can't abort a scheduled Apex job using an
+AsyncApexJob ID" (L238678–238680).
+
+---
+
+## Anti-Pattern 12: Assuming the copy sanitises user identity
+
+**What the LLM generates.** Advice along the lines of "Salesforce automatically modifies usernames and
+email addresses when copying to a sandbox, so no masking is needed" — or a masking routine that derives
+the new address from `Username`.
+
+**Why it happens.** The `Username` mutation is real and visible, and generalising from it is the natural
+inference. `Username` and `Email` sit adjacent on the record and look like peers.
+
+**Correct pattern.** Only `Username` is rewritten: "In a sandbox named `test`, the username
+`user@acme.com` becomes `user@acme.com.test`" (Metadata API Developer Guide L2711–2713). `Email` copies
+through verbatim and routable. Derive the mask from `Email`; using `Username` double-suffixes it.
+
+**Detection hint.** Any claim that email is auto-masked, and any masking code that reads `Username`.

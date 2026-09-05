@@ -12,34 +12,46 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-- **Org release version:** (confirm release 242+ for UAP GA; release 246+ for custom field filters)
-- **Permission sets / PSGs to assign or revoke:** (list names)
-- **PSLs to include:** (list if applicable)
-- **Filter criteria to use:** (e.g., Profile = Sales Rep Profile; Department = Finance)
-- **Trigger event:** User Create / User Field Update / Both
-- **Existing Apex triggers to deactivate:** (list any triggers on the User object managing these permissions)
-- **Backfill needed for existing users:** Yes / No — if Yes, document the bulk operation plan
+- **`userAccessPoliciesEnabled` in the target org:** Yes / No / Unknown — (API v58.0+; without it the UAP-gated fields on `PermissionSetAssignment` do not exist)
+- **Deploying identity holds Manage User Access Policies:** Yes / No
+- **Access mechanisms to grant or revoke:** (developer name + `type` for each — `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `PackageLicense`, `Group`, `Queue`)
+- **Population:** (which user attributes define it, and whether alternatives exist)
+- **`triggerType`:** Create / Update / CreateAndUpdate
+- **Existing Apex triggers to deactivate:** (list any triggers on the User object managing these assignments)
+- **Backfill needed for the existing population:** Yes / No — if Yes, document the one-time operation
 
 ---
 
 ## Policy Design
 
-### Grant Policies
+### Filters
 
-| Policy Name | Filter Field | Filter Value | Assignments (PS / PSG / PSL) |
+| `sortOrder` | `type` | `columnName` (User only) | `operation` | `target` | `value` (User only) |
+|---|---|---|---|---|---|
+| 1 | | | | | |
+| 2 | | | | | |
+
+**`booleanFilter`:** (required — e.g. `1`, `1 AND 2`, `(1 OR 2) AND 3`; every number must match a `sortOrder` above)
+
+### Actions
+
+| `action` | `type` | `target` | Exists in target org? |
+|---|---|---|---|
+| Grant / Revoke | | | |
+
+Grant and Revoke actions belong in the same policy when they fire on the same event.
+
+### Order Register
+
+Every active policy that could match an overlapping population. Only the lowest `order` runs; the rest do not.
+
+| `order` (0–10,000) | Policy | Criteria it matches | Actions it contributes |
 |---|---|---|---|
 | | | | |
 
-### Revoke Policies
-
-| Policy Name | Filter Field | Filter Value | Assignments to Revoke |
-|---|---|---|---|
-| | | | |
-
-### Evaluation Order Notes
-
-- Are any users in scope for both a Grant and a Revoke policy targeting the same permission set? (Yes / No)
-- If Yes, document the expected outcome and confirm it is intentional:
+- Which existing policy does this new one outrank? →
+- What was that policy granting that must now be repeated here? →
+- Are any two active policies sharing an `order` value? (must be No) →
 
 ---
 
@@ -47,40 +59,47 @@ Use this template when working on tasks in this area.
 
 (Which pattern from SKILL.md applies? Why?)
 
-- [ ] Profile-Based Permission Provisioning on Create
-- [ ] Role-Change Permission Revocation
-- [ ] PSL and PSG Co-Assignment
+- [ ] One policy, several values of one attribute (`operation` `in`)
+- [ ] One policy, several attributes (`booleanFilter` with `OR`)
+- [ ] Grant and revoke in the same policy on a role change
+- [ ] Licence plus permission set group for a gated feature
 - [ ] Custom scenario — describe:
 
 ---
 
 ## Checklist
 
-- [ ] Org confirmed on release 242 (Spring '25) or later
-- [ ] All referenced permission sets, PSGs, and PSLs exist and are active
-- [ ] Filter criteria cover all qualifying user segments
-- [ ] Grant and revoke policies use mutually exclusive filter criteria for the same permission sets
-- [ ] No active Apex triggers conflict with the new UAP policies
-- [ ] Policies validated in sandbox by creating and updating test users
-- [ ] Custom user field filters confirmed only used on release 246+
-- [ ] PSL and PSG included in the same policy where co-assignment is required
-- [ ] UserAccessPolicy metadata included in deployment package
-- [ ] Backfill plan documented if existing users need retroactive assignment
+- [ ] `userAccessPoliciesEnabled` confirmed true; Manage User Access Policies held
+- [ ] `booleanFilter` present, and every number in it matches a declared `sortOrder`
+- [ ] Every `operation` supported at the deployment API version (`in` v58.0+; `includes` / `equalsIgnoreCase` v59.0+)
+- [ ] Filter rows with `type` `User` set `target` to `User` and populate `columnName` and `value`
+- [ ] Every action `target` resolves to a component that exists in the target org
+- [ ] `order` unique across active policies and within 0–10,000; numbered in gaps
+- [ ] Suppressed-policy actions repeated in the winning policy where still required
+- [ ] `triggerType` matches the intended event
+- [ ] Post-deploy Setup activation step assigned to a named owner
+- [ ] Verification query over `PermissionSetAssignment.LastCreatedByChange.Source` written and run
+- [ ] No active Apex trigger writes the same assignment rows
+- [ ] `checker` run clean: `python3 skills/admin/user-access-policies/scripts/check_user_access_policies.py --manifest-dir <dir>`
 
 ---
 
 ## Deployment Notes
 
-**Metadata type:** `UserAccessPolicy`
+**Metadata type:** `UserAccessPolicy` — suffix `.useraccesspolicy`, folder `useraccesspolicies`.
 
-**Sample SFDX package.xml entry:**
+**package.xml entry** (this type supports the `*` wildcard, useful for taking a baseline of an org you did not build):
 
 ```xml
 <types>
-    <members>PolicyName</members>
+    <members>Sales_Rep_Onboarding</members>
     <name>UserAccessPolicy</name>
 </types>
 ```
+
+**Deploy order:** `Settings:UserManagement` → the permission sets / groups / queues each `target` names → the `UserAccessPolicy` files → manual activation in Setup → deactivate the superseded Apex trigger.
+
+**Activation owner:** (name — a policy deployed with status `Active` arrives as `Design`)
 
 ---
 

@@ -1,8 +1,8 @@
 ---
 name: user-access-policies
-description: "Configuring User Access Policies (UAP) to automatically assign or revoke permission sets and permission set groups based on user attributes. Use when automating permission provisioning on user create/update without Apex triggers. Covers policy configuration, filter criteria, evaluation order, and PSL assignment. NOT for permission set design — use admin/permission-set-architecture. NOT for delegated user admin — use admin/delegated-administration."
+description: "Configuring User Access Policies (UAP) to automatically assign or revoke permission sets and permission set groups based on user attributes. Use when automating permission provisioning on user create/update without Apex triggers. Covers policy configuration, filter criteria, evaluation order, and PSL assignment. Also covers booleanFilter OR logic, the `in` operator for multi-value filters, the `order` tiebreak between competing policies, actions incl. permission set / permission set group / permission set licence / package licence / queue / public group grant and revoke, the UserAccessChange audit object, and deploying the UserAccessPolicy metadata type. NOT for permission set design — use admin/permission-set-architecture. NOT for delegated user admin — use admin/delegated-administration."
 category: admin
-salesforce-version: "Spring '25+"
+salesforce-version: "Spring '25+ (UserAccessPolicy metadata, API v57.0+)"
 well-architected-pillars:
   - Security
   - Operational Excellence
@@ -12,6 +12,13 @@ triggers:
   - "automate permission provisioning without Apex triggers"
   - "login-based license assignment via user access policy"
   - "auto-provision permissions based on department or role"
+  - "user access policy filter needs OR between two profiles"
+  - "match multiple roles in one user access policy filter"
+  - "two user access policies match the same user which one wins"
+  - "deployed user access policy came back as Design not Active"
+  - "grant and revoke in the same user access policy"
+  - "find out which policy assigned a permission set to a user"
+  - "add a user to a public group or queue automatically"
 tags:
   - user-access-policies
   - permission-sets
@@ -21,19 +28,21 @@ tags:
 inputs:
   - "User field criteria used to identify target users (Profile, Role, UserType, Department, custom fields)"
   - "List of permission sets or permission set groups to grant or revoke"
-  - "Org release version (minimum release 242 / Spring '25 for GA)"
+  - "Target access mechanisms and their types (PermissionSet, PermissionSetGroup, PermissionSetLicense, PackageLicense, Group, Queue)"
+  - "Whether the org has user access policies enabled (UserManagementSettings.userAccessPoliciesEnabled)"
 outputs:
   - "Configured User Access Policy records with filter criteria and permission assignments"
-  - "Review checklist verifying evaluation order, filter logic, and PSL inclusion"
+  - "Deployable .useraccesspolicy metadata plus the package.xml entry"
+  - "Review checklist verifying filter logic, order assignment, and PSL inclusion"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-09-05
 ---
 
 # User Access Policies
 
-This skill activates when a practitioner needs to automate permission set or permission set group assignment and revocation based on user attribute criteria, without writing Apex triggers. It guides policy configuration, filter setup, evaluation order, and permission set license (PSL) assignment using the no-code User Access Policies feature (GA in release 242 / Spring '25).
+This skill activates when a practitioner needs to automate permission set, permission set group, permission set licence, package licence, public group, or queue assignment and revocation based on user attribute criteria, without writing Apex triggers. It guides policy configuration, filter setup, `order` resolution, and deployment of the `UserAccessPolicy` metadata type (available in API version 57.0 and later, Metadata API Developer Guide, "UserAccessPolicy" → Version).
 
 ---
 
@@ -41,76 +50,117 @@ This skill activates when a practitioner needs to automate permission set or per
 
 Gather this context before working on anything in this domain:
 
-- Confirm the org is on release 242 (Spring '25) or later — UAP reached GA in that release. Enhanced filter support for additional user fields was added in release 246 (Spring '26).
-- Identify which user fields will serve as filter criteria: standard fields (Profile, Role, UserType, Department) and any custom user fields available from release 246 onward.
-- Know whether the goal is granting permissions, revoking permissions, or both — grant and revoke policies are separate record types with distinct evaluation order (grant runs first).
-- Confirm that the permission sets and permission set groups being assigned are already deployed and active in the org.
-- Determine if Permission Set Licenses (PSLs) need to be managed alongside permission sets — UAP can assign and revoke PSLs using the same policy mechanism.
-- Identify whether existing Apex-based permission assignment triggers exist — UAP does not replace triggers automatically; old triggers must be deactivated to avoid conflicts.
+- Confirm user access policies are enabled in the org — `UserManagementSettings.userAccessPoliciesEnabled` (API v58.0+). Where the improved authoring UI is wanted, `enableEnhcUiUserAccessPolicies` (API v60.0+) is set to `true` automatically when the feature is enabled, and can be turned back off.
+- Confirm the authoring user holds the **Manage User Access Policies** permission — the Metadata API guide states it is required to create or modify user access policies (`UserAccessPolicy` → Special Access Rules).
+- Identify which user attributes will serve as filter criteria. A filter row is typed: `Profile`, `UserRole`, `Group`, `Queue`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `PackageLicense`, or `User` (a raw user field, named in `columnName` with its `value`).
+- Know which access mechanisms are being granted or revoked. Both are `action` values on the same child element, so one policy can grant and revoke in a single definition.
+- Confirm the target permission sets, permission set groups, permission set licences, package licences, public groups, and queues already exist in the org — `target` is a developer name and is resolved at deploy time.
+- Decide the policy's `order` (0–10,000) relative to every other active policy, because only one policy applies when several match the same user.
+- Identify whether existing Apex-based permission assignment triggers exist — UAP does not replace triggers automatically; leaving both live means two independent writers of the same `PermissionSetAssignment` rows.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before creating the policy; the answers decide the shape of the XML, and an LLM that skips them writes a policy that deploys cleanly and provisions the wrong people.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is this one population, or several that happen to get the same access?" | One population with alternatives is `booleanFilter` `1 OR 2` or one `in` filter; several distinct populations are separate policies that then compete on `order` | Either a single policy definition, or a policy list with an assigned order range |
+| "If a user matches this policy *and* another one, which should win?" | Only the active policy with the lowest `order` is applied — matching is not additive | A concrete integer per policy and a documented tiebreak, instead of an implicit one |
+| "Which access mechanisms, exactly, and of what type?" | `type` is a restricted enum; `PermissionSetLicense` and `PackageLicense` are separate from `PermissionSet`, and public group vs queue membership are different targets | The exact `target`/`type` pairs for each `userAccessPolicyActions` element |
+| "Should this run on create, on update, or both?" | `triggerType` is `Create`, `Update`, or `CreateAndUpdate`; a create-only policy never re-evaluates a transferring employee | The `triggerType` value, and whether a second policy is needed for the other event |
+| "Who is going to activate it after the deploy?" | A policy deployed with `status` `Active` is forced back to `Design`; activation is a Setup step by an admin | A named owner and a post-deploy activation step in the runbook |
+| "How will we prove afterwards that the policy did it, not a person?" | `UserAccessChange` and the `LastCreatedByChangeId` / `LastDeletedByChangeId` fields on `PermissionSetAssignment` only exist when UAP is enabled | A verification query written before go-live, not an argument after one |
+| "Does an Apex trigger already write these assignments?" | Two independent writers on the same rows produce a state that neither owns | A cutover decision — deactivate the trigger — rather than an additive rollout |
+
+What a proper configuration adds over just clicking through Setup: the filter expresses the real population in one policy instead of a fan of near-duplicates, the `order` values are chosen rather than defaulted so the winner is predictable, activation is an explicit owned step after deployment, and every grant is provable from `UserAccessChange` at audit time.
 
 ---
 
 ## Core Concepts
 
-### Grant vs. Revoke Policy Types
+### One Policy, Many Actions — Grant and Revoke Are Not Policy Types
 
-User Access Policies are either Grant policies or Revoke policies. A Grant policy assigns one or more permission sets or permission set groups to users who match the filter criteria. A Revoke policy removes them. The platform evaluates all Grant policies before Revoke policies when a qualifying event occurs. This means if a user matches both a grant and a revoke policy targeting the same permission set, the revoke wins — the permission set is removed after being granted in the same evaluation pass.
+Grant and revoke are `action` values on a `UserAccessPolicyAction` child element, not separate policy record types. A single `UserAccessPolicy` carries a list of `userAccessPolicyActions`, each an independent `{action, target, type}` triple:
 
-### Trigger Events: User Create and User-Field Update
+| Element | Values | Note |
+|---|---|---|
+| `action` | `Grant`, `Revoke` | Required |
+| `target` | developer name of the access mechanism | Required |
+| `type` | `Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Queue` | Required |
 
-A policy fires on two events: when a user record is created, and when a qualifying user field included in any policy's filter criteria is updated. The platform does not re-evaluate every policy on every save — only policies whose filter fields were touched trigger re-evaluation. This makes it critical to include the correct fields in filter criteria. If a user's Profile changes but no UAP filter references Profile, no re-evaluation occurs.
+So one policy can grant a permission set group and revoke a stale public group in the same definition. There is no platform-level "grant pass then revoke pass": the actions on the one winning policy are what runs.
 
-### Filter Criteria and Available Fields
+### Filter Criteria: Two Independent Ways to Express OR
 
-Filters define which users a policy targets. Standard supported fields include Profile, Role, UserType, and Department. From release 246 (Spring '26), additional custom user fields are supported as filter criteria, significantly expanding no-code provisioning scenarios. Filters use equality conditions and can combine multiple fields with AND logic. A user must match all filter conditions on a policy for that policy to apply.
+`booleanFilter` is **required** and combines filter rows by their `sortOrder` — the guide's own wording is that "the `booleanFilter` can be `1 AND 2` or `1 OR 2`". OR logic is supported directly. A second, unrelated mechanism is the `in` operator on a single filter row: set `operation` to `in` and put comma-separated developer names in `target` to reference multiple profiles or roles in one row (API v58.0+).
 
-### Permission Set License (PSL) Assignment
+| `operation` | Available from |
+|---|---|
+| `equals` | v57.0 |
+| `notEquals` | v57.0 |
+| `in` | v58.0 |
+| `equalsIgnoreCase` | v59.0 |
+| `includes` | v59.0 |
 
-UAP can assign and revoke Permission Set Licenses in addition to permission sets and permission set groups. This is especially useful for managing license-gated features (such as Agentforce or Service Cloud features) without manual provisioning steps. The PSL must exist in the org. Assigning a PSL via UAP does not automatically assign the permission set that consumes it — both must be included in the policy or handled by separate policies.
+A filter row's `type` is one of `Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Profile`, `Queue`, `User`, `UserRole`. When `type` is `User`, `target` is literally the string `User`, `columnName` names the user field, and `value` holds the value to compare — that is how a filter on `IsActive`, `Department`, or a custom user field is written.
 
-### Evaluation Order and Conflict Resolution
+### Conflict Resolution: Lowest `order` Wins, Single Winner
 
-Within each type (grant or revoke), policies are evaluated in the order they appear in the policy list. The platform processes all active grant policies first, then all active revoke policies. There is no merge or union logic for conflicts across grant and revoke policies — the revoke always takes effect last. Practitioners must design policies with this order in mind to avoid unexpected permission loss.
+`order` is an integer from 0 to 10,000 (API v61.0+) and is required only when `status` is `Active`. When a user meets the criteria for multiple policies, **only the active policy with the lowest `order` value is applied**. The others do not run at all — their actions are not merged in, not appended, not applied afterwards. Design competing policies as a ranked list, most specific first.
+
+### Status and the Deploy-Time Downgrade
+
+`status` is required and takes `Active`, `Completed`, `Design`, `Failed`, `Migrate`, `Testing`, or `Updating`; the sObject default is `Design`. Deploying a policy with `status` `Active` does not activate it — the guide states the status is changed to `Design`, and an admin then sets it to `Active` by automating the policy in Setup. Every UAP deployment therefore has a manual post-step.
+
+### Trigger Events
+
+`triggerType` selects when the policy runs against a matching user: `Create` (on user creation), `Update` (on user update), or `CreateAndUpdate` (both). This is the only declarative control over when evaluation happens.
+
+### Audit Surface
+
+`UserAccessChange` is a real, queryable, read-only sObject (`describeSObjects()`, `getDeleted()`, `getUpdated()`, `query()`, `retrieve()`; no create/update/delete) whose `Source` field records where the change came from, "for example, `UserAccessPolicyId`". Reading it requires **View Setup and Configuration**. On `PermissionSetAssignment`, three fields exist *only* when user access policies are enabled: `IsRevoked`, `LastCreatedByChangeId`, and `LastDeletedByChangeId`, the latter two lookups to `UserAccessChange`. This is the provable trail, not the Setup Audit Trail.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Profile-Based Permission Provisioning on Create
+### Pattern 1: One Policy, Two Profiles, One Grant
 
-**When to use:** New users need a standard set of permission sets assigned based on their profile at the time of creation — replacing onboarding Apex triggers.
-
-**How it works:**
-1. Create a Grant policy with filter: `Profile = <target profile>`.
-2. Add the required permission sets and permission set groups to the policy's assignment list.
-3. Activate the policy.
-4. When a user is created with the matching profile, the platform automatically assigns all listed permission sets.
-
-**Why not the alternative:** Apex triggers on user creation require code maintenance, are not packageable as declarative configuration, and cannot be managed by admins without developer access. UAP provides the same outcome declaratively.
-
-### Pattern 2: Role-Change Permission Revocation
-
-**When to use:** When a user moves to a different role or department, previously granted permissions for their old role must be revoked automatically.
+**When to use:** Two profiles (or roles) need the same permission set group, and you do not want two policies competing on `order`.
 
 **How it works:**
-1. Create a Revoke policy with filter: `Role = <old role>`.
-2. Add the permission sets that should be removed when a user no longer holds that role.
-3. Create a corresponding Grant policy for the new role.
-4. When the user's Role field is updated, both policies re-evaluate: the old-role revoke fires and the new-role grant fires in the correct order (grant first, then revoke — so the net result for the new role is granted, and the old-role permissions are removed).
+1. Write one `userAccessPolicyFilters` row with `operation` `in`, `type` `Profile`, and `target` set to the comma-separated developer names.
+2. Set `booleanFilter` to `1`.
+3. Add one `Grant` action targeting the permission set group.
+4. Deploy, then activate in Setup.
 
-**Why not the alternative:** Manual permission cleanup on role changes is error-prone and frequently missed. Apex triggers on User updates are complex to maintain and require handling bulkification and role hierarchy traversal.
+**Why not the alternative:** Two policies with identical actions would both match some users, and only the lower `order` would apply — so the second policy is dead weight that still has to be maintained and audited.
 
-### Pattern 3: PSL Assignment Alongside Permission Set Groups
+### Pattern 2: Grant and Revoke in the Same Policy on a Role Change
 
-**When to use:** A feature requires both a PSL and a permission set group to function (e.g., an Agentforce feature seat).
+**When to use:** Moving into a role should add one access mechanism and remove another.
 
 **How it works:**
-1. Create a Grant policy targeting the appropriate filter (e.g., `Department = Sales`).
-2. Add both the PSL and the permission set group to the same policy's assignment list.
-3. Activate the policy.
-4. On user create or qualifying field update, both the PSL and the permission set group are provisioned in a single policy evaluation.
+1. Filter on the destination attribute (`type` `UserRole`, or `type` `User` with `columnName` `Department`).
+2. Add a `Grant` action for the new permission set group and a `Revoke` action for the outgoing public group or permission set.
+3. Set `triggerType` to `CreateAndUpdate` so the policy fires on the transfer, not only on hire.
+4. Give it a low `order` so it beats the broader default-access policy.
 
-**Why not the alternative:** Managing PSL assignment separately from permission set assignment creates operational overhead and inconsistency when users move between teams.
+**Why not the alternative:** Splitting grant and revoke across two policies makes them compete rather than cooperate — the higher-`order` one never runs for a user the lower one already matched.
+
+### Pattern 3: Licence Plus Permission Set Group for a Gated Feature
+
+**When to use:** A feature needs a permission set licence (or a managed-package licence) *and* the permission set group that consumes it.
+
+**How it works:**
+1. Filter on the population (`type` `User`, `columnName` `Department`, `value` the department name).
+2. Add a `PermissionSetLicense` `Grant` action and a `PermissionSetGroup` `Grant` action to the same policy.
+3. Add a `PackageLicense` `Grant` action too when the feature is delivered by a managed package.
+4. Deploy and activate.
+
+**Why not the alternative:** Splitting them across policies reintroduces the `order` problem — one policy wins, the other's licence grant never runs, and the seat looks half-provisioned.
 
 ---
 
@@ -118,33 +168,33 @@ Within each type (grant or revoke), policies are evaluated in the order they app
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Need to assign permissions on user create based on Profile | UAP Grant policy with Profile filter | No-code, runs automatically on create, auditable |
-| Need to revoke permissions when user changes department | UAP Revoke policy with Department filter | Re-evaluates on field update, no trigger required |
-| Need to assign both a PSL and a PSG together | Single UAP Grant policy with both in assignment list | Atomic assignment in one policy evaluation |
-| Conflict: same permission set targeted by both grant and revoke | Revoke wins (evaluated after grant) | Design policies to avoid unintended revocation |
-| Custom user field needed as filter criterion | Requires release 246 (Spring '26) or later | Enhanced filter support added in release 246 |
-| Complex multi-condition logic (OR, nested conditions) | UAP does not support OR logic — use Apex trigger | UAP filter supports AND logic only |
-| Existing Apex trigger handles permission assignment | Deactivate trigger before enabling UAP | Both active simultaneously causes race conditions |
+| Assign permissions on user create based on Profile | One policy, `type` `Profile` filter, `triggerType` `Create` | Declarative, deployable, auditable via `UserAccessChange` |
+| Same access for two or more profiles/roles | One filter row with `operation` `in` and comma-separated `target` | Guide-documented multi-value matching; avoids competing policies |
+| Two genuinely different criteria, either of which qualifies | One policy, two filter rows, `booleanFilter` `1 OR 2` | `booleanFilter` supports OR directly |
+| Add and remove access in the same event | One policy with both `Grant` and `Revoke` actions | Actions are per-policy; both run when that policy is the winner |
+| Several policies could match the same user | Assign distinct `order` values, most specific lowest | Only the lowest-`order` active policy applies; the rest do not run |
+| Add a user to a public group or queue | `Grant` action with `type` `Group` or `Queue` | Both are `UserAccessPolicyActionTargetType` values |
+| Policy needs cross-object lookups or branching logic | Apex, not UAP | Filters compare user attributes only; no traversal exists in the schema |
+| Need the policy live immediately after deploy | Plan a Setup activation step | Deploying `status` `Active` is downgraded to `Design` |
+| Existing Apex trigger handles permission assignment | Deactivate trigger, then activate the policy | Two independent writers of the same assignment rows |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
+1. **Confirm the feature and the permission** — check `UserManagementSettings.userAccessPoliciesEnabled` in the target org's settings metadata, and that the deploying identity holds **Manage User Access Policies**. Without the setting, the UAP-gated fields on `PermissionSetAssignment` do not exist either, so verification (step 6) has nothing to read.
 
-1. **Confirm prerequisites** — Verify the org is on release 242 or later. Confirm all permission sets, permission set groups, and PSLs to be assigned exist and are active. Identify whether any Apex triggers currently handle permission assignment for the same users.
+2. **Write the filter before the actions** — decide the population first. Number each `userAccessPolicyFilters` row with `sortOrder`, then write `booleanFilter` over those numbers. Use `operation` `in` where a single attribute has several qualifying values; use `1 OR 2` where two different attributes qualify. Copy the shape from `references/metadata-examples.md`.
 
-2. **Define filter criteria** — Identify the user fields that determine which users a policy targets. Use standard fields (Profile, Role, UserType, Department) for orgs on release 242–245. Use custom user fields only when on release 246+. Document the exact field values that define each user segment.
+3. **Add the actions** — one `userAccessPolicyActions` element per access mechanism, each with `action`, `target` (developer name), and `type`. Grant and revoke actions belong in the same policy when they fire on the same event.
 
-3. **Design grant and revoke policy pairs** — For each provisioning scenario, plan both the grant policy (who gets what) and any corresponding revoke policy (what is removed when criteria no longer match). Map out evaluation order explicitly to confirm no unintended revocations occur.
+4. **Assign `order` across the whole policy set** — list every active policy that could match an overlapping population and give each a distinct integer 0–10,000, most specific lowest. Record the ranking in `templates/user-access-policies-template.md`; the `order` value is the only conflict resolution the platform offers.
 
-4. **Create and configure policies** — In Setup, navigate to User Access Policies. Create Grant policies first, then Revoke policies. For each policy, set the filter criteria and add all permission sets, permission set groups, and PSLs to the assignment list. Save each policy in inactive state initially.
+5. **Run the checker** — `python3 skills/admin/user-access-policies/scripts/check_user_access_policies.py --manifest-dir force-app/main/default`. It validates `booleanFilter` against the declared `sortOrder` values, enum values, `order` uniqueness and range, and whether each action `target` resolves to something in the manifest.
 
-5. **Test in a sandbox** — Activate policies in a sandbox org. Create test users matching filter criteria and verify expected permission sets are assigned. Update a user's qualifying field (e.g., change Profile or Department) and confirm re-evaluation fires and permissions change correctly. Test conflict scenarios where both grant and revoke policies apply to the same user.
+6. **Deploy, then activate, then verify** — deploy with the package.xml from `references/metadata-examples.md`, set the policy to `Active` in Setup (the deployed status is `Design` regardless of what you wrote), create or update a matching test user, then run the verification SOQL over `UserAccessPolicy` and `UserAccessChange` in that same reference file.
 
-6. **Deactivate conflicting Apex triggers** — If existing Apex triggers assign or revoke permissions for the same user population, deactivate or delete them before activating UAP in production. Running both simultaneously can cause duplicate assignments, limit violations, or race conditions.
-
-7. **Deploy and activate in production** — Deploy the UAP metadata to production. Activate policies in the correct order: grant policies first for clarity, then revoke policies. Run a post-activation spot check by creating a test user in each target segment and confirming correct permission assignment.
+7. **Cut over from Apex** — if a User trigger wrote the same `PermissionSetAssignment` rows, deactivate it in the same release, not after. Record the deactivation so a rollback restores both halves.
 
 ---
 
@@ -152,27 +202,29 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Org is confirmed on release 242 (Spring '25) or later
-- [ ] All referenced permission sets, PSGs, and PSLs exist and are active in the target org
-- [ ] Filter criteria cover all qualifying user segments — no users in scope are missed
-- [ ] Grant and revoke policies are designed with evaluation order in mind (grant runs before revoke)
-- [ ] No active Apex triggers conflict with the new UAP policies
-- [ ] Policies have been validated in a sandbox by creating and updating test users
-- [ ] Custom user field filters are used only on orgs at release 246 or later
-- [ ] PSL assignment is included in the same policy as its corresponding permission set group where needed
-- [ ] UAP metadata is included in the deployment package for change management (UserAccessPolicy metadata type)
+- [ ] `userAccessPoliciesEnabled` confirmed true in the target org, and the deploying identity holds Manage User Access Policies
+- [ ] `booleanFilter` is present and every number in it matches a `sortOrder` on a declared filter row
+- [ ] Every `operation` used is supported at the org's API version (`in` needs v58.0+; `includes` and `equalsIgnoreCase` need v59.0+)
+- [ ] Every action's `type` is one of the six `UserAccessPolicyActionTargetType` values and its `target` is a developer name that exists in the target org
+- [ ] Filter rows with `type` `User` set `target` to `User` and populate both `columnName` and `value`
+- [ ] `order` is unique across all active policies that could match an overlapping population, and within 0–10,000
+- [ ] `triggerType` matches the intended event (`Create` / `Update` / `CreateAndUpdate`)
+- [ ] The runbook contains a post-deploy Setup activation step, because a deployed `Active` status arrives as `Design`
+- [ ] No active Apex trigger writes the same `PermissionSetAssignment` rows
+- [ ] A verification query over `UserAccessChange` (or `PermissionSetAssignment.LastCreatedByChangeId`) is written and has been run against a test user
+- [ ] `UserAccessPolicy` is in the deployment manifest, plus `Settings` if the feature flag is being turned on in the same release
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Non-obvious platform behaviors that cause real production problems. Full detail in `references/gotchas.md`:
 
-1. **Revoke always wins over grant in the same evaluation pass** — If a user matches both a Grant policy and a Revoke policy for the same permission set, the revoke takes effect because grant policies run first and revoke policies run second. The permission is removed. Practitioners who assume the most recently created or highest-priority policy wins will be surprised.
-
-2. **Re-evaluation only fires when a filter field is updated** — If none of the fields referenced in any active policy's filter criteria are changed on a user update, no UAP re-evaluation occurs. A user whose Department changes will not trigger re-evaluation if no active policy uses Department as a filter field. This means users can drift out of sync with policies if their qualifying attributes are updated through integrations that bypass standard field tracking.
-
-3. **UAP does not backfill existing users on activation** — Activating a new policy does not retroactively apply it to all existing users who match the filter. The policy only fires going forward on new creates or qualifying updates. Practitioners who activate a policy and expect bulk assignment across existing users will find no changes. A separate data operation or manual assignment run is required for existing users.
+1. **Overlapping policies do not stack** — the lowest-`order` active policy is the only one applied.
+2. **A deployed `Active` policy arrives as `Design`** — activation is a separate Setup action.
+3. **`booleanFilter` is required**, even for a single filter row, where its value is just `1`.
+4. **The UAP-gated fields on `PermissionSetAssignment`** (`IsRevoked`, `LastCreatedByChangeId`, `LastDeletedByChangeId`) do not exist until the feature is enabled — a query written against a non-UAP org fails to compile.
+5. **`UserAccessPolicy` is read-only over the API** — `describeSObjects()`, `query()`, `retrieve()` only. Authoring is Metadata API or Setup.
 
 ---
 
@@ -180,24 +232,41 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| UAP Grant Policy records | Active policies in Setup that assign permission sets/PSGs/PSLs on user create or field update |
-| UAP Revoke Policy records | Active policies that remove permission sets/PSGs/PSLs when filter criteria no longer match |
-| UserAccessPolicy metadata | Deployable metadata type included in SFDX/sf CLI project for change management |
-| Provisioning audit trail | Setup Audit Trail entries recording policy activations, deactivations, and assignment events |
+| `.useraccesspolicy` files | One per policy, in the `useraccesspolicies` folder of the DX project; carries filters, actions, `order`, `status`, `triggerType` |
+| package.xml entry | `<name>UserAccessPolicy</name>`, with `*` wildcard support in the manifest |
+| Policy order register | The ranked list of active policies and their `order` values (template section) |
+| Activation runbook step | Named owner and Setup step to move each deployed policy from `Design` to `Active` |
+| Verification queries | SOQL over `UserAccessPolicy` (config as deployed) and `UserAccessChange` / `PermissionSetAssignment` (what the policy actually did) |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing the deployable `.useraccesspolicy` XML, package.xml, deploy order, and verification SOQL |
+| `references/gotchas.md` | Diagnosing why a policy did not fire, did not activate, or lost to another policy |
+| `references/examples.md` | Looking for a worked scenario close to the one in front of you |
+| `references/llm-anti-patterns.md` | Reviewing UAP configuration or advice produced by an AI assistant |
+| `references/well-architected.md` | Justifying UAP versus Apex, or writing up the governance tradeoffs |
 
 ---
 
 ## Related Skills
 
-- permission-set-architecture — use when designing the permission set and permission set group structure that UAP will assign; UAP is the provisioning mechanism, not the design tool
-- delegated-administration — use when granting non-admin users the ability to manage other users' permissions manually; distinct from automated UAP provisioning
-- permission-sets-vs-profiles — use when deciding whether to use profiles or permission sets as the primary access control mechanism before configuring UAP filters
+- admin/permission-set-architecture — use when designing the permission set and permission set group structure that UAP will assign; UAP is the provisioning mechanism, not the design tool
+- admin/delegated-administration — use when granting non-admin users the ability to manage other users' permissions manually; distinct from automated UAP provisioning
+- admin/permission-sets-vs-profiles — use when deciding whether to use profiles or permission sets as the primary access control mechanism before configuring UAP filters
+- admin/permission-set-expiration — use when access should lapse on a date rather than on an attribute change
+- admin/user-management — use for the surrounding user lifecycle (creation, deactivation, freeze) that UAP hooks into
 
 ---
 
 ## Official Sources Used
 
-- Salesforce Help — User Access Policies: https://help.salesforce.com/s/articleView?id=sf.perm_user_access_policies.htm
-- Salesforce Help — Active User Access Policy: https://help.salesforce.com/s/articleView?id=sf.perm_active_user_access_policy.htm
-- Release Notes — User Access Policies GA (release 242): https://help.salesforce.com/s/articleView?id=release-notes.rn_permissions_user_access_policies_beta.htm
-- Release Notes — UAP Enhanced Filter Support (release 246): https://help.salesforce.com/s/articleView?id=release-notes.rn_permissions_user_access_policy_filters.htm
+- Metadata API Developer Guide — `UserAccessPolicy`, `UserAccessPolicyAction`, `UserAccessPolicyFilter`, and their enumerations (field tables, `booleanFilter` OR support, `order` 0–10,000 lowest-wins, deploy-time `Active` → `Design`, sample definitions and package.xml): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide — `UserManagementSettings` (`userAccessPoliciesEnabled`, `enableEnhcUiUserAccessPolicies`): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Object Reference for the Salesforce Platform — `UserAccessPolicy` and `UserAccessChange` standard objects (supported calls, field properties, access rules): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Object Reference for the Salesforce Platform — `PermissionSetAssignment` (`IsRevoked`, `LastCreatedByChangeId`, `LastDeletedByChangeId`) and `GroupMember`: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Apex Developer Guide — "sObjects That Can't Be Used Together in DML Operations" (what MIXED_DML_OPERATION actually is): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -22,26 +22,54 @@ global class SandboxPrep implements SandboxPostCopy {
 
     private static void maskEmails() {
         List<User> us = new List<User>();
-        for (User u : [SELECT Id, Email FROM User WHERE Email != NULL]) {
+        for (User u : [SELECT Id, Email FROM User
+                       WHERE Email != NULL AND (NOT Email LIKE '%.invalid')]) {
             u.Email = u.Email.replace('@', '+sandbox@') + '.invalid';
             us.add(u);
         }
-        update us;
+        if (!us.isEmpty()) update us;
     }
 
     private static void deactivateExternallyVisibleProcesses() {
-        // Scheduled jobs that send email externally
+        // Scheduled jobs that send email externally. Note the six live states —
+        // a job sitting in BLOCKED at copy time survives a three-state filter.
         for (CronTrigger ct : [SELECT Id, CronJobDetail.Name FROM CronTrigger
-                               WHERE CronJobDetail.Name LIKE '%Email%'
-                                  OR CronJobDetail.Name LIKE '%Notify%']) {
-            try { System.abortJob(ct.Id); } catch (Exception ex) {}
+                               WHERE State IN ('WAITING','ACQUIRED','EXECUTING',
+                                               'PAUSED','BLOCKED','PAUSED_BLOCKED')
+                                 AND (CronJobDetail.Name LIKE '%Email%'
+                                   OR CronJobDetail.Name LIKE '%Notify%')]) {
+            try { System.abortJob(ct.Id); } catch (Exception ex) {
+                System.debug(LoggingLevel.ERROR, ct.CronJobDetail.Name + ': ' + ex.getMessage());
+            }
         }
     }
 }
 ```
 
-PLUS: org-wide deliverability set to "System emails only" as a
-backup. Belt-and-suspenders.
+PLUS: the org-wide deliverability Access Level, set by hand — it has no metadata surface
+(`gotchas.md` § 5), so it is a named person's job, not a deploy step.
+
+**The evidence that it worked.** Run this the moment the sandbox unlocks, before anyone logs in. It is
+the post-mortem you wish you had had:
+
+```sql
+SELECT CronJobDetail.Name Job, CronJobDetail.JobType Kind, State, NextFireTime
+FROM CronTrigger
+WHERE State IN ('WAITING','ACQUIRED','EXECUTING','PAUSED','BLOCKED','PAUSED_BLOCKED')
+```
+
+A healthy post-copy returns nothing. This is what the failing refresh returned — the rows that sent the
+email, with the reason each one was missed:
+
+| Job | Kind | State | NextFireTime | Why the sweep missed it |
+|---|---|---|---|---|
+| `Nightly Dunning Notice` | `7` Scheduled Apex | `WAITING` | 2026-09-06T02:00Z | Name matches neither `%Email%` nor `%Notify%` |
+| `Renewal Reminder Flow` | `6` Scheduled Flow | `WAITING` | 2026-09-06T06:00Z | Apex-only mental model; Scheduled Flows are `CronTrigger` rows too |
+| `Weekly Digest Blast` | `9` Batch Job | `BLOCKED` | (null) | Filtered on three states; `BLOCKED` is live |
+
+`CronJobDetail.JobType` codes are Object Reference L86671–86680. Two of the three rows are name-filter
+misses, which is the argument for aborting broadly and allow-listing the handful of jobs sandbox testing
+genuinely needs — not the reverse.
 
 ---
 
@@ -156,13 +184,18 @@ private class SandboxPrepTest {
         );
         insert u;
 
-        // Act — invoke runApexClass directly (passing a mock SandboxContext).
+        // Act — the 5-arg overload. RunAsAutoProcUser = true is not optional here:
+        // Salesforce recommends it (Apex Reference Guide L241180-241184) and the 4-arg
+        // form runs as the test initiator, which cannot reproduce the Automated Process
+        // user's restricted access — the most likely real refresh failure.
+        // sandboxId is an Id, not a String; the guide's own sample uses a literal.
         Test.startTest();
         Test.testSandboxPostCopyScript(
             new SandboxPrep(),
             UserInfo.getOrganizationId(),
-            'Test',
-            'TestSandbox'
+            UserInfo.getOrganizationId(),
+            'TestSandbox',
+            true
         );
         Test.stopTest();
 
@@ -173,8 +206,14 @@ private class SandboxPrepTest {
 }
 ```
 
-`Test.testSandboxPostCopyScript` is the platform's test harness —
-fakes the SandboxContext + runApexClass invocation.
+`Test.testSandboxPostCopyScript` is the platform's test harness — it constructs the `SandboxContext` and
+invokes `runApexClass`. It returns nothing and "throws a run-time exception if the test install fails"
+(Apex Reference Guide L241178), so every assertion has to be on state you query back afterwards.
+
+Two things this test still does not cover, and should: the `Username` above ends `.example.com.test`
+because that is what a copied user looks like (`gotchas.md` § 11) — assert on it rather than hand-writing
+it — and a second run of the same call, asserting the mask did not compound. See
+`references/metadata-examples.md` § 2 for the version that does both.
 
 ---
 
