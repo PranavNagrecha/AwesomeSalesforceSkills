@@ -53,43 +53,56 @@ trigger AccountTrigger on Account (after update) {
 
 ---
 
-## Anti-Pattern 2: Not resetting the guard between test methods
+## Anti-Pattern 2: Believing the guard leaks between test methods
 
 **What the LLM generates:**
 
 ```apex
-public class TriggerGuard {
-    public static Boolean hasRun = false;
+@IsTest
+static void testTrigger() {
+    TriggerGuard.reset(); // "statics persist across test methods"
+    insert new Account(Name = 'A');
+    Assert.isTrue(TriggerGuard.hasRun);
 }
-
-// Test 1 sets hasRun = true
-// Test 2 sees hasRun = true and the trigger is silently skipped
 ```
 
-**Why it happens:** LLMs declare static guards but forget that static variables persist across test methods in the same test class execution (unless each test explicitly resets them). Test 2 may see leftover state from Test 1, causing tests to pass or fail depending on execution order.
+**Why it happens:** It is the most repeated claim in trigger-framework blog posts, and it is wrong. The
+Apex Developer Guide is explicit: "Every test method, including the test setup method, runs as a separate
+transaction. The static context of the test class is reinitialized before each transaction begins.
+Therefore, static variable initializers and static blocks are executed fresh at the start of every test
+method" (`apexdev` L41032–41035). The `reset()` call at the top of a test method is a no-op.
+
+**What the belief costs:** an assistant that thinks cross-method leakage is *the* guard risk writes one
+DML per test method and never writes the test that actually fails — two DML statements inside **one**
+method, which is the same transaction and therefore the same static state. That is precisely the shape a
+recursive save presents to the handler.
 
 **Correct pattern:**
 
 ```apex
-public class TriggerGuard {
-    @TestVisible
-    private static Set<Id> processedIds = new Set<Id>();
-
-    @TestVisible
-    static void reset() {
-        processedIds.clear();
-    }
-}
-
-// In each test method:
 @IsTest
-static void testTrigger() {
-    TriggerGuard.reset(); // Ensure clean state
-    // ... test logic
+static void secondDmlInSameTransactionSeesTheGuard() {
+    List<Account> accounts = [SELECT Id, Health_Score__c FROM Account LIMIT 5];
+    for (Account a : accounts) { a.Health_Score__c = 71; }
+    update accounts;                          // pass 1 — guard is populated here
+    Integer afterFirst = AccountTriggerHandler.processedAccountIds.size();
+
+    update accounts;                          // pass 2 — same transaction, same statics
+    Assert.areEqual(afterFirst, AccountTriggerHandler.processedAccountIds.size(),
+        'an unchanged re-save must not be counted as new work');
+
+    for (Account a : accounts) { a.Health_Score__c = 72; }
+    update accounts;                          // pass 3 — real change must be served
+    Assert.areEqual(5, [SELECT COUNT() FROM Contact WHERE Account_Health_Score__c = 72]);
 }
 ```
 
-**Detection hint:** Static recursion guard variables without a `@TestVisible` reset method, and test classes that do not reset the guard.
+Keep a `@TestVisible reset()` on the guard anyway — not for cross-method hygiene, but so a single test
+method can deliberately start a second scenario from clean state. The full version is
+`identicalSecondPassSuppressedNewValueAllowed` in `references/code-examples.md`.
+
+**Detection hint:** a test class whose every method performs exactly one DML statement, or a comment
+asserting that statics survive between test methods.
 
 ---
 
@@ -178,7 +191,7 @@ public class AccountTriggerHandler {
 
 ---
 
-## Anti-Pattern 5: Using try/finally to reset the guard, hiding exceptions
+## Anti-Pattern 5: Resetting the guard in a `finally` block, for the wrong reason
 
 **What the LLM generates:**
 
@@ -189,31 +202,52 @@ public void afterUpdate(List<Account> accounts) {
     try {
         processAccounts(accounts);
     } finally {
-        isRunning = false; // Reset even on exception
+        isRunning = false; // "reset even on exception"
     }
 }
 ```
 
-**Why it happens:** LLMs use `try/finally` to ensure the guard resets even if processing throws an exception. But in a trigger context, an unhandled exception already rolls back the entire transaction, which means the guard reset is irrelevant — there will be no subsequent execution in the same transaction. The `finally` block adds complexity without value.
+**Why it happens:** `try/finally` around mutable state is a reflex from other languages. Assistants then
+justify it — or reject it — with the claim that an unhandled exception rolls the whole transaction back,
+so the reset can never matter.
+
+**Why that justification is wrong:** the transaction does not always end. With partial success allowed,
+"triggers are fired during the first attempt and are fired again during subsequent attempts. Because
+these trigger invocations are part of the same transaction, static class variables that are accessed by
+the trigger aren't reset" (`apexdev` L15499–15501) — up to three attempts (`apexdev` L9070–9076). And
+after a savepoint rollback, "static variables aren't reverted during a rollback. If you try to run the
+trigger again, the static variables retain the values from the first run" (`apexdev` L8692–8693). So
+there really are later passes in the same transaction that read this flag.
+
+**Why the `finally` still doesn't fix it:** it resets a Boolean, and the problem is that the state is a
+Boolean. On the retry the flag reads `false` and the *whole* subset is reprocessed, including rows that
+already got their side effects on attempt one — the opposite failure. Duplicate work instead of missing
+work.
 
 **Correct pattern:**
 
 ```apex
 public void afterUpdate(List<Account> accounts) {
-    Set<Id> newIds = new Set<Id>();
+    String context = RecursionGuard.contextKey('AccountTriggerHandler');
+    List<Account> toProcess = new List<Account>();
     for (Account a : accounts) {
-        if (!processedIds.contains(a.Id)) {
-            newIds.add(a.Id);
+        String fingerprint = fingerprintOf(a);
+        if (RecursionGuard.isProcessed(context, a.Id, fingerprint)) {
+            continue;
         }
+        RecursionGuard.markProcessed(context, a.Id, fingerprint);
+        toProcess.add(a);
     }
-    if (newIds.isEmpty()) return;
-    processedIds.addAll(newIds);
-    // Let exceptions propagate naturally — transaction rolls back on failure
-    processAccounts(accounts);
+    if (toProcess.isEmpty()) {
+        return;
+    }
+    // No try/finally: per-record state needs no unwinding, and the retry subset
+    // is decided by record identity rather than by one transaction-wide flag.
+    processAccounts(toProcess);
 }
 ```
 
-**Detection hint:** `try.*finally` block that only resets a recursion guard Boolean — unnecessary complexity.
+**Detection hint:** a `finally` block whose only statement assigns `false` to a recursion flag.
 
 ---
 
@@ -250,3 +284,73 @@ public void afterUpdate(List<Account> newList, Map<Id, Account> oldMap) {
 ```
 
 **Detection hint:** Recursion guard that makes no distinction between self-DML recursion and legitimate platform-caused re-entry (workflow field updates, flow).
+
+
+---
+
+## Anti-Pattern 7: Deriving re-entry state from governor-limit counters
+
+**What the LLM generates:**
+
+```apex
+// "If no DML has run yet, this must be the first pass."
+if (Limits.getDmlStatements() == 0) {
+    processAccounts(Trigger.new);
+}
+```
+
+**Why it happens:** limit counters look like a free, dependency-less signal for "how deep am I?", and in
+a synchronous Apex DML the correlation roughly holds, so it passes every test.
+
+**Why it breaks:** under Bulk API the two clocks run at different rates. "If a Bulk API request causes a
+trigger to fire multiple times for chunks of 200 records, governor limits are reset between these
+trigger invocations for the same HTTP request. Static variables aren't reset within the multiple trigger
+invocations for the same Bulk API request" (`apexdev` L3789–3792). Every chunk therefore reads
+`getDmlStatements() == 0` and declares itself the first pass, while the actual guard state has carried
+over. The same divergence appears in partial-success retries, where "governor limits are reset to their
+original state before the first attempt" (`apexdev` L9077–9078).
+
+**Correct pattern:** state that answers "have I done this?" must be stored, not inferred — a keyed entry
+in `RecursionGuard`. Limit counters answer "how much budget is left", which is a different question and
+belongs to `apex/governor-limits`.
+
+**Detection hint:** `Limits.get*()` appearing in a conditional that gates business logic rather than in
+a log line or a batching decision.
+
+---
+
+## Anti-Pattern 8: Treating `TriggerHandler.skipOnce()` as a bulk-safe mute
+
+**What the LLM generates:**
+
+```apex
+TriggerHandler.skipOnce('ContactTriggerHandler');
+update contactsToSync;   // 500 rows
+```
+
+**Why it happens:** the method name reads like "suppress the next handler run", and for the single-record
+demo in every code sample it behaves that way.
+
+**Why it breaks:** `templates/apex/TriggerHandler.cls` implements the skip as
+`skipOnceHandlers.remove(handlerName)` — a `Set.remove()` that returns `true` once and leaves the set
+empty. A DML over 200 rows invokes the trigger once per batch (`apexdev` L15029–15033), so rows 201–500
+run with no suppression at all. Worse, the failure is silent and volume-dependent: it passes in a
+sandbox with 20 test rows and misfires on the first real load.
+
+**Correct pattern:**
+
+```apex
+// Mark the child records in the record-keyed guard BEFORE the DML, so every batch
+// of the resulting trigger invocation finds them already accounted for.
+String childContext = 'ContactTriggerHandler.AFTER_UPDATE';
+for (Contact c : contactsToSync) {
+    RecursionGuard.markProcessed(childContext, c.Id, fingerprintOf(c));
+}
+update contactsToSync;
+```
+
+Use `skipOnce` only where the row count is provably at most 200. For a data load, switch the handler off
+through `TriggerControl` instead — see `apex/apex-trigger-bypass-and-killswitch-patterns`.
+
+**Detection hint:** `skipOnce(` immediately preceding a DML on a list whose size is not bounded in the
+same method.
