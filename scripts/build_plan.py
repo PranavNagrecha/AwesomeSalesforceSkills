@@ -141,6 +141,11 @@ DENY_COMMAND_RE = re.compile(
 CHECKER_COMMAND_RE = re.compile(
     r"^python3 (skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py)\b")
 
+# The argument form every skill checker is meant to converge on. A checker that
+# takes something else still runs — step-tester executes the declared command
+# verbatim — but the plan says so out loud rather than looking like a typo.
+CHECKER_STANDARD_ARG = "--manifest-dir"
+
 # Build-directory-relative prefixes a `command` test may name (section 2).
 BUILD_DIR_PREFIXES = ("artefacts/", "tests/", "workbook/", "reports/", "envelopes/")
 
@@ -380,12 +385,23 @@ def _test_label(test: dict) -> str:
     return ": ".join(bits)
 
 
+def _tokens(command: str) -> list[str]:
+    try:
+        return shlex.split(command)
+    except ValueError:
+        return command.split()
+
+
+def _checker_uses_standard_form(command: str) -> bool:
+    """Does this checker command use the house `--manifest-dir <dir>` form?"""
+    return any(token == CHECKER_STANDARD_ARG
+               or token.startswith(f"{CHECKER_STANDARD_ARG}=")
+               for token in _tokens(command)[1:])
+
+
 def _command_script_path(command: str) -> str | None:
     """First non-flag argument after `python3`, or None if there is none."""
-    try:
-        tokens = shlex.split(command)
-    except ValueError:
-        tokens = command.split()
+    tokens = _tokens(command)
     for token in tokens[1:]:
         if token.startswith("-"):
             continue
@@ -427,6 +443,13 @@ def _acceptance_issues(tests: list, owner: str, repo_root: Path,
                 issues.append(("ERROR", f"{where}: checker {m.group(1)} does not exist — a plan "
                                         f"may not declare a test that cannot run (deepen the "
                                         f"skill first, or use a different test type)"))
+            elif not _checker_uses_standard_form(command):
+                # Not every skill checker takes --manifest-dir: a few take a
+                # positional path or --file/--workbook. Rewriting the command to
+                # the house form would break them, so this is a WARN and the
+                # step-tester runs what the plan declares (contract section 5).
+                issues.append(("WARN", f"{where}: checker declares a non-standard argument "
+                                       f"form; step-tester will run it verbatim"))
         if ttype == "command" and command:
             if not command.startswith("python3 "):
                 issues.append(("ERROR", f"{where}: a 'command' test must start with 'python3 ' "
@@ -440,6 +463,85 @@ def _acceptance_issues(tests: list, owner: str, repo_root: Path,
                     issues.append(("ERROR", f"{where}: 'command' test runs {script!r}, which is "
                                             f"neither a path in the repo nor under the build "
                                             f"directory ({', '.join(prefixes)})"))
+    return issues
+
+
+# A decision-tree step id: Q3, Q12, Q3a.
+BRANCH_ID_RE = re.compile(r"^Q[0-9]+[a-z]?$")
+
+# How the seven trees under standards/decision-trees/ actually head their steps.
+# The dominant form is a flat `Q3. <question>` line at column 0 inside the tree's
+# fenced block (automation-selection, sharing-selection, async-selection,
+# flow-pattern-selector, integration-pattern-selection, agentforce-capability-
+# selector); performance-tuning additionally groups steps under `## Q2–Q4 — ...`
+# markdown headings. The bold and anchor forms are accepted so a tree may be
+# reformatted without invalidating every plan that cites it.
+#
+# Every form is anchored at the start of a line on purpose. automation-selection
+# says "(Same gate as Q3 — the ...)" mid-paragraph; matching a branch id
+# anywhere in the prose would let a plan cite a step that only ever appears as
+# a cross-reference, which is the citation this check exists to catch.
+_BRANCH_FORMS = (
+    r"^[ \t]*#{{1,6}}[ \t]*{b}(?![0-9A-Za-z])",          # ## Q3   /  ### Q3a — ...
+    r"^[ \t]*(?:[-*+][ \t]+)?[*_]{{1,2}}{b}(?![0-9A-Za-z])",  # **Q3** / - **Q3**
+    r"^[ \t]*(?:[-*+][ \t]+)?{b}[ \t]*[.):—–-]",  # Q3. ... / Q3) ... / - Q3 — ...
+    r"(?i)\{{#[ \t]*{b}[ \t]*\}}",                       # {#q3} anchor
+    r"(?i)<a[ \t][^>]*\b(?:id|name)[ \t]*=[ \t]*[\"']#?{b}[\"']",   # <a id="q3">
+)
+
+
+def _branch_in_tree(text: str, branch: str) -> bool:
+    """Does `text` head a decision step called `branch`?"""
+    escaped = re.escape(branch)
+    return any(re.search(form.format(b=escaped), text, re.MULTILINE)
+               for form in _BRANCH_FORMS)
+
+
+def _decision_issues(decision: dict, where: str, repo_root: Path) -> list[tuple[str, str]]:
+    """Contract section 1.2: a decision cites a branch that is really in the tree.
+
+    The failure this exists to catch is a plausible-looking citation: a real
+    tree path plus a branch id the tree does not have, or a branch id with no
+    tree at all. Neither can be checked by reading the plan alone, and both
+    read as grounded work until someone opens the file.
+    """
+    issues: list[tuple[str, str]] = []
+    tree = (decision.get("decision_tree") or "").strip()
+    branch = (decision.get("branch") or "").strip()
+    source_reference = (decision.get("source_reference") or "").strip()
+
+    if tree:
+        tree_path = repo_root / tree
+        if not tree_path.is_file():
+            issues.append(("ERROR", f"{where}: decision_tree '{tree}' does not exist — a "
+                                    f"decision may not cite a tree that is not in the repo"))
+        elif branch:
+            if not BRANCH_ID_RE.match(branch):
+                issues.append(("ERROR", f"{where}: branch {branch!r} is not a tree step id "
+                                        f"(expected Q3, Q12, Q3a …)"))
+            else:
+                try:
+                    text = tree_path.read_text(encoding="utf-8", errors="replace")
+                except OSError as exc:  # pragma: no cover - unreadable file
+                    issues.append(("ERROR", f"{where}: cannot read decision_tree '{tree}': {exc}"))
+                    text = None
+                if text is not None and not _branch_in_tree(text, branch):
+                    issues.append(("ERROR", f"{where}: {tree} has no step {branch!r} — the tree "
+                                            f"heads its steps as '{branch}. <question>', "
+                                            f"'## {branch}', '**{branch}**' or an anchor. Cite "
+                                            f"the branch that actually resolved the choice, or "
+                                            f"drop the tree and record source_reference "
+                                            f"with adr_required: true"))
+    elif branch:
+        issues.append(("ERROR", f"{where}: branch {branch!r} with no decision_tree — a branch id "
+                                f"is unverifiable without the tree it belongs to"))
+
+    if source_reference and not (repo_root / source_reference).exists():
+        issues.append(("ERROR", f"{where}: source_reference '{source_reference}' does not exist"))
+
+    if not tree and not source_reference:
+        issues.append(("WARN", f"{where}: cites neither a decision_tree nor a source_reference — "
+                               f"record where the choice came from (contract section 1.2)"))
     return issues
 
 
@@ -535,6 +637,13 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
             if not out.startswith(f"{root_dir}/{sid}/"):
                 issues.append(("WARN", f"step {sid}: output '{out}' is not under "
                                        f"{root_dir}/{sid}/ (contract section 4)"))
+
+    # --- decisions: the cited branch is really in the cited tree ----------
+    for i, decision in enumerate(plan.get("decisions") or []):
+        if not isinstance(decision, dict):
+            continue
+        issues.extend(_decision_issues(
+            decision, f"decision {decision.get('id') or f'[{i}]'}", repo_root))
 
     # --- dependency graph -------------------------------------------------
     graph: dict[str, list[str]] = {}
@@ -868,13 +977,36 @@ def render_plan_md(plan: dict) -> str:
     out.append("")
     decisions = plan.get("decisions") or []
     if decisions:
-        out.append("| Id | Decision | Decision tree | Branch | Rationale |")
-        out.append("| --- | --- | --- | --- | --- |")
+        out.append("| Id | Decision | Decision tree | Branch | ADR | Rationale |")
+        out.append("| --- | --- | --- | --- | --- | --- |")
         for row in decisions:
             tree = row.get("decision_tree")
             out.append(f"| `{row.get('id')}` | {_cell(row.get('decision'))} "
                        f"| {('`' + tree + '`') if tree else '—'} | {_cell(row.get('branch'))} "
+                       f"| {'✔' if row.get('adr_required') else ''} "
                        f"| {_cell(row.get('rationale'))} |")
+        # The evidence a reader needs to check a decision without opening the
+        # tree: what the branch actually said, what was turned down, what it
+        # costs. Sub-bullets rather than columns — a quoted branch does not fit
+        # in a table cell.
+        detail: list[str] = []
+        for row in decisions:
+            lines: list[str] = []
+            if row.get("branch_quote"):
+                lines.append(f"  - Branch quote: {_cell(row['branch_quote'])}")
+            if row.get("source_reference"):
+                lines.append(f"  - Source reference: `{row['source_reference']}`")
+            if row.get("alternatives_rejected"):
+                rejected = "; ".join(_cell(alt) for alt in row["alternatives_rejected"])
+                lines.append(f"  - Alternatives rejected: {rejected}")
+            if row.get("consequences"):
+                lines.append(f"  - Consequences: {_cell(row['consequences'])}")
+            if lines:
+                detail.append(f"- `{row.get('id')}`")
+                detail.extend(lines)
+        if detail:
+            out.append("")
+            out.extend(detail)
     else:
         out.append("_No decisions recorded._")
     out.append("")
@@ -1648,6 +1780,15 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
     for key, value in doc.items():
         plan[key] = value
     plan["status"] = "planned"
+    summary = (getattr(args, "summary", None) or "").strip()
+    if summary:
+        # The planner is the second agent to restate the requirement, and the
+        # first to have done the fit-gap: it can sharpen the clarifier's
+        # paragraph (scope in, scope out, what the platform will not do). Same
+        # single-writer rule as `set-clarifications --summary`; nothing else
+        # may touch requirement.summary.
+        plan["requirement"] = dict(plan.get("requirement") or {})
+        plan["requirement"]["summary"] = summary
     added = _ensure_gates(plan)
     schema = load_schema(args.schema)
     rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
@@ -1655,7 +1796,8 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
         return rc
     print(f"plan written: {len(plan.get('milestones') or [])} milestone(s), "
           f"{len(plan.get('steps') or [])} step(s), status -> planned"
-          + (f"; gates added: {', '.join(added)}" if added else ""))
+          + (f"; gates added: {', '.join(added)}" if added else "")
+          + ("; requirement.summary updated" if summary else ""))
     print("next: `build_plan.py render` then hand the plan to the plan-verifier.")
     return 0
 
@@ -1853,7 +1995,9 @@ Walkthrough:
                          (an answer may span several lines)
   5. gate clarifications approve --by <who>      G1 — refused while a blocking
                          question is still open
-  6. set-plan            the planner's scope/decisions/milestones/steps (status → planned)
+  6. set-plan            the planner's scope, fit_gap, assumptions, decisions,
+                         milestones and steps (status → planned). --summary also
+                         sharpens requirement.summary now the fit-gap is done.
   7. validate            schema + contract checks (agents, skills, DAG, tests, gates)
   8. set-verification    the verifier's lenses (status → verified | plan-rejected)
   9. gate plan approve --by <who>                G2 — refused unless status is
@@ -2078,6 +2222,11 @@ def build_parser() -> argparse.ArgumentParser:
                                    "rejected plan gate.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON object of planner-owned fields")
+    p.add_argument("--summary", default=None,
+                   help="replace requirement.summary with this one-paragraph restatement. "
+                        "The planner is the first agent to have done the fit-gap, so it may "
+                        "sharpen the clarifier's paragraph; omit the flag to leave the stored "
+                        "summary alone.")
     p.set_defaults(func=cmd_set_plan)
 
     p = sub.add_parser("set-verification", parents=[common],

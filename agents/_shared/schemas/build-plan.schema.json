@@ -211,7 +211,7 @@
     },
     "decisions": {
       "type": "array",
-      "description": "Section 1.2: each decision cites the decision-tree branch that resolved it.",
+      "description": "Section 1.2: each decision cites the decision-tree branch that resolved it, or — when no tree covers the choice — the skill reference that did, in source_reference, with adr_required: true.",
       "items": {
         "type": "object",
         "additionalProperties": true,
@@ -223,9 +223,28 @@
             "type": "string",
             "description": "Path under standards/decision-trees/. Validated to exist on disk."
           },
-          "branch": {"type": "string", "description": "The tree step that resolved the choice, e.g. 'Q3'."},
+          "branch": {
+            "type": "string",
+            "description": "The tree step that resolved the choice, e.g. 'Q3'. scripts/build_plan.py validate reads decision_tree off disk and ERRORs unless the tree actually heads a step with this id ('Q3. <question>', '## Q3', '**Q3**', 'Q3 —' or an explicit anchor) — a branch id nobody can find in the tree is a citation of something that was never read."
+          },
+          "branch_quote": {
+            "type": "string",
+            "description": "The branch text, quoted verbatim from the tree. Rendered as a sub-bullet under the PLAN.md decisions table so a reader can check the branch says what the decision says without opening the tree."
+          },
+          "source_reference": {
+            "type": "string",
+            "description": "Repo-relative path to the skill reference that resolved this choice when no decision tree covers it (contract section 1.2 / build-planner step 4). Validated to exist on disk. Cite this instead of stretching a tree branch to cover a decision it does not make; a decision resolved this way sets adr_required: true."
+          },
+          "adr_required": {
+            "type": "boolean",
+            "description": "True when the choice was not settled by a decision-tree branch and deserves its own architecture decision record. Rendered as the ADR column of the PLAN.md decisions table."
+          },
           "rationale": {"type": "string"},
-          "alternatives_rejected": {"type": "array", "items": {"type": "string"}}
+          "alternatives_rejected": {"type": "array", "items": {"type": "string"}},
+          "consequences": {
+            "type": "string",
+            "description": "What this decision costs or forecloses. Rendered as a sub-bullet under the PLAN.md decisions table."
+          }
         }
       }
     },

@@ -63,6 +63,30 @@ category: {domain}
 # {slug}
 """
 
+# The fixture decision tree heads its steps the way the seven real trees under
+# standards/decision-trees/ do: a flat `Q<n>. <question>` line at column 0
+# inside the tree's fenced block. `validate` reads this file to check that a
+# decision's `branch` is really a step in the tree it cites, so a tree with no
+# steps in it would fail every plan in this suite.
+FAKE_TREE = """# Decision Tree — Fake Selection
+
+## Decision tree
+
+```
+Q1. What triggers the work?
+    ├── A record change  → Q3
+    └── A clock          → Q4
+
+Q3. Does the logic need a callout with retry?
+    ├── Yes → Apex
+    └── No  → Record-triggered Flow
+
+Q4. Scheduled. More than 50k records?
+    ├── Yes → Batch Apex
+    └── No  → Schedule-triggered Flow
+```
+"""
+
 
 @pytest.fixture()
 def fixture_repo(tmp_path: Path) -> Path:
@@ -95,7 +119,7 @@ def fixture_repo(tmp_path: Path) -> Path:
     template.write_text("public class FakeHandler {}\n", encoding="utf-8")
     tree = root / "standards" / "decision-trees" / "fake-selection.md"
     tree.parent.mkdir(parents=True, exist_ok=True)
-    tree.write_text("# fake tree\n", encoding="utf-8")
+    tree.write_text(FAKE_TREE, encoding="utf-8")
     return root
 
 
@@ -1619,3 +1643,343 @@ def test_the_dry_run_envelope_validates():
         if not (isinstance(payload, dict) and "envelope_path" in payload):
             continue  # a side-car payload, not an envelope
         assert ve.validate_envelope(payload) == [], f"{path} does not validate"
+
+
+# --------------------------------------------------------------------------
+# decisions: the cited branch must really be in the cited tree
+# --------------------------------------------------------------------------
+
+def warnings_for(plan: dict, repo_root: Path) -> list[str]:
+    schema = build_plan.load_schema()
+    return [msg for level, msg in build_plan.validate_plan(plan, repo_root, schema)
+            if level == "WARN"]
+
+
+def _decision_plan(fixture_repo: Path, **decision) -> dict:
+    """A one-step plan whose single decision is whatever the test hands in."""
+    base = {"id": "D1", "decision": "Record-triggered Flow, not Apex",
+            "rationale": "No callout needed."}
+    base.update(decision)
+    return plan_dict([step("M1-S01", "M1")], decisions=[base])
+
+
+def test_a_decision_may_only_cite_a_tree_that_exists(fixture_repo):
+    plan = _decision_plan(fixture_repo,
+                          decision_tree="standards/decision-trees/invented-selection.md",
+                          branch="Q3")
+    errors = errors_for(plan, fixture_repo)
+    assert any("invented-selection.md' does not exist" in e for e in errors), errors
+
+
+def test_a_decision_may_not_cite_a_branch_the_tree_does_not_have(fixture_repo):
+    """The failure this catches: a real tree plus a plausible, absent branch."""
+    plan = _decision_plan(fixture_repo,
+                          decision_tree="standards/decision-trees/fake-selection.md",
+                          branch="Q9")
+    errors = errors_for(plan, fixture_repo)
+    assert any("has no step 'Q9'" in e for e in errors), errors
+
+    # Q3 is in the fixture tree, so the same plan with the right branch passes.
+    ok = _decision_plan(fixture_repo,
+                        decision_tree="standards/decision-trees/fake-selection.md",
+                        branch="Q3")
+    assert errors_for(ok, fixture_repo) == []
+
+
+def test_branch_ids_do_not_match_by_prefix(fixture_repo):
+    """`Q1` must not be satisfied by the tree's `Q10`, nor `Q4` by `Q4a`."""
+    tree = fixture_repo / "standards" / "decision-trees" / "prefix-selection.md"
+    tree.write_text("```\nQ10. Scheduled job?\nQ4a. Sub-branch?\n```\n", encoding="utf-8")
+    for branch in ("Q1", "Q4"):
+        plan = _decision_plan(fixture_repo,
+                              decision_tree="standards/decision-trees/prefix-selection.md",
+                              branch=branch)
+        assert any(f"has no step '{branch}'" in e for e in errors_for(plan, fixture_repo))
+    for branch in ("Q10", "Q4a"):
+        plan = _decision_plan(fixture_repo,
+                              decision_tree="standards/decision-trees/prefix-selection.md",
+                              branch=branch)
+        assert errors_for(plan, fixture_repo) == [], branch
+
+
+@pytest.mark.parametrize("heading", [
+    "Q3. Does the logic need a callout?",          # the form all seven trees use
+    "## Q3 — Apex CPU, heap, governor limits",     # performance-tuning's grouping
+    "### Q3a. Sub-branch",
+    "**Q3** Does the logic need a callout?",
+    "- **Q3** Does the logic need a callout?",
+    "Q3) Does the logic need a callout?",
+    "Q3: Does the logic need a callout?",
+    '<a id="q3"></a>',
+    "{#q3}",
+])
+def test_branch_heading_forms_are_recognised(heading):
+    branch = "Q3a" if "Q3a" in heading else "Q3"
+    assert build_plan._branch_in_tree(f"# tree\n\n```\n{heading}\n```\n", branch), heading
+
+
+@pytest.mark.parametrize("prose", [
+    # Verbatim from automation-selection.md — a cross-reference, not a step.
+    "  org-wide coverage; Flow has no equivalent gate. (Same gate as Q3 — the\n",
+    "    keeps you in Flow and resolves at Q3.\n",
+    "interviews per 24 h — or user licenses × 200, whichever is greater; see Q3.)\n",
+])
+def test_prose_mentioning_a_branch_is_not_a_heading(prose):
+    """A branch id in running prose must not satisfy the citation check."""
+    assert not build_plan._branch_in_tree(prose, "Q3"), prose
+
+
+@pytest.mark.skipif(not (REPO_ROOT / "standards" / "decision-trees").is_dir(),
+                    reason="running outside the SfSkills checkout")
+@pytest.mark.parametrize("tree,branches", [
+    ("automation-selection.md", ["Q1", "Q2", "Q3", "Q6", "Q10", "Q12"]),
+    ("sharing-selection.md", ["Q1", "Q3", "Q5", "Q9"]),
+])
+def test_real_trees_answer_the_branch_check(tree, branches):
+    """The regex is calibrated against how the real trees are actually headed."""
+    text = (REPO_ROOT / "standards" / "decision-trees" / tree).read_text(encoding="utf-8")
+    for branch in branches:
+        assert build_plan._branch_in_tree(text, branch), f"{tree} {branch}"
+    assert not build_plan._branch_in_tree(text, "Q99"), tree
+
+
+def test_a_branch_without_a_tree_is_unverifiable(fixture_repo):
+    plan = _decision_plan(fixture_repo, branch="Q3")
+    assert any("branch 'Q3' with no decision_tree" in e
+               for e in errors_for(plan, fixture_repo))
+
+
+def test_source_reference_must_exist_on_disk(fixture_repo):
+    """The escape hatch for a choice no tree covers is still a checked citation."""
+    plan = _decision_plan(fixture_repo, adr_required=True,
+                          source_reference="skills/admin/fake-object-design/references/"
+                                           "nowhere.md")
+    assert any("does not exist" in e for e in errors_for(plan, fixture_repo))
+
+    reference = (fixture_repo / "skills" / "admin" / "fake-object-design" / "references"
+                 / "routing-selector.md")
+    reference.parent.mkdir(parents=True, exist_ok=True)
+    reference.write_text("| Route a new Case | Assignment rule |\n", encoding="utf-8")
+    ok = _decision_plan(fixture_repo, adr_required=True,
+                        source_reference="skills/admin/fake-object-design/references/"
+                                         "routing-selector.md")
+    assert errors_for(ok, fixture_repo) == []
+    assert not any("D1" in w for w in warnings_for(ok, fixture_repo))
+
+
+def test_a_decision_grounded_in_nothing_warns(fixture_repo):
+    plan = _decision_plan(fixture_repo)
+    assert errors_for(plan, fixture_repo) == []
+    assert any("cites neither a decision_tree nor a source_reference" in w
+               for w in warnings_for(plan, fixture_repo))
+
+
+# --------------------------------------------------------------------------
+# checker argument form: a WARN, never a rewrite
+# --------------------------------------------------------------------------
+
+CHECKER_SKILL = "skills/admin/fake-object-design/scripts/check_fake.py"
+
+
+def _with_checker(fixture_repo: Path, command: str) -> dict:
+    target = fixture_repo / CHECKER_SKILL
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("# checker\n", encoding="utf-8")
+    return plan_dict([step("M1-S01", "M1",
+                           tests=[{"type": "checker", "command": command}])])
+
+
+NON_STANDARD_FORM = ("checker declares a non-standard argument form; "
+                     "step-tester will run it verbatim")
+
+
+def test_a_non_standard_checker_form_warns_but_does_not_fail(fixture_repo):
+    """Three real skill checkers take a positional path or --file/--workbook."""
+    for command in (f"python3 {CHECKER_SKILL} artefacts/M1-S01",
+                    f"python3 {CHECKER_SKILL} --file artefacts/M1-S01/model.md",
+                    f"python3 {CHECKER_SKILL} --workbook artefacts/M1-S01/workbook.md"):
+        plan = _with_checker(fixture_repo, command)
+        assert errors_for(plan, fixture_repo) == [], command
+        assert any(w.endswith(NON_STANDARD_FORM) for w in warnings_for(plan, fixture_repo)), \
+            command
+
+
+def test_the_house_checker_form_warns_about_nothing(fixture_repo):
+    for command in (f"python3 {CHECKER_SKILL} --manifest-dir artefacts/M1-S01",
+                    f"python3 {CHECKER_SKILL} --manifest-dir=artefacts/M1-S01"):
+        plan = _with_checker(fixture_repo, command)
+        assert errors_for(plan, fixture_repo) == [], command
+        assert not any(NON_STANDARD_FORM in w for w in warnings_for(plan, fixture_repo)), command
+
+
+def test_a_missing_checker_is_still_an_error_not_a_warning(fixture_repo):
+    """The argument-form WARN must not shadow the 'checker does not exist' ERROR."""
+    plan = plan_dict([step("M1-S01", "M1", tests=[
+        {"type": "checker",
+         "command": "python3 skills/admin/fake-object-design/scripts/check_absent.py "
+                    "artefacts/M1-S01"}])])
+    errors = errors_for(plan, fixture_repo)
+    assert any("does not exist" in e for e in errors), errors
+    assert not any(NON_STANDARD_FORM in w for w in warnings_for(plan, fixture_repo))
+
+
+# --------------------------------------------------------------------------
+# render: the ADR column and the decision sub-bullets
+# --------------------------------------------------------------------------
+
+def _rendered_plan_md(tmp_path: Path, fixture_repo: Path, decisions: list[dict]) -> str:
+    plan = plan_dict([step("M1-S01", "M1")], decisions=decisions)
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    return (path.parent / "PLAN.md").read_text(encoding="utf-8")
+
+
+def test_render_marks_adr_required_and_prints_the_decision_evidence(tmp_path, fixture_repo):
+    reference = (fixture_repo / "skills" / "admin" / "fake-object-design" / "references"
+                 / "routing-selector.md")
+    reference.parent.mkdir(parents=True, exist_ok=True)
+    reference.write_text("| Route a new Case | Assignment rule |\n", encoding="utf-8")
+    body = _rendered_plan_md(tmp_path, fixture_repo, [
+        {"id": "D1", "decision": "Record-triggered Flow, not Apex",
+         "decision_tree": "standards/decision-trees/fake-selection.md", "branch": "Q3",
+         "rationale": "No callout needed.",
+         "branch_quote": "Q3. Does the logic need a callout with retry?\n"
+                         "    ├── No  → Record-triggered Flow",
+         "alternatives_rejected": ["Apex before-insert trigger", "After-save Flow"],
+         "consequences": "No coverage gate, and no custom exception handling.",
+         "adr_required": False},
+        {"id": "D2", "decision": "Ownership at creation is set by Assignment Rules",
+         "rationale": "No tree covers the Case rule engine.",
+         "source_reference": "skills/admin/fake-object-design/references/routing-selector.md",
+         "alternatives_rejected": ["Before-save Flow setting OwnerId"],
+         "consequences": "Two post-save OwnerId writers remain.",
+         "adr_required": True},
+    ])
+    header = "| Id | Decision | Decision tree | Branch | ADR | Rationale |"
+    assert header in body
+    rows = [line for line in body.splitlines() if line.startswith("| `D")]
+    assert rows[0].split("|")[5].strip() == "", "D1 is tree-resolved: no ADR tick"
+    assert rows[1].split("|")[5].strip() == "✔", "D2 has adr_required: true"
+
+    # The evidence a reader needs without opening the tree, as sub-bullets.
+    assert "- `D1`" in body
+    assert ("  - Branch quote: Q3. Does the logic need a callout with retry? "
+            "├── No → Record-triggered Flow") in body, "the quote is flattened to one line"
+    assert ("  - Alternatives rejected: Apex before-insert trigger; After-save Flow") in body
+    assert "  - Consequences: No coverage gate, and no custom exception handling." in body
+    assert ("  - Source reference: "
+            "`skills/admin/fake-object-design/references/routing-selector.md`") in body
+
+
+def test_a_bare_decision_renders_no_empty_sub_bullets(tmp_path, fixture_repo):
+    body = _rendered_plan_md(tmp_path, fixture_repo, [
+        {"id": "D1", "decision": "Record-triggered Flow, not Apex",
+         "decision_tree": "standards/decision-trees/fake-selection.md", "branch": "Q3",
+         "rationale": "No callout needed."},
+    ])
+    assert "- `D1`" not in body
+    assert "Branch quote" not in body
+
+
+def test_the_decision_sub_bullets_are_byte_deterministic(tmp_path, fixture_repo):
+    decisions = [
+        {"id": "D1", "decision": "Record-triggered Flow, not Apex",
+         "decision_tree": "standards/decision-trees/fake-selection.md", "branch": "Q3",
+         "branch_quote": "Q3. Does the logic need a callout with retry?",
+         "alternatives_rejected": ["Apex", "After-save Flow"],
+         "consequences": "No coverage gate.", "adr_required": True},
+    ]
+    first = _rendered_plan_md(tmp_path / "one", fixture_repo, decisions)
+    second = _rendered_plan_md(tmp_path / "two", fixture_repo, decisions)
+    assert first.encode() == second.encode()
+
+
+# --------------------------------------------------------------------------
+# set-plan --summary
+# --------------------------------------------------------------------------
+
+def test_set_plan_summary_replaces_the_requirement_paragraph(
+        tmp_path, fixture_repo, requirement, capsys):
+    path = _init_build(tmp_path, fixture_repo, requirement)
+    questions = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Which queue?", "kind": "blocking",
+         "status": "answered", "answer": "Tier 1"},
+    ])
+    assert run("set-clarifications", str(path), "--file", str(questions),
+               "--summary", "The clarifier's paragraph.",
+               "--repo-root", str(fixture_repo)) == 0
+
+    steps = [step("M1-S01", "M1")]
+    body = write_json(tmp_path / "plan-body.json", {
+        "scope": {"in": ["Case"], "out": ["CTI"],
+                  "fit_gap": [{"requirement": "SLA clock", "verdict": "fit"}]},
+        "assumptions": [{"id": "A1", "text": "Service Cloud is licensed."}],
+        "decisions": [{"id": "D1", "decision": "Flow, not Apex",
+                       "decision_tree": "standards/decision-trees/fake-selection.md",
+                       "branch": "Q3"}],
+        "milestones": [{"id": "M1", "title": "Object model", "steps": ["M1-S01"],
+                        "acceptance_tests": [{"type": "manifest", "description": "package.xml"}]}],
+        "steps": steps,
+    })
+    paragraph = ("Inbound support email becomes a Case routed to the owning queue with an "
+                 "SLA clock; CTI and the customer portal are out of scope, and the Billing "
+                 "restriction is taken as record-level until Q13 is answered.")
+    capsys.readouterr()
+    assert run("set-plan", str(path), "--file", str(body), "--summary", paragraph,
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert "requirement.summary updated" in out
+    after = json.loads(path.read_text())
+    assert after["requirement"]["summary"] == paragraph
+    assert after["requirement"]["source_path"] == "requirement.md", "source_path survives"
+
+    # Omitting --summary leaves the stored paragraph alone.
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["requirement"]["summary"] == paragraph
+
+    # And `render` prints the whole paragraph, not a truncation.
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert paragraph in (path.parent / "PLAN.md").read_text(encoding="utf-8")
+
+
+def test_set_plan_still_refuses_fields_it_does_not_own(tmp_path, fixture_repo, requirement):
+    """--summary is a flag, not a seventh writable key in --file."""
+    path = _init_build(tmp_path, fixture_repo, requirement)
+    body = write_json(tmp_path / "plan-body.json",
+                      {"requirement": {"source_path": "requirement.md", "summary": "sneaked in"}})
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 1
+
+
+# --------------------------------------------------------------------------
+# the real dry-run plan — the fixture these gates were written against
+# --------------------------------------------------------------------------
+
+DRY_RUN_PLAN = REPO_ROOT / ".sfskills" / "builds" / "case-onboarding" / "plan.json"
+
+
+@pytest.mark.skipif(not DRY_RUN_PLAN.is_file(),
+                    reason="no local dry-run build in this checkout")
+def test_the_dry_run_plan_still_validates(capsys):
+    """Its nine decisions cite six real trees; every branch must resolve."""
+    capsys.readouterr()
+    assert run("validate", str(DRY_RUN_PLAN), "--repo-root", str(REPO_ROOT)) == 0
+    out = capsys.readouterr().out
+    assert not [line for line in out.splitlines() if line.startswith("ERROR")], out
+
+
+@pytest.mark.skipif(not DRY_RUN_PLAN.is_file(),
+                    reason="no local dry-run build in this checkout")
+def test_the_dry_run_plan_renders_its_adr_decisions(tmp_path):
+    plan = json.loads(DRY_RUN_PLAN.read_text(encoding="utf-8"))
+    expected = sorted(d["id"] for d in plan["decisions"] if d.get("adr_required"))
+    assert expected == ["D3", "D4", "D6", "D7"], "the dry run produced four ADR decisions"
+
+    body = build_plan.render_plan_md(plan)
+    ticked = sorted(line.split("|")[1].strip().strip("`")
+                    for line in body.splitlines()
+                    if line.startswith("| `D") and line.split("|")[5].strip() == "✔")
+    assert ticked == expected
+    for did in expected:
+        assert f"- `{did}`" in body, f"{did} renders its sub-bullets"
