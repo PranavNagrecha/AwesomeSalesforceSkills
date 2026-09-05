@@ -21,8 +21,10 @@
 - Initial focus target:
 - Cancel behavior:
 - Success behavior:
-- Close result:
+- Close result shape (every path, tagged): cancel = , confirm = , error =
 - Focus return target:
+- Navigation out of the modal (relay through launcher? PageReference built where?):
+- `replace` value if this navigates onto another modal:
 
 ## Risk Review
 
@@ -36,3 +38,5 @@
 - [ ] Focus and dismissal are explicit.
 - [ ] Returned result is documented.
 - [ ] Overlay is not standing in for a larger page workflow.
+- [ ] Every `@api` input on the modal appears in the launcher's `open({...})` config.
+- [ ] `python3 scripts/check_lwc_modal_and_overlay.py --manifest-dir <lwc dir>` reports no ISSUE.

@@ -28,6 +28,8 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```javascript
+// Default import - `import { LightningModal }` yields undefined and
+// `extends undefined` throws (use-dialog-modal, L10375, L10377).
 import LightningModal from 'lightning/modal';
 
 export default class MyModal extends LightningModal {
@@ -110,13 +112,15 @@ async handleDelete() {
     const confirmed = await LightningConfirm.open({
         message: 'Are you sure you want to delete this record?',
         label: 'Confirm Deletion',
-        theme: 'warning'
+        variant: 'header'
     });
     if (confirmed) {
         this.deleteRecord();
     }
 }
 ```
+
+**Watch the attribute name.** `lightning/confirm` takes `message`, `variant`, and `label`; `lightning/alert` and `lightning/prompt` take `theme` instead of `variant` (`use-dialog-confirm`, L10418; `use-dialog-alert`, L10404; `use-dialog-prompt`, L10432). An LLM that has seen all three pages will mix them, and an unsupported key is simply ignored - there is no error to tell you.
 
 **Detection hint:** A dedicated LWC component file whose only purpose is a yes/no confirmation with two buttons.
 
@@ -210,3 +214,101 @@ const result = await MyModal.open({
 ```
 
 **Detection hint:** `Modal.open(` call without a `label` property in the configuration object.
+
+---
+
+## Anti-Pattern 7: Applying NavigationMixin to the LightningModal subclass
+
+**What the LLM generates:**
+
+```javascript
+import { NavigationMixin } from 'lightning/navigation';
+import LightningModal from 'lightning/modal';
+
+export default class RecordPickerModal extends NavigationMixin(LightningModal) {
+    handleGo(recordId) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: { recordId, actionName: 'view' }
+        });
+    }
+}
+```
+
+**Why it happens:** `NavigationMixin(LightningElement)` is one of the most common LWC snippets in
+training data, so the model substitutes the base class and keeps the shape. It compiles. The guide
+forbids it: "Use `NavigationMixin` only with a Lightning web component that extends
+`LightningElement`. You can't use the `NavigationMixin` function directly in a custom component that
+extends `LightningModal`" (`use-navigate-modal`, L10258-L10259).
+
+**Correct pattern:**
+
+```javascript
+// In the modal: return the PageReference instead of navigating.
+handleGo(recordId) {
+    this.close({
+        status: 'navigate',
+        pageReference: {
+            type: 'standard__recordPage',
+            attributes: { recordId, actionName: 'view' }
+        }
+    });
+}
+
+// In the launcher, which extends NavigationMixin(LightningElement):
+const result = await RecordPickerModal.open({ label: 'Pick a record' });
+if (result?.status === 'navigate') {
+    this[NavigationMixin.Navigate](result.pageReference);
+}
+```
+
+**Detection hint:** `NavigationMixin(` and `LightningModal` in the same `extends` clause, or any
+`this[NavigationMixin.Navigate]` inside a file that also imports `lightning/modal`.
+
+---
+
+## Anti-Pattern 8: Fire-and-forget open(), or a close() path that never runs
+
+**What the LLM generates:**
+
+```javascript
+handleEdit() {
+    // No await, no .then - the resolved value is thrown away
+    EditModal.open({ label: 'Edit', recordId: this.recordId });
+    this.refreshData();   // runs immediately, before the user has typed anything
+}
+```
+
+**Why it happens:** `open()` reads like a void UI command, so the model treats it as one and puts the
+follow-up work on the next line. But `open()` returns a promise that resolves only when the modal
+closes, carrying the `close()` argument (`use-dialog-modal`, L10379, L10387), so the refresh fires
+against unchanged data and the user sees a stale view behind the open modal.
+
+The mirror-image failure is a modal with an exit path that never calls `close()` at all - typically
+an error branch:
+
+```javascript
+async handleSave() {
+    try {
+        await saveRecord(this.draft);
+        this.close({ saved: true });
+    } catch (e) {
+        this.error = e.body.message;   // modal stays open, caller stays awaiting - forever
+    }
+}
+```
+
+**Correct pattern:** `await` the open, and give the modal a terminating path for every outcome,
+including failure - either close with the error tagged, or leave the modal open only when the user
+still has a working Cancel button to reach.
+
+```javascript
+const result = await EditModal.open({ label: 'Edit', recordId: this.recordId });
+if (result?.saved) {
+    this.refreshData();
+}
+```
+
+**Detection hint:** a `.open(` call whose result is not assigned, awaited, or `.then`-ed; and a
+`catch` block inside a `LightningModal` subclass that neither calls `close()` nor re-enables a
+control that does.
