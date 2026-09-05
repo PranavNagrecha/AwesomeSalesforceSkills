@@ -1863,6 +1863,7 @@
       "flow/pause-elements-and-wait-events"
     ],
     "alerting": [
+      "apex/apex-limits-monitoring",
       "architect/org-limits-monitoring",
       "flow/flow-error-monitoring"
     ],
@@ -10259,6 +10260,7 @@
     "observability": [
       "agentforce/agent-metric-dashboards",
       "agentforce/agentforce-observability",
+      "apex/apex-limits-monitoring",
       "apex/debug-and-logging",
       "architect/org-limits-monitoring"
     ],
@@ -10647,6 +10649,9 @@
     ],
     "org-wide-mfa": [
       "security/mfa-enforcement-strategy"
+    ],
+    "orglimits": [
+      "apex/apex-limits-monitoring"
     ],
     "outbound": [
       "apex/apex-wsdl2apex-patterns",
