@@ -31,8 +31,27 @@ No Custom Object Administration needed.
 Then on the HR Coordinator's profile:
 ```
 Setup > Profiles > [HR Coordinator Profile] > System Permissions
-Enable: Manage Users
+Enable: View Setup and Configuration   (ViewSetup)
+Enable: Manage Users                   (ManageUsers)
 ```
+
+The Metadata API Developer Guide grounds only the first of these: "Only users with the 'View Setup and Configuration' permission can be delegated administrators." UNVERIFIED (2026-09-04): the Manage Users line is retained from the original Salesforce Help walkthrough and is not confirmed by the Metadata API Developer Guide or the Object Reference — enable it, but verify in the org before documenting it as the requirement (`references/gotchas.md` #1).
+
+The equivalent deployable file, rather than the click-path above, is in `references/metadata-examples.md`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<DelegateGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>APAC HR Admin Group</label>
+    <loginAccess>false</loginAccess>
+    <profiles>APAC Sales Rep</profiles>
+    <roles>APAC_Sales_Manager</roles>
+    <roles>APAC_Sales_Rep</roles>
+    <roles>APAC_Sales_SDR</roles>
+</DelegateGroup>
+```
+
+`loginAccess` is `false` because onboarding and password resets need no impersonation — but the field is required, so it has to be written either way.
 
 **Why it works:** The group configuration scopes user management to only users in the APAC role branch. The HR Coordinator can create users, edit details, and reset passwords only for users in those roles. She cannot assign any profile except "APAC Sales Rep," preventing accidental over-provisioning. System Administrator users in the same region remain protected.
 
@@ -54,17 +73,21 @@ Group Name: Product Ops Custom Object Admin
 Delegated Administrators related list:
   Add: ops.manager@example.com
 
-Users in Delegated Group:
+Users in Delegated Group (roles):
   (Leave empty — this group is for custom object admin only, not user management)
 
-Assignable Profiles:
-  (Leave empty)
+Assignable Profiles / Permission Sets / Groups:
+  (Leave empty — with no roles there is no population for them to act on;
+   the guide scopes all three to "users in specified roles and all
+   subordinate roles", so entries here would be dead configuration)
+
+Enable Group for Login Access (loginAccess): false
 
 Custom Object Administration related list:
   Add: Product_Request__c
 ```
 
-The Ops Manager's profile must have **Manage Users** enabled to access the delegated admin setup area, even if they are not managing users.
+The Ops Manager's profile must grant **View Setup and Configuration** to reach the delegated admin area at all, even though this group manages no users. UNVERIFIED (2026-09-04): whether **Manage Users** is additionally required for a custom-object-only group is not documented in the Metadata API Developer Guide — test before promising it either way.
 
 **Why it works:** The Ops Manager can now navigate to Setup > Object Manager > Product_Request__c and modify fields, page layouts, and validation rules independently. They cannot see or touch any other Setup area, any other custom object, or any user records. Audit trail (Setup Audit Trail) records all changes under the Ops Manager's user ID, maintaining traceability.
 

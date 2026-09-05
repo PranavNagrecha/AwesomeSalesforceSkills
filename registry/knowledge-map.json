@@ -5346,6 +5346,9 @@
     "defer-sharing-calculations": [
       "data/sharing-recalculation-performance"
     ],
+    "delegate-group": [
+      "admin/delegated-administration"
+    ],
     "delegated-admin": [
       "admin/user-management"
     ],
@@ -5809,6 +5812,9 @@
     "duplicate-management": [
       "data/clinical-data-quality",
       "data/data-quality-and-governance"
+    ],
+    "duplicate-record-set": [
+      "admin/duplicate-management"
     ],
     "duplicate-rules": [
       "admin/duplicate-management",
@@ -9018,6 +9024,9 @@
     ],
     "login": [
       "security/ip-relaxation-and-restriction"
+    ],
+    "login-access": [
+      "admin/delegated-administration"
     ],
     "login-anomaly": [
       "security/security-incident-response"

@@ -34,15 +34,22 @@ Before starting, record answers to these questions:
 
 ## Delegated Administrator Group Configuration
 
-**Group Name:** _______________
+**Group Name (`label`):** _______________
 
-| Component | Value |
-|---|---|
-| Delegated Administrators (users) | |
-| Users in Delegated Group (roles) | |
-| Assignable Profiles | |
-| Assignable Permission Sets | |
-| Custom Object Administration | |
+**File:** `delegateGroups/________________.delegateGroup-meta.xml`
+
+| Setup related list | `DelegateGroup` field | Value | Notes |
+|---|---|---|---|
+| Delegated Administrators (users) | *(Setup only — not in the file)* | | |
+| Users in Delegated Group | `roles` | | Branch headcount: ______ (roles **and subordinates**) |
+| Assignable Profiles | `profiles` | | Each one opened and read? |
+| Assignable Permission Sets | `permissionSets` | | Modify All / View All / Author Apex checked? |
+| Assignable Permission Set Groups | `permissionSetGroups` | | |
+| Groups | `groups` | | Public groups managed users may be placed into |
+| Custom Object Administration | `customObjects` | | Relationships and OWD are excluded — is that acceptable? |
+| Enable Group for Login Access | `loginAccess` (**required**) | `true` / `false` | If `true`: approver ______, review date ______ |
+
+Deployable shape and package.xml: `references/metadata-examples.md`.
 
 ---
 
@@ -75,14 +82,29 @@ _______________
 
 ---
 
+## Verification Run
+
+| Step | Command / place | Result |
+|---|---|---|
+| Full retrieve | `sf project retrieve start --metadata DelegateGroup --metadata Role --metadata Profile --metadata PermissionSet` | |
+| Static check | `python3 scripts/check_delegated_administration.py --manifest-dir <dir>` | ____ error(s), ____ warning(s) |
+| Dry-run deploy | `sf project deploy start --source-dir .../delegateGroups --dry-run` | |
+| Retrieve round-trip diff | re-retrieve, `git diff` — any dropped entries? | |
+| Setup related lists match the file | Setup > Users > Delegated Administrators | |
+| Negative test as the delegated admin | user outside the role branch; profile not in the list | |
+
+---
+
 ## Known Limitations to Communicate
 
 Record any platform constraints relevant to this request:
 
-- System Administrator users cannot be managed by delegated admins — escalate to a full admin
+- System Administrator users cannot be managed by delegated admins — escalate to a full admin (unverified against the Metadata API guide; see `references/gotchas.md` #2)
 - Users without a role assignment are not visible to delegated admins — roles must be assigned
-- Custom object admin does not extend to standard objects, Flows, or Apex
-- Delegated admins can only assign profiles and permission sets explicitly listed in their group
+- Custom object admin covers nearly every aspect of the named objects, including creating a custom tab, but never relationships or org-wide sharing defaults
+- Delegated admins can only assign the profiles, permission sets, permission set groups, and public groups explicitly listed in their group
+- With `loginAccess` true, the delegated admin can log in as the users they administer — subject to the org's login access policy
+- There is no delegate-group SObject to query; verification is a retrieve round-trip plus Setup, not SOQL
 
 ---
 

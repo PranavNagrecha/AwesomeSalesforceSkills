@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** After editing or deploying permission set groups, especially in larger orgs where recalculation takes time.
 
-**How to avoid:** Check recalculation status, plan deployments with validation time, and verify effective access with a real user after the group finishes processing.
+**How to avoid:** Check recalculation status, plan deployments with validation time, and verify effective access with a real user after the group finishes processing. `PermissionSetGroup.Status` is a restricted picklist with four values — `Updated`, `Outdated`, `Updating`, `Failed` — so poll it rather than testing for a boolean, and treat `Failed` as an incident: the metadata deploy already returned success.
 
 ---
 
@@ -18,7 +18,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** In mixed-license orgs using Salesforce, Platform, Partner, or managed-package-specific user licenses.
 
-**How to avoid:** Design bundle families around license boundaries first, then persona composition second. Validate with representative users from each license type.
+**How to avoid:** Design bundle families around license boundaries first, then persona composition second. Validate with representative users from each license type. The `license` element (API 38.0+, replacing the deprecated `userLicense`) pins the set to one user license or permission set license; the Object Reference's own guidance is to leave `LicenseId` empty when a set will be assigned to users on different licenses.
 
 ---
 
@@ -28,7 +28,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Profile-minimization projects that focus only on CRUD/FLS exports and ignore other setup entity access.
 
-**How to avoid:** Review object, field, tab, app, Apex class, and custom permission access together for each persona before declaring the migration complete.
+**How to avoid:** Review object, field, tab, app, Apex class, and custom permission access together for each persona before declaring the migration complete. The full element list on `PermissionSet` also includes `flowAccesses`, `pageAccesses`, `customMetadataTypeAccesses`, `customSettingAccesses`, and `externalCredentialPrincipalAccesses` — each one a separate migration surface.
 
 ---
 
@@ -38,4 +38,74 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Teams skip capability design and jump straight to one giant PSG plus many muted variants.
 
-**How to avoid:** Split oversized bundles into smaller capability-based permission sets before reaching for muting.
+**How to avoid:** Split oversized bundles into smaller capability-based permission sets before reaching for muting. Remember that a muting file reads inverted — it has the same fields as `PermissionSet`, but per the Metadata API guide, "settings enabled by MutingPermissionSet are turned off for the permission set group that it's a component of". A muting entry for a permission that no member set grants is a no-op that looks, on the page, like a grant.
+
+---
+
+## A Session-Based Permission Set Stops Requiring Activation Inside A Group
+
+**What happens:** A set built for step-up access — `hasActivationRequired` true, activated per session through `SessionPermSetActivation` — is added to a persona PSG as a convenience. Everyone assigned the group now holds the permission continuously, with no activation event and no session scoping.
+
+**When it occurs:** During PSG consolidation, when someone folds "one more set" into the persona bundle without reading its `hasActivationRequired` flag. The Object Reference states it plainly: if you include session-based permission sets in a permission set group, the permissions in them don't require session-based activation for users assigned to the group.
+
+**How to avoid:** Keep session-based sets out of persona PSGs and assign them directly. `PermissionSetGroup` has its own `hasActivationRequired` field (API 53.0+) — that is the group-level control, and it is not inherited from a member.
+
+---
+
+## Field Permissions Silently Collapse When Read Is Missing
+
+**What happens:** An FLS row written as edit-only does not produce an edit-only field. Either the deploy is rejected, or the record is removed and the field ends up with no access at all.
+
+**When it occurs:** Generated or spreadsheet-driven FLS, where someone maps a "can edit" column to `editable` and leaves `readable` at its default. The Object Reference is explicit for `FieldPermissions.PermissionsEdit`: it requires `PermissionsRead` for the same field to be true, and a `FieldPermissions` record must have at minimum `PermissionsRead` true "or it will be deleted".
+
+**How to avoid:** Treat `readable` as the floor for every FLS row and let the checker script reject the shape. The same dependency exists one level up on the object: create and edit require read, delete requires read plus edit, and a field grant on an object the set does not read grants nothing.
+
+---
+
+## Modify All Data Grants Object Access That Object Queries Cannot See Normally
+
+**What happens:** An access audit queries `ObjectPermissions` for everything with full access, gets a clean result, and misses the permission sets that hold `Modify All Data` — or gets rows whose Id begins with `000` and cannot update or delete them.
+
+**When it occurs:** Any org-wide "who can modify everything" sweep. Per the Object Reference, `Modify All Data` enables all object permissions without physically storing object permission records; the query still returns the permission set, but the row carries an invalid `000` Id that signals implicit full access. Removing the access means disabling `Modify All Data` first, then deleting the resulting record.
+
+**How to avoid:** Audit `PermissionSet.PermissionsModifyAllData` and `PermissionsViewAllData` as user permissions in their own right, separately from the per-object `modifyAllRecords` / `viewAllRecords` sweep. Architecturally, keep both in a named override set that is never composed into a persona PSG.
+
+---
+
+## A Partial Permission Set File Is A Revocation
+
+**What happens:** Someone hand-edits or hand-writes a `.permissionset-meta.xml` containing only the two permissions they wanted to add, deploys it, and wipes everything else the set held.
+
+**When it occurs:** API version 40.0 and later. The Metadata API guide's warning on `PermissionSet`: when you retrieve permission set metadata, all content exposed in Metadata API is included, and when you deploy a permission set you must include all of its metadata "to avoid accidentally overwriting the permission set's contents". The same guide notes that in API 40.0+, a user permission not specified in a deployment is disabled.
+
+**How to avoid:** Always retrieve the current file before editing it, and never construct a permission set file from a diff. This is also why permission sets are poor candidates for hand-merged pull requests — two people editing different halves of the same set produce a file that silently drops one half.
+
+---
+
+## Object And Field Permissions Vanish From A Retrieve That Omits The Object
+
+**What happens:** A retrieve returns a permission set file whose `objectPermissions` and `fieldPermissions` blocks are much shorter than the org's real access, and a subsequent deploy of that file removes the missing rows.
+
+**When it occurs:** When `package.xml` names `PermissionSet` but not the `CustomObject`, `RecordType`, `CustomTab`, or `CustomApplication` the permissions refer to. The Metadata API guide states the requirement directly: when retrieving object or field permissions, you must also retrieve the associated object; the same applies to app visibilities and to retrieving a `PermissionSetGroup` without its member `PermissionSet` components.
+
+**How to avoid:** Build the manifest from the permission set outward — objects, record types, tabs, apps, custom permissions, then the sets, then the groups. Two further silent trimmers: `recordTypeVisibilities` is never retrieved or deployed for inactive record types, and enabling the object-level `viewAllFields` (API 63.0+) stops individual fields being returned under `fieldPermissions` at all.
+
+---
+
+## Absence Of A Permission Row Is Not A Queryable State
+
+**What happens:** A governance query written as "find every permission set without read on this object" returns zero rows, and the reviewer concludes that no such set exists.
+
+**When it occurs:** Any `ObjectPermissions` or `FieldPermissions` query filtering on a false value. Access is stored as a record and the absence of a record means no access, so `WHERE PermissionsRead = False` cannot match anything — the Object Reference gives this exact query as the example of what does not work. Setting every permission on a row to false also deletes the row, so a later query for that record Id returns nothing and a new record must be created to grant access again.
+
+**How to avoid:** Express negative questions as set differences in the reporting layer: query the sets that *do* have access and subtract from the full inventory. Conditional filters only work once read is present — "read but not edit" is answerable, "no access at all" is not.
+
+---
+
+## The Profile You Are Migrating Away From Is Itself A Permission Set
+
+**What happens:** An inventory script counts permission sets and reports a number far higher than the admin sees in Setup, or a "which sets grant X" query returns profile-shaped names that nobody created.
+
+**When it occurs:** API version 25.0 and later, where every profile is associated with a permission set holding its user, object, and field permissions, exposed as `PermissionSet.IsOwnedByProfile = true` with a populated `ProfileId`. Those sets are queryable but not modifiable.
+
+**How to avoid:** Filter on `IsOwnedByProfile = false` for anything that counts or audits real permission sets, and use `IsOwnedByProfile = true` deliberately when the question is "what does this profile still carry". The Object Reference also warns not to rely on the `Name` and `Label` returned for profile-owned sets, because those values can change.

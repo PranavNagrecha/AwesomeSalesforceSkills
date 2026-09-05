@@ -79,7 +79,7 @@ Treat this as Salesforce's list, not an exhaustive one — the profile also fixe
 **When it bites you:** Any time you make PSG changes and immediately ask the user to verify.
 
 **How to avoid it:**
-- Allow up to 10 minutes for PSG changes to propagate
+- Allow up to 10 minutes for PSG changes to propagate (UNVERIFIED 2026-09-04: figure not in the official PDFs; observed, not documented)
 - If urgency requires faster access, assign the Permission Set directly to the user (not via PSG) as a temporary measure
 - Add this to your change management runbook: "PSG changes take up to 10 minutes"
 
@@ -92,3 +92,79 @@ Treat this as Salesforce's list, not an exhaustive one — the profile also fixe
 **When it occurs:** DX workspaces that retrieve Profiles to "see access"; CI that deploys slim profile XML.
 
 **How to avoid:** Do not treat a Profile retrieve as the access inventory. Retrieve Permission Sets (and the profile only for login hours, IP, default record type, tab vis). Never deploy a retrieved Profile without confirming object/field blocks are present if you intended to preserve them.
+
+**Precision on the deploy half.** The clearing risk above is real but indirect, and the mechanism matters. Profile metadata deployment *overlays*: a block that is simply absent from the file leaves the target org's value untouched. What clears a permission is an explicit `false` — which is exactly what a round-trip through a UI editor, a diffing tool, or a script that "normalises" a profile can insert on your behalf. So the danger is not the missing block; it is the block that came back rewritten. See "Profile Deployment Overlays; It Does Not Replace" below, and "A Profile Retrieve Returns Only What the Rest of the Manifest Asked For" for the guide's exact wording on which elements always come back.
+
+---
+
+## A Profile's Permissions Physically Live in a Hidden Permission Set
+
+**What happens:** You go looking for a profile's object permissions on the `Profile` object and find nothing but `Name`, `Description`, `UserLicenseId`, `UserType` and the `PermissionsXxx` booleans. The CRUD and FLS are not there. Since API version 25.0 every profile is associated with a `PermissionSet` row that stores the profile's user, object and field permissions plus setup entity access — flagged `IsOwnedByProfile = true`, with `ProfileId` pointing back at the profile.
+
+**When it occurs:** Any time you audit access through SOQL rather than Setup. `ObjectPermissions` and `FieldPermissions` are children of `PermissionSet`, never of `Profile`, so a query filtered on the profile returns zero rows and reads as "this profile grants nothing".
+
+**How to avoid:** Query through the profile-owned permission set — `WHERE Parent.IsOwnedByProfile = TRUE` on `ObjectPermissions` — and join back with `Parent.ProfileId`. Two constraints come with it. The Object Reference states you can query permission sets owned by profiles **but not modify them**, so this is a read path only; edits go through the `Profile` metadata type. And it warns not to depend on the `Name` or `Label` returned for those rows, because those values can change. Key on `ProfileId`.
+
+UNVERIFIED (2026-09-04): the related claim that a `PermissionSetAssignment` cannot be created against a profile-owned permission set is not stated in the Object Reference's `PermissionSet` or `PermissionSetAssignment` sections, which say only that these rows cannot be modified. Do not assert the assignment restriction as documented behaviour.
+
+---
+
+## A Profile Retrieve Returns Only What the Rest of the Manifest Asked For
+
+**What happens:** The retrieved `.profile-meta.xml` is short. It has `loginHours`, `loginIpRanges` and `userPermissions`, and almost nothing else — no object CRUD, no field permissions, no tab settings. Nothing is broken; the file is complete for the request that was made. The Metadata API Developer Guide states the rule twice: the content of a profile returned by Metadata API depends on the content requested in the `RetrieveRequest`, and the returned `.profile` files include security settings only for the *other* metadata types referenced in the same retrieve. User permissions, IP address ranges and login hours are the named exceptions that are always retrieved.
+
+**When it occurs:** `sf project retrieve start --metadata Profile:Sales_User`, or any manifest whose `Profile` entry is not accompanied by the objects, fields, tabs, apps, record types, layouts and classes whose permissions you expected. It also occurs in reverse: the guide notes for `CustomObject`, `CustomField`, `CustomTab`, `CustomApplication`, `RecordType`, `Layout` and `NamedFilter` that *retrieving a component of that type makes the component appear in any Profile and PermissionSet components retrieved in the same package* — so adding one object to a manifest silently grows every profile file in the same retrieve.
+
+**How to avoid:** Never read a profile retrieve as an access inventory, and never diff two profile files retrieved under different manifests. Build one manifest that names every component whose permissions are in scope, and reuse it for both the retrieve and the deploy. Permission sets do not share the problem: from API 40.0 onward a permission set retrieve includes all content exposed in Metadata API for that permission set — which is also why the guide warns that a permission set **deploy** must include all of its metadata or you overwrite what you omitted.
+
+---
+
+## Profile Deployment Overlays; It Does Not Replace
+
+**What happens:** You remove `<objectPermissions>` for an object from a profile file, deploy, and the permission is still there in the target org. Nothing failed. The guide is direct about the design: Profile metadata deployment is built to *overlay* the existing profile settings in a target org, and disabled permission information isn't exported. Silence in the file means "leave whatever is there", not "revoke".
+
+**When it occurs:** Every attempt to strip a profile by deleting XML blocks — which is exactly the last phase of a profile-to-permission-set migration. It is also why sandbox-to-production profile diffs drift one direction only: grants accumulate, revocations never travel.
+
+**How to avoid:** To revoke through metadata, write the permission out explicitly as `false` rather than deleting the block — the guide's own instruction is to add code that explicitly indicates disabled permissions. And note the separate trap on the create path: deploy a profile that does not exist in the target org without specifying any permissions and the resulting profile inherits everything in the standard **Minimum Access - Salesforce** profile at API 60.0 and later, or the standard **Standard User** profile at 59.0 and earlier. A "blank" profile file is not a blank profile.
+
+---
+
+## Standard Profiles Are Editable Only in Part
+
+**What happens:** A deploy that changes object permissions on a standard profile — `<custom>false</custom>` — either fails or silently keeps the org's values. In API version 50.0 and later, editing standard objects on standard profiles is disabled, and the same restriction is repeated in the `ProfileObjectPermissions` notes.
+
+**When it occurs:** Teams that keep `Standard User` or `System Administrator` in version control and deploy the whole `profiles/` folder between environments. The custom profiles apply; the standard ones partially don't, and CI reports success either way.
+
+**How to avoid:** Treat `<custom>false</custom>` as a read-only marker in source control. Clone to a custom profile before making any object-permission change you intend to deploy. Two related behaviours are worth knowing at the same time: since API 18.0 object permissions are disabled in new custom objects for any profile where View All Data or Modify All Data is off, and a profile that already has Modify All Data or View All Data ignores `modifyAllRecords` / `viewAllRecords` entries in Metadata API entirely without returning an error.
+
+UNVERIFIED (2026-09-04): whether a standard profile can be deleted at all is not addressed in the Metadata API Developer Guide `Profile` section or the Object Reference `Profile` section. Do not claim "standard profiles cannot be deleted" as documented; verify in the target org.
+
+---
+
+## The License on a Permission Set Must Match the License on the Profile
+
+**What happens:** The permission set is correct, the user is correct, and the assignment is rejected. The Object Reference states the rule for `PermissionSetAssignment`: if the `PermissionSet` has a `UserLicenseId`, that `UserLicenseId` and the `Profile`'s `UserLicenseId` must match for the assignment to succeed.
+
+**When it occurs:** Mid-migration, when the base profile changes and the permission sets do not. It also occurs on any persona whose population spans licences — a permission set built while everyone held a Salesforce licence cannot then be assigned to Platform-licensed users on a Platform base profile.
+
+**How to avoid:** If a permission set will be assigned across mixed licences, leave `LicenseId` empty — the Object Reference names this as the supported pattern. Scope `LicenseId` only when the permission set genuinely belongs to a single user licence or permission set licence. Before a migration, check the pairing: `SELECT Id, Profile.UserLicenseId FROM User` against `SELECT Id, LicenseId FROM PermissionSet`. And note the ceiling this implies — the user licence on the profile bounds what any permission set can grant, so a licence change is a bigger event than a permission change.
+
+---
+
+## Tab and App Elements Do Not Survive a Copy-Paste Between the Two Types
+
+**What happens:** A block lifted from a profile into a permission set fails to deploy, or deploys with the wrong meaning. The element names and the enums differ: `Profile` uses `tabVisibilities` with `DefaultOff` / `DefaultOn` / `Hidden`; `PermissionSet` uses `tabSettings` with `Available` / `None` / `Visible`. Neither the tag nor a single enum value is shared.
+
+**When it occurs:** Hand-migration, and any script that treats the two metadata types as the same schema. The same trap sits inside `applicationVisibilities` and `recordTypeVisibilities`: both types have those elements, but only the `Profile` variants carry `<default>` (and `<personAccountDefault>` for record types). Copying the profile's block into a permission set drops the `default` child, so the user keeps access and loses the preselection — the migration "worked" and the user lands on the wrong app with the wrong record type preselected.
+
+**How to avoid:** Map the elements deliberately rather than copying blocks. `tabVisibilities`→`tabSettings` with `DefaultOn`→`Visible`, `DefaultOff`→`Available`, `Hidden`→`None`. Leave every `<default>` on the profile — it is residue by definition. `references/metadata-examples.md` carries the full profile-only / permission-set-only element table.
+
+---
+
+## `viewAllFields` Makes the Field List Disappear From the Retrieve
+
+**What happens:** A permission set that clearly grants field access retrieves with no `fieldPermissions` blocks at all. The guide explains it: if the View All Fields object permission is enabled for an object in the permission set, the individual fields aren't returned under `fieldPermissions`. Disable it and the fields reappear, at which point access can be removed field by field.
+
+**When it occurs:** Field-level audits, and any diff that counts `fieldPermissions` entries to measure how permissive a permission set is. An object with `viewAllFields` scores as the most restrictive one in the file while granting read on every field it has.
+
+**How to avoid:** Read `<viewAllFields>` before reading the field list, and treat `viewAllFields=true` as a full-object read grant regardless of what `fieldPermissions` shows. Two adjacent retrieval limits belong in the same check: from API 30.0 onward permissions for **required** fields can be neither retrieved nor deployed, and from API 54.0 onward only field permissions that are *enabled* in the permission set are returned in queries — so absence of a field never means "explicitly denied", only "no record exists".

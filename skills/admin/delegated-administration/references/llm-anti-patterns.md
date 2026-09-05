@@ -7,24 +7,29 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Create a delegated admin group and add the regional manager. They can now manage all users in the org."
 
-**Why it happens:** LLMs describe delegated administration as org-wide user management. Delegated admins can only manage users whose role is at or below their own role in the hierarchy. If the delegated admin has no role, or their role is not above the target users' roles, they cannot manage those users.
+**Why it happens:** LLMs describe delegated administration as org-wide user management. Scope comes from one field. The Metadata API Developer Guide defines `DelegateGroup.roles` as "the roles and subordinates for which delegated administrators of the group can create and edit users" — nothing else in the type widens or narrows which users are reachable.
 
 **Correct pattern:**
 
 ```
-Delegated admin scope is constrained by role hierarchy:
-1. The delegated admin must have a role in the hierarchy.
-2. They can only manage users whose roles are specified in the
-   "User Administration" section of the Delegated Admin group.
-3. Those specified roles must be at or below the delegated admin's role.
-4. They CANNOT manage users in roles above their own or in
-   unrelated branches of the hierarchy.
+Delegated admin scope is exactly the group's `roles` field:
+1. Every role listed in <roles> is in scope, AND every role
+   beneath it in the hierarchy ("roles and subordinates").
+2. Nothing else scopes users. <profiles>, <permissionSets>,
+   <permissionSetGroups> and <groups> are menus of what may be
+   assigned INSIDE that population — they never narrow it.
+3. A user with no role matches no entry and is unreachable.
+4. An empty <roles> means the group manages nobody, whatever
+   else the file lists.
 
-Example: Regional Manager (role: West Region Manager) can manage
-users in roles: West Sales Rep, West SDR — but not East Sales Rep.
+Example: <roles>West_Region_Manager</roles> covers the West branch
+entire — West Sales Rep, West SDR, and anything added under it
+later — but no East role, because East is a different branch.
 ```
 
-**Detection hint:** If the output says a delegated admin can manage "all users" without referencing role hierarchy constraints, the scope is wrong. Search for `role hierarchy` or `at or below` in the delegated admin instructions.
+UNVERIFIED (2026-09-04): the common additional rule that the listed roles must sit *at or below the delegated administrator's own role* does not appear in the `DelegateGroup` documentation. Aligning the administrator's role with the top of the branch remains good practice for consistent report and sharing visibility; do not present it as an enforced boundary without testing it.
+
+**Detection hint:** If the output says a delegated admin can manage "all users", or claims that trimming the assignable-profile list narrows who they can reach, the scope model is wrong. Search for `roles` and `subordinates` in the delegated admin instructions.
 
 ---
 
@@ -123,3 +128,62 @@ Post-configuration verification:
 ```
 
 **Detection hint:** If the output ends at group configuration without a verification/testing step from the delegated admin's perspective, the setup is untested. Search for `log in as` or `verify` or `test` after the configuration steps.
+
+---
+
+## Anti-Pattern 6: Copying `loginAccess` straight out of the guide's sample definition
+
+**What the LLM generates:**
+
+```
+<DelegateGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Regional Admins</label>
+    <loginAccess>true</loginAccess>
+    ...        <!-- the rest of the group -->
+```
+
+**Why it happens:** The Metadata API Developer Guide's only sample definition for `DelegateGroup` has `<loginAccess>true</loginAccess>`, and the field is **required**, so a model generating a valid file has to emit something — the sample's value is the path of least resistance. The result is an impersonation grant nobody asked for: the guide defines the field as allowing "users in this group to log in as users in the role hierarchy that they administer".
+
+**Correct pattern:**
+
+```
+Set loginAccess deliberately, defaulting to false:
+
+<loginAccess>false</loginAccess>   <!-- onboarding, password resets,
+                                        profile assignment: no
+                                        impersonation needed -->
+
+<loginAccess>true</loginAccess>    <!-- only with a named approver,
+                                        recorded as privileged access,
+                                        and after checking the org's
+                                        SecuritySettings:
+                                        canUsersGrantLoginAccess /
+                                        enableAdminLoginAsAnyUser -->
+```
+
+**Detection hint:** If a generated `DelegateGroup` has `loginAccess` true and the surrounding prose never mentions logging in as another user, the value was copied, not chosen. Also flag any explanation of the file that walks through `roles` and `profiles` but skips `loginAccess` entirely — a required field explained nowhere is a field nobody decided.
+
+---
+
+## Anti-Pattern 7: Verifying with SOQL against a delegate-group object that does not exist
+
+**What the LLM generates:** "After deploying, confirm the configuration with `SELECT Id, DelegateGroupId, UserId FROM DelegateGroupMember` — or query `DelegateGroupGrant` to list what each group can assign."
+
+**Why it happens:** Nearly every other admin artefact in this library verifies with SOQL, so the pattern generalises. It does not hold here: the Object Reference for the Salesforce Platform documents no `DelegateGroup`, `DelegateGroupMember`, or `DelegateGroupGrant` SObject. The queries above are plausible-looking and will fail with an invalid-sObject error.
+
+**Correct pattern:**
+
+```
+Verify a delegate group three ways, none of them SOQL:
+1. Retrieve round-trip —
+   sf project retrieve start --metadata DelegateGroup:<Name>
+   then diff against the file you deployed. A dropped <roles> or
+   <permissionSets> entry means the name did not resolve.
+2. Setup — Users > Delegated Administrators > <group>: confirm each
+   related list matches the file, including login access.
+3. Behaviour — log in as one of the group's administrators and run
+   the negative tests (a user outside the role branch; a profile
+   not in the list).
+```
+
+**Detection hint:** Any SOQL query naming an object that starts with `DelegateGroup` is invented. Search generated verification steps for `FROM DelegateGroup` and replace with the retrieve round-trip.
