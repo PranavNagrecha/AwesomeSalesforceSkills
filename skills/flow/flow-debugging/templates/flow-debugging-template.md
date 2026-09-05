@@ -95,13 +95,39 @@ Debug session result:
 
 ---
 
-## 6. Flow Interview Log Review (production)
+## 5b. Capture Rig (production, or any data-dependent bug)
 
-- [ ] Checked Setup > Flows > Flow Interview Log
-- [ ] Located the failing interview (within 7-day retention window)
+| Setting | Value used | Confirmed from the log header? |
+|---|---|---|
+| `Workflow` category level | | [ ] header reads `WORKFLOW,<level>` |
+| Other categories | | [ ] all `NONE` except Validation |
+| `TracedEntityId` (the saving user) | | |
+| `StartDate` / `ExpirationDate` | | [ ] window <= the reproduction |
+| `ApexLog.LogLength` of the captured log | | [ ] under 20,971,520 (not truncated) |
+
+Event sequence read from the log:
+
+| Line | Event | Element | What it told you |
+|---|---|---|---|
+| | `FLOW_START_INTERVIEWS_BEGIN` | n/a | flow started / did not start |
+| | `FLOW_ELEMENT_FAULT` or `FLOW_ELEMENT_ERROR` | | the localising line |
+| | `FLOW_RULE_DETAIL` | | branch that went wrong |
+| | `FLOW_VALUE_ASSIGNMENT` | | value at the branch point |
+| | `*_LIMIT_USAGE` | | limit pressure, if any |
+
+Failure class: [ ] caught fault [ ] uncaught error [ ] wrong branch [ ] limit [ ] never started
+
+---
+
+## 6. Interview Records Review (when the log has expired)
+
+- [ ] Queried `FlowInterview` on `InterviewStatus` / `Error` / `CurrentElement`
+- [ ] Screen flow only: queried `FlowInterviewLog` + `FlowInterviewLogEntry`
+      (these hold screen-flow interviews only; zero rows for other flow types is expected)
+- [ ] Checked `FlowRecordRelation` for the record tied to a paused interview
 - [ ] Identified the last element executed before the fault
 
-Interview log findings: (fill in)
+Interview findings: (fill in)
 
 ---
 
@@ -123,7 +149,10 @@ Interview log findings: (fill in)
 
 ## 9. Regression Check
 
-- [ ] Flow Test Suite run after fix — all assertions pass
+- [ ] `FlowTest` written that reproduces the ORIGINAL failure (fails on the pre-fix flow)
+- [ ] `sf flow run test` after fix — all assertions pass
+- [ ] `python3 scripts/check_flow_debugging.py --manifest-dir <src> --strict` passes
+- [ ] Trace flag deleted or expired
 - [ ] Related flows and automation reviewed for side effects
 - [ ] No paused interviews affected by version activation
 

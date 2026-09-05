@@ -140,3 +140,129 @@ Flow Test: "Closed Won Opportunity creates Task"
 ```
 
 **Detection hint:** Debugging or testing advice that relies entirely on manual record creation without mentioning Flow Tests.
+
+---
+
+## Anti-Pattern 7: Setting the Workflow log category to ERROR "to find the error"
+
+**What the LLM generates:**
+
+```
+"Create a debug level with Workflow set to ERROR so the log only contains
+the failures, then reproduce the issue."
+```
+
+**Why it happens:** The level name matches the word in the user's problem statement, and
+filtering noise out of a log is normally good advice. The model has no model of which
+event fires at which level.
+
+**Correct pattern:**
+
+`FLOW_ELEMENT_FAULT` — the event emitted when a fault connector catches a failure — logs at
+**Workflow / WARNING and above** (`apexdev.txt` L38792). Levels are cumulative upward only
+(L38389–L38403), so `ERROR` excludes `WARN` and therefore excludes every caught fault. The
+better the flow's fault handling, the emptier the log at `ERROR`.
+
+Set `Workflow` to `FINER` and everything else to `NONE`:
+
+```json
+{ "DebugLevel": { "Workflow": "FINER", "ApexCode": "NONE", "Database": "NONE",
+                  "System": "NONE", "Callout": "NONE", "Visualforce": "NONE",
+                  "ApexProfiling": "NONE", "Validation": "INFO" } }
+```
+
+`FINER` is also the floor for `FLOW_VALUE_ASSIGNMENT`, `FLOW_RULE_DETAIL`,
+`FLOW_LOOP_DETAIL` and every `*_LIMIT_USAGE` event, so nothing below it is worth choosing.
+
+**Detection hint:** any generated `DebugLevel` where `Workflow` is `ERROR`, `WARN` or
+`INFO`, or where `ApexCode` is left at `DEBUG`/`FINEST` alongside a flow investigation.
+
+---
+
+## Anti-Pattern 8: Querying `FlowInterviewLog` for a record-triggered flow, then reporting "no evidence the flow ran"
+
+**What the LLM generates:**
+
+```
+"Query FlowInterviewLog for the failed interview. Note that Flow Interview
+Log entries are purged after 7 days."
+```
+
+**Why it happens:** The object name contains "FlowInterview" and "Log", which reads as the
+general-purpose flow log. The seven-day figure is real but belongs to a different object.
+
+**Correct pattern:**
+
+`FlowInterviewLog` "represents the logs of a **screen flow** interview"
+(`object_reference.txt` L140059–L140060). A record-triggered, autolaunched or scheduled flow
+never writes a row. Zero rows is the documented outcome, not a finding.
+
+For any non-screen flow, query `FlowInterview` — "represents a flow interview. A flow
+interview is a running instance of a flow" (L139861), with no flow-type qualifier:
+
+```soql
+SELECT Id, InterviewLabel, CurrentElement, InterviewStatus, Error, Guid, CreatedDate
+FROM FlowInterview
+WHERE InterviewStatus IN ('Error', 'Paused', 'VersionPaused')
+ORDER BY CreatedDate DESC
+```
+
+`Error` — "the error message that explains why the flow interview failed" — is available in
+API version 62.0 and later (L139912–L139913). The seven days belongs to `ApexLog` rows whose
+`Location` is `Monitoring` (L31308–L31311); no retention period for `FlowInterviewLog` is
+stated in the Object Reference at all.
+
+**Detection hint:** `FROM FlowInterviewLog` in advice about a record-triggered flow, or any
+statement of a Flow Interview Log retention period.
+
+---
+
+## Anti-Pattern 9: Inventing `FlowExecutionErrorEvent` field names
+
+**What the LLM generates:**
+
+```apex
+trigger FlowErrors on FlowExecutionErrorEvent (after insert) {
+    for (FlowExecutionErrorEvent e : Trigger.new) {
+        insert new Error_Log__c(
+            Element__c = e.ElementApiName,
+            Flow__c    = e.FlowApiName,
+            Record__c  = e.ContextRecordId,
+            Version__c = e.FlowVersionNumber
+        );
+    }
+}
+```
+
+**Why it happens:** The event name is plausible, the field names follow the platform's usual
+conventions, and the shape of a platform-event trigger is well represented in training data.
+Nothing about the output signals that the field list was reconstructed rather than looked up.
+
+**Correct pattern:**
+
+`FlowExecutionErrorEvent` appears **nowhere** in `object_reference.txt`, `api_meta.txt`,
+`apexdev.txt` or `api_rest.txt`. Neither its existence nor a single field name can be
+confirmed from the Object Reference. Never emit a field list for it. Describe it first:
+
+```bash
+sf sobject describe --sobject FlowExecutionErrorEvent --target-org my-sandbox
+```
+
+If the describe returns, serialize the whole event rather than naming fields, so the code
+cannot fail to compile on a field that does not exist:
+
+```apex
+for (SObject evt : Trigger.new) {
+    logs.add(new Application_Log__c(
+        Source__c = 'FlowExecutionErrorEvent',
+        Message__c = JSON.serialize(evt)
+    ));
+}
+```
+
+The design of the alerting path this feeds belongs to `flow/flow-error-monitoring`.
+
+**Detection hint:** any named field on `FlowExecutionErrorEvent` — `ErrorId`,
+`ElementApiName`, `FlowVersionNumber`, `InterviewGuid`, `ContextRecordId`, `UserId` — stated
+without a describe. The same test applies to any platform event an assistant names
+confidently but cannot cite.
