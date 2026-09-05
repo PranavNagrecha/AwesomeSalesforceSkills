@@ -1,106 +1,217 @@
 # Examples — Flow Collection Processing
 
-## Example 1: Bulk Status Update Using Loop-and-Accumulate
-
-**Context:** A record-triggered after-save Flow fires when `Order__c` records are marked `Submitted`. It must set `Status__c = 'Pending Review'` on all related `Order_Line__c` records.
-
-**Problem:** The naive design queries Order Lines inside the loop for each Order and issues an `Update Records` per iteration. With a data load of 200 Orders, this executes up to 200 SOQL queries and 200 DML statements — both hit governor limits.
-
-**Solution:**
-
-```text
-[Get Records: OrderLines]
-  Filter: Order__c IN {!$Record.Id}  ← single query outside loop
-
-[Loop: OrderLines]
-  Current Item → {!currentLine}
-
-  [Assignment: Set Status]
-    {!currentLine.Status__c} = "Pending Review"   (Set operator)
-    {!updatedLines} Add {!currentLine}            (Add operator)
-
-  → Next Iteration
-
-[After Last] →
-
-[Update Records: updatedLines]   ← single DML for entire collection
-```
-
-**Why it works:** `Get Records` outside the loop executes exactly one query regardless of how many Orders triggered the flow. The Assignment inside the loop accumulates the modified records. The single `Update Records` after the loop consumes one DML statement and one row per line — the minimum possible cost.
+Narrative walk-throughs of the element-selection decision. The deployable XML lives in
+`references/metadata-examples.md`; nothing here is a copy of it.
 
 ---
 
-## Example 2: Collection Filter + Transform + Create Records for Follow-Up Tasks
+## Example 1: Bulk Status Update — and why the Loop is optional
 
-**Context:** An autolaunched Flow is called after a batch of `Lead` records are converted. For each converted Lead with `Rating = 'Hot'`, the flow must create a follow-up `Task` assigned to the Lead owner.
+**Context:** A record-triggered after-save Flow fires when `Order__c` records are marked
+`Submitted`. It must set `Status__c = 'Pending Review'` on all related `Order_Line__c` records.
 
-**Problem:** The original design uses a Loop with an `if/then` decision element to check `Rating`, then builds a Task inside the loop with multiple Assignment elements, then calls `Create Records` inside the same loop — one DML per Hot lead.
+**Problem:** The naive design queries Order Lines inside the loop for each Order and issues an
+`Update Records` per iteration. With a data load of 200 Orders that is up to 200 SOQL queries and
+200 DML statements — against per-transaction budgets of 100 synchronous queries and 150 DML
+statements (`apexdev.txt` L19544, L19554).
+
+**The usual fix — Loop and accumulate:**
+
+```text
+[Get Records: OrderLines]
+  Filter: Order__c IN {!$Record.Id}       ← single query outside the loop
+
+[Loop: OrderLines]  →  currentItem = {!currentLine}
+
+  [Assignment: Set Status]
+    {!currentLine.Status__c} = "Pending Review"   (Assign)
+    {!updatedLines}          Add {!currentLine}   (Add)
+
+[After Last] → [Update Records: {!updatedLines}]  ← one DML for the whole collection
+```
+
+**The fix this skill adds — no Loop at all.** The mutation above is uniform: same field, same value,
+every record. A Map processor whose `outputSObjectType` is the *input* type produces a collection
+carrying `Id` plus the changed field, and `Update Records` keys off the mapped `Id`:
+
+```text
+[Get Records: OrderLines]  →  {!orderLines}
+
+[Map: Stamp_Order_Lines]
+  collectionProcessorType : RecommendationMapCollectionProcessor
+  collectionReference     : orderLines
+  assignNextValueToReference : currentLine
+  outputSObjectType       : Order_Line__c
+  mapItems                : Id           ← currentLine.Id
+                            Status__c    ← "Pending Review"  (literal)
+
+[Update Records: Stamp_Order_Lines]      ← one DML, zero loops
+```
+
+**When the Loop still wins:** the moment the new value differs per record — a branch, a lookup, a
+per-record calculation the mapping cannot express. Uniform stamp → Map. Conditional stamp → Loop.
+`flow/flow-loop-element-patterns` owns the Loop side of that line.
+
+---
+
+## Example 2: Filter then map — and where the computed value goes
+
+**Context:** An autolaunched Flow runs after a batch of `Lead` records is converted. For each
+converted Lead with `Rating = 'Hot'`, create a follow-up `Task` owned by the Lead owner, with a
+subject that combines the company and the lead source.
+
+**Problem:** The original design loops, checks `Rating` in a Decision, builds the Task across three
+Assignment elements, and calls `Create Records` inside the loop.
 
 **Solution:**
 
 ```text
 [Collection Filter: HotLeads]
-  Source: {!ConvertedLeads}
-  Condition: Rating Equals "Hot"
-  Output: {!hotLeadCollection}
+  collectionReference : {!ConvertedLeads}
+  conditionLogic      : And
+  conditions          : Rating EqualTo "Hot"
 
 [Transform: LeadsToTasks]
-  Source Collection: {!hotLeadCollection}  (Lead)
-  Target SObject: Task
-  Field Mappings:
-    WhoId     ← Lead.Id
-    OwnerId   ← Lead.OwnerId
-    Subject   ← "Follow up with converted lead"  (literal)
-    ActivityDate ← {!$Flow.CurrentDate}
-  Output: {!taskCollection}
+  dataType     : sObject     objectType : Task     isCollection : true
+  transformValues → transformValueActions:
+      outputFieldApiName : WhoId
+      transformType      : Map
+      value              : elementReference currentHotLead.Id
+      ---
+      outputFieldApiName : Subject
+      transformType      : Map
+      value              : formulaExpression  "Follow up: " & {!currentHotLead.Company}
+                                              & " (" & {!currentHotLead.LeadSource} & ")"
+                           formulaDataType    String
 
-[Create Records: taskCollection]   ← single DML for all tasks
+[Create Records: LeadsToTasks]   ← one DML for all tasks
 ```
 
-**Why it works:** The Collection Filter declaratively removes Cold and Warm leads without a Loop. The Transform produces a correctly typed Task collection in one element. A single `Create Records` on the collection inserts all tasks in one DML call.
+**The point of this example is the `Subject` row.** A Map *processor* has no formula surface, so a
+computed subject would have to be prepared in an Assignment beforehand. A **Transform** does:
+`formulaExpression` requires `formulaDataType` and both are documented at API version 59.0 and
+later, cross-referenced to `FlowTransform` (`api_meta.txt` L70464–L70482). Choosing between the two
+"mapping" elements is therefore not a style question — it is decided by whether any target field
+needs to be computed.
+
+`flow/flow-formula-and-expression-patterns` owns whether that formula string is *correct*; this
+skill only owns which element it belongs in.
 
 ---
 
-## Example 3: Collection Sort Before Screen Flow Display
+## Example 3: The two ways to take a top N, and the query plan behind them
 
-**Context:** A Screen Flow shows a data table of open `Opportunity` records for the current user. Users complained that records appear in unpredictable order.
+**Context:** A Screen Flow shows the five largest open `Opportunity` records for the current user.
 
-**Problem:** There is no native sort option on the `Get Records` element for Screen Flows prior to the Collection Sort element being available. Developers were sorting inside a Loop — an unnecessary and fragile approach.
+**Route A — cap in the database:**
 
-**Solution:**
+```soql
+SELECT Id, Name, Amount, CloseDate
+FROM Opportunity
+WHERE OwnerId = :userId AND IsClosed = false
+ORDER BY Amount DESC
+LIMIT 5
+```
+
+In Flow this is a Get Records with `sortField` = `Amount`, `sortOrder` = `Desc`, and `limit`
+supplied as a `FlowElementReferenceOrValue` — "valid values are between 2 and 20,000. Supported
+only when `getFirstRecordOnly` is `false`", API 63.0 and later
+(`api_meta.txt` L71177–L71183). Five rows leave the database, five rows enter the heap, five rows
+count against the 50,000-row SOQL budget.
+
+**Route B — cap in the flow:** retrieve the full set, then a Sort processor with `sortOptions`
+(`sortField` `Amount`, `sortOrder` `Desc`) and `limit` 5. Every matching row is retrieved, held and
+counted; five survive.
+
+**Which one:** Route A unless the ranking key is not queryable — a formula the flow computes, a
+value assembled from two collections, or an order that depends on something the WHERE clause cannot
+see. Route B also wins when the *full* collection is needed elsewhere in the same flow, because
+Route A would need a second query to get it back.
+
+**What makes Route B a top N rather than an arbitrary N:** `limit` is "the maximum number of records
+to include in the generated collection… If `sortField` and `sortOrder` are also specified, the
+records are sorted before the limit takes effect" (`api_meta.txt` L69961–L69967). Drop `sortOptions`
+and the same `limit` silently becomes "any five".
+
+---
+
+## Example 4: Two collections, one Assignment
+
+**Context:** A nightly flow has a collection of every active `Contract__c` and a collection of the
+ones that already have a renewal task. It needs the ones that do not.
+
+**What practitioners build:** a Loop over the first collection, an inner Loop over the second, a
+Decision comparing Ids, and an Assignment on the no-match path. That is `n×m` element executions.
+
+**What the operator table says instead** — one Assignment element, two items:
 
 ```text
-[Get Records: OpenOpps]
-  Filter: OwnerId = {!$User.Id}, IsClosed = false
-  Output: {!oppCollection}
-
-[Collection Sort: SortByCloseDate]
-  Collection: {!oppCollection}
-  Sort Field: CloseDate
-  Order: Ascending
-
-[Screen: ShowOpportunities]
-  Data Table source: {!oppCollection}
+[Assignment: Derive_Renewal_Gap]
+  contractsNeedingRenewal  Add          allActiveContracts        ← seed a copy
+  contractsNeedingRenewal  RemoveAll    contractsWithRenewalTask  ← set difference
 ```
 
-**Why it works:** The Collection Sort element reorders `{!oppCollection}` in place before the Screen element renders. No Loop is required. The single Collection Sort element replaces what would otherwise be a multi-element manual sort pattern.
+`RemoveAll` "removes all instances of the value from the variable… when the value is a collection
+variable, the operator removes all instances of each item from the variable in the
+`assignToReference` field", API 43.0 and later (`api_meta.txt` L69823–L69829). Swap `RemoveAll` for
+`RemoveUncommon` and you get the intersection instead: it "keeps items that are in both collections
+and removes the rest" (L69847–L69851).
+
+**The catch to declare up front:** the seeding `Add` takes a *collection* as its value, which is
+"available in API version 43.0 and later, but only via Metadata API. From Flow Builder, you can't
+save an Assignment element that contains a collection variable in the Value column for the `Add`
+operator" (`api_meta.txt` L69786–L69790). Say so in the flow's `<description>`.
+`flow/flow-bulkification` owns the consequences of a Metadata-API-only flow.
 
 ---
 
-## Anti-Pattern: DML Inside A Loop
+## Anti-Pattern: `AddItem` and a bare `limit` — two shapes that deploy and misbehave
 
-**What practitioners do:** They place an `Update Records` or `Create Records` element directly inside a Loop body to write each record as it is processed.
+Both fragments below parse, both look reasonable in review, and both are wrong. Neither appears in
+`references/metadata-examples.md`, which only carries correct XML.
 
-**What goes wrong:** Each iteration of the loop executes one DML statement. Salesforce allows 150 DML statements per transaction. A loop over 200 records blows this limit by 25%, causing an uncaught exception that rolls back the entire transaction.
+```xml
+<assignments>
+    <name>Stage_Line</name>
+    <label>Stage Line</label>
+    <locationX>50</locationX>
+    <locationY>50</locationY>
+    <assignmentItems>
+        <assignToReference>linesToUpdate</assignToReference>
+        <operator>AddItem</operator>
+        <value>
+            <elementReference>currentLine</elementReference>
+        </value>
+    </assignmentItems>
+</assignments>
+```
 
-**Correct approach:** Accumulate modified records into an output SObject Collection variable using an Assignment with the `Add` operator, then place a single DML element after the "After Last" exit of the loop. This converts N DML statements into 1.
+`AddItem` is "supported only when the `assignToReference` field is a variable of type multipicklist"
+(`api_meta.txt` L69799–L69802). Appending to a collection is `Add`.
 
----
+```xml
+<collectionProcessors>
+    <name>Top_Lines</name>
+    <label>Top Lines</label>
+    <locationX>50</locationX>
+    <locationY>158</locationY>
+    <collectionProcessorType>SortCollectionProcessor</collectionProcessorType>
+    <collectionReference>allLines</collectionReference>
+    <limit>10</limit>
+</collectionProcessors>
+```
 
-## Anti-Pattern: Loop With Conditional Accumulation Instead Of Collection Filter
+No `sortOptions`, so nothing was sorted and `limit` took ten arbitrary rows. The element is named
+`Top_Lines` and the reviewer reads the name.
 
-**What practitioners do:** They build a Loop that checks a condition, uses a Decision element, and only adds matching records to an output collection — effectively reimplementing what the Collection Filter element does natively.
+Run both through the checker:
 
-**What goes wrong:** The resulting flow has four to six elements doing the work of one. Future maintainers cannot quickly understand the intent, and adding a second filter condition requires adding another Decision and branch.
+```bash
+python3 skills/flow/flow-collection-processing/scripts/check_flow_collection_processing.py \
+  --manifest-dir force-app --strict
+```
 
-**Correct approach:** Use the Collection Filter element with condition logic directly. This communicates intent in one element, is easier to read during review, and is supported from Spring '23 onward.
+Rule **E6** catches the first (it reads the target variable's declared `dataType` and requires
+`Multipicklist`); rule **E2** catches the second. The general defence is the one in
+`references/llm-anti-patterns.md`: match the operator to the target's declared `dataType`, and never
+let an element's *name* stand in for what its fields actually say.

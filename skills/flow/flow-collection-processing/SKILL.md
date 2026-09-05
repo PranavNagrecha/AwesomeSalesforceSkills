@@ -1,6 +1,6 @@
 ---
 name: flow-collection-processing
-description: "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow'. NOT for pulling DML or SOQL out of a Loop element — use flow/flow-loop-element-patterns. NOT for transaction-budget and bulkification analysis — use flow/flow-bulkification."
+description: "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow', 'collection processor', 'RecommendationMapCollectionProcessor', 'transformType Sum', 'InnerJoin flow', 'AssignCount', 'RemoveUncommon', 'sortOptions', 'outputSObjectType'. NOT for pulling DML or SOQL out of a Loop element — use flow/flow-loop-element-patterns. NOT for transaction-budget and bulkification analysis — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,15 @@ triggers:
   - "how to sort records in a collection variable before displaying in a screen flow"
   - "how do I use the transform element to create related records from a collection"
   - "flow collections isn't working"
+  - "pick between the Transform element and the Map collection processor"
+  - "aggregate a collection to a total in a flow without an Apex invocable"
+  - "join two collections in a flow without a nested loop"
+  - "sort a text collection in a flow and sortField is rejected"
+  - "write the Flow XML for a Collection Filter in formula mode"
+  - "assert on a collection processor output in a flow test"
+  - "stamp the same field value on every record in a collection without a loop"
+  - "which assignment operator appends a record to a collection variable"
+  - "flow transform element sums a currency field across a collection"
 tags:
   - flow-collections
   - loop-element
@@ -32,185 +41,208 @@ outputs:
   - "DML strategy: single Update Records on collection vs. loop+individual DML"
   - "Review findings on anti-patterns in existing Flow logic"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # Flow Collection Processing
 
-Use this skill when a Flow must do more than retrieve a flat list — when it needs to iterate, filter, sort, remap, or write back a group of records as a unit. This skill covers the full suite of Flow collection elements: Loop, Assignment inside a loop, Collection Filter, Collection Sort, and Transform.
+This skill answers one question: **given a collection and a task, which element does the task?**
+Flow has five documented answers — Collection Filter, Collection Sort, the Map processor, Transform,
+and the `FlowAssignmentOperator` set — plus the Loop, which does anything but costs
+`body_elements × iterations` to do it.
 
-The core design choice: **declarative collection elements (Filter/Sort/Transform)** vs **Loop + Assignment**. The declarative elements are clearer, fewer elements, easier to maintain, and less error-prone — but they don't handle every scenario. Knowing when each pattern fits is what this skill teaches.
+Loop *mechanics* (refactoring DML and SOQL out of a body, `noMoreValuesConnector`, iteration
+variables) belong to `flow/flow-loop-element-patterns`; transaction budgets belong to
+`flow/flow-bulkification`. This skill owns the selection, the configuration, and the shape of the
+XML that results.
 
 ---
 
 ## Before Starting
 
-Gather this context before working on anything in this domain:
-
-- What SObject or data type is in the collection? SObject Collections and primitive collections (Text, Number, etc.) behave differently and support different elements.
-- Is the goal to read-and-branch, filter-and-keep, remap fields to a different SObject type, or accumulate records for a single DML write?
-- Is the Flow running in a record-triggered context (bulk-safe, up to 200 records per transaction) or an autolaunched context called directly (potentially single-record)?
-- Is the downstream consumer a DML (needs a collection) or a Screen Flow table (needs sorted collection) or a subflow (needs a specific contract)?
+- What is the collection variable's declared `dataType` and `isCollection`? Record, Text/Number and
+  Apex-defined collections are accepted by different elements with different required fields.
+- What is the flow's `<apiVersion>`, and what is the highest version floor among the elements you
+  intend to use? Sort is API 50.0, Filter and Map are 53.0, `sortOptions` and processor `limit` are
+  51.0, Transform is 59.0, Transform's scalar output types are 62.0, `InnerJoin` and Get Records
+  `limit` are 63.0.
+- Where does the collection come from, and how large is it at p99? A collection from a Get Records
+  spends the transaction's SOQL row budget; one assembled in memory spends heap.
+- What consumes the result — a DML, a screen table, a subflow, an invocable action? The consumer
+  decides the required type, and a generic-sObject consumer needs a separate typing mechanism.
+- Is any part of the operation per-record conditional? That is the one thing no processor does.
 
 ---
 
-## Core Concepts
+## Questions to Ask Before Configuring
 
-### SObject Collection vs. Primitive Collection
-
-Flow supports two collection types. An SObject Collection stores a list of full records (e.g., `Account[]`). A primitive collection stores a list of scalar values such as Text or Number. Most collection operations — Loop, Collection Filter, Collection Sort, and Transform — apply only to SObject Collections. Primitive collections can be looped over and appended to via Assignment, but they are not compatible with the newer declarative filter/sort/transform elements.
-
-| Operation | SObject Collection | Primitive Collection |
+| Ask | Why it matters | What a good answer adds |
 |---|---|---|
-| Loop | ✅ | ✅ |
-| Assignment (add/remove) | ✅ | ✅ |
-| Collection Filter | ✅ | ❌ (use Loop) |
-| Collection Sort | ✅ | ❌ (use Apex or copy to SObject) |
-| Transform | ✅ | Limited (primitive → SObject requires Apex) |
-| DML (Create/Update/Delete) | ✅ | N/A |
+| "What is this collection's declared `dataType` — a record collection, a Text/Number collection, or Apex-defined?" | `sortField` is "required for record collections and collections of Apex-defined variables" and "isn't supported" for primitives (`api_meta.txt` L69994–L69998). The same Sort element needs opposite configuration for the two shapes | The `<variables>` block itself — `dataType`, `isCollection`, `objectType` — rather than a description of the data (Gotcha 1) |
+| "Does any field in the mapping need to be computed, or is every target value a direct copy or a literal?" | It decides Map processor vs Transform. `formulaExpression` + `formulaDataType` are documented at API 59.0 on the Transform surface (`api_meta.txt` L70464–L70482); the Map processor predates them | A per-field list marking which targets are copies, which are literals, and which are formulas — the third column is the one that picks the element (Gotcha 3) |
+| "Do you need the collection in its *original* order or *unfiltered* form later in this same flow?" | A processor emits a **generated** collection and leaves its input alone (`api_meta.txt` L69942–L69963), so no defensive copy is needed — and the copy costs a Metadata-API-only `Add` that makes the flow un-editable in Builder | A "no" that removes an element, or a "yes" that is satisfied by referencing the original variable, not by copying it (Gotcha 4) |
+| "Which element owns the fault path for this collection work?" | `FlowCollectionProcessor` and `FlowTransform` extend `FlowNode`, which declares no `faultConnector` (`api_meta.txt` L69926, L70741–L70756). A processor cannot route its own failure | A named Get Records and a named DML element carrying the `faultConnector`, and an explicit note that the processors between them are one non-faulting span (Gotcha 5) |
+| "What number proves this ran correctly, and which variable holds it?" | `FlowTestPoint.elementApiName` accepts only `Start` and `Finish` (`api_meta.txt` L74139–L74146). Nothing between the Filter and the DML is assertable unless a count survives to the end | A Number variable fed by `AssignCount`, named in advance, that the `FlowTest` asserts on (Gotchas 8 and 12) |
+| "What `<apiVersion>` will this flow carry, and does it clear every element's floor?" | Each element has a documented floor and the deploy fails on the field, not on the element. There is no API-version-to-release-name table in the developer guides, so a seasonal release name in the answer is unsourced | An explicit number, chosen as the maximum of the floors listed in `references/metadata-examples.md` §1 (`references/llm-anti-patterns.md` Anti-Pattern 4) |
+| "Does any downstream action or subflow take a **generic** sObject collection?" | A generic parameter is typed by `FlowDataTypeMapping`, whose `typeName` requires a `T__` prefix for inputs and `U__` for outputs (`api_meta.txt` L70193–L70199) — and `FlowSubflow` has no such field at all | Either a `dataTypeMappings` block on the `actionCalls` element, or a decision to give the subflow a typed input instead (Gotcha 9) |
 
-### Loop Element
+**What a proper configuration adds over just doing it:** an element chosen from what the operation
+*is* rather than from what it reads like, an `<apiVersion>` that clears every floor it depends on,
+and a count that a `FlowTest` can fail on — so the flow's silence when it processes zero records
+becomes a test failure instead of a support ticket.
 
-The Loop element iterates over a collection one record at a time, exposing a "current item" variable for that iteration. Inside the loop, Assignment elements can read from and write to the current item, accumulate records into a separate output collection, or set flags for downstream branching. A Loop always has two exit paths: "For Each" (for each iteration) and "After Last" (when the collection is exhausted). Building up a result collection inside a loop by appending the current item to a separate collection variable is the foundational collection-building pattern in Flow.
+---
 
-### Collection Filter Element
+## Element Selection
 
-Available from Spring '23 onward, the Collection Filter element removes records from a collection based on one or more conditions — entirely without a Loop. It accepts an SObject Collection as input and produces a filtered SObject Collection as output. It supports AND/OR condition logic and field-level comparisons against literal values or other Flow variables. This element should be the first choice whenever the goal is simply reducing a collection to a subset; using a Loop with a conditional assignment to achieve the same result is more verbose and harder to maintain.
+The decision this skill exists to make. Read the middle column, not the left one.
 
-### Collection Sort Element
+| The operation | Element | Metadata shape | Floor |
+|---|---|---|---|
+| Keep a subset of a collection | Collection Filter | `collectionProcessorType` `FilterCollectionProcessor` + `conditions` **or** `formula`, selected by `conditionLogic` | API 53.0 |
+| Order a collection | Collection Sort | `SortCollectionProcessor` + `sortOptions` (`sortField`, `sortOrder`, `doesPutEmptyStringAndNullFirst`) | API 50.0; `sortOptions` API 51.0 |
+| Take the top N | Collection Sort | the same, **plus** `limit` — sort applies first | `limit` API 51.0 |
+| One output record per input record, values copied or literal | Map processor | `RecommendationMapCollectionProcessor` + `assignNextValueToReference` + `outputSObjectType` + `mapItems` | API 53.0 |
+| One output record per input record, some value computed | Transform | `transformType` `Map` + `outputFieldApiName` + `value/formulaExpression` | API 59.0 |
+| Collapse a collection to one number | Transform | `transformType` `Sum` or `Count` + `inputParameters` `aggregationValues` / `aggregationField` | API 59.0; `inputParameters` API 60.0 |
+| Join two collections | Transform | `transformType` `InnerJoin` + `complexValueType` `JoinDefinition` | API 63.0 |
+| Set difference (A − B) | Assignment | `operator` `RemoveAll`, value = the other collection | API 43.0 |
+| Set intersection (A ∩ B) | Assignment | `operator` `RemoveUncommon`, both sides collections | API 43.0 |
+| Append one record | Assignment | `operator` `Add` (**not** `AddItem`) | — |
+| Count a collection | Assignment | `operator` `AssignCount`, collection in `value`, Number in `assignToReference` | API 43.0 |
+| Set the *same* field value on every record | Map processor | `outputSObjectType` = the input type, `mapItems` = `Id` + the changed field, then one DML | API 53.0 |
+| Anything per-record conditional, or that writes / calls out / shows a screen inside the iteration | Loop | see `flow/flow-loop-element-patterns` | API 30.0 |
 
-The Collection Sort element reorders an SObject Collection by one or more fields, ascending or descending. It operates in place on the input collection and does not require a Loop. Sorting before passing a collection to a Screen Flow table or to a downstream subflow is a common use case.
+Enum values, version floors and field semantics: `api_meta.txt` L69926–L70002 (processors),
+L72685–L72814 (Transform), L69767–L69865 (assignment operators).
 
-### Transform Element
+---
 
-The Transform element maps fields from one SObject Collection to a different SObject Collection or to a primitive collection. A common use case is producing a list of `Task` or `Case` records from a list of `Lead` records, mapping field values declaratively. Transform is the correct tool when the goal is type conversion or field remapping across SObject types; doing this inside a Loop with manual field assignments is more error-prone.
+## Collection Typing
 
-### DML on Collections
+Three collection shapes, and what each element accepts:
 
-`Update Records`, `Create Records`, and `Delete Records` all accept either a single record or a collection variable. Using a collection variable with a single DML element processes all records in one operation and consumes one DML statement and one DML row per record — exactly the same limits as a list DML in Apex. Placing a DML element inside a Loop converts that cost into N DML statements, which fails at scale.
+| Shape | `FlowVariable` | Sort | Filter | Map processor | Transform |
+|---|---|---|---|---|---|
+| Record collection | `dataType` `sObject`, `isCollection` `true`, `objectType` set | `sortOptions` **must** carry `sortField` | conditions reference `<item>.<Field__c>` | input and output are both typed by `outputSObjectType` | `dataType` `sObject` + `objectType` + `isCollection` |
+| Primitive collection (Text, Number, …) | `dataType` `String` / `Number` / …, `isCollection` `true` | `sortField` "isn't supported" — omit it | there are no fields to compare; use `formula` mode | `outputSObjectType` has no meaning for a primitive target | `dataType` `String` / `Number` etc., API 62.0 |
+| Apex-defined collection | `dataType` `Apex`, `apexClass` set | `sortField` **required** | — | — | `dataType` `Apex` + `apexClass` |
+
+`isCollection` is documented from API 30.0, and "in API version 32.0 and later, a collection variable
+can be of any data type" (`api_meta.txt` L72880–L72884). A collection with no `objectType` is not a
+"broken" record collection — it is a differently-typed variable, and the elements will tell you so at
+deploy time rather than at run time.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Loop-and-Accumulate to Build a Modified Collection
+### Pattern 1: Declarative pipeline — Filter → Sort+limit → Map → DML
 
-**When to use:** You need to modify a field on every record in a collection (e.g., set `Status__c` to "Processed") and then write the whole list back.
+The default shape. Each stage names the previous stage as its `collectionReference`; nothing is
+mutated in place; the DML at the end consumes the last processor by name. Fully worked, with the
+`<start>` block and the fault routing, in `references/metadata-examples.md` §1.
 
-**Structure:**
-1. Declare a second SObject Collection variable (the output collection, initially empty).
-2. Add a Loop over the source collection.
-3. Inside the loop, use an Assignment element to set the field on `{!Loop.currentItem}`, then add `{!Loop.currentItem}` to the output collection using the `Add` operator.
-4. After the loop exits via "After Last", connect to a single `Update Records` element pointed at the output collection.
+### Pattern 2: Uniform field stamp without a Loop
 
-**Why not the alternative:** Placing `Update Records` inside the loop issues one DML statement per record and fails when the transaction processes more than the DML statement limit allows.
+`outputSObjectType` equal to the *input* type, `mapItems` carrying `Id` plus the one changed field,
+then `Update Records` with `inputReference` naming the processor. One element replaces
+Loop + Assignment + Assignment. Only valid when the new value is the same for every record.
 
-### Pattern 2: Collection Filter for Subset Selection
+### Pattern 3: Aggregate to a scalar
 
-**When to use:** You need to pass a subset of a retrieved collection to a downstream element — for example, only the Opportunities with `StageName = 'Closed Won'` from a larger query result.
+A `FlowTransform` with `dataType` `Number`, `isCollection` `false`, and a `transformValueActions`
+whose `transformType` is `Sum` or `Count`. The source collection goes in the `aggregationValues`
+input key; for `Sum`, the field goes in `aggregationField`. The result is addressed by the
+transform's element name — no output-variable field exists (`references/gotchas.md` Gotcha 7).
 
-**Structure:**
-1. Add a Collection Filter element after `Get Records`.
-2. Set the source collection to the query result variable.
-3. Define filter conditions (field, operator, value).
-4. Store the result in a new SObject Collection variable.
-5. Pass that filtered collection to the next element.
+### Pattern 4: Set algebra instead of a nested loop
 
-**Why not the alternative:** A Loop with an if/then branch and conditional accumulation achieves the same result but takes four to six elements instead of one and is harder to read during review.
+One Assignment element: `Add` to seed a working collection, then `RemoveAll` for difference or
+`RemoveUncommon` for intersection. Replaces `n×m` element executions with two assignment items.
+Declare in the flow's `<description>` that the seeding `Add` is Metadata-API-only.
 
-### Pattern 3: Transform to Produce a Related-Record Collection
+### Pattern 5: Terminate every chain with a count
 
-**When to use:** You have a collection of parent records and need to create child records — for example, creating follow-up `Task` records from a collection of `Case` records.
-
-**Structure:**
-1. Add a Transform element after the source collection is available.
-2. Set the source collection (e.g., `{!CaseCollection}`) and the target SObject type (`Task`).
-3. Map fields: `WhatId` from `Case.Id`, `Subject` from a template or literal, etc.
-4. The output is a Task Collection variable.
-5. Pass that collection to a single `Create Records` element.
-
-**Why not the alternative:** Building the Task collection inside a Loop with manual Assignment and `Add` operations is verbose, difficult to maintain, and does not communicate intent as clearly as a dedicated Transform element.
-
-### Pattern 4: Chained Declarative Pipeline
-
-**When to use:** The collection needs multiple operations — filter, then sort, then transform — all of which have declarative elements.
-
-**Structure:**
-```text
-[Get Records] → [Collection Filter: Status = 'Open']
-              → [Collection Sort: by CreatedDate DESC]
-              → [Transform: map to Notification SObject]
-              → [Create Records: bulk insert notifications]
-```
-
-**Why not the alternative:** Four declarative elements in a row is faster to author, faster to review, and less error-prone than a single Loop with conditional logic + sort + mapping.
-
-### Pattern 5: Empty-Collection Safety
-
-**When to use:** Any collection pipeline — empty collections are common and must not fault.
-
-**Structure:**
-- Put a Decision element BEFORE expensive downstream work checking `COUNT({!collection}) > 0`.
-- If empty, exit early with a Process Observation (no work to do).
-- If non-empty, proceed.
-
-**Why not the alternative:** A Create Records on an empty collection does nothing silently — not a fault, but also not an observable "job completed" signal. Downstream notifications fire on zero records, confusing users.
-
----
-
-## Decision Guidance
-
-| Situation | Recommended Approach | Reason |
-|---|---|---|
-| Filter records from a collection to a subset | Collection Filter element (Pattern 2) | Single element, no loop required, conditions explicit |
-| Sort a collection before display or downstream use | Collection Sort element | Declarative, operates on the collection in place |
-| Remap fields from one SObject type to another | Transform element (Pattern 3) | Designed for type conversion; avoids manual loop-based field assignment |
-| Modify a field on all records and write back | Loop + Assignment + single Update Records (Pattern 1) | No declarative element covers in-place field mutation |
-| Write N records created from a collection | Single Create Records on a collection variable | One DML statement regardless of N |
-| Filter AND sort AND then create related records | Chain declarative elements (Pattern 4) | Fewer elements, clearer intent |
-| Conditional logic per record during iteration | Loop with branching inside | Only Loop supports per-record conditional branching |
-| Pipeline might process empty collection | Pattern 5 gate | Prevents confusing silent no-ops |
+An `AssignCount` into a non-collection `Number` variable at the end of the processor chain. It is
+the only artefact of the intermediate collections that survives to the `Finish` test point, and it
+converts a silent zero-record run into an assertable value. A Decision that only needs "is there
+anything?" uses the `IsEmpty` comparison operator instead (API 61.0 and later,
+`api_meta.txt` L70097–L70098) — there is no `.size` accessor.
 
 ---
 
 ## Review Checklist
 
-- [ ] No `Create Records`, `Update Records`, or `Delete Records` element sits inside a Loop without an explicit justified exception documented in the flow description.
-- [ ] Collection Filter is used instead of a Loop-with-conditional-accumulation wherever the only goal is subset selection.
-- [ ] Collection Sort is used instead of a sorting loop for ordering.
-- [ ] Transform is used instead of a manual-assignment loop for SObject type conversion.
-- [ ] SObject Collection variables have a defined SObject type — untyped collections cannot be used with Filter, Sort, or Transform.
-- [ ] The "After Last" path of every Loop reaches the next meaningful element; unreachable paths cause silent flow termination.
-- [ ] DML elements reference collection variables (not single-record variables) when operating on multiple records.
-- [ ] Flow tested with an empty collection input to confirm it does not fault on the Loop's "After Last" path.
-- [ ] Pattern 5 empty-collection gate in place for any pipeline that can process zero records.
+- [ ] Every `collectionProcessorType` is one of `SortCollectionProcessor`,
+      `FilterCollectionProcessor`, `RecommendationMapCollectionProcessor` — checker **E1**.
+- [ ] Every Sort carrying `limit` also carries `sortOptions`, or the cap has been pushed onto the
+      upstream Get Records instead — checker **E2**.
+- [ ] Every Map processor names both `assignNextValueToReference` and `outputSObjectType`, and every
+      `mapItems` entry carries all three required fields — checker **E3**.
+- [ ] Every `transformType` is one of the documented values, and `GetItemByIndex` / `InvocableAction`
+      are not treated as live capabilities — checker **E4**.
+- [ ] Every `AssignCount` target is a non-collection `Number` variable — checker **E5**.
+- [ ] No `AddItem` targets anything but a `Multipicklist` variable — checker **E6**.
+- [ ] No processor carries both `formula` and `conditions` — checker **W1**.
+- [ ] No Loop body consists only of Assignments and Decisions — checker **W2**.
+- [ ] Every `collectionReference` and aggregation input resolves to a declared variable or element —
+      checker **W3**.
+- [ ] The fault path hangs off the Get Records and the DML, not off any processor.
+- [ ] The flow's `<apiVersion>` clears the highest floor among the elements used.
+- [ ] A `FlowTest` asserts on at least one count produced by the chain.
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; prefer declarative over Loop where applicable
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Classify the operation.** Read the Element Selection table above and name the element before
+   writing any XML. If the answer is Loop, stop here and switch to
+   `flow/flow-loop-element-patterns`.
+2. **Read the collection's typing.** Confirm `dataType`, `isCollection` and `objectType` against the
+   Collection Typing table, then set the flow's `<apiVersion>` to the highest floor the chosen
+   elements need (the floors are listed per element in `references/metadata-examples.md` §1).
+3. **Write the XML from `references/metadata-examples.md` §1**, adapting the object names.
+   Round-trip it: `sf project retrieve start --metadata Flow:<name>` and diff, because the guide
+   ships no sample XML for `FlowCollectionProcessor` and every shape marked `UNVERIFIED` in that
+   file has to come from the org.
+4. **Terminate the chain with an `AssignCount`** into a Number variable, and write the `FlowTest`
+   from §3 asserting on it. If the collection comes from related records, decide now whether
+   `flowTestDataSources` (API 66.0, Apex-backed) is available or the test can only cover the
+   triggering record.
+5. **Run the checker** —
+   `python3 skills/flow/flow-collection-processing/scripts/check_flow_collection_processing.py --manifest-dir <source tree> --strict` —
+   and clear every ERROR. Rules map one-to-one onto the Review Checklist above.
+6. **Deploy in the order in §4 of `references/metadata-examples.md`** (objects → Apex → Flow →
+   FlowTest), then verify with the two SOQL queries and the `FLOW_BULK_ELEMENT_DETAIL` debug-log
+   read in §5.
+7. **Record anything the guide could not settle** in the flow's `<description>` — the
+   Metadata-API-only `Add`, any `UNVERIFIED` shape you confirmed against your own org — using
+   `templates/flow-collection-processing-template.md`.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Collection Filter and Collection Sort require typed SObject Collections** — if the collection variable does not have a specific SObject type set, the Filter and Sort elements cannot reference its fields and the configuration UI will be incomplete.
-2. **Adding the current item to a new collection inside a loop mutates the shared object reference** — if you modify a field on `{!Loop.currentItem}` and then add it to the output collection, the modification is captured. But if you forget to modify before adding, you accumulate the original unmodified values silently.
-3. **Transform does not support formula expressions in its field mappings** — you can map a source field to a target field, or a literal value, but you cannot write a formula inline. If logic is needed during the mapping, a Loop-based approach with an Assignment formula is required instead.
-4. **An empty collection passed to a Loop does not fault — it exits immediately via "After Last"** — this is safe, but downstream elements must handle the resulting empty output collection correctly.
-5. **Collection Sort is stable but sorts the original collection variable in place** — there is no copy; the source variable is modified. If you need both the original and the sorted order, copy the collection into a second variable before sorting.
-6. **Collection Filter's condition on a formula field may behave differently from the same condition in SOQL** — Flow evaluates formula fields based on the record snapshot, not re-evaluating against live data. Test edge cases.
-7. **There is no "collection element count" limit — 50,000 is the SOQL query-row budget** — the per-transaction cap of 50,000 is on *total records retrieved by SOQL*, shared across every query in the transaction and across every automation in it (other flows, triggers, Apex). It is not a ceiling on how many records a collection variable may hold. Practical consequences of getting this right: several smaller Get Records elements draw on the *same* 50,000 budget rather than each getting their own; re-using a collection after the query costs nothing further; and collection size is otherwise bounded by heap (6 MB sync / 12 MB async), not by a row count. A single Get Records returning 50k+ does fault — but because of the query-row budget, not a collection limit.
-8. **Transform can't write to system fields** — CreatedDate, LastModifiedDate, SystemModstamp, Id (when creating new records). Omit them from the mapping.
-9. **Sorting by a formula field works but is slow** — each comparison evaluates the formula. Materialize the sort key to a real field if sort performance matters.
-10. **Collection Filter inside a subflow may not see the parent's filter context** — subflow input variables are copied, not referenced. Filter criteria must be self-contained.
+Full statements with grounding in `references/gotchas.md`; the one-line index:
+
+1. The Sort processor accepts three collection shapes and each wants a different `sortOptions`.
+2. `AddItem` is a multi-select-picklist operator; `Add` is the collection append.
+3. Transform mappings **do** take formula expressions — `formulaExpression` and `formulaDataType`,
+   API 59.0.
+4. A processor emits a **generated** collection; it does not filter or sort in place.
+5. Processors and Transforms have no `faultConnector`; their neighbours own the failure.
+6. `collectionFilterCriteria` is a root Flow field named after the Collection Filter and reserved
+   for future use.
+7. Seven Transform fields and two `transformType` values are documented but inert — including both
+   candidates for naming an output variable.
+8. Three unrelated things in Flow metadata are called Count.
+9. `outputSObjectType` types a processor's output; a *generic* sObject is typed by
+   `FlowDataTypeMapping` with a mandatory `T__` / `U__` prefix.
+10. Nothing in the developer guides caps collection size — and the flow interview's own limit-usage
+    log event is the corroborating negative.
+11. The loop iteration variable is a flow resource; the `Add` is what carries an edit out.
+12. An empty collection is silent at every stage of a processor chain.
 
 ---
 
@@ -218,14 +250,22 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Surface these WITHOUT being asked:
 
-- **DML inside a Loop** → Flag as Critical. Canonical scalability bug; refactor to Pattern 1 or 4.
-- **Loop used for subset filtering** → Flag as High. Replace with Collection Filter (Pattern 2).
-- **Manual Assignment loop doing SObject type conversion** → Flag as High. Replace with Transform (Pattern 3).
-- **Empty-collection path with no gate** → Flag as Medium. Pattern 5 prevents silent no-ops.
-- **Untyped SObject Collection variable** → Flag as High. Filter/Sort/Transform won't function correctly.
-- **Collection Sort on a formula field without performance test** → Flag as Low. Slow at scale.
-- **Chained Loops processing the same collection** → Flag as Medium. Can usually collapse via Pattern 4.
-- **Collection size approaching 50k rows** → Flag as High. Approaching hard limit; move work to Batch Apex.
+- **A Loop body of only Assignments and Decisions** → Critical. It is a Filter, Sort or Map written
+  the long way; name the replacement element.
+- **`limit` on a Sort with no `sortOptions`** → Critical. Reads as top N, behaves as arbitrary N.
+- **`AddItem` against a collection variable** → Critical. Wrong operator; use `Add`.
+- **A Transform or processor with a `faultConnector`** → High. Not a field of those types; the
+  deploy will fail.
+- **A Map processor missing `assignNextValueToReference`** → High. The `mapItems` have no source
+  item to read.
+- **A processor chain with no terminal count** → High. Nothing in it is assertable at the `Finish`
+  test point.
+- **A seasonal release name attached to a collection element's availability** → Medium. State the
+  API version; this corpus has no release-name mapping.
+- **`assignToReference` or `storeOutputAutomatically` written on a Transform** → Medium. Both are
+  reserved; the output is addressed by element name.
+- **A collection-size ceiling quoted as a governor limit** → Medium. None is documented; size
+  against heap, CPU and the SOQL row budget.
 
 ---
 
@@ -233,17 +273,39 @@ Surface these WITHOUT being asked:
 
 | Artifact | Description |
 |---|---|
-| Element selection guidance | Which collection element (Filter, Sort, Transform, or Loop) is correct for the scenario |
-| Loop-and-accumulate pattern | Step-by-step design for in-loop field mutation and single-DML commit |
-| Review findings | Loops containing DML, missing typed collections, patterns that should use declarative elements |
-| Transform field mapping plan | Source-to-target field mapping table for producing a related-record collection |
-| Empty-collection safety gates | List of pipeline points that need Pattern 5 guards |
+| Element selection | Which of Filter / Sort / Map / Transform / Assignment operator / Loop does the task, with the metadata shape and version floor for the choice |
+| Deployable flow XML | A processor chain with fault routing on its Get and DML neighbours, shaped from `references/metadata-examples.md` §1 |
+| `FlowTest` | Assertions on the counts the chain produces, at the `Finish` test point |
+| Checker report | ERROR/WARN findings from `scripts/check_flow_collection_processing.py`, mapped to the Review Checklist |
+| Typing plan | `dataType` / `isCollection` / `objectType` for every collection variable, plus any `dataTypeMappings` needed for a generic-sObject consumer |
+| Version floor | The `<apiVersion>` the flow must carry, derived from the highest floor among the elements used |
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing or reviewing actual `*.flow-meta.xml`: a complete loop-free processor chain, the Transform `Map` and `InnerJoin` variants, a `FlowTest` with `flowTestDataSources`, `package.xml`, deploy order, and the SOQL + debug-log verification |
+| `references/gotchas.md` | The flow deploys and then does the wrong thing quietly — processor output semantics, missing fault paths, the reserved Transform fields, the three Counts, and the two claims this skill previously got wrong |
+| `references/llm-anti-patterns.md` | You are reviewing generated Flow XML or Flow advice, or self-checking your own — including `.size`, `AddItem`, release-name dating, and the invented 50,000 collection limit |
+| `references/examples.md` | You want the narrative element-selection walk-through, the two routes to a top N, or a worked set-difference before writing XML |
+| `references/well-architected.md` | You need the pillar framing, the tradeoff table, or the source and guide line behind any claim in this skill |
+| `templates/flow-collection-processing-template.md` | You are recording the design or the review for someone else to act on |
+| `scripts/check_flow_collection_processing.py` | Before every deploy and against any fixture directory. `--manifest-dir <source tree>`, optional `--strict`; exits 1 on any ERROR |
+
 ## Related Skills
 
-- **flow/flow-bulkification** — when governor-limit safety under volume is the primary concern.
-- **flow/record-triggered-flow-patterns** — when the question is trigger event / entry criteria / save behavior.
-- **flow/subflows-and-reusability** — when collection-processing should extract into a reusable subflow.
-- **flow/fault-handling** — when collection pipelines need fault-routing on DML failures.
+- **flow/flow-loop-element-patterns** — when the answer is a Loop, or a Loop has to be refactored
+  out; owns iteration semantics, `noMoreValuesConnector`, and the retired element-count limit.
+- **flow/flow-bulkification** — when transaction budgets, data-load volume, or the escalate-to-Apex
+  threshold is the question.
+- **flow/flow-formula-and-expression-patterns** — when the `formula` on a Filter or the
+  `formulaExpression` on a Transform has to be *correct*, not just placed.
+- **flow/flow-testing** — when the `FlowTest` strategy, coverage or `sf flow run test` wiring is the
+  question rather than what to assert on.
+- **flow/flow-record-save-order-interaction** — when a collection DML re-enters the save order and
+  the interaction with triggers, validation rules or roll-ups matters.
+- **flow/fault-handling** — when the fault routing around the Get and the DML needs designing.
+- **flow/subflows-and-reusability** — when a collection crosses a subflow boundary and the input
+  contract has to be typed.
