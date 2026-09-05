@@ -16,6 +16,7 @@ triggers:
   - "debug More than one Finalizer cannot be attached to same Async Apex Job"
   - "how many times can a finalizer re-enqueue a failed queueable job"
   - "test a transaction finalizer with Test.startTest and Test.stopTest"
+  - "retry a queueable after an unhandled exception with a finalizer"
 tags:
   - apex-finalizer
   - queueable

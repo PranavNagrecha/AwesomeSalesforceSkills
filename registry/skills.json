@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "760336b9b43512967f7fbc7fa77946ac0f77c12a60d731efa3ab0d411b5dd3cd",
+  "generated_from_hash": "719bd0aa7d8a0cae5f120a9e8ed79511807096c9dde1530e11243605dbc8af1c",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -62467,7 +62467,7 @@
         "ff4368b079048a11c259",
         "ff76529704b5f7fe2a8a"
       ],
-      "content_hash": "00f7ecc91889026ce2c327d62d9c56054694dbd9d5e351a95adc548a64e0b105",
+      "content_hash": "b59b0a67233904e36b16ab356236a836e68eea02010eea09b38aaae14159024c",
       "dependencies": [
         "apex-queueable-patterns"
       ],
@@ -133260,7 +133260,7 @@
         "fde4ca6a66251a103344",
         "feed14f98ae512f50d46"
       ],
-      "content_hash": "ceca66295a25fe7a706c84523209364c656c2bfc8ba26f10d8c5246c0a7b2e30",
+      "content_hash": "5a3ffcc35bb082cb1ecca108f21f4c87279e42475ed4d3b8cb6726321c8277f6",
       "dependencies": [],
       "description": "Choose and implement LWC communication \u2014 @api, events, LMS, @wire between parent, child, sibling, or workspace components. Triggers: 'LWC communication pattern', 'should I use LMS or @api', 'three components need to coordinate'. NOT for the mechanics of a single child-to-parent CustomEvent \u2014 bubbles / composed / cancelable, detail payload, event naming, or an event that is not reaching the parent \u2014 use lwc/lwc-custom-event-patterns. NOT for @wire data provisioning \u2014 use lwc/wire-service-patterns.",
       "file_location": "skills/lwc/component-communication",
