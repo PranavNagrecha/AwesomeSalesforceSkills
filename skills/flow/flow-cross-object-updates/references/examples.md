@@ -80,10 +80,20 @@ wrong sends marketing to "inactive" accounts.
 
 **Problem:** Practitioners build the cascade with an Update
 Records *inside* a Loop. The first time someone bulk-updates 200
-Accounts (e.g., a quarterly cleanup) the Flow hits the 100 SOQL
-limit before processing the 11th Account's children. The
-transaction fails for ALL 200 Accounts — including the first 10
-that "almost succeeded" before the rollback.
+Accounts (e.g., a quarterly cleanup) the transaction dies and
+fails for ALL 200 Accounts, including the ones that "almost
+succeeded" before the rollback.
+
+**Which limit, exactly.** An Update inside a Loop spends **DML
+statements**, and the synchronous ceiling is 150 per transaction
+(`apexdev.txt` L19550) — so an average of one child per Account
+is already enough to blow it at the 151st write. A *Get Records*
+inside a loop is the one that spends SOQL, ceiling 100
+(L19542). A third ceiling catches the bulkified version too:
+10,000 records processed by DML across the whole transaction
+(L19556), which is why the Get in the corrected flow carries a
+`<limit>`. Earlier revisions of this file named "100 SOQL" for
+the DML-in-loop case; that was the wrong counter.
 
 **Solution:** One Get Records (with a bulk filter), one Loop
 (assign-only, no DML inside), one Update Records *outside* the
@@ -157,9 +167,10 @@ Loop: Each_Contact
 **What goes wrong:** On a single Account with 50 Contacts, this
 flow issues 50 DML operations. On a bulk update of 200 Accounts
 (each with ~20 Contacts), that's 200 × 20 = 4,000 DML
-operations in one transaction — Flow hits the 150-DML limit at
-operation 151 and the entire transaction rolls back. Every record
-in the bulk batch fails; users see a wall of error toasts.
+operations in one transaction — the synchronous ceiling is 150
+DML statements (`apexdev.txt` L19550), so the transaction dies
+at operation 151 and rolls back. Every record in the bulk batch
+fails; users see a wall of error toasts.
 
 Worse, the failure is invisible at design time. Flow Builder's
 "Run with Debug" feature against a single record runs the flow
@@ -180,3 +191,51 @@ permits Update Records inside a Loop because some legitimate uses
 exist (e.g., conditional re-fetch from inside a complex loop), but
 those uses are rare and should be flagged in code review. A blanket
 rule that works for >95% of cases: "no DML inside Loop, ever."
+
+
+---
+
+## Reading the failure out of the org, before and after
+
+Neither example above is provable from Flow Builder. Both are provable from a
+debug log and two queries. This is the artifact to run when someone says "the
+flow works, I tested it."
+
+### Before: prove the anti-pattern scales with child count
+
+```bash
+# 1. one Account, many children -- the case the anti-pattern survives
+sf data query --target-org uat --query \
+  "SELECT AccountId, COUNT(Id) children FROM Contact GROUP BY AccountId ORDER BY COUNT(Id) DESC LIMIT 5"
+
+# 2. turn on a Workflow-category log, then edit ONE of those Accounts in the UI.
+#    Read the tail of the log:
+#      LIMIT_USAGE_FOR_NS  -> "Number of DML statements: N out of 150"
+#    N tracks the child count. That is the signature of DML inside the Loop.
+sf apex log tail --target-org uat --color
+
+# 3. now the bulk case, in a sandbox only. 200 parents through the same path
+sf data update bulk --sobject Account --file data/accounts-200-status.csv --target-org uat
+```
+
+### After: prove the corrected flow is flat
+
+Run the identical three steps against the corrected flow. The pass condition is
+that the DML statement count in `LIMIT_USAGE_FOR_NS` is **the same number** for
+step 2 and step 3. Rows processed will differ — that counter is supposed to
+scale — but statements must not.
+
+```sql
+-- Did the cascade actually land, and did it stop where the filter said it would?
+SELECT Account.Status__c, MailingOptOut__c, OptOut_Source__c, COUNT(Id)
+FROM Contact
+WHERE Account.Status__c = 'Inactive'
+GROUP BY Account.Status__c, MailingOptOut__c, OptOut_Source__c
+```
+
+Any row with `MailingOptOut__c = false` under an Inactive Account is a Contact the
+Get Records filter excluded or the Update never reached — the two failure modes
+that look identical from the Flow Builder canvas.
+
+The full deployable version of both flows, with the entry criteria that make the
+counts flat, is in `references/metadata-examples.md`.

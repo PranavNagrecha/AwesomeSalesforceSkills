@@ -135,19 +135,76 @@ exclude the changes the *other* flow produces.
 
 ## Official Sources Used
 
-- Flow Builder Reference — Update Records element:
-  https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_update_records.htm
-- Flow Builder Reference — Bulkification in Record-Triggered Flows:
-  https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger.htm
-- Apex Developer Guide — Order of Execution:
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
-- Apex Developer Guide — Using the with sharing, without sharing, and
-  inherited sharing Keywords (§ Implementation in Apex Triggers):
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm
-- Summer '26 Release Notes — Database Operations Run in User Mode by Default,
-  Not System Mode (API 67.0):
-  https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_default_user_mode.htm&type=5
-- Flow Builder Reference — How a Flow Runs in System or User Context:
-  https://help.salesforce.com/s/articleView?id=sf.flow_concepts_running_context.htm
-- Salesforce Well-Architected — Adaptable (Resilient):
-  https://architect.salesforce.com/well-architected/adaptable/resilient
+Guides read as extracted text; every line number below is a `grep -n` into that
+extract. PDF URLs are the canonical form of the same documents.
+
+- **Metadata API Developer Guide**, `Flow` / `FlowStart` / `FlowRecordUpdate` /
+  `FlowRecordLookup` / `FlowTest` sections —
+  <https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf>.
+  Supports: the two Update Records modes and that `object` is Required (L71264–71292);
+  `doesRequireRecordChangedToMeetCriteria` and `filterFormula` as the cycle-breakers
+  (L72322–72326, L72390–72393); `getFirstRecordOnly` / `limit` /
+  `assignNullValuesIfNoRecordsFound` preconditions (L71100–71110, L71153–71163,
+  L71177–71185); `runInMode` semantics and version floor, which corrects this package's
+  earlier "system context by default" claim (L68374–68390); `FlowTest` shape, suffix and
+  `testType` (L73976–73980, L74041–74050, L74303–74308).
+- **Metadata API Developer Guide**, `CustomField` section — same PDF. Supports: roll-up
+  summaries require a master-detail relationship (`summaryForeignKey`, L43648–43650);
+  `summaryOperation` values and the `summarizedField` rule (L43636–43638, L43651–43666);
+  `deleteConstraint` values with `SetNull` as the default (L43347–43357);
+  `reparentableMasterDetail` and `relationshipOrder` (L43582–43597);
+  `writeRequiresMasterRead` and its restrictive default (L43724–43738).
+- **Metadata API Developer Guide**, `deploy()` call — same PDF. Supports the
+  MasterDetail↔Lookup deploy hazards in `gotchas.md` Gotcha 6: unsupported under
+  `checkOnly`, and permanent deletion of detail records from the Recycle Bin
+  (L4177–4213).
+- **Apex Developer Guide**, *Triggers and Order of Execution* —
+  <https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf>.
+  Supports: a flow's DML re-enters the save procedure (L15468); after-save flows at step
+  14 (L15470); roll-up recalculation at steps 16–17 with the parent and grandparent
+  re-saved (L15471–15477); and the recursive-save skip of steps 9–17 that makes a
+  roll-up untrustworthy mid-transaction (L15414–15415).
+- **Apex Developer Guide**, *Execution Governors and Limits* — same PDF. Supports every
+  number quoted in this package: 100 SOQL and 150 DML per synchronous transaction
+  (L19542, L19550), 10,000 records processed by DML (L19556), stack depth 16 for
+  recursive trigger firing (L19559), 10,000 ms synchronous CPU (L19579).
+- **Apex Developer Guide**, *Debug Log Levels* / flow event types — same PDF. Supports
+  the ping-pong verification in `references/metadata-examples.md` § 10:
+  `FLOW_CREATE_INTERVIEW_BEGIN` logs the definition and version ID (L38759–38761),
+  `FLOW_START_INTERVIEWS_BEGIN`/`_END` log "Requests" (L38856–38861),
+  `FLOW_ELEMENT_BEGIN` logs the element name (L38768–38770), and `LIMIT_USAGE_FOR_NS`
+  closes the log (L38275).
+- **Bulk API 2.0 Developer Guide**, *Organize Data to Minimize Lock Contention* —
+  <https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_asynch.pdf>.
+  Supports `gotchas.md` Gotcha 7: a child insert locks its parent for the transaction,
+  sorting the load by parent Id is the mitigation (L2688–2707), plus the Bulk API 1.0
+  retry and serial-mode behaviour (L4997–5010).
+- **Salesforce App Limits Cheat Sheet**, SOQL relationship limits —
+  <https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf>.
+  Supports the correction to this package's "5 levels of traversal" claim: the five-level
+  ceiling is documented for SOQL child-to-parent relationships (L1143–1146), and the Flow
+  figure is a help.salesforce.com claim carrying an UNVERIFIED marker in `SKILL.md`.
+- **Salesforce Well-Architected — Adaptable (Resilient)** —
+  <https://architect.salesforce.com/well-architected/adaptable/resilient>. Supports the
+  Reliability framing above: two independently correct automations composing into a loop.
+
+- **Apex Developer Guide**, *Using the with sharing, without sharing, and inherited
+  sharing Keywords* § Implementation in Apex Triggers — same PDF. Supports the "Mode" row
+  of the Flow-vs-Apex table above: "Apex triggers can't have an explicit sharing
+  declaration. Triggers always run implicitly in a without sharing context", and database
+  operations in the trigger body "run in user mode unless system mode is explicitly
+  specified. User mode overrides the trigger's without sharing context"
+  (`apexdev.txt` L4880–4886).
+
+### Sources previously listed here that could not be re-verified
+
+The bullets below are help.salesforce.com articles. help.salesforce.com cannot be
+fetched from this repo, so nothing in this package rests on them any longer; the claims
+they used to support have either been re-grounded above or carry an UNVERIFIED marker
+beside them.
+
+- Flow Builder Reference — Update Records element (`sf.flow_ref_elements_update_records`)
+- Flow Builder Reference — Bulkification in Record-Triggered Flows (`sf.flow_concepts_trigger`)
+- Flow Builder Reference — How a Flow Runs in System or User Context (`sf.flow_concepts_running_context`)
+- Summer '26 Release Notes — Database Operations Run in User Mode by Default (API 67.0);
+  the API-version gate itself is recorded in `agents/_shared/AGENT_CONTRACT.md`
