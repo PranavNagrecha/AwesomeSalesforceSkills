@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "c0ee8db8cbac32fa2a96eb7994dd2c3754d0d5647d90c4c814400a4fd42d1d0a",
+  "generated_from_hash": "b03ff6dfb6c9724611eb2368e9eb79af56fc7f699483a755917033305a4b21c1",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -137478,7 +137478,7 @@
         "f7e41d5d9627c253bc0a",
         "fc0fbc4c539e681e83cb"
       ],
-      "content_hash": "9a3be4ff7e66a90c3dbd4cc975215ed7220de61fa331123ea6f1b17d4e72a70b",
+      "content_hash": "824df9ecf84fae83567384384abcefc6ab8bb8d313fa9b2da1c5f6e04f1f0bd7",
       "dependencies": [],
       "description": "First-time lightning-datatable setup \u2014 columns, key-field, basic sort, row actions. Triggers: lightning-datatable basics, datatable columns, key-field, fieldName, draft-values, onsave, onsort, onrowaction, customTypes, LightningDatatable, refreshApex after save. NOT for inline edit, custom types, infinite scroll \u2014 use lwc/lwc-datatable-advanced. NOT for datasets too large for datatable \u2014 use lwc/lwc-virtualized-lists.",
       "file_location": "skills/lwc/lwc-data-table",
