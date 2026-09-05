@@ -11,16 +11,33 @@ Checks a markdown file containing one or more user stories for:
   - A complexity field with one of S / M / L / XL
   - Story body word count below an INVEST-Small threshold
 
+What counts as a story
+----------------------
+Only sections whose heading looks like a story are linted:
+
+  * a heading carrying a story id -- `## US-FSALES-018 — Log Field Meeting`
+  * a heading that is the word Story -- `## Story: Escalate a premier case`
+  * a heading that is the stem itself -- `## As a Tier 1 agent, I want…`
+
+Every other heading is skipped. A story backlog is normally one document with
+a Summary, an RTM, a MoSCoW check, Process Observations and a Citations block
+around the stories; linting each of those as a story produced one guaranteed
+failure per section and made the exit code meaningless. A file with no headings
+at all is still treated as a single story, so `check_invest.py one-story.md`
+behaves as before.
+
 Stdlib only — no pip dependencies.
 
 Usage:
     python3 check_invest.py path/to/story.md
+    python3 check_invest.py --file path/to/story.md
+    python3 check_invest.py --manifest-dir artefacts/M5-S03
     python3 check_invest.py path/to/story.md --max-words 250
     python3 check_invest.py path/to/story.md --json
 
 Exit codes:
-    0 — all stories pass
-    1 — at least one issue found
+    0 — every story found passes
+    1 — at least one story failed, or no story was found at all
     2 — usage / IO error
 """
 
@@ -34,6 +51,26 @@ from pathlib import Path
 
 DEFAULT_MAX_WORDS = 250
 ALLOWED_COMPLEXITY = {"S", "M", "L", "XL"}
+
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+
+# A heading starts a story only when it looks like one. Anything else in the
+# document -- Summary, Requirements Traceability Matrix, MoSCoW capacity check,
+# Process Observations, Citations, Example N, Anti-Pattern -- is skipped.
+STORY_HEADING_PATTERNS = (
+    re.compile(r"^#{2,4}\s+.*\bUS-[A-Za-z0-9]", re.IGNORECASE),   # story id
+    # "Story: …", "Story - …", "Story 4 …" -- but NOT a section heading such
+    # as "Story backlog" or "Story map", which are containers, not stories.
+    re.compile(r"^#{2,4}\s+(?:user\s+)?story\b\s*(?:[:#\-\u2013\u2014]|\d)", re.IGNORECASE),
+    re.compile(r"^#{2,4}\s+as\s+a\b", re.IGNORECASE),             # the stem itself
+)
+
+
+def is_story_heading(line: str) -> bool:
+    for pattern in STORY_HEADING_PATTERNS:
+        if pattern.match(line):
+            return True
+    return False
 
 # Personas that are NOT grounded — must be replaced with a profile / perm set / role.
 GENERIC_PERSONAS = {
@@ -99,7 +136,24 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="INVEST + structural lint for Salesforce user stories.",
     )
-    parser.add_argument("path", help="Path to a markdown file containing user stories.")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        help="Path to a markdown file containing user stories.",
+    )
+    parser.add_argument(
+        "--file",
+        dest="file",
+        help="Path to a markdown file containing user stories — an alias of the positional path.",
+    )
+    parser.add_argument(
+        "--manifest-dir",
+        dest="manifest_dir",
+        help=(
+            "Directory to scan recursively for *.md story documents. Files with no "
+            "story heading are skipped; it is an error if the whole tree has none."
+        ),
+    )
     parser.add_argument(
         "--max-words",
         type=int,
@@ -115,32 +169,49 @@ def parse_args() -> argparse.Namespace:
 
 
 def split_stories(text: str) -> list[tuple[str, str]]:
-    """Split a markdown file into (title, body) pairs by top-level story headers.
+    """Split a markdown file into (title, body) pairs, one per story section.
 
-    A story is delimited by lines starting with '## ' or '# '. If no headers are
-    present, the whole file is treated as a single story with title '<root>'.
+    A story section opens at a heading that `is_story_heading` recognises and
+    closes at the next heading that is either another story heading or is at
+    the same level or shallower. Non-story sections are not returned at all.
+
+    A file with no markdown headings is treated as a single story titled
+    '<root>' -- the single-story-file case.
     """
     lines = text.splitlines()
+
+    if not any(HEADING_RE.match(line) for line in lines):
+        if any(line.strip() for line in lines):
+            return [("<root>", "\n".join(lines))]
+        return []
+
     stories: list[tuple[str, str]] = []
     current_title: str | None = None
+    current_level = 0
     current_body: list[str] = []
 
-    header_re = re.compile(r"^(#{1,3})\s+(.+?)\s*$")
-
     for line in lines:
-        m = header_re.match(line)
-        if m and len(m.group(1)) <= 2:
+        heading = HEADING_RE.match(line)
+        if heading is None:
             if current_title is not None:
-                stories.append((current_title, "\n".join(current_body)))
-            current_title = m.group(2).strip()
+                current_body.append(line)
+            continue
+
+        level = len(heading.group(1))
+        story_heading = is_story_heading(line)
+
+        if current_title is not None and (story_heading or level <= current_level):
+            stories.append((current_title, "\n".join(current_body)))
+            current_title = None
             current_body = []
-        else:
-            current_body.append(line)
+
+        if story_heading:
+            current_title = heading.group(2).strip()
+            current_level = level
+            current_body = []
 
     if current_title is not None:
         stories.append((current_title, "\n".join(current_body)))
-    elif current_body:
-        stories.append(("<root>", "\n".join(current_body)))
 
     return stories
 
@@ -328,49 +399,97 @@ def lint_story(title: str, body: str, max_words: int) -> list[str]:
     return issues
 
 
+def collect_targets(args: argparse.Namespace) -> tuple[list[Path], int, str]:
+    """Resolve the CLI into a list of markdown files, or an error to report."""
+    named: list[Path] = []
+    for value in (args.path, args.file):
+        if value:
+            named.append(Path(value))
+
+    if args.manifest_dir:
+        directory = Path(args.manifest_dir)
+        if not directory.is_dir():
+            return [], 2, f"--manifest-dir is not a directory: {directory}"
+        found = sorted(p for p in directory.rglob("*.md") if p.is_file())
+        if not found and not named:
+            return [], 1, f"no *.md file found under --manifest-dir {directory}"
+        named.extend(found)
+
+    if not named:
+        return [], 2, "provide a path, --file, or --manifest-dir"
+
+    for path in named:
+        if not path.exists():
+            return [], 2, f"File not found: {path}"
+        if not path.is_file():
+            return [], 2, f"Not a file: {path}"
+
+    # Preserve order, drop duplicates.
+    unique: list[Path] = []
+    for path in named:
+        if path not in unique:
+            unique.append(path)
+    return unique, 0, ""
+
+
 def main() -> int:
     args = parse_args()
-    path = Path(args.path)
 
-    if not path.exists():
-        print(f"ERROR: File not found: {path}", file=sys.stderr)
-        return 2
-    if not path.is_file():
-        print(f"ERROR: Not a file: {path}", file=sys.stderr)
-        return 2
-
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"ERROR: Could not read {path}: {e}", file=sys.stderr)
-        return 2
-
-    stories = split_stories(text)
-    if not stories:
-        print(f"ERROR: No stories found in {path}", file=sys.stderr)
-        return 1
+    paths, error_code, error_message = collect_targets(args)
+    if error_code:
+        print(f"ERROR: {error_message}", file=sys.stderr)
+        return error_code
 
     all_findings: list[dict] = []
+    skipped: list[Path] = []
     fail_count = 0
+    story_count = 0
 
-    for title, body in stories:
-        issues = lint_story(title, body, args.max_words)
-        all_findings.append({
-            "title": title,
-            "passed": not issues,
-            "issues": issues,
-        })
-        if issues:
-            fail_count += 1
+    for path in paths:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError as e:
+            print(f"ERROR: Could not read {path}: {e}", file=sys.stderr)
+            return 2
+
+        stories = split_stories(text)
+        if not stories:
+            skipped.append(path)
+            continue
+
+        for title, body in stories:
+            issues = lint_story(title, body, args.max_words)
+            story_count += 1
+            all_findings.append({
+                "file": str(path),
+                "title": title,
+                "passed": not issues,
+                "issues": issues,
+            })
+            if issues:
+                fail_count += 1
+
+    if story_count == 0:
+        scanned = ", ".join(str(path) for path in paths)
+        print(
+            f"ERROR: No story section found in {scanned}. A story section is a "
+            f"heading carrying a story id (## US-...), a heading that begins "
+            f"'Story'/'User Story', or a heading that is the As-a stem itself.",
+            file=sys.stderr,
+        )
+        return 1
 
     if args.json:
         print(json.dumps({
-            "file": str(path),
-            "story_count": len(stories),
+            "files": [str(path) for path in paths],
+            "skipped_files": [str(path) for path in skipped],
+            "story_count": story_count,
             "fail_count": fail_count,
             "findings": all_findings,
         }, indent=2))
     else:
+        for path in skipped:
+            print(f"[SKIP] {path} — no story heading; not linted as a story")
         for finding in all_findings:
             status = "PASS" if finding["passed"] else "FAIL"
             print(f"[{status}] {finding['title']}")
@@ -378,11 +497,13 @@ def main() -> int:
                 print(f"    - {issue}")
         print()
         print(
-            f"Summary: {len(stories) - fail_count}/{len(stories)} stories passed "
+            f"Summary: {story_count - fail_count}/{story_count} stories passed "
             f"({fail_count} failed)."
         )
 
-    return 0 if fail_count == 0 else 1
+    if fail_count:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

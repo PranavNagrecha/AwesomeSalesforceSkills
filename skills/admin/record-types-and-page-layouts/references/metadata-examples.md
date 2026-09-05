@@ -302,12 +302,13 @@ sf project retrieve start --manifest manifest/record-types.xml --target-org my-s
 
 python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py \
   --manifest-dir force-app/main/default
+# add --strict to fail on MEDIUM/LOW/INFO as well as CRITICAL/HIGH
 
 sf project deploy start --manifest manifest/record-types.xml --target-org my-sandbox --dry-run
 sf project deploy start --manifest manifest/record-types.xml --target-org my-sandbox
 ```
 
-Retrieve the object, the layouts, **and** every profile and permission set in the same package. The guide notes that retrieving a `RecordType` or a `Layout` makes that component appear in any `Profile` and `PermissionSet` retrieved in the same package — retrieve them separately and the profiles you commit will be missing assignments they actually have in the org (gotchas #7).
+Point the checker at the whole tree, not at one step's directory: with no record types and no layouts to resolve against, the profile cross-references are reported as `N reference(s) unresolvable at this scope` (INFO) rather than checked. Retrieve the object, the layouts, **and** every profile and permission set in the same package. The guide notes that retrieving a `RecordType` or a `Layout` makes that component appear in any `Profile` and `PermissionSet` retrieved in the same package — retrieve them separately and the profiles you commit will be missing assignments they actually have in the org (gotchas #7).
 
 ## Verify after deploy
 

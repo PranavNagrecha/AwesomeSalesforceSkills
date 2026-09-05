@@ -23,7 +23,7 @@ triggers:
 inputs: ["notification scenario", "audience", "sender requirements"]
 outputs: ["email design guidance", "template governance findings", "notification recommendations"]
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
 updated: 2026-09-05
 ---
@@ -115,7 +115,7 @@ Use this when emails are wrong, duplicated, not sent, or missing merge values.
 2. **Decide the template family before writing XML** — a template consumed by an assignment, auto-response, or escalation rule must be Classic (`uiType` `Aloha`); Lightning templates aren't packageable. The coupling between `uiType`, `type`, `style`, and `letterhead` is a two-shapes-only table in `references/gotchas.md`.
 3. **Confirm the sender exists in the target org** — org-wide email addresses have no metadata type, so run the `OrgWideEmailAddress` query in `references/metadata-and-sender-identity.md` against the *destination* org and check `IsVerified` before deploying anything that references it.
 4. **Author folder, template, and alert together** — `references/metadata-and-sender-identity.md` carries the deployable `EmailFolder`, `.email` body, `EmailTemplate` `-meta.xml`, package.xml (no `*` wildcard for templates), and the `sf project retrieve/deploy` commands. Pair every alert with at least one `recipients` or `ccEmails` entry.
-5. **Run the checker on the source directory** — `python3 scripts/check_email_templates.py force-app/main/default/email` flags hardcoded sender addresses, templates with no merge fields, and undocumented subject lines. Treat every `REVIEW` finding as a question to answer, not noise to suppress.
+5. **Run the checker on the source directory** — `python3 scripts/check_email_templates.py --manifest-dir force-app/main/default` (or pass the directory positionally) flags hardcoded sender addresses, bodies with no merge fields, and meta XML with no `<subject>`. It lints only `*.email` / `*.email-meta.xml` files and bodies under an `email/` directory, so notes that sit beside the templates are left alone. `REVIEW` findings exit 0 — treat each one as a question to answer, and add `--strict` to make them fail the run. Exit 1 means an ERROR: nothing template-shaped matched the paths, or a meta XML will not parse.
 6. **Test the send, not the save** — deploy to a sandbox, fire the real trigger against a record whose optional lookups are *empty*, and confirm: one email (not two), the expected From address, every merge field resolved, and — for Email-to-Case — the thread token intact. Worked scenarios in `references/examples.md`.
 7. **Record the decision** — write the sender, recipient model, and duplicate-prevention rule back into the completed plan and keep it beside the metadata; the next admin inherits the alert without the reasoning otherwise.
 

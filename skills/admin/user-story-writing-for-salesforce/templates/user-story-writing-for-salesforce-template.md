@@ -52,7 +52,7 @@ Use `story-shape.md` as the template. Paste the draft markdown story + handoff J
 - [ ] No story committed at XL (XL split first)
 - [ ] Handoff JSON present, valid, `recommended_agents[]` non-empty
 - [ ] `dependencies[]` populated for any prerequisite stories
-- [ ] `python3 scripts/check_invest.py <story.md>` exits 0
+- [ ] `python3 scripts/check_invest.py --file <story.md>` (or `--manifest-dir <dir>`) exits 0 — confirm the summary counts the stories you expect, not zero
 
 ## Notes
 

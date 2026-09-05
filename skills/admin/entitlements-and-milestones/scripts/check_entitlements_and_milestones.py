@@ -18,7 +18,9 @@ Expects metadata under:
     <manifest-dir>/milestoneTypes/*.milestoneType-meta.xml
     <manifest-dir>/settings/BusinessHours.settings-meta.xml   (optional)
 
-Findings are tagged ERROR / WARN / INFO. Any ERROR or WARN exits 1.
+Findings are tagged ERROR / WARN / INFO. ERROR exits 1. WARN and INFO are
+always printed and exit 0, unless ``--strict`` is passed, which makes WARN exit
+1 too.
 
 ERROR (exit 1)
   E1  <minutesToComplete> missing, non-numeric, or not a positive integer. The
@@ -34,7 +36,7 @@ ERROR (exit 1)
       MilestoneType outside none | recursIndependently | recursChained
       (api_meta.txt:88337-88345).
 
-WARN (exit 1)
+WARN (printed, exit 0)
   W1  An active process (<active>true</active>) declares no <milestones>. It
       deploys, enters cases, and tracks nothing.
   W2  A <milestoneName> does not match any MilestoneType file in the tree. The
@@ -46,6 +48,12 @@ WARN (exit 1)
       no violation, no completion action. Nothing observable happens.
   W5  No process file in the tree sets <isVersionDefault>true</isVersionDefault>
       for a given <versionMaster>.
+  W6  A process (or a milestone override) names <businessHours> and there is no
+      BusinessHours settings file anywhere in the tree, so the name could not be
+      resolved at all. That is what a partial retrieve looks like, and what a
+      build step that does not own settings/BusinessHours.settings-meta.xml
+      looks like — so it is a warning about scope, not an error about the
+      process. Silence would be worse: it reads as "checked and clean".
 
 INFO (does not fail on its own)
   I1  A milestone has violation triggers (positive <timeLength>) but no warning
@@ -256,7 +264,16 @@ def check_process_file(
             ))
 
     process_hours = _child_text(root, "businessHours")
-    if process_hours and business_hours is not None and process_hours not in business_hours:
+    if process_hours and business_hours is None:
+        findings.append(Finding(
+            "WARN", "W6", where,
+            f"Process '{process_name}' names business hours '{process_hours}', and this tree "
+            "holds no BusinessHours settings file, so the name was not resolved against "
+            "anything. Either the retrieve/step scope excludes "
+            "settings/BusinessHours.settings-meta.xml, or the calendar does not exist. Re-run "
+            "over the tree that carries the settings file to make this a real check.",
+        ))
+    elif process_hours and business_hours is not None and process_hours not in business_hours:
         findings.append(Finding(
             "WARN", "W3", where,
             f"Process '{process_name}' names business hours '{process_hours}', which is not a "
@@ -325,7 +342,15 @@ def _check_milestone(
 
     # --- W3: milestone-level calendar override ------------------------------
     override_hours = _child_text(milestone, "businessHours")
-    if override_hours and business_hours is not None and override_hours not in business_hours:
+    if override_hours and business_hours is None:
+        findings.append(Finding(
+            "WARN", "W6", where,
+            f"Milestone '{label}' overrides business hours with '{override_hours}', and this "
+            "tree holds no BusinessHours settings file, so the name was not resolved against "
+            "anything. Re-run over the tree that carries "
+            "settings/BusinessHours.settings-meta.xml to make this a real check.",
+        ))
+    elif override_hours and business_hours is not None and override_hours not in business_hours:
         findings.append(Finding(
             "WARN", "W3", where,
             f"Milestone '{label}' overrides business hours with '{override_hours}', which is not "
@@ -489,6 +514,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Suppress INFO findings; print only ERROR and WARN.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Exit 1 on WARN findings as well as ERROR — use where the tree is supposed "
+            "to be the complete Entitlement Management package."
+        ),
+    )
     args = parser.parse_args(argv)
 
     findings = check_entitlements_and_milestones(Path(args.manifest_dir))
@@ -501,14 +534,18 @@ def main(argv: list[str] | None = None) -> int:
     for finding in shown:
         print(finding)
 
-    if not errors and not warnings:
-        print(f"OK: no ERROR or WARN findings ({len(infos)} INFO note(s)).")
-        return 0
-
     print(
         f"\n{len(errors)} error(s), {len(warnings)} warning(s), {len(infos)} info note(s)."
     )
-    return 1
+
+    if errors:
+        return 1
+    if args.strict and warnings:
+        print(f"--strict: failing on {len(warnings)} warning(s).")
+        return 1
+
+    print("OK: no ERROR findings.")
+    return 0
 
 
 if __name__ == "__main__":

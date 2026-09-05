@@ -246,3 +246,21 @@ This fails INVEST on every axis: persona is generic, the I-Want is an epic, no A
 **What goes wrong:** No grounded persona means sharing rules can't be reasoned about, FLS is a guess, and the build agent has to call the BA back to ask "which user?" — defeating the purpose of the handoff.
 
 **Correct approach:** Force the persona into Salesforce terms — profile, permission set, or role. If the answer is genuinely "everyone," the story is probably an org-wide setting (OWD, login policy) and not a user story at all.
+
+---
+
+## Running the INVEST lint on these stories
+
+```bash
+# one story document
+python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --file backlog/story-backlog.md
+
+# every *.md under a build step's artefacts directory
+python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03
+```
+
+The positional form (`check_invest.py backlog/story-backlog.md`) still works; `--file` and `--manifest-dir` are the forms a build step uses.
+
+Only sections whose heading looks like a story are linted: a heading carrying a story id (`## US-CASE-001 — …`), a heading that begins `Story:` / `Story 4`, or a heading that is the As-a stem itself. A backlog document usually carries a Summary, a Requirements Traceability Matrix, a MoSCoW capacity check, Process Observations and Citations around the stories — those are skipped, not failed, so the exit code says something about the stories rather than about the document's table of contents. `## Story backlog` is a container heading and is skipped for the same reason.
+
+Exit 1 means at least one story failed the lint, **or** no story section was found at all. The rejected `US-Q2C-PARENT` block in Example 3 is the negative case: linted on its own it exits 1 on the missing acceptance criteria and missing complexity, which is exactly the point the example makes.

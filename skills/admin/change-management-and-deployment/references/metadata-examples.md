@@ -323,3 +323,23 @@ Master-Detail relationships "deletes all detail records in the Recycle Bin" in t
 adding a new Master-Detail field, and converting a Lookup to Master-Detail. Those detail
 records "are permanently deleted from the Recycle Bin and can't be recovered"
 (api_meta L4191–L4207). There is no rollback from that at all.
+
+---
+
+## Running the manifest checker on these files
+
+```bash
+python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py \
+  --manifest-dir manifest/
+
+# --manifest-dir recurses: point it at a build root and it checks every
+# package.xml underneath, applying the companion-manifest rule per directory.
+python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py \
+  --manifest-dir artefacts
+
+# --strict also fails on the review findings
+python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py \
+  --manifest-dir manifest/ --strict
+```
+
+Exit 1 means an ERROR: the manifest is not well-formed, its root is not `<Package>`, it declares no `<version>`, a `<types>` block has no `<name>` or no `<members>`, a destructive manifest uses `*`, or a `destructiveChanges*.xml` has no companion `package.xml` in the same directory. Everything else prints and exits 0 — including `manifest includes SharingRules`, which is a review flag rather than a defect: a release that changes sharing rules has to name the type.

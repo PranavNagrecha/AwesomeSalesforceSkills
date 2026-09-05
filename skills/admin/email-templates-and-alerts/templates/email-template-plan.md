@@ -48,7 +48,7 @@ to copy. Deployable shapes for the decisions here: `references/metadata-and-send
 - [ ] `senderAddress` set only where `senderType` is `OrgWideEmailAddress`
 - [ ] Merge fields tested against a record whose optional lookups are empty
 - [ ] Fired the real trigger and counted the emails — exactly one arrived
-- [ ] `python3 scripts/check_email_templates.py <email source dir>` run and every finding answered
+- [ ] `python3 scripts/check_email_templates.py --manifest-dir <email source dir>` run and every REVIEW finding answered (it exits 1 only when no template artefact matched, or a `.email-meta.xml` will not parse; use `--strict` to fail on REVIEW too)
 - [ ] Business owner approved subject/body
 - [ ] Deliverability/compliance requirements reviewed (sandbox deliverability is system-only after a refresh)
 

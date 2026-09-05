@@ -9,21 +9,45 @@ Scans a Salesforce metadata directory containing
     permissionsets/*.permissionset-meta.xml
     mutingpermissionsets/*.mutingpermissionset-meta.xml   (optional)
 
-and reports:
+and reports, by severity:
 
-  GOOD   PSes referenced in multiple PSGs            (composition reuse — desired)
-  GOOD   PSGs that include a Mute Permission Set     (explicit subtract — desired)
-  WARN   PSG with NO included permission sets        (orphan)
-  WARN   PSG names that violate `PSG_<persona>_<env>` convention
-  WARN   Mute Permission Set names that violate `MutePS_<scope>_<delta>` convention
-  WARN   PSG references a permission set whose metadata file is missing
-  WARN   Two PSGs differ by exactly one included PS  (consolidation candidate
-         — likely should be one PSG plus a mute)
+  ERROR  PSG with no `<permissionSets>` at all. A group composes permission
+         sets; one that composes none grants nothing and cannot be the thing
+         the design intends.
+  ERROR  The same permission set listed twice inside one PSG.
+  ERROR  PSG (or muting permission set) with no `<label>`. `label` is a
+         required field on PermissionSetGroup and MutingPermissionSet in the
+         Metadata API; a file without one does not deploy.
+  ERROR  `<status>` present with a value outside the documented
+         PermissionSetGroup status enum (Updated / Outdated / Updating /
+         Failed). `status` is read-only on deploy, so its ABSENCE is normal
+         and is not a finding.
+  ERROR  A PSG or muting file that will not parse as XML.
+  WARN   PSG names that violate the `PSG_<persona>_<env>` house convention.
+  WARN   Mute Permission Set names that violate `MutePS_<scope>_<delta>`.
+  WARN   PSG references a permission set (or mute) whose metadata file is not
+         in the tree — usually a partial retrieve, sometimes a real dangling
+         reference.
+  WARN   Two PSGs differ by exactly one included PS (consolidation candidate
+         — likely should be one PSG plus a mute).
+  INFO   No PSG files under the scanned tree; nothing to compose.
+  GOOD   PSes referenced in multiple PSGs (composition reuse — desired)
+  GOOD   PSGs that include a Mute Permission Set (explicit subtract — desired)
 
-stdlib only. Exits 1 on any WARN finding, 0 if only GOOD findings (or empty).
+Naming conventions are house style, not platform behaviour, so they never
+fail the run on their own. Use `--strict` in a governance gate where the
+convention is enforced.
+
+stdlib only.
+
+Exit codes:
+  0 -- no ERROR (and no WARN when --strict is passed)
+  1 -- at least one ERROR, or at least one WARN under --strict
+  2 -- the manifest directory does not exist
 
 Usage:
     python3 check_permission_set_group_composition.py --manifest-dir <path>
+    python3 check_permission_set_group_composition.py --manifest-dir <path> --strict
 
 The <path> may point at the project root, the `force-app/main/default/`
 directory, or any parent of the `permissionsetgroups/` and `permissionsets/`
@@ -46,6 +70,10 @@ PSG_NAME_RE = re.compile(r"^PSG_[A-Za-z0-9]+_[A-Za-z0-9]+$")
 # load-bearing part because it makes the file searchable as a mute.
 MUTE_NAME_RE = re.compile(r"^MutePS_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$")
 
+# PermissionSetGroup.status is read-only on deploy; the Metadata API documents
+# exactly these values. Absence is normal, an unknown value is not.
+PSG_STATUS_VALUES = {"Updated", "Outdated", "Updating", "Failed"}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -58,6 +86,14 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Exit 1 on warnings as well as errors — use where the "
+            "PSG_<persona>_<env> naming convention is actually enforced."
+        ),
     )
     return parser.parse_args()
 
@@ -110,25 +146,39 @@ def child_text_values(root: ET.Element, child_name: str) -> list[str]:
     return results
 
 
-def analyse(manifest_dir: Path) -> tuple[list[str], list[str]]:
-    """Return (good_findings, warn_findings)."""
+def analyse(
+    manifest_dir: Path,
+) -> tuple[list[str], list[str], list[str], list[str]]:
+    """Return (good_findings, error_findings, warn_findings, info_findings)."""
     goods: list[str] = []
+    errors: list[str] = []
     warns: list[str] = []
-
-    if not manifest_dir.exists():
-        warns.append(f"Manifest directory not found: {manifest_dir}")
-        return goods, warns
+    infos: list[str] = []
 
     psg_files = find_psg_files(manifest_dir)
     ps_files = find_ps_files(manifest_dir)
     mute_files = find_mute_files(manifest_dir)
 
     if not psg_files:
-        warns.append(
+        infos.append(
             f"No *.permissionsetgroup-meta.xml files found under {manifest_dir}; "
-            f"nothing to compose."
+            f"nothing to compose. If a PSG was expected here, the retrieve or "
+            f"the build step scope is wrong."
         )
-        return goods, warns
+        return goods, errors, warns, infos
+
+    # Muting permission sets are their own metadata type and carry a required
+    # label of their own.
+    for mute_path in mute_files:
+        mute_root = parse_xml(mute_path)
+        if mute_root is None:
+            errors.append(f"{mute_path}: unable to parse muting permission set metadata.")
+            continue
+        if not child_text_values(mute_root, "label"):
+            errors.append(
+                f"{mute_path}: muting permission set has no <label>; label is a "
+                f"required field and the file will not deploy without one."
+            )
 
     ps_names_known: set[str] = {stem_developer_name(p) for p in ps_files}
     mute_names_known: set[str] = {stem_developer_name(p) for p in mute_files}
@@ -146,11 +196,40 @@ def analyse(manifest_dir: Path) -> tuple[list[str], list[str]]:
         root = parse_xml(psg_path)
         psg_name = stem_developer_name(psg_path)
         if root is None:
-            warns.append(f"{psg_path}: unable to parse PSG metadata.")
+            errors.append(f"{psg_path}: unable to parse PSG metadata.")
             continue
 
         included_pses = child_text_values(root, "permissionSets")
         included_mutes = child_text_values(root, "mutingPermissionSets")
+
+        # ERROR: required label.
+        if not child_text_values(root, "label"):
+            errors.append(
+                f"{psg_path}: PSG '{psg_name}' has no <label>; label is a "
+                f"required field on PermissionSetGroup and the file will not "
+                f"deploy without one."
+            )
+
+        # ERROR: status present but not a documented value. Absence is normal
+        # (the field is read-only on deploy), so absence is never a finding.
+        declared_status = child_text_values(root, "status")
+        for status_value in declared_status:
+            if status_value not in PSG_STATUS_VALUES:
+                errors.append(
+                    f"{psg_path}: PSG '{psg_name}' declares <status>"
+                    f"{status_value}</status>, which is not one of "
+                    f"{sorted(PSG_STATUS_VALUES)}."
+                )
+
+        # ERROR: the same permission set listed twice in one group.
+        seen_pses: set[str] = set()
+        for ps_name in included_pses:
+            if ps_name in seen_pses:
+                errors.append(
+                    f"{psg_path}: PSG '{psg_name}' lists permission set "
+                    f"'{ps_name}' more than once."
+                )
+            seen_pses.add(ps_name)
 
         psg_composition[psg_name] = tuple(sorted(included_pses))
 
@@ -160,10 +239,11 @@ def analyse(manifest_dir: Path) -> tuple[list[str], list[str]]:
         if included_mutes:
             psgs_with_mutes.append((psg_name, included_mutes))
 
-        for ps_name in included_pses:
+        for ps_name in sorted(set(included_pses)):
             ps_to_psgs.setdefault(ps_name, []).append(psg_name)
 
-        # Naming-convention check on the PSG itself.
+        # Naming-convention check on the PSG itself. House style, not a
+        # platform rule — WARN, never ERROR.
         if not PSG_NAME_RE.match(psg_name):
             warns.append(
                 f"{psg_path}: PSG name '{psg_name}' does not match convention "
@@ -211,9 +291,9 @@ def analyse(manifest_dir: Path) -> tuple[list[str], list[str]]:
                     f"MutePS_<scope>_<delta> (e.g. MutePS_NoOpportunityDelete)."
                 )
 
-    # WARN: orphan PSGs.
+    # ERROR: orphan PSGs — a group that composes nothing grants nothing.
     for psg_name in sorted(orphan_psgs):
-        warns.append(
+        errors.append(
             f"PSG '{psg_name}' has zero included permission sets; "
             f"either delete the PSG or add the PSes that define its access."
         )
@@ -241,28 +321,43 @@ def analyse(manifest_dir: Path) -> tuple[list[str], list[str]]:
                     f"Mute Permission Set instead."
                 )
 
-    return goods, warns
+    return goods, errors, warns, infos
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    goods, warns = analyse(manifest_dir)
+
+    if not manifest_dir.is_dir():
+        print(f"ERROR: Manifest directory not found: {manifest_dir}", file=sys.stderr)
+        return 2
+
+    goods, errors, warns, infos = analyse(manifest_dir)
 
     for finding in goods:
         print(f"GOOD: {finding}")
+
+    for finding in infos:
+        print(f"INFO: {finding}")
+
+    for finding in errors:
+        print(f"ERROR: {finding}", file=sys.stderr)
 
     for finding in warns:
         print(f"WARN: {finding}", file=sys.stderr)
 
     summary = (
-        f"Summary: {len(goods)} good, {len(warns)} warn, scanned "
+        f"Summary: {len(goods)} good, {len(errors)} error, {len(warns)} warn, "
+        f"{len(infos)} info, scanned "
         f"{len(find_psg_files(manifest_dir))} PSG file(s)."
     )
     print("")
     print(summary)
 
-    if warns:
+    if errors:
+        return 1
+    if args.strict and warns:
+        print("--strict: failing on warnings.")
         return 1
     return 0
 

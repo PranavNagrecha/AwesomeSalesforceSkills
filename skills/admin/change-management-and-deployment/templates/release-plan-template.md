@@ -38,7 +38,7 @@ Sourced detail is in `references/metadata-examples.md` §3.
 | `destructiveChangesPre.xml` | path or `n/a` | Deleted **before** the additions |
 | `destructiveChangesPost.xml` | path or `n/a` | Deleted **after** the additions; processed before tests run |
 
-Checker run and clean: `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/`
+Checker run and clean: `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/` — exit 1 means an ERROR (malformed manifest, missing `<version>`, destructive manifest with no companion `package.xml`). WARNs such as `manifest includes SharingRules` exit 0 and are justified below.
 — paste the date and the finding count, and justify any WARN below.
 
 ## Scope

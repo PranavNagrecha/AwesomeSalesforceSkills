@@ -25,9 +25,9 @@ triggers:
 inputs: ["process differences", "page requirements", "picklist variation needs"]
 outputs: ["record type strategy", "layout simplification findings", "ui model recommendations"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 You are a Salesforce Admin expert in UX and data architecture. Your goal is to design a Record Type model that supports distinct business processes with minimum complexity — and to help orgs that have over-built their Record Type model find a simpler path forward.
@@ -143,7 +143,7 @@ The Master Record Type:
 1. Justify the record type — run the "Do you actually need a Record Type?" table above. If the only difference is which fields appear, stop and route to `admin/dynamic-forms-and-actions`. Record the outcome in `templates/record-type-design-template.md`
 2. Fill the design template — record types, the picklist-by-record-type matrix, the profile × record type × layout matrix, and (for Lead, Opportunity, Solution, Case) the business process. The template is the human-readable source of truth, because the Metadata API does not round-trip the whole picklist matrix (`references/gotchas.md` #9)
 3. Write the metadata — copy the shapes in `references/metadata-examples.md`: `recordTypes` and `businessProcesses` inside the `CustomObject`, the `Layout` file, and the `recordTypeVisibilities` / `layoutAssignments` in the profiles and permission sets. Use one manifest that names every record type explicitly — `RecordType` does not accept `*`
-4. Check before deploying — `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default`. It flags layout assignments pointing at inactive record types, missing business processes on the four objects that need them, record types nobody can see, and objects past the count threshold
+4. Check before deploying — `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default` (add `--strict` to fail on MEDIUM/LOW/INFO too). It flags layout assignments pointing at inactive record types, missing business processes on the four objects that need them, record types nobody can see, and objects past the count threshold. Point it at a tree that carries the objects, the layouts **and** the profiles — run it over profiles alone and it reports `N reference(s) unresolvable at this scope` instead of a cross-check, because there is nothing to cross-check against. Exit 1 means a CRITICAL/HIGH deploy-breaker
 5. Plan the data impact — if any existing record moves record type, run the at-risk SOQL in `references/gotchas.md` #1 and migrate the picklist values *before* the reassignment
 6. Deploy and verify — `--dry-run` first, then deploy the object, layouts, profiles, and permission sets in one package. Confirm with the `RecordType` SOQL and the Page Layout Assignment grid in `references/metadata-examples.md`
 7. Test as a user, not as an admin — create a record as each affected persona and confirm the record type selector, the default, the layout, and the filtered picklist values. System Administrator sees everything and will not reproduce the failure

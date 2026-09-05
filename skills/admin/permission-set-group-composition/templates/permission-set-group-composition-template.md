@@ -108,7 +108,7 @@ Tick these before considering the composition done:
 - [ ] Every included PS has a license requirement noted; persona license is compatible with all included PSes.
 - [ ] If retiring a PS referenced by this PSG: detach → wait for `Status = Updated` → delete sequence is documented in section 4.
 - [ ] Time-boxed assignments use `ExpirationDate`; no custom Flow replicates the platform primitive.
-- [ ] `python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir <path>` exits 0 (or warnings reviewed and approved).
+- [ ] `python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir <path>` exits 0 — it exits 1 only on ERROR (empty PSG, duplicate PS in a group, missing `label`, unknown `status`). Re-run with `--strict` to fail on the naming-convention WARNs too.
 - [ ] Setup Audit Trail entry expected for this change is documented for the post-deploy review.
 
 ---

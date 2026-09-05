@@ -58,6 +58,7 @@ The two PSGs share the same underlying PSes. When `PS_ForecastingEdit` is added 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Sales Manager Prod</label>
     <description>Sales Manager — same as Rep, no Opportunity delete</description>
     <hasActivationRequired>false</hasActivationRequired>
     <permissionSets>PS_OpportunityRead</permissionSets>
@@ -73,6 +74,7 @@ The two PSGs share the same underlying PSes. When `PS_ForecastingEdit` is added 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <MutingPermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Mute No Opportunity Delete</label>
     <description>Subtract Delete on Opportunity from any PSG that includes it</description>
     <objectPermissions>
         <object>Opportunity</object>
@@ -192,3 +194,13 @@ The recalculation lifecycle is asynchronous; treating it as instantaneous is the
 **What goes wrong:** The user still does not get Delete on Opportunity. Mute is one-way subtract — once mute is applied, no included PS in the same PSG can grant the muted permission back. The admin spends an afternoon hunting for the "rule" that is suppressing the access; the rule is the mute, working as documented.
 
 **Correct approach:** If the persona genuinely needs Delete on Opportunity, do not include the mute. If only some users in the persona need it, build a second PSG without the mute and assign accordingly.
+
+---
+
+## Running the composition checker on these files
+
+```bash
+python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir force-app/main/default
+```
+
+Exit 1 means an ERROR: a PSG with no `<permissionSets>`, the same permission set listed twice in one group, a missing `<label>` on a PSG or muting permission set, an unknown `<status>` value, or a file that will not parse. Naming-convention violations and unresolved references are WARNs and exit 0 — add `--strict` where the `PSG_<persona>_<env>` convention is actually enforced.

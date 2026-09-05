@@ -22,7 +22,18 @@ Validate anything written here with:
 ```bash
 python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py \
   --manifest-dir force-app/main/default
+
+# --strict also fails on WARN, for a tree that is meant to be the whole package
+python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py \
+  --manifest-dir force-app/main/default --strict
 ```
+
+Exit 1 means an ERROR. WARN and INFO print and exit 0 — including `W6`, which
+fires when a process names `<businessHours>` and the tree holds no
+`settings/BusinessHours.settings-meta.xml` at all. The name could not be
+resolved against anything, so the calendar check was not made; run the checker
+over the tree that carries the settings file (or the whole build) to turn W6
+back into the real `W3` cross-check.
 
 ---
 

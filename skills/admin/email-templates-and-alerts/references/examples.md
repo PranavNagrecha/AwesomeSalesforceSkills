@@ -54,3 +54,13 @@ and Prior Status was not Ready for Handoff
 ```
 
 **Why this matters:** Without the prior-value check, later edits on the same record keep sending the same email.
+
+---
+
+## Running the template checker on these files
+
+```bash
+python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir force-app/main/default
+```
+
+`--manifest-dir` is an alias of the positional path, so `check_email_templates.py force-app/main/default/email` is equivalent. Only `*.email`, `*.email-meta.xml`, and body files under an `email/` directory are linted — a `sender-identity-note.md` or deploy-order note beside the templates is documentation, not a template, and is skipped. REVIEW findings print and exit 0; `--strict` makes them exit 1. Exit 1 without `--strict` means an ERROR: the paths matched no template artefact, or a `.email-meta.xml` will not parse.

@@ -26,9 +26,9 @@ triggers:
 inputs: ["release scope", "deployment method", "rollback plan"]
 outputs: ["deployment plan", "release risk findings", "rollback checklist", "package.xml and destructive-changes manifests", "deploy contract (checkOnly, rollbackOnError, testLevel)"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 You are a Salesforce Admin expert in metadata release planning. Your goal is to move changes safely between environments, choose the right deployment method for the team's maturity, and make rollback a real plan instead of a hopeful sentence in the release notes.
@@ -159,10 +159,14 @@ not a plan; it is a hope with a calendar invite.
    post-deploy switches. The rollback row must name one of the four real backout paths in
    `references/metadata-examples.md` §6 — not "roll back the change set".
 4. **Run the checker.**
-   `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/` — it fails on a
-   malformed manifest, a missing `<version>`, a destructive manifest with no companion
-   `package.xml`, and `NoTestRun` on a release marked for production. Resolve every ERROR;
-   justify every WARN in the release plan.
+   `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/` — it exits 1 on a
+   malformed manifest, a missing `<version>`, and a destructive manifest with no companion
+   `package.xml` in the same directory. `NoTestRun` on a release marked for production, and a
+   risky type such as `SharingRules` in the manifest, are WARNs that print and exit 0 — a
+   release that changes sharing rules has to name `SharingRules`. `--manifest-dir` recurses,
+   so pointing it at a build root checks every step's `package.xml` rather than reporting none.
+   Resolve every ERROR; justify every WARN in the release plan, or re-run with `--strict` to
+   make the WARNs fail the run.
 5. **Validate against the actual target.** `sf project deploy validate` with the chosen
    test level, per `references/metadata-examples.md` §3. A validation against staging does
    not license a quick deploy to production. Note the validation id and its expiry date.
@@ -227,7 +231,7 @@ Surface these WITHOUT being asked:
 | `references/well-architected.md` | You are justifying the release process to an architect or a review board, or you want the source list |
 | `references/llm-anti-patterns.md` | You are reviewing AI-generated release advice, or self-checking your own output before handing it over |
 | `templates/release-plan-template.md` | You are writing the actual release plan — fill it in, do not paraphrase it |
-| `scripts/check_deployment_manifest.py` | You have a manifest directory to check before validating: `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/` |
+| `scripts/check_deployment_manifest.py` | You have a manifest directory to check before validating: `python3 scripts/check_deployment_manifest.py --manifest-dir manifest/` (recurses; add `--strict` to fail on WARNs too) |
 
 ## Related Skills
 

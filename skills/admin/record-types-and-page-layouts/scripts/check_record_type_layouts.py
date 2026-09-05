@@ -21,9 +21,24 @@ Checks (each grounded in the Metadata API Developer Guide, v62):
    enforce a field there).
 5. More than 8 record types on one object (MEDIUM), more than 13 (HIGH).
 6. A `layoutAssignments` entry naming a layout file that is not in the scanned tree.
+7. Profile / PermissionSet references that cannot be resolved at all because the
+   scanned tree holds no record types or no layouts. At a single build step's
+   scope both usually live in another step, so the cross-reference in checks 1,
+   3 and 6 is never actually made. That is reported as an INFO -- "N reference(s)
+   unresolvable at this scope" -- so a reader can tell the difference between
+   "checked and clean" and "nothing to check against".
+
+Severities and exit codes:
+  CRITICAL / HIGH   deploy-breaking; exit 1
+  MEDIUM / LOW      review; printed, exit 0
+  INFO              scope and discovery notes; printed, exit 0
+
+  0 -- no CRITICAL/HIGH finding (and no finding at all when --strict is passed)
+  1 -- at least one CRITICAL/HIGH, or any finding under --strict
 
 Usage:
     check_record_type_layouts.py --manifest-dir force-app/main/default
+    check_record_type_layouts.py --manifest-dir force-app/main/default --strict
     check_record_type_layouts.py path/to/objects path/to/layouts
 """
 
@@ -265,6 +280,36 @@ def run_checks(model: Model) -> list[str]:
                     f"scanned tree - confirm it exists in the target org"
                 )
 
+    # 7. references that cannot be resolved at this scope, and dangling
+    #    references that can be. Never silent: a reader must be able to tell
+    #    "cross-checked and clean" from "there was nothing to cross-check".
+    referenced_record_types = [rt for _path, rt, _root in model.visibility_entries]
+    referenced_record_types += [rt for _path, _layout, rt in model.layout_assignments if rt]
+    referenced_layouts = [layout for _path, layout, _rt in model.layout_assignments]
+
+    if referenced_record_types and not model.record_types:
+        findings.append(
+            f"INFO record types: {len(referenced_record_types)} Profile/PermissionSet "
+            f"record-type reference(s) unresolvable at this scope - the scanned tree holds "
+            f"no record type metadata, so no reference was cross-checked. Re-run over the "
+            f"tree that also carries objects/<Object>/recordTypes/ to make the check real"
+        )
+    elif model.record_types:
+        for path, rt, root_type in model.visibility_entries:
+            if rt not in model.record_types:
+                findings.append(
+                    f"LOW {path}: {root_type} recordTypeVisibilities names record type "
+                    f"'{rt}' which is not in the scanned tree - confirm it exists in the "
+                    f"target org"
+                )
+
+    if referenced_layouts and not model.layouts:
+        findings.append(
+            f"INFO layouts: {len(referenced_layouts)} Profile layoutAssignment reference(s) "
+            f"unresolvable at this scope - the scanned tree holds no layout metadata, so no "
+            f"assignment was cross-checked. Re-run over the tree that also carries layouts/"
+        )
+
     return findings
 
 
@@ -277,14 +322,27 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+BLOCKING_SEVERITIES = {"CRITICAL", "ERROR", "HIGH"}
+
+
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
-    blocking = [item for item in normalized if SEVERITY_WEIGHTS.get(item["severity"], 0) > 0]
-    if normalized:
-        print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if blocking else 0
+    blocking = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
+    if blocking:
+        print(f"ERROR: {len(blocking)} deploy-breaking finding(s) detected", file=sys.stderr)
+    if len(normalized) > len(blocking):
+        print(
+            f"WARN: {len(normalized) - len(blocking)} review/info finding(s) detected",
+            file=sys.stderr,
+        )
+    if blocking:
+        return 1
+    if strict and normalized:
+        print("--strict: failing on review/info findings.", file=sys.stderr)
+        return 1
+    return 0
 
 
 def main() -> int:
@@ -299,6 +357,11 @@ def main() -> int:
         help="Directory to scan recursively (for example force-app/main/default). Repeatable.",
     )
     parser.add_argument("paths", nargs="*", help="Additional files or directories to scan")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on MEDIUM/LOW/INFO findings as well as CRITICAL/HIGH.",
+    )
     args = parser.parse_args()
 
     targets = [Path(value) for value in list(args.manifest_dir) + list(args.paths)]
@@ -310,6 +373,7 @@ def main() -> int:
         return emit_result(
             ["HIGH no object, record type, layout, profile, or permission set metadata found"],
             "Scanned 0 record-type/layout metadata file(s); no files matched the provided paths.",
+            args.strict,
         )
 
     model = Model()
@@ -328,7 +392,7 @@ def main() -> int:
         f"Scanned {len(files)} metadata file(s): {len(model.record_types)} record type(s), "
         f"{len(model.layouts)} layout(s); {len(findings)} finding(s) detected."
     )
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,19 @@ Two entry points:
 
 The --manifest-dir form runs the directory-level checks that need to see the whole
 manifest set at once (a destructive manifest with no companion package.xml, a release
-manifest asking for NoTestRun). The positional form keeps the original per-file scan.
+manifest asking for NoTestRun). It recurses: point it at a build root and it finds
+every package.xml under it, and applies the companion-manifest checks per directory,
+so a wider scope reads more, not less. The positional form keeps the original
+per-file scan.
+
+Severities and exit codes:
+  ERROR / CRITICAL   the manifest will not deploy as written; exit 1
+  HIGH / WARN /      risk to review before deploying -- notably a RISKY_TYPES
+  MEDIUM / LOW       member such as SharingRules, which is a legitimate thing to
+                     ship and must not fail the run on its own; printed, exit 0
+
+  0 -- no ERROR/CRITICAL (and no finding at all when --strict is passed)
+  1 -- at least one ERROR/CRITICAL, or any finding under --strict
 
 Stdlib only.
 """
@@ -97,17 +109,25 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+BLOCKING_SEVERITIES = {"ERROR", "CRITICAL"}
+
+
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
-    errors = [item for item in normalized if item["severity"] in ("ERROR", "CRITICAL")]
+    errors = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
     if normalized:
         print(
             f"{len(normalized)} finding(s) detected ({len(errors)} blocking)",
             file=sys.stderr,
         )
-    return 1 if normalized else 0
+    if errors:
+        return 1
+    if strict and normalized:
+        print("--strict: failing on non-blocking findings.", file=sys.stderr)
+        return 1
+    return 0
 
 
 # ------------------------------------------------------------------- per-file checks
@@ -174,8 +194,10 @@ def audit_package_xml(path: Path, text: str) -> list[str]:
             wildcard_objects = True
 
         if type_name in RISKY_TYPES:
+            # A risky type in the manifest is a review flag, not a defect: a
+            # release that changes sharing rules has to name SharingRules.
             findings.append(
-                f"HIGH {path}: manifest includes {type_name}; require explicit review and smoke tests"
+                f"WARN {path}: manifest includes {type_name}; require explicit review and smoke tests"
             )
         if type_name in ("Flow", "Profile", "PermissionSet", "CustomObject") and "*" in members:
             findings.append(
@@ -228,47 +250,81 @@ def audit_file(path: Path) -> list[str]:
 
 # -------------------------------------------------------------- directory-level checks
 
+def is_manifest_file(path: Path) -> bool:
+    name = path.name.lower()
+    return name == "package.xml" or name.startswith("destructivechanges")
+
+
+def find_manifest_files(directory: Path) -> list[Path]:
+    """Every package.xml / destructiveChanges*.xml under `directory`, recursively.
+
+    Recursion is deliberate: a build root holds one manifest per step, and a
+    non-recursive scan of the root would report "no package.xml found" while
+    silently ignoring all of them.
+    """
+    return sorted(
+        candidate
+        for candidate in directory.rglob("*")
+        if candidate.is_file() and is_manifest_file(candidate)
+    )
+
+
 def audit_manifest_dir(directory: Path) -> list[str]:
     findings: list[str] = []
 
     if not directory.is_dir():
         return [f"ERROR {directory}: --manifest-dir is not a directory"]
 
-    entries = sorted(p for p in directory.iterdir() if p.is_file())
-    package = next((p for p in entries if p.name.lower() == "package.xml"), None)
-    destructive = [p for p in entries if p.name.lower().startswith("destructivechanges")]
+    manifest_files = find_manifest_files(directory)
 
-    for path in entries:
-        if path.name.lower() == "package.xml" or path.name.lower().startswith("destructivechanges"):
-            findings.extend(audit_package_xml(path, path.read_text(encoding="utf-8", errors="ignore")))
+    for path in manifest_files:
+        findings.extend(audit_package_xml(path, path.read_text(encoding="utf-8", errors="ignore")))
 
-    # Check 2: a destructive manifest with no companion package.xml in the same directory.
-    if destructive and package is None:
-        names = ", ".join(p.name for p in destructive)
-        findings.append(
-            f"ERROR {directory}: {names} present with no package.xml in the same directory. "
-            "A destructive deploy also needs a package.xml that lists no components but "
-            "declares the API version, beside the destructive manifest"
-        )
-    elif destructive and package is not None:
-        pkg_text = package.read_text(encoding="utf-8", errors="ignore")
-        if "<version>" not in pkg_text:
+    # Companion-manifest checks are per directory: a destructiveChanges*.xml
+    # needs its package.xml beside it, not merely somewhere in the tree.
+    by_directory: dict[Path, list[Path]] = {}
+    for path in manifest_files:
+        by_directory.setdefault(path.parent, []).append(path)
+
+    for parent, entries in sorted(by_directory.items()):
+        package = None
+        for candidate in entries:
+            if candidate.name.lower() == "package.xml":
+                package = candidate
+                break
+        destructive = [p for p in entries if p.name.lower().startswith("destructivechanges")]
+
+        # Check 2: a destructive manifest with no companion package.xml in the same directory.
+        if destructive and package is None:
+            names = ", ".join(p.name for p in destructive)
             findings.append(
-                f"ERROR {package}: companion package.xml for a destructive deploy declares no <version>"
+                f"ERROR {parent}: {names} present with no package.xml in the same directory. "
+                "A destructive deploy also needs a package.xml that lists no components but "
+                "declares the API version, beside the destructive manifest"
             )
+        elif destructive and package is not None:
+            pkg_text = package.read_text(encoding="utf-8", errors="ignore")
+            if "<version>" not in pkg_text:
+                findings.append(
+                    f"ERROR {package}: companion package.xml for a destructive deploy declares no <version>"
+                )
 
-    for path in destructive:
-        stem = path.name.lower()
-        if stem not in ("destructivechanges.xml", "destructivechangespre.xml", "destructivechangespost.xml"):
-            findings.append(
-                f"WARN {path}: unrecognised destructive-manifest filename; ordering is chosen by "
-                "name (destructiveChanges.xml / destructiveChangesPre.xml / destructiveChangesPost.xml)"
-            )
+        for path in destructive:
+            stem = path.name.lower()
+            if stem not in ("destructivechanges.xml", "destructivechangespre.xml", "destructivechangespost.xml"):
+                findings.append(
+                    f"WARN {path}: unrecognised destructive-manifest filename; ordering is chosen by "
+                    "name (destructiveChanges.xml / destructiveChangesPre.xml / destructiveChangesPost.xml)"
+                )
 
-    # Check 4: NoTestRun in a release-manifest note aimed at production.
-    for path in entries:
-        if path.suffix.lower() not in (".yml", ".yaml", ".json", ".md"):
-            continue
+    # Check 4: NoTestRun in a release-manifest note aimed at production. Notes are
+    # found recursively too, alongside the manifests they describe.
+    notes = sorted(
+        candidate
+        for candidate in directory.rglob("*")
+        if candidate.is_file() and candidate.suffix.lower() in (".yml", ".yaml", ".json", ".md")
+    )
+    for path in notes:
         note = path.read_text(encoding="utf-8", errors="ignore")
         level_match = TEST_LEVEL_LINE.search(note)
         if not level_match:
@@ -293,8 +349,10 @@ def audit_manifest_dir(directory: Path) -> list[str]:
                     "is a development environment, not production"
                 )
 
-    if package is None and not destructive:
-        findings.append(f"ERROR {directory}: no package.xml or destructive manifest found")
+    if not manifest_files:
+        findings.append(
+            f"ERROR {directory}: no package.xml or destructive manifest found anywhere under this directory"
+        )
 
     return findings
 
@@ -314,6 +372,11 @@ def main() -> int:
         nargs="*",
         help="Manifest files or metadata directories to inspect",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on review findings (HIGH/WARN/MEDIUM/LOW) as well as ERROR/CRITICAL.",
+    )
     args = parser.parse_args()
 
     if not args.manifest_dir and not args.paths:
@@ -326,7 +389,7 @@ def main() -> int:
         directory = Path(args.manifest_dir)
         findings.extend(audit_manifest_dir(directory))
         if directory.is_dir():
-            scanned += sum(1 for p in directory.iterdir() if p.is_file())
+            scanned += sum(1 for p in directory.rglob("*") if p.is_file())
 
     if args.paths:
         files = iter_files(args.paths)
@@ -340,11 +403,13 @@ def main() -> int:
         f"Scanned {scanned} manifest or metadata file(s); "
         f"{len(findings)} finding(s) detected."
     )
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":
     exit_code = main()
     if exit_code:
-        sys.exit(1)  # findings present — explicit failure path for CI and the repo validator
+        # An ERROR/CRITICAL finding (or any finding under --strict) — explicit
+        # failure path for CI and the repo validator.
+        sys.exit(1)
     sys.exit(0)

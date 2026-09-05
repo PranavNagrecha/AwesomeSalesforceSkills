@@ -105,7 +105,7 @@ Run through these before marking configuration complete:
 - [ ] Sharing rules referencing groups have been tested by logging in as a group member
 - [ ] SOQL queries for queue-owned records use `Owner.Type = 'Queue'`
 - [ ] Reports and dashboards validated for queue-name rows in Owner-grouped views
-- [ ] Checker script run: `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <path>`
+- [ ] Checker script run: `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <path>` — confirm it lists the queues you expect, not zero; add `--strict` to fail on the WARNs
 
 ---
 

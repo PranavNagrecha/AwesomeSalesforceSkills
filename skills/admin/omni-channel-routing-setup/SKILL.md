@@ -39,7 +39,7 @@ outputs:
   - Queue-to-Routing Configuration mapping
   - Validated Omni-Channel setup checklist
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-09-05
 ---

@@ -36,9 +36,9 @@ outputs:
   - "Decision guidance on queue vs public group for a given use case"
   - "SOQL pattern for finding queue-owned records"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # Queues and Public Groups
@@ -172,7 +172,7 @@ Step-by-step instructions for an AI agent or practitioner working in this domain
 3. **Configure downstream use** — for queues: set up an assignment rule or Flow to route records to the queue. For public groups: create a sharing rule that references the group, or assign list views to the group.
 4. **Validate membership** — confirm all intended users are reachable through the membership chain (direct, via role, or via nested group). Deactivated users should be removed from queue membership to avoid stale ownership pools.
 5. **Test the queue email** — assign a test record to the queue and confirm the queue email receives a notification.
-6. **Run the checker script** — `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <metadata-dir>` to surface any Group metadata references for review, including sharing rules still using the pre-Secure-Roles `<roleAndSubordinates>` element.
+6. **Run the checker script** — `python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir <metadata-dir>` to surface any Group metadata references for review, including sharing rules still using the pre-Secure-Roles `<roleAndSubordinates>` element. It recurses, so `--manifest-dir` can be the project root or a build root and it still finds every `queues/` and `groups/` directory beneath. Exit 1 is an ERROR (a file that will not parse); queue-configuration findings are WARNs that exit 0 unless you add `--strict`.
 7. **Confirm SOQL uses Owner.Type** — any report or query on queue-owned records must use `Owner.Type = 'Queue'`; plain `OwnerId` checks will not distinguish queues from users.
 
 ---

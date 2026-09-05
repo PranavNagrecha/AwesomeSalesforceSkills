@@ -112,7 +112,7 @@ positive = violation). Re-derive every `timeLength` whenever `minutesToComplete`
 - [ ] Process versioning strategy documented for future SLA term changes
 - [ ] Every `timeLength` re-derived after the last change to `minutesToComplete`
 - [ ] Exactly one file per `versionMaster` has `isVersionDefault` true
-- [ ] `python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir <dir>` reports no ERROR
+- [ ] `python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir <dir>` reports no ERROR (exit 0), and no `W6` — a `W6` means the tree has no BusinessHours settings file, so the calendar names were never checked
 
 ---
 

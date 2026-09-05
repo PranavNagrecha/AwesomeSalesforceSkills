@@ -35,9 +35,9 @@ outputs:
   - "Naming-convention check report and consolidation candidates"
   - "Assignment lifecycle plan covering expiration, activation, and audit trail"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # Permission Set Group Composition
@@ -140,7 +140,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 
 ## Recommended Workflow
 
-1. **Inventory existing PSGs.** Run `scripts/check_permission_set_group_composition.py` against the `permissionsetgroups/` and `permissionsets/` directories — capture which PSes are referenced in multiple PSGs (good — reuse), which PSGs have zero included PSes (orphan), which PSGs use mute PSes (good — explicit subtract), and which names violate the convention.
+1. **Inventory existing PSGs.** Run `python3 scripts/check_permission_set_group_composition.py --manifest-dir <path>` (add `--strict` to fail the run on the naming convention as well) against the `permissionsetgroups/` and `permissionsets/` directories — capture which PSes are referenced in multiple PSGs (good — reuse), which PSGs have zero included PSes (orphan), which PSGs use mute PSes (good — explicit subtract), and which names violate the convention.
 2. **Identify the closest existing PSG.** Compare the target persona to existing PSGs and decide: subtractive delta (mute), additive delta (new PS), or different combination (new PSG).
 3. **Apply the Decision Guidance table.** Choose mute, new PS, or new PSG based on the row that matches the request. Avoid cloning; cloning is the explosion vector.
 4. **Compose the PSG.** Use the template at `templates/permission-set-group-composition-template.md`. Fill persona name, included PSes, mute PS (if any), license dependency, and lifecycle stage (draft / piloted / production).
@@ -175,7 +175,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 | Composition plan | Persona, included PSes, mute PS, license dependency, lifecycle stage (uses the template) |
 | Recalculation rollout sequence | Ordered list of PSGs that will recalc when a referenced PS changes, with a quiet-window recommendation |
 | Deletion plan | Detach → wait → delete sequence for retiring a PS that is referenced by one or more PSGs |
-| Composition checker report | Output of `scripts/check_permission_set_group_composition.py` flagging multi-PSG PSes, mute usage, orphans, and naming-convention violations |
+| Composition checker report | Output of `scripts/check_permission_set_group_composition.py` — ERRORs on platform facts (empty PSG, duplicate PS in a group, missing `label`, unknown `status`), WARNs on naming-convention violations and unresolved references, GOODs on multi-PSG reuse and mute usage |
 
 ## Related Skills
 

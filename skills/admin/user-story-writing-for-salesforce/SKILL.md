@@ -35,9 +35,9 @@ outputs:
   - "Story-split rationale when an oversize story is broken into 2+ children"
   - "Complexity sizing per story (S / M / L / XL) with the heuristic that drove the score"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # User Story Writing For Salesforce

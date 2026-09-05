@@ -6,8 +6,19 @@ references in XML files, listing queue names and any members for review.
 
 Uses stdlib only — no pip dependencies.
 
+`--manifest-dir` recurses: every `queues/` and `groups/` directory anywhere
+beneath it is scanned, so a build root with one directory per step reads more,
+not less. Pointing it straight at a `queues/` directory works too.
+
+Exit codes:
+    0 -- no ERROR (and no WARN when --strict is passed)
+    1 -- at least one ERROR (a queue or group file that will not parse), or at
+         least one WARN under --strict
+    2 -- the manifest directory does not exist
+
 Usage:
     python3 check_queues.py [--manifest-dir path/to/metadata]
+    python3 check_queues.py --manifest-dir artefacts --strict
     python3 check_queues.py --help
 """
 
@@ -22,16 +33,12 @@ from pathlib import Path
 # Salesforce Metadata API namespace
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
 
-# Relative path inside a Salesforce DX project where queue metadata lives
-QUEUE_METADATA_PATHS = [
-    "queues",          # MDAPI format
-    "force-app/main/default/queues",   # SFDX format
-]
-
-GROUP_METADATA_PATHS = [
-    "groups",
-    "force-app/main/default/groups",
-]
+# Directory name the Metadata API writes each type under. Searched at any
+# depth beneath --manifest-dir, which covers MDAPI (`queues/`), SFDX
+# (`force-app/main/default/queues/`) and per-step build trees
+# (`artefacts/M2-S04/queues/`) with one rule.
+QUEUE_METADATA_DIRS = ["queues"]
+GROUP_METADATA_DIRS = ["groups"]
 
 # Superseded SharedTo role-hierarchy elements.
 #   roleAndSubordinates  -> roleAndSubordinatesInternal under Secure Roles
@@ -59,19 +66,67 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--manifest-dir",
         default=".",
-        help="Root directory of the Salesforce project or metadata (default: current directory).",
+        help=(
+            "Root directory of the Salesforce project or metadata (default: current "
+            "directory). Scanned recursively for queues/ and groups/ directories."
+        ),
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR.",
     )
     return parser.parse_args()
 
 
-def find_xml_files(base: Path, subdirs: list[str]) -> list[Path]:
-    """Return all .xml files found under any of the given subdirectory candidates."""
+def find_xml_files(base: Path, dir_names: list[str]) -> list[Path]:
+    """Every .xml file in a directory with one of these names, at any depth.
+
+    Recursive on purpose: a build root holds `artefacts/<step-id>/queues/`, and
+    a single-level scan of the root would report "no queue metadata found"
+    while the queues sit one directory down.
+    """
     found: list[Path] = []
-    for subdir in subdirs:
-        candidate = base / subdir
-        if candidate.is_dir():
+    for dir_name in dir_names:
+        candidates: list[Path] = []
+        if base.is_dir() and base.name == dir_name:
+            candidates.append(base)
+        candidates.extend(sorted(p for p in base.rglob(dir_name) if p.is_dir()))
+        for candidate in candidates:
             found.extend(sorted(candidate.glob("*.xml")))
-    return found
+    unique: list[Path] = []
+    for path in found:
+        if path not in unique:
+            unique.append(path)
+    return unique
+
+
+def find_child(element: ET.Element, local: str) -> ET.Element | None:
+    """First direct child with this local name, or None.
+
+    Explicit loop rather than `element.find(a) or element.find(b)`: a leaf
+    Element is falsy, so the `or` form silently discards a real match whose
+    element has no children — which is every text field in this file.
+    """
+    for child in element:
+        if child.tag.rsplit("}", 1)[-1] == local:
+            return child
+    return None
+
+
+def find_descendants(element: ET.Element, path: list[str]) -> list[ET.Element]:
+    """Every element reached by walking this chain of local names."""
+    current = [element]
+    for local in path:
+        nxt: list[ET.Element] = []
+        for node in current:
+            nxt.extend(child for child in node if child.tag.rsplit("}", 1)[-1] == local)
+        current = nxt
+    return current
+
+
+def child_text(element: ET.Element, local: str) -> str:
+    return extract_text(find_child(element, local))
 
 
 def extract_text(element: ET.Element | None) -> str:
@@ -88,21 +143,31 @@ def parse_queue_file(path: Path) -> dict:
         return {"file": str(path), "error": f"XML parse error: {exc}"}
 
     root = tree.getroot()
-    # Strip namespace for easier access
-    ns = {"sf": SF_NS}
 
-    label = extract_text(root.find("sf:label", ns) or root.find("label"))
-    queue_email = extract_text(root.find("sf:queueEmail", ns) or root.find("queueEmail"))
+    # The Metadata API Queue type carries the label in <name> and the queue
+    # address in <email> (references/metadata-examples.md: "The developer name
+    # is the file name; `name` inside the file is the label"). There is no
+    # <label> and no <queueEmail> element on Queue.
+    label = child_text(root, "name")
+    queue_email = child_text(root, "email")
     supported_objects = [
         extract_text(el)
-        for el in (root.findall("sf:queueSobject/sf:sobjectType", ns)
-                   or root.findall("queueSobject/sobjectType"))
+        for el in find_descendants(root, ["queueSobject", "sobjectType"])
     ]
-    member_elements = (
-        root.findall("sf:queueMembers/sf:users/sf:member", ns)
-        or root.findall("queueMembers/users/member")
-    )
-    members = [extract_text(el) for el in member_elements]
+
+    # queueMembers carries four member sources, each with its own element name.
+    members: list[str] = []
+    for container, leaf, kind in (
+        ("users", "user", "user"),
+        ("roles", "role", "role"),
+        ("publicGroups", "publicGroup", "group"),
+        ("roleAndSubordinatesInternal", "roleAndSubordinateInternal", "role+subordinates"),
+        ("roleAndSubordinates", "roleAndSubordinate", "role+subordinates"),
+    ):
+        for el in find_descendants(root, ["queueMembers", container, leaf]):
+            value = extract_text(el)
+            if value:
+                members.append(f"{kind}: {value}")
 
     return {
         "type": "Queue",
@@ -122,17 +187,13 @@ def parse_group_file(path: Path) -> dict:
         return {"file": str(path), "error": f"XML parse error: {exc}"}
 
     root = tree.getroot()
-    ns = {"sf": SF_NS}
 
-    label = extract_text(root.find("sf:label", ns) or root.find("label"))
-    member_elements = (
-        root.findall("sf:members", ns)
-        or root.findall("members")
-    )
+    # Group carries its label in <name>, the same way Queue does.
+    label = child_text(root, "name")
     members = []
-    for el in member_elements:
-        mtype = extract_text(el.find("sf:type", ns) or el.find("type"))
-        mval = extract_text(el.find("sf:member", ns) or el.find("member"))
+    for el in find_descendants(root, ["members"]):
+        mtype = child_text(el, "type")
+        mval = child_text(el, "member")
         if mtype or mval:
             members.append(f"{mtype}: {mval}" if mtype else mval)
 
@@ -182,8 +243,8 @@ def check_queue_issues(queue: dict) -> list[str]:
 
     if not queue.get("queue_email"):
         issues.append(
-            f"[Queue: {label}] No queueEmail configured — team will not receive "
-            "notifications when records are assigned to this queue."
+            f"[Queue: {label}] No <email> configured — the queue address will not "
+            "receive notifications when records are assigned to this queue."
         )
 
     if not queue.get("supported_objects"):
@@ -212,16 +273,17 @@ def main() -> int:
     args = parse_args()
     base = Path(args.manifest_dir).resolve()
 
-    if not base.exists():
+    if not base.is_dir():
         print(f"ERROR: Directory not found: {base}", file=sys.stderr)
-        return 1
+        return 2
 
     print(f"Scanning: {base}\n")
-    issues: list[str] = []
+    errors: list[str] = []
+    warns: list[str] = []
     found_any = False
 
     # --- Scan queue metadata files ---
-    queue_files = find_xml_files(base, QUEUE_METADATA_PATHS)
+    queue_files = find_xml_files(base, QUEUE_METADATA_DIRS)
     if queue_files:
         found_any = True
         print(f"Queues found ({len(queue_files)}):")
@@ -229,7 +291,7 @@ def main() -> int:
             q = parse_queue_file(qf)
             if q.get("error"):
                 print(f"  [ERROR] {q['file']}: {q['error']}")
-                issues.append(f"Parse error in {q['file']}: {q['error']}")
+                errors.append(f"Parse error in {q['file']}: {q['error']}")
                 continue
             objs = ", ".join(q["supported_objects"]) if q["supported_objects"] else "(none)"
             email = q["queue_email"] or "(not configured)"
@@ -238,14 +300,18 @@ def main() -> int:
             print(f"    Objects : {objs}")
             print(f"    Email   : {email}")
             print(f"    Members : {members}")
-            issues.extend(check_queue_issues(q))
+            warns.extend(check_queue_issues(q))
         print()
     else:
         print("No queue metadata files found in known locations.")
-        print(f"  Searched: {[str(base / p) for p in QUEUE_METADATA_PATHS]}\n")
+        print(
+            "  Searched every directory named "
+            + ", ".join(QUEUE_METADATA_DIRS)
+            + f" at any depth beneath {base}.\n"
+        )
 
     # --- Scan public group metadata files ---
-    group_files = find_xml_files(base, GROUP_METADATA_PATHS)
+    group_files = find_xml_files(base, GROUP_METADATA_DIRS)
     if group_files:
         found_any = True
         print(f"Public Groups found ({len(group_files)}):")
@@ -253,7 +319,7 @@ def main() -> int:
             g = parse_group_file(gf)
             if g.get("error"):
                 print(f"  [ERROR] {g['file']}: {g['error']}")
-                issues.append(f"Parse error in {g['file']}: {g['error']}")
+                errors.append(f"Parse error in {g['file']}: {g['error']}")
                 continue
             members = ", ".join(g["members"]) if g["members"] else "(no members listed)"
             print(f"  Group: {g['label']}")
@@ -261,7 +327,11 @@ def main() -> int:
         print()
     else:
         print("No public group metadata files found in known locations.")
-        print(f"  Searched: {[str(base / p) for p in GROUP_METADATA_PATHS]}\n")
+        print(
+            "  Searched every directory named "
+            + ", ".join(GROUP_METADATA_DIRS)
+            + f" at any depth beneath {base}.\n"
+        )
 
     # --- Scan all XML files for queue/group references ---
     refs = scan_metadata_for_group_references(base)
@@ -292,19 +362,33 @@ def main() -> int:
         )
         print()
 
-    # --- Report issues ---
-    if issues:
-        print(f"Issues found ({len(issues)}):")
-        for issue in issues:
-            print(f"  ISSUE: {issue}")
-        return 1
+    # --- Report findings ---
+    if errors:
+        print(f"Errors found ({len(errors)}):")
+        for finding in errors:
+            print(f"  ERROR: {finding}")
+        print()
+    if warns:
+        print(f"Warnings found ({len(warns)}):")
+        for finding in warns:
+            print(f"  WARN: {finding}")
+        print()
 
     if not found_any and not refs:
-        print("No queue or public group metadata found in this directory.")
-        print("Run from the root of a Salesforce DX project or MDAPI package.")
-        return 0
+        print("INFO: No queue or public group metadata found under this directory.")
+        print(
+            "  Point --manifest-dir at a Salesforce DX project, an MDAPI package, or a "
+            "build root — queues/ and groups/ are found at any depth."
+        )
 
-    print("No issues found.")
+    if errors:
+        return 1
+    if args.strict and warns:
+        print("--strict: failing on warnings.")
+        return 1
+
+    if not errors and not warns:
+        print("No issues found.")
     return 0
 
 

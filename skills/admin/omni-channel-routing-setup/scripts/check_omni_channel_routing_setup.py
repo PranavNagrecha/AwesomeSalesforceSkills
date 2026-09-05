@@ -17,13 +17,16 @@ Usage:
 
 Exit code
 ---------
-ERROR findings exit 1. WARN and INFO findings are always printed but exit 0.
+ERROR findings exit 1. WARN and INFO findings are always printed but exit 0,
+unless ``--strict`` is passed, which makes WARN findings exit 1 too.
 
 ERROR (exit 1)
   E1  A ServiceChannel with no QueueRoutingConfig anywhere in the manifest.
       Work items enter the channel and never reach a queue.
-  E2  A ServiceChannel that no ServicePresenceStatus names under <channels>.
-      No agent can select a status that receives its work.
+  E2  A ServiceChannel that no ServicePresenceStatus names under <channels>,
+      when the manifest DOES hold presence statuses. No agent can select a
+      status that receives its work. (When the manifest holds no presence
+      status at all, see W4: that is a scope symptom, not a build defect.)
   E3  A QueueRoutingConfig with neither a PresenceUserConfig nor a
       ServicePresenceStatus in the manifest: capacity is never assigned to
       anyone, so the routing configuration has no one to route to.
@@ -42,6 +45,11 @@ WARN (printed, exit 0)
   W2  A ServicePresenceStatus with no <channels>: the guide says it is treated
       as Away. Legitimate for a real Away status, a bug for a working one.
   W3  A PresenceUserConfig with no <assignments>: nobody uses it.
+  W4  A ServiceChannel in a manifest that holds no ServicePresenceStatus at
+      all. Indistinguishable from a partial retrieve, so it is not an error:
+      it is the scope that is wrong, or the presence statuses are deployed
+      separately. Re-run over the tree that carries
+      servicePresenceStatuses/ to turn this back into a real E2 check.
   W5  An Apex trigger that looks like it sets Case.OwnerId directly, which
       bypasses Omni-Channel capacity enforcement.
 
@@ -122,6 +130,14 @@ def parse_args() -> argparse.Namespace:
         "--quiet-info",
         action="store_true",
         help="Suppress INFO findings; print only ERROR and WARN.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Exit 1 on WARN findings as well as ERROR — use where the manifest is "
+            "supposed to be the complete Omni-Channel package."
+        ),
     )
     return parser.parse_args()
 
@@ -246,21 +262,35 @@ def check_service_channels(
 
         if name not in claimed:
             if statuses:
-                detail = (
-                    "none of the "
-                    f"{len(statuses)} ServicePresenceStatus file(s) in this manifest "
-                    f"name it under <channels>: {', '.join(sorted(claimed)) or '(none)'}"
+                # Presence statuses ARE here and none of them claims the
+                # channel: a real build defect.
+                findings.append(
+                    Finding(
+                        "ERROR", "E2", channel.where,
+                        f"ServiceChannel '{name}': none of the {len(statuses)} "
+                        "ServicePresenceStatus file(s) in this manifest name it under "
+                        f"<channels>: {', '.join(sorted(claimed)) or '(none)'}. No agent "
+                        "can select a status that receives work on this channel, so "
+                        "nothing routes (references/metadata-examples.md § 2).",
+                    )
                 )
             else:
-                detail = "this manifest contains no ServicePresenceStatus at all"
-            findings.append(
-                Finding(
-                    "ERROR", "E2", channel.where,
-                    f"ServiceChannel '{name}': {detail}. No agent can select a status "
-                    "that receives work on this channel, so nothing routes "
-                    "(references/metadata-examples.md § 2).",
+                # No presence statuses anywhere in the tree. That is what a
+                # partial retrieve looks like, and what a step scope that does
+                # not own servicePresenceStatuses/ looks like. Do not call a
+                # scope symptom a build defect.
+                findings.append(
+                    Finding(
+                        "WARN", "W4", channel.where,
+                        f"ServiceChannel '{name}': this manifest contains no "
+                        "ServicePresenceStatus at all, so the channel-to-status link "
+                        "was not checked. Either the retrieve/step scope excludes "
+                        "servicePresenceStatuses/, or no agent can select a status that "
+                        "receives work on this channel. Re-run over the tree that "
+                        "carries the presence statuses to make this a real check "
+                        "(references/metadata-examples.md § 2).",
+                    )
                 )
-            )
 
     return findings
 
@@ -474,12 +504,16 @@ def main() -> int:
     for finding in errors + warnings + ([] if args.quiet_info else infos):
         print(finding)
 
-    if not errors:
-        print(f"OK: no ERROR findings ({len(warnings)} warning(s)).")
-        return 0
+    if errors:
+        print(f"\n{len(errors)} error(s), {len(warnings)} warning(s).")
+        return 1
 
-    print(f"\n{len(errors)} error(s), {len(warnings)} warning(s).")
-    return 1
+    if args.strict and warnings:
+        print(f"\n--strict: failing on {len(warnings)} warning(s).")
+        return 1
+
+    print(f"OK: no ERROR findings ({len(warnings)} warning(s)).")
+    return 0
 
 
 if __name__ == "__main__":

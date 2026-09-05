@@ -43,9 +43,9 @@ outputs:
   - "Verification SOQL for SlaProcess versions, active Entitlements and violated CaseMilestones"
   - "Version-bump plan when SLA terms change, including re-derived time-trigger offsets"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # Entitlements and Milestones
@@ -243,7 +243,10 @@ The Entitlement Templates related list is not available on the product page in L
    `Entitlement.BusinessHoursId` (`references/gotchas.md` gotcha 11).
 6. **Lint, then deploy-validate** — run
    `python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir force-app/main/default`
-   and clear every ERROR, then `sf project deploy validate --test-level RunLocalTests`.
+   and clear every ERROR (only ERROR exits 1; add `--strict` to fail on WARN too), then
+   `sf project deploy validate --test-level RunLocalTests`. Point it at a tree that also carries
+   `settings/BusinessHours.settings-meta.xml` — without it the calendar names are unresolvable and
+   the checker says so (`W6`) instead of cross-checking them.
 7. **Test with the clock and the log, in a sandbox** — create a case through each intake channel; run
    the `Case WHERE EntitlementId = NULL` query in `references/examples.md`; turn on a debug log with
    the **Workflow** category at INFO and confirm `SLA_PROCESS_CASE` appears and `SLA_NULL_START_DATE`
@@ -267,7 +270,7 @@ Run through these before marking work in this area complete:
 - [ ] Every `timeLength` was re-derived after the last change to `minutesToComplete`
 - [ ] Something writes `CaseMilestone.CompletionDate` — completion criteria the platform can satisfy, or deployed Apex/Flow
 - [ ] `enableEntitlementVersioning` and `enableMilestoneStoppedTime` are on, and exactly one version per `versionMaster` has `isVersionDefault` true
-- [ ] `scripts/check_entitlements_and_milestones.py` reports no ERROR against the deploy directory
+- [ ] `scripts/check_entitlements_and_milestones.py` reports no ERROR against the deploy directory, and no `W6` (unresolvable business-hours name — the settings file is out of scope)
 - [ ] A Workflow-category debug log on a test case shows `SLA_PROCESS_CASE` and no `SLA_NULL_START_DATE`
 
 ---

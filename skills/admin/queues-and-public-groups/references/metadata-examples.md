@@ -102,9 +102,21 @@ Group **membership** is not part of `Group` metadata; add members in Setup or wi
 
 ```bash
 sf project retrieve start --metadata Queue --target-org my-sandbox
-python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --help
+
+# --manifest-dir recurses: every queues/ and groups/ directory at any depth is
+# scanned, so a build root with one directory per step reads all of them.
+python3 skills/admin/queues-and-public-groups/scripts/check_queues.py \
+  --manifest-dir force-app/main/default
+python3 skills/admin/queues-and-public-groups/scripts/check_queues.py \
+  --manifest-dir artefacts --strict
+
 sf project deploy start --source-dir force-app/main/default/queues --target-org my-sandbox
 ```
+
+Exit 1 means an ERROR: a queue or group file that will not parse. A queue with
+no `<email>`, no `<queueSobject>`, or an object that does not support queue
+ownership is a WARN — printed, exit 0 — so add `--strict` in a gate that should
+fail on those. Exit 2 means the directory does not exist.
 
 Verify after deploy:
 

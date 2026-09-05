@@ -121,7 +121,7 @@ Every row must exist in source before the change is deployable. Shapes are in `r
 | Default record type | `profiles/*.profile-meta.xml` only — `<default>true</default>`; permission sets cannot set it | ☐ |
 | Layout assignment | `profiles/*.profile-meta.xml` only — `layoutAssignments`; permission sets have no such element | ☐ |
 | Manifest naming every record type explicitly (`RecordType` rejects `*`) | `manifest/*.xml` | ☐ |
-| Checker clean | `python3 scripts/check_record_type_layouts.py --manifest-dir <dir>` | ☐ |
+| Checker clean | `python3 scripts/check_record_type_layouts.py --manifest-dir <dir>` — exits 1 on CRITICAL/HIGH only; confirm the summary does not say `unresolvable at this scope`, which means the tree held no record types or no layouts to check against | ☐ |
 
 ---
 

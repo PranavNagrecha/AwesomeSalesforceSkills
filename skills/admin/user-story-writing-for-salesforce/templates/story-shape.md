@@ -121,4 +121,4 @@ Each child must independently pass INVEST.
 - [ ] **S**mall — fits a single sprint (XL is split, never committed)
 - [ ] **T**estable — every AC is boolean pass/fail in a sandbox
 
-Lint with `python3 scripts/check_invest.py path/to/story.md`. Exit 0 = pass, 1 = fail.
+Lint with `python3 scripts/check_invest.py path/to/story.md` (or `--file path/to/story.md`, or `--manifest-dir <dir>` to lint every `*.md` under a directory). Exit 0 = pass, 1 = fail. Only sections whose heading looks like a story are linted — a heading carrying a story id (`## US-…`), a heading that begins `Story:`/`Story 4`, or a heading that is the As-a stem itself. A Summary, RTM, MoSCoW check, Process Observations or Citations section in the same document is skipped, not failed. Exit 1 also means no story section was found at all.

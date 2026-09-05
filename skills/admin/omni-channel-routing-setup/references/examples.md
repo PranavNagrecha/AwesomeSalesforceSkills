@@ -144,6 +144,10 @@ Step 7 — Create Skills-Based Routing Rules
 ```bash
 python3 skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py \
   --manifest-dir force-app/main/default --quiet-info
+
+# fail on WARN as well, where the manifest is meant to be the complete package
+python3 skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py \
+  --manifest-dir force-app/main/default --quiet-info --strict
 ```
 
 Point `--manifest-dir` at the whole package rather than one folder: the
@@ -152,3 +156,10 @@ configuration, or a routing configuration with no presence configuration and no
 presence status, is an ERROR (exit 1) that only a whole-package run can see.
 `--quiet-info` drops the notes about references that resolve outside the
 package, such as the standard `Busy` status.
+
+One rule bends for scope. A channel that no presence status claims is `ERROR E2`
+**when the manifest holds presence statuses** — that is a real build defect. When
+the manifest holds no `servicePresenceStatus` file at all, the same shape is
+indistinguishable from a partial retrieve, so it reports `WARN W4` and exits 0:
+the check was not made, and the message says so. Add `--strict` to make W4 fail
+the run in a gate where the manifest is supposed to be complete.
