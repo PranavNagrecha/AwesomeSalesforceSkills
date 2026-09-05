@@ -5383,6 +5383,9 @@
     "delegated-administration": [
       "admin/delegated-administration"
     ],
+    "delegates-focus": [
+      "lwc/lwc-accessibility"
+    ],
     "deleteRecord": [
       "lwc/lwc-lds-writes"
     ],
@@ -8641,6 +8644,9 @@
     "kyc": [
       "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture"
+    ],
+    "label-association": [
+      "lwc/lwc-accessibility"
     ],
     "lakehouse": [
       "architect/data-cloud-architecture",
@@ -13441,6 +13447,7 @@
       "devops/automated-regression-testing",
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
+      "lwc/lwc-accessibility",
       "lwc/lwc-css-and-styling",
       "lwc/lwc-custom-event-patterns",
       "lwc/lwc-focus-management",

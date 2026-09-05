@@ -1,6 +1,6 @@
 ---
 name: record-triggered-flow-patterns
-description: "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for tracing save order against triggers — use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right — use flow/flow-bulkification."
+description: "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion', 'triggerOrder', 'doesRequireRecordChangedToMeetCriteria', 'scheduled path', 'RecordBeforeDelete', 'flow-meta.xml', 'FlowTest'. NOT for tracing save order against triggers — use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right — use flow/flow-bulkification."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -20,6 +20,15 @@ triggers:
   - "how do I use $Record__Prior in flow"
   - "when should this be apex instead of flow"
   - "flow runs too many times on update"
+  - "write a record-triggered flow-meta.xml I can deploy"
+  - "set triggerOrder for two flows on the same object"
+  - "add a scheduled path to a record-triggered flow"
+  - "archive a record before it is deleted with flow"
+  - "flow created two tasks for the same opportunity"
+  - "test a record-triggered flow before activating it"
+  - "convert an after-save update to before-save"
+  - "before save flow update same record without an update element"
+  - "record triggered flow entry conditions only when a field changes"
 inputs:
   - "business event that should trigger automation"
   - "whether only the current record or related records must change"
@@ -29,7 +38,7 @@ outputs:
   - "review findings for trigger context and recursion risk"
   - "decision on before-save, after-save, or Apex"
 dependencies: []
-version: 2.0.1
+version: 2.1.0
 author: Pranav Nagrecha
 updated: 2026-09-05
 ---
@@ -49,6 +58,24 @@ Gather if not available:
 - What is the expected bulk cardinality (see `flow/flow-bulkification` for the scale math)?
 - Is there an active trigger framework in the org? (If yes, coexistence requires explicit coordination.)
 
+## Questions to Ask Before Configuring
+
+Ask these before opening Flow Builder. Each one decides an element in the XML, and each one traces to a gotcha that only shows up in production. An agent that skips them ships a flow that passes deploy and fires twice.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does this change fields on the record being saved, or does it touch anything else?" | Same-record-only is the only case that fits `RecordBeforeSave`; everything else forces `RecordAfterSave` | The `triggerType`, and whether the flow can have DML elements at all (`references/gotchas.md` § before-save assignments) |
+| "Is this a state or a transition — 'while Status is Approved' or 'when Status becomes Approved'?" | Decides `doesRequireRecordChangedToMeetCriteria`; the wrong answer creates a duplicate record on every later edit | The `<start>` block: `filters` + `doesRequire…` for a transition, `filterFormula` for a state test (`references/gotchas.md` § transition vs state) |
+| "What else already runs on this object, in which save context, at which `triggerOrder`?" | Two flows in one save context with no declared order is undefined sequencing, and a before-trigger writing the same field always wins over a before-save flow | The `triggerOrder` value and the list of fields this flow may not own (`references/gotchas.md` § triggerOrder ties) |
+| "Does anything downstream update this record again?" | An after-save flow that re-saves its own object re-enters the save procedure, and steps 9–17 are skipped on that pass — so the behaviour differs from the first save | The recursion guard: marker field, changed-field criteria, or a move to before-save (`references/gotchas.md` § recursive save) |
+| "If the related-record write fails at 2am, who finds out and how?" | Without a `faultConnector` the interview stops and the error is invisible outside the flow error email | A fault path on every Create/Update/Delete/Get, landing on `Application_Log__c` per `templates/flow/FaultPath_Template.md` |
+| "Does any of this work need to happen later — hours or days after the save?" | A scheduled path is a `FlowScheduledPath`, batches up to 200 interviews, and an `AsyncAfterCommit` path runs post-commit where it cannot roll the save back | The `scheduledPaths` block with `offsetUnit`, `recordField`, and a deliberate `maxBatchSize` (`references/gotchas.md` § scheduled path batching) |
+| "When a record of this type is deleted, does anything have to be preserved or cleaned up?" | `RecordBeforeDelete` is the only delete context that exists — there is no after-delete record-triggered flow, and cascade deletes may never reach it | A third flow (or an explicit decision not to have one) instead of discovering the gap after a mass delete (`references/gotchas.md` § no after-delete) |
+
+What a proper configuration adds over just building the flow: the trigger context matches the requirement instead of defaulting to after-save, entry criteria encode the business *transition* rather than a state that stays true, every failure path writes a row someone can query, and the object's save context has a declared run order instead of an accidental one.
+
+---
+
 ## Core Concepts
 
 ### Before-Save Is For Fast Same-Record Changes
@@ -67,6 +94,8 @@ Before-save record-triggered flows are optimized for updating fields on the reco
 - Call invocable Apex that performs DML.
 - Have scheduled paths (before-save is transactional, not time-delayed).
 - Be called from Platform-Event-Triggered contexts.
+
+UNVERIFIED (2026-09-05): the Metadata API guide describes `RecordBeforeSave` as running "to make more updates to that record before it's saved to the database" (`api_meta.txt` L72539–72542) and defines `scheduledPaths` on `FlowStart` without restricting it by `triggerType` (L72465–72466). The prohibitions in that list are Flow Builder's, documented on help.salesforce.com, which cannot be fetched. Treat them as design rules — the checker enforces the DML ones — but confirm in a sandbox before telling a customer the platform blocks a specific one.
 
 ### After-Save Is For Committed Side Effects
 
@@ -98,7 +127,9 @@ Record-triggered flows participate in Salesforce's documented order of execution
 - **Before-save flows run BEFORE Apex before-triggers (step 3 vs step 4).** These are separate, consecutively numbered steps, so the ordering is documented and fixed — not a race. If a flow and a before-trigger write the same field, the **trigger's value is what saves**, every time. Fix that by giving the field one owner, or by conditioning the trigger; a condition on the flow changes nothing, because the flow has already finished.
 - **After-save record-triggered flows run at step 14, AFTER Apex after-triggers at step 8.** Apex after-triggers see the record as-saved; after-save flows see the record after Apex has had a chance to modify it. A record created by an after-trigger is visible to the after-save flow; the reverse is not true.
 - **After-save flows run AFTER Workflow Rules (step 11, for orgs still running them)** and AFTER Process Builder (step 13, deprecated but still active in some orgs). Layered automation on the same object creates order-of-execution chains that are hard to trace.
-- **Multiple record-triggered flows of the same type on one object are ordered by `triggerOrder`.** Set it (Metadata API 54.0+, surfaced as Flow Trigger Explorer) rather than leaving the sequence to chance. The canonical guidance is still one record-triggered flow per object per save context.
+- **Multiple record-triggered flows of the same type on one object are ordered by `triggerOrder`.** Set it (Metadata API 54.0+, valid range 1 to 2,000 — `api_meta.txt` L68438–68441; surfaced as Flow Trigger Explorer) rather than leaving the sequence to chance. The canonical guidance is still one record-triggered flow per object per save context.
+- **A recursive save is not the same transaction shape as the first one.** "During a recursive save, Salesforce skips steps 9 (assignment rules) through 17 (roll-up summary field in the grandparent record)" (`apexdev.txt` L15414–15415). Step 14 is inside that window, so a nested save re-runs before-save flows and both trigger phases but not after-save flows — which is why "it worked when I tested it by hand" and "it looped in the data load" can both be true.
+- **The flow's own `<apiVersion>` moves it in the list.** "In API version 53.0 and earlier, after-save record-triggered flows run after entitlements are executed" (`apexdev.txt` L15509). An old flow retrieved from a legacy org and redeployed unchanged sits in a different place in the save order than a new one.
 
 When designing a new flow, ALWAYS check existing automation on the object first (`list_flows_on_object`, `tooling_query` on `ApexTrigger`, `list_validation_rules`). Not knowing what's already there is a scale-invariant mistake.
 
@@ -213,13 +244,13 @@ When an after-save Flow updates records on the same sObject:
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; consult the Decision Guidance table
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Inventory the object's save contexts.** Query `FlowDefinitionView` for every active record-triggered flow on the object (`references/metadata-examples.md` § 8 has the SOQL), plus `ApexTrigger` and validation rules. You need the existing `TriggerOrder` values before you can pick yours.
+2. **Answer the seven questions above.** The first two fix `triggerType` and `recordTriggerType`; the third fixes `triggerOrder`; the rest decide whether you need a scheduled path, a fault path, and a delete flow.
+3. **Fill in the skeleton, don't freehand the XML.** Start from `templates/flow/RecordTriggered_Skeleton.flow-meta.xml` and use the matching worked flow in `references/metadata-examples.md` — § 1 before-save, § 2 after-save with entry conditions plus a scheduled path, § 3 before-delete. Route every Create/Update/Delete/Get `faultConnector` per `templates/flow/FaultPath_Template.md`.
+4. **Write the `FlowTest` before you activate.** `references/metadata-examples.md` § 4 shows the `InputTriggeringRecordInitial` / `InputTriggeringRecordUpdated` pair — the only mechanism that proves your entry criteria fire on the transition rather than on the state.
+5. **Run the checker on the source tree**, then a check-only deploy: `python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir force-app/main/default`, then `sf project deploy validate --manifest manifest/package.xml`. The checker catches missing `faultConnector`s, before-save flows carrying DML, after-save flows re-saving their own object without changed-field criteria, Gets inside loops, and unset `triggerOrder` when the manifest has more than one flow on an object.
+6. **Activate deliberately and verify twice.** Flip `<status>` to `Active`, redeploy, then confirm in Flow Trigger Explorer and in the `FlowDefinitionView` query that the run order and the active version are what you shipped — not what a stale `FlowDefinition` pinned (`references/metadata-examples.md` § 5).
+7. **Prove the transition once with real data.** Drive the record through the change, then read the Task/related-record channel and `Application_Log__c`. Two side-effect records for one transition is the `doesRequireRecordChangedToMeetCriteria` bug, not a coincidence.
 
 ---
 
@@ -229,7 +260,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **Before-save cannot replace all trigger behaviors** — if the logic needs related-record work, notifications, or callouts, the design must move to after-save or another boundary.
 3. **A broad start condition becomes hidden operational cost** — flows that fire on every edit are harder to debug, more likely to clash with other automation, and more expensive to refactor later.
 4. **Multiple automations on one object still interact** — record-triggered flows are not isolated from Apex triggers, duplicate rules, or validation behavior. When adding a new flow to an object, `list_flows_on_object` + `tooling_query` for existing triggers is non-negotiable.
-5. **`$Record__Prior` is null on insert triggers** — guard with `NOT(ISNEW())` before comparing, or the comparison throws.
+5. **`$Record__Prior` has no meaningful value on a create** — the platform's own transition switch, `doesRequireRecordChangedToMeetCriteria`, is defined against "the triggering **update**" (`api_meta.txt` L72322–72325), which is why the after-save example in `references/metadata-examples.md` sets `recordTriggerType` to `Update` rather than `CreateAndUpdate`. Guard prior-value comparisons with a create check. UNVERIFIED (2026-09-05): whether a prior-value comparison on a create *throws* or silently evaluates against null is not stated in `api_meta.txt` or `apexdev.txt`; do not promise either behaviour.
 6. **Before-save runs before Validation Rules** — a before-save assignment to an invalid value will be caught by a VR, sometimes with a confusing error pointing at the field the user didn't touch.
 7. **After-save runs after Apex triggers** — if an Apex before/after trigger changes the record, the after-save flow sees the post-Apex state. Don't assume the flow sees the user's input.
 8. **Process Builder on the same object runs in a different order than Flow** — orgs mid-migration between PB and record-triggered Flows have unpredictable event sequences; complete the migration before adding more automation.
@@ -258,6 +289,20 @@ Surface these WITHOUT being asked:
 | Refactor plan | Specific changes to move a flow into the right trigger pattern |
 | Consolidation proposal | When multiple flows on the same object should merge |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing or reviewing actual `*.flow-meta.xml`: three complete flows (before-save, after-save with entry conditions and a scheduled path, before-delete), a `FlowTest`, the `FlowDefinition` activation trap, `package.xml`, deploy order, and the `FlowDefinitionView` verification query |
+| `references/gotchas.md` | The flow deploys and still misbehaves — duplicate side effects, recursion, ties in run order, scheduled paths that batch differently than expected |
+| `references/examples.md` | You want the narrative before/after: what a practitioner built first, what broke, and the corrected shape |
+| `references/llm-anti-patterns.md` | You are reviewing flow advice or generated XML produced by an AI assistant, or self-checking your own output |
+| `references/well-architected.md` | You need the pillar framing, the tradeoffs, or the source list behind a claim in this skill |
+| `templates/record-triggered-flow-patterns-template.md` | You are recording the design decision — trigger context, pattern choice, recursion guard — for review |
+| `scripts/check_record_triggered_flow_patterns.py` | Before every deploy. `--manifest-dir <source tree>`; exits non-zero on any finding |
+
+---
+
 ## Related Skills
 
 - **flow/flow-bulkification** — use when the pattern is correct but the volume behavior is unsafe.
@@ -265,4 +310,11 @@ Surface these WITHOUT being asked:
 - **flow/orchestration-flows** — use when the automation spans multiple approval or assignment stages rather than a single save context.
 - **apex/trigger-framework** — use when Flow is no longer the right transaction boundary (Pattern 3).
 - **apex/trigger-and-flow-coexistence** — use when the object has both; this is the coexistence skill.
+- **flow/flow-record-save-order-interaction** — use when the question is where this flow sits relative to validation rules, roll-ups, and other automation in the 20-step list.
+- **flow/recursion-and-re-entry-prevention** — use when the flow is already looping and you need the guard patterns, not the trigger-context choice.
+- **flow/subflows-and-reusability** — use when the record-triggered flow should delegate a decision to a reusable child flow; its `references/metadata-examples.md` has the parent/child pair and the input/output contract.
+- **flow/flow-testing** — use when you need more than the single `FlowTest` shown here.
+- **flow/flow-decision-element-patterns** — use when the branching inside the flow, not the trigger, is the hard part.
+- **flow/flow-time-based-patterns** — use when the scheduled path is the design, not a side path.
 - **standards/decision-trees/automation-selection.md** — upstream decision (Flow vs Apex vs Agentforce vs Approval Process).
+- **standards/decision-trees/flow-pattern-selector.md** — downstream of that: which *kind* of flow, once automation-selection has said Flow.

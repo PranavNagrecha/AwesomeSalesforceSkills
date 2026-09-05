@@ -46,3 +46,55 @@ End
 **What goes wrong:** The record save can retrigger the same flow or downstream automation, creating loops, extra DML, and confusing debug runs.
 
 **Correct approach:** Move same-record field changes into before-save, or add a deliberate guard if after-save is truly required for a committed side effect.
+
+---
+
+## Example 3: The Duplicate-Task Incident
+
+**Context:** Sales reports two onboarding Tasks on roughly a fifth of closed deals. The flow "hasn't changed in months," which is true and is also why nobody looked at it.
+
+**Problem:** The after-save flow's entry criteria said `StageName = 'Closed Won'` — a state, not a transition. Any later edit to an already-won opportunity satisfied it again. The trigger was a quarterly owner-reassignment load that touched historical records.
+
+**Finding it.** The flow is not the first place to look; the side-effect records are. Count them per parent:
+
+```sql
+SELECT WhatId, COUNT(Id) taskCount, MIN(CreatedDate) first, MAX(CreatedDate) latest
+FROM Task
+WHERE Subject = 'Kick off onboarding'
+  AND CreatedDate = LAST_N_DAYS:90
+GROUP BY WhatId
+HAVING COUNT(Id) > 1
+ORDER BY COUNT(Id) DESC
+```
+
+Two rows minutes apart means recursion. Two rows *months* apart — which is what this query returned — means the entry criteria re-matched on an unrelated later save. That distinction is the whole diagnosis, and it is visible in `MIN`/`MAX` before anyone opens Flow Builder.
+
+**The fix** is one element in the `<start>` block. Only the Start changes; the rest of the flow is untouched:
+
+```xml
+<start>
+    <locationX>176</locationX>
+    <locationY>50</locationY>
+    <connector>
+        <targetReference>Create_Onboarding_Task</targetReference>
+    </connector>
+    <!-- ADDED: fire on the transition into Closed Won, not on the state -->
+    <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+    <filterLogic>and</filterLogic>
+    <filters>
+        <field>StageName</field>
+        <operator>EqualTo</operator>
+        <value>
+            <stringValue>Closed Won</stringValue>
+        </value>
+    </filters>
+    <object>Opportunity</object>
+    <!-- CHANGED from CreateAndUpdate: doesRequire... is defined against a triggering update -->
+    <recordTriggerType>Update</recordTriggerType>
+    <triggerType>RecordAfterSave</triggerType>
+</start>
+```
+
+**Why it works:** `doesRequireRecordChangedToMeetCriteria` makes the conditions evaluate true only when the record did not meet them before the update and does after it (`api_meta.txt` L72322–72325). The historical records already met the condition, so the reassignment load no longer starts an interview. The complete flow this Start belongs to is in `references/metadata-examples.md` § 2; the deployable test that would have caught it pre-activation is § 4.
+
+**What did not fix it:** three earlier attempts added Decision elements *inside* the flow to bail out early. Every one of them still started an interview per record and still burned the transaction budget — the filter has to be on the Start element to prevent the interview, not on a Decision after it.
