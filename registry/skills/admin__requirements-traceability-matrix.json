@@ -15,6 +15,7 @@
     "08e33ce77b59a7709473",
     "0b10cbba74097dfffa49",
     "0b42c8f09f79f3fd1390",
+    "0b63aba3e7c6b61fdc33",
     "0c024a99f12b8022935d",
     "0c59abeacff6eab11ed1",
     "0c5c6aa8bb8bb8c95784",
@@ -72,6 +73,7 @@
     "3dbf744f3988b4326868",
     "3febb02ee45ab50c33a4",
     "41602ee8aaf89612a188",
+    "4502d7baba95bdbaf2cd",
     "45b89aaa7a6fb1e3263f",
     "47b2b1378bc9982746f7",
     "48a487bda3f0683ba6d6",
@@ -209,6 +211,7 @@
     "f3cf240ef0f8cc8a488a",
     "f4095c4e15c7b45934dd",
     "f45e7f40c498fc16d3df",
+    "f4f9bb504167e5b0be13",
     "f507e7720eb064976109",
     "f605db342af878ab79b3",
     "f6f0fc70be4ba7bf2f61",
@@ -224,7 +227,7 @@
     "fce4632e8f705b065e94",
     "ff1cbd597bfb16994968"
   ],
-  "content_hash": "748daa9dbb820ae29d3e9961cd79b85e27b5baf761eb5df479de221bebb3e2e0",
+  "content_hash": "722209fdbd8643fbf3ce8914dbfeabc4d8ec5f3f8a247d975a906281817e7e23",
   "dependencies": [],
   "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for eliciting the requirements in the first place \u2014 use admin/requirements-gathering-for-sf. NOT for user-story authoring \u2014 use admin/user-story-writing-for-salesforce. NOT for UAT test design \u2014 use admin/uat-test-case-design. NOT for Apex test design \u2014 use apex/test-class-standards. NOT for backlog prioritization \u2014 use admin/moscow-prioritization-for-sf-backlog. More triggers: traceability.md, build-layer traceability, REQ-XXX and FG-XXX id mapping, artefact-to-requirement orphan report, coverage-gap report, check_rtm.py --manifest-dir, owning run-time agent column, design decision ref column, metadata API name in a traceability row.",
   "file_location": "skills/admin/requirements-traceability-matrix",
@@ -284,5 +287,5 @@
   ],
   "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

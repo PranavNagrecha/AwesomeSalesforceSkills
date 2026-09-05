@@ -227,6 +227,16 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
     groups = sorted(manifest_dir.rglob("*.permissionsetgroup-meta.xml"))
     profiles = sorted(manifest_dir.rglob("*.profile-meta.xml"))
 
+    if not (permission_sets or muting_sets or groups or profiles):
+        # Nothing to check is not a failure, but it must never read as a pass:
+        # a step that was meant to build a permission set and built nothing would
+        # otherwise print "No issues found."
+        issues.append((
+            "WARN",
+            f"no PermissionSet, MutingPermissionSet, PermissionSetGroup or Profile "
+            f"files found under --manifest-dir ({manifest_dir}). Nothing was checked.",
+        ))
+
     ps_roots: dict[str, ET.Element] = {}
     ps_activation: dict[str, bool] = {}
     for path in permission_sets:

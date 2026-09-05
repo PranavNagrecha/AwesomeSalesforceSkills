@@ -53,10 +53,31 @@ def check_record_triggered_flow_patterns(manifest_dir: Path) -> list[str]:
     return issues
 
 
+def coverage_note(manifest_dir: Path) -> str | None:
+    """Say so when there was nothing of this type to check.
+
+    Silence and a pass look identical to a build step's acceptance test, so an
+    empty manifest gets a printed warning. It does not change the exit code:
+    plenty of packages legitimately contain no Flow.
+    """
+    if not manifest_dir.exists():
+        return None
+    if any(manifest_dir.rglob("*.flow-meta.xml")):
+        return None
+    return (
+        f"WARN: no Flow files found under --manifest-dir ({manifest_dir}); "
+        "looked for *.flow-meta.xml anywhere beneath it. Nothing was checked."
+    )
+
+
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
     issues = check_record_triggered_flow_patterns(manifest_dir)
+
+    note = coverage_note(manifest_dir)
+    if note:
+        print(note)
 
     if not issues:
         print("No issues found.")

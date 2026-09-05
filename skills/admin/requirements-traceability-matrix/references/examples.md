@@ -121,3 +121,17 @@ FG-034,sow,Case auto-assignment by region,should,US-311,TC-411,,Sprint-3,,In UAT
 Run `python3 scripts/check_rtm.py --file rtm.csv` on the first block and it stops at check 1:
 `missing required columns for the audit schema: req_id, source, description, priority, defect_ids,
 sprint, release`. A title-keyed matrix is not a lightweight RTM — it is a different document.
+
+---
+
+## `--file` on a path that is not there is a failure
+
+```bash
+python3 scripts/check_rtm.py --file build/traceability.md   # exit 1 when the file is absent
+python3 scripts/check_rtm.py --manifest-dir build/          # exit 0 when no matrix exists yet
+```
+
+Naming a file that was never written is a broken invocation, so it exits 1 with
+an ERROR — a build step whose `traceability.md` was never produced must not pass
+its own acceptance test. Discovery through `--manifest-dir` stays lenient,
+because "this project has no RTM yet" is a real state and not an error.

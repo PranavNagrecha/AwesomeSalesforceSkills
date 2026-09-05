@@ -113,7 +113,7 @@
     "f2628d841e34286715e2",
     "f7bb52e3d137f809effa"
   ],
-  "content_hash": "df96c9a53208de96b1d9e733a7e9eac32cdeb43ed4b9353fb7151b2e50d4fe0b",
+  "content_hash": "e4a75d7ea784882bdff1fe9e634965f3be56842afe11a76a28842441c3143df7",
   "dependencies": [],
   "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege', 'how to slice permission sets', 'permission set naming convention', 'permission set license restriction', 'PSG status Outdated', 'permissionset-meta.xml'. NOT for PSG muting mechanics and recalculation order \u2014 use admin/permission-set-group-composition. NOT for record-sharing model design \u2014 use admin/sharing-and-visibility. NOT for time-boxing an assignment \u2014 use admin/permission-set-expiration.",
   "file_location": "skills/admin/permission-set-architecture",
@@ -163,7 +163,7 @@
   "templates": [
     "skills/admin/permission-set-architecture/templates/permission-set-architecture-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

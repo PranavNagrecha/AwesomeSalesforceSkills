@@ -98,4 +98,11 @@ python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py \
   --manifest-dir force-app/main/default
 ```
 
+Exit 1 means an ERROR: two active rules, an active rule with no entries, a
+`minutesToEscalation` that is not a positive integer, or an `assignedTo` naming
+a queue or user this manifest does not contain. WARN and INFO lines print and
+exit 0 — point `--manifest-dir` at the whole package, not just the
+`escalationRules` folder, so the queue and user files are there to resolve
+against.
+
 **Correct approach:** Use a single active escalation rule with multiple rule entries that differentiate by criteria. Entry 1: `Type = Sales Case` with Sales SLA thresholds. Entry 2: `Type = Service Case` with Service SLA thresholds. Both sets of criteria live within the one active rule, and each entry can have its own escalation time and actions.

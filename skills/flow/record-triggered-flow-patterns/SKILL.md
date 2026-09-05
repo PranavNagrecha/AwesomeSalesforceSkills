@@ -29,9 +29,9 @@ outputs:
   - "review findings for trigger context and recursion risk"
   - "decision on before-save, after-save, or Apex"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-09-05
 ---
 
 Use this skill when the hard part is not "how do I automate" but "what is the right record-triggered pattern for this object and this event?" The purpose is to choose the correct trigger context (before-save vs after-save), control how often the flow runs (entry criteria + prior-value checks), align with Salesforce order-of-execution semantics (so the flow plays well with Validation Rules, Apex triggers, and duplicate rules), and know when the answer is to escalate to Apex rather than force more logic into Flow.

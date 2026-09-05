@@ -129,7 +129,7 @@ List them explicitly so the exception is a decision, not an oversight:
 - [ ] Every action with `assignedTo` also sets `assignedToType`
 - [ ] All queues, users, calendars and Classic templates exist in the target org
 - [ ] Automation that watches `OwnerId` was reviewed for each reassigning stage
-- [ ] `scripts/check_escalation_rules.py` reports zero ERROR and zero WARN findings
+- [ ] `scripts/check_escalation_rules.py` reports zero ERROR findings, and every WARN was read and accepted
 - [ ] The after-hours clock test was run (`admin/business-hours-and-holidays`, Example 4)
 - [ ] Cutover was deploy-inactive then activate, with the baseline count captured first
 

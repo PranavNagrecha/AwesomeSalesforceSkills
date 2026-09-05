@@ -38,9 +38,9 @@ outputs:
   - "Cutover plan: deploy inactive, activate one rule, compare against the incumbent"
   - "Monitoring query and report definition for escalated cases"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # Escalation Rules

@@ -63,7 +63,7 @@
     "fbc7d92c22ceddc483dd",
     "ff0102c597a72d509cad"
   ],
-  "content_hash": "f5a9597da8f142d5ab420336da6bc8059f6c14efc3dcd91f21dca505b07e4ba3",
+  "content_hash": "5e5fe7e943d91542d3f55c03f163a193f6e29cee110c8635c7bee01e08a19b62",
   "dependencies": [],
   "description": "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for deciding whether to use record types at all \u2014 use admin/record-types-and-page-layouts. NOT for layout/profile explosion at scale \u2014 use admin/record-type-strategy-at-scale. NOT for hard-coded Profile, Queue or User IDs in Apex \u2014 use apex/apex-hardcoded-id-elimination.",
   "file_location": "skills/admin/record-type-id-management",
@@ -107,7 +107,7 @@
   "templates": [
     "skills/admin/record-type-id-management/templates/record-type-id-management-template.md"
   ],
-  "updated": "2026-04-21",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

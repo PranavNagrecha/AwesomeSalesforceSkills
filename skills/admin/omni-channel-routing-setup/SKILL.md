@@ -39,9 +39,9 @@ outputs:
   - Queue-to-Routing Configuration mapping
   - Validated Omni-Channel setup checklist
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # Omni-Channel Routing Setup

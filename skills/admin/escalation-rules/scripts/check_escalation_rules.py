@@ -7,12 +7,23 @@ enum values in the Metadata API Developer Guide (`EscalationRules` section:
 
 Usage:
     python3 check_escalation_rules.py --manifest-dir force-app/main/default
+    python3 check_escalation_rules.py --manifest-dir .sfskills/builds/<build>/artefacts/M4-S04
     python3 check_escalation_rules.py --help
 
 Expects the metadata under:
     <manifest-dir>/escalationRules/Case.escalationRules-meta.xml
 
-Findings are tagged ERROR / WARN / INFO.
+Reassignment targets are resolved against the same manifest:
+    <manifest-dir>/queues/<Name>.queue-meta.xml
+    <manifest-dir>/users/<Name>.user-meta.xml
+
+Exit code
+---------
+ERROR findings exit 1. WARN and INFO findings are always printed but exit 0:
+a warning is a judgement call a reviewer has to make (is a 15-minute first
+response really what the SLA says?), and a lint that fails the build on a
+judgement call gets suppressed rather than read. Everything that means "this
+package escalates nothing" is an ERROR.
 
 ERROR (exit 1)
   E1  More than one <escalationRule> in the file has <active>true</active>.
@@ -26,16 +37,25 @@ ERROR (exit 1)
       "Specify either formula or criteriaItems, but not both fields."
   E6  <businessHoursSource> or <escalationStartTime> set to a value outside the
       documented enum.
+  E7  An <assignedTo> that names a queue or user the manifest does not contain,
+      while the manifest does carry queue/user metadata of that kind. Deploying
+      an escalation action whose target does not exist fails at deploy time or,
+      worse, silently escalates into nothing.
+  E8  An active rule has no <ruleEntry>: the rule is live and nothing escalates.
+  E9  An active entry has no <escalationAction>: the entry can match and nothing
+      happens.
 
-WARN (exit 1)
+WARN (printed, exit 0)
+  W0  No EscalationRules file found under --manifest-dir.
   W1  No rule in the file is active.
-  W2  An active rule has no <ruleEntry>.
-  W3  An active entry has no <escalationAction>.
   W4  An action neither notifies (notifyTo / notifyEmail / notifyCaseOwner)
       nor reassigns (assignedTo) — it fires and does nothing observable.
   W5  Two actions on the same entry share a <minutesToEscalation> value.
+  W6  <minutesToEscalation> below 60 or above 43200 (30 days). Both ends are
+      legal metadata; both are where the hours-for-minutes transcription error
+      shows up (an 8-business-hour SLA is 480, not 8).
 
-INFO (does not fail)
+INFO (printed, exit 0)
   I1  An entry has neither <criteriaItems> nor <formula>: a catch-all that
       matches every case. Legitimate as the last entry, a bug anywhere else.
   I2  Action count per entry, reported for review. The commonly cited ceiling of
@@ -43,6 +63,45 @@ INFO (does not fail)
       table and NOT in the App Limits cheat sheet, so it is reported, not enforced.
   I3  minutesToEscalation restated in hours, so an hours-for-minutes
       transcription error is visible in the lint output.
+
+Worked examples
+---------------
+Build a manifest from ``references/metadata-examples.md`` (the two ``escalationRules``
+fences under ``escalationRules/``) and the checker exits 0 with INFO notes only::
+
+    $ python3 check_escalation_rules.py --manifest-dir /tmp/fixture
+    INFO  I2  [Case.escalationRules-meta.xml :: Support_SLA_Escalation :: entry 1] 2 ...
+    WARN  W6  [... :: action 1] minutesToEscalation 15 is below 60 ...
+    OK: no ERROR findings (2 warning(s), 12 info note(s)).
+    $ echo $?
+    0
+
+The hours-for-minutes transcription error, with a target that is not in the
+package (``minutesToEscalation`` 8, ``assignedTo`` ``Nonexistent_Queue``,
+alongside ``queues/Tier_1_Support.queue-meta.xml``)::
+
+    $ python3 check_escalation_rules.py --manifest-dir /tmp/broken
+    ERROR E7  [... :: action 1] assignedTo 'Nonexistent_Queue' (assignedToType Queue)
+              is not among the 1 queue(s) in this manifest: Tier_1_Support.
+    WARN  W6  [... :: action 1] minutesToEscalation 8 is below 60 ...
+    1 error(s), 1 warning(s), 2 info note(s).
+    $ echo $?
+    1
+
+An active rule with no entries, and an active entry with no actions::
+
+    $ python3 check_escalation_rules.py --manifest-dir /tmp/empty-rule
+    ERROR E8  [Case.escalationRules-meta.xml] rule 'Support_SLA' is active but has
+              no <ruleEntry>. Nothing escalates.
+    $ echo $?
+    1
+
+An empty manifest is not an error, but it is never silent::
+
+    $ python3 check_escalation_rules.py --manifest-dir /tmp/nothing
+    WARN  W0  [/tmp/nothing] no EscalationRules files found under --manifest-dir.
+    $ echo $?
+    0
 """
 
 from __future__ import annotations
@@ -58,6 +117,11 @@ _SF_NS = "http://soap.sforce.com/2006/04/metadata"
 _BUSINESS_HOURS_SOURCES = {"None", "Case", "Static"}
 _ESCALATION_START_TIMES = {"CaseCreation", "CaseLastModified"}
 _ASSIGNED_TO_TYPES = {"User", "Queue"}
+
+# minutesToEscalation is minutes. Below an hour or above 30 days is legal metadata
+# and is also exactly where an hours-for-minutes transcription error lands.
+_MIN_PLAUSIBLE_MINUTES = 60
+_MAX_PLAUSIBLE_MINUTES = 43200
 
 
 class Finding:
@@ -121,10 +185,52 @@ def _hours(minutes: int) -> str:
     return f"{minutes / 60:.2f}h"
 
 
-def check_escalation_rules_file(path: Path) -> list[Finding]:
-    """Parse one EscalationRules metadata file and return its findings."""
+def _fullname_of(path: Path) -> str:
+    """Developer name of a metadata file: its <fullName>, else the file stem.
+
+    Retrieved source files usually omit <fullName> because the file name carries
+    it; hand-written ones sometimes include it. Both are accepted.
+    """
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError:
+        return path.name.split(".")[0]
+    t = _tagger(root)
+    declared = _text(root, t("fullName"))
+    return declared or path.name.split(".")[0]
+
+
+def index_manifest_targets(manifest_dir: Path) -> dict[str, set[str]]:
+    """Return the queue and user developer names this manifest actually contains.
+
+    An empty set means "this manifest carries no metadata of that kind", which is
+    different from "the target is missing": escalation rules routinely point at
+    queues that already live in the org and are not part of the change. E7 fires
+    only when the manifest does carry queues (or users) and the named one is not
+    among them.
+    """
+    queues = {
+        _fullname_of(f)
+        for f in manifest_dir.rglob("*.queue-meta.xml")
+    }
+    users = {
+        _fullname_of(f)
+        for f in manifest_dir.rglob("*.user-meta.xml")
+    }
+    return {"Queue": queues, "User": users}
+
+
+def check_escalation_rules_file(
+    path: Path, targets: dict[str, set[str]] | None = None
+) -> list[Finding]:
+    """Parse one EscalationRules metadata file and return its findings.
+
+    ``targets`` is the index from :func:`index_manifest_targets`. Passing None
+    skips E7 (nothing to resolve against).
+    """
     findings: list[Finding] = []
     name = path.name
+    targets = targets or {}
 
     try:
         root = ET.parse(path).getroot()
@@ -154,7 +260,7 @@ def check_escalation_rules_file(path: Path) -> list[Finding]:
         if is_active and not entries:
             findings.append(
                 Finding(
-                    "WARN", "W2", name,
+                    "ERROR", "E8", name,
                     f"rule '{rule_name}' is active but has no <ruleEntry>. Nothing escalates.",
                 )
             )
@@ -230,7 +336,7 @@ def check_escalation_rules_file(path: Path) -> list[Finding]:
             if is_active and not actions:
                 findings.append(
                     Finding(
-                        "WARN", "W3", where,
+                        "ERROR", "E9", where,
                         "no <escalationAction>: the entry can match but nothing happens.",
                     )
                 )
@@ -270,6 +376,26 @@ def check_escalation_rules_file(path: Path) -> list[Finding]:
                             "hours; the metadata is minutes. Confirm against the agreed SLA.",
                         )
                     )
+                    if minutes < _MIN_PLAUSIBLE_MINUTES:
+                        findings.append(
+                            Finding(
+                                "WARN", "W6", action_where,
+                                f"minutesToEscalation {minutes} is below "
+                                f"{_MIN_PLAUSIBLE_MINUTES} ({_hours(minutes)}). Legal, but this "
+                                "is where an hours-for-minutes transcription error lands: if the "
+                                f"agreed SLA is {minutes} business hours the value is "
+                                f"{minutes * 60}, not {minutes}. Confirm against the SLA.",
+                            )
+                        )
+                    elif minutes > _MAX_PLAUSIBLE_MINUTES:
+                        findings.append(
+                            Finding(
+                                "WARN", "W6", action_where,
+                                f"minutesToEscalation {minutes} is above "
+                                f"{_MAX_PLAUSIBLE_MINUTES} ({_hours(minutes)}, over 30 days). "
+                                "Legal, but confirm the unit — this is minutes, not seconds.",
+                            )
+                        )
                     if minutes in seen_minutes:
                         findings.append(
                             Finding(
@@ -308,6 +434,20 @@ def check_escalation_rules_file(path: Path) -> list[Finding]:
                             "WARN", "W4", action_where,
                             "assignedToType is set but assignedTo is empty: no reassignment "
                             "happens.",
+                        )
+                    )
+
+                # --- E7: does the reassignment target exist in this manifest? --
+                known = targets.get(assigned_type) if assigned_type else None
+                if assigned_to and known and assigned_to not in known:
+                    noun = "queue" if assigned_type == "Queue" else "user"
+                    findings.append(
+                        Finding(
+                            "ERROR", "E7", action_where,
+                            f"assignedTo '{assigned_to}' (assignedToType {assigned_type}) is "
+                            f"not among the {len(known)} {noun}(s) in this manifest: "
+                            + ", ".join(sorted(known))
+                            + ". Deploy the target with the rule, or correct the name.",
                         )
                     )
 
@@ -354,27 +494,27 @@ def check_escalation_rules(manifest_dir: Path) -> list[Finding]:
             Finding("ERROR", "E0", str(manifest_dir), "manifest directory not found.")
         ]
 
-    rules_dir = manifest_dir / "escalationRules"
-    if not rules_dir.exists():
-        # Not every project deploys escalation rules; absence is not a failure.
-        return []
-
     rule_files = sorted(
-        set(rules_dir.glob("*.escalationRules-meta.xml"))
-        | set(rules_dir.glob("*.escalationRules"))
+        set(manifest_dir.rglob("*.escalationRules-meta.xml"))
+        | set(manifest_dir.rglob("*.escalationRules"))
     )
 
     if not rule_files:
+        # Not every package deploys escalation rules; absence is not a failure.
+        # It is never silent either: a step that was supposed to build one and
+        # built nothing must not read as a clean pass.
         return [
             Finding(
-                "WARN", "W0", str(rules_dir),
-                "escalationRules folder exists but holds no *.escalationRules-meta.xml file.",
+                "WARN", "W0", str(manifest_dir),
+                "no EscalationRules files found under --manifest-dir (looked for "
+                "*.escalationRules-meta.xml anywhere beneath it). Nothing was checked.",
             )
         ]
 
+    targets = index_manifest_targets(manifest_dir)
     findings: list[Finding] = []
     for rule_file in rule_files:
-        findings.extend(check_escalation_rules_file(rule_file))
+        findings.extend(check_escalation_rules_file(rule_file, targets))
     return findings
 
 
@@ -404,8 +544,11 @@ def main(argv: list[str] | None = None) -> int:
     for finding in shown:
         print(finding)
 
-    if not errors and not warnings:
-        print(f"OK: no ERROR or WARN findings ({len(infos)} INFO note(s)).")
+    if not errors:
+        print(
+            f"OK: no ERROR findings ({len(warnings)} warning(s), "
+            f"{len(infos)} info note(s)). Warnings are judgement calls — read them."
+        )
         return 0
 
     print(
@@ -415,7 +558,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    exit_code = main()
-    if exit_code != 0:
+    if main() != 0:
         sys.exit(1)
     sys.exit(0)

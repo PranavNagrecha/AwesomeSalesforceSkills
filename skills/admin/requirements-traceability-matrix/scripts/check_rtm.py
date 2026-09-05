@@ -50,6 +50,19 @@ Exit code
 ---------
     0 — no errors (warnings alone do not fail unless --strict)
     1 — at least one ERROR, or any warning under --strict
+
+A named ``--file`` (or ``--csv``) that does not exist is an ERROR::
+
+    $ python3 check_rtm.py --file build/traceability.md
+    ERROR: --file /abs/build/traceability.md does not exist (or is not a file).
+    Nothing was validated.
+    $ echo $?
+    1
+
+Discovery is the lenient path, because "this repo has no RTM yet" is a real
+state: with ``--manifest-dir`` and no ``--file``, an absent matrix is an INFO
+and exit 0. Naming a file that is not there is a broken invocation, and a step
+whose ``traceability.md`` was never written must not pass its own test.
 """
 
 from __future__ import annotations
@@ -882,6 +895,7 @@ def main() -> int:
         return 1
 
     target = args.file or args.csv
+    explicitly_named = target is not None
     matrix_path = Path(target).resolve() if target else None
     if matrix_path is None and manifest_dir is not None:
         matrix_path = discover_matrix(manifest_dir)
@@ -896,6 +910,16 @@ def main() -> int:
         matrix_path = Path("governance/rtm.csv").resolve()
 
     if not matrix_path.is_file():
+        if explicitly_named:
+            # The caller named a file. A named file that is not there is a broken
+            # invocation, not a pre-RTM repo: exit 1 so a step whose traceability
+            # artefact was never written cannot pass its own acceptance test.
+            print(
+                f"ERROR: --file {matrix_path} does not exist (or is not a file). "
+                "Nothing was validated.",
+                file=sys.stderr,
+            )
+            return 1
         # A pre-RTM repo has no matrix yet; that is not a failure of this checker.
         print(f"INFO: no RTM at {matrix_path}; nothing to validate.", file=sys.stderr)
         return 0

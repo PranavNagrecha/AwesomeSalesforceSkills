@@ -136,3 +136,19 @@ Step 7 — Create Skills-Based Routing Rules
 **What goes wrong:** A queue can only have one Routing Configuration. The second assignment overwrites the first silently in Setup. The admin thinks both rules are active, but only the last-saved Routing Configuration applies. All cases route the same way regardless of priority, and the priority configuration is lost.
 
 **Correct approach:** Create separate queues for each routing behavior. Use assignment rules, Flow, or Apex to place cases into the correct queue based on priority criteria before they enter Omni-Channel routing. Each queue has its own Routing Configuration with the appropriate priority level and routing model.
+
+---
+
+## Checking the package before it deploys
+
+```bash
+python3 skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py \
+  --manifest-dir force-app/main/default --quiet-info
+```
+
+Point `--manifest-dir` at the whole package rather than one folder: the
+mutual-consistency rules are the point, and a channel with no routing
+configuration, or a routing configuration with no presence configuration and no
+presence status, is an ERROR (exit 1) that only a whole-package run can see.
+`--quiet-info` drops the notes about references that resolve outside the
+package, such as the standard `Busy` status.

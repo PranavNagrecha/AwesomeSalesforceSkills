@@ -5,6 +5,7 @@
     "01eebe5884cd456c5bad",
     "025e0ae412e769888b3f",
     "02674a26ba7ffda7d041",
+    "03eb033408dbfa4058ae",
     "040a85fc6834e636953b",
     "05ab291a87aa2e84f404",
     "0758dcb4e0a172d2a733",
@@ -121,7 +122,7 @@
     "fe8a1fb2a70ffd5d30f7",
     "fed93275c38ea9d0d139"
   ],
-  "content_hash": "1ea1f72c1739c0017a4ad7869afdf92158ce5975bc509f77c71608d57087032f",
+  "content_hash": "2d8a4449245eb19f0b3112cab463b4edff9a4c4bbe7ba1b56feff97b407306e6",
   "dependencies": [],
   "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Covers the deployable ListView, CompactLayout, SearchLayouts and ProfileSearchLayouts metadata: filterScope, booleanFilter, sharedTo, compactLayoutAssignment, and the package.xml shapes for each. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel', 'list view missing after sandbox refresh', 'deploy a list view between orgs', 'list view column deployed blank', 'compact layout deploy failed'. NOT for page layouts or record types \u2014 use admin/record-types-and-page-layouts. NOT for Dynamic Forms \u2014 use admin/dynamic-forms-and-actions.",
   "file_location": "skills/admin/list-views-and-compact-layouts",
@@ -171,7 +172,7 @@
   "templates": [
     "skills/admin/list-views-and-compact-layouts/templates/list-views-and-compact-layouts-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

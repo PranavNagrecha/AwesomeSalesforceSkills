@@ -35,9 +35,9 @@ outputs:
   - "review findings for list-view sprawl, weak filters, and poor highlights design"
   - "configuration worksheet for object-level browse and scan paths"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 Use this skill when users are losing time before they even open a record. List views, compact layouts, and search layouts all shape how quickly a user can browse, triage, and select the next record, but they solve different problems and should not be treated as interchangeable UI settings.

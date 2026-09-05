@@ -35,9 +35,9 @@ outputs:
   - "review findings for profile-heavy or inconsistent access models"
   - "migration plan from profile-centric access to governed bundles"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 Use this skill when the problem is no longer "which permission do I grant" and has become "how should the org structure access so future changes stay safe?" The goal is to produce a layered access model that supports least privilege, lowers operational risk, and makes persona-based changes predictable.

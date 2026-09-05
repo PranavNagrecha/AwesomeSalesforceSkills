@@ -88,12 +88,35 @@ def check_recordtype_name_refs(root: Path) -> list[str]:
     return issues
 
 
+SCANNED_SUFFIXES = (".cls", ".trigger", ".js", ".xml")
+
+
+def coverage_note(root: Path) -> str | None:
+    """Say so when there was nothing of this type to scan.
+
+    This checker greps source and metadata for record-type ID literals, so an
+    empty directory produces a clean report that is indistinguishable from a
+    real pass. It does not change the exit code — a package with no Apex, LWC
+    or metadata simply has nothing to get wrong here.
+    """
+    if next(iter_files(root, SCANNED_SUFFIXES), None) is not None:
+        return None
+    return (
+        f"WARN: no {', '.join(SCANNED_SUFFIXES)} files found under --manifest-dir "
+        f"({root}). Nothing was scanned for record-type ID literals."
+    )
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
     if not root.exists():
         print(f"ERROR: directory not found: {root}", file=sys.stderr)
         return 1
+
+    note = coverage_note(root)
+    if note:
+        print(note)
 
     issues: list[str] = []
     issues.extend(check_hardcoded_ids(root))

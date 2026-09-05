@@ -361,9 +361,35 @@ def check_list_views_and_compact_layouts(manifest_dir: Path) -> list[str]:
     return issues
 
 
+def coverage_note(manifest_dir: Path) -> str | None:
+    """Say so when there was nothing of this type to check.
+
+    Silence and a pass look identical to a build step's acceptance test, so an
+    empty manifest gets a printed warning. It does not change the exit code:
+    plenty of packages legitimately contain neither list views nor compact
+    layouts.
+    """
+    if not manifest_dir.exists():
+        return None
+    if any(manifest_dir.rglob("*.listView-meta.xml")) or any(
+        manifest_dir.rglob("*.compactLayout-meta.xml")
+    ):
+        return None
+    return (
+        f"WARN: no ListView or CompactLayout files found under --manifest-dir "
+        f"({manifest_dir}); looked for *.listView-meta.xml and "
+        "*.compactLayout-meta.xml anywhere beneath it. Nothing was checked."
+    )
+
+
 def main() -> int:
     args = parse_args()
-    issues = check_list_views_and_compact_layouts(Path(args.manifest_dir))
+    manifest_dir = Path(args.manifest_dir)
+    issues = check_list_views_and_compact_layouts(manifest_dir)
+
+    note = coverage_note(manifest_dir)
+    if note:
+        print(note)
 
     if not issues:
         print("No issues found.")
