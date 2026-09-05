@@ -92,6 +92,37 @@ STEP_TYPES = [
 # Section 5, "Acceptance tests" table.
 TEST_TYPES = ["checker", "xml", "manifest", "command", "manual"]
 
+# Section 5, `scope` on a checker test. `step` (the default) runs the checker
+# over the one step's artefacts; `build` runs it over the whole artefacts root,
+# which is the only honest scope for a checker that cross-references metadata
+# other steps produce.
+TEST_SCOPES = ["step", "build"]
+DEFAULT_TEST_SCOPE = "step"
+
+# Checkers documented as cross-referential: they assert relationships BETWEEN
+# components (a routing rule against the queue it targets, a milestone against
+# the business hours it counts in, a permission set against the object and
+# record types it grants), so a step-scoped run reads half the picture and
+# reports findings the step itself cannot fix. Hard-coded rather than sniffed:
+# the fact lives in each skill's checker, and guessing it from the filename
+# would flag every checker whose name happens to be plural.
+CROSS_REFERENTIAL_CHECKERS = {
+    "check_escalation_rules.py",
+    "check_omni_channel_routing_setup.py",
+    "check_list_views_and_compact_layouts.py",
+    "check_permission_set_architecture.py",
+}
+
+# The step types whose artefacts a cross-referential checker reaches across.
+CROSS_REFERENTIAL_STEP_TYPES = {"routing", "sla", "access"}
+
+# A checker that is still a scaffold: the plan declares a test the tester will
+# run, and it will exit non-zero (or exit 0 having checked nothing) because
+# nobody wrote it yet. The heuristic is deliberately blunt and deterministic —
+# a real skill checker in this repo is 130-970 lines.
+STUB_CHECKER_MIN_LINES = 60
+STUB_CHECKER_MARKER = "todo: implement"
+
 # Section 4: "pending -> running -> built -> tested -> documented, with
 # `failed` and `blocked` as side exits." Re-running a step (section 8) is
 # `documented -> running`, which appends a run rather than overwriting one.
@@ -377,7 +408,13 @@ def _find_cycle(graph: dict[str, list[str]]) -> list[str] | None:
 
 
 def _test_label(test: dict) -> str:
-    bits = [test.get("type", "?")]
+    head = test.get("type", "?")
+    # Only a declared scope is rendered. The default (`step`) is the reading a
+    # reader already has, and stamping it on every row would rewrite every
+    # PLAN.md for no new information.
+    if test.get("scope"):
+        head = f"{head} [scope: {test['scope']}]"
+    bits = [head]
     if test.get("command"):
         bits.append(test["command"])
     elif test.get("description"):
@@ -399,6 +436,28 @@ def _checker_uses_standard_form(command: str) -> bool:
                for token in _tokens(command)[1:])
 
 
+def _checker_stub_reason(path: Path) -> str | None:
+    """Why this checker file reads as a scaffold stub, or None if it looks real.
+
+    Two signals, both cheap and both stable across runs: an explicit
+    `TODO: Implement` left by the scaffolder, and a file too short to contain
+    finding logic. A checker that is a stub is a test the step-tester will
+    fail (or, worse, one that exits 0 having checked nothing), so the plan
+    should say so before a human signs the plan gate.
+    """
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
+    if STUB_CHECKER_MARKER in text.lower():
+        return "it still carries a 'TODO: Implement' marker"
+    lines = len(text.splitlines())
+    if lines < STUB_CHECKER_MIN_LINES:
+        return (f"it is only {lines} line(s) long — under the "
+                f"{STUB_CHECKER_MIN_LINES}-line floor a real checker clears")
+    return None
+
+
 def _command_script_path(command: str) -> str | None:
     """First non-flag argument after `python3`, or None if there is none."""
     tokens = _tokens(command)
@@ -410,8 +469,13 @@ def _command_script_path(command: str) -> str | None:
 
 
 def _acceptance_issues(tests: list, owner: str, repo_root: Path,
-                       artefacts_root: str = "artefacts") -> list[tuple[str, str]]:
-    """Per-test checks from contract section 5."""
+                       artefacts_root: str = "artefacts",
+                       step_type: str | None = None) -> list[tuple[str, str]]:
+    """Per-test checks from contract section 5.
+
+    `step_type` is the owning step's type when the tests belong to a step, and
+    None for a milestone's tests (a milestone test is build-scoped already).
+    """
     issues: list[tuple[str, str]] = []
     prefixes = tuple(sorted(set(BUILD_DIR_PREFIXES + (f"{artefacts_root.rstrip('/')}/",))))
     for i, test in enumerate(tests or []):
@@ -419,6 +483,13 @@ def _acceptance_issues(tests: list, owner: str, repo_root: Path,
             continue
         ttype = test.get("type")
         where = f"{owner} acceptance_tests[{i}]"
+        scope = test.get("scope") or DEFAULT_TEST_SCOPE
+        if scope not in TEST_SCOPES:
+            issues.append(("ERROR", f"{where}: unknown scope {test.get('scope')!r} "
+                                    f"(contract section 5: {', '.join(TEST_SCOPES)})"))
+        if test.get("scope") and ttype != "checker":
+            issues.append(("WARN", f"{where}: 'scope' only means anything on a 'checker' test "
+                                   f"— type {ttype!r} ignores it"))
         if ttype not in TEST_TYPES:
             issues.append(("ERROR", f"{where}: unknown test type {ttype!r} "
                                     f"(contract section 5: {', '.join(TEST_TYPES)})"))
@@ -443,13 +514,30 @@ def _acceptance_issues(tests: list, owner: str, repo_root: Path,
                 issues.append(("ERROR", f"{where}: checker {m.group(1)} does not exist — a plan "
                                         f"may not declare a test that cannot run (deepen the "
                                         f"skill first, or use a different test type)"))
-            elif not _checker_uses_standard_form(command):
-                # Not every skill checker takes --manifest-dir: a few take a
-                # positional path or --file/--workbook. Rewriting the command to
-                # the house form would break them, so this is a WARN and the
-                # step-tester runs what the plan declares (contract section 5).
-                issues.append(("WARN", f"{where}: checker declares a non-standard argument "
-                                       f"form; step-tester will run it verbatim"))
+            else:
+                if not _checker_uses_standard_form(command):
+                    # Not every skill checker takes --manifest-dir: a few take a
+                    # positional path or --file/--workbook. Rewriting the command
+                    # to the house form would break them, so this is a WARN and
+                    # the step-tester runs what the plan declares (section 5).
+                    issues.append(("WARN", f"{where}: checker declares a non-standard argument "
+                                           f"form; step-tester will run it verbatim"))
+                stub = _checker_stub_reason(repo_root / m.group(1))
+                if stub:
+                    issues.append(("WARN", f"{where}: checker looks like a scaffold stub — the "
+                                           f"tester will fail this step ({m.group(1)}: {stub}); "
+                                           f"deepen the skill's checker, or declare a test type "
+                                           f"that can actually run"))
+                name = m.group(1).rsplit("/", 1)[-1]
+                if (name in CROSS_REFERENTIAL_CHECKERS
+                        and step_type in CROSS_REFERENTIAL_STEP_TYPES
+                        and scope == "step"):
+                    issues.append(("WARN", f"{where}: {name} is cross-referential — it asserts "
+                                           f"relationships across components a single "
+                                           f"'{step_type}' step does not own, so a step-scoped "
+                                           f"run reports findings this step cannot fix; declare "
+                                           f'"scope": "build" on this test or drop it and rely '
+                                           f"on the milestone acceptance test"))
         if ttype == "command" and command:
             if not command.startswith("python3 "):
                 issues.append(("ERROR", f"{where}: a 'command' test must start with 'python3 ' "
@@ -621,7 +709,8 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
         if not tests:
             issues.append(("ERROR", f"step {sid}: needs at least one acceptance test "
                                     f"(contract section 5)"))
-        issues.extend(_acceptance_issues(tests, f"step {sid}", repo_root, artefacts_root))
+        issues.extend(_acceptance_issues(tests, f"step {sid}", repo_root, artefacts_root,
+                                         step_type=stype))
 
         # --- status bookkeeping -------------------------------------------
         if step.get("status") == "blocked" and not (step.get("blocked_reason") or "").strip():
@@ -1048,8 +1137,11 @@ def render_plan_md(plan: dict) -> str:
         out.append("")
         out.append("Milestone acceptance tests:")
         out.append("")
-        out.append(_bullets(f"`{t.get('type')}` — {_cell(t.get('command') or t.get('description'))}"
-                            for t in milestone.get("acceptance_tests") or []))
+        out.append(_bullets(
+            f"`{t.get('type')}`"
+            + (f" [scope: `{t['scope']}`]" if t.get("scope") else "")
+            + f" — {_cell(t.get('command') or t.get('description'))}"
+            for t in milestone.get("acceptance_tests") or []))
         out.append("")
 
     out.append("## Human gates")
@@ -1571,6 +1663,30 @@ def cmd_set_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _archive_rejected_plan(plan: dict, snapshot: dict, at: str, by: str | None,
+                           reason: str) -> int:
+    """Freeze a rejected plan body into history[] and return its version.
+
+    Contract section 3 splits the two halves of "re-planning is a new plan
+    version": the body is archived at the REJECTION (both routes — `gate plan
+    reject` and `set-verification --outcome plan-rejected`), and `version` is
+    incremented at the RE-PLAN (`set-plan` from status 'plan-rejected'). Doing
+    both here would mint a v<n+1> that no planner ever wrote, and would bump
+    twice when a plan is rejected by the verifier and then by the human.
+
+    `snapshot` must already have had `history` popped — history never nests.
+    """
+    plan.setdefault("history", []).append({
+        "version": snapshot["version"],
+        "status": snapshot.get("status"),
+        "superseded_at": at,
+        "superseded_by": by or "unknown",
+        "reason": reason,
+        "plan": snapshot,
+    })
+    return int(snapshot["version"])
+
+
 def _approval_refusal(plan: dict, name: str) -> tuple[str | None, list[str]]:
     """Why this gate may not be approved yet, plus lines worth printing.
 
@@ -1657,20 +1773,19 @@ def cmd_gate(args: argparse.Namespace) -> int:
                 note = "build status -> building"
     else:
         if name == "plan":
-            # Contract section 3: re-planning after a rejected gate is a new
-            # plan version; earlier versions stay in history[].
-            plan.setdefault("history", []).append({
-                "version": snapshot["version"],
-                "status": snapshot["status"],
-                "superseded_at": at,
-                "superseded_by": args.by,
-                "reason": args.notes or "plan gate rejected",
-                "plan": snapshot,
-            })
-            plan["version"] = int(plan["version"]) + 1
+            # Contract section 3: "re-planning is a new plan version".
+            # Archiving happens HERE, at the rejection — the rejected body is
+            # frozen into history[] so the planner's re-plan cannot overwrite
+            # it in place. The version bump happens at the RE-PLAN
+            # (`set-plan` from status 'plan-rejected'), not here: a plan that
+            # is rejected and then abandoned never gets a v2 that no agent
+            # ever wrote.
+            _archive_rejected_plan(plan, snapshot, at, args.by,
+                                   args.notes or "plan gate rejected")
             plan["status"] = "plan-rejected"
-            note = f"build status -> plan-rejected, plan version -> {plan['version']} " \
-                   f"(v{snapshot['version']} archived in history[])"
+            note = (f"build status -> plan-rejected (v{snapshot['version']} archived in "
+                    f"history[]); the planner's next `set-plan` becomes "
+                    f"v{int(snapshot['version']) + 1}")
         elif name.startswith("milestone:"):
             mid = name.split(":", 1)[1]
             for milestone in plan.get("milestones") or []:
@@ -1779,6 +1894,15 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
         doc["scope"] = scope
     for key, value in doc.items():
         plan[key] = value
+    # Contract section 3: "re-planning is a new plan version". The rejection
+    # already archived the superseded body into history[] (`gate plan reject`
+    # or `set-verification --outcome plan-rejected`); this — the re-plan
+    # itself — is the only place `version` moves. Re-planning from
+    # intake/clarifying/planned is still the FIRST plan of that version, so it
+    # leaves the number alone.
+    replanned = status == "plan-rejected"
+    if replanned:
+        plan["version"] = int(plan.get("version") or 1) + 1
     plan["status"] = "planned"
     summary = (getattr(args, "summary", None) or "").strip()
     if summary:
@@ -1796,6 +1920,8 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
         return rc
     print(f"plan written: {len(plan.get('milestones') or [])} milestone(s), "
           f"{len(plan.get('steps') or [])} step(s), status -> planned"
+          + (f"; re-plan after rejection — plan version -> {plan['version']}"
+             if replanned else "")
           + (f"; gates added: {', '.join(added)}" if added else "")
           + ("; requirement.summary updated" if summary else ""))
     print("next: `build_plan.py render` then hand the plan to the plan-verifier.")
@@ -1849,22 +1975,15 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
     verification.setdefault("verified_at", _now(args.at))
     archived = None
     if args.outcome == "plan-rejected":
-        # Contract § 3: a rejected plan is superseded by a new plan version.
-        # This is the second route to plan-rejected (the first is `gate plan
-        # reject`); both must archive the rejected body so the planner's
-        # re-plan never overwrites v<n> in place.
+        # Contract § 3. This is the second route to plan-rejected (the first is
+        # `gate plan reject`); both archive the rejected body so the planner's
+        # re-plan never overwrites v<n> in place, and neither bumps `version`
+        # — `set-plan` does that when the re-plan actually arrives.
         snapshot = copy.deepcopy(plan)
         snapshot.pop("history", None)
-        plan.setdefault("history", []).append({
-            "version": snapshot["version"],
-            "status": snapshot.get("status"),
-            "superseded_at": verification["verified_at"],
-            "superseded_by": args.by or "plan-verifier",
-            "reason": "plan-verifier outcome plan-rejected",
-            "plan": snapshot,
-        })
-        plan["version"] = int(plan["version"]) + 1
-        archived = snapshot["version"]
+        archived = _archive_rejected_plan(
+            plan, snapshot, verification["verified_at"], args.by or "plan-verifier",
+            "plan-verifier outcome plan-rejected")
     plan["verification"] = verification
     plan["status"] = args.outcome
     schema = load_schema(args.schema)
@@ -1873,7 +1992,8 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
         return rc
     lenses = ", ".join(f"{l.get('lens')}={l.get('verdict')}"
                        for l in verification.get("lenses") or []) or "no lenses recorded"
-    tail = f", plan version -> {plan['version']} (v{archived} archived in history[])" if archived else ""
+    tail = (f" (v{archived} archived in history[]; the planner's next `set-plan` "
+            f"becomes v{archived + 1})") if archived else ""
     print(f"verification written ({lenses}); build status -> {args.outcome}{tail}")
     return 0
 
@@ -2039,6 +2159,14 @@ the exit code is 1. WARN lines never fail a command; ERROR lines always do. The
 one exception is `gate plan|clarifications reject`, which records a human's
 rejection of an invalid plan (schema errors still block).
 
+Plan versions (§ 3, "re-planning is a new plan version") have two halves, and
+they happen at different moments. A rejection — `gate plan reject` or
+`set-verification --outcome plan-rejected` — ARCHIVES the rejected body into
+history[] and leaves `version` alone. The RE-PLAN — `set-plan` while the status
+is 'plan-rejected' — increments `version`. So a plan rejected and then
+abandoned never leaves behind a version no planner wrote, and a plan rejected
+by the verifier and then by the human is still one re-plan, not two.
+
 No agent hand-edits plan.json. Every field has a writer here.
 """
 
@@ -2159,8 +2287,9 @@ def build_parser() -> argparse.ArgumentParser:
                                    "'plan' sets the build status to approved; approving the last "
                                    "'milestone:<id>' sets it to done; rejecting 'milestone:<id>' "
                                    "marks that milestone rejected and leaves the build building; "
-                                   "rejecting 'plan' bumps the version and archives the old plan "
-                                   "in history[].")
+                                   "rejecting 'plan' archives the rejected body in history[] "
+                                   "and sets the build status to plan-rejected — the version "
+                                   "number moves at the re-plan, when `set-plan` runs.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("gate", help="clarifications | plan | milestone:M1 | step:M1-S01")
     p.add_argument("decision", choices=["approve", "reject"])
@@ -2238,7 +2367,8 @@ def build_parser() -> argparse.ArgumentParser:
                                    "field. Sets the build status to 'planned' and adds any "
                                    "missing human gates. Refused once the plan is verified, "
                                    "approved, building or done — re-planning starts from a "
-                                   "rejected plan gate.")
+                                   "rejected plan gate. Re-planning (status 'plan-rejected') "
+                                   "increments `version`; this is the only command that does.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON object of planner-owned fields")
     p.add_argument("--summary", default=None,
@@ -2254,7 +2384,9 @@ def build_parser() -> argparse.ArgumentParser:
                                    "body (lenses[], blockers[], notes); --outcome sets both "
                                    "verification.status and the build status. 'verified' is what "
                                    "lets the human approve the plan gate; 'plan-rejected' sends "
-                                   "the plan back to the planner.")
+                                   "the plan back to the planner, archiving the rejected body "
+                                   "into history[] without bumping `version` — the planner's "
+                                   "next `set-plan` does that.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON object: lenses[], blockers[], notes")
     p.add_argument("--outcome", required=True, choices=["verified", "plan-rejected"])

@@ -233,7 +233,7 @@
           },
           "source_reference": {
             "type": "string",
-            "description": "Repo-relative path to the skill reference that resolved this choice when no decision tree covers it (contract section 1.2 / build-planner step 4). Validated to exist on disk. Cite this instead of stretching a tree branch to cover a decision it does not make; a decision resolved this way sets adr_required: true."
+            "description": "Repo-relative path to the skill reference that resolved this choice when no decision tree covers it (build-planner Step 4 / build-planner step 4). Validated to exist on disk. Cite this instead of stretching a tree branch to cover a decision it does not make; a decision resolved this way sets adr_required: true."
           },
           "adr_required": {
             "type": "boolean",
@@ -397,6 +397,11 @@
           "description": "Required for type checker and command. Stdlib-only and read-only: a checker command must be 'python3 skills/<domain>/<slug>/scripts/check_*.py ...' and the file must exist; a command test must start with 'python3 ' and name a path in the repo or under the build directory. scripts/build_plan.py validate rejects anything matching the deploy/fetch/shell deny-list (sf ... deploy, sfdx, force:source:deploy, curl, wget, pipe-to-shell, bash -c, python -c, rm -rf, git push)."
         },
         "description": {"type": "string"},
+        "scope": {
+          "type": "string",
+          "enum": ["step", "build"],
+          "description": "Checker tests only; default 'step'. 'step' runs the checker over the one step's artefacts (artefacts/<step-id>/); 'build' runs it over the whole artefacts root, which is the only honest scope for a cross-referential checker — one that asserts relationships across components a single step does not own (check_escalation_rules.py, check_omni_channel_routing_setup.py, check_list_views_and_compact_layouts.py, check_permission_set_architecture.py). scripts/build_plan.py validate WARNs when one of those is declared with step scope on a routing/sla/access step."
+        },
         "expected": {"type": "string", "description": "Pass condition in words, e.g. 'exit 0'."}
       }
     },

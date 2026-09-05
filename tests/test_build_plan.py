@@ -989,7 +989,12 @@ def test_middle_milestone_gate_sets_building_not_done(tmp_path, fixture_repo):
     assert json.loads(path.read_text())["status"] == "building"
 
 
-def test_plan_gate_rejection_bumps_version_and_archives(tmp_path, fixture_repo):
+def test_plan_gate_rejection_archives_without_bumping(tmp_path, fixture_repo):
+    """Contract § 3: archiving happens at the rejection, bumping at the re-plan.
+
+    A plan rejected and then abandoned must not leave a v2 behind that no
+    planner ever wrote — `set-plan` mints the new version, this does not.
+    """
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
     assert run("gate", str(path), "plan", "reject", "--by", "pranav",
@@ -997,7 +1002,7 @@ def test_plan_gate_rejection_bumps_version_and_archives(tmp_path, fixture_repo):
                "--at", "2026-09-05T10:30:00Z", "--repo-root", str(fixture_repo)) == 0
     after = json.loads(path.read_text())
     assert after["status"] == "plan-rejected"
-    assert after["version"] == 2
+    assert after["version"] == 1, "the rejection archives; the re-plan bumps"
     assert len(after["history"]) == 1
     archived = after["history"][0]
     assert archived["version"] == 1
@@ -1112,7 +1117,8 @@ def test_reject_is_recorded_even_when_the_plan_is_invalid(tmp_path, fixture_repo
                "--at", "2026-09-05T10:30:00Z", "--repo-root", str(fixture_repo)) == 0
     after = json.loads(path.read_text())
     assert after["status"] == "plan-rejected"
-    assert after["version"] == 2
+    assert after["version"] == 1, "rejection archives without bumping"
+    assert len(after["history"]) == 1
 
     assert run("gate", str(path), "clarifications", "reject", "--by", "pranav",
                "--at", "2026-09-05T10:40:00Z", "--repo-root", str(fixture_repo)) == 0
@@ -1986,8 +1992,12 @@ def test_the_dry_run_plan_renders_its_adr_decisions(tmp_path):
         assert f"- `{did}`" in body, f"{did} renders its sub-bullets"
 
 
-def test_set_verification_plan_rejected_archives_and_bumps(tmp_path, fixture_repo):
-    """Both routes to plan-rejected must version the plan (dry-run stage 5 finding)."""
+def test_set_verification_plan_rejected_archives_without_bumping(tmp_path, fixture_repo):
+    """Both routes to plan-rejected archive the rejected body; neither bumps.
+
+    Dry-run stage 5 found the verifier route archiving nothing; stage 6 found
+    both routes bumping, which minted plan versions no planner had written.
+    """
     build = tmp_path / "b"
     plan = plan_dict([step("M1-S01", "M1")], status="planned")
     path = write_plan_file(build, plan)
@@ -2000,6 +2010,210 @@ def test_set_verification_plan_rejected_archives_and_bumps(tmp_path, fixture_rep
                "--repo-root", str(fixture_repo)) == 0
     after = json.loads(path.read_text(encoding="utf-8"))
     assert after["status"] == "plan-rejected"
-    assert after["version"] == before["version"] + 1
+    assert after["version"] == before["version"], "the rejection archives; the re-plan bumps"
     assert after["history"][-1]["version"] == before["version"]
     assert after["history"][-1]["plan"]["status"] == "planned"
+
+
+# --------------------------------------------------------------------------
+# Plan versioning — archive at rejection, bump at re-plan (contract § 3)
+# --------------------------------------------------------------------------
+
+def _replan_body(tmp_path: Path, name: str = "replan.json") -> Path:
+    """A minimal, valid set-plan payload: one milestone, one step."""
+    steps = [step("M1-S01", "M1")]
+    return write_json(tmp_path / name, {
+        "milestones": [{"id": "M1", "title": "Intake", "steps": ["M1-S01"],
+                        "acceptance_tests": [{"type": "manifest",
+                                              "description": "package.xml consistent"}]}],
+        "steps": steps,
+    })
+
+
+def test_replan_after_gate_rejection_bumps_the_version_exactly_once(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("gate", str(path), "plan", "reject", "--by", "pranav",
+               "--at", "2026-09-05T10:30:00Z", "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["version"] == 1
+
+    body = _replan_body(tmp_path)
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["version"] == 2, "the re-plan is v2"
+    assert after["status"] == "planned"
+    assert [h["version"] for h in after["history"]] == [1]
+
+    # A second set-plan at 'planned' is still the same v2 — only a rejection
+    # followed by a re-plan moves the number.
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["version"] == 2
+
+
+def test_replan_after_verifier_rejection_bumps_the_version_exactly_once(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="planned")
+    path = write_plan_file(tmp_path / "b", plan)
+    verification = write_json(tmp_path / "ver.json",
+                              {"lenses": [{"lens": "executability", "verdict": "fail"}]})
+    assert run("set-verification", str(path), "--file", str(verification),
+               "--outcome", "plan-rejected", "--at", "2026-09-05T11:00:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["version"] == 1
+
+    body = _replan_body(tmp_path)
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["version"] == 2
+    assert [h["version"] for h in after["history"]] == [1]
+
+
+def test_set_plan_from_clarifying_leaves_the_version_alone(tmp_path, fixture_repo):
+    """The first plan of a build is v1 — planning is not re-planning."""
+    plan = plan_dict([step("M1-S01", "M1")], status="clarifying")
+    path = write_plan_file(tmp_path / "b", plan)
+    body = _replan_body(tmp_path)
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["version"] == 1
+    assert after["status"] == "planned"
+    assert after["history"] == []
+
+
+# --------------------------------------------------------------------------
+# Checker quality — scaffold stubs and checker scope (contract § 5)
+# --------------------------------------------------------------------------
+
+REAL_CHECKER = "\n".join(
+    ['#!/usr/bin/env python3',
+     '"""A checker with actual finding logic."""',
+     'import argparse, sys',
+     'from pathlib import Path',
+     '']
+    + [f"# body line {i}" for i in range(70)]
+    + ['def main():',
+       '    ap = argparse.ArgumentParser()',
+       '    ap.add_argument("--manifest-dir", required=True)',
+       '    args = ap.parse_args()',
+       '    findings = [p for p in Path(args.manifest_dir).glob("*.xml") if not p.read_text()]',
+       '    for f in findings:',
+       '        print(f"ERROR {f} is empty")',
+       '    return 1 if findings else 0',
+       '',
+       '',
+       'if __name__ == "__main__":',
+       '    sys.exit(main())',
+       ''])
+
+SHORT_STUB_CHECKER = (
+    '#!/usr/bin/env python3\n"""Scaffold."""\nimport sys\n\n\ndef main():\n    return 1\n\n\n'
+    'if __name__ == "__main__":\n    sys.exit(main())\n')
+
+MARKER_STUB_CHECKER = REAL_CHECKER.replace(
+    "# body line 0", "# TODO: Implement the real findings for this skill")
+
+
+def add_checker(repo: Path, domain: str, slug: str, filename: str, source: str) -> str:
+    """Drop a skill-local checker into the fixture repo; return its repo path."""
+    rel = f"skills/{domain}/{slug}/scripts/{filename}"
+    target = repo / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(source, encoding="utf-8")
+    skill = repo / "skills" / domain / slug / "SKILL.md"
+    if not skill.is_file():
+        skill.write_text(SKILL_MD.format(domain=domain, slug=slug), encoding="utf-8")
+    return rel
+
+
+def checker_test(rel: str, step_id: str, **extra) -> dict:
+    out = {"type": "checker", "command": f"python3 {rel} --manifest-dir artefacts/{step_id}"}
+    out.update(extra)
+    return out
+
+
+def warns_for(plan: dict, repo_root: Path) -> list[str]:
+    schema = build_plan.load_schema()
+    return [msg for level, msg in build_plan.validate_plan(plan, repo_root, schema)
+            if level == "WARN"]
+
+
+def test_stub_checker_warns_but_a_real_one_does_not(tmp_path, fixture_repo):
+    real = add_checker(fixture_repo, "admin", "fake-object-design",
+                       "check_fake_object_design.py", REAL_CHECKER)
+    short = add_checker(fixture_repo, "admin", "fake-short",
+                        "check_fake_short.py", SHORT_STUB_CHECKER)
+    marker = add_checker(fixture_repo, "admin", "fake-marker",
+                         "check_fake_marker.py", MARKER_STUB_CHECKER)
+
+    plan = plan_dict([step("M1-S01", "M1", tests=[checker_test(real, "M1-S01")])])
+    assert not [w for w in warns_for(plan, fixture_repo) if "scaffold stub" in w], \
+        "a 70+ line checker with findings logic is not a stub"
+
+    for rel, needle in ((short, "line(s) long"), (marker, "TODO: Implement")):
+        plan = plan_dict([step("M1-S01", "M1", tests=[checker_test(rel, "M1-S01")])])
+        stub_warns = [w for w in warns_for(plan, fixture_repo) if "scaffold stub" in w]
+        assert len(stub_warns) == 1, (rel, warns_for(plan, fixture_repo))
+        assert "the tester will fail this step" in stub_warns[0]
+        assert needle in stub_warns[0]
+        # A stub is a WARN, never an ERROR — the plan is still writable.
+        assert errors_for(plan, fixture_repo) == []
+
+
+def test_cross_referential_checker_warns_at_step_scope_only(tmp_path, fixture_repo):
+    rel = add_checker(fixture_repo, "admin", "fake-escalation",
+                      "check_escalation_rules.py", REAL_CHECKER)
+
+    # routing/sla/access step + step scope (the default) -> WARN.
+    for stype in ("routing", "sla", "access"):
+        plan = plan_dict([step("M1-S01", "M1", stype=stype,
+                               tests=[checker_test(rel, "M1-S01")])])
+        hits = [w for w in warns_for(plan, fixture_repo) if "cross-referential" in w]
+        assert len(hits) == 1, (stype, warns_for(plan, fixture_repo))
+        assert '"scope": "build"' in hits[0] and "milestone acceptance test" in hits[0]
+
+    # Declaring build scope answers the warning.
+    plan = plan_dict([step("M1-S01", "M1", stype="routing",
+                           tests=[checker_test(rel, "M1-S01", scope="build")])])
+    assert not [w for w in warns_for(plan, fixture_repo) if "cross-referential" in w]
+    assert errors_for(plan, fixture_repo) == []
+
+    # A step type the checker does not reach across is not warned about, and
+    # neither is a checker outside the documented cross-referential list.
+    plan = plan_dict([step("M1-S01", "M1", stype="object-model",
+                           tests=[checker_test(rel, "M1-S01")])])
+    assert not [w for w in warns_for(plan, fixture_repo) if "cross-referential" in w]
+    other = add_checker(fixture_repo, "admin", "fake-queues",
+                        "check_queues.py", REAL_CHECKER)
+    plan = plan_dict([step("M1-S01", "M1", stype="routing",
+                           tests=[checker_test(other, "M1-S01")])])
+    assert not [w for w in warns_for(plan, fixture_repo) if "cross-referential" in w]
+
+
+def test_checker_scope_is_validated_and_rendered(tmp_path, fixture_repo):
+    rel = add_checker(fixture_repo, "admin", "fake-object-design",
+                      "check_fake_object_design.py", REAL_CHECKER)
+    plan = plan_dict([step("M1-S01", "M1", tests=[checker_test(rel, "M1-S01", scope="build")])])
+
+    # Schema enum + semantic check both refuse a scope outside step|build.
+    bad = plan_dict([step("M1-S01", "M1", tests=[checker_test(rel, "M1-S01", scope="org")])])
+    schema = build_plan.load_schema()
+    assert build_plan.schema_errors(bad, schema, schema), "schema enum rejects an unknown scope"
+    assert any("unknown scope" in msg for _lvl, msg
+               in build_plan._acceptance_issues(bad["steps"][0]["acceptance_tests"],
+                                                "step M1-S01", fixture_repo))
+
+    body = build_plan.render_plan_md(plan)
+    assert "[scope: build]" in body, "render surfaces a declared checker scope"
+    # The default scope is not stamped on every row.
+    plain = plan_dict([step("M1-S01", "M1", tests=[checker_test(rel, "M1-S01")])])
+    assert "scope:" not in build_plan.render_plan_md(plain)
+
+    # A scope on a non-checker test is a WARN, not a silent no-op.
+    noisy = plan_dict([step("M1-S01", "M1", tests=[{"type": "xml", "scope": "build",
+                                                    "description": "artefacts parse"}])])
+    assert any("only means anything on a 'checker' test" in w
+               for w in warns_for(noisy, fixture_repo))
+    assert errors_for(noisy, fixture_repo) == []
