@@ -73,6 +73,7 @@ Layout of a build directory:
 ├── decisions.md              # append-only decisions log (doc keeper)
 ├── traceability.md           # REQ → step → artefact → test (doc keeper)
 ├── workbook/                 # configuration workbook sections (doc keeper)
+├── skills -> ../../../skills # symlink written by init/ensure-gates so declared checker commands resolve here
 ├── artefacts/<step-id>/      # what each step produced (metadata XML, Apex, Flow, JSON)
 ├── tests/<step-id>/          # tester outputs (checker stdout, results.json)
 ├── envelopes/<step-id>/      # each agent run's JSON envelope (validate with scripts/validate_envelope.py)
@@ -229,7 +230,13 @@ Every step has ≥ 1 acceptance test; every milestone has ≥ 1. Types:
 
 `step-tester` executes a declared `checker` command verbatim once the
 deny-list below has cleared it, and never rewrites it — no flag is appended,
-removed or re-ordered, and no path is substituted. A checker invoked with an
+removed or re-ordered, and no path is substituted. It runs the command **from
+the build directory**: `init` (and `ensure-gates`, for builds that predate
+this) give the build directory a `skills` symlink to the repo's `skills/`, so
+the declared `skills/<domain>/<slug>/scripts/check_x.py` and
+`--manifest-dir artefacts/<step-id>` both resolve exactly as written. From the
+repo root the checker path resolves but `artefacts/` does not, and a correct
+step reads as failing. A checker invoked with an
 argument its own parser does not define exits on a usage error, which reads as
 a failing step when nothing about the artefacts is wrong.
 

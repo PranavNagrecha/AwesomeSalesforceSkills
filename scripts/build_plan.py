@@ -1272,6 +1272,26 @@ def gate_status(plan: dict, name: str) -> str:
 # Subcommands
 # --------------------------------------------------------------------------
 
+def _ensure_skills_link(build_dir: Path, repo_root: Path) -> None:
+    """Give the build directory a `skills` symlink to the repo's skills/.
+
+    Contract section 5: acceptance-test commands are declared as
+    `python3 skills/<domain>/<slug>/scripts/check_x.py --manifest-dir artefacts/<step-id>`
+    and the tester runs them verbatim. Both halves resolve only from a directory
+    that holds BOTH `skills/` and `artefacts/` — the build directory, once it
+    carries this link. The build directory is gitignored, so the link is local
+    state, recreated by `init` (and by `ensure-gates`) whenever it is missing.
+    """
+    link = build_dir / "skills"
+    target = (repo_root / "skills").resolve()
+    if link.is_symlink() or link.exists():
+        return
+    try:
+        link.symlink_to(os.path.relpath(target, build_dir.resolve()), target_is_directory=True)
+    except OSError:
+        link.symlink_to(target, target_is_directory=True)
+
+
 def cmd_init(args: argparse.Namespace) -> int:
     build_dir = Path(args.build_dir)
     requirement_src = Path(args.requirement)
@@ -1288,6 +1308,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     # Section 2 layout.
     for sub in ("workbook", "artefacts", "tests", "envelopes", "reports"):
         (build_dir / sub).mkdir(parents=True, exist_ok=True)
+    _ensure_skills_link(build_dir, Path(args.repo_root))
     shutil.copyfile(requirement_src, build_dir / "requirement.md")
 
     text = (build_dir / "requirement.md").read_text(encoding="utf-8", errors="replace")
@@ -1838,6 +1859,7 @@ def _ensure_gates(plan: dict) -> list[str]:
 def cmd_ensure_gates(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     plan = read_plan(plan_path)
+    _ensure_skills_link(plan_path.parent, Path(args.repo_root))
     added = _ensure_gates(plan)
     gates = plan.get("human_gates") or []
     schema = load_schema(args.schema)

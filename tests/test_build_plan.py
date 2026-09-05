@@ -2270,3 +2270,16 @@ def test_rejected_body_archives_its_own_verdict_and_replan_clears_it(tmp_path, f
                "--by", "verifier", "--repo-root", str(fixture_repo)) == 0
     plan = json.loads(path.read_text())
     assert [h["plan"]["verification"]["plan_version"] for h in plan["history"]] == [1, 2]
+
+
+def test_init_links_skills_into_the_build_dir(tmp_path, fixture_repo, requirement, capsys):
+    """Section 5: declared checker commands resolve from the build dir via a skills symlink."""
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Build B", "--requirement", str(requirement),
+               "--repo-root", str(fixture_repo), "--now", "2026-09-05T09:00:00Z") == 0
+    link = build_dir / "skills"
+    assert link.is_symlink() and link.resolve() == (fixture_repo / "skills").resolve()
+    link.unlink()
+    capsys.readouterr()
+    assert run("ensure-gates", str(build_dir / "plan.json"), "--repo-root", str(fixture_repo)) == 0
+    assert link.is_symlink(), "ensure-gates recreates a missing skills link"
