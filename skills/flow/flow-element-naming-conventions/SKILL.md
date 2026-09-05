@@ -31,7 +31,7 @@ outputs:
   - Subflow input/output rename + version-bump recommendation
   - Audit table of non-conforming element names with proposed replacements
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-09-05
 ---
@@ -50,6 +50,24 @@ Gather this context before working on anything in this domain:
 - **Is this Flow already deployed to production or referenced in a managed/unlocked package?** Element API names become part of the metadata contract. After a package install, renaming an element that is referenced by formula, fault path, or another flow's subflow call is a breaking change.
 - **Common wrong assumption:** practitioners think "API Name doesn't matter, only Label is shown." False — API Name is what serializes into Flow XML, what shows up in metadata diffs in Git, what appears in fault email subjects, and what every Subflow / formula reference resolves against. The Label is throwaway; the API Name is the contract.
 - **Limits in play:** API Name max 80 characters, must start with a letter, alphanumeric + underscore only (Salesforce auto-replaces spaces and special chars with `_`). Reserved words (`null`, `true`, `false`, `Id`) must not be used as variable API names — they will silently shadow built-ins or refuse to save.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before renaming anything; the answers decide whether a rename is a cosmetic edit or a contract break, and they set the exit-code contract for `scripts/check_flow_element_naming_conventions.py`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is there an existing house prefix table, or do we adopt this skill's?" | The checker encodes *this* skill's tables literally — `E-VAR-PREFIX` on the resource tokens, `W-VERB-PREFIX` on the element verbs. A different house table means every conforming flow in the org lints dirty | One prefix table the checker is pointed at, plus the list of flows expected to fail it on day one |
+| "Are any of these flows packaged, installed in subscriber orgs, or called as a subflow by a parent?" | Gotcha 1 / Gotcha 2 — the rename saves with no warning and fails at runtime in the *caller*; subscribers cannot edit your flow but their parents still call it by API name | A rename-risk class (high / medium / low) per element and a version-bump plan for the high ones |
+| "Which elements are auto-named today — `Get_Records_3`, `myDecision_2_A1`?" | `E-AUTONAME` is an ERROR, and Gotcha 5 says the Process Builder converter emits these by default and offers no rename pass | The real size of the rename pass, before someone scopes it as "cleanup later" |
+| "Is `--strict` the CI rule, or are WARNs advisory?" | Without `--strict` the checker exits 0 on every house-style finding; with it, `W-VERB-PREFIX`, `W-IO-PREFIX`, `W-COLL-SHAPE` and `W-FAULT-TARGET` all break the build | A decided exit-code contract, so the pipeline agrees with the review standard instead of contradicting it |
+| "Who owns fault-target naming, and does it match the org's error-logging skeleton?" | Pattern 5 and `W-FAULT-TARGET` expect one target per parent element (`LogFault_<Parent>`); an org standardised on a single shared handler will WARN on every fault connector | Whether each WARN is a defect to fix or a documented exception, decided once rather than per pull request |
+| "How do collections get named — plural noun after `coll`, or a `List` / `s` suffix?" | `W-COLL-SHAPE` fires twice: on `isCollection` variables missing the `coll` prefix, and on a `coll` name whose noun reads singular | A deterministic rule for the collection check instead of reviewer judgement on `collCase` vs `collCases` |
+| "Are Labels throwaway here, or does anything downstream read them?" | This skill treats the Label as throwaway and the API Name as the contract, but `E-LABEL-DEFAULT` and `E-LABEL-DUP` are ERRORs, and `I-LABEL-ECHO` fires when a label just restates the API name | Whether labels get authored content (documentation generators, fault triage) or only have to be unique and non-default |
+
+What a proper configuration adds over just renaming elements: fault emails and metadata diffs name the business step that failed, the public subflow surface is versioned rather than silently broken, and the naming rule is enforced by a checker in CI instead of relitigated in every review.
 
 ---
 
@@ -222,6 +240,8 @@ Element:  Update_OpportunityStageToClosedWon
 | Orchestration Step | `Step_<Stage>_<Action>` | `Step_LegalReview_AssignToCounsel` |
 | Fault target element | `LogFault_<ParentElementName>` | `LogFault_Update_OpportunityStageToClosedWon` |
 
+Known inconsistency: the at-bar sibling skills `flow/record-triggered-flow-patterns` and `flow/subflows-and-reusability` ship metadata examples using `Classify_*` / `Set_*` element names, a shared `Log_Archive_Fault` target, and `in`/`out` variable prefixes, all of which this table grades as WARN under `scripts/check_flow_element_naming_conventions.py` (`W-VERB-PREFIX`, `W-FAULT-TARGET`, `W-IO-PREFIX`) — the house rule is undecided, which is why those codes are WARN and not ERROR.
+
 ---
 
 ## Recommended Workflow
@@ -272,6 +292,19 @@ Element:  Update_OpportunityStageToClosedWon
 | Subflow contract document | Inputs / outputs with API Name + Type + Description, ready to paste into the Flow Description field |
 | Audit table | Non-conforming element names + proposed replacement + rename risk class (high / medium / low) |
 | Migration cleanup list (PB→Flow) | List of `myWaitEvent_<n>` / `myDecision_<n>` style names with target replacements |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/examples.md` | You want the before/after narrative — the name a practitioner shipped first, what it cost, and the corrected shape |
+| `references/gotchas.md` | A rename saved cleanly and something broke anyway: cross-flow contracts, auto-underscore substitution, reserved words, the 80-char cap |
+| `references/llm-anti-patterns.md` | You are reviewing names an AI assistant produced, or self-checking your own output before a pull request |
+| `references/well-architected.md` | You need the Operational Excellence framing, the tradeoffs, or the source behind a claim in this skill |
+| `templates/flow-element-naming-conventions-template.md` | You are recording the rename decision — current names, proposed names, rename-risk class — for review |
+| `scripts/check_flow_element_naming_conventions.py` | Before every deploy. `--manifest-dir <source tree>`; 22 rule codes, exits 1 on any ERROR, and on WARNs too under `--strict` |
 
 ---
 
