@@ -38,6 +38,8 @@ Common mistakes AI coding assistants make when generating or advising on Salesfo
 
 **Detection hint:** Any error handling guide that applies the same retry logic to 403 and 429 is conflating two different error conditions.
 
+**Sharper still:** the REST API Developer Guide's Status Codes and Error Responses table does not list 429 at all, so a contract that attributes 429 to Salesforce is describing the gateway or middleware in front of it. And `REQUEST_LIMIT_EXCEEDED` itself covers two conditions — the exhausted 24-hour allocation *and* the concurrent long-running-request cap — which need different recoveries. See `references/gotchas.md` gotchas 3 and 4.
+
 ---
 
 ## Anti-Pattern 4: Documenting SLA Percentages from Developer Docs
@@ -61,3 +63,39 @@ Common mistakes AI coding assistants make when generating or advising on Salesfo
 **The correct pattern:** The `Sforce-Limit-Info: api-usage=X/Y` header is present on every REST API response and provides real-time consumption visibility. Consumer teams must log this header and alert when X/Y exceeds a threshold (e.g., 80%). Documentation must include the header format and monitoring guidance.
 
 **Detection hint:** API rate limit documentation that does not include the `Sforce-Limit-Info` header is missing the operational monitoring requirement.
+
+---
+
+## Anti-Pattern 6: Modelling the Salesforce Error Body as a Single Object
+
+**What the LLM generates:** An OpenAPI error schema (or a partner-side DTO) shaped as `{ "message": string, "errorCode": string }`, and handler code that reads `response.errorCode`.
+
+**Why it happens:** Most REST APIs return one error object per failure, so the LLM applies the majority shape. Salesforce returns a JSON **array** of error objects — the guide's own examples are `[{ "fields": ["Id"], "message": "...", "errorCode": "MALFORMED_ID" }]` and `[{ "message": "The requested resource does not exist", "errorCode": "NOT_FOUND" }]`.
+
+**The correct pattern:** Type the error as an array of `{ message, errorCode, fields }` and make the handler iterate. See the `SalesforceErrors` schema in `references/worked-examples.md` § 2.
+
+**Detection hint:** Any error schema whose `type` is `object` rather than `array`, or any handler that dereferences `errorCode` without indexing first. This bug survives UAT because most single-cause failures still parse if the client is lenient; it surfaces on the first multi-field validation failure.
+
+---
+
+## Anti-Pattern 7: Treating a 200 from a Batch Resource as "All Rows Saved"
+
+**What the LLM generates:** Reconciliation logic — or a contract clause — whose success criterion is `if (response.status == 200) markAllDelivered()` for an sObject Collections or composite request.
+
+**Why it happens:** For single-record REST calls the HTTP status genuinely is the outcome, and the LLM generalises. For sObject Collections it is not: if the request is well formed the API returns `200 OK`, and per-item outcomes live in the response, where each item carries a `success` flag and an `errors` array.
+
+**The correct pattern:** Require per-row reconciliation in the contract — count `success: true` items against items sent — and record the `allOrNone` decision explicitly, because `allOrNone: true` converts silent partial loss into a whole-batch rollback, which is a business choice rather than a default.
+
+**Detection hint:** Any batch integration whose monitoring dashboard tracks HTTP status codes and nothing else. Green for weeks, then a reconciliation gap nobody can date.
+
+---
+
+## Anti-Pattern 8: Documenting a Hardcoded Host Instead of the Named Credential
+
+**What the LLM generates:** An outbound contract whose `endpoint` is `https://partner.example.com/v1/orders`, matching what the Apex looks like it calls.
+
+**Why it happens:** The LLM resolves `callout:Northwind_OMS/v1/orders` to what it believes the URL is, because a concrete URL reads as more informative than a credential name.
+
+**The correct pattern:** Document the `callout:<NamedCredential>/<path>` form as the contract endpoint and let the Named Credential record own the host. Apex resolves the host at runtime, so repointing the credential retargets every caller with no code diff and no failing test — a hardcoded host in the document is guaranteed to go stale silently.
+
+**Detection hint:** An outbound contract that names a hostname but no Named Credential. Cross-check against `agents/integration-catalog-builder/AGENT.md`, which inventories the credential records that actually decide the host.

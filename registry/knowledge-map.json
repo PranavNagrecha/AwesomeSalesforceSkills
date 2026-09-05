@@ -3002,6 +3002,9 @@
     "bulk-api-v2": [
       "agentforce/sf-to-llm-data-pipelines"
     ],
+    "bulk-api-vs-rest": [
+      "admin/integration-pattern-selection"
+    ],
     "bulk-approval": [
       "admin/approval-process-apex-patterns"
     ],
@@ -5313,6 +5316,7 @@
       "omnistudio/calculation-procedures"
     ],
     "decision-record": [
+      "admin/integration-pattern-selection",
       "admin/process-automation-selection"
     ],
     "decision-rights": [
@@ -9900,6 +9904,7 @@
     ],
     "named-credentials": [
       "admin/connected-apps-and-auth",
+      "admin/integration-pattern-selection",
       "agentforce/model-builder-and-byollm",
       "apex/apex-named-credentials-patterns",
       "apex/apex-secrets-and-protected-cmdt",

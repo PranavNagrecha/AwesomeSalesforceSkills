@@ -1,72 +1,109 @@
-# Integration Pattern Selection — Work Template
+# Integration Pattern Selection — Decision Record Template
 
-Use this template to document the integration pattern decision before any implementation begins.
+Copy this file to `docs/adr/ADR-INT-<nnnn>.md`, fill every field, then lint the copy:
 
-## Scope
+```bash
+python3 scripts/check_integration_pattern_selection.py --decision-record docs/adr/ADR-INT-<nnnn>.md
+```
 
-**Skill:** `integration-pattern-selection`
-
-**Integration Name:** (fill in)
-**Source System:** (fill in)
-**Target System:** (fill in)
-**Trigger Event:** (what triggers this integration)
-**Business Outcome:** (what must happen as a result)
+Worked examples of a filled record are in `references/decision-record-examples.md`.
+The questions the fields answer live in `standards/decision-trees/integration-pattern-selection.md` —
+cite them by number (`integration-pattern-selection.md Q7`), never by paraphrase.
 
 ---
 
-## Two-Axis Classification
+## The Record
 
-| Axis | Answer | Notes |
-|---|---|---|
-| Integration Type | Process / Data / Virtual | |
-| Timing | Synchronous / Asynchronous | Response needed before completing source transaction? |
-
+```yaml
 ---
+record_id:
+requirement: >
 
-## Secondary Constraints
+direction:                # salesforce_to_external | external_to_salesforce | bidirectional_or_decoupled
+volume:
+  per_day:                # measured peak rows or calls per 24 hours
+  per_request:            # rows per API call / per Bulk batch
+latency:                  # realtime | near_realtime | batch
+idempotency:              # designed_idempotent | idempotency_key_required | not_guaranteed
+who_knows_ids:            # salesforce_ids | external_key | neither
+ordering:                 # strict | at_least_once | not_required
+chosen_pattern:           # see the allowed set below
+tree_questions_cited:
+  - "integration-pattern-selection.md Q — "
+rejected:
+  - alternative:
+    reason: >
 
-| Constraint | Value | Impact |
-|---|---|---|
-| Volume per transaction | (records/day) | > 2,000 → Bulk API 2.0 required |
-| External system latency SLA | (seconds typical / max) | > 60s → async pattern required |
-| Cross-system rollback required | Yes / No | Yes → middleware orchestration required |
-| Latency tolerance | Real-time / Near-real-time / Batch | |
-
+auth:
+  named_credential:
+  external_credential:
+owner:
+review_date:              # YYYY-MM-DD
 ---
+```
 
-## Pattern Selection
+### Allowed `chosen_pattern` values
 
-| Canonical Pattern | Applicable? | Reason |
-|---|---|---|
-| Remote Process Invocation — Request/Reply | | |
-| Remote Process Invocation — Fire-and-Forget | | |
-| Batch Data Synchronization | | |
-| Remote Call-In | | |
-| UI Update Based on Data Changes | | |
-| Data Virtualization | | |
+`rest_api`, `rest_composite`, `bulk_api_2`, `custom_rest`,
+`apex_callout_named_credential`, `continuation`, `queueable_callout`,
+`platform_event`, `change_data_capture`, `pub_sub_api`,
+`salesforce_connect_odata`, `streaming_api_pushtopic`, `outbound_message`,
+`mulesoft_ipaas`.
 
-**Selected Pattern:** ______
-**Rationale:** ______
+`streaming_api_pushtopic` and `outbound_message` are legacy — the tree's anti-patterns
+section rules both out for new work. If one of them is the answer, the record has to say
+why the migration is being deferred.
 
----
+### Which questions apply to which direction
 
-## Selected Pattern Implementation Skill
-
-| Next Skill | Why |
+| `direction` | Work these questions, top to bottom, as a checklist |
 |---|---|
-| `integration/event-driven-architecture-patterns` | For Fire-and-Forget or UI Update pattern |
-| `integration/salesforce-to-salesforce-integration` | For Salesforce-to-Salesforce Remote Call-In |
-| `integration/error-handling-in-integrations` | Design error recovery for the chosen pattern |
-| `architect/api-led-connectivity-architecture` | Multi-system governance |
+| `salesforce_to_external` | Q1 latency and context · Q2 authentication · Q3 payload shape · Q4 rate limiting and retry |
+| `external_to_salesforce` | Q5 volume · Q6 latency · Q7 who knows the Ids · Q8 idempotency · Q9 does the data belong in Salesforce tables |
+| `bidirectional_or_decoupled` | Q10 who produces the signal · Q11 who subscribes · Q12 ordering · Q13 external producer shape · Q14 replication direction |
+
+They are not a branching graph. Within a direction every question applies, and each one
+narrows a different axis.
+
+---
+
+## Supporting Notes (free text, kept below the record)
+
+### Integration inventory
+
+What the org already does with this system. Retrieve `NamedCredential`,
+`ExternalCredential`, `ConnectedApp`, `PlatformEventChannel`, `PlatformEventChannelMember`
+and `RemoteSiteSetting` — the manifest and commands are in
+`references/decision-record-examples.md` § *The Integration Inventory*.
+
+| Existing integration | Mechanism | Owner | Overlaps this requirement? |
+|---|---|---|---|
+| | | | |
+
+### Limits this pattern will spend
+
+| Limit | Ceiling | Expected usage | Source |
+|---|---|---|---|
+| | | | |
+
+### Hand-off
+
+| Next skill / agent | Why |
+|---|---|
+| | |
 
 ---
 
 ## Review Checklist
 
-- [ ] Integration type classified (Process / Data / Virtual)
-- [ ] Timing requirement confirmed (Sync / Async)
-- [ ] Volume threshold applied (2,000 record threshold checked)
-- [ ] Callout timeout risk assessed (120s limit for synchronous)
-- [ ] Cross-system rollback requirement checked (middleware needed if yes)
-- [ ] Canonical pattern selected with documented rationale
-- [ ] Pattern decision record signed off before implementation
+- [ ] `direction` chosen before any mechanism was named
+- [ ] Every branch of the choice cites a numbered question a reader can look up
+- [ ] Each rejected alternative carries a reason, not a strikethrough
+- [ ] `volume.per_day` is a measured number, not a sandbox number
+- [ ] The per-request ceiling of the chosen mechanism is respected
+- [ ] `who_knows_ids` was verified, including that any External Id field is Unique
+- [ ] `auth.named_credential` names a real Named Credential; no endpoint is hard-coded
+- [ ] `ordering` states what the pattern actually guarantees, not what is wished for
+- [ ] Existing integrations to the same system were inventoried before this one was proposed
+- [ ] `owner` and `review_date` are filled
+- [ ] `check_integration_pattern_selection.py --decision-record` passes

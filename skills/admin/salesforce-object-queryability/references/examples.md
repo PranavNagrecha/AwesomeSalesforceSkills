@@ -82,11 +82,33 @@ NOT:
 
 ## Example 5: Permission-denied (not a query bug)
 
-**Context:** Agent queries `User` as a restricted portal user; gets 403.
+**Context:** Agent queries `OauthToken` as a probe user whose profile has API
+Enabled but not Customize Application. The object *is* in the org's listing.
 
-**Classification:** Mode 3 — permission denied.
+**What the two calls return.** The describe succeeds and the query does not —
+that gap is the whole diagnosis:
 
-**Remediation:** This is signal, not noise. Record the permission gap in the output (this is itself useful info about the running user). Don't silently continue.
+```http
+GET /services/data/v67.0/sobjects/          -> 200; entry {"name":"OauthToken","queryable":true}
+GET /services/data/v67.0/query/?q=SELECT+Id+FROM+OauthToken+LIMIT+1
+                                            -> 403
+{ "message": "You do not have permission to view this record.",
+  "errorCode": "INSUFFICIENT_ACCESS" }
+```
+
+**Classification:** Mode 3 — permission denied. `queryable: true` in the listing
+rules out Modes 1, 2, 5 and 6 in a single call; the 403 rules out Mode 4.
+
+**Why this user and not another.** The Object Reference states the rule on the
+object itself: "Users with the Customize Application permission see all tokens for
+all users in the org. Otherwise, you see only your own tokens"
+(`object_reference.txt` L189605–L189606). So the same query run by an admin
+returns rows, and run by the probe user returns 403 — the object never moved.
+
+**Remediation:** This is signal, not noise. Record the permission gap in the
+output (it is itself useful information about the running user), name the
+permission the Object Reference demands, and don't silently continue. The
+deployable grant is in `references/metadata-examples.md` block 3.
 
 ---
 

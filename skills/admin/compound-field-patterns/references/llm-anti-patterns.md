@@ -144,3 +144,50 @@ WHERE DISTANCE(Location__c, GEOLOCATION(:lat, :lon), 'mi') < 5
 **Detection hint:** `DISTANCE(...)` compared with `=`, `>=`, or `<=`; a bind
 variable (`:unit`) in the third DISTANCE argument; or `GEOLOCATION(...)`
 appearing before the location field.
+
+---
+
+## Anti-Pattern 7: Building a dynamic query on `isFilterable()`, or reading a component through the parent field
+
+**What the LLM generates:**
+
+```apex
+// (a) A "safe" dynamic filter builder
+for (Schema.SObjectField f : Account.SObjectType.getDescribe().fields.getMap().values()) {
+    if (f.getDescribe().isFilterable()) {
+        filterableFields.add(f.getDescribe().getName());   // BillingAddress sails through
+    }
+}
+
+// (b) Reading a component by chaining off the record
+String city = acct.BillingAddress.City;
+Address addr = acct.BillingAddress;      // ambiguous with Schema.Address
+```
+
+**Why it happens:** Both look like the platform is telling the truth.
+`isFilterable()` is the documented way to ask whether a field can go in
+a `WHERE` clause, and dot-chaining is how every other nested value in
+Apex is read. The model has no signal that either is special-cased.
+
+**Correct pattern:**
+
+```apex
+// (a) Exclude compounds explicitly; the describe flag is wrong for them.
+//     "Address fields aren't filterable, but the isFilterable() method of the
+//      DescribeFieldResult Apex class erroneously returns true for address fields"
+//      (object_reference.txt L2950-L2951)
+Schema.DescribeFieldResult d = f.getDescribe();
+if (d.isFilterable() && d.getSOAPType() != Schema.SOAPType.ADDRESS) { ... }
+
+// (b) Assign the parent field to a typed local first, and namespace it.
+//     "You can't use dot notation to access compound fields' subfields directly
+//      on the parent field" (apexrefguide.txt L199180-L199182)
+System.Address addr = acct.BillingAddress;
+String city = addr.city;
+```
+
+**Detection hint:** `isFilterable()` used as the only gate in a query
+builder; `.BillingAddress.`, `.MailingAddress.`, `.ShippingAddress.` or
+`__c.latitude` chained off a record variable; a bare `Address` or
+`Location` local declaration in a class that also touches the Address or
+Location standard object.

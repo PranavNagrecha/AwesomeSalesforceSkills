@@ -1,0 +1,81 @@
+# Connected App OAuth Diagnosis Record
+#
+# One record per investigated failure. Commit it alongside the fix.
+# Linted by:
+#   python3 scripts/check_connected_app_troubleshooting.py --manifest-dir <dir holding this file>
+#
+# The checker requires, under `diagnosis:`
+#   symptom, error, app, user-id, first-failure, root-cause, fix-applied, verified-by
+# plus at least one `evidence:` entry, and every evidence entry must carry both a
+# `query` and a `result`. `root-cause` must be one of the categories below, which are
+# the ones in references/metadata-examples.md § 1:
+#
+#   callback-url                the redirect_uri the client sends is not in callbackUrl
+#   pre-authorization           isAdminApproved with no matching permissionSetName / profileName
+#   flow-not-enabled            the grant type is not switched on for this app
+#   refresh-token-policy        refreshTokenPolicy invalidates the token before the client renews
+#   secret-required-asymmetry   isConsumerSecretOptional and isSecretRequiredForRefreshToken disagree
+#   refresh-token-rotation      an invalidated refresh token was replayed and deleted the grant
+#   ip-restriction              ipRelaxation ENFORCE against an address the caller cannot control
+#   policy-change               a Setup change corroborated by SetupAuditTrail
+#   user-state                  the authenticating user is inactive, frozen, or unassigned
+#   app-blocked                 the app is blocked in Connected Apps OAuth Usage
+#   post-auth-authorization     authentication succeeded; the API call was refused (scope / CRUD)
+#
+# Redact every consumer key, consumer secret and token as [REDACTED] before committing.
+
+diagnosis:
+  symptom: >
+    One-line description of what the caller sees, with the timeline.
+    Example: worked from 2026-08-14, every call since 2026-09-02T09:14Z returns 400.
+  error: |
+    Paste the response body verbatim, with the request line and HTTP status.
+    Replace credentials with [REDACTED].
+  app: Connected app label, exactly as it appears in Setup
+  user-id: 005XXXXXXXXXXXXXXX
+  first-failure: 2026-09-02T09:14:00Z
+  flow: >
+    The grant flow the client uses, and which half failed
+    (initial authorization or renewal) per LoginSubType.
+  root-cause: refresh-token-policy
+  fix-applied: |
+    What changed, in which org, and whether a re-authorization was required.
+  verified-by: |
+    The post-fix evidence. For a renewal failure this must name a Success row
+    whose LoginSubType is the one that was failing.
+
+  evidence:
+    # Every entry needs both `query` and `result`. A zero-row result is a finding:
+    # write "0 rows" and say what it rules out.
+    - step: LoginHistory for the authenticating user over the failure window
+      query: >
+        SELECT LoginTime, Status, LoginSubType, Application, SourceIp
+        FROM LoginHistory WHERE UserId = '005XXXXXXXXXXXXXXX'
+        AND LoginTime = LAST_N_DAYS:1 ORDER BY LoginTime DESC
+      result: >
+        Row count, the Status and LoginSubType values seen, and which runbook
+        rows this rules out.
+    - step: OauthToken rows for the app
+      query: >
+        SELECT AppName, UserId, LastUsedDate, UseCount FROM OauthToken
+        WHERE AppName = 'Connected app label' ORDER BY LastUsedDate DESC
+      result: >
+        Row count, UseCount and LastUsedDate, AND the runner's username plus
+        confirmation they hold Customize Application. Without that, an empty
+        result rules nothing out.
+    - step: SetupAuditTrail from before the first failure
+      query: >
+        SELECT CreatedDate, CreatedBy.Name, DelegateUser, Action, Section, Display
+        FROM SetupAuditTrail WHERE CreatedDate >= 2026-08-25T00:00:00Z
+        ORDER BY CreatedDate DESC LIMIT 500
+      result: >
+        Any row naming this app, with its timestamp relative to first-failure.
+        Say "0 rows naming the app" explicitly if that is the answer.
+
+  # Optional. Fill when the fix touched oauthPolicy or ipRelaxation.
+  sandbox-reproduction:
+    org: sandbox name
+    reproduced: true
+    notes: >
+      Whether the sandbox reproduced the symptom before the fix. A sandbox that
+      did not reproduce it has validated nothing — diff the two oauthPolicy blocks.

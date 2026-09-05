@@ -37,6 +37,8 @@ Volume thresholds:
 
 **Detection hint:** REST API or SOAP API recommended for scenarios described as "batch," "nightly sync," or where volume mentions thousands or more records.
 
+**Grounding note:** the 150M/24-hour Bulk API 2.0 figure is documented (App Limits Cheat Sheet L779–L782; api_asynch.txt L1242), and so is the 10,000-record batching unit and the 200-record sObject Collections ceiling (api_rest.txt L22642–L22652). The "2,000 records" line above is a rule of thumb, not a documented threshold — UNVERIFIED (2026-09-04): it appears in no extracted guide. Route on `standards/decision-trees/integration-pattern-selection.md` Q5's bands and the org's measured API allocation instead.
+
 ---
 
 ## Anti-Pattern 3: Recommending Synchronous Callout for High-Latency External Systems
@@ -96,3 +98,42 @@ Only then recommend a specific implementation mechanism.
 ```
 
 **Detection hint:** Pattern recommendation given without explicit classification of integration type and timing requirement.
+
+---
+
+## Anti-Pattern 6: Restating The Decision Tree Instead Of Citing It
+
+**What the LLM generates:** A paraphrase of `standards/decision-trees/integration-pattern-selection.md` inside its answer — a retyped version of the Q5 volume bands, or its own copy of the Pattern summary table — presented as the reasoning.
+
+**Why it happens:** Reproducing the source reads as thoroughness, and a model that has the tree in context will happily inline it. The paraphrase then drifts the first time the tree is updated, and nobody can tell which copy is authoritative.
+
+**Correct pattern:**
+```
+Cite: "integration-pattern-selection.md Q5 — > 1M rows/day OR bulk upsert, so Bulk API 2.0"
+Do NOT: restate the branch text, retype the bands, or reproduce the Pattern summary table.
+The decision record's tree_questions_cited field is checked for the literal form
+`integration-pattern-selection.md Q<n>` by scripts/check_integration_pattern_selection.py.
+```
+
+**Detection hint:** an answer that contains the tree's own table rows or branch arrows, or a recommendation whose justification has no `Q<n>` in it anywhere.
+
+---
+
+## Anti-Pattern 7: Quoting An Event Delivery Allocation From Memory
+
+**What the LLM generates:** A confident per-24-hour platform event delivery or publish allocation — "250,000 events per day on Enterprise" — attached to a pattern recommendation.
+
+**Why it happens:** Allocation numbers are heavily repeated in blog posts and training data, they vary by edition and by add-on, and they change between releases. The model reproduces the most common string rather than the org's actual entitlement.
+
+**Correct pattern:**
+```
+Do not state a delivery or publish allocation you cannot cite.
+Measure instead: SELECT EventName, UsageType, Value FROM PlatformEventUsageMetric
+Grounded numbers that CAN be stated:
+  - 150 EventBus.publish calls per transaction for publish-immediately events
+  - 2,000 Apex trigger batch size for platform events and CDC events
+  - 72-hour replay window for stored events
+Everything else: confirm against the Platform Events Developer Guide for the org's edition.
+```
+
+**Detection hint:** an events recommendation that carries a daily number with no source, especially one phrased as "on standard plans" or "by default".

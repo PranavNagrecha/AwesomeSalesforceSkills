@@ -112,7 +112,16 @@ write targets components — no `c.MailingAddress = ...` anywhere
 in the code. Second, when State & Country Picklists are on, the
 `-Code` field is the source of truth and the platform auto-
 populates the matching text field on save (so reports filtering
-by either field stay consistent). Third, the SOQL in `start()`
+by either field stay consistent). UNVERIFIED (2026-09-04): the
+direction of that back-fill — code populates text, not the
+reverse — is not stated in the extracted Object Reference,
+Metadata API, or Apex Reference PDFs; what *is* grounded is that
+`Address.getStateCode()` "returns the state code of this address
+if state and country/territory picklists are enabled in your
+organization. Otherwise, returns null" (apexrefguide.txt
+L199256–L199258). Verify the back-fill in a sandbox with the
+`BillingStateCode = NULL AND BillingState != NULL` query in
+`metadata-examples.md` §9 before relying on it. Third, the SOQL in `start()`
 selects only `Id` — there's no point pulling `MailingAddress`
 because we're overwriting every component anyway. The job
 processes 30,000 records in ~30 chunks of 1,000 without hitting
@@ -196,13 +205,18 @@ public with sharing class StoreLocatorService {
 in a SOQL `WHERE` clause against a compound field — the platform
 treats it as a special operator, not a compound filter, so it
 sidesteps the "no compound in WHERE" restriction. The function
-works in `SELECT`, `WHERE`, and `ORDER BY`, which lets the query
-return exactly the 10 rows the LWC needs. The result of
-`DISTANCE` is exposed as an unnamed aliased column; access it
-through `SObject.get('dist')` rather than typed field access
-(the compiler doesn't model the alias). Supported units are
-`'mi'` and `'km'`; the same float is returned regardless of
-ordering operands. p95 drops from ~3.5s to ~80ms because the
+works in `SELECT`, `WHERE`, and `ORDER BY` — but not `GROUP BY`
+(object_reference.txt L2969–L2970) — which lets the query return
+exactly the 10 rows the LWC needs. The result of `DISTANCE` is
+exposed as an unnamed aliased column; access it through
+`SObject.get('dist')` rather than typed field access (the
+compiler doesn't model the alias). Supported units are `'mi'` and
+`'km'`. Operand order is *not* free: "the geolocation field must
+precede the latitude and longitude coordinates"
+(object_reference.txt L2980–L2983), so the location field goes
+first and `GEOLOCATION` second. In Apex, where both points are
+already in memory, `System.Location.getDistance(a, b, 'mi')` is
+symmetric and needs no query. p95 drops from ~3.5s to ~80ms because the
 database handles bounding-box filtering and sorting before
 returning rows.
 
@@ -221,15 +235,27 @@ origin searches as separate queries and merge in Apex.
 The instinct from working with non-compound fields is to put the
 compound field name in the filter:
 
-```
+```soql
 SELECT Id, Name FROM Account WHERE BillingAddress LIKE '%California%'
 ```
 
 Or in the Report Builder:
 
-```
+```text
 Filter: Billing Address contains "California"
 ```
+
+The rule that decides all of this, and the surface each variant
+dies on:
+
+| Attempt | Result | Rule |
+|---|---|---|
+| `WHERE BillingAddress = :addr` | `MALFORMED_QUERY` at parse time | "Address fields can't be used in WHERE statements in SOQL. Address fields aren't filterable" (object_reference.txt L2950) |
+| "Billing Address" as a report column | Not offered — no UI surface reaches a compound | "The compound versions of fields aren't accessible anywhere in the Salesforce user interface" (object_reference.txt L2913–L2914) |
+| "Billing Address" as a report filter | Not offered, same rule | as above |
+| `ISBLANK(BillingAddress)` in a validation rule | Fails to compile | "As of API version 20.0, validation rules can't have compound fields" (api_meta.txt L45369) |
+| Export "Billing Address" in Data Loader | Error message | "If you select compound fields for export in the Data Loader, they cause error messages" (salesforce_data_loader.txt L918) |
+| `DISTANCE(BillingAddress, GEOLOCATION(37.775,-122.418), 'mi') < 20` | Works | The compound is a *location operand* here, not a filter value (object_reference.txt L2836–L2841) |
 
 **What goes wrong:** The SOQL fails immediately with
 `MALFORMED_QUERY: line 1:38 no viable alternative at character
@@ -237,15 +263,18 @@ Filter: Billing Address contains "California"
 as a syntax error rather than a meaningful filter. There is no
 graceful failure mode; the query just doesn't compile.
 
-In the Report Builder, the behavior is worse: the compound
-"Billing Address" field appears in the column picker (selecting
-it works — it renders as a formatted block) but does NOT appear
-as a filterable field in the filter dropdown. Practitioners
-search the field list, can't find it, conclude "address filtering
-is broken in Reports," and waste an afternoon on the Trailblazer
-Community before someone explains that you filter on `Billing
-City`, `Billing State`, `Billing State/Province (Code)`, `Billing
-Zip/Postal Code`, etc. — one component at a time.
+In the Report Builder the field simply is not there — neither as
+a column nor as a filter — because no UI surface can reach a
+compound value at all. Practitioners search the field list, can't
+find "Billing Address", conclude "address reporting is broken,"
+and waste an afternoon on the Trailblazer Community before
+someone explains that the components are the fields: `Billing
+City`, `Billing State/Province`, `Billing State/Province (Code)`,
+`Billing Zip/Postal Code`, one column and one filter at a time.
+Worse, `DescribeFieldResult.isFilterable()` reports `true` for
+address fields anyway (object_reference.txt L2950–L2951), so any
+tool that asks the platform which fields are filterable gets the
+wrong answer — see gotchas.md, gotcha 10.
 
 The deeper trap: this rule has ONE exception (`DISTANCE` on
 Geolocation in SOQL), which gives a misleading sense that maybe
@@ -256,12 +285,13 @@ on Geolocation only.
 **Correct approach:** Filter by components, every time. For the
 California ZIP-9 example:
 
-```
--- SOQL
+```soql
 SELECT Id, Name FROM Account
 WHERE BillingStateCode = 'CA'        -- code field if SCP enabled, else BillingState
   AND BillingPostalCode LIKE '9%'
+```
 
+```text
 -- Report Builder filter rows
 Billing State/Province (Code)  equals  CA
 Billing Zip/Postal Code        starts with  9

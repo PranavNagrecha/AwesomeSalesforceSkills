@@ -17,8 +17,46 @@ Policies → Refresh Token Policy = "Refresh token is valid until
 revoked." Re-authorize the integration user (initial consent
 flow). The new refresh token is captured under the new policy.
 
-**Verification.** Wait 24 hours; verify Login History shows
-continued Success.
+**The evidence, as it actually came back.** The client-side error
+and the org-side rows, side by side — this is what gets pasted into
+the diagnosis record's `error` and `evidence` fields:
+
+```text
+# 1. Client side, verbatim from the worker's log
+POST https://acme.my.salesforce.com/services/oauth2/token
+  grant_type=refresh_token&client_id=[REDACTED]&refresh_token=[REDACTED]
+HTTP/1.1 400
+{"error":"invalid_grant","error_description":"expired access/refresh token"}
+
+# 2. Org side. LoginHistory, WHERE UserId + LoginTime only.
+LoginTime             Status                    LoginSubType        SourceIp
+2026-09-01T08:02:11Z  Success                   OauthWebServer      52.14.x.x
+2026-09-02T09:14:03Z  Failed: invalid_grant     OauthRefreshToken   52.14.x.x
+2026-09-02T09:19:07Z  Failed: invalid_grant     OauthRefreshToken   52.14.x.x
+... 8 more identical rows through 2026-09-02T13:40Z
+
+# 3. OauthToken, run as a user holding Customize Application.
+AppName            UserId              LastUsedDate          UseCount
+Billing Sync JWT   005XXXXXXXXXXXXXXX  2026-09-01T08:02:11Z  1
+```
+
+Three things fall out of that block before any Setup page is
+opened. The `OauthWebServer` row is Success, so pre-authorization,
+the callback URL and the consumer key are all fine. Every failure
+carries `LoginSubType` = `OauthRefreshToken`, so the broken half is
+the renewal. And `UseCount` is 1 against a `LastUsedDate` that
+matches the one Success — the grant existed and was exchanged
+exactly once, which is the signature of a refresh policy that
+invalidates the token at issue.
+
+`Status` strings are whatever the org emits; the Object Reference
+says only that `Status` "is either success or a reason for
+failure". Read the values, do not predict them.
+
+**Verification.** Re-run the same query after the fix and require a
+Success row whose `LoginSubType` is `OauthRefreshToken`. A Success
+on `OauthWebServer` alone proves nothing — that half was never
+broken.
 
 ---
 

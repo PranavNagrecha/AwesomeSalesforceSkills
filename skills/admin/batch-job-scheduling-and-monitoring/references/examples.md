@@ -70,6 +70,56 @@ global class AccountEnrichmentBatch implements Database.Batchable<sObject> {
 
 ---
 
+## Example 3: The Nightly Job That "Ran Fine" and Processed Nothing
+
+**Context:** An hourly integration sync had grown from ~20 minutes to ~70 minutes as record volume
+climbed. The ops dashboard, filtered on `Status = 'Failed'`, stayed green for three weeks. Downstream
+reports were stale by roughly half a day.
+
+**Problem:** Two failures were stacked and each hid the other. The schedule was firing while the
+previous instance was still running, so most windows produced no job at all; and the runs that did
+happen were completing with per-record errors, which do not set `Status = 'Failed'`.
+
+**Solution:** Query the *schedule* and the *runs* separately — they answer different questions.
+
+```soql
+-- 1. The schedule. BLOCKED means a fire was attempted while an instance was still running.
+SELECT CronJobDetail.Name, State, CronExpression, NextFireTime, PreviousFireTime, TimesTriggered
+FROM CronTrigger
+WHERE CronJobDetail.Name = 'Hourly Integration Sync'
+```
+
+```soql
+-- 2. The runs. Note the failure predicate: Status alone is not enough.
+SELECT ApexClass.Name, Status, NumberOfErrors, JobItemsProcessed, TotalJobItems,
+       CreatedDate, CompletedDate, ExtendedStatus
+FROM AsyncApexJob
+WHERE ApexClass.Name = 'IntegrationSyncBatch'
+  AND JobType != 'BatchApexWorker'
+  AND CreatedDate = LAST_N_DAYS:3
+ORDER BY CreatedDate DESC
+```
+
+What came back, and what each column proved:
+
+| Signal | Value observed | Reading |
+|---|---|---|
+| `CronTrigger.State` | `BLOCKED` | A second instance was attempted while the first was running |
+| `TimesTriggered` vs elapsed hours | 31 over 72 hours | Roughly 40 of 72 windows produced no job at all |
+| `AsyncApexJob.Status` | `Completed` | Which is why the `Status = 'Failed'` dashboard was green |
+| `NumberOfErrors` | 4–11 per run | Ordinary record-level failures, invisible to that dashboard |
+| `JobItemsProcessed` vs `TotalJobItems` | equal | Every batch was attempted; the errors were within batches |
+
+**Why it works:** `BLOCKED` is documented as *"Execution of a second instance of the job is attempted
+while one instance is running"* (Object Reference, CronTrigger → State), and the Apex Developer
+Guide's batch status table defines `Completed` as *"Job completed with or without failure"*. Neither
+condition raises anything. The fix was two changes and one artefact: move the schedule to every two
+hours to fit the observed runtime, add a `NumberOfErrors` branch to `finish()`, and record
+`max_runtime_minutes: 70` plus a two-hour `window` in the scheduling registry so the checker warns
+the next time someone tightens the interval. See `references/gotchas.md` gotchas 7 and 9.
+
+---
+
 ## Anti-Pattern: Looking for Flow Scheduled Jobs in Apex Jobs
 
 **What practitioners do:** Navigate to Setup > Apex Jobs to find a scheduled Flow that is not running, expecting to see "Schedule-Triggered Flow" entries there alongside Batch Apex jobs.
@@ -77,3 +127,29 @@ global class AccountEnrichmentBatch implements Database.Batchable<sObject> {
 **What goes wrong:** Flow scheduled jobs (Schedule-Triggered Flow) do NOT appear in Setup > Apex Jobs. Looking here finds nothing, leading the admin to incorrectly conclude the flow was never scheduled or has no execution history.
 
 **Correct approach:** Navigate to Setup > Scheduled Jobs to view Schedule-Triggered Flow Interviews. This view shows Flow scheduled jobs, their next fire time, and allows deletion of the schedule. For execution history of a scheduled flow, check the Flow Error Email (if error email is configured on the flow) or the custom logging if the flow writes to a custom log object.
+
+The programmatic equivalent — one query that answers "is *anything* scheduled, Apex or Flow", which is the question the admin actually had:
+
+```soql
+SELECT CronJobDetail.Name,
+       CASE WHEN CronJobDetail.JobType = '6' THEN 'Scheduled Flow' ELSE 'Scheduled Apex' END,
+       State, NextFireTime, PreviousFireTime, TimesTriggered
+FROM CronTrigger
+WHERE CronJobDetail.JobType IN ('6', '7')
+ORDER BY CronJobDetail.JobType, NextFireTime
+```
+
+`TimesTriggered = 0` on a schedule created weeks ago is the actual smoking gun — the schedule exists
+and has never fired. Route by what the row shows:
+
+| What the query returns | What it means | Next move |
+|---|---|---|
+| No row at all | The flow is genuinely not scheduled | Activate the flow with a `<schedule>`, or set the schedule in Flow Builder |
+| Row, `State = WAITING`, `TimesTriggered = 0`, future `NextFireTime` | Scheduled, just hasn't reached the first fire | Wait; confirm the time zone against `TimeZoneSidKey` |
+| Row, `State = ERROR` | The trigger definition is broken; it will never fire | Abort it and re-create the schedule |
+| Row, `NextFireTime` null | It ran and will not run again | Re-create; a one-off `Once` frequency was probably used |
+| Row firing normally, but no business effect | The interviews are erroring, not the schedule | Query `FlowInterview` where `InterviewStatus = 'Error'` and read `Error` |
+
+`CronJobDetail.JobType` code `6` is Scheduled Flow and `7` is Scheduled Apex (Object Reference,
+CronJobDetail → JobType). Note that this is the *schedule*, not the run: interview-level history
+lives on `FlowInterview`, and `flow/scheduled-flow-not-running-debug` covers that side.

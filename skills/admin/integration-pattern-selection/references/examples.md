@@ -27,6 +27,52 @@ Cross-system rollback needed: No
 
 **Why it works:** Applying the framework surface the 120-second constraint that ruled out synchronous. Fire-and-Forget with Platform Events is the correct pattern and avoids the brittle synchronous timeout failure.
 
+The same choice written as the linted decision record this skill produces
+(`scripts/check_integration_pattern_selection.py --decision-record` is what checks it; the
+field-by-field walkthrough is in `references/decision-record-examples.md`):
+
+```yaml
+---
+record_id: ADR-INT-0009
+requirement: >
+  Create an Order in the ERP when an Opportunity is set to Closed Won. Confirmation of the
+  ERP order number returns later and is not needed inside the closing transaction.
+direction: bidirectional_or_decoupled
+volume:
+  per_day: 50
+  per_request: 1
+latency: near_realtime
+idempotency: idempotency_key_required
+who_knows_ids: salesforce_ids
+ordering: at_least_once
+chosen_pattern: platform_event
+tree_questions_cited:
+  - "integration-pattern-selection.md Q10 — Salesforce produces the 'deal closed' signal, so route to Q11"
+  - "integration-pattern-selection.md Q11 — the subscriber is the ERP, an external system, so Platform Event plus a Pub/Sub API subscriber on the ERP side"
+  - "integration-pattern-selection.md Q12 — at-least-once is acceptable, so the ERP side dedupes on the idempotency key"
+  - "integration-pattern-selection.md Q13 — the ERP pushes the order number back over HTTP, so a custom REST endpoint receives the callback"
+rejected:
+  - alternative: apex_callout_named_credential
+    reason: >
+      Q1's synchronous branches assume a bounded response. Observed ERP response times of
+      8-12 seconds, with occasional excursions past the transaction's cumulative callout
+      ceiling, make the close of a deal depend on ERP availability.
+  - alternative: continuation
+    reason: >
+      Nobody is watching a spinner — the close happens in a record-triggered context, and
+      Continuation is not available in async or headless contexts.
+auth:
+  named_credential: ERP_Orders_NC
+  external_credential: ERP_Orders_EC
+owner: rev-ops-platform-team
+review_date: 2027-05-01
+---
+```
+
+The record is longer than the free-text block above it, and the extra length is the point:
+`rejected` now carries reasons a reader can argue with, and `review_date` says when the
+50-per-day figure gets re-measured.
+
 ---
 
 ## Example 2: High-Volume Product Price Sync
