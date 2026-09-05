@@ -4302,6 +4302,7 @@
       "apex/error-handling-framework"
     ],
     "cors": [
+      "admin/messaging-and-chat-setup",
       "security/network-security-and-trusted-ips",
       "security/org-hardening-and-baseline-config"
     ],
@@ -4503,6 +4504,7 @@
       "apex/apex-encoding-and-crypto"
     ],
     "csp": [
+      "admin/messaging-and-chat-setup",
       "lwc/lwc-locker-to-lws-migration",
       "lwc/static-resources-in-lwc",
       "security/clickjack-and-frame-protection",
@@ -5626,6 +5628,9 @@
     "dialog-scripting": [
       "admin/agent-conversation-design"
     ],
+    "digest-frequency": [
+      "admin/chatter-notification-tuning"
+    ],
     "digital-engagement": [
       "flow/flow-email-and-notifications"
     ],
@@ -6108,6 +6113,9 @@
     ],
     "embedded-analytics-architecture": [
       "architect/embedded-analytics-architecture"
+    ],
+    "embedded-messaging": [
+      "admin/messaging-and-chat-setup"
     ],
     "embedded-service": [
       "admin/messaging-and-chat-setup",
@@ -9517,6 +9525,9 @@
     ],
     "messaging-for-in-app-web": [
       "architect/multi-channel-service-architecture"
+    ],
+    "messaging-session": [
+      "admin/messaging-and-chat-setup"
     ],
     "meta-xml": [
       "lwc/lwc-app-builder-config"

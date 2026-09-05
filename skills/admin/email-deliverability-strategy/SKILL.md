@@ -1,6 +1,6 @@
 ---
 name: email-deliverability-strategy
-description: "Use when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for building a Marketing Cloud email — use admin/email-studio-administration. NOT for unsubscribe and consent — use admin/consent-management-marketing."
+description: "Use when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for building a Marketing Cloud email — use admin/email-studio-administration. NOT for unsubscribe and consent — use admin/consent-management-marketing. Also covers the Salesforce Core deliverability surface: EmailAdministrationSettings, EmailAuthorizationSettings, EmailDomainKey (DKIM), EmailRelay, EmailDomainFilter, OrgWideEmailAddress verification, bounce management, and the 5,000-a-day outbound email cap."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,6 +19,14 @@ triggers:
   - "throttle email sending rate to avoid spam filters"
   - "salesforce sending too many emails too fast deliverability"
   - "email deliverability isn't working"
+  - "why is my org-wide email address not sending"
+  - "set up DKIM keys in Salesforce Setup"
+  - "rotate a DKIM key without breaking outbound email"
+  - "route Salesforce email through our own SMTP relay"
+  - "hit the 5000 email per day limit in a flow"
+  - "EmailBouncedDate is empty even though emails are bouncing"
+  - "deploy EmailAdministrationSettings but the file name is wrong"
+  - "emails send from sfcustomeremail.com instead of our domain"
 tags:
   - email-deliverability
   - spf
@@ -34,16 +42,20 @@ inputs:
   - "Whether a dedicated IP is in use or planned"
   - "Bounce and unsubscribe rates from recent sends"
   - "Current DNS records for the sending domain (or access to DNS admin)"
+  - "Retrieved EmailAdministration.settings / EmailAuthorization.settings from the target org"
+  - "EmailDomainKey, EmailRelay, EmailDomainFilter and OrgWideEmailAddress query results"
 outputs:
   - "DNS record specifications for SPF, DKIM, and DMARC"
   - "Dedicated IP warm-up schedule with daily volume ramp"
   - "List hygiene suppression policy and implementation steps"
   - "Sender reputation monitoring checklist"
   - "Decision table: private domain vs shared domain vs dedicated IP"
+  - "Deployable EmailAdministrationSettings / EmailAuthorizationSettings XML plus package.xml"
+  - "DKIM key inventory with rotation dates, and the SOQL that regenerates it"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-09-05
 ---
 
 # Email Deliverability Strategy
@@ -59,7 +71,33 @@ Gather this context before working on anything in this domain:
 - Confirm whether the org uses a **private sending domain** (only your organization sends from it) or Marketing Cloud's **shared sending domain** (shared IP pool with other tenants). This distinction drives nearly every downstream decision.
 - Ask for the current and target daily send volume. Volume determines whether a dedicated IP is justified (generally >100,000 emails/day) and shapes the warm-up schedule.
 - Check if SPF, DKIM, and DMARC records already exist on the sending domain. Duplicate or conflicting SPF records are the most common misconfiguration.
-- Know the current hard bounce rate. A rate above 2% is a signal that list hygiene needs immediate attention before any deliverability improvement work will hold.
+- Know the current hard bounce rate. A rate above 2% is a signal that list hygiene needs immediate attention before any deliverability improvement work will hold. UNVERIFIED (2026-09-05): the 2% threshold is industry practice; no Salesforce guide states a bounce-rate number.
+- Determine which of the **two layers** the request lives in, because they share vocabulary and nothing else:
+
+| Layer | What it controls | Where it is configured | Grounded in this repo? |
+|---|---|---|---|
+| **Salesforce Core** | Bounce management, SPF compliance, TLS, Compliance BCC, DKIM keys, SMTP relay, org-wide From addresses, the 5,000-a-day cap | `EmailAdministrationSettings`, `EmailAuthorizationSettings`, and four sObjects | Yes — Metadata API guide, Object Reference, Apex guides. See `references/metadata-examples.md`. |
+| **Marketing Cloud** | Private/shared sending domains, dedicated IPs and warm-up, subscriber suppression, seed-list inbox placement | Marketing Cloud Setup only | No — no Metadata API or Object Reference surface exists. Claims rest on Marketing Cloud Help and are marked UNVERIFIED where numeric. |
+
+  Sending domain reputation is a Marketing Cloud concern; whether the platform will hand the message to a mail server at all is a Core concern. A "deliverability" ticket that is really "the Flow ran and nobody got the email" is Core, every time.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before touching DNS or Setup; the answers decide which of the two layers the work belongs in, and an LLM that skips them produces a DNS plan for a problem that was an unverified org-wide address.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which sends are failing — a Marketing Cloud campaign, or an email alert / Flow / Apex send from the Core org?" | Splits the two layers before any work starts. Core failures have a metadata surface and a checker; Marketing Cloud failures do not. | The layer, and therefore whether `references/metadata-examples.md` or `references/examples.md` is the runbook |
+| "Is the mail *not arriving*, or arriving in spam?" | Not arriving is a send-side failure (unverified domain, unverified org-wide address, daily cap, relay with no active filter). Arriving in spam is a reputation problem. | Splits Gotchas 10 / 12 / 13 from the SPF-DKIM-DMARC track |
+| "Which domains does this org send from, and does each have an active DKIM key with a rotation date?" | Nothing on the platform expires a DKIM key or warns you it is stale; `TxtRecordsPublishState` can read `Publishing failed` indefinitely (Gotcha 9) | The `deliverability/dkim-keys.json` inventory the checker enforces |
+| "Has anyone touched `enableSubstituteFromAddress` or an org-wide address to stop send failures?" | `true` silently rewrites the From address to `@…sfcustomeremail.com`, throwing away every reputation signal (Gotcha 10) | Whether the org is quietly sending as Salesforce rather than as the brand |
+| "What is the org's daily external send volume, counting email alerts and Flow Send Email actions?" | For orgs created Spring '19 and later those count against the same 5,000 external addresses per day as Apex (Gotcha 13, apexdev.txt L19959-19966) | Whether a throttle is a real fix or a redistribution of the same budget |
+| "Do we relay through corporate SMTP, and is bounce management on?" | A relay with no active `EmailDomainFilter` is inert with no error (Gotcha 12); with bounce handling off the Contact/Lead bounce fields stay empty forever (Gotcha 11) | The relay/filter load order and whether bounce reporting is even possible |
+| "Who owns DNS, and what is the change lead time?" | DKIM activation must wait for CNAMEs to resolve; DMARC tightening must wait for aggregate reports | A sequenced plan instead of a same-day activation that fails every signature |
+
+What a proper configuration adds over just publishing the records: sends that fail are visible as bounces rather than as silence, the From address on every message is a domain you own and sign for, DKIM keys have a named owner and a rotation date, and the deployable half of the configuration is in source control and linted before it reaches an org.
 
 ---
 
@@ -69,11 +107,11 @@ Gather this context before working on anything in this domain:
 
 Email authentication uses three complementary DNS-based standards. All three must be in place before deliverability can be fully controlled.
 
-**SPF (Sender Policy Framework)** is a TXT record on the sending domain that lists the IP addresses and mail transfer agents authorized to send on behalf of that domain. Marketing Cloud provides a specific `include:` statement (e.g., `include:_spf.exacttarget.com`) that must be added to the domain's SPF record. There must be exactly one SPF TXT record per domain; multiple SPF records are invalid per RFC 7208 and cause evaluation failures. The total number of DNS lookups from `include:` directives must not exceed 10.
+**SPF (Sender Policy Framework)** is a TXT record on the sending domain that lists the IP addresses and mail transfer agents authorized to send on behalf of that domain. Marketing Cloud provides a specific `include:` statement (e.g., `include:_spf.exacttarget.com` — UNVERIFIED (2026-09-05): the literal is from Marketing Cloud Setup, not from any guide in this repo's corpus; always read the real value from Setup > Private Domains) that must be added to the domain's SPF record. There must be exactly one SPF TXT record per domain; multiple SPF records are invalid per RFC 7208 and cause evaluation failures. The total number of DNS lookups from `include:` directives must not exceed 10.
 
-**DKIM (DomainKeys Identified Mail)** attaches a cryptographic signature to each outbound email. Marketing Cloud generates a DKIM key pair per private sending domain; the public key is published as a CNAME record in DNS pointing to Marketing Cloud's key servers. CNAME-based DKIM (rather than a raw TXT public key) lets Salesforce rotate keys without a DNS change.
+**DKIM (DomainKeys Identified Mail)** attaches a cryptographic signature to each outbound email. Marketing Cloud generates a DKIM key pair per private sending domain; the public key is published as a CNAME record in DNS pointing to Marketing Cloud's key servers. CNAME-based DKIM (rather than a raw TXT public key) lets Salesforce rotate keys without a DNS change. Salesforce Core works the same way and *is* documented: `EmailDomainKey` exposes `Selector` / `AlternateSelector`, and Salesforce publishes `TxtRecordName` / `AlternateTxtRecordName` for you to CNAME to, with `AlternatePublicKey` existing so Salesforce can "auto-rotate domain keys" (object_reference.txt L103529-103545, L103693-103698).
 
-**DMARC (Domain-based Message Authentication, Reporting, and Conformance)** is a TXT record at `_dmarc.<yourdomain.com>` that tells receiving mail servers what to do when SPF or DKIM fails: `p=none` (monitor only), `p=quarantine` (send to spam), or `p=reject` (block). Since February 2024 Google and Yahoo require a minimum DMARC policy of `p=none` for any sender sending more than 5,000 messages per day to Gmail or Yahoo addresses. The record must also include `rua=` (aggregate report destination) so receiving servers can report alignment failures back. DMARC also enforces **alignment**: the domain in the `From:` header must match (or be a subdomain of) the SPF or DKIM signing domain.
+**DMARC (Domain-based Message Authentication, Reporting, and Conformance)** is a TXT record at `_dmarc.<yourdomain.com>` that tells receiving mail servers what to do when SPF or DKIM fails: `p=none` (monitor only), `p=quarantine` (send to spam), or `p=reject` (block). Since February 2024 Google and Yahoo require a minimum DMARC policy of `p=none` for any sender sending more than 5,000 messages per day to Gmail or Yahoo addresses. UNVERIFIED (2026-09-05): receiver policy set by Google and Yahoo; no Salesforce guide states it, and the threshold and date are theirs to change. The record must also include `rua=` (aggregate report destination) so receiving servers can report alignment failures back. DMARC also enforces **alignment**: the domain in the `From:` header must match (or be a subdomain of) the SPF or DKIM signing domain.
 
 ### Private Sending Domain vs Shared Sending Domain
 
@@ -98,6 +136,27 @@ Key hygiene rules:
 - **Soft bounces** (temporary failures: mailbox full, server unavailable) are suppressed automatically by Marketing Cloud after 3 consecutive soft bounce events for the same address.
 - **Inactive subscribers** (no open or click in 6–12 months) should be moved to a sunset flow and eventually suppressed. Continuing to send to a large inactive segment is the most common cause of gradual reputation decay.
 - **Spam complainers** (subscribers who mark email as junk) are automatically suppressed via the Feedback Loop (FBL) integration with major ISPs. Confirm FBL registration is active in the Marketing Cloud account.
+
+### The Salesforce Core Surface
+
+Six controls, four of which have no Metadata API type. `references/metadata-examples.md` has the deployable shapes, field-by-field notes, and every guide citation.
+
+| Control | Surface | Deploys? | The failure it prevents |
+|---|---|---|---|
+| `EmailAdministrationSettings` | `settings/EmailAdministration.settings-meta.xml`, API 47.0+ | Yes | Bounce management off, SPF compliance flipped off, Compliance BCC enabled with no address, TLS unrestricted |
+| `EmailAuthorizationSettings` | `settings/EmailAuthorization.settings-meta.xml`, API 66.0+ | Yes | Sending as `@…sfcustomeremail.com` from an unverified domain |
+| `EmailDomainKey` | sObject, API 28.0+ | No — API / Data Loader / Setup | Unsigned or unverifiable DKIM; stale keys nobody owns |
+| `EmailRelay` + `EmailDomainFilter` | sObjects, API 43.0+ | No | A relay that is configured and inert |
+| `OrgWideEmailAddress` | sObject; `IsVerified` API 58.0+ | No | Alerts and Apex sends that produce no email and no error |
+| Deliverability **Access Level** | Setup page only | **No** | A sandbox mailing real customers, or production silently sending nothing |
+
+Two consequences that shape every plan. First, only two of the six are deployable, so a "deliverability change" is a mixed release: metadata for the settings, Data Loader or API for the sObjects, and a manual Setup step for Access Level — see `references/metadata-examples.md` § 7 for the required order. Second, the Access Level control that decides whether the org sends at all has no metadata element and cannot be diffed between orgs; when a send silently produces nothing, check it before anything else, and expect Apex to surface it as `System.NoAccessException: The organization is not permitted to send email.` (apexrefguide.txt L225158).
+
+### Outbound Volume Is a Shared Org Budget
+
+Each licensed org sends single emails to a maximum of 5,000 external email addresses per day, measured on GMT (apexdev.txt L19959-19961). What counts depends on org age: for orgs created before Spring '19 the cap applies only to Apex and Salesforce APIs except REST; for orgs created in Spring '19 and later it also covers "email alerts, simple email actions, Send Email actions in flows, and REST API" (apexdev.txt L19961-19964). Mass email and list email carry their own separate 5,000-a-day external cap (apexdev.txt L19976-19978).
+
+Three consequences that surprise teams mid-incident: duplicates are counted individually, not deduplicated; internal recipients addressed by `setTargetObjectId` do not count while the same people addressed by `setToAddresses` do (apexdev.txt L19971-19975); and exceeding the cap notifies you by email and a debug-log entry rather than throwing at the point of send. `Messaging.reserveSingleEmailCapacity(n)` converts that into a fail-fast `System.HandledException` before the transaction commits (apexrefguide.txt L225161-225184).
 
 ### Inbox Placement Rate vs Delivery Rate
 
@@ -168,15 +227,19 @@ Tools like Return Path (Validity), 250ok, and GlockApps perform seed-list testin
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
+1. **Split the layers, then read the matching runbook.** Answer the Questions above. Core work (nothing arrives, an alert produced no email, a relay, a DKIM key, a settings deploy) goes to `references/metadata-examples.md`; Marketing Cloud reputation work (arriving in spam, warm-up, list hygiene, inbox placement) goes to `references/examples.md`. Do not start in DNS.
 
-1. **Assess current state**: Confirm sending domain type (private vs shared), current DNS records (SPF, DKIM, DMARC), daily send volume, and latest bounce/complaint rates. Use MXToolbox or similar to inspect live DNS records.
-2. **Fix authentication gaps**: If any of SPF, DKIM, or DMARC are missing or misconfigured, resolve these first. All three must be present and aligned before any other deliverability work is meaningful. Start DMARC at `p=none` and advance to `p=quarantine` or `p=reject` only after reviewing aggregate reports for at least 30 days.
-3. **Plan and execute dedicated IP warm-up** (if applicable): Segment the list by engagement recency. Build a week-by-week volume schedule starting at 50,000–100,000/day with the most-engaged subscribers. Do not skip or compress warm-up.
-4. **Implement list hygiene policy**: Confirm automatic suppression rules are active. Build a re-engagement flow for inactive subscribers (6-month threshold). Document the suppression policy so it is enforced consistently.
-5. **Monitor sender reputation**: Register with Sender Score (Validity/Return Path), check Talos (Cisco), and Barracuda Reputation using the sending IP(s). Set up monitoring alerts for reputation drops. Review DMARC aggregate reports weekly during the first 60 days.
-6. **Validate inbox placement**: After authentication and hygiene steps are in place, run a seed-list inbox placement test to confirm IPR has improved across major ISPs (Gmail, Outlook, Yahoo, Apple Mail).
-7. **Document and operationalize**: Record the DNS record specifications, warm-up schedule, hygiene thresholds, and monitoring checkpoints in the project context file. Schedule quarterly list hygiene audits.
+2. **Get the org's real state into source before changing anything.** Retrieve `EmailAdministration.settings` and `EmailAuthorization.settings` with the manifest in `references/metadata-examples.md` § 7 — never hand-write them, because the guide's own prose misspells the filename (`references/gotchas.md` Gotcha 7). Run the queries in § 3, § 5 and § 6 to capture the DKIM inventory, unverified org-wide addresses, and current bounce volume, and save them as `deliverability/dkim-keys.json` and `deliverability/email-policy.json`.
+
+3. **Lint before you deploy.** `python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir force-app/main/default` — it rejects undocumented settings elements, the two documented field dependencies, `enableComplianceBcc` with no recorded address, bounce handling off in an org that sends externally, and any sending domain without one published, rotation-dated, active DKIM key. Add `--strict` in CI. Fix every ERROR before `sf project deploy validate`.
+
+4. **Sequence DKIM and DNS against the guide's order, not Setup's.** Insert keys inactive, read back `TxtRecordName` and `AlternateTxtRecordName`, publish both CNAMEs, confirm `TxtRecordsPublishState` reads `Published` and `dig` resolves, and only then set `IsActive = true` (`references/metadata-examples.md` § 3; Gotcha 9). Publish SPF in the same window and DMARC at `p=none` with a monitored `rua=`.
+
+5. **Deploy in the order the surfaces force.** DKIM keys → verified org-wide addresses → the two settings files → relay then domain filter (never the reverse; Gotcha 12) → the manual Deliverability Access Level in every sandbox that must not send. Run the seven verification checks in `references/metadata-examples.md` § 8; check 6 in particular catches bounce handling that was never on.
+
+6. **Then, and only then, do the reputation work.** With Core sending correctly, run the Marketing Cloud track: warm-up schedule, list hygiene policy, and seed-list inbox placement testing (Common Patterns 2 and 3 above; worked versions in `references/examples.md` Examples 2 and 3). Tightening DMARC to `p=quarantine` belongs here, after 30+ days of clean aggregate reports — not in step 4.
+
+7. **Leave the operational hooks behind.** Record DKIM rotation dates and owners in `dkim-keys.json`, wire the checker into CI, book the DMARC report review cadence, and re-read `references/llm-anti-patterns.md` before handing generated DNS or XML to anyone.
 
 ---
 
@@ -193,12 +256,20 @@ Run through these before marking work in this area complete:
 - [ ] Re-engagement journey or sunset policy exists for subscribers inactive > 6 months
 - [ ] Sender reputation monitored via at least one tool (Sender Score, Talos, or Barracuda)
 - [ ] Google/Yahoo compliance checked: DMARC in place, one-click unsubscribe header present, spam complaint rate < 0.3%
+- [ ] `python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir <project>` exits 0
+- [ ] `EmailAdministration.settings` is retrieved (not hand-written) and `enableHandleBouncedEmails` is `true` in any org that sends externally
+- [ ] `enableComplianceBcc` is either `false` or paired with an address confirmed in Setup > Compliance BCC Email
+- [ ] `EmailAuthorizationSettings.enableSubstituteFromAddress` is `false`, or its use is documented with an end date
+- [ ] Every sending domain has exactly one active `EmailDomainKey` with `TxtRecordsPublishState = 'Published'`, `KeySize = 2048`, an `AlternateSelector`, and a recorded `nextRotationDue`
+- [ ] `SELECT Address, IsVerified FROM OrgWideEmailAddress WHERE IsVerified = false` returns no address referenced by a live alert or Apex send
+- [ ] If a relay exists, at least one `EmailDomainFilter` with `IsActive = true` points at it
+- [ ] Daily external send volume is counted against the 5,000-address cap **including** email alerts and Flow Send Email actions
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The three summarised here are the ones that most often send a diagnosis down the wrong path. `references/gotchas.md` carries all thirteen with the guide citations, split into the Marketing Cloud layer (1-6) and the Salesforce Core layer (7-13: the misspelled settings filename, the `enableEmailSpfCompliance` default, DKIM activation ordering, From-address substitution, the Contact/Lead bounce-field asymmetry, inert relays, and what actually counts against the 5,000-a-day cap).
 
 1. **Duplicate SPF records break authentication silently** — RFC 7208 requires exactly one SPF TXT record per domain. If a previous team added a generic SPF record and a Salesforce admin adds a second one for Marketing Cloud, SPF evaluation fails with a `PermError`. The failure is silent from the sender's perspective but appears in DMARC aggregate reports as authentication failures. Always merge all authorized senders into a single SPF TXT record.
 2. **DMARC alignment failure when From domain differs from signing domain** — Marketing Cloud uses a subdomain for sending (e.g., `em.yourbrand.com`) but marketers often set the From header to the corporate domain (`yourbrand.com`). If the DMARC record exists at `yourbrand.com` and the DKIM signing domain is `em.yourbrand.com`, relaxed alignment (the default) will pass. But strict alignment (`aspf=s` or `adkim=s`) will fail. The default relaxed mode passes if the org domain matches — verify the DMARC alignment mode before tightening policy.
@@ -214,11 +285,27 @@ Non-obvious platform behaviors that cause real production problems:
 | Warm-Up Schedule | Week-by-week volume ramp table by engagement segment, with pass/fail criteria per day |
 | List Hygiene Policy Document | Suppression rules, re-engagement journey threshold, inactive sunset criteria |
 | Sender Reputation Monitoring Checklist | Tools, monitoring cadence, alert thresholds, and escalation path |
+| `EmailAdministration.settings` / `EmailAuthorization.settings` | Deployable org email settings plus the package.xml that retrieves and deploys them |
+| `deliverability/dkim-keys.json` | DKIM inventory: domain, selector, alternate selector, key size, publish state, rotation due date, owner |
+| `deliverability/email-policy.json` | Sending domains, whether the org sends externally, and the Compliance BCC address — the inputs the checker cross-references |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing, retrieving or reviewing any Salesforce Core artifact: the settings XML, DKIM keys, relay and domain filter, org-wide addresses, bounce SOQL, package.xml, deploy order, verification |
+| `references/gotchas.md` | Thirteen platform behaviours that cause production incidents — 1-6 Marketing Cloud / internet standards, 7-13 Salesforce Core with guide citations |
+| `references/examples.md` | The Marketing Cloud reputation layer: private-domain setup, dedicated IP warm-up, re-engagement and sunset, and a worked Core diagnosis |
+| `references/well-architected.md` | Weighing shared vs dedicated IP, `p=none` vs `p=reject`, and subdomain vs corporate domain — and for the full source list |
+| `references/llm-anti-patterns.md` | Reviewing DNS records, settings XML or a warm-up plan an assistant generated, before it reaches an org |
 
 ---
 
 ## Related Skills
 
 - **admin/email-templates-and-alerts** — Use for template design, merge field configuration, and notification trigger logic. This skill (email-deliverability-strategy) handles whether the email reaches the inbox; email-templates-and-alerts handles what is inside it.
-- **admin/email-to-case-configuration** — Use when the goal is routing inbound customer email to Cases, not outbound deliverability.
+- **admin/email-to-case-configuration** — Use when the goal is routing inbound customer email to Cases, not outbound deliverability. Owns `enableHtmlEmail`, which is an Email-to-Case rendering setting despite living in `EmailAdministrationSettings` alongside the outbound flags.
+- **admin/email-service-inbound** — Use for `EmailServicesFunction` and inbound message processing, including the separate inbound daily limit (user licenses × 1,000, capped at 1,000,000 — apexdev.txt L19951-19953) and inbound sender authentication via `isAuthenticationRequired`.
 - **devops/sandbox-data-isolation-gotchas** — Contains notes on sandbox-level email deliverability settings (Core org layer) and how they interact with production email routing.

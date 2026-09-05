@@ -2,6 +2,10 @@
 
 Use this template when setting up or auditing email deliverability for a Marketing Cloud or Salesforce org.
 
+The **Salesforce Core** half of the work (bounce management, SPF compliance, DKIM keys, relay, org-wide address verification, the daily send cap) has deployable artifacts and a checker — use `references/metadata-examples.md`, not this template, for those. This template covers the **Marketing Cloud reputation** half, which has no metadata surface.
+
+UNVERIFIED (2026-09-05): every vendor literal (`include:` hosts, `*.pub.sfmc.exacttarget.com` CNAME targets), every warm-up volume figure, and every bounce/complaint/Sender-Score threshold in this template is Marketing Cloud Help or industry practice. None of it is checkable against the Salesforce developer guides this repo extracts, and help.salesforce.com is not fetchable. Read the actual values from Marketing Cloud Setup > Private Domains for the account in hand before committing to any of them.
+
 ## Scope
 
 **Skill:** `admin/email-deliverability-strategy`
@@ -148,6 +152,19 @@ Copy from SKILL.md and tick items as you complete them:
 - [ ] Re-engagement journey or sunset policy exists for subscribers inactive > 6 months
 - [ ] Sender reputation monitored via at least one tool (Sender Score, Talos, or Barracuda)
 - [ ] Google/Yahoo compliance checked: DMARC in place, one-click unsubscribe header present, spam complaint rate < 0.3%
+
+---
+
+## Salesforce Core Cross-Check
+
+Complete this even when the request is purely a Marketing Cloud one — these four produce "the email never arrived" with no error, and none of them are DNS.
+
+- [ ] Deliverability **Access Level** confirmed in Setup > Email > Deliverability for every org in scope (no metadata surface; must be checked by hand in each sandbox)
+- [ ] `SELECT Address, IsVerified FROM OrgWideEmailAddress WHERE IsVerified = false` returns no address used by a live alert or Apex send
+- [ ] `EmailAuthorizationSettings.enableSubstituteFromAddress` is `false` (or `true` with a documented end date)
+- [ ] `enableHandleBouncedEmails` is `true`, so bounce data reaches Contact and Lead at all
+- [ ] Daily external volume counted against the 5,000-address cap **including** email alerts and Flow Send Email actions
+- [ ] `python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir <project>` exits 0
 
 ---
 

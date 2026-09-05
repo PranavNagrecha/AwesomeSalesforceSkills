@@ -48,34 +48,40 @@ These are independent allow-lists. Missing either one blocks the widget.
 
 **Correct pattern:**
 ```
-Pre-chat fields collect data and store it on the MessagingSession record.
 Automatic Contact linking does NOT happen.
-To link a Contact, create an Omni-Channel Flow or Apex trigger on MessagingSession (after insert)
-that queries Contact WHERE Email = :session.PreChatFormData__Email
-and updates MessagingSession.ContactId.
+And the write target is NOT the session:
+  MessagingSession.EndUserContactId  -> Filter, Group, Nillable, Sort   (READ-ONLY)
+  MessagingEndUser.ContactId         -> Create, Filter, Group, Nillable, Sort, Update
+MessagingSession has no ContactId field at all.
+Match the person on MessagingEndUser, which represents one address talking to one channel
+and is the identity that survives a resumed conversation.
+Verify:  SELECT Id, MessageType, ContactId FROM MessagingEndUser
+         WHERE MessageType = 'EmbeddedMessaging'
 ```
 
-**Detection hint:** Any response that claims pre-chat fields "automatically match" or "look up" a Contact without describing a Flow or trigger is incorrect.
+**Detection hint:** Two failure shapes. Any response that claims pre-chat fields "automatically match" a Contact is wrong; so is any response that writes the Contact to `MessagingSession.ContactId` (a field that does not exist) or to `MessagingSession.EndUserContactId` (which is not updateable). Both look plausible and both no-op.
 
 ---
 
 ## Anti-Pattern 4: Treating Status-Based Capacity as a Per-Channel Setting
 
-**What the LLM generates:** Instructions to "enable Status-Based capacity for the Messaging channel" in the Embedded Service Deployment settings or on the Messaging Channel record. The response implies the setting is scoped to messaging only and will not affect voice or chat.
+**What the LLM generates:** Instructions to "enable Status-Based capacity for the Messaging channel" on the Embedded Service Deployment or on the Messaging Channel record. Neither record has such a field. The mirror-image error, common in responses trained on older material, is the flat claim that the capacity model is purely org-wide.
 
-**Why it happens:** Per-channel configuration is a natural expectation. LLMs may infer that routing and capacity settings on the Messaging Channel record are fully isolated from other channels.
+**Why it happens:** Both halves of the truth are individually plausible, and the platform changed under them: the per-channel field arrived in API version 65.0, so pre-65.0 guidance and post-65.0 guidance are both in circulation and contradict each other.
 
 **Correct pattern:**
 ```
-Status-Based capacity is an ORG-WIDE setting in Omni-Channel Settings.
-Enabling it affects ALL Omni-Channel channels: messaging, voice, chat, email.
-Before enabling:
-  1. Audit all existing Presence Configurations.
-  2. Set numeric capacity values for every channel type.
-  3. Test in sandbox with realistic concurrent load across all channels.
+There are TWO switches, and neither lives on the Messaging Channel:
+  OmniChannelSettings.enableOmniStatusCapModel   org gate, default false
+  ServiceChannel.capacityModel                   per channel, API 65.0+
+                                                 STATUS_BASED | TAB_BASED
+STATUS_BASED: capacity held until the work is completed or reassigned.
+TAB_BASED:    capacity released when the work tab closes in the console.
+Async messaging outlives a tab, so a messaging ServiceChannel on TAB_BASED over-assigns.
+Capacity numbers live on PresenceUserConfig, not on either record above.
 ```
 
-**Detection hint:** Any response that says to enable Status-Based capacity "for messaging" or "on the Messaging Channel" without noting it is org-wide is misleading.
+**Detection hint:** Reject any response that puts a capacity model field on the Messaging Channel or the Embedded Service Deployment, and any response that names only one of the two real switches.
 
 ---
 
@@ -109,11 +115,17 @@ which is too late to influence the initial routing assignment cleanly.
 
 **Correct pattern:**
 ```
-After configuring an Omni-Channel Flow on a Messaging Channel:
-  1. Open the Messaging Channel record.
-  2. In the Routing section, set Fallback Queue to a valid queue.
-  This queue receives sessions when the Flow faults or produces no routing output.
-  Without it, failed routing leaves the session stranded with no error surfaced.
+There is no separate "fallback queue" field to forget:
+  sessionHandlerQueue is REQUIRED on every MessagingChannel, and when
+  sessionHandlerFlow is set it IS the fallback for anything the flow cannot route.
+So the review question is not "is it populated" - it always is.
+The question is whether that queue can accept work:
+  1. Does it have a QueueRoutingConfig?
+  2. Does it have members?
+  3. Can any of them go available on the messaging service channel?
+Monitor the symptom, because nothing else surfaces it:
+  SELECT COUNT(Id), Status FROM MessagingSession
+  WHERE StartTime = LAST_N_DAYS:7 GROUP BY Status
 ```
 
-**Detection hint:** Any response that configures Omni-Channel Flow routing without also confirming or setting the fallback queue on the Messaging Channel record is incomplete.
+**Detection hint:** Any response that describes the fallback queue as optional, or that treats "fallback queue is set" as sufficient evidence of a safe design, is wrong on the mechanism. The failure mode is a populated queue that nobody can accept from.
