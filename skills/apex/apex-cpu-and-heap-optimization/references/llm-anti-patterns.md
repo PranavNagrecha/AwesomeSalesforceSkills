@@ -46,7 +46,7 @@ for (Integer i = 0; i < records.size(); i++) {
 }
 ```
 
-**Why it happens:** LLMs know `Limits.getCpuTime()` exists and suggest calling it on every iteration. The irony is that calling it thousands of times inside a tight loop adds measurable CPU overhead itself, and the `break` silently drops unprocessed records.
+**Why it happens:** LLMs know `Limits.getCpuTime()` exists and suggest calling it on every iteration. The irony is that calling it thousands of times inside a tight loop adds measurable CPU overhead itself, and the `break` silently drops unprocessed records. The `8000` is also a hardcoded 80% of the *synchronous* 10,000 ms ceiling (`salesforce_app_limits_cheatsheet.txt` L91); the same literal is wrong by 6x in a batch context, so derive it from `Limits.getLimitCpuTime()`. *UNVERIFIED (2026-09-05): the per-call CPU cost of `Limits.getCpuTime()` is not published in the Apex Developer Guide or Apex Reference Guide; the overhead claim is practitioner experience, and the correct-pattern advice stands on the dropped-records defect alone.*
 
 **Correct pattern:**
 
@@ -77,7 +77,7 @@ Map<String, Object> payload = (Map<String, Object>) JSON.deserializeUntyped(json
 String name = (String) ((Map<String, Object>) ((List<Object>) payload.get('records')).get(0)).get('Name');
 ```
 
-**Why it happens:** `JSON.deserializeUntyped` appears in many Salesforce examples and LLMs default to it. Untyped deserialization creates deeply nested `Map<String, Object>` and `List<Object>` structures that consume far more heap than typed Apex classes, and the repeated casting adds CPU cost.
+**Why it happens:** `JSON.deserializeUntyped` appears in many Salesforce examples and LLMs default to it. Untyped deserialization creates deeply nested `Map<String, Object>` and `List<Object>` structures that consume more heap than typed Apex classes, and the repeated casting adds CPU cost. *UNVERIFIED (2026-09-05): the Apex Developer Guide documents that collections are bounded by the heap limit (`apexdev.txt` L1431) but publishes no comparison of untyped versus typed deserialization cost; the relative-heap claim is practitioner measurement, not a documented figure.*
 
 **Correct pattern:**
 
@@ -111,7 +111,7 @@ for (String line : lines) {
 }
 ```
 
-**Why it happens:** LLMs generate self-contained code blocks and do not think about hoisting invariants outside loops. `Pattern.compile` is expensive in Apex and recompiling on every iteration is a significant CPU drain at scale.
+**Why it happens:** LLMs generate self-contained code blocks and do not think about hoisting invariants outside loops. Recompiling the same pattern on every iteration is repeated work that produces an identical object. *UNVERIFIED (2026-09-05): neither guide publishes the CPU cost of `Pattern.compile`; "expensive" here is practitioner experience. The hoist is still correct on invariant-in-loop grounds regardless of the constant factor.*
 
 **Correct pattern:**
 
@@ -141,7 +141,7 @@ for (Account a : accounts) {
 // process safeList
 ```
 
-**Why it happens:** LLMs borrow defensive-copy patterns from Java/C# training data. In Apex, deep-cloning a large SObject list doubles the heap usage and adds CPU for field copying. Most Apex operations do not require a defensive copy.
+**Why it happens:** LLMs borrow defensive-copy patterns from Java/C# training data. In Apex, deep-cloning a large SObject list holds a second full copy of the collection on the heap, and heap is what bounds a collection's size (`apexdev.txt` L1431). Most Apex operations do not require a defensive copy. *UNVERIFIED (2026-09-05): "doubles the heap usage" is not a documented ratio — the guides state the heap bound on collections but publish no per-clone cost.*
 
 **Correct pattern:**
 
@@ -181,3 +181,65 @@ if (LoggingConfig__mdt.getInstance('Debug')?.Enabled__c == true) {
 ```
 
 **Detection hint:** `JSON\.serialize` inside a `for` loop combined with string concatenation, especially near `System\.debug`.
+
+---
+
+## Anti-Pattern 7: Catching the governor-limit exception to "handle it gracefully"
+
+**What the LLM generates:**
+
+```apex
+try {
+    processEverything(records);
+} catch (System.LimitException e) {
+    ApplicationLogger.error('BulkProcessor', e);
+} finally {
+    cleanUp();
+}
+```
+
+**Why it happens:** `System.LimitException` is a real class with a real name, so it reads like any other catchable exception, and LLMs generalise the try/catch/finally idiom from Java. In Apex it is one of the uncatchable exceptions: "When exceptions are uncatchable, catch blocks, as well as finally blocks if any, aren't executed" (`apexdev.txt` L39721–L39728). The generated code produces no log row and never runs `cleanUp()`.
+
+**Correct pattern:**
+
+```apex
+// Check headroom before the expensive block; there is no after.
+if (Limits.getCpuTime() > Limits.getLimitCpuTime() / 2) {
+    System.enqueueJob(new BulkProcessorQueueable(records));
+    return;
+}
+processEverything(records);
+```
+
+**Detection hint:** `catch\s*\(\s*(System\.)?LimitException` anywhere, or a `finally` block whose only purpose is to flush logs after a limit-heavy call.
+
+---
+
+## Anti-Pattern 8: Asserting CPU or heap headroom after `Test.stopTest()`
+
+**What the LLM generates:**
+
+```apex
+Test.startTest();
+new AccountRollupService().recalculate(accounts, opportunities);
+Test.stopTest();
+
+System.assert(Limits.getCpuTime() < 10000, 'Too slow');
+```
+
+**Why it happens:** "Act, stop, assert" is the shape of every Apex test an LLM has seen, so the `Limits` call gets placed with the other assertions. But code after `stopTest` "is assigned the original limits that were in effect before startTest was called" (`apexrefguide.txt` L241086–L241087), so the reading describes the setup block, not the code under test. The hardcoded `10000` compounds it — the same assertion is wrong by 6x in an asynchronous context.
+
+**Correct pattern:**
+
+```apex
+Test.startTest();
+Integer cpuBefore = Limits.getCpuTime();
+new AccountRollupService().recalculate(accounts, opportunities);
+Integer cpuUsed = Limits.getCpuTime() - cpuBefore;
+Integer cpuCeiling = Limits.getLimitCpuTime();
+Test.stopTest();
+
+Assert.isTrue(cpuUsed < cpuCeiling / 4, 'Used ' + cpuUsed + ' ms of ' + cpuCeiling + ' ms');
+```
+
+**Detection hint:** `Limits\.get(CpuTime|HeapSize)` on a line after `Test.stopTest()`, or a `Limits` assertion compared against a numeric literal instead of `Limits.getLimit*()`.
