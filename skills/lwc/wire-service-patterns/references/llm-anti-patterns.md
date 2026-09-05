@@ -197,3 +197,65 @@ wiredRelated({ data, error }) {
 Do not rely on wire data being available in `connectedCallback`. Handle the loading state in the template.
 
 **Detection hint:** Accessing `this.<wiredProperty>.data` in `connectedCallback` or `constructor`.
+
+---
+
+## Anti-Pattern 7: Reaching for refreshApex to refresh a UI API wire
+
+**What the LLM generates:**
+
+```javascript
+import { refreshApex } from '@salesforce/apex';
+import { getRecord } from 'lightning/uiRecordApi';
+
+@wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+wiredAccount;
+
+async handleSave() {
+    await saveViaApex({ recordId: this.recordId });
+    await refreshApex(this.wiredAccount);   // wrong cache, wrong function
+}
+```
+
+**Why it happens:** `refreshApex` is the refresh function assistants have seen most, so it gets applied to every wired property regardless of which adapter provisioned it. But `refreshApex` reads the configuration bound to an *Apex* `@wire`; using it against a non-Apex wire adapter is deprecated.
+
+**Correct pattern:**
+
+```javascript
+import { notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+
+async handleSave() {
+    await saveViaApex({ recordId: this.recordId });
+    await notifyRecordUpdateAvailable([{ recordId: this.recordId }]);
+}
+```
+
+If the component also holds an Apex `@wire` over the same data, both calls are needed — they are two caches.
+
+**Detection hint:** `refreshApex(` whose argument is a property decorated with a `lightning/ui*Api` or `lightning/graphql` adapter rather than an `@salesforce/apex/...` import.
+
+---
+
+## Anti-Pattern 8: Nesting the reactive `$` inside an array or object
+
+**What the LLM generates:**
+
+```javascript
+@api accountIds;
+
+@wire(getRecords, { records: [{ recordIds: ['$accountIds'], fields: FIELDS }] })
+wiredRecords;
+```
+
+**Why it happens:** The `$` syntax reads like string interpolation, so assistants place it wherever the value belongs structurally. The platform only resolves `$` for top-level values in the configuration object; nested it becomes the seven-character literal `$accountIds`, and the wire is neither dynamic nor reactive.
+
+**Correct pattern:** Build the whole structure as one reactive property and reference it at the top level.
+
+```javascript
+parameterObject;   // rebuilt whenever accountIds changes
+
+@wire(getRecords, { records: '$parameterObject' })
+wiredRecords;
+```
+
+**Detection hint:** `'$` or `"$` appearing inside `[` … `]` or a nested `{` … `}` within a `@wire` configuration object.
