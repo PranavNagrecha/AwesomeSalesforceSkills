@@ -20,6 +20,41 @@ The redesign makes three targeted changes without rebuilding the portal:
 
 Measured outcome (90 days post-launch): deflection rate increased from 4% to 23%. Monthly case volume for the top three contact reasons dropped by 18%.
 
+**How the team knew which 15 articles to retitle.** Not from the deflection component — from two
+queries that need nothing but Knowledge and Case. The first finds the articles the portal is already
+reading; the second finds the questions the portal failed to answer, which is where the retitle
+backlog comes from.
+
+```sql
+-- 1. Where each article is being read, across both portal channels at once.
+--    An article with a healthy Pkb count and a near-zero Csp count is reaching
+--    search engines but not the logged-in journey - usually a category or a
+--    navigation problem, not a title problem.
+SELECT ParentId, Parent.Title, Channel, ViewCount
+FROM   KnowledgeArticleViewStat
+WHERE  Channel IN ('Csp', 'Pkb')
+AND    ViewCount > 0
+ORDER  BY ParentId, Channel
+```
+
+```sql
+-- 2. Deflection failure: cases an agent closed by attaching an article the customer
+--    could have read. CaseArticle is agent-side only - "Customer Portal users can't
+--    access this object" - so run this as an internal user.
+SELECT KnowledgeArticleId, COUNT(Id) casesClosedWithThisArticle
+FROM   CaseArticle
+WHERE  Case.CreatedDate = LAST_N_DAYS:90
+AND    Case.Origin IN ('Web', 'Email')
+GROUP  BY KnowledgeArticleId
+ORDER  BY COUNT(Id) DESC
+```
+
+Any article at the top of query 2 that does not appear in query 1 is a **findability** problem — the
+article exists, is visible to the channel, and still nobody found it. That is the retitle list. Any
+article at the top of query 2 whose `Knowledge__kav.IsVisibleInCsp` is `false` is a one-field fix,
+not a copywriting job. Separating those two populations before touching any titles is what kept the
+retitle list short enough to finish in one sprint.
+
 ---
 
 ## Example 2: Pre-Submission Search Prompt Driving Article Deflection for a Partner Portal

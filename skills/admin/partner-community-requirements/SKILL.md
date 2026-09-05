@@ -1,6 +1,6 @@
 ---
 name: partner-community-requirements
-description: "Use this skill to define and validate the requirements for a Salesforce Partner Relationship Management (PRM) implementation: deal registration flows, lead distribution models, partner tier hierarchies, MDF budget tracking, and co-marketing content entitlement. Trigger keywords: partner community requirements, PRM deal registration setup, channel partner portal requirements, lead distribution partner, partner tier management, MDF tracking, co-marketing entitlement. NOT for implementing the partner sharing model — use data/partner-data-access-patterns. NOT for building the portal in Experience Builder — use admin/experience-cloud-site-setup."
+description: "Use this skill to define and validate the requirements for a Salesforce Partner Relationship Management (PRM) implementation: deal registration flows, lead distribution models, partner tier hierarchies, MDF budget tracking, and co-marketing content entitlement. Trigger keywords: partner community requirements, PRM deal registration setup, channel partner portal requirements, lead distribution partner, partner tier management, MDF tracking, co-marketing entitlement. NOT for implementing the partner sharing model — use data/partner-data-access-patterns. NOT for building the portal in Experience Builder — use admin/experience-cloud-site-setup. More trigger keywords: partner portal design worksheet, partner tier licence and role depth, PartnerAccountId blank on opportunity, portal role Executive Manager User, sharing set does not support Lead, enable partner user greyed out, offboard a partner firm, PartnerMarketingBudget PartnerFundRequest PartnerFundClaim, ChannelProgramLevel partner tier, deal registration acceptance step."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,14 @@ triggers:
   - "lead distribution to partners using assignment rules"
   - "partner tier management Gold Silver Bronze feature access"
   - "partner community isn't working"
+  - "partner account field is blank on the converted opportunity"
+  - "enable partner user is greyed out on the contact"
+  - "partner rep cannot see a deal owned by their colleague"
+  - "how many portal roles can one partner account have"
+  - "sharing set will not let me pick the lead object"
+  - "offboard a partner firm without breaking their open pipeline"
+  - "which licence do channel partners need — partner community or login"
+  - "does salesforce have standard MDF objects or do we build custom"
 tags:
   - partner-community
   - prm
@@ -37,9 +45,9 @@ outputs:
   - "Lead distribution assignment rule specification"
   - "Review checklist confirming configuration readiness before build"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-05
 ---
 
 # Partner Community Requirements
@@ -60,18 +68,73 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before anything is written down. Each one closes a gotcha in `references/gotchas.md`, and
+each answer becomes a row in the design artefact of `references/worked-examples.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which partner-portal licence is actually on the contract?" | `Account.IsPartner`, `Lead.PartnerAccountId` and `Opportunity.PartnerAccountId` are documented as available only when PRM is enabled or digital experiences is enabled **and the org holds partner portal licences** (Object Reference, `Account.IsPartner`) | Whether the design may reference `PartnerAccountId` at all, and the licence line item per tier |
+| "How many decision layers exist inside one partner firm?" | `UserRole.PortalRole` is a restricted picklist — `Executive`, `Manager`, `User`, `PersonAccount` — so a partner account stacks at most three roles | A role depth per tier instead of an invented role tree |
+| "Which records must a partner see that they do not own — and is Lead one of them?" | The `SharingSet` `AccessMapping.object` list does not include Lead, so lead-pool visibility needs a different mechanism | One named mechanism per object, chosen from a documented set |
+| "Is the Partner Account on a deal declared by the channel manager, or derived from who owns it?" | `Lead.PartnerAccountId` / `Opportunity.PartnerAccountId` are read-only and set from the owning partner user; making them writable is the org-wide `CommunitiesSettings.enableRelaxPartnerAccountFieldPref` switch | Whether the registration flow needs an ownership-transfer step, and whether an org pref changes |
+| "Does fund tracking need per-claim audit, or just a number on the tier sheet?" | `PartnerMarketingBudget`, `PartnerFundAllocation`, `PartnerFundRequest` and `PartnerFundClaim` are standard objects from API v41.0 — a custom object model is a choice, not a necessity | A standard-vs-custom decision with a stated reason |
+| "What happens the day a partner firm is terminated?" | Flipping `Account.IsPartner` from `true` to `false` disables up to 15 partner portal users and **permanently deletes** the account's partner portal roles and groups | The offboarding order: reassign, deactivate, then flag — never the reverse |
+| "Must partner users inside one firm be invisible to each other?" | `SharingSettings.enablePortalUserVisibility` overrides org-wide defaults for same-account portal users, and enabling it requires a Salesforce Support case | A dated support case in the plan, or an explicit decision not to need one |
+
+What a proper set of PRM requirements adds over just writing "we want a partner portal": every tier
+has a licence it can actually be provisioned on, every object a partner can reach has one named
+sharing mechanism that is capable of carrying it, deal attribution survives conversion because
+ownership transfer is a designed step, and terminating a partner is a reversible sequence rather than
+a one-way delete of their portal roles.
+
+---
+
 ## Core Concepts
 
-### Partner Central Template and License Requirements
+### License Requirements and What They Gate
 
-PRM is delivered through the Partner Central Experience Cloud template. The site must use either:
+PRM is delivered through the Partner Central Experience Cloud template.
+**UNVERIFIED (2026-09-05):** the "Partner Central" template name does not appear in the Metadata API
+Developer Guide, the Object Reference or the App Limits cheat sheet, and the `Network` metadata type
+has no `template` field at all — so the template cannot be read from, or asserted by, a retrieved
+package. Confirm it from the site's Experience Builder settings before relying on the name.
 
-- **Partner Community license** — member-based pricing, includes access to deal registration, lead distribution, and MDF features.
-- **Partner Community Plus license** — adds CRM-level record access (more sharing rule flexibility, reports, dashboards). Required when partners need deep pipeline visibility.
+The documented licence keys for partner users are:
 
-Customer Community and Customer Community Plus licenses do not unlock PRM-specific features. Assigning the wrong license results in silent feature unavailability rather than clear errors.
+| `UserLicense.LicenseDefinitionKey` | Licence | Notes |
+|---|---|---|
+| `PID_Partner_Community` | Partner Community | Member-based. On the documented sharing-set licence list |
+| `PID_Partner_Community_Login` | Partner Community Login | Login-based; 10 API calls per licence per 24 h vs 200 for member-based |
+| `PID_STRATEGIC_PRM` | Gold Partner | Legacy PRM licence still enumerated by the API |
+| `POWER_PRM` | Partner | Legacy PRM licence still enumerated by the API |
 
-Partner users are Person Contacts with `IsPartner = true` on their Account. The partner Account must have the Partner Account checkbox enabled before Experience Cloud user creation.
+"Partner Community Plus" is named as a licence in the Apex Developer/Reference documentation but is
+not among the `LicenseDefinitionKey` values above.
+**UNVERIFIED (2026-09-05):** Partner Community Plus is named in the Apex Reference Guide (Login
+Discovery availability) but appears in neither the Object Reference's `LicenseDefinitionKey` list nor
+the `SharingSet` licence list in the Metadata API Guide. Confirm the entitlement on the org's Company
+Information page before designing anything on it — in particular, do not assume it can use sharing sets.
+
+What the licence actually gates is narrower and more concrete than "PRM features":
+
+- `Account.IsPartner`, `Lead.PartnerAccountId` and `Opportunity.PartnerAccountId` are each documented
+  as available "if Partner Relationship Management is enabled or if digital experiences is enabled and
+  you have partner portal licenses". Without a partner portal licence there is no partner account on a
+  lead, so nothing downstream of `PartnerAccountId` exists to design.
+- Sharing sets are documented as available with a licence list that includes Partner Community.
+- `AccountBrand` (partner account branding) requires "a Partner Community or Customer Community Plus
+  license".
+- `ProcessDefinition` — the approval-process definition — is readable by "Portal and communities users
+  with the Customer Community Plus and Partner Community licenses".
+
+Partner users are Contacts on an Account with `IsPartner = true`. Set `User.ContactId`, not
+`User.AccountId`: `AccountId` is read-only and derived from the Contact, and the Contact "must have a
+value in the `AccountId` field or an error occurs".
+
+`CommunitiesSettings.enableEnablePRM` ("allows admins to enable partner users", API v48.0+) is the
+org switch underneath all of this. See `references/worked-examples.md` §4c for the settings XML.
 
 ### Deal Registration Flow: Lead → Approval → Opportunity
 
@@ -79,8 +142,15 @@ Deal registration in Partner Central follows a defined object lifecycle:
 
 1. Partner submits a deal registration record (backed by the `Lead` object in standard PRM, or a custom object in some implementations).
 2. The submitted Lead enters an approval process. The approval process routes to the channel manager or an automated queue based on criteria (territory, deal size, product).
-3. On approval, the Lead is converted to an Opportunity. The partner is stamped on the Opportunity via a lookup to the partner Account and tracked through the sales cycle.
-4. On rejection, the partner receives a notification and may resubmit with updated information.
+3. **Ownership transfers to a named partner user** — this is the step most designs omit, and it is what makes attribution work.
+4. On approval and acceptance, the Lead is converted to an Opportunity. `Opportunity.PartnerAccountId` then derives from the owning partner user; it is read-only and cannot be stamped by a Flow.
+5. On rejection, the partner receives a notification and may resubmit with updated information.
+
+`Lead.PartnerAccountId` and `Opportunity.PartnerAccountId` carry the properties
+`Filter, Group, Nillable, Sort` — no Create, no Update — and are documented as "ID of the partner
+account for the partner user that **owns** this lead / opportunity… If the owner… isn't a partner
+user, this field has no value." Making them editable is the org-wide
+`CommunitiesSettings.enableRelaxPartnerAccountFieldPref` switch, not a field-level permission.
 
 Key constraint: deal registration requires the Lead record to exist before conversion. You cannot register against an existing Opportunity directly in standard PRM. Any requirement to register deals that are already past the Lead stage requires a custom solution or the Channel Revenue Management product.
 
@@ -100,20 +170,44 @@ Lead distribution does not function correctly without a defined partner tier and
 Partner tiers (commonly Gold / Silver / Bronze or Registered / Authorized / Premier) are the structural backbone of a PRM implementation. Tier drives:
 
 - **Feature access:** Gold partners may have access to deal registration and the lead pool; Bronze partners may only have access to co-marketing assets.
-- **MDF eligibility:** Higher tiers receive larger MDF allocations. MDF tracking requires a custom object (commonly `MDF_Request__c` and `MDF_Claim__c`) linked to the partner Account.
+- **Fund eligibility:** Higher tiers receive larger marketing-fund allocations, tracked on the standard `PartnerMarketingBudget` / `PartnerFundAllocation` objects or on custom equivalents.
 - **Co-marketing content entitlement:** Content visibility in the portal is controlled by sharing rules scoped to a tier-based public group or a record-level share. Profile or permission set alone is insufficient because content entitlement varies within the same license type.
 - **Approval routing:** Approval processes can route differently based on tier — Gold deals may auto-approve below a threshold while Silver deals always require manual review.
 
-Tier is typically stored as a picklist on the partner Account record and referenced by assignment rules, sharing rules, approval criteria, and content entitlement settings.
+Tier has two documented homes, and the choice is a decision to record rather than a default:
+
+- **Standard:** `ChannelProgram` ("a channel program that vendors use to market and sell their
+  products through channel partners"), `ChannelProgramLevel` ("a level, based on member experience,
+  in a channel program") and `ChannelProgramMember.LevelId` — all available from API v41.0.
+- **Custom:** a picklist on the partner Account, referenced by assignment rules, sharing rules,
+  approval criteria and content entitlement. Simpler to report on and easier to use in rule criteria.
+
+Tier is **not** the same thing as role depth. Roles inside a partner firm come from
+`UserRole.PortalRole`, a restricted picklist with exactly `Executive`, `Manager`, `User`,
+`PersonAccount` — so at most three stacked levels per partner account, regardless of how many tiers
+the programme has.
 
 ### MDF and Co-Marketing
 
-Market Development Funds (MDF) are budget allocations made to partners to fund co-marketing activities. In Salesforce, MDF tracking requires custom objects because there is no standard MDF object in the core PRM product outside of Channel Revenue Management.
+Market Development Funds (MDF) are budget allocations made to partners to fund co-marketing
+activities. Salesforce ships standard objects for the budget → allocation → request → claim chain,
+all available from API version 41.0:
 
-A standard custom object model includes:
-- `MDF_Budget__c` — linked to the partner Account and fiscal year; stores total allocation.
-- `MDF_Request__c` — partner-submitted request for use of funds; includes amount, activity type, target dates.
-- `MDF_Claim__c` — post-activity claim for reimbursement; linked to an approved request.
+| Object | What the Object Reference says it represents |
+|---|---|
+| `PartnerMarketingBudget` | "a budget that provides funds to channel partners for selling and marketing products and services" |
+| `PartnerFundAllocation` | "allocated funds from a partner marketing budget for channel partners" |
+| `PartnerFundRequest` | "a request for funds from the partner marketing budget by a channel partner" |
+| `PartnerFundClaim` | "a claim of funds from the partner marketing budget by a channel partner" |
+
+Start there. A custom `MDF_Budget__c` / `MDF_Request__c` / `MDF_Claim__c` model is a legitimate
+choice — the standard objects have a fixed field set and one hard reporting limitation (see below) —
+but it is a decision that needs a written reason, not the default.
+
+The limitation to check first: "The `ChannelPartnerId` field isn't supported for formula fields,
+custom buttons, or custom links for the `PartnerFundAllocation` object. This limitation also applies
+to the `PartnerMarketingBudget` and `PartnerFundRequest` objects." Any fund requirement phrased as a
+formula that pulls partner attributes onto the claim is unbuildable as written on the standard objects.
 
 Co-marketing assets (templates, brand assets, campaign collateral) are surfaced in the portal via CMS Content or Salesforce Files with sharing rules based on partner tier. Content entitlement rules must be defined before the portal build begins.
 
@@ -127,10 +221,10 @@ Co-marketing assets (templates, brand assets, campaign collateral) are surfaced 
 
 **How it works:**
 1. Store partner tier as a picklist on the partner Account (`Tier__c`).
-2. Create a cross-object formula field on Lead: `Partner_Tier__c` that references the partner Account's tier via the partner lookup.
+2. Create a custom `Partner_Account__c` lookup on Lead and a cross-object formula `Partner_Tier__c = Partner_Account__r.Tier__c`. Do not build the formula off the standard `PartnerAccountId` — it is a read-only derived field, not a designed lookup for your own formulas.
 3. Build an approval process on Lead with entry criteria `Status = Submitted for Registration`.
 4. Add approval steps: Step 1 checks `Partner_Tier__c = Gold AND Amount < 50000` and routes to auto-approve; Step 2 routes all other leads to channel manager queue.
-5. On final approval, a Flow converts the Lead to Opportunity and stamps the partner Account on the Opportunity.
+5. On final approval, transfer Lead ownership to the accepting partner user, **then** convert. `Opportunity.PartnerAccountId` derives from the new owner; a Flow cannot write it.
 6. On rejection, a Flow sends a notification to the submitting partner user with rejection reason.
 
 **Why not the alternative:** A single-step approval process with no tier differentiation creates a manual review bottleneck for high-volume Gold partners and degrades partner experience. Auto-approval criteria require the tier field to exist on the Lead at approval time — which requires the formula field in step 2.
@@ -155,30 +249,54 @@ Co-marketing assets (templates, brand assets, campaign collateral) are surfaced 
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Partner needs deal registration and lead distribution | Partner Community or Partner Community Plus license | Customer Community license does not include PRM features |
-| Partners need deep pipeline reporting and dashboard access | Partner Community Plus license | Standard Partner Community has limited report/dashboard access for partner users |
+| Partner needs deal registration and lead distribution | Partner Community (member) or Partner Community Login | `Account.IsPartner` and `PartnerAccountId` are documented as requiring partner portal licences |
+| Partner logs in a handful of times a year | Partner Community Login | 10 API calls per licence per 24 h vs 200 for member-based — sized for occasional use |
+| Partner users must run reports in the portal | `CommunitiesSettings.enableNetPortalUserReportOpts` plus the report permission | The guide describes external-user reporting as an org preference "with permission", not a licence tier |
 | Deal registration volume is high and most Gold deals auto-qualify | Criteria-based auto-approval for top tier, manual for others | Reduces channel manager workload while preserving governance on mid-market deals |
 | Leads should be claimed by partners, not pushed automatically | Pull model with shared queue and tier-scoped list view | Push assignment requires capacity logic that is expensive to maintain; pull gives partners agency while respecting tier eligibility |
-| MDF tracking must be auditable and tied to campaign outcomes | Custom MDF Request + Claim objects in Salesforce | External spreadsheet tracking lacks the audit trail and portal visibility that partners expect |
+| MDF tracking must be auditable and tied to campaign outcomes | Standard `PartnerMarketingBudget` / `PartnerFundAllocation` / `PartnerFundRequest` / `PartnerFundClaim` first | They ship from API v41.0; build custom only when the fixed field set or the `ChannelPartnerId` formula restriction blocks a stated requirement |
+| Partner needs visibility of records that hang off a *related* account, not their own | `AccountRelationshipShareRule` | Its documented `EntityType` list covers Account, Campaign, Case, Contact, Lead, Order and the four partner fund objects — including the Lead a sharing set cannot reach |
 | Co-marketing assets should only be visible to Gold partners | Sharing rules on CMS Content or Files tied to Gold public group | Profile-only visibility does not vary within a license type; sharing rules are required |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
+1. **Licence and switch audit** — Query `UserLicense` for the org's actual partner keys
+   (`PID_Partner_Community`, `PID_Partner_Community_Login`, and the legacy `PID_STRATEGIC_PRM` /
+   `POWER_PRM`). Retrieve `Settings` members `Communities` and `Sharing` and read
+   `enableEnablePRM`, `enablePRMAccRelPref`, `enableRelaxPartnerAccountFieldPref`,
+   `enableAccountRoleOptimization`, `enablePartnerSuperUserAccess` and `enablePortalUserVisibility`.
+   These six flags decide what the rest of the design is allowed to assume — the XML and the
+   guide quotations are in `references/worked-examples.md` §4c.
 
-1. **License and org audit** — Confirm the org edition supports Experience Cloud. Verify Partner Community or Partner Community Plus licenses are provisioned and available. Document the license count and whether login-based or member-based pricing is in use. Check whether the Partner Central template is available in the org.
+2. **Fill the tier / licence worksheet and the role plan** — Copy §1 and §2 of
+   `references/worked-examples.md`. Every tier gets a licence and a role depth of 1–3, because
+   `UserRole.PortalRole` is a four-value restricted picklist. Decide tier storage here: standard
+   `ChannelProgramLevel` or a custom Account picklist, with the reason written down.
 
-2. **Tier hierarchy definition** — Document the full partner tier model: tier names, promotion/demotion criteria, and which features each tier unlocks (deal registration eligibility, lead pool access, MDF allocation, co-marketing content). Produce a tier decision matrix. This drives all downstream configuration.
+3. **Write the partner-portal design YAML** — Use the artefact in §3 of
+   `references/worked-examples.md`. List **every** object a partner can reach, including the ones
+   set to `not-exposed`, each with one sharing mechanism from the documented set. The
+   deal-registration block must include an `acceptance` step and a `duplicate_check` step;
+   offboarding must include `reassign_records` and `deactivate_user`.
 
-3. **Deal registration requirements** — Define the deal registration object model (Lead-based standard vs. custom object). Map the approval chain: who approves at each tier, what the auto-approval thresholds are, how duplicates are prevented, and what happens on rejection. Produce a flow diagram of the Lead → Approval → Opportunity conversion path.
+4. **Run the checker** —
+   `python3 scripts/check_partner_community_requirements.py --file partner-portal-design.yaml`.
+   It fails the design when a tier has no licence or an impossible role depth, when an object is
+   handed to a mechanism that cannot carry it (a sharing set on Lead), when a row has no owner,
+   or when the registration and offboarding flows are incomplete. Point `--manifest-dir` at a
+   retrieved package to parse `networks/*.network-meta.xml` and `sharingSets/*.sharingSet-meta.xml`
+   against the guide's field tables at the same time.
 
-4. **Lead distribution requirements** — Decide push vs. pull model. For push: define assignment rule criteria (geography fields, product interest, tier eligibility) and the queue structure. For pull: define the shared pool structure and the sharing rule model for tier-scoped visibility. Document the lead capacity model if applicable.
+5. **Write the acceptance SOQL before the build starts** — §9 of `references/worked-examples.md`
+   has the six queries. A3 and A4 (null `PartnerAccountId` on approved registrations and open
+   partner-owned opportunities) are the ones that catch the attribution failure this domain is
+   prone to; A6 catches an offboarding leak. Hand them to the build team as the UAT pack.
 
-5. **MDF and co-marketing requirements** — Determine whether MDF tracking will be in Salesforce or external. If in Salesforce, specify the custom object data model (Budget, Request, Claim) and approval process for claim reimbursement. Define co-marketing asset categories and which tiers can access which categories.
-
-6. **Review checklist and handoff** — Walk through the review checklist below. Confirm all requirements are documented before handing off to the Experience Cloud configuration team. Flag any open decisions that would block configuration.
+6. **Read `references/gotchas.md` end to end, then hand off** — Confirm each of the eleven
+   behaviours is either designed for or explicitly out of scope. Route the artefacts using the
+   handoff table in §10 of `references/worked-examples.md`; this skill stops at the specification.
 
 ---
 
@@ -186,14 +304,18 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking requirements work complete:
 
-- [ ] Partner Community or Partner Community Plus licenses confirmed — Customer Community explicitly ruled out
+- [ ] Partner licence keys confirmed against `UserLicense` in the target org — not assumed from the contract
+- [ ] Role depth per tier set to 1–3 against the `UserRole.PortalRole` picklist
 - [ ] Partner tier hierarchy documented with tier names, promotion criteria, and feature access matrix
 - [ ] Deal registration object model selected (Lead-based standard PRM or custom object)
 - [ ] Approval chain fully mapped per tier including auto-approval thresholds and rejection flow
 - [ ] Lead duplicate rules defined to prevent multi-registration of the same deal
 - [ ] Lead distribution model selected (push or pull) with assignment rule criteria documented
 - [ ] Queue structure defined for push model OR shared pool sharing model defined for pull model
-- [ ] MDF custom object model specified (or external system integration documented)
+- [ ] Fund tracking decided: standard partner fund objects, custom objects with a stated reason, or external
+- [ ] Ownership-transfer step present in the registration flow so `PartnerAccountId` is populated
+- [ ] Offboarding sequence documented: reassign, deactivate, then (only on termination) clear `IsPartner`
+- [ ] `partner-portal-design.yaml` written and `scripts/check_partner_community_requirements.py` exits 0
 - [ ] Co-marketing asset entitlement rules defined per tier
 - [ ] Sharing rule model documented — profile/permission set vs. sharing rule distinction confirmed
 - [ ] Open decisions logged with owner and target resolution date
@@ -208,9 +330,9 @@ Non-obvious platform behaviors that cause real production problems:
 
 2. **Tier-based visibility requires sharing rules, not just profiles** — All partner users in a tier share the same license type. Profile and permission set alone cannot vary content or record visibility within a tier. Sharing rules scoped to a tier-based public group are required for co-marketing asset entitlement, lead pool visibility, and MDF record access. Administrators who rely only on profiles to control tier-differentiated access will find that all partners see all content.
 
-3. **MDF budget tracking has no standard object in core PRM** — There is no standard `MDF_Budget__c` or `MDF_Claim__c` object in the base PRM product. Projects that discover this mid-build must pause to design, build, and test custom objects before continuing. This object model must be specified in the requirements phase, not discovered during configuration.
+3. **Standard partner fund objects exist, and `ChannelPartnerId` is not formula-usable** — `PartnerMarketingBudget`, `PartnerFundAllocation`, `PartnerFundRequest` and `PartnerFundClaim` have shipped since API v41.0, so a requirements document that assumes a custom MDF build is skipping an evaluation. The trap on the standard path is different: `ChannelPartnerId` is documented as unsupported for formula fields, custom buttons and custom links across all three of budget, allocation and request.
 
-4. **Lead assignment rules do not natively reference partner tier** — Assignment rules evaluate fields on the Lead record. Partner tier lives on the partner Account. To route leads by partner tier, a cross-object formula or a Flow must stamp the tier value onto the Lead at assignment time. Projects that skip this end up with assignment rules that cannot filter by tier eligibility.
+4. **Lead assignment rules do not natively reference partner tier** — Assignment rules evaluate fields on the Lead record; partner tier lives on the partner Account. Route by tier and you need a custom lookup plus a cross-object formula, or a Flow that stamps the value. The standard `PartnerAccountId` is not the field to build that on: it is read-only and only populated once a partner user owns the record, which is after assignment, not before it.
 
 5. **Partner user creation requires Partner Account checkbox** — A Contact cannot be enabled as a partner Experience Cloud user unless the parent Account has `IsPartner = true`. If Accounts are created in bulk without this flag, partner user provisioning fails silently or produces a generic error. Bulk partner onboarding scripts must set the flag before user creation.
 
@@ -228,7 +350,30 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You are producing the actual artefacts — tier worksheet, role plan, design YAML, Network/SharingSet/Settings XML, onboarding and offboarding runbooks, acceptance SOQL |
+| `references/gotchas.md` | Before signing off a design, and when a partner-portal behaviour is not what the requirements assumed |
+| `references/examples.md` | You want two end-to-end scenarios (multi-tier deal registration; push/pull lead distribution) with the reasoning behind each choice |
+| `references/llm-anti-patterns.md` | You are reviewing PRM requirements an AI assistant produced, or about to generate some |
+| `references/well-architected.md` | You need the pillar framing, the licence and MDF trade-offs, and the source list behind the platform claims |
+| `templates/partner-community-requirements-template.md` | You are running the requirements workshop and want the blank worksheet to fill in live |
+| `scripts/check_partner_community_requirements.py` | After writing the design YAML, and again after retrieving partner metadata from the org |
+
+---
+
 ## Related Skills
 
-- experience-cloud-security — use alongside this skill to define the sharing model and guest user access boundaries for the partner portal
-- license-optimization-strategy — use to evaluate whether Partner Community vs. Partner Community Plus licensing is cost-effective given the required feature set
+- `admin/portal-requirements-gathering` — run first: persona/licence matrix and access architecture for any portal, partner or customer
+- `admin/experience-cloud-site-setup` — receives the design artefact and builds the site (Network, CustomSite, template selection)
+- `admin/experience-cloud-guest-access` — use to confirm the partner site exposes no public pages, and to design any that must be
+- `admin/sharing-and-visibility` — owns the OWD, sharing set and sharing rule layer this skill's design YAML points at
+- `admin/lead-management-and-conversion` — owns the conversion field mapping and lead process behind the registration flow
+- `admin/opportunity-management` — owns stage, forecast category and the opportunity side of partner attribution
+- `admin/role-hierarchy-design` — creates the per-partner-account portal roles this skill plans the depth of
+- `admin/duplicate-management` — builds the Lead duplicate rule the deal-registration flow depends on
+- `data/partner-data-access-patterns` — implements the partner data access model once this skill has specified it
+- `security/experience-cloud-security` — hardens the portal after the sharing model is agreed
+- `architect/license-optimization-strategy` — prices member vs login partner licences against the tier worksheet

@@ -87,3 +87,50 @@ Step 4 — Validate:
 **What goes wrong:** The manually created Amazon Connect instance lacks the IAM trust role that Salesforce's wizard creates. The instance also does not have the Salesforce-managed contact flows installed (the flows that handle the handoff from Amazon Connect to Salesforce Omni-Channel). As a result, calls may reach Amazon Connect but never route to a Salesforce agent. The import path in the wizard requires the admin to have IAM admin permissions in AWS to grant Salesforce the required trust — a higher bar than greenfield provisioning.
 
 **Correct approach:** Always start in Salesforce Setup > Service Cloud Voice > Contact Centers > New and let the wizard provision infrastructure. Only use the import path if there is an operational reason to reuse an existing Amazon Connect instance (e.g., existing customer phone numbers or contact flow investment), and ensure the importing admin has AWS IAM admin access to complete the trust grant.
+
+**How to tell, from the org, that this happened:** the symptom is calls that exist in Amazon Connect
+and never become routable Salesforce work. Three queries separate the failure modes. Field names and
+value sets are from the Object Reference `VoiceCall` section (object_reference.txt L306734–307520).
+
+```sql
+-- 1. Did any VoiceCall rows land at all? If zero, the AWS-to-Salesforce handoff never fired.
+--    VendorType is always 'ContactCenter' for Salesforce Voice (object_reference.txt L307500-307509),
+--    which also excludes Sales Dialer rows in a mixed org.
+SELECT COUNT(Id) FROM VoiceCall
+WHERE VendorType = 'ContactCenter' AND CreatedDate = LAST_N_DAYS:1
+
+-- 2. Rows exist but are orphaned from the contact center: the CallCenter link is wrong.
+SELECT Id, Name, CallCenterId, QueueName, CallDisposition, CallStartDateTime
+FROM VoiceCall
+WHERE VendorType = 'ContactCenter' AND CallCenterId = NULL
+  AND CreatedDate = LAST_N_DAYS:1
+
+-- 3. Rows are linked and queued but never accepted: routing reached Omni-Channel and stalled there
+--    (no eligible agent, or the presence status has no channels). CallDisposition stays 'new'
+--    until an agent accepts, at which point it becomes 'in-progress'
+--    (object_reference.txt L306823-306841).
+SELECT Id, Name, QueueName, CallDisposition, CallQueuedDateTime, DisconnectReason
+FROM VoiceCall
+WHERE VendorType = 'ContactCenter'
+  AND CallQueuedDateTime != NULL AND CallAcceptDateTime = NULL
+  AND CreatedDate = LAST_N_DAYS:1
+ORDER BY CallQueuedDateTime DESC
+
+-- 4. Are Salesforce agents mapped to vendor agents at all? An empty result here is the signature
+--    of a hand-built Amazon Connect instance: transfers and availability checks have nothing
+--    to resolve against. Access requires Salesforce Voice Contact Center Admin / Supervisor /
+--    Manage Call Centers (object_reference.txt L56475-56477).
+SELECT Id, DeveloperName, CallCenterId, ExternalId, ReferenceRecordId
+FROM CallCenterRoutingMap
+LIMIT 50
+```
+
+| Query result | What it means | Where to fix it |
+|---|---|---|
+| 1 returns 0 | No handoff from the vendor system into Salesforce | Contact center provisioning / vendor link (`ConversationVendorInfo`) |
+| 1 > 0, 2 returns rows | Calls arrive but are not tied to the contact center record | `CallCenter` record and `VoiceCall.CallCenterId` population |
+| 2 empty, 3 returns rows | Salesforce received and queued the work; Omni-Channel could not place it | `ServiceChannel`, `ServicePresenceStatus` channels, `PresenceUserConfig.capacity` |
+| 4 empty in a transfer-using org | Agents and queues were never mapped to vendor identities | `CallCenterRoutingMap` (see `references/metadata-examples.md` §5) |
+
+Run 1 through 4 in order and stop at the first one that answers; running them out of order produces a
+plausible-looking diagnosis of the wrong layer.

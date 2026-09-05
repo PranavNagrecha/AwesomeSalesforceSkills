@@ -44,10 +44,16 @@ They are the primary recognition signal visible to all community members.
 
 ```
 Ideation setup is incomplete without:
-1. At least four status values: New, Under Review, Planned, Closed — Not Planned
-2. A named internal owner per IdeaTheme with a committed monthly review
-3. A process for posting a status-update comment when status changes
-4. At least one active IdeaTheme before the feature is opened to members
+1. The ZONE named. Idea.CommunityId cannot be changed after an idea is created,
+   so this is the one decision that is not cheaply reversible.
+2. Status values WRITTEN DOWN. Idea.Status is a "Customizable picklist of values
+   used to specify the status of an idea" — the platform ships no standard set,
+   so whatever you write is the entire definition. Four is a reasonable floor:
+   New, Under Review, Planned, Closed — Not Planned.
+3. A named internal owner per IdeaTheme with a committed review cadence.
+4. A process for posting a status-update comment when status changes.
+5. halfLife checked — it is an org-wide dial on how fast old ideas fall down
+   Popular Ideas, and it is often blamed on member behaviour instead.
 
 Ideas sitting at "New" for 60+ days will kill member trust in the ideation channel.
 ```
@@ -79,28 +85,36 @@ Do NOT assume reputation tier escalation triggers any permission change.
 
 ---
 
-## Anti-Pattern 4: Omitting the IdeaTheme Requirement for Idea Submission
+## Anti-Pattern 4: Inventing an IdeaTheme Gate That Does Not Exist
 
-**What the LLM generates:** Instructions that enable Ideas and tell members "click New Idea to submit your feedback" — without creating an IdeaTheme first. The LLM does not mention that IdeaTheme is required for the submission UI to appear.
+**What the LLM generates:** "Members cannot post an idea until an active IdeaTheme exists — create one first or the submission form will not appear." It is stated with the confidence of a platform constraint, and it is wrong.
 
-**Why it happens:** The IdeaTheme prerequisite is a platform-specific constraint not obvious from the feature name. LLMs trained on high-level documentation omit it because it appears to be a configuration detail rather than a functional gate.
+**Why it happens:** The claim is plausible, widely repeated in community-management blog content, and structurally similar to real Salesforce prerequisites (record types, data categories). LLMs reproduce it because nothing in the surface documentation contradicts it loudly.
 
 **Correct pattern:**
 
 ```
-Before members can submit ideas, an active IdeaTheme must exist.
+What the Object Reference actually says:
 
-Steps:
-1. Enable Ideas in site settings.
-2. Add the Ideas tab to navigation in Experience Builder.
-3. Create at least one IdeaTheme (e.g., "General Product Feedback").
-4. Confirm the IdeaTheme status is Active.
+  Idea.IdeaThemeID   Properties: Create, Filter, Group, Nillable, Sort, Update
+                     -> nillable. An idea can exist with no theme.
 
-Without an active IdeaTheme, the idea submission form will not appear to members
-even if the Ideas tab is visible in navigation.
+  Idea.CommunityId   Properties: Create, Filter, Group, Sort
+                     "The zone ID associated with the idea. Once you create an
+                      idea, you can't change the zone ID associated with that idea."
+                     -> the zone is the container that matters, and the one
+                        decision that cannot be reversed later.
+
+  IdeaTheme          "Represents an invitation to zone members to submit ideas
+                      that are focused on a specific topic."
+                     -> a grouping and curation device, not a gate.
+
+So: name the ZONE in the strategy before naming any theme. Treat themes as
+curation with an owner. Do not promise that a theme prevents uncategorised ideas
+from arriving, because it does not.
 ```
 
-**Detection hint:** Any ideation setup guide that does not mention creating an IdeaTheme before directing members to submit ideas is incomplete.
+**Detection hint:** Any sentence asserting that something "is required for the idea submission UI to appear" — check the field's Nillable property before repeating it. The same test catches the sibling claim that Ideas is configured per Experience Cloud site; `IdeasSettings` is an org-level settings file.
 
 ---
 
@@ -152,3 +166,67 @@ Members who visit and find nothing to read or respond to do not return.
 ```
 
 **Detection hint:** Any launch checklist that ends at "configure settings and open registration" without a content seeding step is incomplete.
+
+---
+
+## Anti-Pattern 7: Specifying Engagement Metrics `FeedItem` Cannot Produce
+
+**What the LLM generates:** A measurement plan built on feed counts — `SELECT COUNT() FROM FeedItem WHERE Type = 'QuestionPost'`, "filter by `NetworkScope` to scope it to the site", "group by month for the trend". It reads like every other Salesforce reporting answer and none of it runs.
+
+**Why it happens:** Aggregate SOQL over a standard object is the single most common shape in Salesforce training data. `FeedItem` is an exception, and exceptions are exactly what pattern-matching erases.
+
+**Correct pattern:**
+
+```
+Two hard constraints from the Object Reference, FeedItem:
+
+  "The FeedItem object doesn't support aggregate functions in queries."
+  "You can't filter a feed item on the NetworkScope field."
+
+  (Plus: direct FeedItem querying requires View All Data, API 23.0 and later.)
+
+So these do NOT work:
+  SELECT COUNT() FROM FeedItem WHERE ...
+  SELECT Type, COUNT(Id) FROM FeedItem GROUP BY Type
+  SELECT Id FROM FeedItem WHERE NetworkScope = '0DB...'
+
+Redesign onto objects that answer:
+  Active members / recency  -> NetworkMember (aggregates fine, scoped by NetworkId)
+  Per-member activity       -> ChatterActivity, one ParentId per query
+  Escalation volume         -> Case, via Case.FeedItemId (Case DOES aggregate)
+  Topic reach               -> Topic.TalkingAbout
+  Best-answer rate          -> page FeedItem rows and count client-side
+```
+
+**Detection hint:** Any community metric plan containing `COUNT(` against `FeedItem`, or a `WHERE NetworkScope =` clause. Also treat "average posts per member across the community" as a red flag: the denominator needs `NetworkMember` because members who never posted have no `ChatterActivity` row at all.
+
+---
+
+## Anti-Pattern 8: Quoting a Reputation Limit Without Saying Which System
+
+**What the LLM generates:** "Experience Cloud supports up to 10 reputation levels per site" or "you can create up to 25 reputation levels". Both numbers appear in Salesforce documentation. Neither means what the sentence implies.
+
+**Why it happens:** Salesforce ships several unrelated features called reputation, and the guides describe them in different chapters. An LLM retrieving on the word "reputation" pulls facts from whichever one matched, then presents them as one system.
+
+**Correct pattern:**
+
+```
+The "10" is a set of DEFAULT LABELS, not a cap:
+  Metadata API, ReputationLevel.label — "This field is optional. If not
+  specified, one of the 10 defaults is used" -> Level 1 ... Level 10.
+  No maximum level count for Network reputation appears in the guide.
+
+The "25" belongs to the ZONE systems, not to the site:
+  IdeaReputationLevel — "You can create up to 25 levels per zone or internal
+  organization", Name unique and max 50 chars, Threshold unique and >= 0.
+  Community (Zone).reputationLevels — "You can create up to 25 reputation
+  levels per zone."
+
+Site reputation lives on Network: enableReputation, reputationLevels,
+reputationPointsRules, with points on NetworkMember.ReputationPoints.
+Ideas-zone reputation is a separate system with separate storage.
+
+Say which system before quoting any number.
+```
+
+**Detection hint:** A reputation limit stated without the words `Network`, `zone`, or `Ideas` beside it. Also watch for advice that mixes the two vocabularies in one paragraph — `reputationPointsRules` (site) next to `IdeaReputationLevel` (zone) is a sign the answer was assembled from two sources that do not describe the same feature.

@@ -2,10 +2,10 @@
 
 ## Relevant Pillars
 
-- **Security** — Service Cloud Voice uses OAuth 2.0 between Salesforce and Amazon Connect, with IAM roles created by the provisioning wizard. Admins must ensure IAM roles follow least-privilege principles. The Amazon Connect instance should not be publicly accessible via the AWS console to unauthorized staff; access should be governed by AWS IAM policies. VoiceCall records contain PII (caller phone numbers, transcripts) and must be protected by field-level security and object permissions.
-- **Reliability** — Amazon Connect has its own service availability SLA (99.99% for the managed service). Contact flows must handle Amazon Connect unavailability gracefully — configure fallback routing or error branches in contact flows so calls are not silently dropped if the Salesforce connection is interrupted. After Conversation Work Time prevents agent overload, contributing to sustained reliability under high call volume.
+- **Security** — Service Cloud Voice uses OAuth 2.0 between Salesforce and Amazon Connect, with IAM roles created by the provisioning wizard. Admins must ensure IAM roles follow least-privilege principles. The Amazon Connect instance should not be publicly accessible via the AWS console to unauthorized staff; access should be governed by AWS IAM policies. VoiceCall records contain PII (caller phone numbers, transcripts) and must be protected by field-level security and object permissions. Three controls are documented rather than inferred: `ServiceCloudVoiceSettings.enablePhoneNumberMaskingForSCV` redacts inbound and outbound numbers "in Omni-Channel views, call recordings, and call transcripts" but not for rep-to-rep calls managed by partner telephony providers (api_meta.txt L126856-126865); "Only users with the Modify All Data permission can delete call records" on VoiceCall (object_reference.txt L306747); and VoiceCallRecording is restricted so that "As of Spring '20 and later, only your Salesforce org's internal users can access this object" (object_reference.txt L308351). For Amazon Connect the recording audio is not in Salesforce at all — it "is stored in S3 buckets on your Amazon Web Services (AWS) account" (object_reference.txt L308341-308343), so the retention and access policy for the audio is an AWS artefact that needs its own named owner. `MyDomainSettings.isFirstPartyCookieUseRequired` must be false for both Amazon Connect models (api_meta.txt L122293-122299), which is a security-relevant exception to a cookie-hardening default rather than a convenience setting.
+- **Reliability** — Amazon Connect has its own service availability SLA. UNVERIFIED (2026-09-05): the specific availability percentage is an AWS commitment published outside the Salesforce documentation set and is not stated in the Metadata API Developer Guide, the Object Reference, or the App Limits cheat sheet — quote the current AWS Service Level Agreement rather than a number from memory. Contact flows must handle Amazon Connect unavailability gracefully — configure fallback routing or error branches in contact flows so calls are not silently dropped if the Salesforce connection is interrupted. After Conversation Work Time prevents agent overload, contributing to sustained reliability under high call volume.
 - **Operational Excellence** — The guided provisioning wizard reduces operational risk by automating AWS infrastructure setup. Post-setup, operational excellence requires monitoring VoiceCall record creation rates, transcript availability rates, and ACW duration compliance. Salesforce's built-in reporting on VoiceCall objects supports call volume dashboards without additional tooling.
-- **Performance** — Real-time transcription introduces latency; the Kinesis Video Stream must be sized appropriately for the concurrent call volume. Omni-Channel capacity weights for voice should be set lower than for asynchronous channels (chat, email) since calls are synchronous and cannot be queued the same way.
+- **Performance** — Real-time transcription introduces latency; the Kinesis Video Stream must be sized appropriately for the concurrent call volume. UNVERIFIED (2026-09-05): the Kinesis Video Streams dependency is documented on help.salesforce.com and in AWS documentation, neither of which is in the grounded source set. The Salesforce-side control that *is* documented is `PresenceUserConfig.capacity` — "Required. The maximum number of work units an agent can be assigned at one time" (api_meta.txt L96998-97001) — plus `ServiceCloudVoiceSettings.enableOmniCapacityForSCV`, which makes Voice AgentWork honour Omni-Channel capacity at all (api_meta.txt L126841-126851). Without that flag, capacity numbers tuned for voice are ignored.
 - **Scalability** — Amazon Connect scales automatically for call volume within AWS service limits. Salesforce Omni-Channel queue depth and agent capacity are the constraining factors on the Salesforce side. Scale testing should include peak call volume scenarios with real agents in ACW to confirm routing does not back up.
 
 ## Architectural Tradeoffs
@@ -15,6 +15,16 @@
 **Native Service Cloud Voice vs. Open CTI with a third-party telephony provider:** Service Cloud Voice provides deeper integration (VoiceCall records, real-time transcription, Einstein AI features) but requires Amazon Connect specifically. Open CTI supports any telephony provider but delivers only basic call control with no native transcript or AI features. Teams already invested in a non-Amazon telephony platform face a re-platforming cost to gain native Voice features.
 
 **Real-time transcription always-on vs. on-demand:** Enabling transcription for all calls increases Amazon Connect data streaming costs (Kinesis Video Streams pricing). Organizations with high call volume should evaluate whether transcription is needed for all calls or only for flagged/escalated calls. Selective transcription requires contact flow logic in Amazon Connect to conditionally start the media stream.
+
+**ACW on the service channel vs. on the presence configuration:** After Conversation Work Time can be
+set in two places. `ServiceChannel.hasAfterConvoWorkTimer` / `afterConvoMaxTime` applies to everyone
+working that channel and has existed for Voice since API 52.0 (api_meta.txt L107784–107792,
+L107832–107841). `PresenceUserConfig.hasAfterConvoWorkTimer` / `afterConvoWorkMaxTime` is
+API 65.0 and later and is assigned to sets of users or profiles (api_meta.txt L96989–96993,
+L97037–97046, and `PresenceConfigAssignments` at L97063–97072). Channel-level is one setting for the
+whole org and survives a v62 manifest; config-level lets a tier-2 queue have a longer wrap-up than
+tier-1 but multiplies the number of records a release has to keep consistent and raises the manifest's
+API version floor. Choose channel-level unless there is a stated per-team wrap-up difference.
 
 ## Anti-Patterns
 
@@ -26,9 +36,25 @@
 
 ## Official Sources Used
 
+- **Metadata API Developer Guide (Summer '26 / v62), `CallCenter`, `CallCenterSection`, `CallCenterItem`, `ContactCenterChannel` — api_meta.txt L31421–31683** (that a Service Cloud Voice contact center is a `CallCenter` component; the required `displayName` / `displayNameLabel` / `internalNameLabel` trio; the `sections`/`items` shape used in `references/metadata-examples.md`; the "Don't change the value in this field. Instead, configure … routing in Lightning Experience" warning on the voicemail and callback handler fields behind Gotcha 9)
+- **Metadata API Developer Guide, `CallCenterRoutingMap` — api_meta.txt L31685–31796** (the Amazon Connect agent-ARN and `quickConnect` example; the `[SALESFORCE_USER_ID]_[CALL_CENTER]` developer-name rule; the "Contact Center Admin, Contact Center Admin (Partner Telephony), Contact Center Supervisor, or Manage Call Centers permission" access rule used in the Security pillar and the permission-set section)
+- **Metadata API Developer Guide, `ConversationVendorInfo` — api_meta.txt L38622–39087** (the `vendorType` enum `Amazon_Connect` / `BringYourOwnChannelPartner` / `BringYourOwnContactCenter` / `ServiceCloudVoicePartner`; the per-implementation field scoping that separates Amazon Connect from Partner Telephony in the "Native Service Cloud Voice vs. Open CTI" tradeoff; the `awsAccountKey` / `awsRootEmail` / `awsTenantVersion` fields that document Salesforce provisioning an AWS subaccount and an `SVCTenantStack` CloudFormation stack in `us-east-1`, which is the grounded basis for the Operational Excellence claim about the guided wizard)
+- **Metadata API Developer Guide, `ServiceCloudVoiceSettings` — api_meta.txt L126802–126935** (`enableServiceCloudVoice`, `enableOmniCapacityForSCV` in the Performance pillar, `enablePhoneNumberMaskingForSCV` in the Security pillar, `enableAmazonQueueManagement`; and the contrast with `VoiceSettings` at api_meta.txt L128645–128712, which is Sales Dialer and underpins Gotcha 8)
+- **Metadata API Developer Guide, `ServiceChannel`, `ServicePresenceStatus`, `PresenceUserConfig` — api_meta.txt L107759–108009 and L96963–97062** (After Conversation Work Time as a channel-level field pair with a 10–3600 second range, which is the Reliability claim about ACW preventing agent overload; the "available only if Omni-Channel is enabled in your org" access rule; the Away-status behaviour of a channel-less presence status)
+- **Metadata API Developer Guide, `MyDomainSettings` — api_meta.txt L122088–122300** (`isFirstPartyCookieUseRequired` incompatibility with both Amazon Connect models and its Summer '24 default flip — the Security pillar and Gotcha 6)
+- **Object Reference (Summer '26 / v62), `VoiceCall`, `VoiceCallRecording`, `CallCenter` — object_reference.txt L306734–307520, L308340–308470, L56379–56480** (the `CallDisposition` and `CallType` value sets used in the verification SOQL; `VendorType = 'ContactCenter'` for Salesforce Voice; the S3 storage location of Amazon Connect recordings; the standard permission-set names *Salesforce Voice Contact Center Rep / Admin / Supervisor* and *Agentforce Contact Center Admin (Salesforce Voice)*; the `CallCenter` object's missing `update()` and `delete()`)
+- **Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html** (pillar framing for this file)
+
+### Help-only claims in this package
+
+UNVERIFIED (2026-09-05): the following help.salesforce.com articles carry the provisioning-wizard
+steps, the Amazon-Connect-side Live Media Streaming and Kinesis configuration, the one-instance-per-org
+constraint, and the add-on licence names used in `SKILL.md` and Gotchas 1–5. help.salesforce.com cannot
+be fetched in this environment, so none of those claims is grounded in the source set above. They are
+retained because they reflect field practice, and each is marked at the point of use.
+
 - Set Up Service Cloud Voice with Amazon Connect — https://help.salesforce.com/s/articleView?id=sf.voice_setup_amazon_connect.htm
 - Configure Call Transcription — https://help.salesforce.com/s/articleView?id=sf.voice_transcription_setup.htm
 - Configure After Conversation Work Time — https://help.salesforce.com/s/articleView?id=sf.voice_acw_setup.htm
 - Service Cloud Voice Best Practices Guide — https://help.salesforce.com/s/articleView?id=sf.voice_best_practices.htm
 - Service Cloud Voice Overview — https://help.salesforce.com/s/articleView?id=sf.voice_overview.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

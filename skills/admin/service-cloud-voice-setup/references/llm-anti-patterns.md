@@ -112,18 +112,34 @@ For sandbox environments:
 
 ```
 Service Cloud Voice (Amazon Connect) setup:
-- No AppExchange package installation required.
-- No Call Center definition file (callcenter.xml) required.
-- Setup is entirely within Setup > Service Cloud Voice > Contact Centers.
-- The phone widget appears automatically in the Service Console
-  after the provisioning wizard completes and agents have
-  the "Service Cloud Voice" permission set.
+- No AppExchange CTI package installation required.
+- No hand-authored Open CTI adapter definition, and no locally
+  hosted adapterUrl (http://localhost:11000 and similar).
+- Setup starts in Setup > Service Cloud Voice > Contact Centers;
+  the provisioning flow writes the metadata for you.
+- The phone widget appears in the Service Console after
+  provisioning completes and agents hold the standard
+  contact-center permission sets.
 
 Open CTI (third-party telephony) is the correct path only when
 using a non-Amazon telephony provider.
 ```
 
-**Detection hint:** Look for mentions of "Call Center definition file," "callcenter.xml," "CTI adapter," or "assign users to Call Center" in Service Cloud Voice setup guidance. These are Open CTI concepts and do not apply to Service Cloud Voice.
+**Correction to a widespread claim:** it is *not* true that Service Cloud Voice bypasses the
+`CallCenter` metadata type. A Service Cloud Voice contact center **is** a `CallCenter` component. The
+Metadata API Developer Guide defines the type as covering "a third-party computer-telephony
+integration (CTI) system, a partner telephony system, or partner Contact Center as a Service (CCaaS)
+system" (api_meta.txt L31421-31424); the guide's own `CallCenterRoutingMap` sample carries an
+`arn:aws:connect:` agent ARN (api_meta.txt L31774-31776); and `VoiceCall.CallCenterId` is a lookup to
+`CallCenter` (object_reference.txt L306795-306809). What is genuinely obsolete is the Open CTI
+*workflow* — the AppExchange package, the local adapter URL, and manually assigning users to a call
+center. An assistant that tells you never to touch `CallCenter` metadata will also tell you a contact
+center cannot be deployed between orgs, which is wrong; see `references/metadata-examples.md` §3.
+
+**Detection hint:** Look for a locally hosted `adapterUrl`, an AppExchange CTI package name, or "add
+users to this Call Center" in Service Cloud Voice setup guidance — those are the Open CTI leftovers.
+Do *not* treat a `callCenters/*.callCenter-meta.xml` file as a red flag: in a Service Cloud Voice org
+that file is expected, and its absence from a manifest is the actual problem.
 
 ---
 

@@ -3872,6 +3872,9 @@
     "community-engagement": [
       "admin/community-engagement-strategy"
     ],
+    "community-metrics": [
+      "admin/community-engagement-strategy"
+    ],
     "community-portals": [
       "architect/multi-site-architecture"
     ],
@@ -9355,6 +9358,9 @@
     ],
     "managed-subscriptions": [
       "integration/pub-sub-api-patterns"
+    ],
+    "managed-topics": [
+      "admin/community-engagement-strategy"
     ],
     "manual-residue": [
       "admin/process-flow-as-is-to-be"

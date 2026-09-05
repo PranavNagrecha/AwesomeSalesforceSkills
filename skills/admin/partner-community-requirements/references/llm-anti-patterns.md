@@ -103,35 +103,45 @@ portal list view configuration are required for partners to act on leads.
 
 ---
 
-## Anti-Pattern 5: Assuming MDF Is a Standard Out-of-the-Box PRM Feature
+## Anti-Pattern 5: Reaching for Custom MDF Objects Without Checking the Standard Ones
 
-**What the LLM generates:** A PRM requirements document that lists "MDF tracking" as a standard feature to be configured, citing Trailhead PRM content, without noting that MDF requires custom objects or Channel Revenue Management.
+**What the LLM generates:** A PRM requirements document that specifies `MDF_Budget__c`,
+`MDF_Request__c` and `MDF_Claim__c` as a custom build — often with a confident assertion that "there
+is no standard MDF object in Salesforce" — and sizes a multi-day data-model exercise around it.
 
-**Why it happens:** Trailhead PRM modules and marketing materials describe MDF as part of the PRM feature set. LLMs trained on this content reproduce the description without the licensing and implementation caveats. The distinction between "shown in a demo org" and "available in a standard licensed org" is rarely explicit in training data.
+**Why it happens:** The custom-object framing is over-represented in consulting write-ups and older
+community answers, and it reads as safe hedging. The standard objects are comparatively invisible:
+they are named `PartnerMarketingBudget` / `PartnerFundAllocation` / `PartnerFundRequest` /
+`PartnerFundClaim` rather than anything containing the letters MDF, so keyword-shaped recall does not
+reach them.
 
 **Correct pattern:**
 
 ```
-MDF tracking in base PRM requires custom objects. There is no standard
-MDF_Budget__c or MDF_Claim__c object in the core Salesforce product
-(without Channel Revenue Management licensing).
+Standard objects exist for the whole chain, from API version 41.0:
 
-To implement MDF in Salesforce:
-Option A: Design custom objects (MDF_Budget__c, MDF_Request__c, MDF_Claim__c)
-          with approval process for claim reimbursement.
-          Effort: 2-3 days configuration, plus portal surfacing.
+  PartnerMarketingBudget  "a budget that provides funds to channel partners
+                           for selling and marketing products and services"
+  PartnerFundAllocation   allocated funds from that budget
+  PartnerFundRequest      a partner's request against an allocation
+  PartnerFundClaim        a post-activity claim against a request
 
-Option B: License Channel Revenue Management, which includes standard
-          MDF objects and workflows.
+Tiers also have a standard home:
+  ChannelProgram / ChannelProgramLevel / ChannelProgramMember.LevelId
 
-Option C: Track MDF in an external finance system and surface summary
-          data in the portal via integration.
+So the requirement is: EVALUATE standard first, then decide.
 
-Specify which option is in scope during requirements. Do not assume
-MDF is available out of the box.
+Go custom only for a stated reason the standard field set cannot carry.
+Go standard and you inherit one documented restriction:
+  ChannelPartnerId is not supported for formula fields, custom buttons or
+  custom links on PartnerFundAllocation, PartnerMarketingBudget or
+  PartnerFundRequest. Any "formula that shows the partner on the claim"
+  requirement must be re-specified before sign-off.
 ```
 
-**Detection hint:** Flag any PRM requirements document that lists MDF as "standard configuration" without referencing a custom object design or Channel Revenue Management license.
+**Detection hint:** Flag any PRM requirements document that names `MDF_*__c` custom objects without a
+sentence comparing them to `PartnerMarketingBudget` and friends — and flag any document that asserts
+"there is no standard MDF object", which is the older claim this pattern corrects.
 
 ---
 

@@ -49,3 +49,140 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** The Amazon Connect softphone widget is served from a Lightning page and loads via a URL tied to the org's My Domain. If My Domain is configured but not yet deployed to all users (Setup > My Domain > Deployment > Deploy to All Users), some agents retain the old instance URL format. The Amazon Connect OAuth callback URI is registered against the My Domain URL — a mismatch causes the OAuth flow to fail silently.
 
 **How to avoid:** Confirm My Domain is fully deployed to all users before starting the provisioning wizard. Check Setup > My Domain and ensure the "Deploy to All Users" action has been completed (not just "Deploy to the organization"). This is a one-time action that cannot be reversed once completed, so perform it during a low-traffic window.
+
+---
+
+## Gotcha 6: My Domain's `isFirstPartyCookieUseRequired` Silently Breaks Amazon Connect — and Orgs Created After Summer '24 Default It On
+
+**What happens:** The softphone widget fails to load or the agent is repeatedly signed out of the
+contact center, with no configuration error anywhere in Setup. The Metadata API Developer Guide is
+explicit about the cause: "Service Cloud Voice with Amazon Connect and Service Cloud Voice with
+Partner Telephony from Amazon Connect aren't compatible with this setting. If you use those features,
+set `isFirstPartyCookieUseRequired` to `false`" (api_meta.txt L122293–122299, `MyDomainSettings`).
+
+**When it occurs:** Whenever `MyDomainSettings.isFirstPartyCookieUseRequired` is `true`. The same
+field description states: "In Salesforce orgs created in Summer '24 and later, the default is `true`.
+In all other orgs, the default is `false`." So a brand-new org fails by default and a long-lived org
+does not — which is exactly the pattern that makes a team conclude "it worked in the old sandbox, so
+Voice must be broken in the new one." A sandbox spun from a newer template inherits the newer default.
+
+**How to avoid:** Read the flag before provisioning, not after the first failed call. Retrieve
+`Settings:MyDomain`, confirm `<isFirstPartyCookieUseRequired>false</isFirstPartyCookieUseRequired>`,
+and deploy the change ahead of the contact center. `enableCrossDomainPreviewCookies` is only
+meaningful when the flag is `true` (api_meta.txt L122225–122229), so it is not a workaround.
+
+---
+
+## Gotcha 7: After Conversation Work Is a Service Channel Field Pair, and Setting Half of It Fails the Deploy
+
+**What happens:** A deploy that sets `hasAfterConvoWorkTimer` to `true` on the Voice service channel
+without also setting the maximum-time field is rejected. The `ServiceChannel` field table is
+unambiguous: "If set to `true`, After Conversation Work (ACW) time can be configured for the channel.
+If set to `true`, you must also set the `afterConvoWorkMaxTime` field" (api_meta.txt L107832–107841),
+and the corresponding field states "You must set this field if `hasAfterConvoWorkTimer` is set to
+`true`. Specify a value from 10 through 3600" (api_meta.txt L107784–107792).
+
+**When it occurs:** Three variants, all from the same partial-set mistake. (1) Timer on, max time
+missing. (2) `hasAcwExtensionEnabled` on without both `acwExtensionDuration` (10–3600) and
+`maxExtensions` (1–10) — "Available only if `hasAfterConvoWorkTimer` is set to `true`. If set to
+`true`, you must also set the `acwExtensionDuration` and `maxExtensions` fields"
+(api_meta.txt L107825–107831, L107778–107783, L107852–107856). (3) The fields set on a channel whose type is neither
+Voice nor Messaging: all four are "Available only for service channels of type Messaging or Voice."
+
+**How to avoid:** Treat ACW as an atomic group of two (or five, with extensions) elements on the
+`ServiceChannel` file, and keep every seconds value inside 10–3600. Note the guide's own field table
+labels the max-time element `afterConvoMaxTime` while the `hasAfterConvoWorkTimer` description calls
+it `afterConvoWorkMaxTime` (api_meta.txt L107784–107792 versus L107832–107841); `PresenceUserConfig`
+uses `afterConvoWorkMaxTime` (api_meta.txt L96989–96993). UNVERIFIED (2026-09-05): the guide is
+internally inconsistent on the `ServiceChannel` spelling, so retrieve the channel from the target org
+and copy the element name that comes back rather than trusting either page.
+
+---
+
+## Gotcha 8: `Voice.settings` Is Sales Dialer — Editing It Changes Nothing in Service Cloud Voice
+
+**What happens:** An admin asked to "turn on call recording for voice" finds
+`enableVoiceCallRecording` in `settings/Voice.settings-meta.xml`, sets it to `true`, deploys cleanly,
+and nothing changes for contact-center agents. The deploy succeeded because the field is real; it just
+belongs to a different product.
+
+**When it occurs:** Any time the two similarly named settings types are confused. `VoiceSettings`
+"Represents an org's Sales Dialer settings, such as call recording, conferencing, and voicemail"
+(api_meta.txt L128646–128647), and each of its fields ends with "To use this feature, enable Dialer in
+Lightning Experience" (api_meta.txt L128686–128700). Service Cloud Voice lives in
+`ServiceCloudVoiceSettings` / `ServiceCloudVoice.settings`, whose switch is `enableServiceCloudVoice`
+(api_meta.txt L126897–126900). The confusion is compounded because both products write to the same
+`VoiceCall` object, so reports still show rows.
+
+**How to avoid:** Match the file name to the product before editing: `ServiceCloudVoice.settings` for
+contact centers, `Voice.settings` for Sales Dialer. In a mixed org, separate the traffic in reports
+with `VoiceCall.VendorType`, which "for Salesforce Voice … is always set to `ContactCenter`"
+(object_reference.txt L307500–307509).
+
+---
+
+## Gotcha 9: The Contact Center sObject Has No `update()` — and Re-deploying Its Routing Fields Overwrites UI Configuration
+
+**What happens:** A script tries to correct a contact center's name or version with a DML update and
+gets an unsupported-operation error. Separately, a team round-trips the `CallCenter` file from sandbox
+to production and finds voicemail routing pointing at the wrong flow afterwards.
+
+**When it occurs:** The `CallCenter` object's supported calls are `create(), describeSObjects(),
+getDeleted(), getUpdated(), query(), retrieve()` — no `update()`, no `delete()`
+(object_reference.txt L56385). Changing a live contact center is a metadata deploy, not DML. And four
+`ContactCenterChannel` subtype fields carry an explicit warning: `voiceMailHandler`,
+`voiceMailFallbackQueue` (api_meta.txt L31603–31619) and, from API 65.0, `omniCallbackHandler`,
+`omniCallbackFallbackQueue` (api_meta.txt L31575–31602) each say "Don't change the value in this
+field. Instead, configure … routing in Lightning Experience." Those values are org-specific record
+IDs, so a sandbox file carries sandbox IDs into production.
+
+**How to avoid:** Retrieve the production `CallCenter` before every deploy and diff it, rather than
+promoting the sandbox copy wholesale. Strip or re-point `contactCenterChannels` handler and fallback
+elements to the production values. Remember `Name` and `InternalName` are capped at 80 characters
+(object_reference.txt L56429–56448), so a long descriptive name fails at create time, not at design
+time.
+
+---
+
+## Gotcha 10: A Presence Status With No Channels Becomes an "Away" Status, So the Agent Is Never Routed a Call
+
+**What happens:** Agents show as online in the Omni-Channel widget, pick a status that looks
+available, and receive no calls. Routing is configured correctly and the queue has work; the agents
+simply are not eligible.
+
+**When it occurs:** The `ServicePresenceStatus` `channels` field says: "Represents the service channels
+assigned to the presence status. If no service channels are included, the presence status is
+automatically marked as 'Away' (where `IsAway` is set to `true`.)" (api_meta.txt L107966–107970). A
+hand-authored status file that omits the `channels` block, or one whose `channel` value does not match
+the Voice `ServiceChannel`'s API name, is silently converted to an Away status. Nothing in the deploy
+result says so.
+
+**How to avoid:** Every routable status file must contain a `channels`/`channel` pair naming the Voice
+service channel, and the deploy must place the `ServiceChannel` before the `ServicePresenceStatus`
+that references it. Then check the presence configuration too: `PresenceUserConfig.capacity` is
+Required (api_meta.txt L96998–97001), and `enableAutoAccept` is "Available only if `enableDecline` is
+set to `false`" while `enableDecline` is available only if `enableAutoAccept` is `false`
+(api_meta.txt L97004–97012) — setting both `true` is a contradiction the file will not resolve for you.
+
+---
+
+## Gotcha 11: Amazon Connect Call Recordings Are Not in Salesforce, So a `VoiceCallRecording` Row Proves Only Linkage
+
+**What happens:** A compliance team confirms recordings exist by querying `VoiceCallRecording`, then
+discovers during an audit that the audio itself is unreachable because the AWS-side bucket or its
+lifecycle policy was changed by a different team.
+
+**When it occurs:** The Object Reference is explicit: "Call recordings for Salesforce Voice with
+Amazon Connect and for Salesforce Voice with Partner Telephony from Amazon Connect are stored in S3
+buckets on your Amazon Web Services (AWS) account and can be accessed via AWS. Call recordings for
+Sales Dialer are saved as files in Salesforce" (object_reference.txt L308341–308343). Only the Sales
+Dialer path puts a `ContentDocument` in Salesforce via `MediaContentId`, which "counts toward your
+org's file storage quota" (object_reference.txt L308398–308408). Retention for the Amazon Connect path
+is an AWS bucket policy that Salesforce neither sets nor monitors.
+
+**How to avoid:** Treat the retention SLA as an AWS artefact with a named owner, and make the S3
+lifecycle policy part of the same change record as the Salesforce configuration. Two related access
+facts belong in the same runbook: "As of Spring '20 and later, only your Salesforce org's internal
+users can access this object" (object_reference.txt L308351), and on `VoiceCall`, "Only users with the
+Modify All Data permission can delete call records" (object_reference.txt L306747) — so a
+right-to-erasure request cannot be delegated to a support supervisor without over-granting.

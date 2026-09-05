@@ -30,6 +30,17 @@ Duplicate Rule on Lead:
 
 **Why it works:** The auto-approval threshold eliminates channel manager bottlenecks for routine Gold deals while preserving governance on large or anomalous registrations. The duplicate rule prevents channel conflict before it reaches the approval queue rather than after conversion.
 
+**What the design still has to add:** auto-approval alone does not attribute the deal. `Opportunity.PartnerAccountId` is read-only and derives from the owning partner user, so an auto-approved registration that stays owned by the channel manager converts with an empty partner account. The rule below is what turns "approved" into "attributed", and belongs in the requirements as a numbered step rather than in the build as an implementation detail:
+
+| Registration outcome | Owner immediately after | `PartnerAccountId` on conversion | Design action required |
+|---|---|---|---|
+| Gold, auto-approved under $25K | Submitting partner user | Populated | None — the submitter already owns it |
+| Silver, manually approved | Channel manager (the approver) | **Empty** | Transfer ownership to the accepting partner user before conversion |
+| Sourced by Acme, offered to a partner | Acme AE | **Empty** | Transfer on acceptance; the partner must own it to be credited |
+| Rejected, resubmitted, then approved | Submitting partner user | Populated | None |
+
+Two of those four rows lose attribution without an explicit transfer step, which is why the design artefact in `references/worked-examples.md` §3 requires a step of `type: acceptance` before it will pass the checker.
+
 ---
 
 ## Example 2: Push Lead Distribution Model for Regional Partners
@@ -68,6 +79,31 @@ Portal List View for Silver partners:
 ```
 
 **Why it works:** Queue-based assignment decouples the lead from individual user availability. Gold partners see their assigned leads immediately via queue-scoped list views. Silver partners see only their regional pool via sharing rules scoped to a regional public group — not a broad profile filter. Orphaned leads fall to the channel manager queue rather than disappearing.
+
+**One caveat the queue design must absorb:** a sharing set cannot carry Lead. The Metadata API Guide's `SharingSet` `AccessMapping.object` list is Account, Campaign, Contact, Case, custom objects, Opportunity, Order, ServiceContract, User and WorkOrder. Lead visibility for the Silver pool therefore has to come from queue membership, a sharing rule shared to a portal role group, or `AccountRelationshipShareRule` — never from a sharing set, however naturally the requirement is phrased.
+
+These two queries are the ones to run in the sandbox after the queues are built. The first proves distribution is landing where the rules say; the second proves the pool has not silently become invisible:
+
+```sql
+-- Where are partner-eligible leads actually sitting, and which are stuck unowned by a partner?
+SELECT Owner.Name, Owner.Type, Status, COUNT(Id) leads
+FROM   Lead
+WHERE  IsConverted = false
+AND    CreatedDate = LAST_N_DAYS:30
+GROUP BY Owner.Name, Owner.Type, Status
+ORDER BY COUNT(Id) DESC
+
+-- Queue-owned leads with no active partner user in the queue: a pool nobody can claim.
+SELECT Id, Company, State, OwnerId, Owner.Name
+FROM   Lead
+WHERE  IsConverted = false
+AND    Owner.Type = 'Queue'
+AND    OwnerId NOT IN (
+         SELECT Queue.Id FROM QueueSobject WHERE SobjectType = 'Lead'
+       )
+```
+
+The second query is deliberately conservative — it finds leads owned by something that is not a Lead-enabled queue at all, which is the failure that produces a permanently unreachable pool. Membership emptiness itself is checked in Setup, since `Group` and `GroupMember` do not expose partner queue membership in a single query.
 
 ---
 

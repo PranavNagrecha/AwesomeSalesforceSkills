@@ -24,21 +24,69 @@
 
 2. **Profile-only tier visibility without sharing rules** — Designing tier-differentiated record visibility using profiles alone. All partner users in the same tier share the same license type, so profile cannot vary record-level access within the tier. Co-marketing assets, lead pools, and MDF records require sharing rules scoped to tier-based public groups to enforce tier visibility correctly.
 
-3. **Individual user-based approval routing and lead assignment** — Routing deal registration approvals to a specific named user (rather than a queue) and assigning leads to individual partner user records (rather than queues). This creates single points of failure: when the named approver or user is inactive, the entire workflow stalls. Queue-based routing provides resilience and auditability.
+3. **Assuming the fund model must be custom** — Writing `MDF_Budget__c` / `MDF_Request__c` /
+   `MDF_Claim__c` into the requirements without first evaluating `PartnerMarketingBudget`,
+   `PartnerFundAllocation`, `PartnerFundRequest` and `PartnerFundClaim`, which have shipped since API
+   version 41.0. Custom is a defensible choice; skipping the comparison is not. The adaptability cost
+   runs both ways: a custom model carries permanent maintenance, and a standard model carries the
+   `ChannelPartnerId` formula restriction. Pick one on the evidence and write the reason down.
+
+4. **Individual user-based approval routing and lead assignment** — Routing deal registration approvals to a specific named user (rather than a queue) and assigning leads to individual partner user records (rather than queues). This creates single points of failure: when the named approver or user is inactive, the entire workflow stalls. Queue-based routing provides resilience and auditability.
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — architecture quality framing (Trusted/Easy/Adaptable model, anti-pattern guidance)
-  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- **Metadata API Developer Guide** (Summer '26 / v62 PDF), `Network` type field table — the site's
+  partner-relevant fields, the `communityRoles` labels, `networkMemberGroups`, the "you can't update
+  `emailSenderAddress` via Metadata API" note, and the `NetworkStatus` values (supports the site
+  metadata in `references/worked-examples.md` §4b and the checker's `Network` rules).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 
-- Partner Relationship Management (PRM) — Configure Deal Registration in Partner Central
-  URL: https://help.salesforce.com/s/articleView?id=sf.prm_deal_reg_overview.htm
+- **Metadata API Developer Guide**, `SharingSet` and `AccessMapping` — the licence list that includes
+  Partner Community, the `object` list that excludes Lead, the `userField` and `accessLevel` values,
+  and the sample definitions the worked example is shaped from (supports gotcha 8 and §4a).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 
-- Configure Lead Distribution — Salesforce Help
-  URL: https://help.salesforce.com/s/articleView?id=sf.prm_lead_distribution.htm
+- **Metadata API Developer Guide**, `CommunitiesSettings` and `SharingSettings` — `enableEnablePRM`,
+  `enablePRMAccRelPref`, `enableRelaxPartnerAccountFieldPref`, `enableNetPortalUserReportOpts`,
+  `enablePartnerSuperUserAccess`, `enableAccountRoleOptimization`, and the support-gated
+  `enablePortalUserVisibility` (supports gotchas 9 and 11, and step 1 of the Recommended Workflow).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 
-- Partner Community License Overview — Salesforce Help
-  URL: https://help.salesforce.com/s/articleView?id=sf.networks_partner_license_overview.htm
+- **Object Reference for the Salesforce Platform**, `Account.IsPartner`, `User` (`ContactId`,
+  `AccountId`, `PortalRole`, `UserType`), `UserRole` (`PortalAccountId`, `PortalRole`, `PortalType`)
+  and `UserLicense.LicenseDefinitionKey` — the licence keys, the four-value portal role picklist, the
+  destructive `IsPartner` clause, and the onboarding order (supports gotchas 6, 7 and 10 and the
+  acceptance SOQL in §9).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
 
-- Experience Cloud: Set Up a Partner Community — Salesforce Help
-  URL: https://help.salesforce.com/s/articleView?id=sf.networks_setup_partner_community.htm
+- **Object Reference**, `Lead.PartnerAccountId` and `Opportunity.PartnerAccountId` — read-only,
+  derived from the owning partner user, empty when the owner is not a partner (supports gotcha 9 and
+  the acceptance step in the deal-registration flow).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+
+- **Object Reference**, `PartnerMarketingBudget`, `PartnerFundAllocation`, `PartnerFundRequest`,
+  `PartnerFundClaim`, `ChannelProgram`, `ChannelProgramLevel`, `ChannelProgramMember`,
+  `AccountRelationship` and `AccountRelationshipShareRule` — the standard fund and channel-program
+  objects from API v41.0, the `ChannelPartnerId` formula restriction, and the `EntityType` list that
+  includes Lead (supports gotchas 3 and 8 and the MDF section of SKILL.md).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+
+- **Salesforce Developer Limits and Allocations Quick Reference**, "Total API Request Allocations" —
+  `Partner Community: 200` and `Partner Community Login: 10` API calls per licence per 24 hours in
+  Enterprise/Professional and Unlimited/Performance (supports the tier worksheet in §1 and the
+  login-vs-member row in Decision Guidance). The same document contains **no** limit on portal roles,
+  sharing sets, partner accounts or portal users — those numbers are not available from it and should
+  not be quoted as if they were.
+
+- **Best Practices for Deployments with Large Data Volumes** — the load order "Load users into roles…
+  Configure public groups and queues… Add sharing rules one at a time", and the 10,000-record
+  ownership and child-record guidance (supports the onboarding runbook in §7).
+
+- **Salesforce Well-Architected** — architecture quality framing (Trusted / Easy / Adaptable model)
+  used for the pillar sections above.
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+- Repo standards used by the artefacts on this page: `standards/decision-trees/sharing-selection.md`
+  (which record-access mechanism, cited rather than restated by the `exposed_objects` rows) and
+  `agents/_shared/AGENT_CONTRACT.md` § Citations (the handoff table in §10 of
+  `references/worked-examples.md` names the skill each artefact is routed to).

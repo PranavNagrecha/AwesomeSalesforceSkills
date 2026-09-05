@@ -20,6 +20,14 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - **After Conversation Work Time required?** Yes / Max ACW duration: ___ seconds
 - **AWS region for contact center:** ___
 - **Number of phone numbers to claim:** ___
+- **Vendor model / `ConversationVendorInfo.vendorType`:** Amazon_Connect / ServiceCloudVoicePartner / BringYourOwnContactCenter / BringYourOwnChannelPartner
+- **`MyDomain.settings` `isFirstPartyCookieUseRequired` today:** true / false  → must be **false** before provisioning
+- **ACW placement:** ServiceChannel (org-wide) / PresenceUserConfig (per team, API 65.0+) / none
+- **ACW values:** max ___ s (10–3600); extension enabled? Yes → ___ s (10–3600), max ___ extensions (1–10)
+- **Voice `ServiceChannel` API name:** ___  (`relatedEntityType` must be `VoiceCall`)
+- **Routable presence status(es) naming that channel:** ___
+- **`PresenceUserConfig.capacity`:** ___
+- **S3 bucket for Amazon Connect recordings — owner and retention policy:** ___
 
 ## Approach
 
@@ -52,6 +60,10 @@ Copy and tick as you complete each step:
 - [ ] Transcript verified on VoiceCall record during live call (if transcription enabled)
 - [ ] ACW presence status verified after call completion (if ACW enabled)
 - [ ] No orphaned Amazon Connect instances in AWS from failed partial runs
+- [ ] `python3 scripts/check_service_cloud_voice_setup.py --manifest-dir <source>` reports zero errors
+- [ ] Metadata retrieved into source control after provisioning (not hand-authored)
+- [ ] Deploy order followed per `references/metadata-examples.md` §7
+- [ ] Four diagnostic queries from `references/examples.md` run after the test call
 
 ## AWS Configuration Summary
 
@@ -62,6 +74,9 @@ Copy and tick as you complete each step:
 | Phone number(s) claimed | |
 | Live Media Streaming enabled | Yes / No |
 | Kinesis Video Stream name | |
+| S3 bucket for call recordings | |
+| S3 retention / lifecycle policy | |
+| AWS owner for the above | |
 
 ## Notes
 
