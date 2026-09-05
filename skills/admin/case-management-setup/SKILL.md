@@ -15,6 +15,9 @@ triggers:
   - "case team members cannot see the case even though I added them to the predefined team"
   - "how do I set up email to case so customer replies thread instead of creating new cases"
   - "we're having issues with email to case"
+  - "case intake setup from requirements email web form routing sla"
+  - "case intake"
+  - "set up case intake for a support team"
 tags:
   - cases
   - email-to-case

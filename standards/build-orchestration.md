@@ -82,6 +82,10 @@ Layout of a build directory:
 Committed example: `examples/builds/case-onboarding/` — the canonical
 end-to-end test case, built from
 `skills/admin/case-management-setup/references/worked-example-case-intake.md`.
+`.sfskills/` is gitignored, so a build becomes a committed example only through
+`build_plan.py export <plan> <dest-dir>` (`--force` to replace an existing one),
+which copies the whole build directory across and refuses to run until
+`validate` passes.
 
 ## 3. Lifecycle and human gates
 
@@ -293,9 +297,14 @@ keeper. Fable is never invoked at run time.
 - `scripts/build_plan.py` (stdlib-only) is the single writer of plan state,
   derived views and gate records. Its subcommands: `init`, `validate`,
   `render`, `ingest-answers`, `next`, `set-status`, `check-outputs`, `gate`,
-  `status`, `ensure-gates`, `set-clarifications`, `set-plan`,
-  `set-verification`, `set-milestone`. Agents call it; they do not
+  `status`, `ensure-gates`, `set-clarifications` (which also takes `--summary
+  "<paragraph>"`, the only writer of `requirement.summary`), `set-plan`,
+  `set-verification`, `set-milestone`, `export`. Agents call it; they do not
   re-implement it, and they do not edit `plan.json` by hand.
+- `python3 scripts/validate_envelope.py <envelope.json>` validates an agent's
+  output envelope against `agents/_shared/schemas/output-envelope.schema.json`
+  with its `urn:` sub-schema refs resolved (bare `jsonschema` cannot resolve
+  them), so an agent in this loop can check its own envelope before writing it.
 - The four `set-*` writers exist so no agent needs a hand edit:
   `set-clarifications <plan> --file <json>` (the clarifier's question set),
   `set-plan <plan> --file <json>` (the planner's scope / fit-gap / decisions /

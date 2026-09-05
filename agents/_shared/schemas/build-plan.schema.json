@@ -139,7 +139,31 @@
             "pattern": "^[a-z0-9-]+/[a-z0-9-]+$",
             "description": "Skill id whose Questions-to-Ask table produced this question."
           },
-          "asked_by": {"type": "string"}
+          "asked_by": {"type": "string"},
+          "group": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional grouping key, e.g. 'objects-and-fields', 'access', 'sla'. scripts/build_plan.py render groups the questions under a '### <group>' heading inside Blocking / Informational, in first-appearance order, with ungrouped questions last under 'Other'. A grouping key, not a step type: nothing validates it against the section 4 table."
+          },
+          "owner_role": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Who in the requester's organisation can actually answer this, e.g. 'Data steward', 'Support manager'. Rendered as one line so the human can route the question rather than guess."
+          },
+          "answer_shape": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What a usable answer looks like, e.g. 'the picklistValues blocks per record type'. Rendered as one line; it is what stops a one-word answer that does not unblock the step."
+          },
+          "also_asked_by": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+            "description": "Other skill ids whose Questions-to-Ask table asked the same question before dedup. source_skill is the one the wording came from; this is the rest of the evidence that the question is not invented."
+          },
+          "default_source": {
+            "type": "string",
+            "description": "Where proposed_default came from, e.g. 'skill-guidance', 'requirement', 'none'. 'none' means the layer had no basis for a default and the human must supply the answer."
+          }
         }
       }
     },

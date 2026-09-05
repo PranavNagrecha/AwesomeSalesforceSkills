@@ -575,7 +575,7 @@ def test_render_is_deterministic(tmp_path, fixture_repo):
     assert "`M1-S02`" in plan_md and "beta-flow-builder" in plan_md
     assert "| Gate | Status | By | At | Notes |" in plan_md
     clar_md = (build_dir / "CLARIFICATIONS.md").read_text()
-    assert "### Q1" in clar_md and "Answer:" in clar_md
+    assert "#### Q1" in clar_md and "Answer:" in clar_md
 
 
 def test_render_refuses_off_schema_plan(tmp_path, fixture_repo):
@@ -1316,3 +1316,306 @@ def test_validates_against_the_real_repo(tmp_path):
     plan["steps"][0]["agent"] = "picklist-governor"
     path2 = write_plan_file(tmp_path / "real-bad", plan)
     assert run("validate", str(path2), "--repo-root", str(REPO_ROOT)) == 1
+
+
+# --------------------------------------------------------------------------
+# grouped clarifications view (render + round-trip)
+# --------------------------------------------------------------------------
+
+def _grouped_plan(tmp_path: Path, fixture_repo: Path) -> Path:
+    """Three groups, one of them absent — the shape a real clarifier emits."""
+    plan = plan_dict([step("M1-S01", "M1")], clarifications=[
+        {"id": "Q1", "question": "Which picklist values differ per record type?",
+         "kind": "blocking", "status": "open", "group": "objects-and-fields",
+         "owner_role": "Data steward",
+         "answer_shape": "The picklistValues blocks per record type.",
+         "proposed_default": "Two Case record types",
+         "also_asked_by": ["flow/fake-flow-patterns"],
+         "default_source": "skill-guidance"},
+        {"id": "Q2", "question": "Which queue owns unrouted email?", "kind": "blocking",
+         "status": "open", "group": "routing", "owner_role": "Support manager"},
+        {"id": "Q3", "question": "Who signs off the layout?", "kind": "blocking",
+         "status": "open"},
+        {"id": "Q4", "question": "Which picklist is the default?", "kind": "blocking",
+         "status": "open", "group": "objects-and-fields"},
+        {"id": "Q5", "question": "Do we need a business-hours calendar?",
+         "kind": "informational", "status": "open", "group": "sla",
+         "answer_shape": "A BusinessHours name plus its timezone."},
+    ])
+    return write_plan_file(tmp_path / "b", plan)
+
+
+def test_render_groups_questions_under_group_headings(tmp_path, fixture_repo):
+    path = _grouped_plan(tmp_path, fixture_repo)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    md = (path.parent / "CLARIFICATIONS.md").read_text(encoding="utf-8")
+
+    # Group headings inside Blocking, first-appearance order, ungrouped last.
+    blocking = md.split("## Blocking", 1)[1].split("## Informational", 1)[0]
+    assert [line for line in blocking.splitlines() if line.startswith("### ")] == [
+        "### objects-and-fields", "### routing", "### Other"]
+    # Both members of the first group sit under it, in plan order.
+    first_group = blocking.split("### objects-and-fields", 1)[1].split("### routing", 1)[0]
+    assert "#### Q1" in first_group and "#### Q4" in first_group
+    assert "#### Q2" not in first_group
+
+    informational = md.split("## Informational", 1)[1]
+    assert "### sla" in informational and "#### Q5" in informational
+
+    # owner_role and answer_shape each render as one line, only when present.
+    assert "**Who can answer:** Data steward" in md
+    assert "**Answer shape:** The picklistValues blocks per record type." in md
+    q2 = md.split("#### Q2", 1)[1].split("###", 1)[0]
+    assert "**Who can answer:** Support manager" in q2
+    assert "**Answer shape:**" not in q2
+
+    # Still byte-deterministic.
+    first = (path.parent / "CLARIFICATIONS.md").read_bytes()
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert (path.parent / "CLARIFICATIONS.md").read_bytes() == first
+
+
+def test_grouped_view_still_round_trips(tmp_path, fixture_repo):
+    """A `### <group>` heading between two questions must not eat an answer."""
+    path = _grouped_plan(tmp_path, fixture_repo)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    clar = path.parent / "CLARIFICATIONS.md"
+    # Q4 is the last question before the `### routing` heading — the boundary case.
+    set_answer(clar, "Q1", "Status and Reason")
+    set_answer(clar, "Q4", "New\n- and Escalated")
+    set_answer(clar, "Q2", "Tier 1 Support")
+    set_answer(clar, "Q3", "The support manager")
+    set_answer(clar, "Q5", "Yes — 9-5 Mon-Fri")
+
+    assert run("ingest-answers", str(path), "--repo-root", str(fixture_repo)) == 0
+    stored = {c["id"]: c for c in json.loads(path.read_text())["clarifications"]}
+    assert stored["Q4"]["answer"] == "New\n- and Escalated"
+    assert stored["Q2"]["answer"] == "Tier 1 Support", "the group heading swallowed an answer"
+    assert stored["Q5"]["answer"] == "Yes — 9-5 Mon-Fri"
+    assert all(c["status"] == "answered" for c in stored.values())
+
+    # Render → ingest is a fixed point.
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    before = path.read_bytes()
+    assert run("ingest-answers", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert path.read_bytes() == before
+
+
+def test_render_reads_a_view_written_before_grouping(tmp_path, fixture_repo):
+    """`### Q1` was the old heading shape; a stale view must still ingest."""
+    path = _grouped_plan(tmp_path, fixture_repo)
+    answers = build_plan.parse_clarification_answers(
+        "## Blocking\n\n### Q1 — status: open\n\nAnswer: legacy heading\n")
+    assert answers == {"Q1": "legacy heading"}
+
+
+# --------------------------------------------------------------------------
+# set-clarifications: one summary WARN, and --summary
+# --------------------------------------------------------------------------
+
+def _init_build(tmp_path: Path, fixture_repo: Path, requirement: Path) -> Path:
+    build_dir = tmp_path / "case-onboarding"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Case intake onboarding",
+               "--requirement", str(requirement), "--repo-root", str(fixture_repo),
+               "--now", "2026-09-05T09:00:00Z") == 0
+    return build_dir / "plan.json"
+
+
+def test_open_blocking_questions_warn_once_not_per_question(tmp_path, fixture_repo,
+                                                            requirement, capsys):
+    path = _init_build(tmp_path, fixture_repo, requirement)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": f"Q{i}", "question": f"Question {i}?", "kind": "blocking", "status": "open"}
+        for i in range(1, 6)
+    ] + [{"id": "Q6", "question": "Nice to know?", "kind": "informational", "status": "open"}])
+    capsys.readouterr()
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    warns = [line for line in out.splitlines() if line.startswith("WARN")]
+    assert warns == ["WARN 5 blocking question(s) still open — G1 cannot pass until they are "
+                     "answered or deferred"], out
+    assert "blocking and still open" not in out
+
+    # `validate` reports the same one line, not one per question.
+    capsys.readouterr()
+    assert run("validate", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert len([l for l in capsys.readouterr().out.splitlines() if l.startswith("WARN")]) == 1
+
+
+def test_no_warning_once_every_blocking_question_is_closed(tmp_path, fixture_repo,
+                                                           requirement, capsys):
+    path = _init_build(tmp_path, fixture_repo, requirement)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Which queue?", "kind": "blocking", "status": "answered",
+         "answer": "Tier 1"},
+        {"id": "Q2", "question": "Which calendar?", "kind": "blocking", "status": "deferred",
+         "answer": "DEFER: legal"},
+    ])
+    capsys.readouterr()
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    assert "still open" not in capsys.readouterr().out
+
+
+def test_set_clarifications_summary_replaces_the_truncated_init_summary(
+        tmp_path, fixture_repo, requirement, capsys):
+    path = _init_build(tmp_path, fixture_repo, requirement)
+    initial = json.loads(path.read_text())["requirement"]["summary"]
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Which queue owns unrouted email?", "kind": "blocking",
+         "status": "open"},
+    ])
+    paragraph = ("Acme's B2B support team runs from a shared mailbox today; every inbound "
+                 "email must become a Case, routed to the owning queue, with an SLA clock "
+                 "running from first touch.")
+    capsys.readouterr()
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--summary", paragraph, "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["requirement"]["summary"] == paragraph != initial
+    assert after["requirement"]["source_path"] == "requirement.md", "source_path survives"
+    assert "requirement.summary updated" in capsys.readouterr().out
+
+    # Omitting --summary leaves the stored paragraph alone.
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["requirement"]["summary"] == paragraph
+
+
+# --------------------------------------------------------------------------
+# export
+# --------------------------------------------------------------------------
+
+def _exportable_build(tmp_path: Path, fixture_repo: Path) -> Path:
+    plan = plan_dict([step("M1-S01", "M1")], clarifications=[
+        {"id": "Q1", "question": "Which queue owns unrouted email?", "kind": "blocking",
+         "status": "answered", "answer": "Tier 1 Support", "group": "routing"},
+    ])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    write_outputs(path, "M1-S01")
+    write_results(path, "M1-S01")
+    write_json(path.parent / "envelopes" / "M1-S01" / "run-1.json", {"agent": "alpha-designer"})
+    (path.parent / "reports").mkdir(exist_ok=True)
+    (path.parent / "reports" / "MILESTONE-M1-REPORT.md").write_text("# M1\n", encoding="utf-8")
+    (path.parent / "workbook").mkdir(exist_ok=True)
+    (path.parent / "workbook" / "01-objects.md").write_text("# Objects\n", encoding="utf-8")
+    (path.parent / "decisions.md").write_text("# Decisions log\n", encoding="utf-8")
+    (path.parent / "traceability.md").write_text("# Traceability\n", encoding="utf-8")
+    (path.parent / "requirement.md").write_text("Inbound email to Case.\n", encoding="utf-8")
+    return path
+
+
+def test_export_copies_the_whole_build_directory(tmp_path, fixture_repo, capsys):
+    path = _exportable_build(tmp_path, fixture_repo)
+    dest = tmp_path / "examples" / "builds" / "case-onboarding"
+    capsys.readouterr()
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
+
+    for rel in ("plan.json", "PLAN.md", "CLARIFICATIONS.md", "requirement.md", "decisions.md",
+                "traceability.md", "workbook/01-objects.md",
+                "artefacts/M1-S01/Case.object-meta.xml", "tests/M1-S01/results.json",
+                "envelopes/M1-S01/run-1.json", "reports/MILESTONE-M1-REPORT.md"):
+        assert (dest / rel).is_file(), f"{rel} was not exported"
+    assert json.loads((dest / "plan.json").read_text()) == json.loads(path.read_text())
+
+    out = capsys.readouterr().out
+    expected = len([p for p in path.parent.rglob("*") if p.is_file()])
+    assert f"{expected} file(s)" in out, out
+
+
+def test_export_refuses_an_existing_destination_unless_forced(tmp_path, fixture_repo):
+    path = _exportable_build(tmp_path, fixture_repo)
+    dest = tmp_path / "out"
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
+
+    stale = dest / "artefacts" / "M1-S01" / "Gone.object-meta.xml"
+    stale.write_text("<CustomObject/>\n", encoding="utf-8")
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 1
+    assert stale.is_file(), "a refused export must not touch the destination"
+
+    assert run("export", str(path), str(dest), "--force",
+               "--repo-root", str(fixture_repo)) == 0
+    assert not stale.exists(), "--force replaces the destination rather than merging into it"
+    assert (dest / "plan.json").is_file()
+
+
+def test_export_refuses_an_invalid_plan(tmp_path, fixture_repo):
+    path = _exportable_build(tmp_path, fixture_repo)
+    plan = json.loads(path.read_text())
+    plan["steps"][0]["agent"] = "gamma-legacy"  # deprecated
+    path.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
+    dest = tmp_path / "out"
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 1
+    assert not dest.exists()
+
+
+def test_export_refuses_to_copy_the_build_into_itself(tmp_path, fixture_repo):
+    path = _exportable_build(tmp_path, fixture_repo)
+    assert run("export", str(path), str(path.parent / "copy"),
+               "--repo-root", str(fixture_repo)) == 1
+
+
+# --------------------------------------------------------------------------
+# output envelope: extensions + the build-directory envelope path
+# --------------------------------------------------------------------------
+
+MINIMAL_ENVELOPE = {
+    "agent": "requirements-clarifier",
+    "mode": "single",
+    "run_id": "2026-09-05T13-30-00Z",
+    "report_path": ".sfskills/builds/case-onboarding/envelopes/clarify/"
+                   "2026-09-05T13-30-00Z.md",
+    "envelope_path": ".sfskills/builds/case-onboarding/envelopes/clarify/"
+                     "2026-09-05T13-30-00Z.json",
+    "summary": "Clarified the Acme case intake requirement into 97 questions.",
+    "confidence": "MEDIUM",
+    "process_observations": [],
+    "citations": [],
+}
+
+
+def test_envelope_accepts_extensions_and_a_build_directory_path():
+    """The two defects the clarifier dry run hit, checked through the helper."""
+    pytest.importorskip("jsonschema")
+    from scripts import validate_envelope as ve
+
+    envelope = dict(MINIMAL_ENVELOPE)
+    envelope["extensions"] = {
+        "clarifications": [{"id": "Q1", "group": "routing"}],
+        "capability_coverage": [{"capability": "Case priority picklist", "skills": []}],
+    }
+    assert ve.validate_envelope(envelope) == []
+
+    # Without `extensions`, the same payload at the top level is still refused —
+    # that is the reason the field had to exist.
+    freestyle = dict(MINIMAL_ENVELOPE)
+    freestyle["clarifications"] = [{"id": "Q1"}]
+    assert any("clarifications" in msg for msg in ve.validate_envelope(freestyle))
+
+    # The canonical docs/reports/ form keeps working.
+    canonical = dict(MINIMAL_ENVELOPE)
+    canonical["report_path"] = "docs/reports/requirements-clarifier/2026-09-05T13-30-00Z.md"
+    canonical["envelope_path"] = "docs/reports/requirements-clarifier/2026-09-05T13-30-00Z.json"
+    assert ve.validate_envelope(canonical) == []
+
+    # And an arbitrary path is still not a report path.
+    stray = dict(MINIMAL_ENVELOPE)
+    stray["report_path"] = "notes/wherever.md"
+    assert any("report_path" in msg for msg in ve.validate_envelope(stray))
+
+
+@pytest.mark.skipif(not (REPO_ROOT / ".sfskills" / "builds" / "case-onboarding").is_dir(),
+                    reason="no local dry-run build in this checkout")
+def test_the_dry_run_envelope_validates():
+    pytest.importorskip("jsonschema")
+    from scripts import validate_envelope as ve
+
+    envelopes = sorted((REPO_ROOT / ".sfskills" / "builds" / "case-onboarding"
+                        / "envelopes").rglob("*.json"))
+    for path in envelopes:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if not (isinstance(payload, dict) and "envelope_path" in payload):
+            continue  # a side-car payload, not an envelope
+        assert ve.validate_envelope(payload) == [], f"{path} does not validate"

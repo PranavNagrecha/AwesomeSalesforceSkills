@@ -33,13 +33,13 @@
     },
     "report_path": {
       "type": "string",
-      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.md|\\.sfskills/runs/[A-Za-z0-9._-]+/report\\.md)$",
-      "description": "Markdown report path. Canonical: docs/reports/<agent-id>/<run_id>.md. Product Cursor runs may persist under .sfskills/runs/<run_id>/report.md."
+      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.md|\\.sfskills/runs/[A-Za-z0-9._-]+/report\\.md|\\.sfskills/builds/[a-z0-9]+(?:-[a-z0-9]+)*/envelopes/[A-Za-z0-9._-]+/.+\\.md)$",
+      "description": "Markdown report path. Canonical: docs/reports/<agent-id>/<run_id>.md. Product Cursor runs may persist under .sfskills/runs/<run_id>/report.md. Build-layer runs (standards/build-orchestration.md \u00a7 2) persist under .sfskills/builds/<build-id>/envelopes/<step-or-stage>/<run_id>.md."
     },
     "envelope_path": {
       "type": "string",
-      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.json|\\.sfskills/runs/[A-Za-z0-9._-]+/envelope\\.json)$",
-      "description": "JSON envelope path. Same stem as report_path, .json suffix, or product path envelope.json."
+      "pattern": "^(docs/reports/[a-z0-9-]+/.+\\.json|\\.sfskills/runs/[A-Za-z0-9._-]+/envelope\\.json|\\.sfskills/builds/[a-z0-9]+(?:-[a-z0-9]+)*/envelopes/[A-Za-z0-9._-]+/.+\\.json)$",
+      "description": "JSON envelope path. Same stem as report_path, .json suffix, or product path envelope.json, or the build-layer path .sfskills/builds/<build-id>/envelopes/<step-or-stage>/<run_id>.json."
     },
     "input_fixture": {
       "type": "object",
@@ -234,6 +234,11 @@
           "type": "string"
         }
       }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Agent-specific structured payload that has no first-class field on this envelope \u2014 e.g. the requirements-clarifier's clarifications[] and capability_coverage[]. The envelope itself is additionalProperties: false, so anything an agent wants to carry beyond the contract goes here rather than at the top level. Keys are the agent's own; consumers MUST tolerate unknown ones."
     },
     "citations": {
       "type": "array",

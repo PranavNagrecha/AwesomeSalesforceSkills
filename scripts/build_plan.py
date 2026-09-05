@@ -595,13 +595,20 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
                                     f"run `build_plan.py ensure-gates` to add it as pending"))
 
     # --- clarifications ---------------------------------------------------
+    # One question with a broken record is per-question news; N unanswered
+    # blocking questions is a single fact about the gate. A real clarifier
+    # emits ~100 of them, and a WARN per question buried the ERRORs that
+    # matter under a wall of text saying the same thing.
+    open_blocking = 0
     for clar in plan.get("clarifications", []) or []:
         if clar.get("status") == "answered" and not (clar.get("answer") or "").strip():
             issues.append(("ERROR", f"clarification {clar.get('id')}: status 'answered' "
                                     f"with an empty answer"))
         if clar.get("kind") == "blocking" and clar.get("status") == "open":
-            issues.append(("WARN", f"clarification {clar.get('id')}: blocking and still open — "
-                                   f"gate G1 cannot pass"))
+            open_blocking += 1
+    if open_blocking:
+        issues.append(("WARN", f"{open_blocking} blocking question(s) still open — G1 cannot "
+                               f"pass until they are answered or deferred"))
 
     return issues
 
@@ -930,6 +937,34 @@ def render_plan_md(plan: dict) -> str:
     return "\n".join(out)
 
 
+# The heading a clarification with no `group` lands under. Last, so a plan
+# that groups nothing still renders one predictable section.
+UNGROUPED_HEADING = "Other"
+
+
+def group_clarifications(clarifications: list[dict]) -> list[tuple[str, list[dict]]]:
+    """Group a kind's questions by their optional `group`, deterministically.
+
+    Groups come out in first-appearance order — the clarifier controls the
+    order by the order it writes clarifications[], and nothing sorts behind its
+    back — with the ungrouped questions last under `Other`. Ordering depends
+    only on plan.json, which is what keeps `render` byte-deterministic.
+    """
+    order: list[str] = []
+    buckets: dict[str, list[dict]] = {}
+    for clar in clarifications:
+        raw = clar.get("group")
+        name = raw.strip() if isinstance(raw, str) and raw.strip() else UNGROUPED_HEADING
+        if name not in buckets:
+            buckets[name] = []
+            order.append(name)
+        buckets[name].append(clar)
+    named = [n for n in order if n != UNGROUPED_HEADING]
+    if UNGROUPED_HEADING in buckets:
+        named.append(UNGROUPED_HEADING)
+    return [(name, buckets[name]) for name in named]
+
+
 def render_clarifications_md(plan: dict) -> str:
     out: list[str] = []
     out.append(f"# Clarifications — {plan['title']}")
@@ -941,7 +976,7 @@ def render_clarifications_md(plan: dict) -> str:
                f"`{gate_status(plan, 'clarifications')}`")
     out.append("")
     out.append("Fill in each `Answer:` line — the answer may run over several lines, up to the "
-               "next `###` heading — then run:")
+               "next heading (`### <group>` or `#### Q<n>`) or a `---` rule — then run:")
     out.append("")
     out.append("```bash")
     out.append(f"python3 scripts/build_plan.py ingest-answers <build-dir>/plan.json")
@@ -957,28 +992,37 @@ def render_clarifications_md(plan: dict) -> str:
     ):
         out.append(heading)
         out.append("")
-        group = [c for c in clarifications if c.get("kind") == kind]
-        if not group:
+        of_kind = [c for c in clarifications if c.get("kind") == kind]
+        if not of_kind:
             out.append(empty)
             out.append("")
             continue
-        for clar in group:
-            out.append(f"### {clar['id']} — status: {clar.get('status', 'open')}")
+        for group_name, members in group_clarifications(of_kind):
+            out.append(f"### {group_name}")
             out.append("")
-            out.append(f"**Question:** {clar.get('question', '').strip()}")
-            out.append("")
-            if clar.get("why"):
-                out.append(f"**Why it matters:** {clar['why'].strip()}")
+            for clar in members:
+                out.append(f"#### {clar['id']} — status: {clar.get('status', 'open')}")
                 out.append("")
-            if clar.get("source_skill"):
-                out.append(f"**From skill:** `{clar['source_skill']}`")
+                out.append(f"**Question:** {clar.get('question', '').strip()}")
                 out.append("")
-            if clar.get("proposed_default"):
-                out.append(f"**Proposed default:** {clar['proposed_default'].strip()}")
+                if clar.get("why"):
+                    out.append(f"**Why it matters:** {clar['why'].strip()}")
+                    out.append("")
+                if clar.get("owner_role"):
+                    out.append(f"**Who can answer:** {clar['owner_role'].strip()}")
+                    out.append("")
+                if clar.get("answer_shape"):
+                    out.append(f"**Answer shape:** {clar['answer_shape'].strip()}")
+                    out.append("")
+                if clar.get("source_skill"):
+                    out.append(f"**From skill:** `{clar['source_skill']}`")
+                    out.append("")
+                if clar.get("proposed_default"):
+                    out.append(f"**Proposed default:** {clar['proposed_default'].strip()}")
+                    out.append("")
+                answer = (clar.get("answer") or "").strip()
+                out.append(f"Answer: {answer}".rstrip())
                 out.append("")
-            answer = (clar.get("answer") or "").strip()
-            out.append(f"Answer: {answer}".rstrip())
-            out.append("")
     return "\n".join(out)
 
 
@@ -1119,7 +1163,9 @@ def cmd_render(args: argparse.Namespace) -> int:
 
 
 _ANSWER_RE = re.compile(r"^Answer:(?P<text>.*)$")
-_QUESTION_RE = re.compile(r"^###\s+(?P<id>Q\d+)\b")
+# `### Q1` is the pre-grouping heading shape and `#### Q1` the grouped one;
+# both are accepted so a view rendered before grouping still ingests.
+_QUESTION_RE = re.compile(r"^#{3,6}\s+(?P<id>Q\d+)\b")
 _HEADING_RE = re.compile(r"^#{1,6}\s")
 _HRULE_RE = re.compile(r"^-{3,}\s*$")
 
@@ -1128,10 +1174,10 @@ def parse_clarification_answers(markdown: str) -> dict[str, str]:
     """Map question id -> answer text from a rendered CLARIFICATIONS.md.
 
     An answer may run over several lines: everything after `Answer:` up to the
-    next heading (`### Q2`, `## Informational`, ...) or a `---` rule belongs to
-    it, joined with newlines and trimmed. That is what a human actually does
-    when the answer is a list, so parsing only the first line silently dropped
-    the rest of their intent.
+    next heading (`#### Q2`, `### <group>`, `## Informational`, ...) or a `---`
+    rule belongs to it, joined with newlines and trimmed. That is what a human
+    actually does when the answer is a list, so parsing only the first line
+    silently dropped the rest of their intent.
     """
     answers: dict[str, str] = {}
     current: str | None = None
@@ -1625,13 +1671,22 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
              f"'clarifications' array)")
     plan["clarifications"] = doc
     plan["status"] = "clarifying"
+    summary = (getattr(args, "summary", None) or "").strip()
+    if summary:
+        # `init` can only take the requirement's first prose line, truncated at
+        # 400 chars. The clarifier is the first agent that has actually read the
+        # requirement, so this is where the schema's "one-paragraph restatement"
+        # gets written — and until now nothing could write it without a hand
+        # edit of plan.json, which section 2 forbids.
+        plan["requirement"] = dict(plan.get("requirement") or {})
+        plan["requirement"]["summary"] = summary
     schema = load_schema(args.schema)
     rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
     if rc:
         return rc
     blocking = sum(1 for c in doc if isinstance(c, dict) and c.get("kind") == "blocking")
     print(f"clarifications written: {len(doc)} question(s), {blocking} blocking; "
-          f"status -> clarifying")
+          f"status -> clarifying" + ("; requirement.summary updated" if summary else ""))
     print("next: `build_plan.py render`, then the human answers CLARIFICATIONS.md.")
     return 0
 
@@ -1683,6 +1738,56 @@ def cmd_set_milestone(args: argparse.Namespace) -> int:
     if args.status == "verified":
         print(f"next: the human decides — `build_plan.py gate {plan_path} "
               f"milestone:{args.milestone} approve --by <who>`")
+    return 0
+
+
+# Never worth exporting: the atomic-write temp files this script leaves behind
+# if a process dies mid-write, and editor/interpreter droppings.
+EXPORT_IGNORE = shutil.ignore_patterns(".*.tmp*", "__pycache__", "*.pyc", ".DS_Store")
+
+
+def cmd_export(args: argparse.Namespace) -> int:
+    """Copy a whole build directory out of gitignored .sfskills/ (contract § 9).
+
+    A build lives under `.sfskills/builds/<id>/`, which is not committed. The
+    committed example under `examples/builds/` has to be *produced by the loop*,
+    not written by hand — so there has to be one command that moves a finished
+    build across, and it must refuse to move a build that does not validate.
+    """
+    plan_path = Path(args.plan)
+    plan = read_plan(plan_path)
+    build_dir = plan_path.parent.resolve()
+    dest = Path(args.dest).resolve()
+
+    schema = load_schema(args.schema)
+    issues = validate_plan(plan, Path(args.repo_root), schema)
+    for level, msg in issues:
+        if level == "WARN":
+            print(f"WARN {msg}")
+    errors = [msg for level, msg in issues if level == "ERROR"]
+    if errors:
+        for msg in errors:
+            print(f"ERROR {msg}", file=sys.stderr)
+        print(f"refusing to export {build_dir.name}: {len(errors)} validation error(s) — "
+              f"an exported build is an example other builds are copied from.", file=sys.stderr)
+        return 1
+
+    if dest == build_dir or build_dir in dest.parents:
+        _die(f"destination {dest} is the build directory or lives inside it")
+    if dest.exists():
+        if not args.force:
+            _die(f"{dest} already exists — pass --force to replace it")
+        if not dest.is_dir():
+            _die(f"{dest} exists and is not a directory")
+        # Replace, don't merge: a merged export silently keeps files the build
+        # no longer produces, and the export would then not be the build.
+        shutil.rmtree(dest)
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(build_dir, dest, ignore=EXPORT_IGNORE)
+    files = sorted(path for path in dest.rglob("*") if path.is_file())
+    print(f"exported {build_dir} -> {dest}")
+    print(f"  {len(files)} file(s)")
     return 0
 
 
@@ -1762,6 +1867,8 @@ Walkthrough:
  14. gate milestone:M1 approve --by <who>        G3 — refused until every step is
                          documented (or blocked with a reason); last milestone → 'done'
  15. status              one-screen summary: step counts per milestone, gates, blockers
+ 16. export              copy the finished build out of gitignored .sfskills/ into a
+                         committable directory (validate must pass first)
 
 Every mutating subcommand re-validates the resulting document and writes it
 atomically; if validation fails the file on disk is left exactly as it was and
@@ -1899,6 +2006,24 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")
     p.set_defaults(func=cmd_gate)
 
+    p = sub.add_parser("export", parents=[common],
+                       help="copy a validated build directory somewhere committable",
+                       description="Copy the whole build directory — plan.json, the rendered "
+                                   "views, requirement.md, decisions.md, traceability.md and "
+                                   "the artefacts/, tests/, envelopes/, reports/ and workbook/ "
+                                   "trees — into <dest-dir>. Runs `validate` first and refuses "
+                                   "to export a plan with any ERROR. Refuses an existing "
+                                   "destination unless --force, which replaces it outright "
+                                   "(a merge would keep files the build no longer produces). "
+                                   "This is how a build under gitignored .sfskills/ becomes a "
+                                   "committed example such as examples/builds/case-onboarding "
+                                   "(contract § 9). Prints the file count.")
+    p.add_argument("plan", help="path to plan.json")
+    p.add_argument("dest", metavar="dest-dir", help="e.g. examples/builds/case-onboarding")
+    p.add_argument("--force", action="store_true",
+                   help="replace dest-dir if it already exists")
+    p.set_defaults(func=cmd_export)
+
     p = sub.add_parser("status", parents=[common], help="one-screen build summary")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_status)
@@ -1935,6 +2060,11 @@ def build_parser() -> argparse.ArgumentParser:
                                    "leaves the file untouched if the result would be invalid.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON array of clarification objects")
+    p.add_argument("--summary", default=None,
+                   help="replace requirement.summary with this one-paragraph restatement. "
+                        "`init` can only lift the requirement's first prose line; the "
+                        "clarifier is the first agent that has read the whole requirement, "
+                        "and this is the only writer of that field.")
     p.set_defaults(func=cmd_set_clarifications)
 
     p = sub.add_parser("set-plan", parents=[common],
