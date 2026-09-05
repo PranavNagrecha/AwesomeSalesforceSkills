@@ -34,13 +34,22 @@ Non-obvious Salesforce platform behaviors in Flow Formula authoring that cause r
 
 ---
 
-## Gotcha 4: 5,000-character limit per Formula resource expression
+## Gotcha 4: The formula-length ceiling this skill used to quote is not in any of the guides
 
-**What happens:** Deploy fails with `The formula expression is invalid: Compiled formula is too big to execute (5,001 characters)`. No partial-deploy fallback — the entire flow rejects.
+**What happens:** A long formula eventually fails to deploy. The number people quote for the threshold — 5,000 characters, with the error `Compiled formula is too big to execute` — is folklore as far as this corpus is concerned. `grep -n -i "5,000 bytes\|5000 bytes\|Compiled formula"` across `api_meta.txt`, `object_reference.txt`, `apexdev.txt` and `salesforce_app_limits_cheatsheet.txt` returns **zero hits**, and `FlowFormula` (`api_meta.txt` L70596–L70622) documents no length bound at all.
 
-**When it occurs:** When a single formula has organically grown over many edits — typically formatted-output formulas concatenating 30+ fields with conditional formatting, or large CASE statements covering 20+ branches.
+Two different 3,900 figures *are* grounded, and they bound different things — do not merge them:
 
-**How to avoid:** Compose into multiple Formula resources at ~3,500 chars. Each child counts independently against the 5,000 cap. Going deeper than 3 layers of composition is a smell — push to Apex Invocable.
+| Source | Line | Bounds |
+|---|---|---|
+| `apexdev.txt` | L28143–L28144 — *"bound by the formula field character limit, but not the compile size limit. A formula can contain up to 3,900 characters including spaces, return characters, and comments."* | the **source text** of a formula |
+| `object_reference.txt` | L2210 — *"The length of text calculated fields is 3,900 characters or less—anything longer is truncated."* | the **returned string** of a Text formula field |
+
+The `apexdev.txt` sentence also confirms a separate compile-size limit exists without naming its number.
+
+**When it occurs:** Formatted-output formulas concatenating 30+ fields, or `CASE` statements covering 20+ branches.
+
+**How to avoid:** UNVERIFIED (2026-09-05) whether the 3,900 source-character limit binds a Flow `FlowFormula` `<expression>`. Compose at ~3,000 rather than arguing about which ceiling applies. The composition mechanic *is* grounded — the guide's own flow sample composes `<formulas>` by name at `api_meta.txt` L73357–L73362. Deeper than 3 layers, push to Apex Invocable.
 
 ---
 
@@ -256,13 +265,15 @@ Non-obvious Salesforce platform behaviors in Flow Formula authoring that cause r
 
 ---
 
-## Gotcha 26: HYPERLINK is not available in Flow formulas
+## Gotcha 26: HYPERLINK *is* a Flow formula function — what varies is whether its output is encoded
 
-**What happens:** `HYPERLINK(url, text)` works in formula fields (because the rendering layer interprets the result as HTML) but is not useful in Flow Formula resources because Flow resources are always rendered as plain text in non-HTML contexts.
+**Correction (2026-09-05).** This gotcha previously said `HYPERLINK` is not available in Flow. The Metadata API guide contradicts that directly. `FlowSettings.doesFormulaGenerateHtmlOutput` (`api_meta.txt` L116860–L116863): *"Indicates whether **flow formula functions that generate HTML, such as BR(), IMAGE(), and HYPERLINK()**, include encoded markers (`__BR_ENCODED__`) (true) or not (false). Available in API version 48.0 and later."* The guide names all three as flow formula functions.
 
-**When it occurs:** Authors copy formula-field hyperlink patterns into Flow.
+**What happens:** The function is available; whether its result renders as a link or as a literal string carrying an encoded marker is an **org setting**, not a property of Flow. The same formula produces a working anchor in one org and `__BR_ENCODED__`-laden text in another.
 
-**How to avoid:** For Display Text components, write the HTML `<a>` tag directly using rich text. For email actions, build the HTML in the email body, not in a Formula resource.
+**When it occurs:** Moving a flow between orgs whose Process Automation Settings differ, or working in an org where the related critical update was never activated (see Gotcha 43 for the `BR()` twin).
+
+**How to avoid:** Check `doesFormulaGenerateHtmlOutput` on both orgs before shipping a formula that builds markup. Confirm the function itself is legal in your org's Flow context with `SELECT Function.Name FROM FormulaFunctionAllowedType WHERE Type = 'FLOW' AND Function.Name = 'HYPERLINK'` (`object_reference.txt` L149310–L149400) rather than trusting either this file or a help article.
 
 ---
 
@@ -316,13 +327,16 @@ Non-obvious Salesforce platform behaviors in Flow Formula authoring that cause r
 
 ---
 
-## Gotcha 32: `&&` and `||` are NOT supported in Salesforce formula syntax
+## Gotcha 32: `||` appears in a documented Salesforce formula sample — so "the dialect has no C-family operators" is too strong
 
-**What happens:** `{!a} && {!b}` produces a parse error.
+**Correction (2026-09-05).** The Metadata API guide ships a formula `<expression>` that uses `||`: `api_meta.txt` L102276–L102277, inside a `RecommendationStrategy` sample —
+`NOT(ISPICKVAL($Record.Account.SLA__c, "Gold") || ISPICKVAL($Record.Account.SLA__c, "Platinum"))`.
 
-**When it occurs:** Authors with Java/JavaScript background.
+**What happens:** The blanket claim that Salesforce formula syntax rejects `&&` and `||` is contradicted by Salesforce's own sample, at least for that expression context. UNVERIFIED (2026-09-05) whether a Flow `FlowFormula` `<expression>` accepts them — the corpus contains no Flow sample using either operator, and no statement either way.
 
-**How to avoid:** Use `AND(a, b)` and `OR(a, b)` functions. Salesforce formula language predates the C-family operators in this dialect.
+**When it occurs:** Reviewing generated formulas, or porting an expression between contexts (`FormulaFunctionAllowedType.Type` distinguishes `FLOW` from `VALIDATION` from `VISUALFORCE`, `object_reference.txt` L149355–L149365 — the guide models context differences as real).
+
+**How to avoid:** Write `AND(a, b)` / `OR(a, b)` anyway. They are unambiguous, they are what every documented Flow sample uses, and they sidestep a question this corpus cannot settle. But do not *fail a review* on an `||` with "that is invalid syntax" — say "use the function form for consistency" instead, because the strong claim is not defensible.
 
 ---
 
@@ -403,3 +417,94 @@ Non-obvious Salesforce platform behaviors in Flow Formula authoring that cause r
 **When it occurs:** Reactive screens (Winter '24+) with dense formula bindings.
 
 **How to avoid:** Keep reactive formulas trivial. For expensive computations, defer to a server-side action triggered on next/save instead of binding to a reactive formula.
+
+---
+
+## Gotcha 41: An omitted `<dataType>` silently makes the formula a Number formula
+
+**What happens:** `FlowFormula` (`api_meta.txt` L70596–L70612) has three fields, and the guide states the default outright: *"dataType defaults to Number if it isn't defined in a formula."* A `<formulas>` block whose expression returns text or a Boolean, written without `<dataType>`, becomes a Number formula. Nothing in the formula itself fails. The error surfaces at whichever element consumes the resource — a `leftValueReference` on a decision, an `inputAssignments` on a record update — and names *that* element, so the diagnosis starts in the wrong place.
+
+**When it occurs:** Hand-written XML, XML assembled by a generator, and any flow migrated from a tool that did not emit `dataType`. `dataType` is available in API version 31.0 and later, so pre-31 sources have none by construction.
+
+**How to avoid:** Declare `<dataType>` on every `<formulas>` block. Valid values are exactly `Boolean`, `Currency`, `Date`, `DateTime`, `Number`, `String`, `Time` — the Flow Builder UI's "Text" is `String` in the XML, which is its own source of round-trip surprises. `scripts/check_flow_formula_and_expression_patterns.py` rule `FFX01` fails on a missing `dataType`.
+
+---
+
+## Gotcha 42: `scale` is Number/Currency-only, has no documented default, and decides what the record shows
+
+**What happens:** `api_meta.txt` L70618–L70622: *"Scale of the return value, specifically, the number of digits to the right of the decimal point. Available only when the data type is Number or Currency. Corresponds to the Decimal Places field in Flow Builder."* The guide never says what `scale` is when omitted. A Currency formula with no `<scale>` writing into a Currency field with 2 decimal places can produce a stored value that does not match the arithmetic a reviewer does by hand, and the difference is small enough to survive review.
+
+**When it occurs:** Currency and Number formulas that feed `inputAssignments` on a record update, especially where the source fields are themselves scaled differently.
+
+**How to avoid:** Set `<scale>` explicitly on every Number and Currency formula, matched to the target field's decimal places. Do not set it on any other type — the guide scopes it to two. Checker rule `FFX02` warns on a Number/Currency formula with no `scale`.
+
+---
+
+## Gotcha 43: Four org-level settings change what an identical formula does
+
+**What happens:** Two orgs, byte-identical flow XML, different behaviour. The Metadata API guide documents four `FlowSettings` fields that alter formula evaluation without touching the formula:
+
+| Field | Line | What it changes |
+|---|---|---|
+| `doesFormulaEnforceDataAccess` | L116855–L116858 | *"whether formula resources and formula fields in a flow enforce **record-level** security"* — corresponds to the Enforce Data Access in Flow Formulas critical update, API 48.0+ |
+| `doesFormulaGenerateHtmlOutput` | L116860–L116863 | whether HTML-generating flow formula functions (`BR()`, `IMAGE()`, `HYPERLINK()`) include encoded markers (`__BR_ENCODED__`) |
+| `enableFlowBREncodedFixEnabled` | L116865–L116868 | whether `BR()` produces a line break or resolves to `_BR_ENCODED_` as a literal value |
+| `enableFlowFormulasFixEnabled` | L116910–L116915 | *"whether process and flow formulas return null values when the calculations involve a null record variable or null lookup relationship field. When the value is true, those formulas return null values at run time. When the value is false, those formulas return **unhandled exceptions** at run time."* |
+
+**When it occurs:** Any cross-org deploy. The last one is the sharpest: the same null-lookup formula is a silent null in one org and an unhandled fault in another. That is the difference between a wrong report and a flow error email.
+
+**How to avoid:** Diff the four values between source and target org before deploying a formula-heavy flow. The guide's own `FlowSettings` sample sets three of them (`api_meta.txt` L117067–L117071). Note the first one says **record-level**, not field-level — a common misstatement, and one this package previously made in `references/well-architected.md`.
+
+---
+
+## Gotcha 44: `isViewedAsPlainText` is named backwards from what it does
+
+**What happens:** `api_meta.txt` L72824–L72829: *"If set to true, the flow resource remembers the View as Plain Text setting used for the text template after the flow resource is saved. If set to false, the flow resource uses the View as Rich Text setting. **The default value is false.**"* So the default — and the value in the guide's own sample at L73573–L73577 — is **rich text**. A template body written as plain prose that happens to contain a `<` or an `&` is being handed to a rich-text renderer.
+
+**When it occurs:** Templates that embed generated content, customer-supplied text, or a formula result that itself concatenates user input.
+
+**How to avoid:** Choose deliberately per template. Rich text (`false`) for anything with markup; `true` for anything that must render literally. And note the twin risk in `text`: *"Actual text of the template. Supports merge fields."* — a merge field naming a resource that does not exist is a deploy failure whose message points at the flow, not at the template. Checker rule `FFX04` resolves every merge field in every text template against the flow's own resource names.
+
+---
+
+## Gotcha 45: `filterFormula` and `filters` can both be set on `<start>`, and the guide never says which wins
+
+**What happens:** `FlowStart` documents `filterFormula` (L72390–L72392, API 55.0+), `filterLogic` (L72395–L72400) and `filters` (L72402–L72404) as three adjacent, independent fields. There is **no** exclusivity sentence, no "only one of", no cross-reference between them. A flow carrying both deploys. Which entry condition the runtime honours is not readable from the XML.
+
+**When it occurs:** A flow whose entry condition was migrated from condition rows to a formula, where the rows were never deleted; or a merge of two branches that each edited the `<start>` block.
+
+**How to avoid:** Pick one and delete the other. For contrast, this is what an exclusivity statement looks like when Salesforce writes one — `FlowElementReferenceOrValue` (L70411–L70413): *"Defines a reference to an existing element or a particular value that you specify. **Make sure that you specify only one of the fields.**"* Because no equivalent sentence exists for `filterFormula`/`filters`, checker rule `FFX05` reports the pair as a WARN rather than an ERROR — the defect is unreadability, not a documented violation.
+
+---
+
+## Gotcha 46: `$Record__Prior` is undocumented; the declarative equivalent is not
+
+**What happens:** `grep -n 'Record__Prior' api_meta.txt` returns **zero hits**. `$Record` is grounded (L74307 in the `FlowTestParameter` contract, L74350 in the `FlowTest` sample, L102253 in a `RecommendationStrategy` expression). The prior-value token appears nowhere in the Metadata API guide, so nothing in this corpus states which flow types expose it, whether it is populated on create, or what it holds on delete.
+
+Meanwhile the *behaviour* it is usually reached for — "only run when this changed" — has a fully documented field, in two places: `doesRequireRecordChangedToMeetCriteria` on `FlowStart` (L72315–L72318) and on `FlowRule` (L71321–L71324), both API 50.0 and later: *"If set to true, conditions evaluate to true only if the record didn't meet the required conditions before the triggering update but now meets the conditions after the update."*
+
+**When it occurs:** Writing an entry condition as `TEXT($Record.Status__c) <> TEXT($Record__Prior.Status__c)` when the requirement was "fire when the record newly qualifies".
+
+**How to avoid:** Reach for `doesRequireRecordChangedToMeetCriteria` first — it is documented, it is a checkbox rather than an expression, and `flow/flow-record-save-order-interaction` owns its interaction with the save order. Use `$Record__Prior` only when you genuinely need the old *value* rather than a change in qualification, and record that you are using an undocumented token.
+
+---
+
+## Gotcha 47: Compound fields reject `BLANKVALUE`, `CASE`, `NULLVALUE`, `PRIORVALUE` and every comparison operator
+
+**What happens:** `object_reference.txt` L2936–L2937: *"The only formula functions that you can use with compound fields are `ISBLANK`, `ISCHANGED`, and `ISNULL`. You can't use `BLANKVALUE`, `CASE`, `NULLVALUE`, `PRIORVALUE`, or the equality and comparison operators with compound fields."* Compound fields are the address and geolocation fields (`BillingAddress`, `MailingAddress`, a `Location__c` geolocation) plus `Name` on Person Accounts.
+
+This collides head-on with the rest of this skill: the default advice everywhere else is "wrap every nullable operand in `BLANKVALUE`". On a compound field that advice is invalid, and the only null test available is `ISBLANK` or `ISNULL`.
+
+**When it occurs:** A formula that guards `{!$Record.BillingAddress}` the way it guards every other nullable field.
+
+**How to avoid:** Operate on the compound field's *components* (`BillingStreet`, `BillingCity`, `BillingPostalCode`), which are ordinary fields with the full function set. Reserve `ISBLANK` on the compound field itself for a presence test. Checker rule `FFX03` cannot detect this — it does not know field types — so it is a review item, not a mechanical one.
+
+---
+
+## Gotcha 48: `ISNULL` and `ISBLANK` both exist, and this corpus documents neither's semantics
+
+**What happens:** `object_reference.txt` L2936 names `ISBLANK`, `ISCHANGED` and `ISNULL` as three distinct formula functions. That is the *only* place in the entire corpus where `ISNULL` appears. Nothing in `api_meta.txt`, `object_reference.txt`, `apexdev.txt` or `apexrefguide.txt` states how either behaves on a Text field, a Number field, or a picklist — the guidance everyone repeats ("`ISBLANK` treats empty string as blank for Text; `ISNULL` is the legacy spelling that only handles Number and Date") comes entirely from the Formula Operators and Functions help article.
+
+**When it occurs:** Reviewing a formula that mixes both, or porting one from a validation rule.
+
+**How to avoid:** UNVERIFIED (2026-09-05): every claim in this package about `ISBLANK` vs `ISNULL` vs `BLANKVALUE` vs `NULLVALUE` behaviour per data type — including Gotchas 16, 17 and 39 above. They are the working semantics practitioners rely on and they are almost certainly right; they are simply not confirmable from these guides. What you *can* settle from the org is which of the four is legal in a Flow context at all: `SELECT Function.Name, Function.ExampleString FROM FormulaFunctionAllowedType WHERE Type = 'FLOW' AND Function.Name IN ('ISBLANK','ISNULL','BLANKVALUE','NULLVALUE')` (`object_reference.txt` L149310–L149400). `ExampleString` (L149244–L149247) is documented as *"Describes the function and what arguments you can use with it"* — the closest thing to the help article that lives inside your own org.

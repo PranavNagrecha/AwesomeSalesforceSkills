@@ -44,13 +44,13 @@ ISPICKVAL({!opportunity.StageName}, "Closed Won")
 
 ---
 
-## Anti-Pattern 3: Generating a monster formula > 5,000 characters
+## Anti-Pattern 3: Generating a monster formula in one resource
 
-**What the LLM generates:** A single Formula resource with 40+ concatenations and conditional formatting branches that exceeds 5,000 chars.
+**What the LLM generates:** A single Formula resource with 40+ concatenations and conditional formatting branches, thousands of characters long.
 
-**Why it happens:** LLMs prefer to produce the entire solution in a single artifact when asked. The 5,000-char ceiling is documented but easy for a fluent generator to blow past.
+**Why it happens:** LLMs prefer to produce the entire solution in a single artifact when asked. Length is not a constraint a fluent generator feels, and the ceiling it would otherwise respect is not documented anywhere (Anti-Pattern 35).
 
-**Correct pattern:** Compose into multiple Formula resources, each focused and under 3,500 chars:
+**Correct pattern:** Compose into multiple Formula resources, each focused and well under 3,000 chars:
 
 ```
 // formattedHeader (~1,500 chars)
@@ -270,7 +270,7 @@ BLANKVALUE({!textField}, "no value")
 
 **What the LLM generates:** Six Formula resources composing into a final answer, each referencing the next.
 
-**Why it happens:** LLMs decompose recursively. The pattern is technically correct under the 5,000-char limit but becomes unreadable at depth.
+**Why it happens:** LLMs decompose recursively. Each layer is short enough to pass any length check, and the chain becomes unreadable at depth.
 
 **Correct pattern:** Cap composition at 3 layers. Beyond that, switch to an Apex Invocable Action with the same input/output contract.
 
@@ -307,19 +307,19 @@ Or use a Custom Metadata mapping table loaded via Get Records.
 
 ---
 
-## Anti-Pattern 16: Recommending HYPERLINK() in a Flow Formula resource
+## Anti-Pattern 16: Asserting that HYPERLINK() is unavailable in Flow
 
-**What the LLM generates:**
+**Corrected 2026-09-05 — the previous version of this entry was itself the anti-pattern.**
 
-```
-HYPERLINK("/" & {!record.Id}, {!record.Name})
-```
+**What the LLM generates:** "`HYPERLINK()` doesn't work in Flow formulas — build the `<a>` tag by hand."
 
-**Why it happens:** HYPERLINK works in object-level formula fields where the layout renders the result as HTML. In Flow it returns plain text.
+**Why it happens:** It is a widely repeated claim, and an assistant that has internalised "Flow formulas are a restricted subset" generalises from that.
 
-**Correct pattern:** In a Display Text Screen component use rich text and embed the `<a>` tag directly. In email actions, build the HTML in the email body, not in a Formula resource.
+**The guide says otherwise.** `api_meta.txt` L116860–L116863, `FlowSettings.doesFormulaGenerateHtmlOutput`: *"whether **flow formula functions that generate HTML, such as BR(), IMAGE(), and HYPERLINK()**, include encoded markers (`__BR_ENCODED__`)."* All three are named as flow formula functions. What varies is output encoding, and it varies by **org setting**, not by context.
 
-**Detection hint:** grep for `HYPERLINK(` in a Formula resource expression body. Wrong context.
+**Correct pattern:** Say what actually varies — "`HYPERLINK()` is a Flow formula function; whether its output renders as a link depends on `doesFormulaGenerateHtmlOutput` and `enableFlowBREncodedFixEnabled` in the target org's Process Automation Settings" — and offer the query that settles it: `SELECT Function.Name FROM FormulaFunctionAllowedType WHERE Type = 'FLOW' AND Function.Name = 'HYPERLINK'`.
+
+**Detection hint:** any confident "function X is not available in Flow" with no `FormulaFunctionAllowedType` query behind it. Availability is a per-org, per-context fact with a queryable answer; do not assert it from memory.
 
 ---
 
@@ -463,13 +463,13 @@ BLANKVALUE({!textVar}, "default")
 
 ---
 
-## Anti-Pattern 25: Ignoring the per-formula 5,000-char limit when generating from a long spec
+## Anti-Pattern 25: Expanding a long spec into one formula resource
 
 **What the LLM generates:** A single Formula resource expanding 40 input fields into a long formatted output, hitting 6,000 characters.
 
 **Why it happens:** LLMs aim for one-shot completeness.
 
-**Correct pattern:** Pre-emptively decompose at ~3,500 chars even if the spec implies a single formula.
+**Correct pattern:** Pre-emptively decompose at ~3,000 chars even if the spec implies a single formula.
 
 **Detection hint:** measure character length of every generated Formula resource body. If > 4,000, refactor.
 
@@ -544,3 +544,92 @@ IF({!a} > {!b}, TRUE, FALSE)
 **Correct pattern:** Either cache the result if referenced multiple times per iteration, or move the REGEX out of the loop if applicable, or push to Apex if scale > 200 records.
 
 **Detection hint:** any REGEX inside a Loop element should trigger a cost-warning in the agent's response.
+
+---
+
+## Anti-Pattern 31: Emitting a `<formulas>` block with no `<dataType>`
+
+**What the LLM generates:**
+
+```xml
+<formulas>
+    <name>customerGreeting</name>
+    <expression>&quot;Hello, &quot; &amp; {!$Record.FirstName}</expression>
+</formulas>
+```
+
+**Why it happens:** The model writes the two fields the expression needs — a name and the expression itself — and treats type as inferable from the body. In every language it has seen, it would be. Here it is not.
+
+**What the guide says:** `api_meta.txt` L70609 — *"dataType defaults to Number if it isn't defined in a formula."* That block is now a **Number** formula returning a string. It deploys. It fails at the element that consumes it.
+
+**Correct pattern:**
+
+```xml
+<formulas>
+    <name>customerGreeting</name>
+    <dataType>String</dataType>
+    <expression>&quot;Hello, &quot; &amp; {!$Record.FirstName}</expression>
+</formulas>
+```
+
+**Detection hint:** parse the flow and assert `<dataType>` on every `<formulas>` child. Also check the value is one of the seven documented enums — note that Flow Builder's "Text" is `String` in XML, and `Text` is not a valid `FlowDataType` for a formula.
+
+---
+
+## Anti-Pattern 32: Inventing `$Flow.` and `$Setup.` globals that the Metadata API guide has never heard of
+
+**What the LLM generates:** `{!$Flow.InterviewGuid}` to correlate fault logs, `{!$Setup.My_Setting__c.Threshold__c}` inside a Flow formula, `{!$Profile.Name}` in an entry condition.
+
+**Why it happens:** These read like siblings of tokens the model has genuinely seen. Global-variable namespaces are exactly the kind of surface a fluent generator extends by analogy.
+
+**What the corpus says:** across `api_meta.txt`, only `$Flow.CurrentDateTime` (L27212, L73380, L73641, L73744), `$Flow.ActiveStages` (L69784–L69840), `$Flow.CurrentStage` (L71996), `$User.*` (L12949, L31153, L66249, L66825), `$Organization.*` (L66217, L140282) and `$Permission.CustomPermission` / `$Permission.StandardPermission` (L67560–L67562) appear at all. `$Flow.InterviewGuid`, `$Flow.CurrentDate`, `$Flow.FaultMessage`, `$Flow.InterviewStartTime`, `$Profile.` and `$Setup.` return **zero hits**.
+
+**Correct pattern:** Use the ones you can cite. For the rest, state the negative — "`$Flow.FaultMessage` is real and widely used but is not documented in the Metadata API guide" — rather than either dropping it or presenting it as grounded.
+
+**Detection hint:** grep the generated expression for `{!$` and check each token against the list above. A token not on it needs an UNVERIFIED marker, not silence.
+
+---
+
+## Anti-Pattern 33: Putting the branching logic in an inline decision condition instead of a Boolean formula resource
+
+**What the LLM generates:** A `<rules>` block with a formula-mode `conditionLogic` and the expression inlined in the condition body, because the user asked for "a decision that branches on a formula" and that is the literal reading.
+
+**Why it happens:** Literal instruction-following, plus the Flow Builder UI genuinely offers "Formula Evaluates to True" as a criteria mode.
+
+**What the guide says:** `FlowRule.conditionLogic` (`api_meta.txt` L71301–L71313) documents exactly three shapes — `and`, `or`, and advanced logic like `1 AND (2 OR 3)` capped at 1,000 characters. There is no formula value, no `<formula>` child on `FlowRule`, and `grep -n 'formula_evaluates'` returns zero hits. The inline shape is undocumented.
+
+**Correct pattern:** Declare a Boolean `FlowFormula`, reference it as the rule's `leftValueReference`, compare it to `booleanValue true` with `conditionLogic and`. That is the shape the guide's own decision sample uses (L73310–L73325), it is assertable by a `FlowTest` (an inline condition body is not), and it is greppable by name.
+
+**Detection hint:** any generated `<rules>` whose `conditionLogic` is not `and`, `or`, or a numeric advanced-logic string. Tolerate it when reading someone else's flow; do not author it.
+
+---
+
+## Anti-Pattern 34: Wrapping a compound field in BLANKVALUE
+
+**What the LLM generates:**
+
+```
+BLANKVALUE({!$Record.BillingAddress}, "(no address)")
+```
+
+**Why it happens:** This skill's own headline advice is "guard every nullable operand with `BLANKVALUE`". The model applies it uniformly, which is exactly what a good rule-follower does.
+
+**What the guide says:** `object_reference.txt` L2936–L2937 — *"The only formula functions that you can use with compound fields are `ISBLANK`, `ISCHANGED`, and `ISNULL`. You can't use `BLANKVALUE`, `CASE`, `NULLVALUE`, `PRIORVALUE`, or the equality and comparison operators with compound fields."*
+
+**Correct pattern:** Operate on the components — `BLANKVALUE({!$Record.BillingStreet}, "(no street)")` — which are ordinary fields. Use `ISBLANK` on the compound field only as a presence test.
+
+**Detection hint:** any function other than `ISBLANK`/`ISCHANGED`/`ISNULL` applied to an address field, a geolocation field, or `Name` on a Person Account. The check needs field types, so it belongs in review rather than in the static checker.
+
+---
+
+## Anti-Pattern 35: Quoting the 5,000-character formula limit as fact
+
+**What the LLM generates:** "Flow formulas are limited to 5,000 characters" — often with the error string `Compiled formula is too big to execute (5,001 characters)` attached for authenticity.
+
+**Why it happens:** It is the single most-repeated number in Salesforce formula folklore, and this package itself asserted it until 2026-09-05.
+
+**What the corpus says:** `grep -n -i "5,000 bytes\|5000 bytes\|Compiled formula"` across `api_meta.txt`, `object_reference.txt`, `apexdev.txt` and `salesforce_app_limits_cheatsheet.txt` returns **zero hits**. `FlowFormula` (L70596–L70622) documents no length bound. The only grounded figure is 3,900 source characters (`apexdev.txt` L28144), stated for formula fields.
+
+**Correct pattern:** Give the grounded number, name what it bounds, and mark the Flow binding UNVERIFIED. Then give advice that does not depend on the number: compose at ~3,000 characters, because a formula that long is unreviewable regardless of where the ceiling sits.
+
+**Detection hint:** any numeric platform limit in generated output with no `grep -n` line or guide section beside it. In this domain specifically, "5,000" is the tell.

@@ -1,6 +1,6 @@
 # Examples — Flow Formula And Expression Patterns
 
-Worked examples covering NULL-safe formula authoring, picklist comparison correctness, lazy re-evaluation refactoring, type coercion, time-zone handling, and the 5,000-character composition pattern. Each example is shown as it would appear inside a Flow Formula resource expression body or a Decision condition.
+Worked examples covering NULL-safe formula authoring, picklist comparison correctness, lazy re-evaluation refactoring, type coercion, time-zone handling, and the composition pattern for over-long expressions. Each example is shown as it would appear inside a Flow Formula resource expression body or a Decision condition.
 
 ---
 
@@ -372,21 +372,19 @@ AND(
 )
 ```
 
-**Why composition:** Each formula stays focused and reusable. Layer 1 alone serves Account-level decisions; Layer 2 serves Opportunity decisions that ALSO need the Account-strategic check. Each layer counts independently against the 5,000-char limit.
+**Why composition:** Each formula stays focused and reusable. Layer 1 alone serves Account-level decisions; Layer 2 serves Opportunity decisions that ALSO need the Account-strategic check. Each layer counts independently against whatever length ceiling applies — see Example 27 for what is actually documented.
 
 ---
 
-## Example 27: 5,000-Character Split — Symptom
+## Example 27: Length Split — Symptom, and what is actually documented
 
-A monolithic Formula resource that concatenates 40 fields with conditional formatting starts hitting deploy errors:
+A monolithic Formula resource that concatenates 40 fields with conditional formatting eventually fails to deploy. The error text usually quoted for this is `Compiled formula is too big to execute (5,001 characters)`.
 
-```
-The formula expression is invalid: Compiled formula is too big to execute (5,001 characters)
-```
+UNVERIFIED (2026-09-05): that error string and the 5,000 figure appear nowhere in `api_meta.txt`, `object_reference.txt`, `apexdev.txt` or the App Limits cheat sheet. The grounded figure is 3,900 source characters, `apexdev.txt` L28144, and it is stated for formula *fields*, not for `FlowFormula` — which documents no length bound at all (`api_meta.txt` L70596–L70622). Compose at ~3,000 and the question stops mattering. See `references/gotchas.md` Gotcha 4.
 
 ---
 
-## Example 28: 5,000-Character Split — Refactor
+## Example 28: Length Split — Refactor
 
 Split into three Formula resources:
 
@@ -400,7 +398,7 @@ Then a parent Formula resource concatenates them:
 {!formattedHeader} & {!formattedBody} & {!formattedFooter}
 ```
 
-**Why it works:** The 5,000-char limit applies per Formula resource expression body, not per evaluation. Each child stays under the cap.
+**Why it works:** Whatever length ceiling applies, it applies per `<expression>` body rather than per evaluation, so each child stays under it. The composition mechanic itself is grounded — the guide's own flow sample references one formula from another by name (`api_meta.txt` L73357–L73362).
 
 ---
 
@@ -536,10 +534,71 @@ IF(ISBLANK({!flag}), FALSE, {!flag})
 
 ---
 
-## Anti-Pattern: Letting A Formula Resource Grow To 4,800 Characters Then Adding "Just One More" Branch
+## Anti-Pattern: Letting A Formula Resource Grow Until The Next Branch Breaks The Deploy
 
-**What practitioners do:** A formula has organically grown to 4,800 chars over many edits. The next add takes it to 5,100 and the deploy fails.
+**What practitioners do:** A formula grows over many edits until one more branch tips it past whatever the real ceiling is, and the deploy fails. Nobody knows the number in advance — see Example 27 for why.
 
 **What goes wrong:** Last-minute scramble in front of a release deadline. The split is rushed, behaviour drifts.
 
-**Correct approach:** Compose pre-emptively at ~3,500 chars. Each child Formula resource gets a meaningful name and stays focused.
+**Correct approach:** Compose pre-emptively at ~3,000 chars — short enough that the undocumented ceiling stops being the deciding factor. Each child Formula resource gets a meaningful name and stays focused.
+
+---
+
+## Example 37: The XML those expressions actually live in
+
+Every expression above is the `<expression>` child of a `<formulas>` block. The block, not
+the expression, is where two of the most common defects live: a missing `<dataType>` and a
+missing `<scale>`. Here is Example 24's rounded tax calculation as deployable metadata,
+with the sibling resource it composes from and the text template that merges the result.
+
+```xml
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formulas>
+        <name>taxableBase</name>
+        <dataType>Currency</dataType>
+        <expression>MAX(0, {!$Record.Amount} - BLANKVALUE({!$Record.Discount__c}, 0))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>taxDue</name>
+        <dataType>Currency</dataType>
+        <expression>ROUND(
+  {!taxableBase} * (BLANKVALUE({!$Record.Tax_Rate__c}, 0) / 100),
+  2
+)</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>isTaxExempt</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!$Record.Tax_Status__c}, &quot;Exempt&quot;)</expression>
+    </formulas>
+    <textTemplates>
+        <name>invoiceFooter</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Taxable base {!taxableBase}, tax due {!taxDue}.&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>
+```
+
+Four things a reviewer reads off this that they cannot read off the expression alone:
+
+- **`taxableBase` and `taxDue` both declare `<dataType>Currency</dataType>`.** Omitted, each
+  would default to Number (`api_meta.txt` L70609) — arithmetically similar, but a Number
+  formula assigned to a Currency field is a different contract.
+- **Both declare `<scale>2</scale>`.** `scale` is *"Available only when the data type is
+  Number or Currency"* (L70618–L70622), and the guide states no default. `isTaxExempt` is
+  Boolean, so it correctly has none — a `<scale>` there would be wrong.
+- **`isTaxExempt` declares `Boolean`, not `String`.** The seven valid values are `Boolean`,
+  `Currency`, `Date`, `DateTime`, `Number`, `String`, `Time`. Flow Builder's "Text" is
+  `String` in the XML; `Text` is not a valid value.
+- **`taxDue` divides `Tax_Rate__c` by 100 and that is correct here**, because
+  `Tax_Rate__c` is a **Number** field holding `7.5` for 7.5%. On a **Percent** field the
+  division would be wrong — see Example 23 and `references/gotchas.md` Gotcha 9. The XML
+  does not record which it is, which is exactly why the field-type question belongs in the
+  Questions table rather than in the formula.
+
+`references/metadata-examples.md` §1 is the complete flow this fragment belongs to,
+including `filterFormula` on `<start>`, the decision that branches on a Boolean formula,
+the `package.xml`, and the `FlowTest` that pins `taxDue` to a number for a record whose
+`Discount__c` is absent.
