@@ -1,34 +1,45 @@
 #!/usr/bin/env python3
-"""Checker script for Custom Permissions skill.
+"""Checker script for the admin/custom-permissions skill.
 
-Scans Salesforce metadata XML files to report:
-  1. Which custom permissions are defined in the org metadata.
-  2. Which permission sets grant each custom permission.
-  3. Custom permissions that are defined but granted by no permission set (orphans).
-  4. Permission sets that reference a custom permission name not found in the
-     customPermissions metadata directory (dangling references).
+Scans a Salesforce DX metadata tree and reports, by severity:
 
-Uses stdlib only — no pip dependencies.
-
-Usage:
-    python3 check_custom_permissions.py [--manifest-dir path/to/metadata]
-
-The script walks the manifest directory looking for:
-  - *.customPermission-meta.xml  (custom permission definitions)
-  - *.permissionset-meta.xml     (permission set definitions)
+  ERROR  A permission set (or profile) grants a custom permission that is not
+         defined anywhere in the tree. This is a deploy-breaking dangling
+         reference: the grant cannot be deployed to an org that lacks the
+         definition.
+  WARN   A `requiredPermission` names a custom permission that is not in the
+         tree. The dependency target must ship in the same package as its
+         parent (Metadata API Developer Guide, CustomPermissionDependencyRequired).
+  WARN   A custom permission has an empty or missing `description`. The
+         description is the only place the consumer list can live, and the
+         field is capped at 255 characters.
+  WARN   A consumer references a custom permission that is not defined in the
+         tree -- `$Permission.X` in a validation rule / formula / Flow /
+         FlexiPage, `FeatureManagement.checkPermission('X')` in Apex, or
+         `@salesforce/customPermission/X` in an LWC module.
+  INFO   A custom permission is defined but no permission set or profile in
+         the tree grants it. Often intentional (the grant lives in another
+         package), so it is not an error.
 
 Exit codes:
-  0 — no issues found
-  1 — one or more issues found (orphaned permissions or dangling references)
+  0 -- no ERROR (and no WARN when --strict is passed)
+  1 -- at least one ERROR, or at least one WARN under --strict
+  2 -- the manifest directory does not exist
+
+Uses stdlib only -- no pip dependencies.
+
+Usage:
+    python3 check_custom_permissions.py --manifest-dir force-app/main/default
+    python3 check_custom_permissions.py --manifest-dir force-app/main/default --strict
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Namespace helpers
@@ -37,7 +48,6 @@ from pathlib import Path
 # Salesforce metadata XML uses a default namespace. ElementTree requires
 # explicit namespace handling.
 _SF_NS = "http://soap.sforce.com/2006/04/metadata"
-_NS = {"sf": _SF_NS}
 
 
 def _tag(local: str) -> str:
@@ -45,61 +55,170 @@ def _tag(local: str) -> str:
     return f"{{{_SF_NS}}}{local}"
 
 
-# ---------------------------------------------------------------------------
-# Parsing helpers
-# ---------------------------------------------------------------------------
+def child_text(parent, local: str) -> str | None:
+    """Return the stripped text of a direct child element, or None.
 
-
-def parse_custom_permission_names(manifest_dir: Path) -> set[str]:
-    """Return the API names of all custom permissions found in the metadata tree.
-
-    Looks for files matching ``*.customPermission-meta.xml`` anywhere under
-    *manifest_dir*.  The API name is derived from the filename stem (the part
-    before ``.customPermission-meta.xml``).
+    A leaf ``Element`` is falsy, so ``parent.find(a) or parent.find(b)`` is a
+    trap. Always compare against None explicitly.
     """
-    names: set[str] = set()
-    for cp_file in manifest_dir.rglob("*.customPermission-meta.xml"):
-        # filename: MyPermission.customPermission-meta.xml  -> api name: MyPermission
-        stem = cp_file.name.replace(".customPermission-meta.xml", "")
-        names.add(stem)
-    return names
+    node = parent.find(_tag(local))
+    if node is None:
+        node = parent.find(local)  # tolerate namespace-stripped fixtures
+    if node is None:
+        return None
+    if node.text is None:
+        return ""
+    return node.text.strip()
 
 
-def parse_permission_set_grants(
-    manifest_dir: Path,
-) -> dict[str, list[str]]:
-    """Return a mapping of permission-set-name -> [custom permission API names granted].
+def find_all(parent, local: str) -> list:
+    """Return direct children by local name, namespaced or not."""
+    found = parent.findall(_tag(local))
+    if not found:
+        found = parent.findall(local)
+    return found
 
-    Looks for files matching ``*.permissionset-meta.xml`` anywhere under
-    *manifest_dir* and parses the ``<customPermissions>`` nodes.
+
+# ---------------------------------------------------------------------------
+# Consumer scanning
+# ---------------------------------------------------------------------------
+
+# Component-visibility grammar carries an extra segment and must be matched
+# first so the plain-formula pattern does not capture "CustomPermission".
+_RE_VISIBILITY = re.compile(r"\$Permission\.CustomPermission\.([A-Za-z]\w*)")
+_RE_STANDARD = re.compile(r"\$Permission\.StandardPermission\.[A-Za-z]\w*")
+_RE_FORMULA = re.compile(r"\$Permission\.([A-Za-z]\w*)")
+_RE_APEX = re.compile(
+    r"""checkPermission\s*\(\s*['"]([^'"]+)['"]\s*\)""", re.IGNORECASE
+)
+_RE_LWC_IMPORT = re.compile(r"@salesforce/customPermission/([A-Za-z]\w*)")
+
+# Extensions worth scanning for consumers, by what they are.
+_CONSUMER_SUFFIXES = (
+    ".validationRule-meta.xml",
+    ".field-meta.xml",
+    ".object-meta.xml",
+    ".flow-meta.xml",
+    ".workflow-meta.xml",
+    ".flexipage-meta.xml",
+    ".prompt-meta.xml",
+    ".quickAction-meta.xml",
+    ".cls",
+    ".trigger",
+    ".page",
+    ".cmp",
+    ".js",
+)
+
+
+def is_consumer_file(path: Path) -> bool:
+    return any(path.name.endswith(suffix) for suffix in _CONSUMER_SUFFIXES)
+
+
+def scan_consumer_references(manifest_dir: Path) -> dict[str, list[tuple[str, int]]]:
+    """Return {custom-permission-name: [(relative path, line number), ...]}.
+
+    Namespaced references (containing ``__``) are skipped: they belong to an
+    installed managed package whose definition is not expected in this tree.
     """
-    grants: dict[str, list[str]] = {}
-    for ps_file in manifest_dir.rglob("*.permissionset-meta.xml"):
-        ps_name = ps_file.name.replace(".permissionset-meta.xml", "")
+    refs: dict[str, list[tuple[str, int]]] = {}
+
+    def record(name: str, path: Path, lineno: int) -> None:
+        if "__" in name:
+            return
+        rel = str(path.relative_to(manifest_dir))
+        refs.setdefault(name, []).append((rel, lineno))
+
+    for path in sorted(manifest_dir.rglob("*")):
+        if not path.is_file() or not is_consumer_file(path):
+            continue
         try:
-            tree = ET.parse(ps_file)
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            for match in _RE_VISIBILITY.finditer(line):
+                record(match.group(1), path, lineno)
+            scrubbed = _RE_VISIBILITY.sub("", line)
+            scrubbed = _RE_STANDARD.sub("", scrubbed)
+            for match in _RE_FORMULA.finditer(scrubbed):
+                record(match.group(1), path, lineno)
+            for match in _RE_APEX.finditer(line):
+                record(match.group(1), path, lineno)
+            for match in _RE_LWC_IMPORT.finditer(line):
+                record(match.group(1), path, lineno)
+
+    return refs
+
+
+# ---------------------------------------------------------------------------
+# Metadata parsing
+# ---------------------------------------------------------------------------
+
+
+def parse_custom_permissions(
+    manifest_dir: Path,
+) -> tuple[dict[str, dict], list[str]]:
+    """Return ({api name: {description, required}}, parse errors)."""
+    defined: dict[str, dict] = {}
+    parse_errors: list[str] = []
+
+    for cp_file in sorted(manifest_dir.rglob("*.customPermission-meta.xml")):
+        name = cp_file.name.replace(".customPermission-meta.xml", "")
+        rel = str(cp_file.relative_to(manifest_dir))
+        record: dict = {"file": rel, "description": None, "required": []}
+        try:
+            root = ET.parse(cp_file).getroot()
         except ET.ParseError as exc:
-            # Malformed XML — report but continue
-            grants.setdefault(ps_name, [])
-            grants[ps_name].append(f"[PARSE ERROR: {exc}]")
+            parse_errors.append(f"{rel}: malformed XML ({exc})")
+            defined[name] = record
             continue
 
-        root = tree.getroot()
-        perm_names: list[str] = []
-        for cp_node in root.findall(_tag("customPermissions")):
-            enabled_node = cp_node.find(_tag("enabled"))
-            name_node = cp_node.find(_tag("name"))
-            if (
-                name_node is not None
-                and name_node.text
-                and enabled_node is not None
-                and enabled_node.text == "true"
-            ):
-                perm_names.append(name_node.text.strip())
+        record["description"] = child_text(root, "description")
+        for dep in find_all(root, "requiredPermission"):
+            required_name = child_text(dep, "customPermission")
+            dependency = child_text(dep, "dependency")
+            if required_name:
+                record["required"].append((required_name, dependency))
+        defined[name] = record
 
-        grants[ps_name] = perm_names
+    return defined, parse_errors
 
-    return grants
+
+def parse_grants(manifest_dir: Path) -> tuple[dict[str, list[str]], list[str]]:
+    """Return ({granting container: [permission names]}, parse errors).
+
+    Covers ``*.permissionset-meta.xml`` and ``*.profile-meta.xml`` -- Profile
+    carries the same ``customPermissions`` element from API version 31.0.
+    """
+    grants: dict[str, list[str]] = {}
+    parse_errors: list[str] = []
+
+    patterns = (
+        ("*.permissionset-meta.xml", ".permissionset-meta.xml", "permission set"),
+        ("*.profile-meta.xml", ".profile-meta.xml", "profile"),
+    )
+
+    for glob, suffix, kind in patterns:
+        for ps_file in sorted(manifest_dir.rglob(glob)):
+            label = f"{kind} '{ps_file.name.replace(suffix, '')}'"
+            try:
+                root = ET.parse(ps_file).getroot()
+            except ET.ParseError as exc:
+                rel = str(ps_file.relative_to(manifest_dir))
+                parse_errors.append(f"{rel}: malformed XML ({exc})")
+                grants[label] = []
+                continue
+
+            enabled_names: list[str] = []
+            for cp_node in find_all(root, "customPermissions"):
+                name = child_text(cp_node, "name")
+                enabled = child_text(cp_node, "enabled")
+                if name and enabled == "true":
+                    enabled_names.append(name)
+            grants[label] = enabled_names
+
+    return grants, parse_errors
 
 
 # ---------------------------------------------------------------------------
@@ -108,37 +227,86 @@ def parse_permission_set_grants(
 
 
 def analyse(
-    defined_permissions: set[str],
+    defined: dict[str, dict],
     grants: dict[str, list[str]],
-) -> tuple[list[str], list[str], dict[str, list[str]]]:
-    """Analyse coverage and return (orphans, dangling_refs, coverage_map).
+    consumer_refs: dict[str, list[tuple[str, int]]],
+) -> tuple[list[str], list[str], list[str], dict[str, list[str]]]:
+    """Return (errors, warnings, infos, coverage_map)."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    infos: list[str] = []
 
-    orphans:        custom permissions defined but granted by no permission set.
-    dangling_refs:  custom permission names referenced in permission sets but
-                    not found in customPermission metadata.
-    coverage_map:   {custom-permission-api-name: [permission-set-name, ...]}
-    """
-    coverage_map: dict[str, list[str]] = {p: [] for p in defined_permissions}
+    coverage_map: dict[str, list[str]] = {name: [] for name in defined}
 
-    dangling_refs: list[str] = []
-
-    for ps_name, perm_names in grants.items():
-        for perm_name in perm_names:
-            if perm_name.startswith("[PARSE ERROR"):
-                continue
-            if perm_name in coverage_map:
-                coverage_map[perm_name].append(ps_name)
+    # ERROR -- a grant naming a permission that does not exist in the tree.
+    for container, names in grants.items():
+        for name in names:
+            if name in coverage_map:
+                coverage_map[name].append(container)
+            elif "__" in name:
+                infos.append(
+                    f"{container} grants namespaced '{name}'; its definition "
+                    f"belongs to an installed package, not this tree."
+                )
             else:
-                dangling_refs.append(
-                    f"Permission set '{ps_name}' references '{perm_name}' "
-                    f"which is not defined in the customPermissions metadata directory."
+                errors.append(
+                    f"{container} grants '{name}', which is not defined by any "
+                    f"*.customPermission-meta.xml in the tree. The deploy will fail."
                 )
 
-    orphans: list[str] = [
-        p for p, ps_list in coverage_map.items() if not ps_list
-    ]
+    # WARN -- requiredPermission target missing, or dependency not true.
+    for name, record in sorted(defined.items()):
+        for required_name, dependency in record["required"]:
+            if "__" in required_name:
+                continue
+            if required_name not in defined:
+                warnings.append(
+                    f"'{name}' requires '{required_name}', which is not defined in "
+                    f"the tree. A dependency target must ship in the same package "
+                    f"as its parent."
+                )
+            if dependency is not None and dependency != "true":
+                warnings.append(
+                    f"'{name}' declares requiredPermission '{required_name}' with "
+                    f"<dependency>{dependency}</dependency>; only 'true' makes the "
+                    f"target required."
+                )
 
-    return orphans, dangling_refs, coverage_map
+    # WARN -- empty description.
+    for name, record in sorted(defined.items()):
+        description = record["description"]
+        if description is None or not description.strip():
+            warnings.append(
+                f"'{name}' has no description ({record['file']}). Name the "
+                f"consumers there -- it is the only place that list survives."
+            )
+        elif len(description) > 255:
+            warnings.append(
+                f"'{name}' has a {len(description)}-character description; the "
+                f"field limit is 255 characters and the deploy will truncate or fail."
+            )
+
+    # WARN -- a consumer references a permission that is not defined here.
+    for name, locations in sorted(consumer_refs.items()):
+        if name in defined:
+            continue
+        shown = ", ".join(f"{path}:{line}" for path, line in locations[:4])
+        if len(locations) > 4:
+            shown += f", +{len(locations) - 4} more"
+        warnings.append(
+            f"'{name}' is referenced by {len(locations)} consumer "
+            f"location(s) but is not defined in the tree: {shown}"
+        )
+
+    # INFO -- defined but ungranted.
+    for name, containers in sorted(coverage_map.items()):
+        if not containers:
+            infos.append(
+                f"'{name}' is defined but granted by no permission set or profile "
+                f"in this tree. Nobody holds it unless the grant lives elsewhere."
+            )
+
+    return errors, warnings, infos, coverage_map
 
 
 # ---------------------------------------------------------------------------
@@ -146,20 +314,33 @@ def analyse(
 # ---------------------------------------------------------------------------
 
 
-def print_coverage_report(coverage_map: dict[str, list[str]]) -> None:
+def print_coverage_report(
+    coverage_map: dict[str, list[str]],
+    consumer_refs: dict[str, list[tuple[str, int]]],
+) -> None:
     """Print a human-readable coverage table."""
     if not coverage_map:
         print("  (no custom permissions found)")
         return
 
-    max_perm_len = max(len(p) for p in coverage_map)
-    header = f"  {'Custom Permission':<{max_perm_len}}  Permission Sets"
-    print(header)
-    print("  " + "-" * (len(header) - 2))
-    for perm_name in sorted(coverage_map):
-        ps_list = coverage_map[perm_name]
-        ps_display = ", ".join(sorted(ps_list)) if ps_list else "(none)"
-        print(f"  {perm_name:<{max_perm_len}}  {ps_display}")
+    width = max(len(name) for name in coverage_map)
+    width = max(width, len("Custom Permission"))
+    print(f"  {'Custom Permission':<{width}}  Consumers  Granted by")
+    print("  " + "-" * (width + 30))
+    for name in sorted(coverage_map):
+        containers = coverage_map[name]
+        granted = ", ".join(sorted(containers)) if containers else "(none)"
+        uses = len(consumer_refs.get(name, []))
+        print(f"  {name:<{width}}  {uses:>9}  {granted}")
+
+
+def print_block(title: str, lines: list[str]) -> None:
+    if not lines:
+        return
+    print(title)
+    for line in lines:
+        print(f"  {line}")
+    print()
 
 
 # ---------------------------------------------------------------------------
@@ -167,11 +348,12 @@ def print_coverage_report(coverage_map: dict[str, list[str]]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Scan Salesforce metadata to report which permission sets grant "
-            "which custom permissions, and flag orphaned or dangling references."
+            "Scan Salesforce metadata for custom permission definitions, the "
+            "permission sets and profiles that grant them, dependency targets, "
+            "and consumer references that point at nothing."
         ),
     )
     parser.add_argument(
@@ -179,63 +361,60 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on warnings as well as errors.",
+    )
+    return parser.parse_args(argv)
 
 
-def main() -> int:
-    args = parse_args()
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     manifest_dir = Path(args.manifest_dir)
 
-    if not manifest_dir.exists():
+    if not manifest_dir.is_dir():
         print(f"ERROR: Manifest directory not found: {manifest_dir}")
-        return 1
+        return 2
 
     print(f"Scanning: {manifest_dir.resolve()}")
     print()
 
-    # 1. Discover defined custom permissions
-    defined_permissions = parse_custom_permission_names(manifest_dir)
-    print(f"Custom permissions defined in metadata: {len(defined_permissions)}")
-    if not defined_permissions:
+    defined, cp_parse_errors = parse_custom_permissions(manifest_dir)
+    grants, grant_parse_errors = parse_grants(manifest_dir)
+    consumer_refs = scan_consumer_references(manifest_dir)
+
+    print(f"Custom permissions defined:        {len(defined)}")
+    print(f"Permission sets / profiles parsed: {len(grants)}")
+    print(f"Distinct permissions referenced:   {len(consumer_refs)}")
+    print()
+
+    if not defined:
         print("  (no *.customPermission-meta.xml files found)")
-
-    # 2. Discover permission set grants
-    grants = parse_permission_set_grants(manifest_dir)
-    print(f"Permission sets scanned:                {len(grants)}")
-    print()
-
-    # 3. Analyse
-    orphans, dangling_refs, coverage_map = analyse(defined_permissions, grants)
-
-    # 4. Print coverage table
-    print("Coverage (custom permission -> granting permission sets):")
-    print_coverage_report(coverage_map)
-    print()
-
-    # 5. Print issues
-    issues: list[str] = []
-
-    if orphans:
-        print("ORPHANED PERMISSIONS (defined but granted by no permission set):")
-        for perm in sorted(orphans):
-            msg = f"  '{perm}' is defined but not included in any permission set."
-            print(msg)
-            issues.append(msg)
         print()
 
-    if dangling_refs:
-        print("DANGLING REFERENCES (permission sets reference undefined custom permissions):")
-        for ref in sorted(dangling_refs):
-            print(f"  {ref}")
-            issues.append(ref)
-        print()
+    errors, warnings, infos, coverage_map = analyse(defined, grants, consumer_refs)
+    errors = [f"malformed metadata: {e}" for e in cp_parse_errors + grant_parse_errors] + errors
 
-    if not issues:
-        print("No issues found.")
-        return 0
+    print("Coverage (custom permission -> consumers, granting containers):")
+    print_coverage_report(coverage_map, consumer_refs)
+    print()
 
-    print(f"{len(issues)} issue(s) found.")
-    return 1
+    print_block("ERROR:", errors)
+    print_block("WARN:", warnings)
+    print_block("INFO:", infos)
+
+    print(
+        f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), "
+        f"{len(infos)} info."
+    )
+
+    if errors:
+        return 1
+    if args.strict and warnings:
+        print("--strict: failing on warnings.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

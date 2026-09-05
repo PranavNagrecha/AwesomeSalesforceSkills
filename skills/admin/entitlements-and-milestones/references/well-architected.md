@@ -28,9 +28,56 @@ No Recurrence is safer for most SLA tracking use cases. Independent recurrence p
 
 ## Official Sources Used
 
-- Salesforce Help: Set Up and Manage Entitlements and Milestones — https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm
-- Salesforce Help: Milestone Actions — https://help.salesforce.com/s/articleView?id=sf.entitlements_milestones_actions.htm
-- Salesforce Help: Business Hours in Entitlement Management — https://help.salesforce.com/s/articleView?id=sf.entitlements_business_hours.htm
-- Salesforce Help: Entitlement Templates — https://help.salesforce.com/s/articleView?id=sf.entitlements_templates_overview.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Well-Architected: Reliable — https://architect.salesforce.com/docs/architect/well-architected/reliable/overview.html
+Primary sources, with the claim each one carries. Line numbers are `grep -n` offsets into the plain-text
+extracts of the Summer '26 / v62 PDFs.
+
+- **Metadata API Developer Guide — `EntitlementProcess`, `EntitlementProcessMilestoneItem`,
+  `EntitlementProcessMilestoneTimeTrigger`** (api_meta.txt:59069–59308) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf — the deployable shape in
+  `references/metadata-examples.md` § 2, the version-derived file name, and the fact that milestone
+  thresholds are signed `timeLength` offsets rather than percentages (gotcha 6).
+- **Metadata API Developer Guide — `MilestoneType`** (api_meta.txt:88319–88380) — the three
+  `recurrenceType` values `none` / `recursIndependently` / `recursChained`, the guide's own mapping of
+  `recursChained` to "sequential recurrence", and the fact that recurrence is a property of the
+  milestone type rather than of the process that uses it (gotcha 7).
+- **Metadata API Developer Guide — `EntitlementTemplate` and `EntitlementSettings`**
+  (api_meta.txt:59310–59374, 115601–115730) — the template's `businessHours` / `term` /
+  `casesPerEntitlement` semantics, and `enableEntitlements`, `enableEntitlementVersioning`,
+  `enableMilestoneStoppedTime`, `ignoreMilestoneBusinessHours` (gotchas 10 and 12, and the
+  "Architectural Tradeoffs" note on templates versus manual creation).
+- **Metadata API Developer Guide — `Workflow`, `WorkflowActionReference`, `WorkflowAlert`,
+  `WorkflowFieldUpdate`** (api_meta.txt:139874–140195) — the container the milestone actions are
+  deployed in, the five valid action `type` values, the required fields on each action, and the
+  `reevaluateOnChange` cascade limit behind the "keep SLA stamps inert" recommendation.
+- **Object Reference — `SlaProcess`** (object_reference.txt:270637–270790) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf — the absence of
+  `create()` and `update()` on the process record, the auto-generated `NameNorm`, the `Case` /
+  `Work Order` split on `SObjectType`, and the versioning fields' dependence on the versioning switch
+  (gotcha 12, and the "Adaptable" pillar note on versioning).
+- **Object Reference — `CaseMilestone`** (object_reference.txt:63342–63470) — no `create()` or
+  `delete()`, and `CompletionDate` / `StartDate` as the only updateable fields, which is why a milestone
+  never completes on its own (gotcha 8) and why the Apex in `references/metadata-examples.md` § 9 is an
+  update rather than an insert.
+- **Object Reference — `Entitlement`, `EntitlementContact`, and the `Case` entitlement fields**
+  (object_reference.txt:110176–110480, 62245–62700) — `BusinessHoursId` documented Required but not
+  createable or updateable, `Status` derived from `StartDate` / `EndDate`, `RemainingCases` decrementing
+  per case, and `Case.IsStopped` / `Case.StopStartDate` / `Case.SlaStartDate` (gotchas 9, 10 and 11).
+- **Apex Developer Guide — debug log event table** (apexdev.txt:39104–39117) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf —
+  the `SLA_PROCESS_CASE`, `SLA_EVAL_MILESTONE`, `SLA_NULL_START_DATE` and `SLA_END` events under the
+  Workflow category, which is the diagnosis path in `references/examples.md` and
+  `references/metadata-examples.md` § 9.
+- **Salesforce App Limits Cheat Sheet** (salesforce_app_limits_cheatsheet.txt) — checked and reported as
+  a negative result: `grep -i "entitlement\|milestone"` returns one unrelated row about the API Request
+  Limit usage-based entitlement. **No milestones-per-process or processes-per-org limit is published
+  there**, which is why the "up to 10 milestones per process" figure in `SKILL.md` is marked UNVERIFIED
+  rather than restated as fact.
+- **Salesforce Well-Architected — Reliable** —
+  https://architect.salesforce.com/docs/architect/well-architected/reliable/overview.html — the framing
+  for "reliability failures here are silent" in the Relevant Pillars section above.
+- **Salesforce Well-Architected — overview** —
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — pillar naming.
+- Salesforce Help topics used for orientation only, and **not** relied on for any behaviour claim above
+  (help.salesforce.com cannot be fetched for verification):
+  `sf.entitlements_overview.htm`, `sf.entitlements_milestones_actions.htm`,
+  `sf.entitlements_business_hours.htm`, `sf.entitlements_templates_overview.htm`.

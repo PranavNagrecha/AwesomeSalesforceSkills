@@ -49,3 +49,157 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Independent recurrence milestones that reset based on a case field update or elapsed time, combined with cases that are unworked for longer than one recurrence interval. Each unresolved instance continues running independently.
 
 **How to avoid:** Use Independent recurrence only when each recurrence genuinely represents a distinct SLA commitment (e.g., each customer comment). For general response SLAs, prefer No Recurrence. If Independent recurrence is required, gate violation email alerts with a suppression check — for example, only send the violation email if `Case.Status != 'Waiting on Customer'`. This prevents alert storms for stalled cases that are legitimately awaiting customer input.
+
+---
+
+## Gotcha 6: Milestone action thresholds are offsets from the target, not percentages — and they do not scale
+
+**What happens:** A team sets a first-response milestone to 240 minutes with warnings "at 75% and
+90%", then later shortens the milestone to 120 minutes. The warnings keep firing at 180 and 216
+minutes elapsed — which is now *after* the breach, so the warning arrives later than the violation.
+Nobody edited the warnings, so nobody suspects them.
+
+**When it occurs:** Any time `minutesToComplete` changes on a milestone that already has time
+triggers. The `EntitlementProcessMilestoneTimeTrigger` type carries `timeLength` (int) and
+`workflowTimeTriggerUnit` (`Minutes` | `Hours` | `Days`) and nothing else numeric
+(api_meta.txt:59204–59224). `timeLength` is "the length of time between the time trigger activation
+and the milestone target completion date"; negative values "correspond to warning time triggers" and
+positive values "correspond to violation time triggers" (api_meta.txt:59213–59219). There is no
+percentage anywhere in the model, and no element that ties a trigger to `minutesToComplete`.
+
+**How to avoid:** Treat every `timeLength` as a hand-derived constant. Record the intended percentage
+in `versionNotes` or the design doc, and re-derive all of them in the same edit that changes
+`minutesToComplete` — `references/metadata-examples.md` § 7 shows `-60` becoming `-30` when a
+240-minute milestone becomes 120. The checker reports each trigger's offset against the milestone
+target so a stale one is visible in lint output rather than in a breach report.
+
+---
+
+## Gotcha 7: Recurrence lives on the milestone type, so changing it changes every process at once
+
+**What happens:** An admin needs the "Case Update" milestone to recur independently on the Platinum
+process while staying sequential on Standard. They open the milestone, switch the recurrence, and
+both processes change.
+
+**When it occurs:** Whenever more than one entitlement process names the same milestone. Recurrence
+is a field on `MilestoneType` — `recurrenceType`, valid values `none`, `recursIndependently`,
+`recursChained` (api_meta.txt:88337–88345) — and `MilestoneType` is a standalone component in the
+`milestoneTypes` directory (api_meta.txt:88325). The per-process `EntitlementProcessMilestoneItem`
+field table has no recurrence field at all (api_meta.txt:59158–59202): a process can override the
+milestone's timing, calendar, criteria and actions, but not how it repeats.
+
+**How to avoid:** Decide recurrence at the milestone-type level and name the type after its recurrence
+behaviour, not after its business meaning — "Case Update (Chained)" rather than "Case Update" — so the
+shared object is obvious to the next admin. When two tiers genuinely need different recurrence for the
+same concept, create two milestone types. Query `MilestoneType` and `SlaProcess` together before
+editing to see how many processes a type serves.
+
+---
+
+## Gotcha 8: Nothing completes a milestone; a milestone stays open until something writes CompletionDate
+
+**What happens:** First-response milestones show as violated on cases where the agent demonstrably
+replied. The team assumes the timer is broken. It is not — the milestone was never told the reply
+happened.
+
+**When it occurs:** On every milestone whose completion criteria are not satisfiable by the platform
+alone. `CaseMilestone` supports only `describeLayout(), describeSObjects(), query(), retrieve(),
+update()` — there is no `create()` and no `delete()` (object_reference.txt:63347–63348). Salesforce
+creates the rows when a case enters the process; `CompletionDate` ("the date and time the milestone
+was completed") and `StartDate` are the only fields carrying the `Update` property
+(object_reference.txt:63373–63380). `IsCompleted` and `IsViolated` are derived and not updateable.
+
+**How to avoid:** Ship the completion mechanism with the process, never after it. Either set the
+milestone's completion criteria so the platform can satisfy them, or deploy the Apex/Flow that stamps
+`CompletionDate` — the bulk-safe shape is in `references/metadata-examples.md` § 9. Add a query for
+`CaseMilestone WHERE IsCompleted = false AND TargetDate < TODAY` grouped by milestone type to the
+go-live checks; a type where nothing ever completes is a missing stamp, not a missed SLA.
+
+---
+
+## Gotcha 9: The process exit is the boundary for recurrence, so closing and reopening restarts everything
+
+**What happens:** A case is closed, then reopened two days later for a related question. The
+first-response milestone — configured as non-recurring precisely so it fires once — starts a fresh
+timer, and the case breaches a response SLA on a conversation that has been running all week.
+
+**When it occurs:** Whenever the process exit criteria are satisfied and later stop being satisfied.
+The guide defines non-recurrence in terms of the process, not the case: `none` means "the milestone
+occurs only one time **until the entitlement process exits**" (api_meta.txt:88339–88341). With exit
+criteria of `Case.Status equals Closed`, closing the case exits the process and re-opening it enters
+the process again.
+
+**How to avoid:** Write exit criteria that describe the end of the *commitment*, not the end of the
+current status. A boolean such as `Case.SLA_Complete__c equals true`, stamped once by the resolution
+milestone's success action, survives a reopen; `Status = Closed` does not. If reopens are legitimately
+new commitments, say so explicitly in `versionNotes` so the second first-response timer is a decision
+rather than a surprise.
+
+---
+
+## Gotcha 10: A stopped case freezes the SLA clock, and the elapsed time you report is not the elapsed time you promised
+
+**What happens:** Support reports 98% SLA attainment. The customer's own records say otherwise. Both
+are reading real numbers — the org has been stopping the clock on cases awaiting customer response,
+and the milestone's elapsed time excludes every stopped interval.
+
+**When it occurs:** `Case.IsStopped` is a plain boolean carrying `Create`, `Update`, `Filter`, `Group`
+and `Sort` (object_reference.txt:62486–62502) — meaning any Flow, trigger, integration user or agent
+with edit access can stop an entitlement process on a case, and `Case.StopStartDate` records when it
+happened but is read-only (object_reference.txt:62685–62693). The stopped interval is invisible in the
+milestone UI unless `enableMilestoneStoppedTime` is `true` in `Entitlement.settings-meta.xml`, which
+is what surfaces the *Stopped Time* and *Actual Elapsed Time* fields (api_meta.txt:115646–115655).
+
+**How to avoid:** Turn `enableMilestoneStoppedTime` on before go-live, not after the first dispute —
+it is a display switch, so enabling it costs nothing and enabling it late means the earlier cases
+still cannot be explained. Restrict who can write `Case.IsStopped` (field-level security plus a
+validation rule requiring a stop reason), and report attainment with the stopped time visible beside
+it. `entryStartDateField` even accepts `StopStartDate` as the process start (api_meta.txt:59116), so
+in an org that stops cases routinely, check which date the process is actually counting from.
+
+---
+
+## Gotcha 11: A Flow can create an Entitlement but cannot set its business hours or its status
+
+**What happens:** The Lightning replacement Flow creates entitlements successfully, then every case
+using them runs its milestones on the wrong calendar — or the entitlement sits inactive and nothing
+the Flow does makes it active.
+
+**When it occurs:** On any Flow, Apex or integration that builds `Entitlement` records field by field.
+`Entitlement` does support `create()` and `update()` (object_reference.txt:110182–110184), but
+`BusinessHoursId` — documented as **"Required. ID of the BusinessHours associated with the
+entitlement"** — carries only `Filter, Group, Nillable, Sort` and neither `Create` nor `Update`
+(object_reference.txt:110216–110222). `Status` likewise carries only `Filter, Nillable`
+(object_reference.txt:110364–110371); it is derived from `StartDate` and `EndDate`, which *are*
+createable and updateable.
+
+**How to avoid:** Let the entitlement template carry the calendar. `EntitlementTemplate` has its own
+`businessHours` field (api_meta.txt:59328–59330), so a Flow that stamps the template reference plus
+`AccountId`, `StartDate`, `EndDate` and `SlaProcessId` gets a correctly calendared entitlement without
+writing the field it cannot write. To make an entitlement active, set `StartDate` to today or earlier
+and `EndDate` in the future — never try to write `Status`. Verify with the `Entitlement` query in
+`references/metadata-examples.md` § 8 rather than trusting the Flow's debug output.
+
+---
+
+## Gotcha 12: The version fields are inert until versioning is switched on, and the file name is not yours to choose
+
+**What happens:** An admin adds `versionMaster` and `versionNumber` to a retrieved process file,
+deploys, and gets either a failure or a second independent process. Later, hand-writing a file named
+after the process's display name produces "component not found" on retrieve.
+
+**When it occurs:** In any org where `enableEntitlementVersioning` is still `false`. The Object
+Reference marks `IsVersionDefault`, `VersionMaster`, `VersionNotes` and `VersionNumber` as available
+"in API version 28.0 and later **in organizations that have entitlement versioning enabled**"
+(object_reference.txt:270688–270693, 270752–270758, 270763–270769, 270775–270781). The switch itself
+is `enableEntitlementVersioning` in the entitlement settings file (api_meta.txt:115638–115642). The
+file name is derived, not chosen: it is `slaProcess.NameNorm`, "the lowercase version of the `name`
+field", with `_v<n>` appended when versioning is on — the guide's own example turns `gold_support`
+into `gold_support_v2.entitlementProcess` (api_meta.txt:59078–59084, object_reference.txt:270717–270727).
+
+**How to avoid:** Deploy `enableEntitlementVersioning` as a separate, earlier change than the first
+versioned process, and confirm it in **Setup > Entitlement Settings** before writing any version
+fields. For file names, never hand-write the first one: create the process, retrieve
+`EntitlementProcess`, and edit the file the org gave you. Keeping process `name` values lowercase and
+underscore-separated makes the derived file name predictable, which matters when the same file must
+be diffed across sandboxes.

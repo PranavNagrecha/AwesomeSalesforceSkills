@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Custom Permissions Cannot Be Assigned Directly to Profiles
+## Gotcha 1: A Profile *Can* Grant a Custom Permission, and That Grant Is Invisible in the Permission Sets List
 
-**What happens:** Admins look in the profile editor for a "Custom Permissions" section and do not find one. Attempting to assign a custom permission to a profile via the Metadata API results in a deployment error. The platform only supports custom permission assignment through permission sets and permission set groups.
+**What happens:** The common advice is that custom permissions live only in permission sets. The Metadata API disagrees: `Profile` has a `customPermissions` field of type `ProfileCustomPermissions[]`, available in API version 31.0 and later — the same version and the same `enabled` + `name` shape as `PermissionSet` (`api_meta.txt` L97670 and L97961-97970). A profile-borne grant deploys cleanly. It then hides: the access is carried by the profile's implicit permission set, so an admin auditing **Setup > Custom Permissions > Permission Sets** finds nothing, and a user holds a permission nobody can explain.
 
-**When it occurs:** Every time a team assumes that because profiles control most access, they should also control custom permissions. This is a design assumption that does not match how the platform works.
+**When it occurs:** After a profile is retrieved from a legacy org, hand-edited, or copied between orgs — `customPermissions` nodes ride along in the profile XML unnoticed. Also any time an org still manages access profile-first.
 
-**How to avoid:** Always assign custom permissions through a permission set. If every user with a given profile needs the permission, create a dedicated "baseline" permission set, add the custom permission to it, and assign that permission set to all users with that profile. For large user populations, use a permission set group as the assignment unit.
+**How to avoid:** Grant through a permission set so the grant is assignable, revocable, and expirable independently of the user's profile. To find grants that are already hiding in profiles, run the `SetupEntityAccess` -> `PermissionSetAssignment` query in `references/metadata-examples.md` and read the `PermissionSet.IsOwnedByProfile` column: `true` means the grant came from a profile. The Object Reference shows the inverse filter, `isOwnedByProfile = false`, precisely because profile-owned rows otherwise pollute the result (`object_reference.txt` L88571-88578). See `admin/permission-sets-vs-profiles` for the migration argument and `admin/permission-set-expiration` for time-boxing a bypass grant.
 
 ---
 
@@ -59,3 +59,43 @@ This extra step is required because Flow evaluates `$Permission` only inside for
 **When it occurs:** When ISVs or teams building managed packages include custom permissions and forget to use the namespaced API name in their Apex (`FeatureManagement.checkPermission('MyNS__My_Permission')`) or in subscriber-facing setup instructions.
 
 **How to avoid:** Always use the fully namespaced API name in managed package Apex and documentation. In unmanaged development orgs, the namespace prefix is absent, so use a utility method that conditionally prepends the namespace when running inside a managed context.
+
+---
+
+## Gotcha 6: Component Visibility Uses a Different `$Permission` Syntax Than Formulas
+
+**What happens:** An admin copies the formula-context expression `$Permission.Bypass_Validation_Rules` into a Dynamic Forms / Lightning page component visibility filter or an In-App Guidance prompt, and the component either never shows or never hides. Component visibility resolves permissions through a different grammar: `{!$Permission.CustomPermission.permissionName}` for custom permissions and `{!$Permission.StandardPermission.permissionName}` for standard ones (`api_meta.txt` L67560-67562 for FlexiPage, L99375-99378 for Prompt, with a working sample at L99472). The extra `CustomPermission.` segment is not optional and the formula form is not a synonym for it.
+
+**When it occurs:** Any time the same permission gates both a validation rule and a page component, which is the normal case for a feature flag, and the practitioner reuses the string.
+
+**How to avoid:** Keep two spellings per permission and treat them as different APIs. The guide also bounds where the expression works at all: `{!$Permission.CustomPermission...}` is "Supported for app, Home, and record pages only" — not on other FlexiPage types. Component-visibility mechanics belong to `admin/dynamic-forms-and-actions`; the In-App Guidance `uiFormulaRule` shape belongs to `admin/in-app-guidance-and-walkthroughs`.
+
+---
+
+## Gotcha 7: `isLicensed` Is Read-Only, So You Cannot Deploy a Permission Into Being License-Gated
+
+**What happens:** A team wants a custom permission that only license-holders can hold, sets `<isLicensed>true</isLicensed>` in the `.customPermission-meta.xml`, and deploys. The field is documented as **"Required. Read-only."** (`api_meta.txt` L46654-46657) and the guide's own sample definition omits it entirely (L46688-46700). The platform owns the value; the deploy does not make the permission license-gated, and the team believes it has an enforcement boundary it does not have.
+
+**When it occurs:** When "custom permission" and "permission set license" get conflated during design, usually while packaging a feature for distribution.
+
+**How to avoid:** Treat `isLicensed` as output, not input — query it back as `CustomPermission.IsLicensed`, available in API version 50.0 and later (`object_reference.txt` L88459-88467). If Salesforce itself must enforce a license boundary, that is a permission set license, not a custom permission (see the pillar note in `references/well-architected.md`). If the gate is purely functional, a plain custom permission is correct and no licensing element is needed.
+
+---
+
+## Gotcha 8: A Retrieve Cannot Distinguish "Never Granted" From "Revoked"
+
+**What happens:** A team diffs two orgs' permission sets to prove a bypass permission was removed from production, and the diff shows nothing at all. `PermissionSetCustomPermissions` is documented with "Only enabled custom permissions are retrieved" (`api_meta.txt` L94943-94952); the identical sentence governs `ProfileCustomPermissions` (L97961-97963). A `<customPermissions>` node with `<enabled>false</enabled>` therefore never comes back from a retrieve. Absence in source means "not granted" and carries no evidence of whether it was ever granted or deliberately turned off.
+
+**When it occurs:** During access reviews, SOX-style evidence gathering, and any org-comparison tooling that treats retrieved metadata as a complete statement of access.
+
+**How to avoid:** Do not use metadata diffs as revocation evidence for custom permissions. Query the live org through `SetupEntityAccess` (`SetupEntityType = 'CustomPermission'`, valid since API 31.0 — `object_reference.txt` L261686) and capture the result set with a timestamp. Note the corollary for deploys: because absence is not a revocation instruction, removing a `<customPermissions>` node from a permission set file and deploying it does revoke the grant, while `<enabled>false</enabled>` is a shape you will never see in a round-trip and should not hand-author.
+
+---
+
+## Gotcha 9: The API Name Rules Are Stricter Than "Letters, Digits, Underscores"
+
+**What happens:** A permission named `Bypass__Validation` or `Beta_Feature_` is authored by hand, and the deploy fails or Setup rejects the name for reasons the error message states tersely. The `DeveloperName` contract is narrower than the usual API-name folklore: it "can contain only underscores and alphanumeric characters and must be unique in your organization. It must begin with a letter, not include spaces, not end with an underscore, and not contain two consecutive underscores" with a limit of 80 characters (`object_reference.txt` L88439-88448). Two consecutive underscores and a trailing underscore are both illegal — not merely discouraged.
+
+**When it occurs:** When names are generated from labels by a script, or when someone mimics the `__c` custom-field convention and produces a double underscore.
+
+**How to avoid:** Generate names with a single underscore between words, never a trailing one, and never the `__` sequence — which is reserved as the namespace separator (`NamespacePrefix__componentName`, `object_reference.txt` L88510-88520). `label` and `connectedApp` are capped at 80 characters and `description` at 255 (`api_meta.txt` L46647-46652, L46660-46663), so a description that names every consumer has to stay terse. The checker script flags an empty description for exactly this reason: the description is the only place the consumer list can live.

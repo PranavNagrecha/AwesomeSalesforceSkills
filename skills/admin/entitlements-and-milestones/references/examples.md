@@ -42,6 +42,22 @@ Entitlement Process: "Platinum SLA"
 
 The Gold and Standard processes follow the same structure with adjusted time limits and a "Business Hours: M–F 8am–5pm" assignment at the process level.
 
+The percentages above are how the tier is *described*. They are not what you deploy: an
+`EntitlementProcessMilestoneTimeTrigger` carries a `timeLength` offset from the milestone target and a
+unit, never a percentage (Metadata API Developer Guide, api_meta.txt:59204–59224). Convert once, and
+keep the conversion beside the design so the next SLA change re-derives all of it:
+
+| Milestone | `minutesToComplete` | Design threshold | Deployed `timeLength` / unit | Sign means |
+|---|---|---|---|---|
+| First Response (Platinum) | 60 | 50% → 30 min elapsed | `-30` `Minutes` | Warning — target not yet reached |
+| First Response (Platinum) | 60 | 75% → 45 min elapsed | `-15` `Minutes` | Warning |
+| First Response (Platinum) | 60 | 100% → breach | `1` `Minutes` | Violation — target has passed |
+| Resolution (Platinum) | 240 | 50% → 2 hr elapsed | `-120` `Minutes` | Warning |
+| Resolution (Platinum) | 240 | 75% → 3 hr elapsed | `-60` `Minutes` | Warning |
+| Resolution (Platinum) | 240 | 100% → breach | `1` `Minutes` | Violation |
+
+The full deployable file for a process shaped like this is in `references/metadata-examples.md` § 2.
+
 Each entitlement record is created on the customer's Account, referencing the correct process. When a case is created for the account, a Record-Triggered Flow populates `Case.EntitlementId` by querying the active entitlement for that account.
 
 **Why it works:** Milestone timers respect the process-level business hours assignment, so Gold and Standard timers pause automatically outside M–F 8–5. Platinum timers run 24/7. The action system handles agent notification without custom Apex, and the field updates enable standard reports to track SLA breach rates by tier.
@@ -62,7 +78,7 @@ Entitlement Process: "MSP Ongoing Response"
 
   Milestone: Customer Comment Response
     Time Limit: 2 hours
-    Recurrence: Independent
+    Recurrence: Independent  (MilestoneType.recurrenceType = recursIndependently)
     Reset Event: Case Comment Added (when contact is the author)
     Business Hours: M–F 8am–6pm (milestone-level override to be explicit)
     Warning Actions:
@@ -85,3 +101,35 @@ A Flow also stamps `Case.Last_Customer_Comment__c` each time a contact adds a co
 **What goes wrong:** Milestone processes are only triggered when `Case.EntitlementId` is populated. Cases without an entitlement lookup have no process, no milestone timers, and no SLA tracking — silently. Agents see no Milestone Tracker on the case. No warning or violation actions fire. The org believes entitlements are running when they are not.
 
 **Correct approach:** Build a Record-Triggered Flow on Case creation (Before Save for performance) that queries `Entitlement` WHERE `AccountId = triggerCase.AccountId` AND `Status = 'Active'` and stamps the result into `Case.EntitlementId`. For cases without an account (anonymous web submissions), define a fallback default entitlement (e.g., "Standard SLA — No Account") so at minimum baseline tracking applies.
+
+**Diagnosing it before go-live.** The failure is silent, so it needs a query rather than a look at the
+Setup screen. Run this by intake channel — any `Origin` with a high `noEntitlement` count is a channel
+the automation does not cover:
+
+```sql
+SELECT Origin, COUNT(Id) noEntitlement
+FROM Case
+WHERE EntitlementId = NULL
+  AND IsClosed = false
+  AND CreatedDate = LAST_N_DAYS:7
+GROUP BY Origin
+ORDER BY COUNT(Id) DESC
+```
+
+Then confirm the cause on one of those cases rather than guessing. `Case.SlaStartDate` "shows the time
+that the case entered an entitlement process" (Object Reference, object_reference.txt:62659–62666), so
+a null here is proof the case never entered:
+
+```sql
+SELECT Id, CaseNumber, Origin, AccountId, ContactId, EntitlementId,
+       SlaStartDate, IsStopped, StopStartDate, BusinessHoursId
+FROM Case
+WHERE Id = '500xx0000000001AAA'
+```
+
+For the live version of the same question, turn on a debug log with the **Workflow** category at
+**INFO** and create a case through the failing channel: `SLA_NULL_START_DATE` in the log says the
+engine ran and found no SLA start date, while no `SLA_PROCESS_CASE` event at all says the engine never
+looked at the case (Apex Developer Guide debug-log event table, apexdev.txt:39104–39117). Those two
+answers point at different fixes — the first is the entitlement lookup, the second is the process
+entry criteria.

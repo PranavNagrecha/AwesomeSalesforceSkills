@@ -12,11 +12,11 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 ```
 Use an Entitlement Process with a milestone:
-  - Time limit: 4 hours
-  - Business hours: assigned at process or milestone level
-  - Warning action at 75% (3 hours)
-  - Violation action at 100% (4 hours)
-Flow role: only populate Case.EntitlementId on case creation
+  - minutesToComplete: 240        (4 hours)
+  - businessHours: assigned at process or milestone level
+  - timeTriggers: timeLength -60 Minutes   -> warning at 3 hours elapsed
+                  timeLength   1 Minutes   -> violation just past the target
+Flow role: only populate the entitlement lookup on the Case at creation
 ```
 
 **Detection hint:** Look for Flow nodes that add a duration (hours/minutes) to `Case.CreatedDate` or `Case.LastModifiedDate` and store the result in a custom field. This is the SLA-hardcoding pattern.
@@ -36,11 +36,14 @@ In Lightning Experience:
 2. Build a Record-Triggered Flow on OpportunityLineItem (Opportunity.StageName = 'Closed Won')
    or on Order activation
 3. In the Flow, create an Entitlement record with:
-   - EntitlementTemplateId = <template ID>
+   - the entitlement template reference
    - AccountId = related account
    - StartDate = today
    - EndDate = today + contract duration
-   - EntitlementProcessId = <process ID>
+   - SlaProcessId = <SlaProcess ID>
+   NOT BusinessHoursId and NOT Status: neither carries the Create or Update
+   property (Object Reference, Entitlement). The calendar comes from the
+   template; Status is derived from StartDate / EndDate.
 ```
 
 **Detection hint:** Any response that says "on the Product record, add the entitlement template using the related list" without qualifying "this requires Classic" is suspect.
@@ -80,8 +83,8 @@ Record-Triggered Flow on Case (Create):
 Use entitlement milestones for:
   - Time-based SLA tracking per support tier
   - Business-hours-aware timer pausing
-  - Warning (50%/75%/90%) + violation (100%) action thresholds
-  - Milestone completion tracking (Success actions)
+  - Signed timeLength triggers: negative = warning, positive = violation
+  - Milestone completion tracking (successActions)
 
 Use escalation rules only for:
   - Simple age-based case reassignment when entitlement management is not in use
@@ -137,3 +140,43 @@ To update milestone time limits:
 ```
 
 **Detection hint:** Any response that says "update the milestone time limit in the entitlement process" without mentioning versioning and in-flight case impact should be challenged.
+
+
+---
+
+## Anti-Pattern 7: Inventing `warningActions` and `violationActions` Elements in the XML
+
+**What the LLM generates:** An `EntitlementProcess` file whose milestones contain
+`<warningActions>` and `<violationActions>` blocks alongside `<successActions>`, often with a
+`<percentComplete>` or `<threshold>` child, because that is how the Setup UI and every blog post
+describe the feature.
+
+**Why it happens:** The Setup UI genuinely labels the three categories "Success Actions", "Warning
+Actions" and "Violation Actions", and prompts about SLAs are usually phrased in percentages. The
+model reproduces the UI vocabulary as element names. The deploy fails with an unhelpful "Invalid
+field" error, or — worse — the model "fixes" it by dropping the triggers entirely and the process
+deploys with no alerting at all.
+
+**Correct pattern:**
+```
+The EntitlementProcessMilestoneItem field table (Metadata API Developer Guide,
+api_meta.txt:59158-59202) has exactly two action-bearing elements:
+
+  <successActions>   -> fires when the milestone is completed
+  <timeTriggers>     -> everything else
+
+Each <timeTriggers> carries:
+  <timeLength>       int, an OFFSET from the milestone target
+                     negative = warning, positive = violation
+  <workflowTimeTriggerUnit>  Minutes | Hours | Days
+  <actions>          name + type (Alert | FieldUpdate | FlowAction |
+                                  OutboundMessage | Task)
+
+There is no warningActions element, no violationActions element, and no
+percentage anywhere in the schema.
+```
+
+**Detection hint:** grep generated XML for `warningActions`, `violationActions`, `percent`, or a
+`<timeLength>` whose value looks like a percentage (0–100) on a milestone whose `minutesToComplete`
+is not itself around 100. Any hit means the model wrote the UI's vocabulary instead of the API's.
+The deployable reference is `references/metadata-examples.md` § 2.

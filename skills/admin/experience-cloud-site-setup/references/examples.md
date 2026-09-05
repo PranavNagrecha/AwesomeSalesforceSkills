@@ -78,3 +78,58 @@ Validation:
 **What goes wrong:** The component does not appear in the Experience Builder component picker. No error is shown. The practitioner may spend time troubleshooting visibility settings or component configuration before realizing the root cause. In some cases, if a component is added via a workaround, it may cause the site to error at runtime because Aura's rendering engine is not loaded in LWR pages.
 
 **Correct approach:** For an LWR site, all page components must be LWC. Migrate the Aura component to LWC before placing it in the site, or choose the Aura-based Build Your Own template if migration is not feasible within the project timeline. Document the template choice and the rationale (Aura component dependency) so future contributors understand why LWR was not selected.
+
+**The artifact that decides it.** Whether a component appears in the Experience Builder
+picker at all is settled in its `*.js-meta.xml`, not in the site. The Metadata API guide
+describes `targets` as "a list of targets where the Lightning web component can be used,
+such as in Lightning App Builder or Experience Builder sites" (api_meta.txt
+L84053–L84054) and shows the element shape in the `LightningComponentBundle` sample
+(api_meta.txt L84157–L84163). A component that only declares internal targets is invisible
+to Experience Builder regardless of template:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <!-- Internal Lightning pages only — never offered in Experience Builder -->
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+</LightningComponentBundle>
+```
+
+The corrected bundle adds the Experience Cloud targets, and — for a component that needs a
+relaxed content security policy inside a site — the `lightningCommunity__RelaxedCSP`
+capability, which the guide does enumerate (api_meta.txt L84062–L84064):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <capabilities>
+        <capability>lightningCommunity__RelaxedCSP</capability>
+    </capabilities>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+</LightningComponentBundle>
+```
+
+UNVERIFIED (2026-09-04): the Metadata API Developer Guide's `LightningComponentBundle`
+section documents the `targets`/`target` element shape but does not enumerate the valid
+target values; `lightningCommunity__Page` and `lightningCommunity__Default` are not listed
+in it. The guide does name `lightningCommunity__Theme_Layout` as a target elsewhere
+(api_meta.txt L53016–L53018) and `lightningCommunity__RelaxedCSP` as a capability
+(api_meta.txt L84064), so the `lightningCommunity__` prefix is confirmed while these two
+specific values are not — confirm them against the LWC Developer Guide's XML Configuration
+File Elements page before relying on the exact spelling.
+
+Run `scripts/check_experience_cloud_site_setup.py --manifest-dir <source>` to find exposed
+components missing an Experience Cloud target across a whole project rather than one bundle
+at a time.

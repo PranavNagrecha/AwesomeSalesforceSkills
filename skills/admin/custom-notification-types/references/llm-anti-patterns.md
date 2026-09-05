@@ -45,22 +45,33 @@ for (Integer i = 0; i < all.size(); i += BATCH) {
 
 ## Anti-Pattern 3: Setting title/body over character limits
 
-**What the LLM generates:** A 300-char title; a 2,000-char body.
+**What the LLM generates:** A 300-char title; a 2,000-char body. Or — more
+often, and harder to spot — a *too-small* cap invented from a half-remembered
+UI constraint, such as `abbreviate(64)`.
 
-**Why it happens:** Model doesn't know the caps.
+**Why it happens:** Model doesn't know the caps, and the platform has several
+unrelated 80/128/255-character limits nearby to confuse them with.
 
 **Correct pattern:**
 
 ```
-Title: up to 64 characters.
-Body: up to 750 characters.
+Title: up to 250 characters  (apexrefguide.txt:166830)
+Body:  up to 750 characters  (apexrefguide.txt:166860)
+Both are required to send    (apexrefguide.txt:166831, 166861)
 
 Truncate defensively:
-n.setTitle(title.abbreviate(64));
-n.setBody(body.abbreviate(750));
+n.setTitle(String.isBlank(title) ? 'Notification' : title.abbreviate(250));
+n.setBody(String.isBlank(body) ? ' ' : body.abbreviate(750));
 ```
 
-**Detection hint:** Apex `setTitle` / `setBody` with string literals longer than the caps, or concatenated strings with no length guard.
+Do not confuse these with the *metadata* limits on the type itself:
+`customNotifTypeName` max 80 and `description` max 255
+(`api_meta.txt:41799-41803`). Those constrain the `.notiftype` file, not the
+notification the user reads.
+
+**Detection hint:** Apex `setTitle` / `setBody` with string literals longer
+than the caps or concatenated strings with no length guard — and equally,
+`abbreviate(64)` or any truncation to a number that is neither 250 nor 750.
 
 ---
 

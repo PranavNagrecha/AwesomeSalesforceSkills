@@ -25,6 +25,9 @@ Answer these questions before starting any configuration:
 - **Products & Price Books in use for support contracts?** Yes / No
 - **Lightning Experience or Classic?** (affects entitlement template product attachment)
 - **Existing entitlement records on accounts?** Yes / No / Partial
+- **`enableEntitlementVersioning` on?** Yes / No — (must be on *before* the first versioned process)
+- **`enableMilestoneStoppedTime` on?** Yes / No — (must be on *before* go-live to explain stopped cases)
+- **Does anything set `Case.IsStopped`?** Yes / No — if yes, who, and under what policy?
 
 ---
 
@@ -35,17 +38,31 @@ Fill in one block per support tier:
 ### Tier: _______________
 
 - **Process name:** _______________
-- **Version label:** _______________
+- **`versionMaster`:** _______________ (identical across every version of this process)
+- **`versionNumber`:** _______________   **`isVersionDefault`:** Yes / No
+- **`SObjectType`:** Case / Work Order
+- **`entryStartDateField`:** SlaStartDate / CreatedDate / ClosedDate / LastModifiedDate / StopStartDate
 - **Business hours (process level):** _______________
 - **Start condition:** Case Created / Status Change / (other: _______)
 - **Exit condition:** Case Closed / (other: _______)
 
 #### Milestones
 
-| Milestone Name | Time Limit | Recurrence Type | BH Override | Warning Actions | Violation Actions | Success Actions |
-|---|---|---|---|---|---|---|
-| First Response | | No Recurrence | | 50%: email agent; 75%: email agent+manager | 100%: email VP + field update | Stamp First_Response_Met__c |
-| Resolution | | No Recurrence | | 50%: email agent; 75%: email agent+manager | 100%: email VP + field update | Stamp Resolution_Met__c |
+Record the deployable values, not the percentages. `minutesToComplete` is always minutes;
+`timeLength` is a signed offset from the target with its own unit (negative = warning,
+positive = violation). Re-derive every `timeLength` whenever `minutesToComplete` changes.
+
+| Milestone Name (must match a MilestoneType) | `minutesToComplete` | `recurrenceType` | `businessHours` override | `useCriteriaStartTime` | Warning `timeLength` / unit | Violation `timeLength` / unit | `successActions` |
+|---|---|---|---|---|---|---|---|
+| First Response | | `none` | | `false` | | `1` Minutes | Stamp First_Response_Met__c |
+| Resolution | | `none` | | | `1` Minutes | Stamp Resolution_Met__c |
+
+**Milestone completion — who writes `CaseMilestone.CompletionDate`?**
+
+| Milestone | Completion mechanism | Owner |
+|---|---|---|
+| First Response | Completion criteria the platform can satisfy / Apex / Flow | |
+| Resolution | | |
 
 ---
 
@@ -93,6 +110,9 @@ Fill in one block per support tier:
 - [ ] Entitlement template creation mechanism confirmed (Flow for Lightning, Classic UI for Classic)
 - [ ] Milestone timer behavior tested in sandbox with shortened time limit
 - [ ] Process versioning strategy documented for future SLA term changes
+- [ ] Every `timeLength` re-derived after the last change to `minutesToComplete`
+- [ ] Exactly one file per `versionMaster` has `isVersionDefault` true
+- [ ] `python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir <dir>` reports no ERROR
 
 ---
 

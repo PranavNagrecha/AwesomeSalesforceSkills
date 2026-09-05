@@ -3,25 +3,32 @@
 Common mistakes AI coding assistants make when generating or advising on Salesforce Custom Permissions.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Assigning custom permissions directly to profiles
+## Anti-Pattern 1: Routing a custom permission grant through a profile
 
-**What the LLM generates:** "Add the custom permission to the Sales User profile so all sales reps get access."
+**What the LLM generates:** "Add the custom permission to the Sales User profile so all sales reps get access." (Or, just as often, the over-correction: "custom permissions cannot be assigned to profiles at all.")
 
-**Why it happens:** LLMs generalize permission assignment and assume profiles can carry custom permissions directly. Custom permissions cannot be assigned directly to profiles -- they must be included in a Permission Set, which is then assigned to users or included in a Permission Set Group.
+**Why it happens:** LLMs repeat the widely-copied claim that profiles cannot carry custom permissions. Both the claim and its opposite are wrong as stated. `Profile.customPermissions` is a real Metadata API field of type `ProfileCustomPermissions[]`, available in API version 31.0 and later -- the same version and the same `enabled` + `name` shape as `PermissionSet.customPermissions`. A profile grant deploys. It is still the wrong design, because the grant then rides the profile's implicit permission set and never appears in the permission's Permission Sets related list.
 
 **Correct pattern:**
 
 ```
-Custom permissions are assigned via Permission Sets, not Profiles:
+Grant through a Permission Set:
 1. Create or edit a Permission Set.
-2. In the Permission Set, go to Custom Permissions → Edit.
-3. Move the custom permission from Available to Enabled.
-4. Assign the Permission Set to the users who need the capability.
+2. Custom Permissions → Edit → move from Available to Enabled.
+3. Assign the Permission Set to the users who need the capability.
 
-Profiles do NOT have a Custom Permissions section.
+Why not a Profile:
+- The grant is invisible in Setup > Custom Permissions > Permission Sets.
+- It cannot be revoked without editing the profile every user shares.
+- It cannot be time-limited via permission set expiration.
+- It surfaces only as PermissionSet.IsOwnedByProfile = true in a
+  SetupEntityAccess query.
+
+Do NOT say "profiles do not have custom permissions" — the metadata
+element exists and deploys. Say "do not grant through profiles."
 ```
 
-**Detection hint:** If the output says "add the custom permission to the profile," it is incorrect. Search for `profile` in the same sentence as `custom permission` assignment.
+**Detection hint:** Flag both directions. Search for `custom permission` near `profile`: an output that assigns one to a profile is a design error; an output that claims the platform forbids it is a factual error. Correct output recommends a permission set *and* explains that a profile grant is possible but hidden.
 
 ---
 
@@ -29,7 +36,7 @@ Profiles do NOT have a Custom Permissions section.
 
 **What the LLM generates:** "Use `$Permission.My_Custom_Permission` in your validation rule to check if the user has the permission."
 
-**Why it happens:** LLMs get close but sometimes hallucinate the exact syntax. The correct global variable is `$Permission.My_Custom_Permission__c` -- note the `__c` suffix is NOT included. The API name of a custom permission does not use the `__c` suffix in the `$Permission` global variable context, unlike custom fields. However, LLMs may also incorrectly add `__c`.
+**Why it happens:** LLMs get close but hallucinate the exact syntax, in two directions. First, they append `__c` as if the permission were a custom field: the correct reference is `$Permission.Enable_Discount_Override`, with no suffix. A custom permission's `DeveloperName` cannot even contain two consecutive underscores, so `__c` is not a legal part of the name. Second, and more damaging because it fails silently, they reuse the formula spelling in a Lightning page component-visibility filter or an In-App Guidance `uiFormulaRule`, where the required grammar carries an extra segment: `{!$Permission.CustomPermission.Enable_Discount_Override}`.
 
 **Correct pattern:**
 
@@ -44,14 +51,26 @@ Apex:
   FeatureManagement.checkPermission('Enable_Discount_Override')
 
 Flow:
-  Use a Decision element with the formula:
-  {!$Permission.Enable_Discount_Override} = true
+  Create a Formula resource, Return Type Boolean, value
+  $Permission.Enable_Discount_Override
+  then reference that resource in the Decision element.
+  ($Permission is not valid directly in a condition row.)
 
 Visualforce:
   {!$Permission.Enable_Discount_Override}
+
+LWC:
+  import hasPerm from
+    '@salesforce/customPermission/Enable_Discount_Override';
+  (Resolves to true or undefined — never false.)
+
+Lightning page component visibility / In-App Guidance:
+  {!$Permission.CustomPermission.Enable_Discount_Override}
+  (Note the extra CustomPermission. segment. App, Home,
+   and record pages only.)
 ```
 
-**Detection hint:** If the output uses `$Permission.Enable_Discount_Override__c` (with `__c`), the syntax is wrong. Custom permission API names in the `$Permission` global variable do not carry the `__c` suffix. Regex: `\$Permission\.\w+__c`.
+**Detection hint:** Two regexes. `\$Permission\.\w+__c` catches the bogus `__c` suffix. `leftValue>\{!\$Permission\.(?!CustomPermission\.|StandardPermission\.)` catches the formula spelling used inside a component-visibility or `uiFormulaRule` criterion, where it will evaluate to nothing rather than error.
 
 ---
 

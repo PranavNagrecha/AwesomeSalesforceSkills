@@ -158,3 +158,20 @@ private class RefundControllerTest {
 - The bypass cannot be assigned to a specific user within a profile — it is all-or-nothing at the profile level.
 
 **Correct approach:** Create a custom permission with a meaningful API name. Add it to a permission set. Check `$Permission.My_Permission` in formulas or `FeatureManagement.checkPermission('My_Permission')` in Apex. Assign or revoke access by managing permission set assignments — no code or rule changes needed.
+
+**Finding the ones already in your org.** Profile-name gates are text inside metadata, so they are a source-tree grep, not a query. Run this against a retrieved DX project before you plan a migration:
+
+```bash
+# Profile-name gates hiding in declarative metadata
+grep -rn --include='*.validationRule-meta.xml' \
+        --include='*.field-meta.xml' \
+        --include='*.flow-meta.xml' \
+        --include='*.workflow-meta.xml' \
+        -e '\$Profile\.Name' -e '\$Profile\.Id' force-app/main/default
+
+# The same gate in Apex, plus hardcoded 15/18-char user Ids
+grep -rnE "UserInfo\.getProfileId\(\)|'005[A-Za-z0-9]{12,15}'" \
+     force-app/main/default/classes
+```
+
+Each hit is one candidate for a custom permission. Triage them by counting distinct profile names referenced: a gate naming three or more profiles is almost always one capability wearing three costumes, and collapses to a single permission. Migrate by adding `NOT($Permission.New_Permission)` alongside the existing profile check first, granting the permission to exactly the users the old check admitted, verifying with the `SetupEntityAccess` query in `references/metadata-examples.md`, and only then deleting the `$Profile.Name` clause.

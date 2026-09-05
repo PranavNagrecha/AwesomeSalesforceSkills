@@ -9952,6 +9952,9 @@
       "flow/screen-flows",
       "lwc/lightning-navigation-dead-link-handling"
     ],
+    "navigation-menu": [
+      "admin/experience-cloud-site-setup"
+    ],
     "navigation-mixin": [
       "lwc/aura-to-lwc-migration",
       "lwc/common-lwc-runtime-errors",
@@ -9982,6 +9985,7 @@
       "data/community-analytics-data"
     ],
     "network-metadata": [
+      "admin/experience-cloud-site-setup",
       "devops/experience-cloud-deployment-admin"
     ],
     "network-topology": [

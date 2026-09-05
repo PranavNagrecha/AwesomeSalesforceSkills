@@ -24,7 +24,12 @@ Answer these before writing any metadata or code:
   - [ ] Formula field (`$Permission.X`)
   - [ ] Flow (formula resource of type Boolean)
   - [ ] Visualforce (`{!$Permission.X}`)
-  - [ ] Connected App (OAuth gate)
+  - [ ] LWC (`@salesforce/customPermission/X`)
+  - [ ] Lightning page component visibility / Dynamic Forms (`{!$Permission.CustomPermission.X}`)
+  - [ ] In-App Guidance `uiFormulaRule`
+- **Description text (names every consumer above; 255-char limit):**
+- **Does another custom permission have to be enabled with this one (`requiredPermission`)?**
+- **Is the grant permanent, or does it expire?** (see `admin/permission-set-expiration`)
 - **Permission sets that will carry this permission:** (list all)
 - **Users or personas who should receive the permission:** (list or describe)
 - **Is this a new permission or modifying an existing one?**
@@ -91,4 +96,8 @@ Record any deviations from the standard pattern and why:
 | Formula field | `$Permission.My_Custom_Permission` |
 | Flow formula resource | `$Permission.My_Custom_Permission` (used as resource value, type Boolean) |
 | Visualforce | `{!$Permission.My_Custom_Permission}` |
-| Permission set XML | `<customPermissions><enabled>true</enabled><name>My_Custom_Permission</name></customPermissions>` |
+| LWC | `import hasPerm from '@salesforce/customPermission/My_Custom_Permission';` (resolves to `true` or `undefined`) |
+| Component visibility / In-App Guidance | `{!$Permission.CustomPermission.My_Custom_Permission}` — note the extra `CustomPermission.` segment |
+| Permission set XML | `<customPermissions><enabled>true</enabled><name>My_Custom_Permission</name></customPermissions>`, inside a `<PermissionSet>` root |
+
+Full deployable files, package.xml, deploy order, and the `SetupEntityAccess` verification queries are in `references/metadata-examples.md`.

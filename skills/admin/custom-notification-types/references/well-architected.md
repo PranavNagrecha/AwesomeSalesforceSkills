@@ -112,3 +112,70 @@ or when you need explicit try/catch around the send.**
   https://developer.salesforce.com/docs/atlas.en-us.api_action.meta/api_action/actions_intro.htm
 - CustomNotificationType (Metadata API):
   https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_customnotificationtype.htm
+
+Sources read as extracted text from the Summer '26 / v62 PDFs, with the
+section each claim rests on:
+
+- Metadata API Developer Guide — `CustomNotificationType`
+  (`api_meta.txt:41769-41894`): file suffix `.notiftype` and the
+  `notificationtypes` directory (L41783-41784); API 46.0+ (L41791);
+  `customNotifTypeName` required, max 80 (L41799-41800); `description` max
+  255 (L41802-41803); `desktop` and `mobile` required booleans
+  (L41805-41811); `masterLabel` required (L41808); `slack` "Reserved for
+  future use" (L41813); `actionGroups` (Beta) and the
+  `NotificationActionType` values `NotificationApiAction` / `Share`
+  (L41795-41864); the sample definition this skill's XML extends
+  (L41877-41882); **no wildcard support in `package.xml`** (L41892-41894).
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide — `NotificationTypeConfig`
+  (`api_meta.txt:92197-92296`): suffix `.config`, folder
+  `notificationTypeConfig`, API 48.0+ (L92203-92207); `notificationType`
+  takes the type's API name (L92221-92225); `desktopEnabled` /
+  `mobileEnabled` / `slackEnabled` (L92269-92274); `connectedAppName`
+  required and to be harvested by retrieving (L92248-92251); the ECA/CA
+  deploy caveat (L92258-92262) — supports the "delivery settings do not
+  travel with the type" point in `references/metadata-examples.md` §2.
+- Metadata API Developer Guide — `Flow` (`api_meta.txt`): the
+  `customNotificationAction` `actionType` enum value, "available in API
+  version 46.0 and later" (L68710), and the `actionCalls` /
+  `inputParameters` element shape the Flow excerpt follows (L73211-73275).
+  The *input parameter names* for this action are **not** in this guide —
+  they live in the Actions Developer Guide, which is why
+  `references/metadata-examples.md` §3 carries an UNVERIFIED marker and a
+  retrieve-to-harvest instruction rather than an asserted schema.
+- Apex Reference Guide — `Messaging.CustomNotification`
+  (`apexrefguide.txt:166555-166944`): the target rule — either `targetId` or
+  `targetPageRef`, both omitted throws, dummy Id `000000000000000AAA`
+  (L166572-166575), and the pre-Winter '21 client-compatibility note
+  (L166587-166589); the **Send Custom Notifications** user permission and
+  user-mode execution (L166590-166594); the worked example this skill's Apex
+  excerpt is adapted from, including `WITH USER_MODE` on the type lookup
+  (L166600-166635); `send(Set<String>)` and the five valid recipient Id kinds
+  with their active-user and team-enablement preconditions, capped at 500
+  values (L166757-166781); `setTitle` max 250 and `setBody` max 750, both
+  required (L166830, L166860-166861); the six-argument constructor
+  (L166689-166690). Corrects the previously stated 64-character title cap.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/apexref.pdf
+- Object Reference for Salesforce — `CustomNotificationType`
+  (`object_reference.txt:88293-88394`): sObject available API 47.0+
+  (L88294); supported calls (L88301); `CustomNotifTypeName` `idLookup` /
+  `Unique`, max 80, "isn't namespaced, so it can't be duplicated across
+  installed packages" (L88306-88313); `DeveloperName` as the API name
+  (L88340-88345); `Desktop` and `Mobile` both "Defaulted on create" with
+  default `false` (L88332-88338, L88369-88386); `IsSlack` reserved
+  (L88347-88352) — the grounding for the verification SOQL and for
+  `references/gotchas.md` Gotcha 8.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Salesforce Developer Limits and Allocations Quick Reference
+  (`salesforce_app_limits_cheatsheet.txt`): "Maximum number of push
+  notification method calls allowed per Apex transaction — 10" and "Maximum
+  number of push notifications that can be sent in each push notification
+  method call — 2,000" (L96-100); "An org can send up to 20,000 iOS and
+  10,000 Android push notifications per hour", only deliverable
+  notifications counting (L449-456); and the fail-open behaviour, "When an
+  org's hourly push notification limit is met, any additional notifications
+  are still created for in-app display and retrieval via REST API"
+  (L465-466) — the grounding for `references/gotchas.md` Gotchas 6 and 7.
+  The cheat sheet names the governed operation "push notification method
+  calls" without naming `Messaging.CustomNotification.send()`, which is why
+  Gotcha 6 carries an UNVERIFIED marker on that applicability.

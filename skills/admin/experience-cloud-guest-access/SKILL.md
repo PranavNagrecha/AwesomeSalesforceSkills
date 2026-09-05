@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-guest-access
-description: "Use when designing or configuring public pages on an Experience Cloud site — guest user profile setup, page-level access settings in Experience Builder, object/field visibility for unauthenticated visitors, and explicit sharing rules that expose data on public pages. Triggers: 'configure public pages Experience Cloud', 'guest user profile setup', 'unauthenticated site access', 'public community page visibility', 'make page visible without login'. NOT for authenticated user features (use admin/experience-cloud-member-management). NOT for security hardening or remediation of guest user exposure (use security/guest-user-security)."
+description: "Use when designing or configuring public pages on an Experience Cloud site — guest user profile setup, page-level access settings in Experience Builder, object/field visibility for unauthenticated visitors, and explicit sharing rules that expose data on public pages. Triggers: 'configure public pages Experience Cloud', 'guest user profile setup', 'unauthenticated site access', 'public community page visibility', 'make page visible without login'. NOT for authenticated user features (use admin/experience-cloud-member-management). NOT for security hardening or remediation of guest user exposure (use security/guest-user-security). Also covers the deployable shape: pageAccess on the route file, the guest Profile's objectPermissions and fieldPermissions, sharingGuestRules, siteGuestRecordDefaultOwner on CustomSite, and the Network guest flags."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,6 +19,12 @@ triggers:
   - "public community page visibility not working"
   - "make this Experience Builder page accessible without login"
   - "set up product catalog accessible without login"
+  - "public Experience Cloud page renders but the record list is empty"
+  - "guest user sharing rule accessLevel Edit fails to deploy"
+  - "records created by a guest user are owned by the guest user"
+  - "set siteGuestRecordDefaultOwner on an Experience Cloud site"
+  - "retrieved guest profile has no object permissions in it"
+  - "making a page public turned on guest file access"
 inputs:
   - "Experience Cloud site name and template type (LWR, Aura, Microsite)"
   - "List of pages that must be publicly accessible vs. members-only"
@@ -30,9 +36,9 @@ outputs:
   - "Explicit sharing rule recommendations to expose records on public pages"
   - "Public page access checklist (see templates/)"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-04
 ---
 
 # Experience Cloud Guest Access
@@ -49,6 +55,24 @@ Gather this context before working on anything in this domain:
 - Confirm the org is on Spring '21 or later. The Secure Guest User Record Access toggle became mandatory in Spring '21 and changes how guest record visibility works — any site designed before this release may need sharing rule restructuring.
 - Know which pages must be public and which should require login. Page-level access is set in Experience Builder per page; this is the primary mechanism for controlling unauthenticated access.
 - Confirm whether any public pages require guests to submit records (e.g., contact forms, case deflection). Guest Create permissions on a profile are different from Read-only object access.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Experience Builder. Guest access has six independent gates, and every one of these questions decides the value of one of them. An agent that skips them produces a site that deploys cleanly and either shows nothing or shows too much.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Route by route, which pages are public and which require login — including the ones nobody mentioned?" | `pageAccess` defaults to `UseParent`, and an unclassified route inherits whatever the site does later | A per-route classification, with zero `UseParent` values left in the bundle |
+| "Which objects and which *named fields* does each public page actually render?" | The guest profile is the site-wide FLS boundary; anything you add for one page is readable from every page | The exact `objectPermissions` and `fieldPermissions` list, and the fields deliberately excluded |
+| "Which records of those objects belong in public, and what field distinguishes them?" | External OWD stays Private; the criteria on the guest sharing rule is the whole release policy | The `criteriaItems` for `sharingGuestRules`, and a rule that survives new records being created |
+| "Can a visitor submit anything — a case, a form, a registration?" | Create is the only write a guest should ever have, and it drags `siteGuestRecordDefaultOwner` in with it | A create-only object list plus the named integration user that will own those records |
+| "Who owns the records a guest creates today, and who should?" | Without an explicit owner the guest user itself owns them, and the org-level fallback is deprecated in API 63.0+ | `siteGuestRecordDefaultOwner` set in the same deploy as `allowCreate`, not afterwards |
+| "Do guests get files, Chatter, or member visibility on this site?" | Three `Network` switches, independent of both profile and sharing — and one of them turns itself on | Explicit `false` values, plus a post-publish re-retrieve to confirm they held |
+| "Should these public pages be indexed by search engines?" | Public and indexed are separate decisions; `robotsTxtPage` is a page you author, and an absent one is not a restrictive policy | A crawl decision made before launch rather than a de-indexing project after |
+
+What a proper configuration adds over just setting a page to Public: the six gates agree with each other, the guest profile grants exactly the fields on screen and nothing a future page might query, only the intended records are released, and any record a visitor creates lands with an owner someone manages.
 
 ---
 
@@ -142,15 +166,15 @@ Leaving these enabled expands the attack surface of the public site beyond the p
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
+Work the six gates in `references/metadata-examples.md` in order. Each step ends with an artefact, not a Setup click.
 
-1. **Identify scope** — list all pages on the site and classify each as Public or Requires Login. Confirm site template (LWR vs Aura) so the correct Experience Builder navigation applies.
-2. **Configure page access** — for each public page, open Page Properties in Experience Builder and set Page Access to Public. Save and publish after all pages are configured.
-3. **Set guest profile permissions** — open the guest user profile for this site. Grant Read on objects and fields required by public pages. Add Create on specific objects only where a public form submission is required. Remove any permissions not directly needed.
-4. **Configure sharing for public records** — review external OWD for each object the public pages display. For Private OWD objects, create Guest User Sharing Rules that expose only the intended records (e.g., criteria-based on Status = Published). For objects that should not be publicly readable, confirm external OWD is Private and no sharing rule exists.
-5. **Disable API settings** — confirm API Enabled is OFF on the guest user profile. Confirm "Allow guest users to access public APIs" is OFF in Site Administration > Preferences.
-6. **Test as a guest** — open the site in an incognito browser. Navigate all public pages. Confirm intended records load and no unexpected records or fields appear. Confirm members-only pages redirect to login.
-7. **Handoff to security review** — if the site has custom Apex controllers called from public pages, hand off to security/guest-user-security for FLS and WITH USER_MODE review.
+1. **Classify every route.** Retrieve the site bundle (`experiences/` for classic LWR and Aura, `digitalExperiences/` for enhanced LWR) and grep the route files for `"pageAccess"`. Resolve every `UseParent` to `Public` or `RequiresLogin`. For an Aura site, enable ExperienceBundle Metadata API first or the routes will not come back at all — see gate 2 in `references/metadata-examples.md`.
+2. **Retrieve the guest profile *with* its objects.** Build the manifest from the `package.xml` in `references/metadata-examples.md`: `Profile` plus a `CustomObject` member for every object the public pages touch, standard objects named individually. A profile-only retrieve returns almost no permissions and will make an over-permissive profile look clean (gotcha 9).
+3. **Write the profile to the pages, not the other way round.** For each public route, list the components' objects and the fields on screen, then set `objectPermissions` (`allowRead` true, the other four and the three escalation flags explicitly `false`) and one `fieldPermissions` entry per displayed field. Add `allowCreate` only where a form submits, and record why in the template.
+4. **Release records with `sharingGuestRules`.** Confirm `externalSharingModel` is `Private`, then write one guest rule per publishable set with `accessLevel` `Read`, `sharedTo/guestUser` naming this site's guest nickname, and `criteriaItems` that discriminate published from draft. Decide `includeHVUOwnedRecords` now — it cannot be edited after the rule is created (gotcha 13).
+5. **Set the site and network files.** Add `siteGuestRecordDefaultOwner` to the `CustomSite` file in the same package as any `allowCreate`. Set `clickjackProtectionLevel`, and set `enableGuestChatter` / `enableGuestFileAccess` / `enableGuestMemberVisibility` deliberately on the `Network` file.
+6. **Run the checker, then deploy check-only.** `python3 skills/admin/experience-cloud-guest-access/scripts/check_experience_cloud_guest_access.py --manifest-dir <source-root> --guest-profile "<the guest profile's real file name>"` — the guest profile's generated name is UNVERIFIED (2026-09-04): the Metadata API guide documents neither it nor the guest user license label, so read the name out of your retrieve rather than assuming `<Site> Profile`. The checker errors on escalating object permissions, forbidden system permissions, and any guest rule whose `accessLevel` is not `Read`; it warns on guest write permissions, a missing default owner, inert `requireHttps` / `guestProfile` elements, and enabled network guest flags. Fix the errors, judge the warnings, then `sf project deploy start --dry-run`.
+7. **Prove it from outside.** Run the three verification steps at the end of `references/metadata-examples.md`: the `UserType = 'Guest'` query, the `ObjectPermissions` and `RowCause = 'GuestRule'` pair that isolates which gate is failing, and the unauthenticated `curl` against one Public and one RequiresLogin route. Re-retrieve the `Network` file afterwards to confirm `enableGuestFileAccess` still reads what you deployed (gotcha 8). Complete `templates/experience-cloud-guest-access-template.md` as the record, then hand off what this skill does not own: Apex reachable from a public page goes to `security/guest-user-security`, an already-live site needing an exposure sweep goes to `security/guest-user-security-audit`, and the crawl and indexing decision goes to `admin/experience-cloud-seo-settings`.
 
 ---
 
@@ -166,6 +190,11 @@ Run through these before marking work in this area complete:
 - [ ] API Enabled is OFF on the guest user profile.
 - [ ] "Allow guest users to access public APIs" is OFF in Site Administration > Preferences.
 - [ ] Site tested in incognito browser — all public pages load expected content and no unexpected records are visible.
+- [ ] Every route in the site bundle has `pageAccess` explicitly `Public` or `RequiresLogin` — no `UseParent` left behind.
+- [ ] Every `sharingGuestRules` entry has `accessLevel` `Read`, a `sharedTo/guestUser` naming this site, and criteria that exclude drafts.
+- [ ] `siteGuestRecordDefaultOwner` is set on the `CustomSite` file wherever the guest profile grants `allowCreate`.
+- [ ] `enableGuestChatter`, `enableGuestFileAccess`, and `enableGuestMemberVisibility` were re-checked on the `Network` file *after* publishing, not only before.
+- [ ] `scripts/check_experience_cloud_guest_access.py` reports zero errors, and every warning has a recorded decision.
 
 ---
 
@@ -189,9 +218,24 @@ Run through these before marking work in this area complete:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing the deployable shape — the six gates in deploy order, `package.xml`, retrieve/deploy commands, and the three verification steps that isolate which gate is failing |
+| `references/gotchas.md` | A public page shows nothing, shows too much, or a setting you deployed did not stick — fifteen platform behaviours behind those three symptoms |
+| `references/examples.md` | Working a real requirement end to end before any XML exists — a public Knowledge base, a public product catalog, and the broaden-permissions anti-pattern |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated guest-access advice, especially "set the OWD to Public Read Only" and View All offered as a fix for an empty page |
+| `references/well-architected.md` | Framing the Public-OWD-versus-sharing-rule tradeoff, and locating the official source behind each claim |
+| `templates/experience-cloud-guest-access-template.md` | Workflow step 1, and again at review time as the one-page record of which routes are public, what the guest profile grants, and which records are released |
+| `scripts/check_experience_cloud_guest_access.py` | Before every deploy — static checks on the guest profile, guest sharing rules, and the site and network files |
+
 ## Related Skills
 
 - `security/guest-user-security` — use when the question is hardening, auditing, or remediating security exposure on the guest user profile rather than configuring public page access.
 - `admin/experience-cloud-site-setup` — use when the task is creating or initially configuring an Experience Cloud site rather than configuring guest access on an existing site.
 - `admin/experience-cloud-member-management` — use when the question involves authenticated external user access, sharing sets, or member profiles rather than guest access.
 - `admin/sharing-and-visibility` — use when the broader sharing model design (OWD strategy, role hierarchy, internal sharing rules) is the primary question.
+- `admin/sharing-rules` — use when the `SharingRules` container itself is the question: which rule type, the `FilterOperation` enumeration, or a second worked `sharingGuestRules` example on a different object.
+- `security/guest-user-security-audit` — use when the site is already live and the task is sweeping it for exposure rather than configuring it.
+- `admin/experience-cloud-seo-settings` — use when the question is whether and how public pages should be indexed by search engines.

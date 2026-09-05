@@ -1,6 +1,6 @@
 ---
 name: custom-permissions
-description: "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag'. NOT for gating Apex service code and its tests — use apex/apex-custom-permissions-check. NOT for permission set design — use admin/permission-set-architecture."
+description: "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag', 'SetupEntityAccess', 'requiredPermission', 'who has this custom permission'. NOT for gating Apex service code and its tests — use apex/apex-custom-permissions-check. NOT for permission set design — use admin/permission-set-architecture."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -10,6 +10,13 @@ triggers:
   - "how do I check a custom permission in Apex or a validation rule"
   - "I want to gate a feature so only certain users can see or use it"
   - "how do I use $Permission in a formula field or flow"
+  - "create a custom permission and grant it through a permission set"
+  - "custom permission returns false even though the user has the permission set"
+  - "find out which users hold a custom permission"
+  - "deploy failed because the permission set references a custom permission that does not exist"
+  - "hide a Lightning page component unless the user has a custom permission"
+  - "let the integration user bypass a validation rule without deactivating it"
+  - "who has this custom permission assigned, query it"
 tags:
   - custom-permissions
   - access-control
@@ -25,15 +32,17 @@ outputs:
   - "permission set XML including the custom permission node"
   - "Apex, formula, validation rule, or Flow expressions that read the permission"
   - "checker report of which permission sets grant which custom permissions"
+  - "SetupEntityAccess verification query proving who holds the permission today"
+  - "component visibility filter using {!$Permission.CustomPermission.X}"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-09-04
 ---
 
 # Custom Permissions
 
-Use this skill when a feature or capability needs a named access gate that goes beyond object, field, or record permissions. Custom permissions grant boolean access to a named capability and can be checked in validation rules, formula fields, Apex, Flow, Visualforce, and Connected App policies.
+Use this skill when a feature or capability needs a named access gate that goes beyond object, field, or record permissions. Custom permissions grant boolean access to a named capability and can be checked in validation rules, formula fields, Apex, Flow, LWC, Visualforce, and Lightning page component visibility. Each of those contexts spells the check differently.
 
 ---
 
@@ -41,8 +50,26 @@ Use this skill when a feature or capability needs a named access gate that goes 
 
 - Confirm you need a custom permission, not a permission set feature license or a record-level sharing rule. Custom permissions are for feature on/off gates, not record visibility.
 - Identify all platform contexts that must check the permission (validation rule, formula, Apex, Flow). Each uses a different syntax.
-- Gather the exact API name you want. API names must start with a letter and may only contain letters, digits, and underscores. The name cannot be changed after creation without updating every reference.
-- Determine which permission sets will carry the permission. Custom permissions cannot be assigned directly to profiles — they must ride inside a permission set.
+- Gather the exact API name you want. `DeveloperName` must begin with a letter, contain only alphanumerics and underscores, not include spaces, **not end with an underscore, and not contain two consecutive underscores**; limit 80 characters (Object Reference, `CustomPermission.DeveloperName`). The name cannot be changed after creation without updating every reference.
+- Determine which permission sets will carry the permission. A `Profile` can also carry one — `Profile.customPermissions` exists in the Metadata API from version 31.0 — but a profile-borne grant is invisible in the Custom Permissions related list, so grant through a permission set (`references/gotchas.md` Gotcha 1).
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before creating anything. A custom permission is trivial to create and permanent in practice, so the cost of a wrong answer is paid later, by whoever inherits the org.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What exactly does holding this permission let someone do, in one sentence?" | If the sentence needs an "and", this is two permissions; a single flag that means several things cannot be revoked partially | The permission's `description`, and possibly a second permission |
+| "Which contexts read it — validation rule, formula, Flow, Apex, LWC, component visibility?" | Each has a different spelling, and component visibility needs the extra `CustomPermission.` segment | The consumer list, and the set of syntaxes to get right (Gotcha 6) |
+| "Does anything already hold this access through a profile?" | `Profile.customPermissions` deploys cleanly and hides in the profile-owned permission set | A `SetupEntityAccess` baseline before you add a second grant path (Gotcha 1) |
+| "Does another custom permission have to be on for this one to make sense?" | `requiredPermission` enforces that at the platform level instead of in prose | A `CustomPermissionDependencyRequired` node and a single-package deploy order |
+| "Who revokes it, and what proves it was revoked?" | A metadata diff cannot prove revocation — only enabled grants are ever retrieved | An owner and a live `SetupEntityAccess` query as the evidence artifact (Gotcha 8) |
+| "Is this a bypass? If so, which named rules does it suppress?" | An unnamed bypass becomes an org-wide off switch nobody dares remove | The rule list in the `description` and a scoped `Bypass_Validation_<Domain>` name |
+| "Is the grant permanent, or should it expire?" | Data-fix and migration bypasses outlive their reason by default | A time-limited permission set assignment (`admin/permission-set-expiration`) |
+
+What a proper configuration adds over just creating the permission: the flag means one thing, every context that reads it uses the right syntax, the grant path is a permission set you can audit and expire, and there is a query that answers "who holds this today" without a Setup click-through.
 
 ---
 
@@ -58,26 +85,35 @@ Source: Salesforce Help — [Custom Permissions Overview](https://help.salesforc
 
 Custom permissions are created in **Setup > Custom Permissions**. Click **New**, enter a label and an API name, then optionally provide a description and a Connected App association.
 
-Key constraints on the API name:
-- Must begin with a letter (not a digit or underscore).
+Key constraints on the API name (`CustomPermission.DeveloperName`, Object Reference):
+- Must begin with a letter, and must not include spaces.
 - Only alphanumeric characters and underscores are allowed.
-- Cannot end with a double underscore followed by a letter (reserved for managed packages).
+- Must not end with an underscore, and must not contain two consecutive underscores — `__` is the namespace separator (`NamespacePrefix__componentName`).
+- Limit 80 characters, unique in the org.
 - Cannot be changed after the permission is referenced in production without a coordinated update of all dependent metadata and code.
 
-The `CustomPermission` metadata type is supported by the Metadata API and SFDX source format. The file lives at `customPermissions/My_Custom_Permission.customPermission-meta.xml`.
+`label` and `connectedApp` are capped at 80 characters and `description` at 255 (Metadata API Developer Guide, `CustomPermission` field table).
+
+The `CustomPermission` metadata type is supported by the Metadata API (version 31.0 and later) and SFDX source format. The file lives at `customPermissions/My_Custom_Permission.customPermission-meta.xml`, and the filename stem is the API name — there is no `<fullName>` element in source format. Deployable shapes, package.xml, and the verification queries are in `references/metadata-examples.md`.
 
 ### Assigning Custom Permissions to Permission Sets
 
-Custom permissions live in permission sets, not profiles. In Setup, open a permission set, navigate to **Custom Permissions**, and enable the desired permission. In the Metadata API, the permission set XML includes a `<customPermissions>` node:
+Grant custom permissions through permission sets. In Setup, open a permission set, navigate to **Custom Permissions**, and enable the desired permission. In the Metadata API, the permission set XML includes a `<customPermissions>` node (`PermissionSetCustomPermissions`, API 31.0+):
 
 ```xml
-<customPermissions>
-    <enabled>true</enabled>
-    <name>My_Custom_Permission</name>
-</customPermissions>
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Refund Pilot</label>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>My_Custom_Permission</name>
+    </customPermissions>
+</PermissionSet>
 ```
 
 A single custom permission can appear in multiple permission sets and permission set groups. When any one of those is assigned to a user, the permission evaluates to `true` for that user.
+
+`Profile` accepts the identical shape through `ProfileCustomPermissions`, also from API version 31.0. It deploys, and it hides — see `references/gotchas.md` Gotcha 1 and `admin/permission-sets-vs-profiles`. Permission set structure, grouping, and muting are `admin/permission-set-architecture`.
 
 ### Checking Custom Permissions in Each Platform Context
 
@@ -127,9 +163,27 @@ Source: Apex Developer Reference — [FeatureManagement Class](https://developer
 
 This evaluates to the string `"true"` or `"false"` in merge field contexts, or as a Boolean in `rendered` attributes.
 
+**Lightning Page Component Visibility, Dynamic Forms, and In-App Guidance**
+
+Component-visibility filters use a different grammar — note the extra `CustomPermission.` segment:
+
+```
+{!$Permission.CustomPermission.My_Custom_Permission}
+```
+
+Supported for app, Home, and record pages only (Metadata API Developer Guide, `FlexiPage` component-visibility expressions; the same expression appears in `Prompt.uiFormulaRule`). Owned by `admin/dynamic-forms-and-actions` and `admin/in-app-guidance-and-walkthroughs`.
+
+**LWC**
+
+```javascript
+import hasPerm from '@salesforce/customPermission/My_Custom_Permission';
+```
+
+The import resolves to `true` or `undefined`, never `false`, and it shapes the DOM rather than enforcing anything. The Apex method behind the component needs its own check. Owned by `apex/apex-custom-permissions-check`.
+
 **Connected Apps**
 
-A custom permission can be required for a user to authorize a Connected App. Configure this in the Connected App definition under **Custom Permissions**. Users who lack the permission are blocked at OAuth authorization time with an `access_denied` error.
+The `CustomPermission` metadata type has a `connectedApp` field: "The name of the connected app that's associated with this permission. Limit: 80 characters." UNVERIFIED (2026-09-04): the Metadata API guide does not document what that association enforces at authorization time, and the `CustomPermission` sObject exposes no connected-app field to query it back — do not promise an `access_denied` on OAuth. To require permissions for a connected app, the grounded field is `ConnectedApp.permissionSetName` (API 46.0+), which needs `isAdminApproved` set to `true`.
 
 ---
 
@@ -197,13 +251,13 @@ AND(
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above** and fill `templates/custom-permissions-template.md`. The consumer list you produce there is the input to every later step; if the permission's purpose needs an "and", split it into two permissions now.
+2. **Baseline the existing grants.** Run the `SetupEntityAccess` -> `PermissionSetAssignment` query in `references/metadata-examples.md` for the permission (or for `SetupEntityType = 'CustomPermission'` org-wide) and read `PermissionSet.IsOwnedByProfile` — profile-borne grants will not show up anywhere else (`references/gotchas.md` Gotcha 1).
+3. **Author the `.customPermission-meta.xml`** from the matching shape in `references/metadata-examples.md` (feature flag, bypass, dependent, or connected-app). Write a `description` that names the consumers; leave `isLicensed` out entirely — it is read-only (Gotcha 7).
+4. **Author the grant** as a `<customPermissions>` node in a permission set, not a profile. For a bypass, decide expiry here and use `admin/permission-set-expiration` if the grant is temporary.
+5. **Write each consumer in its own syntax** — `NOT($Permission.X)` for validation rules (contract in `templates/admin/validation-rule-patterns.md`), a Boolean formula resource for Flow, `FeatureManagement.checkPermission('X')` for Apex, `@salesforce/customPermission/X` for LWC, and `{!$Permission.CustomPermission.X}` for component visibility. The last one is the one that gets copied wrong (Gotcha 6).
+6. **Lint, then validate.** Run `python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir <dir>` — it flags dangling grants as ERROR, missing `requiredPermission` targets, empty descriptions, and `$Permission.X` / `checkPermission('X')` references to permissions absent from the tree. Then `sf project deploy validate`, deploying definitions before grants before consumers.
+7. **Verify in the org and record the evidence.** Re-run the `SetupEntityAccess` query and keep the result as the access-review artifact; a metadata diff cannot prove a revocation (Gotcha 8). Work the Review Checklist below.
 
 ---
 
@@ -215,13 +269,18 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] Apex unit tests assign the permission set to the test user via `System.runAs` and a `PermissionSetAssignment` insert.
 - [ ] Validation rule bypass uses `NOT($Permission.X)` as an outer AND condition so the original rule logic is preserved.
 - [ ] The custom permission metadata file and updated permission set XML are committed to source control.
-- [ ] `check_custom_permissions.py` has been run on the metadata directory to confirm all permissions are covered by at least one active permission set.
+- [ ] `check_custom_permissions.py` has been run on the metadata directory and reports no ERROR.
+- [ ] Every custom permission has a non-empty `description` naming its consumers.
+- [ ] `isLicensed` does not appear in any authored `.customPermission-meta.xml` (it is read-only).
+- [ ] Component visibility filters use `{!$Permission.CustomPermission.X}`, not the formula spelling.
+- [ ] Any `requiredPermission` target ships in the same deployment package as its parent.
+- [ ] Grants were verified in the org with the `SetupEntityAccess` query, and `IsOwnedByProfile` was checked for hidden profile grants.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Custom permissions cannot be assigned directly to profiles** — they must live inside a permission set. If every user on a profile needs the permission, create a permission set, add the permission, and assign it to all users with that profile. This is a permanent platform constraint as of Spring '25.
+1. **Grant through permission sets, not profiles — but know that a profile grant deploys** — `Profile.customPermissions` exists in the Metadata API from version 31.0, the same version as the permission set element. A profile-borne grant is real and is invisible in the Custom Permissions related list. Full detail in `references/gotchas.md` Gotcha 1.
 
 2. **Apex test classes do not inherit the running user's real permission sets** — `FeatureManagement.checkPermission()` returns `false` in test context unless you explicitly create the permission set, add the custom permission to it, and assign it to the test user with a `PermissionSetAssignment` record inside `System.runAs`. Skipping this causes false-passing tests in development environments that have the permission set already assigned.
 
@@ -239,12 +298,32 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | Permission set update | Updated `.permissionset-meta.xml` containing the `<customPermissions>` node |
 | Apex guard clause | `FeatureManagement.checkPermission` call wrapped in a helper method with test coverage pattern |
 | Validation rule expression | `NOT($Permission.X)` bypass wrapper for existing validation rule formulas |
-| Checker report | Output of `check_custom_permissions.py` showing perm-set-to-permission assignments and orphaned permissions |
+| Checker report | Output of `check_custom_permissions.py`: coverage table, ERROR on dangling grants, WARN on missing dependency targets, empty descriptions, and undefined `$Permission` / `checkPermission` references |
+| Access evidence | `SetupEntityAccess` -> `PermissionSetAssignment` result set, timestamped, from `references/metadata-examples.md` |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing the deployable XML, package.xml, deploy order, or the `SetupEntityAccess` verification queries |
+| `references/gotchas.md` | A permission "isn't working", a grant cannot be explained, or a metadata diff is being used as access evidence |
+| `references/examples.md` | Working an end-to-end scenario: beta gate, validation-rule bypass, or the Apex test-setup pattern |
+| `references/well-architected.md` | Justifying custom permission vs custom setting vs permission set license, or citing the source behind a claim |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated custom permission guidance before it ships |
+| `templates/custom-permissions-template.md` | Starting a task — capture the API name, consumer list, and grant plan before authoring metadata |
 
 ---
 
 ## Related Skills
 
 - `admin/permission-set-architecture` — use when the question is how to structure permission sets and groups, not how to create or check a custom permission.
-- `admin/validation-rules` — use when validation rule logic is the primary concern and the custom permission is only the bypass mechanism.
+- `admin/permission-sets-vs-profiles` — use when deciding whether a grant belongs on a profile at all; owns the migration argument behind Gotcha 1.
+- `admin/permission-set-expiration` — use when a bypass or pilot grant must expire on a date rather than be remembered.
+- `admin/validation-rules` — use when validation rule logic is the primary concern and the custom permission is only the bypass mechanism; owns the `NOT($Permission.X)` bypass contract with `templates/admin/validation-rule-patterns.md`.
+- `admin/dynamic-forms-and-actions` — use for field and component visibility rules; owns the `{!$Permission.CustomPermission.X}` filter syntax.
+- `admin/in-app-guidance-and-walkthroughs` — use for prompts and walkthroughs; owns `uiFormulaRule` targeting on custom permissions.
+- `admin/flow-for-admins` — use when the check happens inside a Flow; owns the Boolean formula-resource pattern.
+- `apex/apex-custom-permissions-check` — use when the gate lives in Apex or LWC; owns `FeatureManagement.checkPermission`, the `@salesforce/customPermission` import, managed-package namespacing, and the test patterns.
 - `security/security-health-check` — use when auditing org-wide access and permission hygiene at scale.

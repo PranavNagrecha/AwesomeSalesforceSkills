@@ -55,7 +55,9 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
                     hard.append(f"{p.relative_to(ROOT)}: malformed XML fence — {exc}")
             elif lang in ("apex", "java"):
                 # braces inside string literals (e.g. Mermaid connectors '||--o{') are not code braces
-                code = re.sub(r"'(?:\\.|[^'\\])*'", "''", body)
+                code = re.sub(r"//[^\n]*", "", body)              # drop line comments (apostrophes in prose)
+                code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)  # drop block comments
+                code = re.sub(r"'(?:\\.|[^'\\])*'", "''", code)   # then string literals
                 if code.count("{") != code.count("}"):
                     # a labelled excerpt (the 300 chars before the fence say "excerpt") is allowed
                     lead = t[max(0, m.start() - 300):m.start()].lower()
@@ -82,7 +84,8 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
 
     # related skills resolve
     rel = s[s.find("## Related Skills"):] if "## Related Skills" in s else ""
-    for slug in re.findall(r"`?\b(admin|apex|lwc|flow|omnistudio|agentforce|security|integration|data|devops|architect)/([a-z0-9-]+)`?", rel):
+    # `templates/admin/x.md` is a shared template path, not a skill slug
+    for slug in re.findall(r"(?<!templates/)`?\b(admin|apex|lwc|flow|omnistudio|agentforce|security|integration|data|devops|architect)/([a-z0-9-]+)`?", rel):
         if not (ROOT / "skills" / slug[0] / slug[1] / "SKILL.md").exists():
             hard.append(f"{skill_md.relative_to(ROOT)}: Related Skills cites missing skill {slug[0]}/{slug[1]}")
 

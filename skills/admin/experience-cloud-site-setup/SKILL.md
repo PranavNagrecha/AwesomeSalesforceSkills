@@ -1,6 +1,6 @@
 ---
 name: experience-cloud-site-setup
-description: "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for coding LWR themes or custom components — use lwc/lwr-site-development. NOT for deploying a finished site to another org — use devops/experience-cloud-deployment-admin."
+description: "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for coding LWR themes or custom components — use lwc/lwr-site-development. NOT for deploying a finished site to another org — use devops/experience-cloud-deployment-admin. Also covers the deployable metadata: Network, CustomSite, NavigationMenu, ExperienceBundle, DigitalExperienceBundle, urlPathPrefix, networkMemberGroups, emailSenderAddress, site status Live vs UnderConstruction."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,8 @@ tags:
   - community
   - branding
   - custom-domain
+  - network-metadata
+  - navigation-menu
 inputs:
   - Target audience for the site (customers, partners, employees)
   - Required component types (LWC-only vs mixed Aura/LWC)
@@ -31,10 +33,16 @@ triggers:
   - "set up custom domain for Experience Cloud site"
   - "configure branding and navigation in Experience Builder"
   - "Build Your Own LWR site template"
+  - "experience cloud site changes not showing up after deploy"
+  - "network metadata deploy fails on a missing required field"
+  - "change the url path prefix on an existing community site"
+  - "portal members disappeared after switching to permission sets"
+  - "deploy an Experience Cloud site with sf project deploy"
+  - "publish an Experience Cloud site from UnderConstruction to Live"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-04
 ---
 
 # Experience Cloud Site Setup
@@ -52,6 +60,30 @@ Gather this context before working on anything in this domain:
 - **Component library constraint:** LWR-based templates (Build Your Own LWR, Microsite LWR) support Lightning Web Components only. The legacy Aura-based Build Your Own template supports both Aura and LWC but lacks the performance optimizations LWR provides. Confirm which components are already built or planned before choosing a template.
 - **My Domain requirement:** A custom branded domain on the pattern `MyDomainName.my.site.com` requires My Domain to be configured and deployed in the org. Verify this is in place before custom domain setup.
 - **LWR publish model:** LWR sites freeze component trees at publish time, enabling HTTP caching. Edits require an explicit republish to go live. Practitioners accustomed to Aura sites often miss this.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before creating anything in Setup. Each one traces to a behaviour that is
+either irreversible or fails silently, and every row maps to a gotcha in
+`references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which components does this site have to render — name them, and say LWC or Aura for each?" | Template family is fixed at creation and the LWR component picker offers LWC only | The component inventory that decides LWR vs Aura before anything is created (Gotchas 1, 3) |
+| "What sender address will portal emails come from, and is it already verified in this org?" | `emailSenderAddress` can only be supplied on the deploy that creates the site; later Metadata API updates are ignored with no error | A verified address on day one instead of an unfixable one on day thirty (Gotcha 6) |
+| "Is this site enhanced LWR created in Winter '23 or later, or something older?" | It decides whether the content bundle is `DigitalExperienceBundle` or `ExperienceBundle` — and enhanced LWR cannot be packaged | The right retrieve manifest, and an early answer on whether packaging is even available (Gotcha 8) |
+| "Who becomes a member, by profile or by permission set, and on which community licence?" | `networkMemberGroups` confers membership, never a licence, and the permission-set path skips Chatter customers | The membership shape plus the licence decision, taken with `admin/portal-requirements-gathering` (Gotcha 11) |
+| "Can anyone self-register, and if so onto which profile — and what stops duplicate Contacts?" | `selfRegistration` is one site-wide boolean; `selfRegProfile` is not required by the deploy but is required by reality | A named profile and a matching/duplicate rule pair, not a switch left on (Gotcha 12) |
+| "What is the URL path prefix, and who else already links to it?" | The prefix lives in three places (`Network`, the content bundle, `CustomSite`) that must agree, and every email template embeds it | One prefix agreed once, and the list of links a later rename would break (Gotcha 10) |
+| "Does this site ever need to come back offline after go-live?" | `UnderConstruction` is a one-way door; `DownForMaintenance` is the only route back | A documented offline procedure rather than a status value that quietly does nothing (Gotcha 7) |
+
+What a proper configuration adds over just clicking through New Site: the template matches
+the components that actually exist, the site's settings are in source as `Network` +
+`CustomSite` + `NavigationMenu` rather than trapped in Setup, the email sender is right on
+the only deploy that can set it, and publishing is a deliberate status change you can prove
+with SOQL instead of a screenshot.
 
 ---
 
@@ -81,7 +113,7 @@ Experience Cloud offers two primary template families. The choice is permanent p
 
 ### Custom Domain Configuration
 
-Experience Cloud sites are accessed via a URL on the pattern `MyDomainName.my.site.com/site-path`. The subdomain is set by My Domain in org settings. The site path is set per-site during creation and cannot be changed after the site goes active.
+Experience Cloud sites are accessed via a URL on the pattern `MyDomainName.my.site.com/site-path`. The subdomain is set by My Domain in org settings. The site path is `urlPathPrefix` — the first part of the path that distinguishes this site from other sites (Metadata API Guide, `Network`, api_meta.txt L91084–L91089). The platform does allow it to change: `Network.UrlPathPrefix` carries the `Update` property (Object Reference, `Network`, object_reference.txt L187375–L187378). Treat it as fixed anyway — the same prefix is duplicated in the content bundle and the `CustomSite`, and all three must move together (`references/gotchas.md`, Gotcha 10).
 
 For LWR sites, clean URL paths work without the `/s` prefix. Aura sites append `/s` to all page paths automatically. This distinction matters when sharing deep links or setting up redirects.
 
@@ -92,6 +124,25 @@ Experience Builder is the drag-and-drop page editor for Experience Cloud. It man
 - **Branding sets** define tokens (colors, typography, spacing) applied site-wide.
 - **`--dxp-*` CSS custom properties** are the styling hooks used in LWR themes. Component CSS should consume these tokens rather than hardcoded values, so branding changes propagate across the entire site.
 - Navigation menus are configured in Experience Builder under the Navigation section and support nested items, labels, and access-controlled items (visible only to logged-in users or specific profiles).
+
+### The Metadata Behind a Site
+
+A site that only exists in Setup cannot be reviewed, diffed or promoted. Four types
+carry it, and they are separate files in separate directories:
+
+| Type | Directory | Holds |
+|---|---|---|
+| `Network` | `networks/` | Site settings: status, members, email senders and templates, self-registration, `urlPathPrefix` |
+| `CustomSite` | `sites/` | The container: `active`, `indexPage`, `clickjackProtectionLevel`, `siteAdmin`, `siteType` `ChatterNetwork` |
+| `NavigationMenu` | `navigationMenus/` | Menu items — replaced the `navigationLinkSet` subtype on `Network` in API 47.0 (api_meta.txt L90951–L90954) |
+| `ExperienceBundle` **or** `DigitalExperienceBundle` | `experiences/` **or** `digitalExperiences/site/` | Pages, routes, themes, branding sets — one type or the other, never both |
+
+`Network.site` is a Required reference to the `CustomSite` (api_meta.txt L91045), so the
+two always ship together. Which bundle type applies is not a preference: enhanced LWR
+sites created in Winter '23 or later use `DigitalExperienceBundle`; Aura sites and other
+LWR sites use `ExperienceBundle` (api_meta.txt L51234–L51236). Full deployable XML,
+`package.xml`, retrieve/deploy commands and verification SOQL are in
+`references/metadata-examples.md`.
 
 ### Publish Model and Cache Implications
 
@@ -152,14 +203,44 @@ Any change to a page, component, or branding requires an explicit republish. For
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Confirm prerequisites:** Verify org edition (Enterprise, Performance, Unlimited, or Developer), confirm My Domain is deployed, and inventory all components the site will use (LWC only vs any Aura components). Template selection depends on this inventory.
-2. **Select and create the site:** In Setup > Digital Experiences > All Sites > New, choose the appropriate template based on the decision table above. Set the site name and URL path — the path cannot be changed after the site is activated.
-3. **Configure branding in Experience Builder:** For LWR sites, open the Branding Set editor and define `--dxp-*` CSS custom property tokens (brand color, background, typography). For Aura sites, use the theme panel. Apply a logo via Site Settings.
-4. **Build navigation menus:** In Experience Builder, open the Navigation section. Create the primary navigation menu. Set item visibility (public, authenticated, profile-specific) for each item. Add secondary or footer menus as required.
-5. **Assign and configure pages:** Use Page Manager to create or assign custom pages. For LWR sites, add LWC components to page regions via the component panel. Configure component properties and verify mobile responsiveness.
-6. **Publish and validate:** Click Publish in Experience Builder. Verify the site resolves at the expected URL (`MyDomainName.my.site.com/path`). Confirm branding, navigation, and page content render correctly. Test with both guest and authenticated user sessions.
+1. **Answer the seven questions above and record the template decision.** Work through
+   `## Questions to Ask Before Configuring`, then fill the Pre-Creation Checklist and
+   Component Inventory in `templates/experience-cloud-site-setup-template.md`. Template
+   family and `urlPathPrefix` are settled here, before anything is created, because
+   neither is recoverable cheaply afterwards.
+2. **Verify the sender address exists and is verified in the target org.** `emailSenderAddress`
+   is Required on `Network` and can only be supplied on the deploy that creates the site;
+   later Metadata API updates are silently ignored (`references/gotchas.md`, Gotcha 6).
+   Template selection itself is `admin/email-templates-and-alerts`.
+3. **Create the site, then retrieve it into source immediately.** In Setup → Digital
+   Experiences → All Sites → New, choose the template from the Decision Guidance table.
+   Then pull `CustomSite`, `Network`, `NavigationMenu` and whichever bundle type the org
+   returns — the retrieve tells you whether this is `experiences/` (ExperienceBundle) or
+   `digitalExperiences/site/` (DigitalExperienceBundle). Commands are in
+   `references/metadata-examples.md`.
+4. **Write the settings in source, not in Setup.** Set `networkMemberGroups` (profiles or
+   permission sets), `selfRegistration` with its `selfRegProfile`, the email templates,
+   `maxFileSizeKb` and `allowedExtensions` on the `Network`; set
+   `clickjackProtectionLevel`, `allowStandardPortalPages` and `redirectToCustomDomain` on
+   the `CustomSite`. Shape and field semantics are in `references/metadata-examples.md`.
+5. **Build branding and navigation.** For LWR, define the branding set (`brandingSetType`
+   `APP`, `definitionName` matching the template, e.g. `starter:branding-starter`) and have
+   component CSS consume `--dxp-*` tokens rather than literals. Author the primary menu as
+   a `NavigationMenu` file, and create a matching page for every `SalesforceObject` item —
+   LWR and Help Center templates ship no generic record pages (api_meta.txt L90449–L90452).
+6. **Run the checker, then validate, then deploy in dependency order.**
+   `python3 skills/admin/experience-cloud-site-setup/scripts/check_experience_cloud_site_setup.py --manifest-dir force-app/main/default`
+   catches a Live site with self-registration and no profile, an empty
+   `networkMemberGroups`, missing Required `Network` fields, a `requireHttps` element that
+   does nothing, weak clickjack protection, non-https external menu targets, and a
+   `Network` whose Experience Builder folder is absent. Then
+   `sf project deploy validate`, then deploy `sites/` before `networks/`.
+7. **Publish and prove it.** Move `Network.status` to `Live`, publish the Builder content,
+   and confirm the result with SOQL rather than a page load:
+   `SELECT Status, UrlPathPrefix FROM Network WHERE Name = '<site>'` plus
+   `SELECT COUNT(Id) FROM NetworkMember WHERE Network.Name = '<site>'`. Test as a guest in
+   a private window and as an authenticated member. Guest permissions themselves are
+   `admin/experience-cloud-guest-access`.
 
 ---
 
@@ -168,13 +249,19 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 Run through these before marking work in this area complete:
 
 - [ ] Template selection documented and confirmed as appropriate for component inventory
-- [ ] Site URL path set correctly — confirm it cannot be changed and matches requirements
+- [ ] `urlPathPrefix` agreed once and identical in `Network`, `CustomSite` and the content bundle
 - [ ] My Domain is deployed; custom domain pattern (`MyDomainName.my.site.com`) resolves
 - [ ] Branding tokens (`--dxp-*` for LWR, theme panel for Aura) applied and consistent with brand guidelines
 - [ ] Navigation menus configured with correct visibility rules (public vs authenticated items)
 - [ ] Site published after all changes — not just saved
 - [ ] Guest user profile permissions set correctly for public pages
 - [ ] Site tested with both unauthenticated (guest) and authenticated user sessions
+- [ ] `emailSenderAddress` verified in the org **before** the site-creating deploy
+- [ ] `networkMemberGroups` non-empty, and `NetworkMember` count reconciled against the assignment count
+- [ ] `selfRegistration` either off, or on with a named `selfRegProfile` and a duplicate rule behind it
+- [ ] `clickjackProtectionLevel` is `SameOriginOnly` unless an external framing domain is documented
+- [ ] `scripts/check_experience_cloud_site_setup.py` run against the retrieved source and clean
+- [ ] Status confirmed with `SELECT Status FROM Network WHERE Name = '<site>'`, not from the deploy result
 
 ---
 
@@ -185,6 +272,11 @@ Non-obvious platform behaviors that cause real production problems:
 1. **Template is permanent post-creation** — Once a site is created with a given template, there is no "change template" option. To switch from Aura to LWR (or vice versa), the site must be deleted and recreated. Any customizations, pages, and navigation configuration must be rebuilt from scratch. Always confirm the template before creation.
 2. **LWR requires explicit republish** — Changes made in Experience Builder on an LWR site (including branding and component edits) do not go live until the site is republished. The site serves the last published version from cache. Practitioners coming from Aura expect changes to appear immediately; on LWR they do not.
 3. **Aura components cannot be used in LWR sites** — The LWR template component panel only exposes LWC-compatible components. Attempting to use an Aura component in an LWR site will fail silently (the component simply will not appear in the picker). The fix is to migrate the component to LWC or switch to an Aura-based template.
+4. **`emailSenderAddress` cannot be changed by a second deploy** — the field is Required, is honoured only on the deploy that creates the site, and later Metadata API updates are discarded without an error (api_meta.txt L90784–L90795).
+5. **`UnderConstruction` never comes back** — once a site has been published it can never return to that status (object_reference.txt L187373). `DownForMaintenance` is the only way to take a live site offline.
+6. **`ExperienceBundle` and `DigitalExperienceBundle` are not interchangeable** — enhanced LWR sites from Winter '23 onward use the latter, everything else the former, and packaging is unsupported for enhanced LWR (api_meta.txt L51234–L51238).
+
+All twelve, with **What happens / When it occurs / How to avoid**, are in `references/gotchas.md`.
 
 ---
 
@@ -199,7 +291,31 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing the deployable XML: `Network`, `CustomSite`, `NavigationMenu`, the content bundle, `package.xml`, retrieve/deploy, verification SOQL |
+| `references/gotchas.md` | A deploy succeeded but the org did not change, or a site behaves differently from its source |
+| `references/well-architected.md` | Justifying the template and publish model against the pillars, and finding the official sources used |
+| `references/examples.md` | Two worked site builds (LWR self-service, Partner Central) and the Aura-in-LWR anti-pattern |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated Experience Cloud guidance before acting on it |
+| `templates/experience-cloud-site-setup-template.md` | Recording the pre-creation decisions: edition, component inventory, template, URL path |
+| `scripts/check_experience_cloud_site_setup.py` | Linting retrieved source before `sf project deploy validate` |
+
+---
+
 ## Related Skills
 
-- flow-for-experience-cloud — Use when adding Flow screens or automation to pages within an already-created Experience Cloud site
-- lwc-for-experience-cloud — Use when building custom LWC components intended for placement in an LWR site
+- admin/experience-cloud-guest-access — guest profile permissions, public page access, external OWD; this skill stops at the site, that one owns who can see what without logging in
+- admin/portal-requirements-gathering — the requirements and licence catalogue that should precede site creation; source of the self-registration duplicate-Contact control
+- admin/experience-cloud-member-management — provisioning the external users that `networkMemberGroups` turns into members
+- admin/experience-cloud-cms-content — authoring and managing content inside an established site
+- admin/experience-cloud-moderation — flagging, moderation rules and member behaviour after go-live
+- admin/experience-cloud-seo-settings — indexing, sitemaps and canonical URLs once the URL structure is settled
+- admin/email-templates-and-alerts — the Classic templates named on `Network` for welcome, forgot-password and lockout
+- security/experience-cloud-security — hardening the site beyond `clickjackProtectionLevel` and the guest profile
+- devops/experience-cloud-deployment-admin — promoting a finished site between orgs, ExperienceBundle API-version pinning, sandbox refresh
+- lwc/lwr-site-development — building the LWR theme layouts and custom components this skill only places
+- lwc/experience-cloud-lwc-components — LWC targets and property shapes that make a component appear in Experience Builder
+- flow/flow-for-experience-cloud — screen flows and automation on pages inside an already-created site

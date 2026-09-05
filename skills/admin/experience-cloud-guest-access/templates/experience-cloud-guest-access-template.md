@@ -103,6 +103,34 @@ For each object with Read access on the guest profile, list the fields with Read
 
 ---
 
+## Section 5b: Site and Network Settings
+
+Values are in the deployed metadata, not only in Setup. Re-check the `Network` row **after** publishing — `enableGuestFileAccess` is enabled automatically when public access is turned on at the page or site level.
+
+| Setting | File | Value | Decision / Reason |
+|---|---|---|---|
+| `siteGuestRecordDefaultOwner` | `sites/<Site>.site-meta.xml` | | Required whenever the guest profile grants create on anything |
+| `clickjackProtectionLevel` | `sites/<Site>.site-meta.xml` | | `SameOriginOnly` recommended; `NoFraming` for most protection |
+| `enableGuestChatter` | `networks/<Site>.network-meta.xml` | | |
+| `enableGuestFileAccess` (pre-publish) | `networks/<Site>.network-meta.xml` | | |
+| `enableGuestFileAccess` (**post-publish re-retrieve**) | `networks/<Site>.network-meta.xml` | | |
+| `enableGuestMemberVisibility` | `networks/<Site>.network-meta.xml` | | |
+| `robotsTxtPage` | `sites/<Site>.site-meta.xml` | | Public and indexed are separate decisions — see `admin/experience-cloud-seo-settings` |
+
+**Objects the guest profile can create, and who owns the resulting records:**
+
+| Object | Why a guest must create it | Owner after insert |
+|---|---|---|
+| | | |
+
+**Action items from this section:**
+- [ ] `siteGuestRecordDefaultOwner` names a maintained integration user, set in the same deploy as any `allowCreate`
+- [ ] Network guest flags recorded pre-publish **and** re-checked post-publish
+- [ ] Indexing decision made and recorded before the first Public route ships
+- [ ] `scripts/check_experience_cloud_guest_access.py` run against the source tree: errors resolved, warnings decided
+
+---
+
 ## Section 6: Guest Access Test Results
 
 Test all public pages in an incognito browser (no active Salesforce session).

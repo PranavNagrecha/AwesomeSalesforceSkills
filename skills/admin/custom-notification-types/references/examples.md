@@ -226,3 +226,51 @@ incrementally: add a parallel Send Custom Notification action,
 monitor delivery via a Platform Event marker, and once confirmed
 working, downgrade the email to a daily-digest format instead of
 per-event.
+
+**The channel-selection artefact.** Fill this in per event before
+building anything; the row decides the mechanism, and the columns are
+the questions that actually discriminate between the two channels.
+
+```yaml
+# notification-channel-matrix.yaml — one entry per business event.
+- event: Case priority escalated to High
+  audience: case owner (User or Queue) + on-call manager group
+  needs_interrupt: true          # must reach them mid-task
+  needs_audit_trail: true        # a regulator may ask when it fired
+  has_non_licensed_recipients: false
+  natural_target_record: Case    # -> targetId, not targetPageRef
+  worst_hour_volume: ~40
+  decision: BOTH
+  # Custom Notification for attention (bell + push, deep-links to the Case);
+  # Email Alert for the record. Audience expressed as 2 Ids, not 40 user Ids.
+
+- event: Invoice generated and ready
+  audience: billing contact
+  needs_interrupt: false
+  needs_audit_trail: true
+  has_non_licensed_recipients: true   # external contact, no Salesforce seat
+  natural_target_record: Invoice__c
+  worst_hour_volume: ~2000
+  decision: EMAIL_ONLY
+  # Custom Notifications reach Salesforce users only, and 2000/hour of
+  # interrupt-grade alerts is how an org trains its users to ignore the bell.
+
+- event: Nightly territory realignment finished
+  audience: all affected Account owners
+  needs_interrupt: false
+  needs_audit_trail: false
+  has_non_licensed_recipients: false
+  natural_target_record: null    # no single record -> targetPageRef, or the
+                                 # documented dummy Id 000000000000000AAA
+  worst_hour_volume: ~2500 recipients in one batch window
+  decision: CUSTOM_NOTIFICATION_DIGEST
+  # One notification per owner, not one per Account moved. Sized against the
+  # per-transaction send-call budget, not just the 500-Id cap.
+```
+
+Three columns do the discriminating. `has_non_licensed_recipients`
+rules a custom notification out entirely. `natural_target_record`
+decides `targetId` versus `targetPageRef` versus the dummy Id — and
+forces the question early enough that "we'll add the target later"
+never becomes a thrown `send()`. `worst_hour_volume` is the column
+teams skip and then rediscover in production.

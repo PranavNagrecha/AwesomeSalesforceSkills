@@ -15,6 +15,38 @@
 5. Confirm external OWD for Knowledge is set appropriately. For a public help center, Public Read Only is acceptable for Knowledge if no sensitive drafts exist. If the org has sensitive draft articles, keep external OWD Private and rely entirely on the sharing rule.
 6. Test in an incognito browser. Navigate to the article list page — confirm only Published/Online articles appear. Open a detail page — confirm the article body renders.
 
+**The rule, as deployed:** step 4 above is one file. `Knowledge__kav` has two independent discriminators for "publicly readable" and they mean different things — `PublishStatus` (`Draft` / `Online` / `Archived`) is the publication lifecycle, and `IsVisibleInPkb` is "Required. Indicates whether the article is visible in the public knowledge base (`true`) or not (`false`)". An article can be `Online` and still not intended for the public knowledge base, so filter on both:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/sharingRules/Knowledge__kav.sharingRules-meta.xml -->
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingGuestRules>
+        <fullName>Online_Public_Articles_To_Help_Center_Guest</fullName>
+        <label>Online Public Articles to Help Center Guest</label>
+        <description>Online articles flagged for the public knowledge base only. Drafts and archived versions stay internal.</description>
+        <accessLevel>Read</accessLevel>
+        <sharedTo>
+            <guestUser>Help_Center</guestUser>
+        </sharedTo>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <field>PublishStatus</field>
+            <operation>equals</operation>
+            <value>Online</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>IsVisibleInPkb</field>
+            <operation>equals</operation>
+            <value>true</value>
+        </criteriaItems>
+        <includeHVUOwnedRecords>false</includeHVUOwnedRecords>
+    </sharingGuestRules>
+</SharingRules>
+```
+
+Filtering an article set by `PublishStatus` alone publishes every `Online` article the org has, including ones written for internal agents. `booleanFilter` and `criteriaItems` on a guest rule both require API version 48.0 or later.
+
 **Why it works:** The page access setting allows the page to render for guests. The guest profile Read access on Knowledge allows the components to query the object. The sharing rule (or Public OWD) makes specific records visible. All three gates must be open for a public Knowledge page to work correctly.
 
 ---
@@ -44,5 +76,39 @@
 **What practitioners do:** When a public page shows empty results, admins grant View All or broaden OWD to Public Read/Write on the object to "fix" the visibility issue quickly.
 
 **What goes wrong:** View All on the guest profile exposes every record of that object to unauthenticated visitors regardless of any other access controls. Public Read/Write OWD allows guests to potentially write records depending on profile permissions. Both approaches violate least-privilege and can expose sensitive business data on a public-facing site.
+
+**What the wrong fix looks like in the file** — one element, and the guest sharing rule stops mattering:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/profiles/Help Center Profile.profile-meta.xml (excerpt) -->
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- The "fix" that makes the page fill up. Do not deploy this. -->
+    <objectPermissions>
+        <object>Support_Article__c</object>
+        <allowRead>true</allowRead>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+</Profile>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The narrow fix: leave viewAllRecords false and release the records with a guest rule instead. -->
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+    <objectPermissions>
+        <object>Support_Article__c</object>
+        <allowRead>true</allowRead>
+        <allowCreate>false</allowCreate>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllFields>false</viewAllFields>
+    </objectPermissions>
+</Profile>
+```
+
+`viewAllRecords` reads "all records for the object … can be read … regardless of the sharing settings for the object" — so it does not widen the guest sharing rule, it makes the rule irrelevant. `scripts/check_experience_cloud_guest_access.py` reports this as an ERROR, not a warning.
 
 **Correct approach:** Diagnose the empty page by checking all three gates in order: (1) Is Page Access set to Public? (2) Does the guest profile have Read on the object and relevant fields? (3) Does the external OWD and/or Guest User Sharing Rule make the specific records visible? Fix the narrowest gate that is actually blocked rather than broadening permissions to bypass the investigation.

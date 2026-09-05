@@ -23,15 +23,19 @@ two places.
 Setup > Custom Labels > New Custom Label
   Short Description: Validation error when amount field is non-positive
   Name:              Error_Amount_Must_Be_Positive
-  Categories:        Errors;Quote
+  Categories:        Errors,Quote
   Language:          English (default)
   Value:             Amount must be greater than zero.
 ```
 
 The `Name` is the API handle — pick it carefully because Apex code
-breaks if it changes. Categories are free-text and act as filterable
-tags inside Translation Workbench exports; `Errors;Quote` lets the
-translator slice the export by feature area.
+breaks if it changes. `Categories` is "a comma-separated list of
+categories for the label" that "can be used in filter criteria when
+creating custom label list views", capped at 255 characters
+(Metadata API Developer Guide, `CustomLabel` field table,
+`api_meta.txt:41191-41193`) — so `Errors,Quote` (commas, not
+semicolons) lets you slice the label list by feature area. See
+`gotchas.md` Gotcha 11 for what a semicolon silently costs you.
 
 **Step 2 — Reference from Apex.** Replace the literal in the trigger
 handler:
@@ -255,6 +259,28 @@ Worse second-order effects:
   about as inconsistent voice.
 - **Renaming the product** requires a global codebase search-and-
   replace; with labels, you change one value in Setup.
+
+**The artifact that would have prevented it** — a disposition
+inventory, one row per string, produced during the very first sprint
+that ships user-facing text. This is the concrete output of workflow
+step 1 and the thing an eighteen-month-late audit has to reconstruct
+from scratch across 770 strings:
+
+| Source | String | Disposition | Label `fullName` | `categories` | `protected` | Owner |
+|---|---|---|---|---|---|---|
+| `OpportunityTrigger.trigger:5` | Amount must be greater than zero | Custom Label | `Error_Amount_Must_Be_Positive` | `Errors,Quote` | `false` | Sales Ops |
+| `OpportunityTrigger.trigger:8` | Close date cannot be in the past | Custom Label | `Error_Close_Date_In_Past` | `Errors,Quote` | `false` | Sales Ops |
+| `quoteForm.html:3` | Submit a Quote | Custom Label | `Quote_Form_Heading` | `UIHeadings,Quote` | `false` | Marketing |
+| `quoteForm.html:5` | Save Draft | Custom Label | `Common_Save_Draft_Button` | `UIButtons` | `false` | Marketing |
+| `PricingEngine.cls:120` | `PRICING_ENGINE_TIMEOUT` | Stays inline | — | — | — | Engineering |
+| `IntegrationConfig` endpoint | `https://api.vendor.example/v2` | Custom Metadata Type | — | — | — | Engineering |
+
+Two columns do the real work. **Disposition** is where the
+label-vs-CMDT-vs-inline decision gets made once, in review, instead of
+per developer per sprint. **Owner** is who the translator's questions
+go to eighteen months later — without it, the vendor's "does *Save*
+mean the button or the verb?" email has no recipient and the answer
+gets guessed.
 
 **Correct approach from day one:**
 

@@ -120,15 +120,62 @@ Workbench at the same time.
 
 ## Official Sources Used
 
+Metadata API and Apex claims below are grounded in the extracted v62/Summer '26
+PDF text; the line references point at the exact passage in that extract.
+
+- **Metadata API Developer Guide — `CustomLabels`, *Declarative Metadata File
+  Suffix and Directory Location*** (`api_meta.txt:41165`) — supports the
+  "one file for the whole org" claim behind the whole-set-write tradeoff in
+  `gotchas.md` Gotcha 6 and the storage table below.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- **Metadata API Developer Guide — `CustomLabel` field table**
+  (`api_meta.txt:41187-41221`) — supports the Required-field list in SKILL.md's
+  *Core Concepts*, the 1,000-character `value` ceiling used throughout this
+  file, the 255-character comma-separated `categories` rule (`gotchas.md`
+  Gotcha 11), and the `protected` definition behind Anti-Pattern 5 and
+  `gotchas.md` Gotcha 10.
+- **Metadata API Developer Guide — `CustomLabels` *Usage* and *CustomLabels
+  Limitation*** (`api_meta.txt:41224-41227`, `api_meta.txt:41289-41291`) —
+  supports the plural-vs-singular manifest guidance in
+  `metadata-examples.md` and `gotchas.md` Gotcha 7's "can't retrieve with a
+  namespace", which is the reason the 5,000-label audit in the *Scalability*
+  pillar cannot be done from a retrieve alone.
+- **Metadata API Developer Guide — `Translations` file location, and
+  `CustomLabelTranslation`** (`api_meta.txt:135574-135577`,
+  `api_meta.txt:135930-135937`) — supports the `<locale>.translation` layout in
+  `metadata-examples.md` and the 765-vs-1000-character mismatch in `gotchas.md`
+  Gotcha 9, which is why the storage table's "Translatable: Yes" row carries a
+  practical ceiling lower than the stated limit.
+- **Metadata API Developer Guide — `Translations` *Usage*** (
+  `api_meta.txt:136670-136673`) — supports `gotchas.md` Gotcha 8: a retrieve
+  returns label translations only when the label type is also named in
+  `package.xml`. This is the mechanism behind the *Reliability* pillar's claim
+  that missing translations are invisible rather than loud.
+- **Metadata API Developer Guide — `ValidationRule` field table**
+  (`api_meta.txt:45402-45403`) — supports the 255-character `errorMessage`
+  ceiling cited against Anti-Pattern 4's "always use `$Label.X` for validation
+  rule errors".
+- **Apex Reference Guide — `Label` class** (`apexrefguide.txt:220006-220123`) —
+  supports `System.Label.myLabelName`, `Label.get(namespace, label, language)`,
+  `Label.translationExists(...)`, the run-time-resolution behaviour, and "You
+  can't access labels that are protected in a different namespace" used in
+  `gotchas.md` Gotcha 10.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- **Apex Developer Guide — *Custom Labels*** (`apexdev.txt:7246-7250`) —
+  supports "custom labels aren't standard sObjects; you can't create a new
+  instance" behind Anti-Pattern 2's argument against a parallel
+  `Map<String,String>` mechanism.
 - Salesforce Help — Custom Labels:
   https://help.salesforce.com/s/articleView?id=sf.cl_about.htm
 - Salesforce Help — Create and Edit Custom Labels:
   https://help.salesforce.com/s/articleView?id=sf.cl_create_define.htm
 - Salesforce Help — Translation Workbench:
   https://help.salesforce.com/s/articleView?id=sf.cl_translation_workbench.htm
-- Apex Reference Guide — Label class (System.Label):
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_System_Label.htm
 - Lightning Web Components Developer Guide — Labels:
   https://developer.salesforce.com/docs/platform/lwc/guide/create-labels.html
+  UNVERIFIED (2026-09-04): this guide is not part of the extracted corpus used
+  for this revision, so the `@salesforce/label/c.<Name>` import specifier is
+  cited from the skill's prior version and not re-grounded — see the marker in
+  `metadata-examples.md`.
 - Salesforce Well-Architected — Operationally Excellent:
   https://architect.salesforce.com/well-architected/operationally-excellent/overview
