@@ -12,7 +12,7 @@ even opens.
 
 | Tree | Routes between | Read before |
 |---|---|---|
-| [`automation-selection.md`](./automation-selection.md) | Flow, Apex, Agentforce, Approvals, Platform Events, Batch | Any skill in `apex/`, `flow/`, `agentforce/` |
+| [`automation-selection.md`](./automation-selection.md) | Flow, Apex, Agentforce, Approvals, Platform Events, Batch — plus the native Case/Lead rule engines (Assignment, Auto-Response, Escalation, Omni-Channel, Web-to-Case / Email-to-Case, Entitlement milestones) at Q13–Q15 | Any skill in `apex/`, `flow/`, `agentforce/`; and any Case or Lead intake / ownership / SLA design before reaching for a Flow |
 | [`flow-pattern-selector.md`](./flow-pattern-selector.md) | Before-save, after-save, scheduled path, autolaunched, screen, schedule-triggered, orchestration, platform-event-triggered | After `automation-selection.md` resolves to Flow, before any skill in `flow/` |
 | [`agentforce-capability-selector.md`](./agentforce-capability-selector.md) | Agentforce Agent, Prompt Builder, Next Best Action, Model Builder / BYOLLM, Einstein Discovery, Einstein Bots | Any skill in `agentforce/` |
 | [`async-selection.md`](./async-selection.md) | `@future`, Queueable, Batch, Schedulable, Platform Events, Scheduled Flow | Any skill in `apex/async-*`, `apex/batch-*`, `apex/queueable-*`, `apex/scheduled-*` |
