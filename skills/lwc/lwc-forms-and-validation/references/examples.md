@@ -76,4 +76,29 @@ handleSave() {
 
 **What goes wrong:** Validation, dirty state, and error handling split across two models. The component becomes hard to reason about and easy to break during future changes.
 
-**Correct approach:** Pick one form ownership model per save path. Use record-edit-form for supported record editing, or go fully custom when the UX truly requires it.
+**What it looks like in markup** — the `Discount__c` control below is orphaned: it is inside the
+form, so it looks saved, but `lightning-record-edit-form` only submits the fields it owns unless
+the `onsubmit` handler folds the value in, and there is no `onsubmit` here.
+
+```html
+<!-- BROKEN: two ownership models, one Save button, no onsubmit -->
+<lightning-record-edit-form object-api-name="Opportunity" record-id={recordId}>
+    <lightning-input-field field-name="Name"></lightning-input-field>
+    <lightning-input-field field-name="Amount"></lightning-input-field>
+
+    <!-- not LDS-wired, never submitted, silently discarded on Save -->
+    <lightning-input data-field="Discount" label="Discount %" value={discount}></lightning-input>
+
+    <lightning-button type="submit" label="Save"></lightning-button>
+</lightning-record-edit-form>
+```
+
+**Correct approach:** Pick one form ownership model per save path, and if the hybrid shape is
+genuinely needed, make the `onsubmit` handler the single owner of the field map.
+
+| Symptom in review | Which model is leaking | Fix |
+|---|---|---|
+| A `lightning-input` sits inside the form with no `onsubmit` on the form | Hybrid without an owner | Add `onsubmit`, `preventDefault`, fold the value into `event.detail.fields`, then `submit(fields)` |
+| `setCustomValidity()` called on a `lightning-input-field` | Custom rule on an LDS control | Swap that one control to `lightning-input` (`data-edit-record`:5513) |
+| `onsuccess` present, `onerror` absent | Form model without its failure path | Add `onerror` and read `event.detail.output.fieldErrors` (`data-edit-record`:5509) |
+| Imperative `createRecord` fired from inside a rendered `lightning-record-edit-form` | Two save paths on one screen | Delete one; the form's `submit()` and `createRecord` must not both own the save |

@@ -197,3 +197,97 @@ handleError(event) {
 ```
 
 **Detection hint:** `onerror` handler that only calls `console.error` or `console.log` with no user-visible feedback.
+
+---
+
+## Anti-Pattern 7: An onsubmit handler that augments fields but never calls preventDefault()
+
+**What the LLM generates:**
+
+```javascript
+handleSubmit(event) {
+    const fields = event.detail.fields;
+    fields.Email = fields.Email.trim().toLowerCase();
+    // No event.preventDefault() — the form already submitted the raw values
+    this.template.querySelector('lightning-record-edit-form').submit(fields);
+}
+```
+
+**Why it happens:** The handler reads like ordinary JavaScript, so the model assumes mutating
+`event.detail.fields` mutates what gets saved. It does not — the guide's instruction is to
+validate and update the fields *in the handler and submit the record data through it*
+(`data-edit-record`:5516), which only works when the default submission is stopped first. The
+symptom is nasty: the record saves, so nothing looks broken, but the normalisation, the derived
+field, and any blocked-save logic are all silently ignored.
+
+**Correct pattern:**
+
+```javascript
+handleSubmit(event) {
+    event.preventDefault();
+    const fields = { ...event.detail.fields };
+    fields.Email = (fields.Email || '').trim().toLowerCase();
+    if (!this.validateConfirmEmail(fields.Email)) {
+        return; // no submit() call, no save
+    }
+    this.template.querySelector('lightning-record-edit-form').submit(fields);
+}
+```
+
+UNVERIFIED (2026-09-05): `preventDefault()` on the form's submit event and the `submit(fields)`
+method are Component Library facts; the Developer Guide describes the handler's job
+(`data-edit-record`:5516) but not these two API details.
+
+**Detection hint:** `onsubmit={handler}` in the template where the handler body references
+`detail.fields` or assigns a `fields` object, with no `preventDefault()` call. Implemented as
+check C3 in `scripts/check_lwc_forms_and_validation.py`.
+
+---
+
+## Anti-Pattern 8: Reusing a read-error reducer on a write rejection
+
+**What the LLM generates:**
+
+```javascript
+async handleCreate() {
+    try {
+        const record = await createRecord(this.recordInput);
+        this.recordId = record.id;
+    } catch (error) {
+        // Written for a getRecord wire error, where body is an ARRAY
+        this.message = error.body.map((e) => e.message).join(', ');
+    }
+}
+```
+
+**Why it happens:** The same `reduceErrors()` helper is copied across every component in a repo,
+and it was originally written against a wire adapter. UI API **read** operations return
+`error.body` as an array of objects; UI API **write** operations such as `createRecord` return
+`error.body` as an object, often carrying object-level and field-level errors
+(`data-error`:6568–6569). The array method throws or yields `undefined`, so the user gets a blank
+or generic failure while the server was returning a precise reason.
+
+**Correct pattern:**
+
+```javascript
+catch (error) {
+    const body = (error && error.body) || {};
+    if (Array.isArray(body)) {
+        this.message = body.map((e) => e.message).join(', ');
+    } else {
+        const fieldErrors = (body.output && body.output.fieldErrors) || {};
+        Object.keys(fieldErrors).forEach((field) => {
+            const input = this.template.querySelector(`[data-field="${field}"]`);
+            if (input) {
+                input.setCustomValidity(fieldErrors[field].map((e) => e.message).join(' '));
+                input.reportValidity();
+            }
+        });
+        this.message = body.message || 'Save failed.';
+    }
+}
+```
+
+**Detection hint:** `error.body.map(` or `error.body.forEach(` in a `catch` that follows a
+`createRecord` / `updateRecord` / `deleteRecord` call, with no `Array.isArray` branch. Related
+checker rule: C5 flags the harder failure — an LDS write with no `catch` at all.

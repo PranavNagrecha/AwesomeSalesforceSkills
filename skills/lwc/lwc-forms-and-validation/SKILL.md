@@ -19,6 +19,14 @@ triggers:
   - "custom validation messages in lightning input"
   - "file upload with lwc form save flow"
   - "lwc forms isn't working"
+  - "block the save when two fields disagree in lwc"
+  - "intercept onsubmit and change fields before saving"
+  - "show validation rule error next to the field in lwc"
+  - "createRecord rejected but the user sees unknown error"
+  - "required field saves empty on my custom lwc form"
+  - "clear a custom error message after the user fixes the field"
+  - "jest test that a form refuses to submit"
+  - "show field errors from the server on a record edit form"
 inputs:
   - "whether the form uses LDS base components, UI API, or Apex"
   - "which fields need custom layout, conditional logic, or cross-field validation"
@@ -28,9 +36,9 @@ outputs:
   - "validation design for client checks, server errors, and submit lifecycle"
   - "review findings for weak form UX, missing error handling, and brittle save logic"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-03-15
+updated: 2026-09-05
 ---
 
 Use this skill when a form is the center of the component and the team needs to be precise about where validation should live. In LWC, most form bugs come from choosing the wrong abstraction first, then fighting the platform to get labels, validation, and save behavior back under control.
@@ -44,6 +52,25 @@ Gather this context before working on anything in this domain:
 - Is the form editing a single record that fits Lightning Data Service, or is it a custom workflow that spans records or custom payloads?
 - Which validation rules should run in the browser first, and which must remain server-enforced?
 - Does the UX need file upload, multi-step save, conditional sections, or custom field layout beyond what `lightning-input-field` gives you?
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before writing markup. Each one decides a branch that is expensive to reverse once the
+form is built, and each traces to a gotcha in `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which rules must block the save in the browser, and which are validation rules already on the object?" | `lightning-input-field` doesn't support client-side custom validation at all — a browser-side rule forces a `lightning-input` nested in the form (`data-edit-record`:5513) | The list of controls that must be `lightning-input`, and the ones that stay LDS-wired |
+| "Is this object supported by User Interface API, and does it have more than one record type?" | LDS covers custom objects and the standard objects UI API supports (not Task, Event, or custom metadata types — `data-guidelines`:5319, 5357); multiple record types with no default mean the form needs `record-type-id` (`data-considerations`:6362) | Either a supported-object green light, or an early switch to Apex before markup exists |
+| "Does anything have to change between the user's click and the record hitting the server?" | Only `onsubmit` can intervene — the guide's instruction is to validate and update the fields inside that handler (`data-edit-record`:5516) | Whether a plain submit button is enough, or the form needs an intercepting handler |
+| "What should the user see when a validation rule fires — a toast, a red field, or both?" | `event.detail.message` is generic; `event.detail.output.fieldErrors` names the fields (`data-edit-record`:5509) | The error-presentation contract, and whether `lightning-messages` alone covers it |
+| "Does this form create the record, or edit an existing one?" | Create paths cannot pass `recordTypeId` or `allowOnSaveDuplicate` through `createRecord` (`reference-create-record`:15030), and the new Id is not on the submit event (`data-considerations`:6376) | The correct post-save handler and an honest duplicate-handling plan |
+| "Who clicks Save twice, and what happens if they do?" | Nothing in LDS de-duplicates the second click; every call is an independent transaction (`data-guidelines`:5347) | A pending-state flag and a disabled Save button, decided rather than retrofitted |
+| "Are files part of this, and does the record exist yet when they are chosen?" | File association normally needs a committed record, which splits one click into two steps | A staged save-then-upload sequence instead of an improvised mid-submit branch |
+
+What a proper configuration adds over just building the form: the rules that must block a save actually block it in the browser, the rules that must always hold are still enforced on the server and are shown against the field that failed, and the save path has exactly one owner — so a second click, a validation rule, and a record-type change each produce a predictable outcome instead of a support ticket.
 
 ---
 
@@ -110,13 +137,31 @@ If the form uses `lightning-record-edit-form`, include `lightning-messages` and 
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the Questions table above**, then settle the form model in one line: LDS-wired
+   `lightning-record-edit-form`, hybrid (form plus one or more `lightning-input` controls), or
+   fully custom `lightning/uiRecordApi`. Cross-check the component choice against
+   `lwc/lwc-lightning-record-forms` — do not re-derive it here.
+2. **Build the bundle from `references/code-examples.md`.** Bundle 1 is the hybrid shape
+   (`onsubmit` intercept, `setCustomValidity`/`reportValidity`, `onsuccess`/`onerror` with
+   `lightning/platformShowToastEvent`); Bundle 2 is the custom `createRecord` shape with a
+   field-level error map. Start from `templates/lwc/component-skeleton/` and
+   `templates/lwc/patterns/ldsRecordEditForm.html`; copy `templates/lwc/jest.config.js`.
+3. **Write the validation sweep before the save call, not after.** Every control gets
+   `setCustomValidity(message)` or `setCustomValidity('')`, then `reportValidity()`; a custom form
+   also needs the requiredness sweep it no longer gets for free
+   (`references/gotchas.md` → "A Custom Form Loses Client-Side Requiredness Entirely").
+4. **Wire the failure path.** `lightning-messages` inside the form, an `onerror` handler that reads
+   `event.detail.output.fieldErrors`, and — for `createRecord`/`updateRecord` — a `catch` that maps
+   the write-error body back onto controls. Fill in `templates/lwc-forms-and-validation-template.md`
+   as you go.
+5. **Add the Jest tests.** At minimum: one test proving an invalid form does not submit, and one
+   proving a server error reaches the user. Use the two suites in `references/code-examples.md` as
+   the shape; stub `reportValidity`/`checkValidity` on the base-component stubs.
+6. **Run the checker** —
+   `python3 skills/lwc/lwc-forms-and-validation/scripts/check_lwc_forms_and_validation.py --manifest-dir force-app/main/default/lwc`
+   — then `npx sfdx-lwc-jest`, then the Review Checklist below.
+7. **Deploy and verify** with the `package.xml` and the three verification steps at the end of
+   `references/code-examples.md` (Setup list, mismatched-field behaviour, SOQL on the saved record).
 
 ---
 
@@ -130,6 +175,10 @@ Run through these before marking work in this area complete:
 - [ ] Save buttons are guarded against duplicate submission during pending work.
 - [ ] Server-side validation errors are mapped to fields or a clear form message.
 - [ ] File upload is sequenced around record creation instead of improvised mid-submit.
+- [ ] Any `onsubmit` handler that touches the field map calls `event.preventDefault()` first.
+- [ ] Every `createRecord`/`updateRecord` call has a `catch` that reads the write-error body shape.
+- [ ] The bundle has a `__tests__` suite proving an invalid form does not submit.
+- [ ] `scripts/check_lwc_forms_and_validation.py --manifest-dir <lwc source>` reports no errors.
 
 ---
 
@@ -141,6 +190,14 @@ Non-obvious platform behaviors that cause real production problems:
 2. **`setCustomValidity()` is inert until `reportValidity()` runs** - teams set a message and assume the field will render it automatically.
 3. **Validation-rule failures return structured field errors** - if `onerror` is ignored, the team loses useful detail that could improve the UX or support logging.
 4. **File upload often needs a committed record ID first** - trying to combine create and upload in one vague click path produces brittle state transitions.
+5. **A custom form drops client-side requiredness** - `updateRecord` does not enforce it; you run the `reportValidity()` sweep or the user saves an empty required field (`reference-update-record`:15403).
+6. **Read and write errors have different body shapes** - `getRecord` rejects with an array, `createRecord` with an object (`data-error`:6568-6569), so one shared reducer silently degrades to "Unknown error".
+7. **`createRecord` accepts neither `recordTypeId` nor a duplicate override** - only `apiName` and `fields` (`reference-create-record`:15028-15030).
+8. **The saved record's Id arrives on `success`, never on `submit`** (`data-considerations`:6376).
+9. **Display density moves your labels between orgs** - `auto` follows the org setting and `cozy` is not a valid `density` value (`data-display-density`:6329-6331).
+
+Full detail, with the "what happens / when it occurs / how to avoid" breakdown and the UNVERIFIED
+markers, is in `references/gotchas.md`.
 
 ---
 
@@ -154,8 +211,23 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/code-examples.md` | You are writing the bundle: hybrid record-edit-form + custom `lightning-input`, custom `createRecord` form with a field-error map, both Jest suites, `js-meta.xml`, `package.xml`, deploy and verification steps |
+| `references/gotchas.md` | A form behaves differently from what the markup implies — silent custom rules, missing requiredness, mismatched error shapes, record-type picklists, density shifts |
+| `references/llm-anti-patterns.md` | You are reviewing generated form code, or want the detection hints the checker script implements |
+| `references/well-architected.md` | You need the pillar framing, the tradeoffs behind the form-model choice, or the sourced claims list |
+| `templates/lwc-forms-and-validation-template.md` | You are recording the form-shape decision, validation map, and submit lifecycle for review |
+| `scripts/check_lwc_forms_and_validation.py` | Before deploy: run it with `--manifest-dir` over the LWC source tree |
+
+---
+
 ## Related Skills
 
+- `lwc/lwc-lightning-record-forms` - use first to choose between `lightning-record-form`, `lightning-record-edit-form`, and `uiRecordApi`; this skill assumes that choice is made.
+- `lwc/lwc-lds-writes` - use for the write mechanics themselves: record input shapes, duplicate detection, and cache refresh after a save.
 - `lwc/wire-service-patterns` - use when the form issue is really a data loading contract problem.
 - `lwc/lwc-accessibility` - use alongside this skill when labels, error messages, and keyboard flow need review.
 - `lwc/custom-property-editor-for-flow` - use when the form runs inside Flow Builder design-time surfaces rather than runtime record editing.
