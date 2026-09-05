@@ -42,6 +42,19 @@ Requirements Workshop Agenda — B2C Support Portal
    - Out-of-scope: internal agent console, live chat (separate project)
 ```
 
+**The step-1 data pull, concretely.** The workshop agenda above is only as good as the extract behind it. This is the query that produces the ranked contact-reason table the whole requirements set rests on — run it per channel so the Answers / Status / Actions split can be read by origin, not just in aggregate:
+
+```sql
+SELECT Reason, Origin, COUNT(Id) contactVolume
+FROM Case
+WHERE CreatedDate = LAST_N_DAYS:90
+  AND IsClosed = true
+GROUP BY Reason, Origin
+ORDER BY COUNT(Id) DESC
+```
+
+Two things the output has to survive before it is usable. First, a `Reason` that is null on a large share of rows means the picklist is not being filled by agents, and the ranking is measuring compliance rather than demand — fall back to a text analysis of `Subject`, and record that the baseline is weaker for it. Second, `Origin` values that map to a channel the portal will not replace (a phone queue that stays open) belong in the denominator of the deflection baseline but not in the feature stack.
+
 **Why it works:** Anchoring the feature list to contact reason data forces the conversation from "what would be nice" to "what will reduce the 4,000 monthly contacts." Explicitly deferring forum and gamification removes scope creep without killing the ideas — they are recorded as deferred, not rejected.
 
 ---
@@ -95,6 +108,34 @@ PRM Requirements Workshop — License and Access Decisions
    - MDF request workflow (phase 2 — requires custom object build and approval process)
    - Partner leaderboards (phase 2 — after core jobs validated)
 ```
+
+**What the tier table becomes downstream.** Partner tiers are not a portal feature; they are a set of catalogue rows that differ only in licence and access mechanism. The Gold tier from session 1 lands as:
+
+```yaml
+  - id: PR-011
+    statement: "As a Gold-tier partner rep I can register a deal and see its approval status."
+    persona: partner-rep-gold
+    licence_implication: partner-community
+    access_mechanism: ownership
+    content_type: record
+    auth: sso
+    downstream: skills/admin/partner-community-requirements
+    owner: "Channel Ops"
+    status: approved
+
+  - id: PR-012
+    statement: "As a Gold-tier partner manager I can see every deal registered by reps at my own partner account."
+    persona: partner-manager-gold
+    licence_implication: partner-community
+    access_mechanism: account-role-hierarchy
+    content_type: record
+    auth: sso
+    downstream: skills/admin/sharing-and-visibility
+    owner: "Channel Ops"
+    status: approved
+```
+
+The pair is the whole point: PR-011 and PR-012 read almost identically in a stakeholder workshop and resolve to entirely different platform mechanisms. Writing them as one row — "partners can see their deals" — is how a portal ships without a working hierarchy. Lint the file with `scripts/check_portal_requirements_gathering.py --file` before the tiers are agreed, not after.
 
 **Why it works:** Identifying the Lead and Opportunity object requirement in session 1 prevents the license mistake. Catching the wrong license during requirements costs zero effort to fix; catching it during build requires reprovisioning hundreds of partner user records.
 

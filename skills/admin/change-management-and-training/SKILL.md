@@ -1,18 +1,21 @@
 ---
 name: change-management-and-training
-description: "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion — use admin/change-management-and-deployment. NOT for adoption of an Agentforce or Einstein AI feature — use admin/ai-adoption-change-management."
+description: "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication, communication plan, training plan by persona, adoption metrics, LoginHistory adoption report, PromptAction, training sandbox, go-live checklist, post-go-live feedback, super user program, pilot group. NOT for org deployment mechanics or sandbox promotion — use admin/change-management-and-deployment. NOT for adoption of an Agentforce or Einstein AI feature — use admin/ai-adoption-change-management. NOT for configuring the in-app prompts themselves — use admin/in-app-guidance-and-walkthroughs."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Operational Excellence
   - User Experience
 triggers:
-  - "how do I plan user adoption for our Salesforce rollout"
-  - "what should be in a Salesforce training plan for end users"
-  - "how do I write a release communication for a Salesforce go-live"
-  - "how do I assess the impact of a Salesforce change on users"
-  - "our users are not adopting Salesforce, how do I fix that"
-  - "how do I structure training materials for different roles in Salesforce"
+  - "build an adoption and communication plan for a Salesforce go-live"
+  - "write the go-live announcement for a Salesforce release"
+  - "assess which users are affected by a Salesforce page or process change"
+  - "nobody is using the new Salesforce feature we shipped last month"
+  - "training deck screenshots do not match what users actually see"
+  - "measure Salesforce adoption without just counting logins"
+  - "we announced a new field and users say they cannot see it"
+  - "which sandbox should we run end-user training in and when"
+  - "design role-based training for a Salesforce rollout"
 tags:
   - change-management
   - user-adoption
@@ -26,13 +29,14 @@ inputs:
   - "Existing training assets or Trailhead paths (optional)"
 outputs:
   - "Change impact assessment by role/persona"
-  - "User adoption plan with milestones and success metrics"
+  - "Lintable change-plan artefact (personas, communications, adoption metrics, feedback loop)"
   - "Role-based training plan and material structure"
   - "Release communication template (go-live announcement, What Changed guide)"
+  - "Adoption metrics as SOQL queries and report definitions"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # Change Management and Training
@@ -49,6 +53,24 @@ Gather this context before working on anything in this domain:
 - What is the go-live date and whether the rollout is all-at-once or phased by region/role?
 - Are there existing Trailhead trails, in-app guidance walkthroughs, or training videos already available?
 - What adoption metric does leadership care about (login rate, record creation volume, pipeline data quality)?
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before writing a single message or booking a room. Each one traces to a failure documented in `references/gotchas.md`, and each answer becomes a field in the plan artefact in `references/worked-examples.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which permission set carries the new access, who assigns it, and on what day relative to the announcement?" | `PermissionSetAssignment` records are data created per user, not part of the metadata deploy — a message that names a field before assignment produces a ticket wave (gotcha 7) | The assignment step placed on the comms timeline with an owner, and the count query that verifies it |
+| "Which page will each persona actually see — which app, record type, profile and form factor?" | A Lightning page assignment is keyed on all four, so the admin's screenshot may be a different page from the reps' (gotcha 8) | The screenshot matrix, and an explicit "nothing changes for you" message for personas whose record type keeps the old page |
+| "Which org will training run in, and when is it refreshed relative to the deploy?" | A sandbox refreshed before the deploy teaches the configuration users are about to lose, and the refresh interval makes the mistake expensive to undo (gotcha 5) | A sequenced refresh date on the persona's training environment row |
+| "Does the go-live window cross this instance's seasonal upgrade date?" | The UI, click paths and prompt anchor points can move mid-rollout (gotcha 9) | A recorded upgrade-date check and, if needed, a rollout split either side of the weekend |
+| "What behaviour — not what login — tells us this landed?" | `LoginHistory` measures presence; only record counts and `PromptAction` measure behaviour, and list-view usage is not queryable at all (gotcha 3) | Adoption metrics written as SOQL or report definitions, with the pre-go-live baseline captured |
+| "Who is affected who never opens a Lightning page?" | Integration and API-only users are broken by the same field change and reached by none of the channels (gotcha 10) | An integration-user persona row, a mapping request instead of an announcement, and an id-based exclusion from the metrics |
+| "Who owns each message, and who signs it?" | An unowned row is an unsent message; a message signed by IT about a sales process change is ignored | A named owner per row, which the checker enforces |
+
+What a proper change plan adds over just sending an announcement: the people who are told, the people who are trained, the people who get access, and the people who are measured are provably the same set — and where they differ, the difference is recorded rather than discovered at go-live.
 
 ---
 
@@ -162,13 +184,13 @@ Standard release communication pack:
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Build the ship list, then the persona list.** Name every metadata piece that deploys and the skill that owns it (`references/worked-examples.md` §1), then derive personas from *who touches the object*, not from who attends meetings — that is what catches the unaffected record type and the integration user.
+2. **Assess impact in three columns per persona:** what changes on screen, what changes in process, what permission changes ship. A persona with no entry in any column is a persona who needs a "nothing changes for you" message, not silence (`references/worked-examples.md` §2).
+3. **Fill the plan artefact.** Copy the YAML from `references/worked-examples.md` §3 to `<project>/change-plan.yaml` and fill it in: every message gets an audience, channel, `D±n` timing and owner; every persona gets a training format (`none` is a legal, recorded answer) and a training environment.
+4. **Sequence the training environment against the deploy.** Deploy to the training sandbox → validate → run labs → deploy to production → refresh the training org. Confirm the seasonal upgrade date with `admin/salesforce-release-preparation` and the refresh window with `devops/sandbox-refresh-and-templates` before committing dates.
+5. **Write every adoption metric as a query.** `LoginHistory` for presence, `PromptAction` for guidance engagement, record counts for behaviour (`references/worked-examples.md` §6). Capture the baseline before the deploy. If a metric has no query — list-view usage, for instance — drop it at planning time and say why.
+6. **Lint the plan.** `python3 scripts/check_change_management_and_training.py --file <project>/change-plan.yaml --repo-root .` — it fails on a missing owner, a calendar date where a `D±n` offset belongs, an audience that matches no persona, a duplicate id, an adoption metric with no query, or a `reads:` path that does not resolve.
+7. **Walk `references/gotchas.md` against the finished plan** before the first message goes out. Most of the ten failures are cheap to fix a week early and expensive to fix on go-live morning.
 
 ---
 
@@ -184,18 +206,25 @@ Run through these before marking the change management deliverable complete:
 - [ ] Adoption dashboard or report scheduled for weekly review post-go-live
 - [ ] Feedback mechanism in place (Chatter group, survey, or named support contact)
 - [ ] Post-go-live check-in scheduled for 2 weeks after go-live
+- [ ] `change-plan.yaml` passes `scripts/check_change_management_and_training.py`
+- [ ] Permission set assignments verified by count *before* any message naming a new field is sent
+- [ ] Every persona whose screen does NOT change has been told so explicitly
+- [ ] Integration and API-only users have a row, an owner, and an exclusion from the adoption metrics
+- [ ] Training-environment refresh is sequenced after deploy validation, and the date is recorded
+- [ ] Instance upgrade date checked against the rollout window
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+1. **Profile targeting on a prompt is the wrong lever** — target the audience with `userAccess` = `SpecificPermissions` or a `uiFormulaRule` custom-permission criterion, so one permission-set assignment opens the field and the guidance together.
+2. **A Path is bound to one record type** — the Metadata API allows only one path per record type per object; a new record type starts with no coaching text and inherits none.
+3. **Login counts are not adoption** — `LoginHistory` includes OAuth and integration logins, and in an SSO org the human browser login is a SAML value, so the copied `LoginType = 'Application'` filter hides the very users you are measuring.
+4. **The permission set deploys; the assignment does not** — `PermissionSetAssignment` records are created per user, so any message naming a new field must land after the assignment runs.
+5. **The page you screenshotted may not be the page they see** — the assignment is keyed on app, record type, profile and form factor.
+6. **The training sandbox must carry the change** — a refresh timed before the deploy teaches the configuration users are about to lose.
 
-1. **In-App Guidance is profile-gated but not permission-set-gated in older orgs** — In older orgs and certain setups, In-App Guidance filtering may be limited to profile only. If your org uses permission sets as the primary access control model and profiles are generic, prompts may show to users who are not affected by the change. Always test prompt visibility in a sandbox with test users assigned the correct profile before go-live.
-
-2. **Path coaching text is record-type-scoped** — Salesforce Path supports different coaching text per record type (e.g., Enterprise vs. SMB Opportunity stages). If you add a new stage to one record type and copy coaching text from another, the change applies only to the specific record type and picklist combination you configure. BAs frequently configure the "default" record type and assume it propagates — it does not.
-
-3. **Adoption Dashboard login metrics count OAuth API logins** — The Adoption Dashboards package uses the LoginHistory object to measure daily active users. API integrations and connected apps that authenticate using OAuth also appear as logins. This can inflate "active users" metrics. Filter by LoginType = 'Application' (standard browser logins) when measuring human adoption, not total logins.
+All ten, with the source for each, are in `references/gotchas.md`.
 
 ---
 
@@ -208,11 +237,34 @@ Non-obvious platform behaviors that cause real production problems:
 | Role-Based What Changed Guide | Per-role bullet list of what is different; written in business language, not technical terms |
 | Go-Live Announcement Template | Email/Chatter post template announcing the change, training resources, and support contact |
 | Post-Go-Live Check-In Template | 2-week follow-up communication template requesting feedback and surfacing help resources |
+| `change-plan.yaml` | The lintable artefact holding personas, communications, adoption metrics and the feedback loop |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You need the filled-in artefact: impact table, plan YAML, training plan, in-app guidance decisions, adoption queries, feedback loop |
+| `references/examples.md` | You want two contrasting rollout narratives (200-agent Service Cloud go-live; a required-field change) and the go-live-day-training anti-pattern |
+| `references/gotchas.md` | Before the first message goes out, and whenever a plan looks finished — ten platform behaviours that break rollouts |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated change-management output, or self-checking your own |
+| `references/well-architected.md` | Justifying the approach to an architect or sponsor; also holds the source list |
+| `templates/change-management-and-training-template.md` | Starting a plan from scratch — the blank form of the worked example |
+| `scripts/check_change_management_and_training.py` | Linting a finished `change-plan.yaml` |
 
 ---
 
 ## Related Skills
 
-- requirements-gathering-for-sf — Use to capture the business requirements that drive the change impact assessment
-- uat-and-acceptance-criteria — UAT completion is the gate before go-live communications are sent
-- change-management-and-deployment — Handles the technical deployment mechanics; this skill handles the human side
+- admin/requirements-gathering-for-sf — captures the business requirements that drive the change impact assessment
+- admin/uat-and-acceptance-criteria — UAT completion is the gate before go-live communications are sent
+- admin/change-management-and-deployment — the technical deployment mechanics; this skill owns the human side of the same release
+- admin/in-app-guidance-and-walkthroughs — builds the `Prompt` metadata this skill decides the audience and copy for
+- admin/salesforce-release-preparation — seasonal upgrade dates, Release Updates triage, Sandbox Preview opt-in
+- admin/ai-adoption-change-management — the same practice for an Agentforce or Einstein rollout
+- admin/stakeholder-raci-for-sf-projects — who decides and who is consulted; this skill assumes those roles exist
+- admin/record-types-and-page-layouts — why a persona's screen may not change at all
+- devops/sandbox-refresh-and-templates — refresh intervals and templates for the training org
+- devops/release-management — the release train the go-live date sits inside
+- devops/release-notes-automation — generates the technical change list this skill translates for users

@@ -47,6 +47,59 @@
 5. Deploy the validation rules and Path coaching text together
 6. Monitor Chatter group for questions in the first week
 
+**The artefact that goes out — a What Changed Guide short enough to be read on a phone:**
+
+```markdown
+## Opportunity Proposal stage — what changes on 14 March
+
+**Who:** Sales Reps (50), Sales Managers (10)   **When:** Friday 14 March, 06:00 UTC
+**Who to ask:** #salesforce-help on Slack, or Priya (RevOps)
+
+### If you are a Sales Rep
+Moving an Opportunity to **Proposal** now asks for three fields before it saves:
+
+| Field | What to put in it | If you do not know yet |
+|---|---|---|
+| Competitor | Who else is in the deal | "Unknown" is fine — update it later |
+| Decision Criteria | What the customer says will decide it | One line is enough |
+| Budget Confirmed | Yes / No / Not discussed | "Not discussed" is a real answer |
+
+You will see the same three fields in the Path panel at the top of the record,
+with a reminder of why each one matters.
+
+**Why:** RevOps forecasts from these three fields. Today they guess.
+
+### If you are a Sales Manager
+Nothing changes on your screen. From week two, your pipeline review will show
+Competitor and Budget Confirmed, so ask about them in your one-to-ones.
+
+### Nothing changes for you if
+You work Renewals, Service, or Marketing. This affects the Opportunity
+Proposal stage only.
+```
+
+**The go/no-go check the morning of the deploy** — verify that what the guide promises is true before anyone reads it:
+
+```bash
+# 1. Did the Path deploy for BOTH Opportunity record types?
+#    PathAssistant allows only one path per record type per object, so expect one
+#    file per record type. One file back means a record type was missed.
+sf project retrieve start -m "PathAssistant" -o prod
+ls force-app/main/default/pathAssistants/
+grep -h "<recordTypeName>" force-app/main/default/pathAssistants/*.pathAssistant-meta.xml
+```
+
+```sql
+-- 2. Does everyone the email is addressed to already have the field?
+--    Must equal 60 (50 reps + 10 managers) BEFORE the announcement sends.
+--    Reading this object needs View Setup and Configuration, Assign Permission
+--    Sets, or Manage User — an enablement lead often has none of them.
+SELECT COUNT(Id)
+FROM PermissionSetAssignment
+WHERE PermissionSet.Name = 'Opportunity_Proposal_Fields'
+  AND IsActive = true
+```
+
 **Why it works:** Communicating before deployment turns a surprise error into an expected behavior. Path coaching text provides persistent guidance without requiring IT support. Framing the change around business benefit ("help Revenue Ops forecast") gives reps a reason to comply.
 
 ---

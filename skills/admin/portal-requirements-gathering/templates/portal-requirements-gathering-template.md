@@ -204,6 +204,67 @@ Features that directly support the top-3 jobs and deflection goal.
 
 ---
 
+## Section 8: Persona / Licence Matrix
+
+One row per persona with a distinct record-visibility need. Merge personas that share one.
+
+| Persona | Records they must see | Licence implied | Login vs member | Owned by the org? |
+|---|---|---|---|---|
+| | | | Login / Member | Yes / No / Procurement raised |
+| | | | Login / Member | Yes / No / Procurement raised |
+| | | | Login / Member | Yes / No / Procurement raised |
+
+**Guest (unauthenticated) persona in scope?** Yes / No — if yes, name the security reviewer: ______________
+
+---
+
+## Section 9: Requirements Catalogue
+
+The machine-readable artefact. Copy the block below, fill one entry per requirement, save as
+`<portal>-requirements.yaml`, and lint it before the handoff meeting:
+
+```bash
+python3 scripts/check_portal_requirements_gathering.py --file <portal>-requirements.yaml
+```
+
+```yaml
+portal: <portal-slug>
+network_api_name: <Network component api name>
+url_path_prefix: <Network.urlPathPrefix>
+data_period: "<start> to <end>"
+baseline_containment_rate_pct: 0
+
+requirements:
+  - id: PR-001
+    statement: "As a <persona> I can <action> so that <outcome>."
+    persona: <persona-slug from Section 8>
+    # one of: guest | external-identity | customer-community | customer-community-login |
+    #         customer-community-plus | customer-community-plus-login | partner-community |
+    #         partner-community-login | external-apps | internal-salesforce
+    licence_implication: <licence>
+    # one of: ownership | sharing-set | sharing-rule | account-role-hierarchy |
+    #         partner-super-user | apex-managed-sharing | manual-share | external-owd |
+    #         guest-public-page | guest-sharing-rule | data-category-visibility |
+    #         object-permission-only | not-applicable
+    access_mechanism: <mechanism>
+    # one of: record | knowledge | cms | file | external-object | static-page
+    content_type: <content type>
+    # one of: self-registration | sso | admin-provisioned | login-only | guest
+    auth: <auth model>
+    # the skill, agent, or named person that turns this row into configuration
+    downstream: skills/<domain>/<slug>
+    owner: "<name> (<team>)"
+    # one of: draft | in-review | approved | deferred | out-of-scope
+    status: draft
+    # required only on guest-facing rows
+    # guest_review: "<security reviewer> — signed <date>"
+    notes: ""
+```
+
+A worked, filled-in version of this catalogue is in `references/worked-examples.md` section 3.
+
+---
+
 ## Sign-Off
 
 | Section | Decision Summary | Approver | Date |

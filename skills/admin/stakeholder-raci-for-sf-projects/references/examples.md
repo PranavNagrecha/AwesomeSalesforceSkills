@@ -122,3 +122,71 @@ Roster legend (column headers below):
 **What goes wrong:** Sponsors do not have time to decide on field-level changes. By week 4 the project has a single bottleneck and an A who is not informed enough to decide. The CRM admin lead starts deciding without authority; the project ships with decisions nobody can defend in audit.
 
 **Correct approach:** Sponsor's A is scope, budget, license tier, and go/no-go. Operational A flows down to the role with the proximate domain expertise — process owner for data model, security architect for security, integration architect for integration boundary, admin lead for day-to-day automation. The sponsor is I (informed) on the operational rows.
+
+**What the linter says about it.** The universal-A deck is usually also a short deck — the rows that
+have no obvious sponsor decision simply never get written. Run it through the checker and the missing
+owners surface before the sponsor signs:
+
+```yaml
+# raci-draft.yaml — the SI's opening deck, transcribed
+project: "Greenfield Sales Cloud"
+phase: build
+version: "0.9.0"
+stakeholders:
+  - code: BSP
+    role: Business sponsor
+    named: "The CRO"
+  - code: PO
+    role: Process owner
+    named: "TBD"
+  - code: AL
+    role: CRM admin lead
+    named: "S. Patel"
+activities:
+  - id: ACT-01
+    activity: data-model-change
+    cells:
+      BSP: A
+      PO: C
+      AL: R
+    escalation:
+      trigger: "CRO unavailable"
+      target: BSP          # escalates to the person who is already accountable
+      time_box_business_days: 5
+  - id: ACT-02
+    activity: sharing-model-change
+    cells:
+      BSP: A
+      PO: C
+      AL: R
+    escalation:
+      trigger: "CRO unavailable"
+      target: BSP
+      time_box_business_days: 5
+escalation_path:
+  - level: 1
+    forum: "Weekly project call"
+    time_box_business_days: 5
+```
+
+```text
+$ python3 scripts/check_raci.py --file raci-draft.yaml
+raci-draft.yaml: ERRORS (8):
+  ERROR: required activity 'permission-set-change' has no row — that decision has no accountable owner
+  ERROR: required activity 'integration-change' has no row — that decision has no accountable owner
+  ERROR: required activity 'release-go-no-go' has no row — that decision has no accountable owner
+  ERROR: required activity 'sandbox-refresh-approval' has no row — that decision has no accountable owner
+  ERROR: required activity 'production-hotfix' has no row — that decision has no accountable owner
+  ERROR: required activity 'data-load-approval' has no row — that decision has no accountable owner
+  ERROR: required activity 'release-update-activation' has no row — that decision has no accountable owner
+  ERROR: required activity 'seasonal-release-preview' has no row — that decision has no accountable owner
+raci-draft.yaml: WARNINGS (2):
+  WARN: stakeholders[1] (PO): no named individual — surface as a project risk
+  WARN: no 'refusal_code_map' present — runtime agents that emit REFUSAL_* codes will not have a routing target
+```
+
+Note what the checker does **not** flag: `target: BSP` on a row where `BSP` already holds **A** is a
+legal document and a useless escalation — the rule sends the decision back to the person who is
+already stuck with it. One A per row is machine-checkable; whether the A is the right person, and
+whether the escalation goes anywhere, is the review conversation the linter is meant to shorten, not
+replace. A filled version of every artefact named here is in `worked-examples.md`.

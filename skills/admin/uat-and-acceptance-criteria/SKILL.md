@@ -1,18 +1,23 @@
 ---
 name: uat-and-acceptance-criteria
-description: "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for Given/When/Then AC syntax — use admin/acceptance-criteria-given-when-then. NOT for automated Flow or Apex test coverage — use flow/flow-testing."
+description: "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for Given/When/Then AC syntax — use admin/acceptance-criteria-given-when-then. NOT for the per-case field schema and AC-to-case decomposition — use admin/uat-test-case-design. NOT for automated Flow or Apex test coverage — use flow/flow-testing. Also covers: UAT plan record, sandbox selection for UAT, pre-UAT environment checklist, sandbox email deliverability for testers, test-user personas, negative and bulk coverage, defect triage categories, go/no-go sign-off, quick-deploy window."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Operational Excellence
   - Reliability
 triggers:
-  - "how do I write UAT test scripts for a Salesforce release"
-  - "what format should acceptance criteria use for a Salesforce feature"
-  - "how to classify defects found during Salesforce UAT testing"
-  - "how to plan regression testing for a Salesforce release"
-  - "UAT test script template for Salesforce features"
-  - "how to structure a test case for a Salesforce validation rule or flow"
+  - "write a UAT test script for a Salesforce release"
+  - "which sandbox should we run UAT in"
+  - "our sandbox was refreshed in the middle of UAT"
+  - "email alert never arrives when testing in the sandbox"
+  - "UAT passed but the feature broke in production"
+  - "classify a defect found in UAT as config, data or sharing"
+  - "plan regression testing before a Salesforce release"
+  - "get business owner sign-off for a go-live decision"
+  - "data loader test rows did not run the assignment rules"
+  - "works in Lightning but fails in the Salesforce mobile app"
+  - "acceptance criteria are too vague to test"
   - "how do I know if a Salesforce feature passed UAT"
 tags:
   - uat
@@ -26,14 +31,15 @@ inputs:
   - "List of personas (profiles/permission sets) that interact with the feature"
   - "Description of the feature: objects, fields, automation, pages involved"
 outputs:
+  - "UAT plan record (YAML) covering environment, personas, cases, defects and sign-off"
   - "Structured UAT test script with test steps, expected results, and pass/fail columns"
   - "Defect log with Salesforce-specific severity classification"
   - "Regression test plan identifying which existing features must be re-tested"
   - "UAT sign-off checklist for the feature"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # UAT and Acceptance Criteria
@@ -52,6 +58,28 @@ Gather this context before beginning UAT work:
 | Which user personas are in scope? | Testing one profile may not reveal a field-level security (FLS) gap visible to a different profile. Identify every profile or permission set that will use the feature and ensure test execution covers each. |
 | Is time-based automation in scope? | Time-based workflow rules and scheduled flows cannot be advanced manually in sandbox. If a feature includes time-triggered automation, plan for either manual triggering via Developer Console or a separate automation testing environment. |
 | Have all acceptance criteria been confirmed as testable? | Acceptance criteria must be boolean (observable pass/fail) before test scripts are written. Criteria like "the page should be fast" or "the form should be intuitive" cannot be tested — they must be rewritten before UAT begins. |
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before a single test case is written. Each one traces to a gotcha in
+`references/gotchas.md`; skipping them produces a script that passes and a release that breaks.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which sandbox is UAT in, when was it last refreshed, and is another refresh booked inside the window?" | A refresh during UAT deletes the build and the seeded data; a Full sandbox's 29-day floor makes teams book refreshes far in advance and forget them (gotcha 6) | `refreshed_on` and `build_deployed_on` in the plan header, plus a named person who can veto a refresh |
+| "Does any acceptance criterion depend on data volume — a rollup, a queue backlog, a query, a batch?" | A Partial Copy holds a sample, so volume-dependent behaviour cannot be proved in it (gotcha 8) | The sandbox type decision, and an explicit list of cases the chosen environment cannot prove |
+| "Which named user, with which profile and permission sets, runs each case?" | An admin bypasses FLS and most sharing in the UI, so an admin pass proves nothing about the persona (gotcha 2) | A persona table with real usernames — the roster the sign-off record is anchored to |
+| "Does any criterion involve an email arriving, and who has to receive it?" | Sandboxes default to `System Email Only`, and only `User.Email` is `.invalid`-suffixed on refresh — Contact and Lead emails are real (gotcha 1) | A deliverability setting recorded with a date, and scrubbed contact emails before it is raised |
+| "How will test data be created — UI, Data Loader, Bulk API, REST?" | The three load paths disagree about whether assignment rules run at all (gotcha 7) | The tool and its assignment-rule setting written into the case preconditions, with a UI control record to compare against |
+| "Which criteria are restrictions rather than capabilities — what must be blocked, hidden, or rejected?" | A script built only from "the user can…" never touches a validation rule, FLS or sharing (gotcha 10) | At least one `negative_path` case per story, and a go decision that is invalid without them |
+| "When must the validation deploy run relative to sign-off, and who accepts a deferred defect?" | A quick deploy only skips tests within 10 days of a successful validation, so a validation taken at the start of a three-week cycle is dead by sign-off | A dated validation slot in the plan, and a named business owner for the known-issues list |
+
+What a proper UAT programme adds over just testing it: every result is attributable to a named
+persona in a dated environment against a stated build, so a pass is evidence rather than an opinion
+and a deferred defect is a decision someone signed rather than something that was forgotten.
+
 
 ---
 
@@ -114,6 +142,8 @@ In addition to severity, classify defects by Salesforce component type for faste
 | Security defect | FLS, sharing rule, OWD, profile permission error (admin fixes — prioritize P1/P2 immediately) |
 | Data defect | Existing records in bad state due to migration or earlier defect (data team fixes) |
 | Integration defect | Callout, external ID, sync error (dev team fixes) |
+| Training / expectation | The platform did what it was configured to do; the tester expected something else, or could not observe the result (e.g. a mail sent to a `.invalid` address). Fix the script or the test data, not the build. |
+| Environment defect | The build is correct but the sandbox is not: deliverability reset, drifted layout assignment, stale sharing recalculation. Route to the release manager and log the pattern. |
 
 A defect log is maintained per release. Each entry includes: Defect ID, Test Case ID, Component type, Severity, Description of actual vs expected behavior, Steps to reproduce, Assignee, Status (Open/In Progress/Fixed/Closed), and Retest result.
 
@@ -191,13 +221,32 @@ Before each release, compile a regression test list using this process:
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above** and write the plan header first: sandbox name and type,
+   `refreshed_on`, `build_deployed_on`, deliverability, and the persona roster with real usernames.
+   Route the sandbox-type decision through `admin/sandbox-strategy` § Sandbox Type Decision Matrix
+   rather than deciding it here; `references/worked-examples.md` § 2 shows the header filled in.
+2. **Run the pre-UAT environment checklist** (`references/worked-examples.md` § 6) and record each
+   line's result with a date. Deliverability, contact-email scrubbing, CronTriggers and Named
+   Credentials come from `devops/sandbox-data-isolation-gotchas`; do not re-derive them.
+3. **Build the script.** Take the AC blocks from `admin/acceptance-criteria-given-when-then` and the
+   per-case field schema from `admin/uat-test-case-design`; this skill adds only the programme
+   fields — persona, sandbox, `negative_path`, `bulk_path`. Every story needs at least one negative
+   case, and every volume-dependent story needs a bulk case with the load tool and its
+   assignment-rule setting pinned.
+4. **Emit the plan as a record** in the shape of `references/worked-examples.md` § 7 (or start from
+   `templates/uat-and-acceptance-criteria-template.md`) and lint it:
+   `python3 scripts/check_uat_and_acceptance_criteria.py --file uat-plan.yaml`. The same script
+   lints a markdown script or story document with `--file`, and a whole folder with
+   `--manifest-dir`. Fix every ERROR before the first tester logs in.
+5. **Execute and triage.** Record `pass_fail` per case; log each defect against a `case_id` with a
+   severity and one of the categories in the table above. A finding with no case behind it is a
+   missing case or a change request, not a bug.
+6. **Plan the regression pass** from the release's changed components (§ Regression Testing
+   Planning), and schedule the validation deploy so its 10-day quick-deploy window covers the
+   expected sign-off date (`admin/change-management-and-deployment` § The Deploy Contract).
+7. **Sign off against the record**: re-run the checker, walk the Review Checklist below, and confirm
+   the negative and bulk cases actually executed. Then hand the cutover itself to
+   `devops/go-live-cutover-planning`.
 
 ---
 
@@ -215,6 +264,13 @@ Run through these before declaring UAT complete and signing off for production d
 - [ ] Business owner has formally signed off (name, date, sandbox, build version documented)
 - [ ] Deferred defects have owners and target resolution dates
 - [ ] Test results and defect log are stored in a project artifact location (not in the tester's inbox)
+- [ ] The plan record lints clean: `python3 scripts/check_uat_and_acceptance_criteria.py --file uat-plan.yaml`
+- [ ] `refreshed_on` precedes `build_deployed_on`, and no refresh is booked inside the remaining window
+- [ ] At least one case has `negative_path: true` and it was executed, not skipped
+- [ ] At least one case has `bulk_path: true` where any criterion depends on volume, with the load tool and its assignment-rule setting named in the preconditions
+- [ ] No persona in the roster is System Administrator
+- [ ] Email-dependent cases ran with deliverability recorded and contact emails scrubbed first
+- [ ] The validation deploy falls inside the 10-day quick-deploy window relative to the sign-off date
 
 ---
 
@@ -228,12 +284,23 @@ Non-obvious platform behaviors that cause real production problems:
 
 3. **Record type and profile assignments may differ from production** — If the UAT sandbox was refreshed months ago, profile assignments, record type defaults, and page layout assignments may not match production. Changes made to the sandbox for other projects can silently corrupt the test environment. Before UAT, verify that the sandbox configuration matches production for the personas being tested.
 
+4. **A refresh booked during the UAT window deletes the build** — the plan header carries `refreshed_on` and `build_deployed_on` in that order so the checker can catch it. See `references/gotchas.md` gotcha 6.
+
+5. **Assignment rules do not run the same way through every load path** — REST defaults to running the active rules, a Bulk API 2.0 job runs none unless `assignmentRuleId` is set, and Data Loader has its own Assignment rule setting that overrides the CSV's owner. See gotcha 7.
+
+6. **A Partial Copy proves nothing volume-dependent** — sampling is per selected object, so parent and child volumes come out of proportion. See gotcha 8.
+
+7. **Mobile is a different form factor, not a different browser** — a Lightning page assigned only for `Large` is not what the phone renders, and a compact layout cannot show a long text area at all. See gotcha 11.
+
+Full versions, with sources, are in `references/gotchas.md` (11 gotchas).
+
 ---
 
 ## Output Artifacts
 
 | Artifact | Description |
 |---|---|
+| UAT Plan Record | `uat-plan.yaml` — environment, personas, cases, defects and sign-off in one lintable file (`references/worked-examples.md` § 7) |
 | UAT Test Script | Table of test cases derived from acceptance criteria, with steps, expected results, actual results, and pass/fail tracking |
 | Defect Log | Structured log of all defects with severity, component type, status, and owner |
 | Regression Test Plan | List of test cases selected for regression based on changed components |
@@ -241,9 +308,29 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You need the whole programme filled in for one real feature: plan header and sandbox rationale, deliverability, persona roster, a 6-case script with a negative and a bulk case, the defect table, the sign-off record, the environment checklist, and the lintable plan YAML |
+| `references/gotchas.md` | Before writing the plan header or triaging a defect — 11 platform behaviours that produce false passes and false failures, each with what happens / when it occurs / how to avoid |
+| `references/examples.md` | You need a single worked case or defect entry at click-level detail, or the happy-path-only anti-pattern spelled out |
+| `references/well-architected.md` | You are justifying the environment or the manual-vs-automated split, or you need the source behind a platform claim (`## Official Sources Used`) |
+| `references/llm-anti-patterns.md` | You are reviewing AI-generated acceptance criteria or a generated test script before it reaches a tester |
+| `templates/uat-and-acceptance-criteria-template.md` | Starting a new UAT cycle — copy, fill, then lint with `scripts/check_uat_and_acceptance_criteria.py` |
+
+---
+
 ## Related Skills
 
-- requirements-gathering-for-sf — use before UAT to elicit and write the user stories and acceptance criteria that UAT test scripts are derived from
-- sandbox-strategy — use to select and configure the appropriate sandbox environment for UAT
-- flow-testing — use when acceptance criteria cover Flow automation that should be covered by automated tests, not manual UAT
-- apex-test-class-standards — use for automated Apex test coverage, not manual UAT
+- `admin/acceptance-criteria-given-when-then` — owns the Given/When/Then form of an acceptance criterion. Run it first; this skill consumes its output and never restates the syntax.
+- `admin/uat-test-case-design` — owns the per-case field schema and the AC-to-case decomposition. This skill wraps around it with the environment, defect and sign-off layers.
+- `admin/user-story-writing-for-salesforce` — owns the story stem, INVEST sizing and splitting that produce the `story_id` every case traces to.
+- `admin/requirements-gathering-for-sf` — use before UAT to elicit the requirements the stories come from.
+- `admin/requirements-traceability-matrix` — closes the loop: the RTM cell each executed case fills in.
+- `admin/sandbox-strategy` — owns sandbox type, capacity and refresh floor. Cite its decision matrix for the environment choice instead of re-deriving it.
+- `devops/sandbox-data-isolation-gotchas` — owns email deliverability, `.invalid` obfuscation, CronTrigger and Named Credential carry-over. Source for the pre-UAT checklist.
+- `admin/change-management-and-deployment` — owns the deploy vehicle and `DeployOptions`; supplies the validation / quick-deploy window the UAT schedule has to fit inside.
+- `devops/go-live-cutover-planning` — takes over at sign-off: freeze, cutover window, hypercare.
+- `flow/flow-testing` — use when acceptance criteria cover Flow automation that should be automated rather than manually re-tested each release.
+- `apex/test-class-standards` — use for automated Apex coverage; a bulk UAT case is a manual proxy for one of these.

@@ -118,3 +118,30 @@ RTM is fiction.
 **Correct approach:** Use the row schema. If a change is too vague to write
 as a single row with all canonical fields populated, it is not yet ready for
 the workbook — it goes back to the BA as a fit-gap clarification.
+
+Here is the same wiki bullet run through that test. "PSGs for tier 2" becomes
+one row per artefact in the `cwb.json` envelope, and the three fields the
+bullet had no answer for are the three that force the clarification:
+
+```json
+{
+  "row_id": "CWB-PSG-022",
+  "section": "Profiles + Permission Sets + PSGs",
+  "target_value": "New PSG `Tier2Support_Bundle` composing `Obj_CaseEditor`, `Feat_KnowledgeReader`, `Feat_OmniSupervisor`",
+  "owner": "M. Vidal",
+  "source_req_id": "REQ-031",
+  "source_story_id": "US-2104",
+  "recommended_agent": "permission-set-architect",
+  "recommended_skills": [
+    "admin/permission-set-architecture",
+    "security/permission-set-groups-and-muting"
+  ],
+  "status": "proposed",
+  "notes": "Deployment order per devops/permission-set-deployment-ordering. Muting PS is CWB-PSG-023, a separate row."
+}
+```
+
+`owner`, `source_req_id` and `source_story_id` are the ones a wiki bullet
+never carries — which is the whole reason the bullet reviews cleanly and the
+row does not. `references/worked-examples.md` walks the format rules that
+govern the other nine columns.

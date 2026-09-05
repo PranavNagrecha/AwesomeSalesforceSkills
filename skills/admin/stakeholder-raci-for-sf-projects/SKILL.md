@@ -1,6 +1,6 @@
 ---
 name: stakeholder-raci-for-sf-projects
-description: "Use this skill when building, reviewing, or refreshing a RACI (Responsible / Accountable / Consulted / Informed) matrix for a Salesforce project so that every Salesforce-specific decision — data model change, automation tier choice, security model, integration boundary, deployment, license/edition — has exactly one accountable owner and a documented escalation path that downstream agents can route to. Trigger keywords: RACI matrix salesforce project, stakeholder authority salesforce, escalation path salesforce decisions, who approves data model change, salesforce decision rights, REFUSAL_NEEDS_HUMAN_REVIEW routing. NOT for the change advisory board operating model itself (use admin/change-management-and-deployment). NOT for end-user training rollout plans (use admin/change-management-and-training). NOT for the technical mechanics of permission set assignment authority (use admin/permission-set-architecture). NOT for pure stakeholder requirements elicitation (use admin/requirements-gathering-for-sf)."
+description: "Use this skill when building, reviewing, or refreshing a RACI (Responsible / Accountable / Consulted / Informed) matrix for a Salesforce project so that every Salesforce-specific decision — data model change, automation tier choice, security model, integration boundary, deployment, license/edition — has exactly one accountable owner and a documented escalation path that downstream agents can route to. Trigger keywords: RACI matrix salesforce project, stakeholder authority salesforce, escalation path salesforce decisions, who approves data model change, salesforce decision rights, REFUSAL_NEEDS_HUMAN_REVIEW routing. NOT for the change advisory board operating model itself (use admin/change-management-and-deployment). NOT for end-user training rollout plans (use admin/change-management-and-training). NOT for the technical mechanics of permission set assignment authority (use admin/permission-set-architecture). NOT for pure stakeholder requirements elicitation (use admin/requirements-gathering-for-sf). More trigger keywords: who approves a sandbox refresh, who signs off a data load, release update activation owner, delegated admin authority vs RACI, multi-org decision rights, escalation time-box."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,12 @@ triggers:
   - "stakeholder authority salesforce integration data steward"
   - "escalation path salesforce decisions exec sponsor"
   - "how to map agent refusal codes to human stakeholders for review"
+  - "who approves a sandbox refresh in Salesforce"
+  - "who signs off a Salesforce data load before it runs"
+  - "nobody owns activating our Salesforce release updates"
+  - "delegated admin can assign permission sets we never approved"
+  - "same role different person in each org multi-org governance"
+  - "our escalation path has no time-box and decisions stall"
 tags:
   - raci
   - stakeholder-management
@@ -35,9 +41,9 @@ outputs:
   - "Sponsor / steerco review log showing the matrix has been reviewed and version-locked for the current phase"
   - "Identified gaps — decision categories with no A, A roles overloaded across rows, decisions still owned by the consulting partner instead of the customer"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # Stakeholder RACI for Salesforce Projects
@@ -58,6 +64,27 @@ Gather this context before drafting the matrix:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before drafting a single cell. Each one exists because a specific failure recurs — the
+matching gotcha is named in the last column so you can see what the answer is protecting you from.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who loses something when the sandbox is refreshed, and who schedules it?" | A refresh replaces the org; the person who runs it is rarely the person whose UAT evidence or seeded data disappears | Separate A (data owner) and R (release manager) on the refresh row, with a blocking trigger — `gotchas.md` §9 |
+| "Who signs off a data load — the person who runs the tool, or the person who owns the records?" | Hard-deleted records cannot be recovered from the Recycle Bin, and a failed bulk job leaves a partial state someone must adjudicate | An A on the data owner and an escalation trigger on hard delete and row-count overrun — `gotchas.md` §13 |
+| "Who decides when we activate a Release Update, and against which enforcement release?" | Release Updates carry an availability release and an enforcement release; unowned, the platform activates on its date | A release-update row with A on the release manager and a time-box measured in releases — `gotchas.md` §12 |
+| "Which delegate groups exist today, and do they match what this matrix says about permissions?" | Delegated administration is the decision-rights model made deployable — the org grants what the metadata says, not what the deck says | A retrieve-and-diff step at each phase review — `gotchas.md` §14 |
+| "Is 'the Salesforce admin' one column or several roles one person happens to fill?" | One column means one bottleneck and no successor; the platform itself splits admin authority | A register that records the double-hatting instead of merging the columns — `gotchas.md` §10 |
+| "Which running integrations does this org already have, and who owns each one?" | API allocations and concurrency limits are org-wide and shared; an unlisted integration can fail your rehearsed load | Named owners for existing integrations as C on the integration row — `gotchas.md` §11 |
+| "If this is a multi-org programme, does each role mean the same person in every org?" | Roles, delegate groups, and release managers are org-scoped; one column hides two different authorities | Org-scoped columns (`RM_A`, `RM_B`) and a steerco A on cross-org decisions — `gotchas.md` §15 |
+
+What a proper matrix adds over just naming an owner per workstream: every irreversible Salesforce
+action — refresh, load, hotfix, release-update activation — has exactly one named person who can
+authorise it, a clock that fires when they do not, and a decision log an auditor can read a year later.
+
+---
+
 ## Core Concepts
 
 ### The Salesforce Decision Surface
@@ -72,6 +99,33 @@ A generic project RACI lists deliverables. A Salesforce RACI lists *decisions* �
 6. **License + edition** — which user license, which add-on (Service Cloud, Sales Cloud, Agentforce, CPQ, OmniStudio, Experience Cloud), edition tier, and feature license assignment.
 
 Every row in the matrix is one of these categories — or a sub-row scoped to a specific object, integration, or release. Resist adding deliverable rows ("build the Account page layout") — those belong in a work-breakdown structure, not a RACI.
+
+### The Ten Required Activity Rows
+
+The six categories above are how you *think* about the surface. The rows you actually write are the
+ten activities below — the ones that are irreversible, expensive to reverse, or driven by a date
+Salesforce sets rather than one you set. `scripts/check_raci.py` requires every slug to appear at
+least once; a missing slug is an error, because a required decision with no row is a decision with no
+owner.
+
+| Activity slug | Category | Typical A | Executed by |
+|---|---|---|---|
+| `data-model-change` | Data model | Data steward or process owner | `agents/object-designer/AGENT.md`, `agents/field-impact-analyzer/AGENT.md` |
+| `sharing-model-change` | Security | Security architect | `agents/access-path-explainer/AGENT.md` |
+| `permission-set-change` | Security | CRM admin lead | `agents/permission-set-architect/AGENT.md` |
+| `integration-change` | Integration | Integration architect | `agents/integration-catalog-builder/AGENT.md` |
+| `release-go-no-go` | Deployment | Business sponsor | `agents/release-readiness-reviewer/AGENT.md` |
+| `sandbox-refresh-approval` | Deployment | Data owner (not the refresher) | `agents/sandbox-strategy-designer/AGENT.md` |
+| `production-hotfix` | Deployment | Release manager | `agents/deployment-risk-scorer/AGENT.md`, `agents/changeset-builder/AGENT.md` |
+| `data-load-approval` | Data model | Data steward | `agents/data-loader-pre-flight/AGENT.md`, `agents/data-migration-reconciler/AGENT.md` |
+| `release-update-activation` | Deployment | Release manager | `agents/change-impact-planner/AGENT.md`, `agents/org-health-assessor-v2/AGENT.md` |
+| `seasonal-release-preview` | Deployment | Release manager | `agents/release-train-planner/AGENT.md` |
+
+Sub-rows share a slug: a regulated programme writes two `data-model-change` rows (regulated data and
+everything else) with different As. The automation-tier and license/edition categories stay as
+optional extra rows — they are decisions, but they are reversible, so they do not carry the same
+"nobody owns this and the platform is about to act" risk the ten do. A filled version of all ten,
+with escalation rules and the executing agent per row, is in `references/worked-examples.md`.
 
 ### The Canonical Salesforce Stakeholder Roster
 
@@ -184,27 +238,47 @@ Every BA / admin runtime agent's escalation step should look up the refusal code
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or BA activating this skill:
-
-1. **Identify stakeholders + roles.** Confirm a named individual exists for every role on the canonical roster. Flag empty roles as project risks before drafting the matrix.
-2. **List Salesforce-specific decision categories.** Start with the six canonical categories (data model, automation, security, integration, deployment, license/edition). Add sub-rows only if a category needs scoping (e.g., "data model — Account / Contact / Opportunity" vs. "data model — custom regulatory objects").
-3. **Assign R / A / C / I per cell.** Apply the one-A rule, the no-A-on-C rule, and the every-row-has-an-R rule. Run `scripts/check_raci.py` against the JSON to enforce them.
-4. **Define the escalation rule per A cell.** For each A, write trigger + target + time-box. No A may ship without an escalation rule.
-5. **Map RACI to agent refusal codes.** Fill the refusal-code-to-stakeholder map at the bottom of the matrix using `agents/_shared/REFUSAL_CODES.md`. Every code that ends in `_HUMAN_REVIEW`, `_AMBIGUOUS`, `_GUARD`, `_MISMATCH`, or `_NEEDS_HUMAN_REVIEW` must resolve to a named A.
-6. **Review with sponsor and steerco.** A RACI without a sponsor signature is advisory. Capture the review date and the next planned re-review date.
-7. **Version-lock per phase.** Tag the matrix with the phase (discovery / build / UAT / hypercare) and the version. The next phase requires a re-review and a new version, not an in-place edit.
-
----
+1. **Fill the intake sheet and build the register.** Copy
+   `templates/stakeholder-raci-for-sf-projects-template.md`; record phase, org topology, regulatory
+   overlay, managed packages, delegate groups already in the org, and the partner's hypercare exit
+   date, working the `## Questions to Ask Before Configuring` table into it. Then name a person for
+   every roster role with org unit, Salesforce persona, user licence, and decision rights — the six
+   columns in `references/worked-examples.md` §1. An unnamed role is a project risk to escalate, not
+   a placeholder to fill later.
+2. **Write the ten activity rows.** Copy `templates/raci-matrix.md`, keep the ten required slugs, and
+   add sub-rows only where a category needs splitting. Apply the one-A rule, the no-A-on-a-C rule, and
+   the every-row-has-an-R rule as you fill cells.
+3. **Attach an escalation rule to every A, and an escalation path to the programme.** Trigger, target,
+   time-box per row; level, forum, chair, time-box per escalation level. `references/gotchas.md` §4
+   is why the time-box is not optional.
+4. **Map each R to its executor.** Fill `executed_by` with the repo path of the agent, skill, or
+   decision tree that carries out the row — see the table in `## Core Concepts` and
+   `references/worked-examples.md` §5.
+5. **Lint the artefact.** Run
+   `python3 scripts/check_raci.py --file <path>/raci.yaml --repo-root <repo> --strict`. Errors are
+   structural (missing A, missing R, missing required activity, missing escalation, unresolved
+   `executed_by`); fix them before circulating. Warnings are judgement calls — read them, then decide.
+6. **Reconcile the matrix against the org.** Retrieve the delegate groups and diff them against the
+   permission row (`references/worked-examples.md` §6). A difference is a decision made outside the
+   governance path.
+7. **Review, version-lock, log.** Capture the sponsor sign-off date, the next review date, and the
+   phase in the artefact header. Record decisions as they are made in the `decision_log` shape — the
+   next phase gets a new version, not an in-place edit.
 
 ## Review Checklist
 
 Run through these before publishing the matrix:
 
+- [ ] All ten required activity slugs have a row (`check_raci.py` errors on a missing one)
 - [ ] Every row has exactly one A
 - [ ] No row has A on a C role
 - [ ] Every row has at least one R
 - [ ] Every R/A/C/I value is from the enum (R, A, C, I) — no blanks, no commentary
 - [ ] Every A cell has a written escalation rule with trigger + target + time-box
+- [ ] The escalation target on each row is someone other than that row's A
+- [ ] A programme-level `escalation_path` exists with level, forum, chair, and time-box per level
+- [ ] Every `executed_by` path resolves to a real agent, skill, or decision tree in the repo
+- [ ] Delegate groups in the org have been retrieved and diffed against the permission row
 - [ ] Every refusal code in `agents/_shared/REFUSAL_CODES.md` that requires human review resolves to a named A
 - [ ] No A is held by the implementation partner past the planned hypercare exit date
 - [ ] Compliance officer holds A (not just C) on regulatory-control rows for HIPAA/FINRA/PCI/GDPR/SOX projects
@@ -229,17 +303,43 @@ Non-obvious project-governance behaviors that cause real production problems:
 
 5. **Escalation paths without time-boxes.** "Escalate to sponsor if blocked" with no clock means the team waits indefinitely for the A to decide. A 3–5 business-day time-box should be the default, with shorter for security and longer for license-tier decisions.
 
+
+Seven more — the sandbox refresh approved by someone who does not own the data in it, "the Salesforce
+admin" as A for everything, integrations whose owners are outside the matrix, release-update
+activation owned by nobody, the data load signed off by the tool operator instead of the record owner,
+delegate groups that contradict the permission row, and one role meaning two different people in a
+multi-org programme — are in `references/gotchas.md` §9–§15, each with the platform behaviour that
+makes it bite.
+
 ---
 
 ## Output Artifacts
 
 | Artifact | Description |
 |---|---|
-| RACI matrix (markdown) | One row per decision category, one column per stakeholder role; cells contain R/A/C/I |
-| RACI matrix (JSON) | Machine-readable mirror of the markdown for `check_raci.py` and downstream agent consumption |
-| Escalation rule table | One row per A cell; columns: trigger, target, time-box |
+| Stakeholder register | One row per role: named person, org unit, Salesforce persona, user licence, decision rights |
+| RACI matrix (markdown) | The circulated view — one row per activity, one column per stakeholder role; cells contain R/A/C/I |
+| RACI matrix (YAML) | The artefact of record, linted by `scripts/check_raci.py`. JSON with the same keys is accepted |
+| Escalation rules + escalation path | Per-row trigger / target / time-box, plus programme-level levels, forums, chairs |
+| R-to-executor map | `executed_by` per row: the agent, skill, or decision tree that carries out the work |
 | Refusal-code-to-stakeholder map | Mapping from `REFUSAL_*` codes to the named A who should be paged |
+| Decision log | Per decision: date, activity, decision, decided by, consulted, alternatives rejected, reversal cost, evidence |
 | Review log | Sponsor / steerco review date, attendees, version stamp, next review date |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You need the filled artefacts — register, ten-row matrix in markdown and YAML, escalation path, decision log, R-to-executor map, and the DelegateGroup / CustomMetadata XML that makes the matrix deployable |
+| `references/examples.md` | You need a matrix shaped for a specific programme type — greenfield, regulated (HIPAA), or M&A multi-org — or the sponsor-as-universal-A anti-pattern with the linter output |
+| `references/gotchas.md` | Before publishing, and any time a cell feels obvious — 15 failure modes with what happens / when it occurs / how to avoid |
+| `references/well-architected.md` | You are justifying the matrix to an architecture review, or need the pillar mapping and the source list |
+| `references/llm-anti-patterns.md` | An AI assistant is generating or reviewing the matrix — the seven ways it goes wrong |
+| `scripts/check_raci.py` | Every time the artefact changes: `--file <raci.yaml> --repo-root <repo> --strict` |
+| `templates/raci-matrix.md` | You are producing the deliverable — the matrix, escalation, refusal map, and YAML shape to fill |
+| `templates/stakeholder-raci-for-sf-projects-template.md` | You are starting an engagement — the intake sheet that captures context before any cell is filled |
 
 ---
 
@@ -249,8 +349,13 @@ Non-obvious project-governance behaviors that cause real production problems:
 - admin/change-management-and-deployment — covers the CAB operating model that the RACI references
 - admin/change-management-and-training — covers end-user adoption, which is downstream of the RACI
 - admin/permission-set-architecture — covers the technical authority model for permission set assignment
+- admin/delegated-administration — the permission row made concrete: the delegate group that either matches this matrix or contradicts it
+- devops/release-management — the release train the go/no-go, hotfix, release-update, and preview rows sit inside
 - admin/sandbox-strategy — feeds the deployment-row decisions on which sandboxes a change traverses
 - standards/decision-trees/automation-selection.md — the tree the automation-tier A cell consults
 - standards/decision-trees/sharing-selection.md — the tree the security-model A cell consults
 - standards/decision-trees/integration-pattern-selection.md — the tree the integration-boundary A cell consults
 - agents/_shared/REFUSAL_CODES.md — the refusal-code enum the matrix maps to
+- agents/_shared/AGENT_CONTRACT.md — why an agent's Citations block and confidence score are usable as decision-log evidence
+- agents/org-health-assessor-v2/AGENT.md — reports the pending release updates and org-level findings the matrix must assign owners to
+- agents/release-readiness-reviewer/AGENT.md — produces the evidence the go/no-go A signs

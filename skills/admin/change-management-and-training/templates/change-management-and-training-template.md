@@ -146,6 +146,79 @@ Define measurable targets before go-live. Agree with stakeholders.
 
 ---
 
+## The Lintable Plan Artefact
+
+The prose sections above are for humans. This block is the machine-checkable record of the
+same plan. Save it as `change-plan.yaml` beside this document and lint it with:
+
+```bash
+python3 scripts/check_change_management_and_training.py --file change-plan.yaml --repo-root .
+```
+
+A filled-in version of exactly this shape is in `references/worked-examples.md` section 3.
+
+```yaml
+change_plan:
+  id: CM-                         # unique id for this change
+  title: ""
+  deploy_date: ""                 # YYYY-MM-DD; every 'when' below is relative to this
+  release_window_check: ""        # instance upgrade date checked? see admin/salesforce-release-preparation
+  owner: ""
+  status: planned                 # planned | in-progress | complete | blocked | cancelled
+
+personas:
+  # One row per group who TOUCHES THE OBJECT, not per group who attends meetings.
+  # Include the unaffected (they need a "nothing changes" message) and the
+  # API-only users (they need a mapping request). training_format: none is a
+  # legal, recorded answer.
+  - id: P-
+    label: ""
+    headcount: 0
+    screen_change: ""
+    process_change: ""
+    permission_change: ""
+    training_format: hands-on-lab # hands-on-lab | live-demo | self-paced-video |
+                                  # in-app-guidance | trailhead-trail | quick-reference | none
+    training_env: ""              # which org, and when it is refreshed relative to the deploy
+    owner: ""
+    status: planned
+    reads: []                     # repo paths the plan depends on; the checker resolves them
+
+communications:
+  # Every row: audience, channel, D-relative timing, owner. Managers before their teams.
+  # A message naming a new field must land AFTER the permission set is assigned.
+  - id: MSG-01
+    audience: P-                  # a persona id, or 'all'
+    channel: email                # email | chatter | chatter-group | slack | in-app-guidance |
+                                  # town-hall | manager-cascade | intranet | survey
+    when: D-10                    # D-10 | D0 | D+14 — never a calendar date
+    owner: ""
+    subject: ""
+    status: planned
+
+adoption_metrics:
+  # If it cannot be written as a query or a report definition, it will not be measured.
+  # Presence: LoginHistory. Guidance engagement: PromptAction. Behaviour: record counts.
+  # List-view usage has no query — do not promise it.
+  - id: AM-01
+    label: ""
+    source: ""                    # LoginHistory | PromptAction | <sObject>
+    query: ""
+    target: ""                    # capture the baseline BEFORE the deploy
+    owner: ""
+    status: planned
+
+feedback_loop:
+  - id: FB-01
+    channel: chatter-group
+    audience: P-
+    when: D0
+    owner: ""
+    status: planned
+```
+
+---
+
 ## Notes
 
 (Record deviations from the standard plan and their justification)

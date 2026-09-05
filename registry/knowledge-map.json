@@ -6012,6 +6012,9 @@
     "elevate": [
       "architect/fundraising-integration-patterns"
     ],
+    "elicitation": [
+      "admin/requirements-gathering-for-sf"
+    ],
     "eligibility": [
       "omnistudio/business-rules-engine"
     ],
@@ -9989,6 +9992,9 @@
     "nlu-training": [
       "architect/einstein-bot-architecture"
     ],
+    "non-functional-requirements": [
+      "admin/requirements-gathering-for-sf"
+    ],
     "non-qualifying-points": [
       "integration/loyalty-management-setup"
     ],
@@ -12198,6 +12204,9 @@
       "admin/commerce-checkout-flow-design",
       "admin/subscription-lifecycle-requirements",
       "admin/territory-design-requirements"
+    ],
+    "requirements-catalogue": [
+      "admin/requirements-gathering-for-sf"
     ],
     "requirements-gathering": [
       "admin/analytics-requirements-gathering",
@@ -14745,7 +14754,6 @@
     ],
     "user-stories": [
       "admin/acceptance-criteria-given-when-then",
-      "admin/requirements-gathering-for-sf",
       "admin/user-story-writing-for-salesforce",
       "devops/copado-essentials"
     ],

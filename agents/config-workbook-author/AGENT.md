@@ -95,7 +95,7 @@ The workbook is what an admin team uses to execute a release — every row conve
 4. `AGENT_RULES.md`
 
 ### Workbook structure & traceability
-5. `skills/admin/configuration-workbook-authoring` — the canonical 10-section structure (Org Profile, Objects + Fields, Record Types + Page Layouts, Validation Rules, Permissions + Sharing, Automation, UI + Lightning Pages, Reports + Dashboards, Data Migration, UAT + Cutover) — every row carries `recommended_agent` validated against the runtime roster
+5. `skills/admin/configuration-workbook-authoring` — the canonical 10-section structure (Objects + Fields, Page Layouts + Lightning Pages, Profiles + Permission Sets + PSGs, Sharing Settings, Validation Rules, Automation (Flow / Apex / Approvals), List Views + Search, Reports + Dashboards, Integrations, Data + Migration) — every row carries `recommended_agent` validated against the runtime roster
 6. `skills/admin/user-story-writing-for-salesforce` — read story envelope shape so the workbook can absorb `recommended_agents[]` and `recommended_skills[]`
 7. `skills/admin/fit-gap-analysis-against-org` — read the fit-gap report shape so the workbook respects descope decisions
 8. `skills/admin/process-flow-as-is-to-be` — when a process-flow map is supplied, the workbook embeds handoff catalog references in the Automation section

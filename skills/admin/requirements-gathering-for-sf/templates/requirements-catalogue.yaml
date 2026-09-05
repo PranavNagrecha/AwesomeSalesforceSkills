@@ -1,0 +1,61 @@
+# Salesforce requirements catalogue — skeleton
+#
+# One row per requirement. Copy this file into the project's discovery folder, replace the two
+# sample rows, and lint before any handoff:
+#
+#   python3 scripts/check_requirements_catalogue.py --file requirements-catalogue.yaml
+#
+# Field reference
+#   id                    REQ-<digits>. Permanent. The RTM joins story / test / defect ids on it.
+#   statement             The outcome in the stakeholder's words. Never a build instruction.
+#   type                  functional | nfr
+#   source_stakeholder    Named person and role. "The business" is not a stakeholder.
+#   objects / fields      Candidates, not decisions. Downstream agents are free to disagree.
+#   automation_candidate  The tier you think it is. Requires decision_tree_step.
+#   decision_tree_step    The standards/decision-trees/ branch that produced the tier.
+#   sharing_impact        The visibility ask, in one line.
+#   sharing_layer         OWD | Role Hierarchy | Sharing Rules | Teams | Manual / Apex |
+#                         Restriction / Scoping Rules | Implicit | Field-Level Security
+#   data_volume           Steady state AND worst-case single batch.
+#   licence_implication   Employee / Customer Community / Partner Community / platform-only.
+#   measure               Required on nfr rows, and linted: it must contain a number with a unit.
+#   priority              Must | Should | Could | Wont
+#   status                draft | confirmed | deferred | descoped | blocked
+#   notes                 Free text. Required in practice on blocked rows: owner and decision date.
+#   downstream            At least one of story / fit_gap_row / workbook_section.
+#
+# A filled 13-row example is in references/worked-examples.md.
+
+project: "<project name> — <phase>"
+
+requirements:
+  - id: REQ-001
+    statement: "<what the stakeholder needs to be true, in their words, after the Solution-to-Requirement Rewind>"
+    type: functional
+    source_stakeholder: "<name> — <role>"
+    objects: [Account]
+    fields: [Account.Name]
+    automation_candidate: "Before-save record-triggered Flow"
+    decision_tree_step: "standards/decision-trees/automation-selection.md Q1 -> Q2"
+    sharing_impact: "<who must see the record, and who must not>"
+    sharing_layer: "Role Hierarchy"
+    data_volume: "<steady state> per <period>; worst-case single batch <n>"
+    licence_implication: "Internal Salesforce licence; no external persona"
+    priority: Must
+    status: draft
+    downstream:
+      story: STORY-001
+      fit_gap_row: FG-001
+      workbook_section: "6. Automation"
+
+  - id: REQ-002
+    statement: "<the non-functional constraint the solution must live inside>"
+    type: nfr
+    source_stakeholder: "<name> — <role>"
+    measure: "1,200 records per month; worst-case single load 40,000 rows"  # a real number, or the linter fails the row
+    data_volume: "<the sizing case, which is usually the worst case, not the average>"
+    priority: Should
+    status: draft
+    notes: "Bounding platform fact and its source go here — see the NFR sheet in references/worked-examples.md."
+    downstream:
+      workbook_section: "10. Data"

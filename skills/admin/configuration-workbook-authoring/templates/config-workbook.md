@@ -5,7 +5,9 @@
 > with a single row whose `target_value` is `not-in-scope-this-release`.
 >
 > Authoritative skill: `skills/admin/configuration-workbook-authoring`.
-> Validate before sprint commit:
+> Validate before sprint commit (exit code 1 on any finding, so it drops
+> straight into a hook or a CI step; do not pass `--allow-empty-section` at
+> commit time):
 > `python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook <path>`
 
 ---
@@ -44,10 +46,10 @@ Every row in every section uses this schema:
 | `section` | yes | Must match one of the 10 canonical section names below. |
 | `target_value` | yes | The configurable value (API name, formula, picklist set, sharing rule criterion, etc.). |
 | `owner` | yes | Named human accountable for this row. Not a team alias. |
-| `source_req_id` | yes | Fit-gap id from the RTM. |
+| `source_req_id` | yes | The RTM `req_id` (`REQ-XXX`), immutable and never reused. |
 | `source_story_id` | yes | User-story id (e.g. `US-2031`). |
-| `recommended_agent` | yes | Single downstream runtime agent. Must resolve to a real `agents/<name>/AGENT.md`. |
-| `recommended_skills[]` | yes (≥ 1) | Skill ids the executing agent should consult. |
+| `recommended_agent` | yes | Exactly ONE runtime agent id, optionally followed by `--flag` arguments. Must resolve to `agents/<id>/AGENT.md` whose frontmatter `status` is not `deprecated`. |
+| `recommended_skills[]` | yes (≥ 1) | Skill ids the executing agent must consult; every entry resolves on disk (`<domain>/<slug>`, `<domain>/<slug> -> references/<file>.md`, or a repo-relative `templates/…` / `standards/…` path). |
 | `status` | yes | One of `proposed`, `committed`, `in-progress`, `executed`, `verified`, `change-requested`. |
 | `notes` | optional | Risks, ADR links, decision-tree branches cited. |
 
@@ -57,7 +59,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-OBJ-001 |  |  |  |  | object-designer |  | proposed |  |
+| CWB-OBJ-001 |  |  |  |  | object-designer |  | proposed | The object's `sharingModel` (OWD) is a row here, not in Section 4. |
 
 ---
 
@@ -65,7 +67,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-PG-001 |  |  |  |  | lightning-record-page-auditor |  | proposed |  |
+| CWB-PG-001 |  |  |  |  | audit-router --domain=lightning_record_page |  | proposed | `path-designer` instead for Path + Guidance rows. |
 
 ---
 
@@ -81,7 +83,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-SHR-001 |  |  |  |  | sharing-audit-agent |  | proposed | Cite `standards/decision-trees/sharing-selection.md`. |
+| CWB-SHR-001 |  |  |  |  | audit-router --domain=sharing |  | proposed | Required: cite `sharing-selection.md` and the `Q<n>` branch that resolved it. OWD (`sharingModel`) belongs in Section 1, not here. |
 
 ---
 
@@ -89,7 +91,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-VR-001 |  |  |  |  | validation-rule-auditor |  | proposed |  |
+| CWB-VR-001 |  |  |  |  | audit-router --domain=validation_rule |  | proposed | Bypass infrastructure (Custom Permission + Custom Setting) is its own row. |
 
 ---
 
@@ -97,7 +99,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-AUT-001 |  |  |  |  | flow-builder |  | proposed | Cite `standards/decision-trees/automation-selection.md`. |
+| CWB-AUT-001 |  |  |  |  | flow-builder |  | proposed | Required: cite `automation-selection.md` and the `Q<n>` branch that resolved it. `apex-builder` / `apex-refactorer` / `assignment-and-auto-response-rules-designer` per the branch. |
 
 ---
 
@@ -105,7 +107,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-LV-001 |  |  |  |  | list-view-and-search-layout-auditor |  | proposed |  |
+| CWB-LV-001 |  |  |  |  | audit-router --domain=list_view_search_layout |  | proposed |  |
 
 ---
 
@@ -113,7 +115,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-RPT-001 |  |  |  |  | report-and-dashboard-auditor |  | proposed |  |
+| CWB-RPT-001 |  |  |  |  | audit-router --domain=report_dashboard |  | proposed |  |
 
 ---
 
@@ -129,7 +131,7 @@ Every row in every section uses this schema:
 
 | row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |
 |---|---|---|---|---|---|---|---|---|
-| CWB-DAT-001 |  |  |  |  | data-loader-pre-flight |  | proposed |  |
+| CWB-DAT-001 |  |  |  |  | data-loader-pre-flight |  | proposed | Cutover order for the whole release lives in this row's notes. |
 
 ---
 
@@ -186,3 +188,16 @@ After sprint commit, hand off rows to downstream agents:
 | CWB-OBJ-001 | object-designer | `Follow agents/object-designer/AGENT.md to execute row CWB-OBJ-001 from this workbook.` |
 | CWB-PSG-001 | permission-set-architect | `Follow agents/permission-set-architect/AGENT.md in design mode to execute row CWB-PSG-001.` |
 | CWB-AUT-001 | flow-builder | `Follow agents/flow-builder/AGENT.md to execute row CWB-AUT-001.` |
+| CWB-SHR-001 | audit-router | `Follow agents/audit-router/AGENT.md --domain=sharing to verify row CWB-SHR-001.` |
+
+---
+
+## Descope / Defer Ledger
+
+Requirements that deliberately produced no row. Keep it: a missing row is
+invisible without it, and `agents/config-workbook-author/AGENT.md` Step 3
+refuses (`REFUSAL_DESCOPE_BREACH`) if a descoped story reappears as a row.
+
+| source_req_id | source_story_id | fit-gap decision | Recorded as | Rationale | Decided by | Date |
+|---|---|---|---|---|---|---|
+| `REQ-XXX` | `US-XXXX` | `descope` \| `defer` \| `escalate` | No workbook row / carried to `<release>` / ADR required | `<why>` | `<forum>` | `YYYY-MM-DD` |

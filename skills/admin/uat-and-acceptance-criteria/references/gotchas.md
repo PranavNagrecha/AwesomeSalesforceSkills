@@ -53,3 +53,69 @@ Document time-based automation as a separate test case category with explicit sa
 **When it occurs:** Any multi-project sandbox where configuration changes accumulate across projects without a full refresh. The UAT environment diverges from production over time.
 
 **How to avoid:** Before UAT for each release, generate a metadata diff between the sandbox and production using `sf project retrieve` or a change management tool. Verify that record type assignments, page layout assignments, and profile configurations for the personas in scope match production. If they do not match, either refresh the sandbox or document the known differences and adjust test preconditions accordingly. Include sandbox configuration verification as a formal pre-UAT setup step in the test plan.
+
+---
+
+## Gotcha 6: A Refresh Scheduled Mid-Cycle Deletes the Build You Are Testing
+
+**What happens:** UAT starts on Monday. On Wednesday the platform team runs the sandbox refresh that was booked six weeks earlier for a different project. Thursday morning the testers find the new object, the assignment rule and the seeded test data gone, and every case that had passed is now unprovable. The build is still in version control, so nothing is lost permanently — but the UAT cycle restarts from the environment checklist, not from where it stopped.
+
+**When it occurs:** Any release whose UAT window overlaps a booked refresh. It is likeliest on a Full sandbox, because a Full sandbox can only be refreshed every 29 days (`admin/sandbox-strategy` § Type Capacities and Refresh Windows) and teams therefore treat the refresh slot as unmissable and book it far ahead. Refreshing over live work destroys the metadata and test data sitting in the sandbox (`admin/sandbox-strategy` → `references/gotchas.md` § Refreshing Over Active Work).
+
+**How to avoid:** The refresh date is a field in the UAT plan header, not a footnote — `refreshed_on` and `build_deployed_on`, in that order, with the checker asserting the refresh came first. Freeze the environment for the length of the cycle and name the person who can approve a refresh during it. If the refresh cannot move, the honest choice is to run UAT after it and re-deploy the build, not to run UAT across it.
+
+---
+
+## Gotcha 7: The Three Load Paths Disagree About Whether Assignment Rules Run
+
+**What happens:** A developer inserts 50 cases through the REST API while building; they route correctly. The data owner loads the same 50 rows through Data Loader during UAT and every case lands on the load user instead of a queue. The rule is identical. Nothing was deployed in between.
+
+**When it occurs:** Whenever a UAT case creates Cases, Leads or Accounts through anything other than the UI, and the case does not name the tool. The three paths have different defaults:
+
+| Path | Behaviour when nothing is specified | Source |
+|---|---|---|
+| REST API | "If the header is not provided with a request, REST API defaults to using the active assignment rules" | `api_rest.txt` L691–694 |
+| Bulk API 2.0 | `assignmentRuleId` is listed as **Optional** on the ingest job resource — absent means no rule runs | `api_asynch.txt` L1591–1595 |
+| Data Loader | An **Assignment rule** setting takes the rule id for inserts, updates and upserts on cases and leads, and "the assignment rule overrides Owner values in your CSV file" — left blank, the CSV's owner wins | `salesforce_data_loader.txt` L379–383 |
+
+**How to avoid:** Name the tool *and* the setting in the case preconditions, never "load the file." If the story says the backlog must route like a UI-created case, the case has a control set: create one record in the UI with the same field values and assert that the loaded rows landed on the same owner. Comparing to an expectation in the tester's head is how this defect reaches production.
+
+---
+
+## Gotcha 8: Partial Copy Sampling Hides Every Volume-Dependent Behaviour
+
+**What happens:** UAT runs in a Partial Copy that "has production data in it." Every case passes. In production the same automation times out on the first end-of-month batch, or a report that returned in two seconds returns in ninety, or a rollup that was correct in UAT is wrong because the sandbox held a tenth of the child records.
+
+**When it occurs:** Any release touching a query, rollup, escalation queue or automation whose behaviour is a function of row count. A Partial Copy holds 5 GB, or 10,000 records per selected object plus its children (`admin/sandbox-strategy` § Type Capacities and Refresh Windows) — the sample is a sample, and the sampling is per selected object, so parent and child volumes come out of proportion to each other. A synchronous transaction has 100 SOQL queries, 150 DML statements and 10,000 ms of CPU to work in (`apexdev.txt` L19544, L19554, L19579); none of those ceilings is anywhere near reachable at sample volume.
+
+**How to avoid:** Decide the sandbox type from the *cases*, not the budget: if any acceptance criterion depends on volume, the programme needs a Full sandbox or the case has to be run somewhere that has the rows. When a Partial Copy is the only option, write the list of cases it cannot prove into the plan header and get the business owner to accept that list explicitly at sign-off. An unprovable case marked "Not Run" is a known risk; the same case marked "Pass" is a lie the release rests on.
+
+---
+
+## Gotcha 9: Defects Logged Against Symptoms Cannot Be Closed
+
+**What happens:** The defect log fills with entries like "case went to the wrong queue," "email didn't arrive," "field is missing." Weeks later nobody can tell whether a fix closed the defect, because the entry never said what the correct behaviour was. Retest becomes an argument about what was originally meant, and the release ships with defects marked Closed that were only ever forgotten.
+
+**When it occurs:** Any UAT run where testers log defects from the record page rather than from the test script. It is worst when the script and the defect log live in different tools, because the case id is then a manual copy-paste and the first tester who skips it sets the pattern.
+
+**How to avoid:** A defect entry that does not carry a `case_id` — which in turn carries a `story_id` and an `ac_id` — is not accepted into the log. The expected result is copied from the case, not re-described. This makes the retest mechanical: re-run the named case, compare against the same expected string, close or reopen. It also makes the disposition honest, because a "defect" that no case predicts is either a missing case or a change request, and both of those are decisions someone has to make rather than a bug someone can quietly fix.
+
+---
+
+## Gotcha 10: Sign-Off on an All-Positive Script Proves Only That the Feature Exists
+
+**What happens:** The script has twenty cases, all twenty pass, the business owner signs. Two weeks after go-live a user saves a record the validation rule was written to block, or opens a record the sharing model was written to hide. Nothing regressed — the guardrails were never tested, because every case in the script drove the feature the way it was designed to be driven.
+
+**When it occurs:** Scripts generated directly from acceptance criteria that are all phrased as "the user can…". Restrictions — validation rules, FLS, sharing, required fields, permission gates — only fire on the conditions a positive case avoids by construction, so a script with no negative cases will never touch them regardless of how many rows it has.
+
+**How to avoid:** Make negative coverage a property of the plan rather than a habit of the tester: at least one case with `negative_path: true` per story, and a go decision that is invalid unless those cases were executed and passed. For anything volume-sensitive, add the bulk case on the same footing — the checker in this skill fails a plan with no negative case and no bulk case for exactly this reason. `admin/uat-test-case-design` § Negative-Path Coverage gives the decomposition; this skill's contribution is that the programme cannot be signed off without it.
+
+---
+
+## Gotcha 11: "Works in Lightning, Fails in Mobile" Is a Layout Assignment, Not a Bug
+
+**What happens:** Every case passes on the desktop. A tester opens the same record in the Salesforce mobile app and the new fields are not there, or the record opens on an entirely different page. The build team cannot reproduce it and closes the defect as "cannot reproduce" — from a desktop browser.
+
+**When it occurs:** Whenever a release adds fields or a Lightning record page and UAT is executed only in a desktop browser. Two separate mechanisms are in play. Lightning page assignments are per form factor: `Large` "represents the Lightning Experience desktop environment," `Small` "represents the Salesforce mobile app on a phone or tablet," and `Medium` is reserved (`api_meta.txt` L39827–39836) — a page assigned only for `Large` is simply not what the phone renders. Separately, the at-a-glance fields the mobile app shows come from the compact layout, which "displays a record's key fields at a glance in the Salesforce mobile app, Lightning Experience, and in the Outlook and Gmail integrations" and supports every field type **except** text area, long text area, rich text area and multi-select picklist (`api_meta.txt` L43076–43082). A new long-text field can never appear there, and that is correct behaviour rather than a defect.
+
+**How to avoid:** If any story mentions phone or field use, the persona row in the plan carries a device and at least one case is executed on it; otherwise state in the plan header that mobile is out of scope, so a mobile finding after go-live is a known gap rather than a surprise. When a mobile-only failure is reported, check the form-factor assignment and the compact layout before opening a defect against the build — most of these are configuration that was never assigned, and one of them is a field type that cannot be shown at all.

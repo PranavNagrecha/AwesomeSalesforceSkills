@@ -75,3 +75,18 @@ The integration requirement is surfaced in the workshop, not mid-sprint. The tea
 **What goes wrong:** The VP describes the reporting and forecast visibility they want. They do not describe what a sales rep sees when they open a lead record, what fields they need to enter, or what error messages they encounter. The resulting build optimizes for manager reporting and ignores rep workflow. Adoption drops — reps continue using email and spreadsheets, and the reports the VP needs are never populated accurately because reps don't enter data into the tool.
 
 **Correct approach:** Interview the actual end users doing the daily work. Observe them performing their current process if possible. Interview the manager separately to capture reporting and oversight requirements. Reconcile the two perspectives explicitly in the requirements document. Tag each story with its primary persona so the build team knows whose workflow it supports.
+
+**The artefact that makes the reconciliation visible** — a persona coverage matrix, filled in before
+any story is written. Empty cells are the interviews still owed, not gaps to be filled by inference:
+
+| Requirement area | End user interviewed | Manager interviewed | Data steward / admin interviewed | Conflict? | Rows generated |
+|---|---|---|---|---|---|
+| Lead capture and qualification | Yes — 2 reps, 2026-03-04 | Yes — VP Sales, 2026-03-02 | No | Rep wants 8 fields; VP wants 3 required at save | REQ-001 … REQ-004 |
+| Pipeline reporting | No | Yes — VP Sales, 2026-03-02 | No | — | REQ-005 |
+| Lead assignment on API-created leads | No | No | Yes — Ops admin, 2026-03-06 | — | REQ-006 |
+| Data quality / dedup | No | No | Yes — Ops admin, 2026-03-06 | Rep workflow impact unknown | REQ-007 (`status: blocked`) |
+
+Two things fall out of it that a narrative hides. Pipeline reporting was captured from the sponsor
+alone, so its acceptance criteria describe a report nobody has watched anyone use; and the dedup row
+has no end-user column at all, which is why it is `blocked` rather than `draft` — the requirement is
+real, but the person whose day it changes has not been asked yet.
