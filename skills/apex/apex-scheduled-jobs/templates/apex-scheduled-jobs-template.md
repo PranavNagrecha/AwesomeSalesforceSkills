@@ -24,7 +24,11 @@ Answer these before proceeding:
 - **Desired time of day:** ___________ (prefer off-peak, typically 1:00 AM – 5:00 AM)
 - **Approximate record volume processed per run:** ___________________________________
 - **Does the job need outbound callouts?** Yes / No
-- **Current org scheduled job count:** ___ / 100
+- **Current scheduled *Apex* count** (`CronJobDetail.JobType = '7'`): ___ / 100 (___ / 5 in Developer Edition)
+- **Identity + time zone the reschedule script will run under:** ___________________________________
+- **Classes referenced by this scheduler** (all locked by an active schedule): ___________________________________
+- **Behaviour if the previous run is still in flight:** skip / queue / abort-and-restart
+- **Behaviour if a fire is missed entirely:** self-heals next run / needs catch-up (how?)
 
 ---
 
@@ -32,7 +36,7 @@ Answer these before proceeding:
 
 | Field | Value | Notes |
 |---|---|---|
-| Seconds | `0` | Must be 0 — sub-minute scheduling not supported |
+| Seconds | `0` | Range is 0–59; `0` is conventional. Frequency, not seconds, is capped: no more than once an hour |
 | Minutes | ___ | 0–59 |
 | Hours | ___ | 0–23 |
 | Day_of_month | ___ or `?` | Use `?` if Day_of_week is specified |

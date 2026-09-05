@@ -206,7 +206,7 @@
     "ff1cc3e278a4967c463f",
     "ffe3f2f9e270ec9beb9b"
   ],
-  "content_hash": "0e15eebfe1e131abeb2a7e1ba54bb5b432aad21a336a2940eb3da46a6cacfb7c",
+  "content_hash": "3faceb88b28599a16de4e38ca01fcc1cf688d84b0b4e7b4d77447c588c52b388",
   "dependencies": [],
   "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes \u2014 use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup \u2014 use admin/batch-job-scheduling-and-monitoring. NOT for alerting when a scheduled job fails silently \u2014 use apex/scheduled-apex-failure-detection-and-monitoring. Also covers: SchedulableContext.getTriggerId, System.abortJob, System.scheduleBatch, CronTrigger.State, CronJobDetail.JobType, TimesTriggered, NextFireTime, the 100-scheduled-Apex ceiling, the schedulable-class deploy lock, and the unschedule-deploy-reschedule runbook.",
   "file_location": "skills/apex/apex-scheduled-jobs",
