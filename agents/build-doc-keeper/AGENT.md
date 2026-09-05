@@ -53,8 +53,8 @@ Four skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRA
 2. `agents/_shared/AGENT_CONTRACT.md` — section shape, Process Observations, confidence rubric.
 3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence and the atomic-write rule.
 4. `agents/_shared/REFUSAL_CODES.md` — the refusal enum.
-5. `standards/build-orchestration.md` — § 2 (which files in a build directory are rendered and must never be hand-edited), § 6 (this agent's one job), § 8 (a skill gap recorded in `decisions.md` is the signal to deepen a skill).
-6. `agents/_shared/schemas/build-plan.schema.json` — the fields this agent reads and the ones it must leave alone.
+5. `standards/build-orchestration.md` — § 2 (which files in a build directory are rendered and must never be hand-edited, and that no agent hand-edits `plan.json`), § 4 (the step types Step 4 maps to workbook sections, and the rule that this map carries a default section so a new type never breaks a documentation run), § 6 (this agent's one job), § 8 (a skill gap recorded in `decisions.md` is the signal to deepen a skill).
+6. `agents/_shared/schemas/build-plan.schema.json` — the fields this agent reads and the ones it must leave alone, including the `type` enum whose members Step 4 maps to workbook sections.
 
 ### The formats this agent emits
 1. `skills/admin/configuration-workbook-authoring` — the ten canonical sections and the full row schema (`row_id`, `section`, `target_value`, `owner`, `source_req_id`, `source_story_id`, `recommended_agent`, `recommended_skills[]`, `status`, `notes`), including the rule that `status` is never a placeholder token and `recommended_agent` is exactly one live roster agent.
@@ -107,15 +107,19 @@ Pick the workbook section from the step's `type`, then write one row per address
 | Step type | Workbook section |
 |---|---|
 | `object-model` | 1 — Objects + Fields |
-| `ui` | 2 — Page Layouts + Lightning Pages |
+| `ui` | 2 — Page Layouts + Lightning Pages, with list views, reports and email templates named in `target_value` |
 | `access` | 3 — Profiles + Permission Sets + PSGs, and 4 — Sharing Settings for sharing artefacts |
-| `automation` | 5 — Validation Rules for VR artefacts, 6 — Automation for Flow / Apex / Approvals |
-| `routing` | 6 — Automation, with queue and routing artefacts named in `target_value` |
-| `sla` | 6 — Automation |
+| `validation` | 5 — Validation Rules |
+| `automation` | 6 — Automation for Flow / Apex / Approvals |
+| `routing` | 6 — Automation, with queue, routing and Email-to-Case / Web-to-Case artefacts named in `target_value` |
+| `sla` | 6 — Automation, with escalation rules named in `target_value` |
 | `data` | 10 — Data + Migration |
 | `integration` | 9 — Integrations, credentials referenced by alias and never inline |
-| `docs` | the section the document itself covers |
+| `docs` | the section the document itself covers; `package.xml` and the deploy-order note go to 10 — Data + Migration only when they are a migration artefact, otherwise to **Other configuration** |
 | `custom` | the section the step's artefacts fall in; if they straddle two, split the rows |
+| anything else | **Other configuration** — the default section. A step type this table does not name is documented, not dropped |
+
+**The default matters.** `standards/build-orchestration.md` § 4 names this map as one of the five places a new step type has to be added, and it is the one most likely to be missed. When a step's `type` is not a row above, write its rows to `workbook/99-other-configuration.md` under the section heading **Other configuration**, and say so in Process Observations and in the report — naming the type, so the gap gets closed in the map rather than rediscovered on the next build. A row placed in the default section is a documented artefact with a flag on it; a step type with no row is an artefact nobody signs off.
 
 Each row is written to `<build_dir>/workbook/<NN>-<section-slug>.md` as a markdown table row carrying every field the row schema requires, with these bindings:
 
@@ -178,7 +182,7 @@ Overrides the default rubric:
 | Score | Condition |
 |---|---|
 | HIGH | every artefact produced a workbook row, every row carries a real `source_req_id` and a verification step, every requirement the step serves has a traceability row, and re-running produced no duplicates |
-| MEDIUM | an artefact could not be placed in a section without judgment, or a requirement id had to be inferred from a clarification answer rather than read from the step |
+| MEDIUM | an artefact could not be placed in a section without judgment, a step type fell through to the **Other configuration** default, or a requirement id had to be inferred from a clarification answer rather than read from the step |
 | LOW | a row had to be written with an empty `source_req_id` or an empty verification cell, or the step's test results were unreadable |
 
 ---
@@ -241,7 +245,7 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `build_dir` or `step_id` absent; `plan.json` unreadable; `tests/<step-id>/results.json` missing for a step claiming `tested`. |
 | `REFUSAL_OUT_OF_SCOPE` | Step status is not `tested`. Also: a request to document a whole milestone at once, to edit a rendered view by hand, or to write documentation for a step that does not exist. |
-| `REFUSAL_INPUT_AMBIGUOUS` | The step's artefacts straddle two workbook sections with no defensible split, or two different `req_id` values claim the same artefact. |
+| `REFUSAL_INPUT_AMBIGUOUS` | Two different `req_id` values claim the same artefact. A step whose artefacts straddle two sections is split across both; a step whose type this map does not name goes to **Other configuration** with the gap flagged — neither is a refusal, because refusing to document a tested step leaves it stranded at `tested` forever. |
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | An artefact has no `source_req_id` anywhere in the plan — an undocumented requirement is scope that arrived without an approval trail, and a row invented for it would make the traceability matrix fiction. |
 
 ---

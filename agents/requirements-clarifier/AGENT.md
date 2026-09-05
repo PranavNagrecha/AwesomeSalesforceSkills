@@ -60,7 +60,7 @@ Arguments the agent expects: a path to the requirement text, optionally a build 
 5. `standards/build-orchestration.md` — § 1 stage 1 (what clarification owes the loop), § 2 the build-directory layout and the rule that rendered views are never hand-edited, § 3 the G1 gate condition and the "questions are never capped" rule.
 6. `agents/_shared/schemas/agent-frontmatter.schema.json` — each clarification carries an `owner_hint` naming the run-time agent likely to consume the answer; this schema defines the `class` and `status` fields the agent checks before writing that hint, so a hint never points at a build-time agent or a deprecated Wave-3b stub.
 
-`standards/build-orchestration.md` § 2 also names the plan schema at `agents/_shared/schemas/build-plan.schema.json` and its single writer `scripts/build_plan.py`. Read that schema when it is present on disk; `python3 scripts/build_plan.py validate` is the authority on plan shape either way.
+`standards/build-orchestration.md` § 2 also names the plan schema at `agents/_shared/schemas/build-plan.schema.json` and its single writer `scripts/build_plan.py` — § 8 lists the subcommands, of which `set-clarifications` is the one this agent writes through. Read that schema when it is present on disk; `python3 scripts/build_plan.py validate` is the authority on plan shape either way.
 
 ### Question harvesting
 7. `skills/admin/requirements-gathering-for-sf` — supplies the seven generic interview questions every requirement gets regardless of topic (volume, licence, sharing layer, integration source, exception path) and the catalogue row shape answers are written back into; without it the agent asks only what the topic skills happen to ask, and a requirement whose topic skills say nothing about volume ships a plan sized on ten records.
@@ -174,27 +174,29 @@ Finally, dedupe **by meaning, not by string**. Two skills asking "who owns this 
 
 Group by topic using the workbook sections from `skills/admin/configuration-workbook-authoring` as the grouping vocabulary (objects and fields, access, automation, routing, SLA, UI, data, integration, docs). Order: every blocking question first, grouped; then the informational ones in the same group order. Number `Q1…Qn` in final display order so a human can answer top to bottom — the id is what `ingest-answers` round-trips on, so it must not change once rendered.
 
-Write the clarifications into `plan.json` and set the build `status` to `clarifying`, then:
+Write the ordered clarification array to a scratch JSON file, then hand it to the CLI. The agent never edits `plan.json` itself:
 
 ```bash
+python3 scripts/build_plan.py set-clarifications .sfskills/builds/<build-id>/plan.json \
+  --file <path-to-the-clarifications-array>.json
 python3 scripts/build_plan.py validate .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py render   .sfskills/builds/<build-id>/plan.json
 ```
 
-Both take the **path to `plan.json`** as a positional argument — not the build directory, and there is no `--build-dir` flag outside `init`. `validate` WARNs on every blocking question still open; that is the expected state at this stage, not a failure. An ERROR is a failure, and is fixed before rendering. `CLARIFICATIONS.md` is a rendered view: the agent writes `plan.json` and lets `build_plan.py` render it, never the other way round.
+`set-clarifications` replaces `clarifications[]` wholesale, sets the build `status` to `clarifying`, and validates before it writes — so a malformed question set is rejected rather than landed. Every subcommand except `init` takes the **path to `plan.json`** as a positional argument; there is no `--build-dir` flag outside `init`. `validate` WARNs on every blocking question still open; that is the expected state at this stage, not a failure. An ERROR is a failure, and is fixed before rendering. `CLARIFICATIONS.md` is a rendered view: the agent writes through the CLI and lets `build_plan.py` render it, never the other way round.
 
 ### Step 6 — Stop at G1 and hand the loop back
 
 Report the counts (total, blocking, informational, defaults proposed, defaults absent) and tell the human exactly how to answer:
 
-1. **Answer in `CLARIFICATIONS.md`.** Every question carries one `Answer:` line. Write the answer on that line; copy the proposed default onto it to accept the default; write `DEFER: <reason>` to defer a blocking question. This is the one rendered view a human is meant to type into — the answers are read back out of it rather than left sitting there.
+1. **Answer in `CLARIFICATIONS.md`.** Every question carries an `Answer:` line. Write the answer on that line; copy the proposed default onto it to accept the default; write `DEFER: <reason>` to defer a blocking question. An answer may run to several lines: every non-heading line after `Answer:`, up to the next `### Q` heading or a `---` rule, is part of that answer and is joined with newlines. This is the one rendered view a human is meant to type into — the answers are read back out of it rather than left sitting there.
 2. **Read the answers back into `plan.json`:**
 
    ```bash
    python3 scripts/build_plan.py ingest-answers .sfskills/builds/<build-id>/plan.json
    ```
 
-   It refuses while any blocking question still has an empty `Answer:` line, and accepts `DEFER: <reason>` on a blocking question only with `--allow-deferred`.
+   It refuses while any blocking question still has an empty `Answer:` line, and accepts `DEFER: <reason>` on a blocking question only with `--allow-deferred`. Blanking an answer a blocking question already carries is an ERROR for the same reason: an answer is removed only by deferring it explicitly.
 3. **Record G1** — a human action, once every blocking question is answered or explicitly deferred:
 
    ```bash
@@ -284,6 +286,7 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 - Never answers its own questions. It proposes defaults and marks their source; accepting a default is the human's action at G1.
 - Never caps or trims the question set to keep it short, and never drops a question because the answer seems obvious from the requirement — it proposes that reading as the default instead.
 - Never writes scope, fit-gap, decisions, milestones or steps — that is the planner's output, and writing it here would let unanswered questions harden into a plan.
-- Never hand-edits `CLARIFICATIONS.md`, `PLAN.md` or any other rendered view; it writes `plan.json` and calls `build_plan.py render`.
+- Never hand-edits `plan.json`. `set-clarifications --file` is the writer of `clarifications[]`; a surgical JSON edit is a defect, not a shortcut.
+- Never hand-edits `CLARIFICATIONS.md`, `PLAN.md` or any other rendered view; it writes through the CLI and calls `build_plan.py render`.
 - Never writes outside the build directory and its own report path.
 - Never auto-chains to the planner or any other agent.

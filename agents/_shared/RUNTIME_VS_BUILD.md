@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (67)
+## Run-time agents (68)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -106,7 +106,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
 | `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
 
-### Orchestration — Tier 4 (7)
+### Orchestration — Tier 4 (8)
 
 `status: beta`. These agents implement the requirement-to-build loop in [`standards/build-orchestration.md`](../../standards/build-orchestration.md): one agent per stage, one human gate between stages, builds tracked under `.sfskills/builds/<build-id>/`. None of them deploys or approves a gate — each stops and prints the next command for a human to run.
 
@@ -119,6 +119,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `step-tester` | Testing / DevOps | Machine-readable test result + human summary; step moved to `tested` or `failed` | `/test-build-step` |
 | `build-doc-keeper` | Documentation / Admin | Re-rendered `PLAN.md`, decisions log, configuration-workbook rows, traceability rows; step moved to `documented` | `/keep-build-docs` |
 | `milestone-verifier` | Verification / DevOps | Milestone acceptance report + manual-test checklist for gate G3 | `/verify-milestone` |
+| `metadata-builder` | Admin / Metadata | Deploy-ready source-format metadata XML + `package.xml` fragment + deploy-order note for one declarative step, checked against the cited skills' own checkers | `/build-metadata` |
 
 Composite commands that span the whole loop rather than one agent: `/run-build` (every step of one milestone) and `/build-from-requirements` (all five stages, gate by gate).
 

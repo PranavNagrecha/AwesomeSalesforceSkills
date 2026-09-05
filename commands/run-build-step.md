@@ -23,6 +23,8 @@ Ask the user:
 
 If either required input is missing, STOP.
 
+If the step's owning agent declares `requires_org: true` while the plan's `build_mode` is `design-only`, STOP: § 4 makes it ineligible to own the step, which is a planning defect. Name the § 4 design-only owner (`metadata-builder` for a metadata step) as the fix.
+
 ---
 
 ## Step 2 — Load the agent
@@ -36,13 +38,13 @@ Read `agents/build-step-runner/AGENT.md` in full, plus everything in its Mandato
 Follow the 9-step plan exactly:
 
 1. Load `plan.json` and locate the step
-2. Confirm the step appears in `python3 scripts/build_plan.py next <build_dir>/plan.json` — refuse if not, except for a `failed` or `blocked` step being re-run with a `reason` (those are never in `next`, which lists `pending` steps only)
-3. `set-status … running`
+2. Confirm the step appears in `python3 scripts/build_plan.py next <build_dir>/plan.json` — refuse if not. `next` lists `pending` steps only, whose dependencies are documented and whose `step:<id>` gate, if the step has one, is approved. Two carve-outs: a `blocked` step may be re-run with a `reason`, and a `failed` step is reset with `set-status … pending` first. Neither reaches around a human gate
+3. `set-status … running` — refused, writing nothing, while the step's `step:<id>` gate is pending or its milestone is not the current runnable one. Treat a non-zero exit as a refusal and invoke nothing
 4. Read the owning agent's `## Inputs` section
 5. Map plan `inputs{}` + clarification answers + upstream step outputs onto it
 6. Invoke the owning agent — Agent tool with `subagent_type` = the agent id in Claude Code; read its AGENT.md and execute its Plan inline in any other host — under the artefacts-only-under-`artefacts/<step-id>/` constraint
-7. Store the returned envelope under `envelopes/<step-id>/` and reconcile the artefacts against the step's declared outputs
-8. `set-status … built` with the run fields, or `blocked` when the owning agent reports a skill gap or an ambiguity
+7. Store the returned envelope under `envelopes/<step-id>/`, run `python3 scripts/build_plan.py check-outputs <build_dir>/plan.json <step-id>`, and reconcile the artefacts against the step's declared outputs
+8. `set-status … built` with the run fields — refused unless `check-outputs` passed — or `blocked` when the owning agent reports a skill gap or an ambiguity
 9. Score confidence
 
 ---
@@ -73,4 +75,5 @@ Suggest (but do not auto-invoke):
 
 - Does not deploy, and never runs `sf project deploy start`.
 - Does not run the step's tests or write any build documentation.
-- Does not approve a gate or process more than one step.
+- Does not approve a gate — including the `step:<id>` gate in front of a human-gated step; it prints the command for a human to run.
+- Does not hand-edit `plan.json`, and does not process more than one step.

@@ -310,7 +310,7 @@ run it yourself.
 
 ## What's in it
 
-**1,035 skills · 95 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,035 skills · 96 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
 - **Skills** (`skills/`) — 1,035 structured guides across 11 domains: admin 253,
   apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
@@ -326,13 +326,13 @@ run it yourself.
   pattern, Agentforce capability, async tier, integration pattern, sharing
   mechanism, performance tuning — consulted before any code gets written.
 - **Agents** (`agents/`) — instruction files any agentic AI can follow.
-  **Build-time (14)** maintain the library; **Run-time (67)** do real
+  **Build-time (14)** maintain the library; **Run-time (68)** do real
   Salesforce work in your codebase or org, across five tiers —
   Developer + architecture tier (28), Admin accelerators — Tier 1 (14),
   Strategic — Tier 2 (7), Vertical + governance — Tier 3 (11), Orchestration
-  — Tier 4 (7, `status: beta` — the requirement-to-build loop in
+  — Tier 4 (8, `status: beta` — the requirement-to-build loop in
   `standards/build-orchestration.md`). Fourteen more are deprecated redirect
-  stubs, for 95 `AGENT.md` files in total. Contract:
+  stubs, for 96 `AGENT.md` files in total. Contract:
   [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md);
   roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md);
   skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).

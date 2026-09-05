@@ -234,7 +234,7 @@ class DriftIsDetectedTest(RootMixin, unittest.TestCase):
 
     def test_wrong_agent_total_in_the_readme_headline(self):
         self.edit("README.md", f"· {AGENTS_TOTAL} agents", "· 56 agents")
-        self.assert_fails("agents_total is 56 in doc but canonical is 6")
+        self.assert_fails(f"agents_total is 56 in doc but canonical is {AGENTS_TOTAL}")
 
     def test_wrong_mcp_tool_count(self):
         self.edit("README.md", f"{MCP_TOOLS} tools across skill", "17 tools across skill")
@@ -291,7 +291,7 @@ class DriftIsDetectedTest(RootMixin, unittest.TestCase):
         self.assertTrue(issues)
         joined = self.joined()
         self.assertIn(f"agents_total is {AGENTS_TOTAL} in doc but canonical is {AGENTS_TOTAL + 1}", joined)
-        self.assertIn("active_runtime is 4 in doc but canonical is 5", joined)
+        self.assertIn(f"active_runtime is {ACTIVE_RUNTIME} in doc but canonical is {ACTIVE_RUNTIME + 1}", joined)
 
     def test_every_doc_quoting_a_count_is_checked_not_just_the_readme(self):
         for rel, old, new in (

@@ -1,6 +1,6 @@
 # /verify-plan — Try to refute the plan before a human approves it
 
-Wraps [`agents/plan-verifier/AGENT.md`](../agents/plan-verifier/AGENT.md). For every step in `plan.json` it runs three independent adversarial lenses — **executability** (can the named agent actually produce these outputs from these inputs?), **grounding** (do the cited skills, templates and decision-tree branches contain what the step claims?), and **testability** (is every acceptance test runnable, and would it fail on a bad build?) — records a verdict per (step, lens), writes `plan.json.verification`, sets the plan to `verified` or `plan-rejected`, and stops at gate **G2** with the exact approval command for a human to run. Stage 3 of the loop in [`standards/build-orchestration.md`](../standards/build-orchestration.md).
+Wraps [`agents/plan-verifier/AGENT.md`](../agents/plan-verifier/AGENT.md). For every step in `plan.json` it runs three independent adversarial lenses — **executability** (can the named agent actually produce these outputs from these inputs, and is it eligible to own the step in this `build_mode`?), **grounding** (do the cited skills, templates and decision-tree branches contain what the step claims?), and **testability** (is every acceptance test runnable, and would it fail on a bad build?) — records a verdict per (step, lens), writes `plan.json.verification`, sets the plan to `verified` or `plan-rejected`, and stops at gate **G2** with the exact approval command for a human to run. Stage 3 of the loop in [`standards/build-orchestration.md`](../standards/build-orchestration.md).
 
 A lens that cannot be shown to hold is `refuted`, not passed. The default is disbelief: the cost of an unverified step is discovered three stages later, inside an artefact somebody is about to deploy.
 
@@ -44,7 +44,7 @@ Workflow { scriptPath: ".claude/workflows/plan-verify.js",
 |---|---|---|
 | `build_dir` | yes | the build directory |
 
-The workflow loads and validates the plan, fans out one `plan-verifier` agent per (step, lens) pair, then runs a single synthesis agent that writes `plan.json.verification`, sets the status, renders the views and returns the blocker list plus the G2 command. A lens agent that dies returns `refuted` by default — an unverified lens is never a silent pass. It is re-runnable: the synthesis replaces this plan version's `verification` block rather than appending to it.
+The workflow loads and validates the plan, fans out one `plan-verifier` agent per (step, lens) pair, then runs a single synthesis agent that records the verdicts with `build_plan.py set-verification --file`, renders the views and returns the blocker list plus the G2 command. A lens agent that dies returns `refuted` by default — an unverified lens is never a silent pass. It is re-runnable: the synthesis replaces this plan version's `verification` block rather than appending to it.
 
 One difference worth knowing: the workflow has no separate cross-step phase. `build_plan.py validate` at load covers the DAG, the milestone membership and the per-step and per-milestone test minimums, and each executability lens gets the whole plan's step skeleton so it can see output collisions and ordering from its own step's side. The traceability sweep in the agent's Step 5 — every requirement reaching a step and a test — is the one check no fanned-out worker performs, so run the inline path when that is what you need to confirm.
 
@@ -60,7 +60,7 @@ Follow the 6-step plan exactly:
 3. Grounding lens, per step
 4. Testability lens, per step
 5. Cross-step checks — every requirement reaches a step and a test; no two steps write the same output path; the dependency graph is acyclic; every milestone has an acceptance test and at least one step
-6. Synthesise, write `verification` and `status` into `plan.json`, `validate`, `render`, and stop at G2
+6. Synthesise, then write the block through `python3 scripts/build_plan.py set-verification <plan> --file <verification>.json --outcome verified|plan-rejected` — which writes `verification` and sets the build status and touches nothing else — then `validate`, `render`, and stop at G2. Nobody hand-edits `plan.json`
 
 Every verdict is one object of exactly this shape — the same shape the workflow requires from each fanned-out worker:
 
@@ -100,7 +100,7 @@ python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json \
   plan approve --by "<name>" --notes "<what was checked>"
 ```
 
-Approving `plan` sets the build status to `approved`, which is what `build_plan.py next` and `/run-build` require before a milestone may start. Then:
+`gate plan approve` is refused unless the status is exactly `verified` — so it is an approval of a verified plan or of nothing. Approving it sets the build status to `approved`, which is what `build_plan.py next` and `/run-build` require before a milestone may start. Then:
 
 ```
 /run-build .sfskills/builds/<build-id> M1
@@ -118,7 +118,7 @@ Suggest, but never auto-invoke: [`/assess-waf`](./assess-waf.md) when blockers c
 - Does not mark a lens `pass` because it looks plausible. Unshown is refuted, and a lens that did not run is refuted with the reason.
 - Does not invent a skill path, a template path, an agent id or a decision-tree branch — a branch it cannot find in the cited tree is a refutation, not a near-miss.
 - Does not execute a step's acceptance tests against artefacts; it verifies that they could run, which is a different job from running them.
-- Does not write under `artefacts/` or `tests/`, and does not hand-edit `PLAN.md` or any other rendered view.
+- Does not write under `artefacts/` or `tests/`, and does not hand-edit `plan.json`, `PLAN.md` or any other rendered view — `set-verification --file` is the one write it makes.
 - Does not verify more than one plan version per invocation, and does not auto-chain to the planner or to the build workflow.
 
 ---

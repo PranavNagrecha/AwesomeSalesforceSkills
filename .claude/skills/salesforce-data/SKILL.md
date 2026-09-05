@@ -79,6 +79,7 @@ Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
 - `data-loader-pre-flight` — Go/no-go checklist for a planned data load
+- `data-migration-reconciler` — Data Migration Reconciliation
 - `data-model-reviewer` — Review a data-model domain
 - `duplicate-rule-designer` — Design a Matching Rule + Duplicate Rule pair
 

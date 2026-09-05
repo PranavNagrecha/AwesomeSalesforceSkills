@@ -11,7 +11,7 @@
       "name": "sfskills",
       "source": "./",
       "displayName": "SfSkills — Salesforce AI Skill Library",
-      "description": "Tiered Salesforce library: 12 router skills up front, 1,034 grounded Salesforce skill packages, 49 run-time agents and 69 slash commands reached on demand.",
+      "description": "Tiered Salesforce library: 12 router skills up front, 1,035 grounded Salesforce skill packages, 68 run-time agents and 90 slash commands reached on demand.",
       "version": "1.1.0",
       "author": {
         "name": "Pranav Nagrecha",

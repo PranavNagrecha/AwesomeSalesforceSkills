@@ -54,7 +54,7 @@ The list is short on purpose. Five skill reads sits under the 8–25 design targ
 2. `agents/_shared/AGENT_CONTRACT.md` — section shape, Process Observations, and the confidence rubric this agent overrides.
 3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence and the atomic-write rule.
 4. `agents/_shared/REFUSAL_CODES.md` — the refusal enum.
-5. `standards/build-orchestration.md` — § 5 is normative here: the five acceptance-test types, their runners, their pass conditions, and the rule that a declared checker which does not exist blocks the step rather than passing silently.
+5. `standards/build-orchestration.md` — § 5 is normative here: the five acceptance-test types, their runners, their pass conditions, the `check-outputs` precondition that `checker` and `set-status … built` both rest on, the rule that the always-on `manifest` check fails rather than skips on a metadata step with no `package.xml`, and the rule that a declared checker which does not exist blocks the step rather than passing silently. Also § 4 for the metadata step types that rule applies to.
 6. `agents/_shared/schemas/build-plan.schema.json` — the shape of `acceptance_tests[]` and `outputs[]` this agent reads.
 
 ### What the tester judges for itself
@@ -93,7 +93,9 @@ Zero XML files under the step is not a pass and not a failure: record the `xml` 
 
 The rule, stated precisely, is a two-way consistency check between the step's `package.xml` and the files under the step's artefact directory:
 
-1. Locate `package.xml` under `<build_dir>/artefacts/<step_id>/`. If the step declares one in `outputs[]` and it is absent, the manifest test fails. If the step declares none and none exists, record `manifest` as skipped-not-applicable with that reason, and do not fail the step.
+1. Locate `package.xml` under `<build_dir>/artefacts/<step_id>/`, or under the artefacts of a step this one `depends_on`. If the step declares one in `outputs[]` and it is absent, the manifest test **fails**. If none exists at all, what happens next turns on the step's `type`:
+   - **A metadata step type** — `object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui` — with no `package.xml` anywhere in its own or its dependencies' artefacts **fails** the manifest check. It does not skip. A metadata step with no manifest is a step nothing can deploy, and recording that as not-applicable is how it reaches a milestone report looking green.
+   - Any other type (`data`, `integration`, `docs` that produces no manifest, `custom`) records `manifest` as skipped-not-applicable with that reason, and does not fail the step.
 2. **File to manifest.** For every artefact file, derive its metadata type and member name from its filename and directory per `skills/devops/salesforce-dx-project-structure`. Every derived member must appear in the manifest — either literally under the matching `<name>` block, or covered by a `*` wildcard member for that type. A file with no covering member fails the check, named individually.
 3. **Manifest to file.** For every explicitly named `<members>` entry that is not `*`, a file producing that member must exist under the step's artefact directory. A member with no file fails the check, named individually.
 4. A wildcard member is never treated as covering the manifest-to-file direction, because a wildcard names no specific component.
@@ -105,8 +107,8 @@ Run each entry of `acceptance_tests[]` in the order the plan lists them, dispatc
 
 | type | What this agent does | Pass |
 |---|---|---|
-| `checker` | Resolve the declared path. If the file does not exist, do NOT run anything and do NOT pass the test: the step goes `blocked`. Otherwise run `python3 <the declared checker path> --manifest-dir <build_dir>/artefacts/<step_id>` from the repo root and capture stdout, stderr and the exit code to `tests/<step-id>/`. | exit code 0 |
-| `command` | Run only if the declared command is stdlib-only and is not a deploy. Anything invoking `sf project deploy`, `sf data`, `sf org` writes, a package install, or a network fetch is refused rather than run, and the test is recorded as refused-not-run with that reason. | exit code 0 |
+| `checker` | Resolve the declared path. If the file does not exist, do NOT run anything and do NOT pass the test: the step goes `blocked`. Otherwise run `python3 <the declared checker path> --manifest-dir <build_dir>/artefacts/<step_id>` from the repo root and capture stdout, stderr and the exit code to `tests/<step-id>/`. Also run `python3 scripts/build_plan.py check-outputs <build_dir>/plan.json <step_id>` once per run and record its JSON. | exit code 0 **and** `check-outputs` ok. A checker that exits 0 over a directory missing a declared output is a green light on an incomplete step, so both conditions are required and the failing one is named in `failed[]`. |
+| `command` | Run only if the declared command starts with `python3 `, references a path under the repo or the build directory, is stdlib-only, and is not a deploy. Refuse rather than run anything matching the § 5 deny-list — `sf … deploy`, `sfdx`, `force:source:deploy`, `curl`, `wget`, a pipe into a shell, `bash -c`, `python3 -c`, `rm -rf`, `git push` — or anything invoking `sf data`, an `sf org` write, a package install or a network fetch, and record the test as refused-not-run with that reason. `validate` ERRORs on those too, so a plan that reaches this agent carrying one has a validation hole worth naming in Process Observations. | exit code 0 |
 | `xml` | Already covered by Step 2. Record it as satisfied by the always-on run rather than parsing twice. | all files parse |
 | `manifest` | Already covered by Step 3, same treatment. | consistent |
 | `manual` | Not runnable here. Record it in `skipped_manual[]` with its full text, so `milestone-verifier` can collect it into the human checklist. Check it against the Given/When/Then shape first and flag one that names no observable outcome. | ticked by a human at the gate — never by this agent |
@@ -129,9 +131,13 @@ Write `<build_dir>/tests/<step_id>/results.json`:
 
 `passed` is `true` only when `failed` is empty. Manual tests never appear in `failed` — an untickable manual test is reported in the summary and in Process Observations, not counted as a failure of the build step.
 
+This file is a precondition, not a record: `set-status <step> tested` requires `tests/<step-id>/results.json` to exist with `"passed": true`, so writing it before Step 6 is what makes Step 6 possible. Write it truthfully and let the transition fail; never adjust `passed` to make a status move.
+
 Alongside it write `<build_dir>/tests/<step_id>/summary.md`: one table of test name, type, result, and the first line of any failure output. Keep raw checker stdout in sibling files rather than inlining it into the summary.
 
 ### Step 6 — Set the status
+
+`tested` is refused unless `results.json` exists and says `"passed": true`, so run this only after Step 5 has written it:
 
 ```bash
 python3 scripts/build_plan.py set-status <build_dir>/plan.json <step_id> tested \
@@ -171,7 +177,7 @@ Overrides the default rubric:
 | Score | Condition |
 |---|---|
 | HIGH | every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed |
-| MEDIUM | a `command` test was refused as out of policy, or a manifest exclusion had to be applied for a coverage-gap type |
+| MEDIUM | a `command` test was refused as out of policy, a manifest exclusion had to be applied for a coverage-gap type, or `check-outputs` reported a missing, empty or malformed declared output — the artefacts under test are incomplete, whatever the checkers said |
 | LOW | a declared checker was missing, the artefact directory was empty, or a test's exit code could not be captured |
 
 ---

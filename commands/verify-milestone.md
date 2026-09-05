@@ -21,7 +21,7 @@ Ask the user:
    Used only to render the gate command line.
 ```
 
-If either required input is missing, STOP. If any step in the milestone is not `documented`, STOP and list the steps with their statuses.
+If either required input is missing, STOP. If any step in the milestone is `pending`, `running`, `built`, `tested` or `failed`, STOP and list the steps with their statuses. A step at `blocked` **with a recorded reason** is verified, not refused: `standards/build-orchestration.md` § 3 lets a human approve a milestone whose steps are documented or blocked-with-a-reason, so the report has to put that gap in front of them. The verdict is `not-ready`.
 
 ---
 
@@ -43,7 +43,7 @@ Follow the 10-step plan exactly:
 6. Run the milestone's own acceptance tests
 7. Collect every deferred manual test into one human checklist
 8. State the optional, human-run validate-only command
-9. Write `reports/MILESTONE-<id>-REPORT.md` and print the gate line
+9. Write `reports/MILESTONE-<id>-REPORT.md` — the agent writes it; `build_plan.py` renders no milestone report — then record it with `python3 scripts/build_plan.py set-milestone <plan> <id> --status verified|rejected --report-path reports/MILESTONE-<id>-REPORT.md`, and print the gate line unrun
 10. Score confidence
 
 ---
@@ -59,7 +59,8 @@ Return the Output Contract:
 - Acceptance-test results
 - The manual checklist
 - The optional validate-only command, marked human-run
-- The exact `build_plan.py gate` line, unrun
+- The exact `build_plan.py gate` line, unrun, with the § 3 conditions it will be checked against
+- The `set-milestone` command that recorded the verdict and the report path
 - Process Observations + Citations
 
 ---
@@ -78,3 +79,4 @@ Suggest (but do not auto-invoke):
 - Does not approve the gate — it prints the command for a named human to run.
 - Does not deploy or run any `sf` command.
 - Does not edit artefacts, test results or documentation, and does not verify more than one milestone per invocation.
+- Does not hand-edit `plan.json`. Its only plan write is `set-milestone`, which records this milestone's status and report path — bookkeeping, not an approval.

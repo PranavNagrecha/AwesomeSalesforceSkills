@@ -65,8 +65,8 @@ Arguments the agent expects: the build directory, optionally one `step_id` and o
 4. `AGENT_RULES.md`
 
 ### Build-loop contract
-5. `standards/build-orchestration.md` — § 3 the G2 gate and the rule that agents never approve one, § 4 the step-type table and the fields a step must record, § 5 what each acceptance-test type actually runs and what "the tester never invents a test" means for a plan that names a checker which does not exist, § 7 the fan-out shape this agent's Plan is written to fit.
-6. `agents/_shared/schemas/agent-frontmatter.schema.json` — the executability lens reads each named agent's frontmatter for `class`, `status` and `requires_org`; this schema is what those values mean, and it is how the lens distinguishes a legitimately beta agent from a deprecated stub.
+5. `standards/build-orchestration.md` — § 2 `build_mode` and what it changes about who may own a step, § 3 the G2 gate and the rule that agents never approve one, § 4 the step-type table, its design-only owner column, the agent-eligibility rule and the fields a step must record, § 5 what each acceptance-test type actually runs, the three `validate` constraints on test commands, and what "the tester never invents a test" means for a plan that names a checker which does not exist, § 7 the fan-out shape this agent's Plan is written to fit.
+6. `agents/_shared/schemas/agent-frontmatter.schema.json` — the executability lens reads each named agent's frontmatter for `class`, `status` and `requires_org`; this schema is what those values mean, it is the enum the eligibility rule's "non-deprecated" is measured against, and it is how the lens distinguishes a legitimately beta agent from a deprecated stub.
 7. `agents/_shared/RUNTIME_VS_BUILD.md` — the active roster the plan's `agent` assignments are checked against.
 8. `agents/_shared/AGENT_DISAMBIGUATION.md` — a plan naming a Wave-3b auditor is refuted with the router mapping in hand, so the blocker carries a remedy rather than only a complaint.
 
@@ -122,6 +122,8 @@ Every subcommand except `init` takes the **path to `plan.json`** as its position
 
 If it exits non-zero, stop and record `plan-rejected` with the validator output as the blocker list. Refuse to run the lenses on a plan that is not well-formed: every lens verdict would be about a file that is about to change shape anyway.
 
+Read `plan.build_mode` before running any lens: it is `design-only` or `org-connected`, and the executability lens's eligibility check turns on it. A plan with no `build_mode` predates this contract — record that as a blocker rather than assuming a mode.
+
 Verify a plan at `status: planned`; re-verifying one already at `verified` is allowed, because that is how a plan is re-checked after an edit. Refuse anything else — a `clarifying` plan has nothing to verify, an `approved` or `building` plan is past this gate, and a `plan-rejected` plan needs a new version from the planner first.
 
 ### Step 2 — Executability lens, per step
@@ -130,12 +132,12 @@ For each step, open the named agent's `AGENT.md` and check, one claim at a time:
 
 | Check | Refuted when |
 |---|---|
-| Agent resolves | `agents/<id>/AGENT.md` does not exist, is `class: build`, or is `status: deprecated`. `agents/_shared/RUNTIME_VS_BUILD.md` and `agents/_shared/SKILL_MAP.md` are the roster. |
+| Agent resolves | `agents/<id>/AGENT.md` does not exist, is `class: build`, or its `status` is not a valid non-deprecated value of the `agent-frontmatter` schema enum (`stable` or `beta`). `agents/_shared/RUNTIME_VS_BUILD.md` and `agents/_shared/SKILL_MAP.md` are the roster. |
 | Agent covers the job | That agent's **What This Agent Does** does not cover this step's work. An agent that designs Permission Sets cannot build a Flow; a plausible-sounding but wrong owner is a blocker, not a nit. |
 | Inputs accepted | The step's `inputs{}` keys are not things that agent's **Inputs** section accepts, or a required input of that agent is absent from the step, from the plan's clarifications, and from the outputs of a step this one depends on. Anything the agent would have to invent is a blocker. |
 | Outputs producible | That agent's **Output Contract** does not produce what the step's `outputs[]` names — an agent that emits a report cannot own a step whose output is a Flow XML file — or `outputs[]` is prose describing an artefact rather than concrete paths under `artefacts/<step-id>/`. |
-| Org posture | The agent's frontmatter says `requires_org: true` and the plan supplies no org — the loop is org-free, so such a step cannot run unattended. |
-| Step type fit | The step's `type` is not one of the § 4 rows, or the § 4 table does not associate that row with this agent and the step gives no reason for the exception. |
+| Org posture | The agent's frontmatter says `requires_org: true` **and** the plan's `build_mode` is `design-only`. That is the whole rule (§ 4 eligibility): an org-requiring agent in an `org-connected` plan is eligible and is **not** refuted for requiring an org. In a design-only plan the § 4 design-only owner column is the remedy the blocker should name — `metadata-builder` for a metadata step, `apex-builder` for Apex automation, `story-drafter` for workbook and story docs, `bulk-migration-planner` for data and integration. |
+| Step type fit | The step's `type` is not one of the § 4 rows (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom`), or neither the row's owning-agents column nor its design-only owner column names this agent for the plan's `build_mode` and the step gives no reason for the exception. |
 | Ordering | A path in `inputs{}` is produced by a step that is not in `depends_on`; `depends_on` names a step that does not exist, closes a cycle, or sits in a later milestone. |
 | Output collision | Another step writes a path this step writes. Two steps sharing an output path force a serialisation the plan does not declare. |
 | One unit of work | The step bundles several builds, so it cannot be run, tested or rolled back as one thing. |
@@ -163,9 +165,10 @@ Open every skill the step cites and read the parts that matter: its `## Question
 | Check | Refuted when |
 |---|---|
 | At least one test | `acceptance_tests[]` is empty. § 5 requires at least one. |
-| Checker exists | A `checker` test names a `check_*.py` that is not at that path — confirm with `ls skills/<domain>/<slug>/scripts/` — or passes a flag the checker does not accept (`python3 <path> --help`). A checker that does not exist means the step would be **blocked** at test time, never silently passed. |
-| Metadata coverage | A step that emits metadata has no `xml` test or no `manifest` test; or an `xml` test on a step that emits no XML; or a `manifest` test with no `package.xml` produced by this step or one it depends on. |
-| Command safety | A `command` test is not stdlib-only, needs an org, reaches the network, writes outside the build directory, or is any form of deploy. |
+| Checker exists | A `checker` test's `command` does not match `^python3 skills/<domain>/<slug>/scripts/check_<name>.py`, names a script that is not at that path — confirm with `ls skills/<domain>/<slug>/scripts/` — or passes a flag the checker does not accept (`python3 <path> --help`). |
+| Outputs listable | The step's `outputs[]` are not paths `build_plan.py check-outputs` could confirm: prose rather than a path, a path outside the build directory, or a file the step's own work would not produce. `set-status … built` is refused until `check-outputs` passes, so an unlistable output is a step that can never advance. |
+| Metadata coverage | A step whose type is a metadata type (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`) has no `xml` test or no `manifest` test; or an `xml` test on a step that emits no XML; or no `package.xml` produced by this step or one it depends on — the always-on `manifest` check **fails** on a metadata step with no manifest, it does not skip. |
+| Command safety | A `command` test does not start with `python3 `, references a path outside the repo and the build directory, is not stdlib-only, needs an org, reaches the network, writes outside the build directory, or matches the § 5 deny-list — `sf … deploy`, `sfdx`, `force:source:deploy`, `curl`, `wget`, a pipe into a shell, `bash -c`, `python3 -c`, `rm -rf`, `git push`. Each of these is an ERROR at `validate` time too; a plan that reaches this lens carrying one has already failed mechanics. |
 | Manual test concrete | A `manual` test cannot be ticked at the milestone gate without interpretation — no precondition, no single unambiguous observable outcome. |
 | Pass condition objective | The pass condition is not stated as something checkable (exit 0, parses, member present in `package.xml`). "Looks correct" is a blocker. |
 | Test can fail | Every test would pass against an empty `artefacts/<step-id>/`. A test that cannot fail is not a test. |
@@ -186,10 +189,17 @@ Run once per plan, after the per-step lenses. These are the checks no single ste
 
 Merge the verdicts. Any `refuted` lens on any step, any step that returned no verdict at all, and any failed cross-step check is a **blocker**; anything the agent wants a human to see but which does not invalidate a step is a **warning**. Aggregate, do not re-adjudicate: never overturn a refutation because it reads harshly, and never add a blocker no lens raised. Deduplicate an identical finding across lenses into one blocker that lists the lenses that raised it, and order blockers by step in plan order.
 
-Make one surgical edit to `plan.json`: set the top-level `verification` object, and set the top-level `status`. Change nothing else — never reword, reorder or delete an existing field, and never touch `history[]` or `human_gates[]`.
+Write the `verification` object to a scratch JSON file and hand it to the CLI. This agent never edits `plan.json` by hand:
+
+```bash
+python3 scripts/build_plan.py set-verification .sfskills/builds/<build-id>/plan.json \
+  --file <verification>.json --outcome verified|plan-rejected
+```
+
+`set-verification` writes the `verification` block and sets the build `status` from `--outcome` — `verified` when there are no blockers, `plan-rejected` when there are — and touches nothing else: no existing field is reworded, reordered or deleted, and `history[]` and `human_gates[]` are left alone. The file holds the block itself, with no `"verification":` wrapper around it:
 
 ```json
-"verification": {
+{
   "status": "plan-rejected",
   "verified_at": "2026-09-05T11:02:13Z",
   "by": "plan-verifier 1.0.0",
@@ -212,14 +222,14 @@ Make one surgical edit to `plan.json`: set the top-level `verification` object, 
 
 Two shapes meet here and neither is negotiable. `agents/_shared/schemas/build-plan.schema.json` governs what lands in `plan.json`: each `lenses[]` entry is an **object** requiring `lens` and a `verdict` of `pass` or `fail` — a roll-up across steps, where `fail` means at least one step was refuted on that lens — and each `blockers[]` entry requires `step` and `problem`. The per-lens verdict objects from the Output Contract below keep their own `pass` / `refuted` vocabulary and nest under `steps[].lenses[]`, which the schema leaves open. Writing `lenses` as an array of plain strings fails validation.
 
-Then set `status` in the same edit — `verified` when there are no blockers, `plan-rejected` when there are — and run:
+Then:
 
 ```bash
 python3 scripts/build_plan.py validate .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py render   .sfskills/builds/<build-id>/plan.json
 ```
 
-`validate` must exit 0. If the edit broke the schema, fix the edit — never make the validator pass by deleting plan content. The build status is set by editing `plan.json` because no subcommand sets it: `set-status` moves one **step** along the § 4 state machine (`plan.json`, a step id, and one of `pending`/`running`/`built`/`tested`/`documented`/`failed`/`blocked`) and has nothing to say about the build's own status, and `gate` writes only what a human decided.
+`validate` must exit 0. If `set-verification` rejected the block, fix the block — never make the validator pass by deleting plan content. Do not reach for `set-status` here: it moves one **step** along the § 4 state machine (`plan.json`, a step id, and one of `pending`/`running`/`built`/`tested`/`documented`/`failed`/`blocked`) and has nothing to say about the build's own status. `gate` writes only what a human decided.
 
 If the plan was rejected, stop there and name the blockers; the human sends it back to [`/plan-build`](../../commands/plan-build.md). If it was verified, print the G2 command verbatim for the human to run, and stop:
 
@@ -346,5 +356,5 @@ A refused run still writes its deliverable pair with the refusal block populated
 - Never invents a skill path, a template path, an agent id or a decision-tree branch — and treats a branch it cannot find in the cited tree as a refutation rather than a near-miss.
 - Never marks a lens `pass` because it looks plausible. Unshown is refuted.
 - Never executes a step's acceptance tests against artefacts — it verifies that the tests could run, which is a different job from running them.
-- Never writes anything under `artefacts/` or `tests/`, and never hand-edits `PLAN.md` or any other rendered view.
+- Never writes anything under `artefacts/` or `tests/`, and never hand-edits `plan.json`, `PLAN.md` or any other rendered view — `set-verification --file` is the one write it makes.
 - Never processes more than one plan version per invocation, and never auto-chains to the planner or to the build workflow.

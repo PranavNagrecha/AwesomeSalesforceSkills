@@ -370,7 +370,7 @@ Templates: none. There is no `templates/omnistudio/` directory yet — a real ga
 
 ---
 
-## Wave I — Tier 4 (7 orchestration agents)
+## Wave I — Tier 4 (8 orchestration agents)
 
 `status: beta`. Implements the requirement-to-build loop defined by the contract [`standards/build-orchestration.md`](../../standards/build-orchestration.md) — one agent per stage, a human gate between each. No agent in this wave cites a `templates/` path; each carries its own build-state schema instead. Skill and decision-tree lists below are copied verbatim from each AGENT.md's `dependencies` frontmatter.
 
@@ -419,6 +419,13 @@ Templates: none. There is no `templates/omnistudio/` directory yet — a real ga
 - `devops/permission-set-deployment-ordering`, `devops/pre-deployment-checklist`
 - Contract: `standards/build-orchestration.md` §§ 3, 5, 7 (gate G3)
 - Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+
+### `metadata-builder`
+- `admin/assignment-rules`, `admin/change-management-and-deployment`, `admin/email-templates-and-alerts`, `admin/entitlements-and-milestones`
+- `admin/escalation-rules`, `admin/object-creation-and-design`, `admin/permission-set-architecture`, `admin/validation-rules`
+- Contract: `standards/build-orchestration.md` §§ 4, 5, 8 (design-only owner of the declarative step types)
+- Shared: `agents/_shared/AGENT_CONTRACT.md`, `AGENT_RULES.md`, `agents/_shared/DELIVERABLE_CONTRACT.md`, `agents/_shared/REFUSAL_CODES.md`
+- Note: unlike the other seven, this agent's skill reads are a *floor*, not the whole list — the step's own `skills[]` is authoritative per invocation, and every element it writes is copied from those skills' deployable-XML reference files rather than from a `templates/` path.
 
 ---
 

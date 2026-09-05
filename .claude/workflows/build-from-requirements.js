@@ -30,7 +30,7 @@ The contract you are working under is standards/build-orchestration.md — read 
 HARD RULES:
 - NEVER deploy. Never run \`sf project deploy start\`, \`sf project deploy validate\`, or any command that touches an org. This layer produces deploy-ready artefacts and a deploy order; a human deploys, outside the loop.
 - Write ONLY inside ${BUILD_DIR}. Never modify skills/, agents/, templates/, registry/, vector_index/ or docs/ — a build consumes the library, it does not edit it.
-- \`python3 scripts/build_plan.py\` is the single writer of plan state and of every rendered view (PLAN.md, CLARIFICATIONS.md, reports). Never hand-edit a rendered view. If an invocation shape is rejected, read \`python3 scripts/build_plan.py --help\` and \`<subcommand> --help\` for the real flags.
+- \`python3 scripts/build_plan.py\` is the single writer of plan state and of the rendered views (PLAN.md, CLARIFICATIONS.md). Never hand-edit a rendered view, and never hand-edit plan.json — every field an agent owns has a subcommand (set-status, check-outputs, gate, set-milestone, ensure-gates). The milestone report is the one build document an agent WRITES rather than renders; its path is then recorded with \`set-milestone --report-path\`. If an invocation shape is rejected, read \`python3 scripts/build_plan.py --help\` and \`<subcommand> --help\` for the real flags.
 - Agents never approve a human gate. \`build_plan.py gate\` is the only writer of gate records and a human is the only decider.
 - No secrets in artefacts, envelopes or output; redact with [REDACTED].
 - If a step needs Salesforce knowledge no cited skill states, mark it blocked with reason \`skill-gap\` (§ 8). That is the signal to deepen a skill — never to freestyle a pattern.
@@ -47,7 +47,9 @@ const PREFLIGHT = {
     reason: { type: 'string', description: 'if ok=false, the single specific thing missing plus the exact command that fixes it; if ok=true, what you confirmed' },
     milestone: { type: 'string' },
     plan_status: { type: 'string' },
+    build_mode: { type: 'string', description: 'plan.json "build_mode", verbatim: "design-only" or "org-connected". Empty string if the plan carries none.' },
     runnable: { type: 'array', items: { type: 'string' }, description: 'step ids runnable right now' },
+    step_gates_pending: { type: 'array', items: { type: 'string' }, description: 'step ids in this milestone with human_gate true whose step:<id> gate is not approved — they will not be offered until a human approves them' },
     all_steps: {
       type: 'array',
       items: {
@@ -80,7 +82,7 @@ const NEXT_OUT = {
           output_paths: {
             type: 'array',
             items: { type: 'string' },
-            description: 'EVERY path this step writes, repo-relative. Drives the concurrency guard: two steps writing the same path are never run together. Empty array = undeclared, and the step is run alone.',
+            description: 'the step\'s outputs[] entries VERBATIM, plus any other path it declares it will write. Drives the concurrency guard: two steps writing the same path are never run together. Empty array = undeclared, and the step is run alone.',
           },
         },
       },
@@ -188,19 +190,22 @@ TASK: decide whether milestone ${MILESTONE} may start. READ-ONLY — run build_p
 
 1. Run \`python3 scripts/build_plan.py status ${PLAN}\` (every subcommand takes the plan file, not the build directory; discover the real argument shape from --help if one is rejected).
 2. Run \`python3 scripts/build_plan.py next ${PLAN} --milestone ${MILESTONE}\`. It prints the runnable steps as JSON on stdout, or \`[]\` plus the reason on stderr when nothing may run — read both.
-3. Read ${PLAN} — specifically \`status\`, \`human_gates[]\`, \`milestones[]\` and every step whose milestone is ${MILESTONE}.
+3. Read ${PLAN} — specifically \`status\`, \`build_mode\`, \`human_gates[]\`, \`milestones[]\` and every step whose milestone is ${MILESTONE}.
 
 Set ok=true ONLY IF ALL of these hold, each confirmed by something you actually read:
 - the plan validates and its \`status\` is \`approved\` or \`building\` — approving the G2 gate is what moves it off \`verified\`, so a plan still sitting at \`verified\` has not been approved;
 - the G2 plan-approval gate is recorded in \`human_gates[]\` with status \`approved\`;
 - every milestone ordered BEFORE ${MILESTONE} has its G3 acceptance gate recorded \`approved\` (a milestone with no G3 record has not been accepted);
-- milestone ${MILESTONE} exists in the plan and has at least one step not yet at status \`documented\`.
+- milestone ${MILESTONE} exists in the plan and has at least one step not yet at status \`documented\`;
+- \`build_mode\` is present and is \`design-only\` or \`org-connected\`, and every step in ${MILESTONE} is owned by an agent eligible under it (standards/build-orchestration.md § 4: \`class: runtime\`, a \`status\` that is a valid non-deprecated value of the agent-frontmatter enum, and \`requires_org: false\` unless the mode is \`org-connected\`). A missing \`build_mode\`, or an org-requiring owner in a design-only plan, is a planning defect — refuse and send the human to /verify-plan and /plan-build, do not build around it.
+
+Also report, in \`step_gates_pending\`, every step in ${MILESTONE} with \`human_gate: true\` whose \`step:<id>\` gate is not \`approved\`. Those are NOT a reason to refuse the milestone — \`next\` simply will not offer them — but the human needs to know which ones are waiting, and the exact \`build_plan.py gate ... step:<id> approve\` command to record each.
 
 If any condition fails, set ok=false and make \`reason\` name the ONE specific thing that is missing plus the exact command the human should run next (e.g. the \`build_plan.py gate\` invocation, or \`/verify-plan\`). Do not soften it and do not proceed anyway.
 
 You never approve a gate. \`build_plan.py gate\` is the only writer and the human is the only decider — if the gate is missing, the answer is "no", not "record it".
 
-Return {ok, reason, milestone, plan_status, runnable, all_steps, gates_seen}.`,
+Return {ok, reason, milestone, plan_status, build_mode, runnable, step_gates_pending, all_steps, gates_seen}.`,
   { label: 'preflight', phase: 'Preflight', schema: PREFLIGHT, model: 'sonnet', effort: 'low' }
 )
 if (!pre) throw new Error(`preflight agent failed — nothing was built in ${BUILD_DIR}. Re-run /run-build.`)
@@ -208,7 +213,11 @@ if (!pre.ok) throw new Error(`refusing to build milestone ${MILESTONE}: ${pre.re
 
 const milestoneSteps = pre.all_steps || []
 log(`Gate OK — ${pre.reason}`)
-log(`milestone ${pre.milestone || MILESTONE}: ${milestoneSteps.length} step(s), ${(pre.runnable || []).length} runnable now, ${milestoneSteps.filter((s) => s.status === 'documented').length} already documented`)
+log(`milestone ${pre.milestone || MILESTONE}: build_mode ${pre.build_mode || 'unreported'}; ${milestoneSteps.length} step(s), ${(pre.runnable || []).length} runnable now, ${milestoneSteps.filter((s) => s.status === 'documented').length} already documented`)
+const stepGatesPending = pre.step_gates_pending || []
+if (stepGatesPending.length) {
+  log(`${stepGatesPending.length} step(s) held behind an unapproved step:<id> human gate and will NOT be offered this run: ${stepGatesPending.join(', ')}. Approve each with: python3 scripts/build_plan.py gate ${PLAN} step:<id> approve --by "<name>" --notes "<what you reviewed>"`)
+}
 
 // ---------------------------------------------------------------------------
 // Phase 2 — Build. Rounds of: ask for `next`, partition, run -> test -> doc.
@@ -223,13 +232,14 @@ TASK: report what is runnable RIGHT NOW in milestone ${MILESTONE}. READ-ONLY —
 
 1. Run \`python3 scripts/build_plan.py next ${PLAN} --milestone ${MILESTONE}\` (the plan file, not the build directory). It prints \`[]\` on stdout and the reason on stderr when nothing may run.
 2. For each step it returns, read that step in ${PLAN} and report: \`step_id\`, the step's owning \`agent\` id, its \`type\`, its \`depends_on\`, and \`output_paths\`.
-3. \`output_paths\` = EVERY path the step writes, repo-relative — its \`outputs[]\` entries resolved against ${BUILD_DIR}/artefacts/<step-id>/, plus any other file it declares it will write (a shared package.xml, a workbook section). This drives a concurrency guard: two steps that write the same path are never run at the same time. A missing or wrong path is a correctness bug, not a formatting one. If a step declares no outputs at all, return an empty array and say so in \`note\` — it will be run alone.
+3. \`output_paths\` = the step's \`outputs[]\` entries COPIED VERBATIM — they are already build-directory-relative paths under artefacts/<step-id>/, so do not re-prefix them, resolve them, or rewrite them in any way — plus any other file the step declares it will write (a shared package.xml, a workbook section). This drives a concurrency guard: two steps that write the same path are never run at the same time, and it only works if the strings match across steps. A missing, rewritten or wrong path is a correctness bug, not a formatting one. If a step declares no outputs at all, return an empty array and say so in \`note\` — it will be run alone.
 4. \`remaining\` = how many steps in milestone ${MILESTONE} are not yet at status \`documented\`. \`all_documented\` = true only when that count is 0.
 
 EXCLUDE:
 - any step whose \`depends_on\` are not ALL at status \`documented\`;
 - any step from another milestone;
 - any step already at status \`documented\`;
+- any step with \`human_gate: true\` whose \`step:<id>\` gate is not \`approved\` — \`next\` already withholds these and prints the reason; report them in \`note\` rather than offering them, and never approve the gate yourself;
 - these step ids, which failed or blocked earlier in this run and must not be retried here: ${JSON.stringify(excludedIds)}.
 
 Return {milestone, runnable, remaining, all_documented, note}.`
@@ -244,7 +254,9 @@ Read the step in ${PLAN} first: its \`agent\`, \`skills[]\`, \`templates[]\`, \`
 
 - READ every skill, template and decision-tree branch the step cites, before producing anything. That is what makes the output grounded rather than freestyled.
 - Write artefacts ONLY under ${BUILD_DIR}/artefacts/${step.step_id}/, at exactly the paths the step's \`outputs[]\` declares. Write the run envelope under ${BUILD_DIR}/envelopes/${step.step_id}/. Touch nothing else.
-- Record the run in the step's \`runs[]\` via \`build_plan.py\` and set the step status to \`built\` when the artefacts are complete. Re-running APPENDS a run; it never overwrites history.
+- Before claiming the step, \`build_plan.py set-status ... running --started <iso>\` must succeed. It is REFUSED, writing nothing, while the step's \`step:<id>\` human gate is pending or its milestone is not the current runnable one — treat a non-zero exit as a refusal, return without invoking the owning agent, and name the \`build_plan.py gate ... step:${step.step_id} approve\` command the human would run. Never approve it yourself.
+- When the artefacts are written, run \`python3 scripts/build_plan.py check-outputs ${PLAN} ${step.step_id}\`. It prints {ok, missing[], empty[], malformed[]} and exits 1 when a declared output is absent, empty or unparseable XML. \`set-status ... built\` is REFUSED unless it passes, so a run that produced nothing cannot advance the step: report \`failed\` (or \`blocked\`, when the envelope names a skill gap) with that JSON in the result, rather than retrying the transition.
+- Record the run in the step's \`runs[]\` via \`build_plan.py\` and set the step status to \`built\` once check-outputs passes. Re-running APPENDS a run; it never overwrites history, and \`running -> running\` is allowed so re-claiming a crashed run is safe.
 - IDEMPOTENT: if this step is already at status \`built\`, do NOT rebuild it — return \`built\` with the artefacts already on disk. \`next\` offers \`pending\` steps only, so a \`tested\` or \`documented\` step never reaches you here; re-running one is a re-plan decision, not yours.
 - If the step needs Salesforce knowledge no cited skill states, set status \`blocked\` with \`blocked_reason\` starting "skill-gap: " and name the missing fact. Do not fill the gap from memory.
 - If an input the step needs is absent, status \`blocked\` with the missing input named. Do not invent it.
@@ -261,14 +273,16 @@ Inputs: {"build_dir": "${BUILD_DIR}", "step_id": "${step.step_id}"}
 
 Run exactly what the plan declares in that step's \`acceptance_tests[]\`, plus the always-on checks from standards/build-orchestration.md § 5:
 - \`xml\` — ElementTree-parse every *.xml / *-meta.xml under ${BUILD_DIR}/artefacts/${step.step_id}/;
-- \`manifest\` — every artefact type/member appears in package.xml and no package.xml member lacks a file.
+- \`manifest\` — every artefact type/member appears in package.xml and no package.xml member lacks a file. On a metadata step type (object-model, access, validation, automation, routing, sla, ui) with no package.xml in its own or its dependencies' artefacts this FAILS; it does not skip.
 
 RULES:
 - NEVER invent a test, and never relax one to make it pass.
 - If a declared \`checker\` script does not exist at its stated path, the step is \`blocked\` — not passed. A missing checker is a plan defect, not a free pass.
 - \`command\` tests are stdlib-only and org-free. Refuse to run anything that touches an org or the network.
 - \`manual\` tests are not runnable here: list them for the milestone gate and do not count them toward \`passed\`.
-- Write the full results to ${BUILD_DIR}/tests/${step.step_id}/results.json, the per-test table to summary.md beside it, and set the step status to \`tested\` only when everything runnable passed. A missing declared checker is \`blocked --blocked-reason "missing-checker"\`; a failing test is \`failed\` with the failing test names in \`--result\`.
+- A \`checker\` passes on exit 0 AND \`python3 scripts/build_plan.py check-outputs ${PLAN} ${step.step_id}\` being ok — a checker that exits 0 over a directory missing a declared output is a green light on an incomplete step.
+- A \`command\` test must start with \`python3 \` and reference a path under the repo or the build directory. Refuse rather than run anything matching the deny-list in standards/build-orchestration.md § 5: \`sf ... deploy\`, \`sfdx\`, \`force:(source|mdapi):deploy\`, \`curl\`, \`wget\`, a pipe into a shell, \`bash -c\`, \`python3 -c\`, \`rm -rf\`, \`git push\`.
+- Write the full results to ${BUILD_DIR}/tests/${step.step_id}/results.json, the per-test table to summary.md beside it, and set the step status to \`tested\` only when everything runnable passed. \`set-status ... tested\` is REFUSED unless that results.json exists and says \`"passed": true\`, so write it truthfully first and let the transition fail rather than adjusting it. A missing declared checker is \`blocked --blocked-reason "missing-checker"\`; a failing test is \`failed\` with the failing test names in \`--result\`.
 - IDEMPOTENT: re-running overwrites results.json for this step; it does not append duplicate step statuses.
 
 \`passed\` is true only when every runnable declared test AND both always-on checks passed. Put one line per failure in \`failed\`, quoting what the runner printed.
@@ -442,9 +456,12 @@ DO:
 1. Re-derive the truth from ${PLAN} and from disk — do not take the list above on trust; it is what the orchestrator observed, not what is on disk.
 2. Run the CROSS-STEP checks the per-step tester could not: artefacts consistent across steps (field referenced by an automation step actually exists in the object-model step's XML; a queue referenced by routing exists; permissions cover every object and field the milestone created); one coherent package.xml; the deploy order implied by depends_on is sound; nothing references an artefact no step produced.
 3. Run the milestone's own \`acceptance_tests[]\`. List every \`manual\` test in \`manual_checklist\` — those are for the human at G3, and they are not evidence of passing.
-4. Write the report to ${BUILD_DIR}/reports/MILESTONE-${MILESTONE}-REPORT.md directly, alongside the merged milestone package.xml. \`build_plan.py\` renders no milestone report, and per agents/milestone-verifier/AGENT.md this agent does not touch plan.json at all — its verdict lives in the report and the envelope. Include: what was built, what each test returned, the failed/blocked steps with their reasons, any \`skill-gap\` recorded in decisions.md, the deploy order, and the validate-only command a human MAY run — never run it yourself.
-5. \`passed\` is true ONLY when every step in the milestone is at status \`documented\` AND every cross-step check and milestone test passed. Any failed or blocked step means passed=false. Do not round up.
-6. Read \`python3 scripts/build_plan.py gate --help\` and return in \`gate_command\` the exact command a human runs to record the G3 acceptance gate for milestone ${MILESTONE} on ${BUILD_DIR}. You do NOT run it — agents never approve a gate.
+4. Write the report to ${BUILD_DIR}/reports/MILESTONE-${MILESTONE}-REPORT.md directly, alongside the merged milestone package.xml. \`build_plan.py\` renders no milestone report — this one is written. Include: what was built, what each test returned, the failed/blocked steps with their reasons, any \`skill-gap\` recorded in decisions.md, the deploy order, and the validate-only command a human MAY run — never run it yourself.
+5. Record the verdict and the report path — the ONE plan write this agent makes, and it is a subcommand, never a hand edit:
+   \`python3 scripts/build_plan.py set-milestone ${PLAN} ${MILESTONE} --status verified|rejected --report-path reports/MILESTONE-${MILESTONE}-REPORT.md\`
+   \`verified\` when the milestone is ready for the gate (with or without findings the human may accept), \`rejected\` when it is not. That is a statement about what the checks found, not an approval: the gate record stays empty until a human writes it.
+6. \`passed\` is true ONLY when every step in the milestone is at status \`documented\` AND every cross-step check and milestone test passed. Any failed or blocked step means passed=false. Do not round up.
+7. Read \`python3 scripts/build_plan.py gate --help\` and return in \`gate_command\` the exact command a human runs to record the G3 acceptance gate for milestone ${MILESTONE} on ${BUILD_DIR}. You do NOT run it — agents never approve a gate. That command is itself gated: it is refused unless the plan gate and the previous milestone's gate are approved and every step here is \`documented\`, or \`blocked\` with a recorded reason (which it prints). Say plainly in the report if approving would accept a known gap.
 
 IDEMPOTENT: re-running replaces this milestone's report; it does not append a second one.
 

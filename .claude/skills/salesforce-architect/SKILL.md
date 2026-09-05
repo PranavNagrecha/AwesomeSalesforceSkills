@@ -79,6 +79,7 @@ solved more than one way, and cite the branch that decided it.
 Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
+- `org-health-assessor-v2` — Org Health Assessment
 - `waf-assessor` — Well-Architected Framework assessment
 
 ## Rules

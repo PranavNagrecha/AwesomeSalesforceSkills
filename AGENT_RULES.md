@@ -407,7 +407,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > still name it as an entry point — that is wrong. Invoke build agents by
    > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
-2. **Run-time (67)** — four tiers:
+2. **Run-time (68)** — four tiers:
    - **Developer + architecture (28):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
@@ -437,10 +437,11 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
      `lead-routing-rules-designer`, `sandbox-strategy-designer`,
      `release-train-planner`, `waf-assessor`, `agentforce-action-reviewer`,
      `profile-to-permset-migrator`, `user-access-diff`, `omnistudio-designer`.
-   - **Orchestration — Tier 4 (7):** `status: beta`; the requirement-to-build
+   - **Orchestration — Tier 4 (8):** `status: beta`; the requirement-to-build
      loop from `standards/build-orchestration.md`: `requirements-clarifier`,
      `build-planner`, `plan-verifier`, `build-step-runner`, `step-tester`,
-     `build-doc-keeper`, `milestone-verifier`.
+     `build-doc-keeper`, `milestone-verifier`, and `metadata-builder` — the
+     org-free default owner of declarative steps in a design-only build.
 
    These USE the library to do real Salesforce work. Invoked via the matching
    `commands/<name>.md`, a direct AGENT.md read, or the MCP `get_agent` tool.

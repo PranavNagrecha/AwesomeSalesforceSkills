@@ -20,6 +20,7 @@ accepted.
 | `milestone` | one milestone id from `PLAN.md` |
 | G2 approved | the plan-approval gate, recorded in `plan.json.human_gates[]` |
 | previous G3 approved | every earlier milestone accepted |
+| step gates approved | every step in the milestone with `human_gate: true` has its `step:<id>` gate approved, or it will not be offered |
 
 If you do not know the milestone id or the gate state:
 
@@ -36,6 +37,18 @@ python3 scripts/build_plan.py status .sfskills/builds/<build-id>/plan.json
 - **G2** is absent or not `approved`;
 - any earlier milestone's **G3** is absent or not `approved`;
 - the milestone has no step left to build.
+
+A step with `human_gate: true` — an access change, a deletion — has a gate of
+its own, and it does not stop the milestone: `next` simply does not offer that
+step, and says why. Approve it the same way you approve any other gate:
+
+```bash
+python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json \
+  step:M1-S03 approve --by "<your name>" --notes "<what you reviewed>"
+```
+
+`set-status <step> running` is refused while that gate is pending, so no agent
+can claim the step around it.
 
 Agents never approve a gate. `scripts/build_plan.py gate` is the only writer of
 a gate record and you are the only decider. If preflight refuses, the answer is
@@ -75,9 +88,29 @@ agent reports each step's output paths and the workflow partitions the round
 into conflict-free batches before running anything. A step that declares no
 outputs runs alone, because nothing can prove it disjoint.
 
+A step only reaches `built` when `build_plan.py check-outputs` confirms every
+declared output exists, is non-empty and parses, and only reaches `tested` when
+`tests/<step-id>/results.json` says `passed: true`. A run that produced nothing
+cannot advance.
+
 A step that fails or blocks is logged with its reason and excluded from later
 rounds — the steps depending on it stop too. A round that documents nothing
 stops the loop instead of retrying it.
+
+**Resetting a failed step.** Fix whatever the reason named, then put the step
+back in the queue:
+
+```bash
+python3 scripts/build_plan.py set-status .sfskills/builds/<build-id>/plan.json \
+  M1-S03 pending --result "<what was fixed>"
+```
+
+`failed → pending` is an allowed transition and is the documented reset: the
+step goes back through `next`, so its dependencies and its own gate are
+re-checked before it runs again. Re-running `/run-build` on the same milestone
+then picks it up. (`failed → running` is also allowed, for an immediate
+re-claim; prefer the reset.) Nothing here rewrites history — every run stays in
+`steps[].runs[]`.
 
 A `blocked` step whose reason starts `skill-gap:` is the signal to deepen a
 skill (`/add-skill`), never to freestyle the missing pattern. The doc keeper
@@ -85,9 +118,12 @@ records it in `decisions.md`.
 
 ## Afterwards
 
-The workflow returns the report path and the exact G3 command. Read the report
-first — it lists every test result, every failed or blocked step, the manual
-checklist for you to tick, and the deploy order:
+The workflow returns the report path and the exact G3 command. The milestone
+verifier **writes** that report and records its path with `set-milestone`; it
+is not rendered from `plan.json`, so it is the one build document that says
+what the checks actually found. Read it first — it lists every test result,
+every failed or blocked step, the manual checklist for you to tick, and the
+deploy order:
 
 ```bash
 cat .sfskills/builds/<build-id>/reports/MILESTONE-<id>-REPORT.md
@@ -104,6 +140,13 @@ python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json \
 (The returned `gate_command` is the authoritative form — it is read from
 `build_plan.py gate --help` at run time.)
 
+That approval is itself checked: it is refused unless the plan gate and the
+previous milestone's gate are approved and every step in this milestone is
+`documented`, or `blocked` with a recorded reason — which it prints, so
+accepting a milestone with a known gap is a decision you see rather than one
+you make by accident. `gate milestone:<id> reject` records the opposite: the
+milestone goes to `rejected` and the build stays at `building`.
+
 Then `/run-build <build_dir> <next-milestone>`.
 
 `passed: false` means at least one step is not documented or a cross-step check
@@ -115,7 +158,10 @@ agents that already succeeded.
 
 - **Deploy.** Nothing in this layer touches an org. It produces deploy-ready
   metadata, a deploy order and a validate-only command you may run yourself.
-- **Approve its own gate.** It reports the command; you run it.
+- **Approve its own gate.** It reports the command; you run it — including the
+  `step:<id>` gate in front of a human-gated step.
+- **Hand-edit `plan.json`.** Every state change goes through a `build_plan.py`
+  subcommand.
 - **Write outside the build directory.** `skills/`, `agents/`, `templates/`,
   `registry/` and `docs/` are read-only to a build.
 - **Invent a test.** The tester runs what the plan declares plus the always-on

@@ -11,6 +11,7 @@
     "version",
     "status",
     "created",
+    "build_mode",
     "requirement",
     "clarifications",
     "assumptions",
@@ -56,6 +57,22 @@
       "type": "string",
       "minLength": 10,
       "description": "ISO-8601 creation timestamp, UTC."
+    },
+    "build_mode": {
+      "type": "string",
+      "enum": ["design-only", "org-connected"],
+      "description": "design-only = the build has no org target, so every step must be owned by an agent with requires_org: false (the metadata-builder default owner for metadata step types). org-connected = an org alias is available, so org-requiring designer agents may own steps. Set by scripts/build_plan.py init (--org-alias switches it to org-connected); enforced by validate and by the plan-verifier's executability lens."
+    },
+    "org": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["alias"],
+      "description": "Present only when build_mode is org-connected. The layer never deploys; the alias is what org-requiring agents read metadata through.",
+      "properties": {
+        "alias": {"type": "string", "minLength": 1},
+        "instance_url": {"type": "string"},
+        "api_version": {"type": "string"}
+      }
     },
     "updated": {
       "type": "string",
@@ -212,7 +229,8 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "building", "verified", "accepted"]
+            "enum": ["pending", "building", "verified", "rejected", "accepted"],
+            "description": "pending -> building (set when the first step starts) -> verified (milestone-verifier) -> accepted (G3 approved) | rejected (G3 rejected; the build stays 'building' and the milestone is reworked)."
           },
           "report_path": {"type": "string", "description": "reports/MILESTONE-<id>-REPORT.md once the verifier has run."}
         }
@@ -225,7 +243,7 @@
     },
     "human_gates": {
       "type": "array",
-      "description": "Section 3: 'clarifications' (G1), 'plan' (G2) and 'milestone:<id>' (G3, one per milestone). Agents never approve a gate; scripts/build_plan.py gate is the only writer.",
+      "description": "Section 3: 'clarifications' (G1), 'plan' (G2), 'milestone:<id>' (G3, one per milestone) and 'step:<step-id>' (one per step with human_gate: true). Agents never approve a gate; scripts/build_plan.py gate is the only writer.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -233,7 +251,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "pattern": "^(clarifications|plan|milestone:M[0-9]+)$"
+            "pattern": "^(clarifications|plan|milestone:M[0-9]+|step:M[0-9]+-S[0-9]{2,})$"
           },
           "status": {
             "type": "string",
@@ -333,7 +351,7 @@
         },
         "command": {
           "type": "string",
-          "description": "Required for type checker and command. Stdlib-only; never 'sf project deploy start'."
+          "description": "Required for type checker and command. Stdlib-only and read-only: a checker command must be 'python3 skills/<domain>/<slug>/scripts/check_*.py ...' and the file must exist; a command test must start with 'python3 ' and name a path in the repo or under the build directory. scripts/build_plan.py validate rejects anything matching the deploy/fetch/shell deny-list (sf ... deploy, sfdx, force:source:deploy, curl, wget, pipe-to-shell, bash -c, python -c, rm -rf, git push)."
         },
         "description": {"type": "string"},
         "expected": {"type": "string", "description": "Pass condition in words, e.g. 'exit 0'."}
@@ -381,6 +399,7 @@
             "object-model",
             "access",
             "automation",
+            "validation",
             "routing",
             "sla",
             "ui",

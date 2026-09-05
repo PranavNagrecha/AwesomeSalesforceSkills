@@ -91,6 +91,8 @@ rather than a single question:
 - `assignment-and-auto-response-rules-designer` — Design or audit Assignment + Auto-Response rules
 - `audit-router` — Run the SfSkills audit-router run-time agent
 - `automation-migration-router` — Run the SfSkills automation-migration-router run-time agent
+- `build-doc-keeper` — one requirement in, a verified build out
+- `build-planner` — one requirement in, a verified build out
 - `business-hours-and-holidays-configurator` — Design or audit Business Hours + Holidays
 - `change-impact-planner` — Change Impact Planner
 - `config-workbook-author` — Compile the canonical 10-section Salesforce Configuration Workbook
@@ -103,12 +105,15 @@ rather than a single question:
 - `fit-gap-analyzer` — Fit-gap a backlog against a target Salesforce org
 - `knowledge-article-taxonomy-agent` — Design or audit Knowledge taxonomy
 - `lead-routing-rules-designer` — Design or audit lead routing
+- `metadata-builder` — Build one declarative step of a build plan into deploy-ready metadata
 - `object-designer` — Design a Setup-ready sObject from a business concept
 - `omni-channel-routing-designer` — Design or audit Omni-Channel routing
 - `path-designer` — Design or audit a Sales/Service Path
 - `permission-set-architect` — Design or audit Permission Sets + Permission Set Groups
+- `plan-verifier` — Try to refute the plan before a human approves it
 - `process-flow-mapper` — Map a process narrative to a Salesforce-aware swim-lane flow
 - `profile-to-permset-migrator` — Decompose a Profile into Permission Sets + PSGs
+- `requirements-clarifier` — Ask every question the skills say must be asked before configuring
 - `sales-stage-designer` — Design or audit Opportunity sales stages
 - `story-drafter` — Draft a Salesforce-aware INVEST story backlog
 - `user-access-diff` — Side-by-side access comparison between two Salesforce users

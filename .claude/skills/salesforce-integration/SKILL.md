@@ -79,6 +79,7 @@ rather than a single question:
 
 - `bulk-migration-planner` — Pick the right Salesforce integration pattern
 - `integration-catalog-builder` — Build the org's integration catalog
+- `integration-incident-triager` — Integration Incident Triage
 
 ## Rules
 

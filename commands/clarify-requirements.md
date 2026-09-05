@@ -43,7 +43,7 @@ Follow the 6-step plan exactly:
 2. Enumerate capability phrases and run `python3 scripts/search_knowledge.py "<phrase>"` — one search per phrase, never one for the whole requirement
 3. Keep only skills that carry a `## Questions to Ask Before Configuring` table; record the rest with the phrase that surfaced them
 4. Harvest **every row** into a clarification: `kind` blocking or informational, `why`, `answer_shape`, `proposed_default` (from skill guidance or the requirement text only), `owner_role`, `owner_hint` — then add the generic set and dedupe by meaning
-5. Group by workbook section, order blocking-first, number `Q1…Qn`, write `plan.json` at `status: clarifying`, then `validate` and `render`
+5. Group by workbook section, order blocking-first, number `Q1…Qn`, then write the set through `python3 scripts/build_plan.py set-clarifications <plan> --file <clarifications>.json` — which replaces `clarifications[]`, sets `status: clarifying` and validates before it writes — followed by `validate` and `render`. The agent never hand-edits `plan.json`
 6. Report the counts and stop at G1
 
 ---
@@ -64,15 +64,15 @@ Return the Output Contract:
 
 Tell the user, in this order:
 
-1. **Answer in `CLARIFICATIONS.md`** — one `Answer:` line per question. Copy the proposed default onto the line to accept it; write `DEFER: <reason>` to defer a blocking question.
+1. **Answer in `CLARIFICATIONS.md`** — an `Answer:` line per question. Copy the proposed default onto the line to accept it; write `DEFER: <reason>` to defer a blocking question. Answers may run to several lines: everything after `Answer:` up to the next `### Q` heading or a `---` rule is part of that answer.
 2. **Read the answers back in:**
 
    ```bash
    python3 scripts/build_plan.py ingest-answers .sfskills/builds/<build-id>/plan.json
    ```
 
-   Add `--allow-deferred` if any blocking question was deferred.
-3. **Record G1** (a human action — the agent never runs this):
+   Add `--allow-deferred` if any blocking question was deferred. Blanking an answer a blocking question already carries is an ERROR — an answer is withdrawn by deferring it, not by deleting it.
+3. **Record G1** (a human action — the agent never runs this). It is refused while any `blocking` question is still `open`, so `ingest-answers` comes first:
 
    ```bash
    python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json \
@@ -92,7 +92,8 @@ Where the requirement is really a backlog rather than one requirement, suggest [
 - Does not answer its own questions — it proposes defaults and marks their source.
 - Does not cap, trim or drop questions, and does not skip one whose answer seems obvious from the requirement; it proposes that reading as the default instead.
 - Does not write scope, fit-gap, decisions, milestones or steps — that is [`/plan-build`](./plan-build.md).
-- Does not hand-edit `CLARIFICATIONS.md`, `PLAN.md` or any other rendered view; it writes `plan.json` and calls `build_plan.py render`.
+- Does not hand-edit `plan.json`; `set-clarifications --file` is the writer of `clarifications[]`.
+- Does not hand-edit `CLARIFICATIONS.md`, `PLAN.md` or any other rendered view; it writes through the CLI and calls `build_plan.py render`.
 - Does not invent a skill path — every `source_skill` resolves on disk before it is written.
 - Does not write outside the build directory and its own report path.
 - Does not auto-chain to the planner.

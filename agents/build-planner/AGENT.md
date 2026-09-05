@@ -67,8 +67,8 @@ Arguments the agent expects: the build directory. Milestone count and step granu
 4. `AGENT_RULES.md`
 
 ### Build-loop contract
-5. `standards/build-orchestration.md` — § 3 the lifecycle and which gate must already be approved, § 4 the step-type table and the fields every step records, § 5 the five acceptance-test types and their pass conditions, § 8 the rule that the planner may assign only non-deprecated runtime agents and cite only skills that resolve.
-6. `agents/_shared/schemas/agent-frontmatter.schema.json` — a step's `agent` is legal only if that agent's frontmatter says `class: runtime` and its `status` is not `deprecated`; this schema is where those fields and their enums are defined, and reading it is how the planner checks an assignment instead of trusting the roster prose.
+5. `standards/build-orchestration.md` — § 2 `build_mode` and what it changes, § 3 the lifecycle and which gate must already be approved, § 4 the step-type table with its **design-only owner** column and the agent-eligibility rule, § 5 the five acceptance-test types, their pass conditions and the three `validate` constraints on declared test commands, § 8 the subcommands that write the plan and the rule that the planner cites only skills that resolve.
+6. `agents/_shared/schemas/agent-frontmatter.schema.json` — a step's `agent` is legal only if that agent's frontmatter says `class: runtime`, its `status` is a valid non-deprecated value of this schema's enum (`stable` or `beta`), and its `requires_org` is compatible with the plan's `build_mode`; this schema is where those three fields and their enums are defined, and reading it is how the planner checks an assignment instead of trusting the roster prose.
 7. `agents/_shared/RUNTIME_VS_BUILD.md` — the active roster by tier; the planner picks step owners from it and from nowhere else.
 8. `agents/_shared/SKILL_MAP.md` — which agent is source-mapped to which skills, so a step's `skills[]` matches what its owning agent already reads instead of handing it an unfamiliar reading list.
 9. `agents/_shared/AGENT_DISAMBIGUATION.md` — the deprecated-name to `audit-router --domain=<x>` mapping; a Wave-3b name in an answer or a workbook row is rewritten, never assigned.
@@ -124,7 +124,9 @@ Every subcommand except `init` takes the **path to `plan.json`** as its position
 
 `status` prints the gate records and the step counts. Then read `requirement.md`, `plan.json`, and every clarification with its answer. Refuse unless G1 is `approved` in `human_gates[]` and every `blocking` clarification is either answered or explicitly deferred with a reason. An unanswered blocking question is not a small gap: it is precisely the decision the skill said would change the design.
 
-If `plan.status` is already `verified` or later, this is a re-plan, and re-planning is not something this agent may start on its own: `standards/build-orchestration.md` § 3 makes a re-plan a new plan version, and `build_plan.py gate <plan> plan reject` is the only thing that bumps `plan.version` and archives the superseded plan into `history[]`. Refuse (`REFUSAL_COMPETING_ARTIFACT`) and tell the human to record the rejection first; then this agent plans version n+1 into the archived-and-bumped file.
+Read `plan.build_mode` in the same pass. It is `design-only` or `org-connected`, it is required, and it decides which agents may own a step (Step 6). A plan whose `build_mode` is absent is a plan from before this contract: stop and tell the human to re-run `init` rather than assuming either mode.
+
+**When re-planning is allowed.** `plan-rejected` is the one status this agent may re-plan from: the gate rejection has already bumped `plan.version` and archived the superseded plan into `history[]`, so planning version n+1 into that file is exactly what the loop expects next. Refuse (`REFUSAL_COMPETING_ARTIFACT`) at `verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate — and tell the human that `build_plan.py gate <plan> plan reject` is what creates the next version. `clarifying` is too early: run through G1 first.
 
 ### Step 2 — Write scope in and out
 
@@ -177,25 +179,34 @@ Between two and six. Each milestone records exactly `id` (`M1`, `M2`, …), `tit
 
 One step per unit of build. Step objects are `additionalProperties: false`, and all fifteen of these are **required**: `id` (`M1-S01` — `^M[0-9]+-S[0-9]{2,}$`), `milestone`, `type`, `title`, `agent`, `skills[]`, `templates[]`, `decision_trees[]`, `inputs{}`, `outputs[]`, `depends_on[]`, `acceptance_tests[]` (minItems 1), `status`, `runs[]` (`[]` at plan time) and `human_gate`. `blocked_reason` is the only optional key, and it is required when `status` is `blocked`. Nothing else may be added — there is no field for requirement ids on a step.
 
-**Type** comes from the table in `standards/build-orchestration.md` § 4 — `object-model`, `access`, `automation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom`. Nothing else is a type; a step that fits none of them is `custom` and declares its own tests.
+**Type** comes from the table in `standards/build-orchestration.md` § 4 — `object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom`. Nothing else is a type; a step that fits none of them is `custom` and declares its own tests. The artefact map under that table settles the ones that look homeless: validation rules are `validation`; escalation rules are `sla`; list views, reports and their folders, and email templates are `ui`; Email-to-Case and Web-to-Case intake is `routing`; `package.xml` and the deploy-order note are `docs`.
 
-**Agent** — exactly one, from the active roster. Check three things before writing it: `agents/<id>/AGENT.md` exists; its frontmatter is `class: runtime`; its `status` is not `deprecated`. A deprecated name is rewritten through `agents/_shared/AGENT_DISAMBIGUATION.md`, never assigned. Prefer the agent whose § 4 row lists this step type.
+**Agent** — exactly one, from the active roster. Check four things on disk before writing it:
+
+1. `agents/<id>/AGENT.md` exists;
+2. its frontmatter is `class: runtime`;
+3. its `status` is a valid non-deprecated value of the `agent-frontmatter` schema enum — `stable` or `beta`. A deprecated name is rewritten through `agents/_shared/AGENT_DISAMBIGUATION.md`, never assigned, and a status that is off-enum entirely is not an assignment this plan may make;
+4. either `plan.build_mode` is `org-connected`, or that agent's frontmatter says `requires_org: false`.
+
+`validate` ERRORs on all four, so a plan that breaks one does not reach the verifier. The fourth is the one that bites: most of the designer agents in the § 4 table declare `requires_org: true`, so in a `design-only` build they are **not** eligible and the owner is the § 4 **design-only owner** column instead — `metadata-builder` for every metadata step type (`object-model`, `access`, `validation`, declarative `automation`, `routing`, `sla`, `ui`, and the `package.xml` / deploy-order part of `docs`), `apex-builder` for Apex automation, `story-drafter` for workbook and story `docs`, `bulk-migration-planner` for `data` and `integration`.
+
+`metadata-builder` is the default owner in design-only mode, not a fallback for an awkward step: it builds artefacts from the step's cited skills' `references/metadata-examples.md` and `templates/`, and runs those skills' `scripts/check_*.py`. Give it the same `skills[]` the designer agent would have read — a `metadata-builder` step with a thin reading list produces a thin artefact. In `org-connected` mode the designer agents own their rows as the table's second column lists them.
 
 **Skills** — bare skill ids in `<domain>/<slug>` form (`admin/business-hours-and-holidays`), not paths; the schema's pattern rejects a `skills/` prefix. Every one must resolve to a real `skills/<domain>/<slug>/SKILL.md`, which is what `validate` checks. Prefer skills the owning agent already reads per `agents/_shared/SKILL_MAP.md`.
 
 **Templates** — repo-relative paths (`templates/apex/TriggerHandler.cls`). Check the matching family under `templates/` before letting a step imply hand-written code; a step that emits Apex without naming a template is a step that will freestyle.
 
-**Outputs** — concrete file paths relative to the build directory, under `artefacts/<step-id>/`. Not prose describing an artefact: the verifier and the tester both need a path they can list. Two steps never write the same path.
+**Outputs** — concrete file paths relative to the build directory, under `artefacts/<step-id>/`. Not prose describing an artefact: `build_plan.py check-outputs` lists each one, requires it to be non-empty, and parses it when it is XML — and `set-status … built` is refused until that passes. An output the step will not actually write is therefore a step that can never advance. Two steps never write the same path.
 
 **Depends on** — the step ids whose outputs this step reads. This is what makes the build a pipeline rather than a list.
 
 **Acceptance tests** — at least one, typed per `standards/build-orchestration.md` § 5:
 
-- Prefer a `checker` test naming the real checker of a skill the step cites. Confirm it first: `ls skills/<domain>/<slug>/scripts/check_*.py`. A checker that does not exist blocks the step; naming one that does not exist is worse than naming none, because the tester will block on it later instead of the planner catching it now.
+- Prefer a `checker` test naming the real checker of a skill the step cites. Confirm it first: `ls skills/<domain>/<slug>/scripts/check_*.py`. Its `command` must match `^python3 skills/<domain>/<slug>/scripts/check_<name>.py` and the file must exist — `validate` ERRORs otherwise, so naming a checker that does not exist fails here rather than blocking the step three stages later.
 - Every step that emits metadata also gets an `xml` test and a `manifest` test. Always both — they are cheap, and they catch the two failures (a malformed file, a member with no file) that make a milestone report meaningless.
-- `command` tests are stdlib-only and never deploy. `manual` tests are single observable outcomes a human ticks at the gate.
+- `command` tests start with `python3 ` and reference a path under the repo or the build directory, are stdlib-only, and never deploy: § 5 carries a deny-list regex that `validate` ERRORs on, covering `sf … deploy`, `sfdx`, `force:source:deploy`, `curl`, `wget`, a pipe into a shell, `bash -c`, `python3 -c`, `rm -rf` and `git push`. `manual` tests are single observable outcomes a human ticks at the gate.
 
-**Human gate** — `true` when the step changes who can see or do something (permission sets, permission set groups, profiles, sharing rules, org-wide defaults, queue or group membership, guest access) or when it deletes anything (a field, an object, records, a `destructiveChanges.xml` entry). Access and deletion are the two classes where an agent being wrong is not recoverable by re-running the step.
+**Human gate** — `true` when the step changes who can see or do something (permission sets, permission set groups, profiles, sharing rules, org-wide defaults, queue or group membership, guest access) or when it deletes anything (a field, an object, records, a `destructiveChanges.xml` entry). Access and deletion are the two classes where an agent being wrong is not recoverable by re-running the step. `human_gate: true` has teeth: `ensure-gates` creates a pending `step:<step-id>` gate for it, `next` will not offer the step until a human approves that gate, and `set-status <step> running` is refused while it is pending.
 
 **Blocked steps** — when no skill covers what a step needs, write the step anyway with `status: "blocked"` and `blocked_reason: "skill-gap"`, naming what was searched. That is the signal to deepen a skill. It is never a licence to write the Salesforce claim from memory.
 
@@ -203,17 +214,20 @@ Three rules govern this whole step and are worth stating flatly: **agents only f
 
 ### Step 7 — Write, validate, render
 
-Edit `plan.json` directly — `scope` (in, out, `fit_gap`), `decisions`, `milestones`, `steps`, and `status: "planned"` — then run all three, in this order:
+Never edit `plan.json` by hand. Write the plan body — `scope` (in, out, `fit_gap`), `decisions`, `milestones`, `steps` — to a scratch JSON file and hand it to the CLI, which replaces all five in one validated write and sets `status: "planned"`. Then the gates, then validate, then render:
 
 ```bash
+python3 scripts/build_plan.py set-plan     .sfskills/builds/<build-id>/plan.json --file <plan-body>.json
 python3 scripts/build_plan.py ensure-gates .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py validate     .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py render       .sfskills/builds/<build-id>/plan.json
 ```
 
-`ensure-gates` is not optional and it is not the human's job: `validate` ERRORs with `missing human gate 'milestone:M1'` until every milestone has a gate record, and `ensure-gates` is what adds them — as `pending`, never approved, and it never touches a gate that already exists. Adding a *pending* gate record is not approving one; `gate` remains the only writer of a decision and a human the only decider.
+`set-plan` validates before it writes, so a plan body that would not have validated never lands — the failure arrives as an error message rather than as a half-written plan file. If it rejects the body, fix the body and re-run; do not route around it by editing `plan.json`.
 
-`validate` rejects an unknown step type, an agent that is not an active runtime id, a skill that does not resolve, a dependency cycle, a step or milestone with no acceptance test, a milestone whose `steps[]` does not match its members, and a missing gate. Fix every error and re-run until it exits 0 — finishing with a plan that does not validate hands the verifier a file it will reject on mechanics instead of on substance. Report the next command in the loop, [`/verify-plan`](../../commands/verify-plan.md), and stop.
+`ensure-gates` is not optional and it is not the human's job: `validate` ERRORs with `missing human gate 'milestone:M1'` until every milestone has a gate record, and `ensure-gates` is what adds them — one per milestone plus a `step:<step-id>` gate for every step written with `human_gate: true`, all as `pending`, never approved, and it never touches a gate that already exists. Adding a *pending* gate record is not approving one; `gate` remains the only writer of a decision and a human the only decider.
+
+`validate` rejects an unknown step type, an agent that is not eligible under the four checks in Step 6, a skill that does not resolve, a dependency cycle, a step or milestone with no acceptance test, a milestone whose `steps[]` does not match its members, a missing gate, a `checker` test whose script is not on disk, and any test `command` that matches the § 5 deploy deny-list. Fix every error and re-run until it exits 0 — finishing with a plan that does not validate hands the verifier a file it will reject on mechanics instead of on substance. Report the next command in the loop, [`/verify-plan`](../../commands/verify-plan.md), and stop.
 
 ---
 
@@ -283,7 +297,7 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 | `REFUSAL_OUT_OF_SCOPE` | Any request to deploy, to approve a gate, to execute a step, to plan more than one build directory per invocation, or to plan a requirement that has no Salesforce platform surface. |
 | `REFUSAL_POLICY_MISMATCH` | An answer asks for behaviour the platform does not have, and a skill or decision tree says so explicitly — record the conflict rather than planning a step that cannot work. |
 | `REFUSAL_SECURITY_GUARD` | A step would grant a security-sensitive permission (Modify All Data, View All Data, a broadened org-wide default) — the planner refuses to write it without an explicit answer authorising it, and never writes it with `human_gate: false`. |
-| `REFUSAL_COMPETING_ARTIFACT` | The build directory already holds a plan at `status: verified` or later — re-planning in place would discard a recorded gate. A re-plan is a new plan version, and only `build_plan.py gate <plan> plan reject --by <name> --notes <reason>` creates one; ask the human to record that first. |
+| `REFUSAL_COMPETING_ARTIFACT` | The build directory holds a plan at `status: verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate. A re-plan is a new plan version, and only `build_plan.py gate <plan> plan reject --by <name> --notes <reason>` creates one; ask the human to record that first. A plan at `plan-rejected` is the re-plan case and is planned, not refused. |
 | `REFUSAL_OVER_SCOPE_LIMIT` | The answered requirement would need more than six milestones — split it into more than one build rather than writing a plan no gate can accept. |
 
 ---
@@ -293,7 +307,8 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 - Never deploys to an org, never runs `sf project deploy`, never probes an org.
 - Never approves a gate. It writes `status: planned` and stops. `ensure-gates` adds missing gate records as `pending`, which is bookkeeping the schema requires; `scripts/build_plan.py gate` is the only writer of a gate *decision*, and only a human runs it.
 - Never invents a skill path, a template path, a decision-tree branch or an agent id. Every one is checked on disk before it is written into a step.
-- Never assigns a build-time agent, a deprecated agent, or an agent absent from the roster.
+- Never assigns a build-time agent, a deprecated agent, an agent whose `status` is off the frontmatter-schema enum, or an org-requiring agent in a `design-only` build.
+- Never hand-edits `plan.json`. `set-plan --file` writes the plan body; `ensure-gates` writes the pending gate records; nothing else in this agent touches the file.
 - Never writes a Salesforce claim no skill supports — the step is `blocked` with `blocked_reason: skill-gap` instead.
 - Never executes a step, runs a checker against artefacts, or writes anything under `artefacts/`.
 - Never edits `PLAN.md` or any other rendered view by hand.

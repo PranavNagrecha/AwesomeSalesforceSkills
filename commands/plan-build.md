@@ -29,6 +29,8 @@ python3 scripts/build_plan.py status .sfskills/builds/<build-id>/plan.json
 
 Refuse (`REFUSAL_NEEDS_HUMAN_REVIEW`) unless G1 is `approved` and every `blocking` clarification is answered or explicitly deferred. An unanswered blocking question is precisely the decision the skill said would change the design.
 
+Re-planning is allowed from exactly one status: `plan-rejected`, where the rejected gate has already bumped `plan.version` and archived the old plan into `history[]`. Refuse (`REFUSAL_COMPETING_ARTIFACT`) at `verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate — and tell the user that `build_plan.py gate <plan> plan reject` is what creates the next version.
+
 ---
 
 ## Step 2 — Load the agent
@@ -45,10 +47,14 @@ Follow the 7-step plan exactly:
 3. Fit-gap every in-scope capability (`requirement`, `verdict`, `steps[]`, tier, note)
 4. Decide, citing a decision-tree branch for every technology choice — no branch, no decision
 5. Cut two to six milestones in workbook deployment order, each with a Given/When/Then goal and its own acceptance test
-6. Write the steps: one owning **runtime, non-deprecated** agent each, a `type` from the § 4 table, skills that resolve on disk, concrete outputs under `artefacts/<step-id>/`, `depends_on`, `human_gate`, and at least one acceptance test whose runner exists
-7. `ensure-gates`, then `validate`, then `render` — fix every ERROR and re-run until `validate` exits 0
+6. Write the steps: one owning agent each — `class: runtime`, a `status` that is a valid non-deprecated value of the agent-frontmatter enum (`stable` or `beta`), and `requires_org: false` unless the plan's `build_mode` is `org-connected` — a `type` from the § 4 table (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom`), skills that resolve on disk, concrete outputs under `artefacts/<step-id>/`, `depends_on`, `human_gate`, and at least one acceptance test whose runner exists
+7. `set-plan --file`, then `ensure-gates`, then `validate`, then `render` — fix every ERROR and re-run until `validate` exits 0. The plan body is written through the CLI, never by hand-editing `plan.json`
 
-Three rules govern step 6: **agents only from the active roster; skills only when they resolve on disk; no freestyle Salesforce claims.** A step whose knowledge no skill covers is written with `status: "blocked"` and `blocked_reason: "skill-gap"`, naming what was searched. That is the signal to deepen a skill, never a licence to write the claim from memory.
+Three rules govern step 6: **agents only from the active roster and only when eligible for this `build_mode`; skills only when they resolve on disk; no freestyle Salesforce claims.** A step whose knowledge no skill covers is written with `status: "blocked"` and `blocked_reason: "skill-gap"`, naming what was searched. That is the signal to deepen a skill, never a licence to write the claim from memory.
+
+**Who owns a step depends on `build_mode`.** Most designer agents in the § 4 table declare `requires_org: true`, so in a `design-only` build — the default — they are ineligible and the owner is the table's **design-only owner** column: `metadata-builder` for every metadata step type, `apex-builder` for Apex automation, `story-drafter` for workbook and story docs, `bulk-migration-planner` for data and integration. `metadata-builder` builds from the step's cited skills' `references/metadata-examples.md` and `templates/`, so give it the reading list the designer agent would have had. In an `org-connected` build (`init --org-alias`) the designer agents own their rows again.
+
+Validation rules are the `validation` type; escalation rules are `sla`; list views, reports and email templates are `ui`; Email-to-Case and Web-to-Case are `routing`; `package.xml` and the deploy-order note are `docs`.
 
 ---
 
@@ -79,11 +85,12 @@ Suggest, but never auto-invoke: [`/assess-waf`](./assess-waf.md) when a decision
 - Does not deploy, probe an org, or touch an org at all.
 - Does not approve a gate. `ensure-gates` adds missing gate records as `pending`, which the schema requires; `build_plan.py gate` is the only writer of a gate decision and a human the only decider.
 - Does not invent a skill path, a template path, a decision-tree branch or an agent id — every one is checked on disk before it is written into a step.
-- Does not assign a build-time agent, a deprecated agent, or an agent absent from the roster.
+- Does not assign a build-time agent, a deprecated agent, an agent whose `status` is off the frontmatter-schema enum, or an org-requiring agent in a `design-only` build.
+- Does not hand-edit `plan.json` — `set-plan --file` writes the plan body and `ensure-gates` writes the pending gate records (one per milestone, plus a `step:<id>` gate per human-gated step).
 - Does not write a Salesforce claim no skill supports — the step is `blocked` with `blocked_reason: skill-gap` instead.
 - Does not execute a step, run a checker against artefacts, or write anything under `artefacts/`.
 - Does not answer an unanswered clarification itself.
-- Does not bump `plan.version` or write `history[]` — a rejected plan gate is what creates the next version.
+- Does not bump `plan.version` or write `history[]` — a rejected plan gate is what creates the next version, and `plan-rejected` is the one status this command re-plans from.
 - Does not hand-edit `PLAN.md` or any other rendered view.
 - Does not auto-chain to the verifier or to any step's owning agent.
 

@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (67 active runtime agents across developer, admin,
+3. **Run-time agents** (68 active runtime agents across developer, admin,
    strategic, vertical/governance, and orchestration tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
@@ -183,7 +183,7 @@ Vertical + governance — Tier 3 (11):
 | `user-access-diff`                    | Side-by-side access comparison report between users |
 | `omnistudio-designer`                 | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit |
 
-Orchestration — Tier 4 (7, `status: beta`):
+Orchestration — Tier 4 (8, `status: beta`):
 
 | Agent name                | What it returns |
 | -------------------------- | --------------- |
@@ -194,6 +194,7 @@ Orchestration — Tier 4 (7, `status: beta`):
 | `step-tester`              | Machine-readable test result; step moved to `tested` or `failed` |
 | `build-doc-keeper`         | Re-rendered `PLAN.md`, decisions log, workbook + traceability rows; step moved to `documented` |
 | `milestone-verifier`       | Milestone acceptance report + manual-test checklist (gate G3) |
+| `metadata-builder`         | Deploy-ready metadata XML + `package.xml` fragment + deploy-order note for one declarative step |
 
 Implements the requirement-to-build loop in `standards/build-orchestration.md`; none of these deploys or approves a gate.
 

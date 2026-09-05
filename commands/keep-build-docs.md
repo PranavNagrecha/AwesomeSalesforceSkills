@@ -35,7 +35,7 @@ Follow the 10-step plan exactly:
 1. Precondition + read the envelope and the test results
 2. `python3 scripts/build_plan.py render <build_dir>/plan.json` to regenerate PLAN.md
 3. Append to `decisions.md` any decision the envelope actually recorded — dated, attributed, cited
-4. Write the workbook rows for the step's type into `workbook/`, in the 10-section row format, one row per addressable artefact
+4. Write the workbook rows for the step's type into `workbook/`, in the 10-section row format, one row per addressable artefact. A step type the section map does not name goes to the default section, **Other configuration** (`workbook/99-other-configuration.md`), with the gap flagged in the report — a new step type never breaks a documentation run
 5. Give every row its deployment-order position
 6. Give every row its verification step
 7. Update `traceability.md`: requirement / clarification id → step → artefact paths → test result
@@ -72,4 +72,5 @@ Suggest (but do not auto-invoke):
 
 - Does not deploy.
 - Does not build, edit or delete artefacts, and does not re-run tests.
-- Does not hand-edit a rendered view, approve a gate, or document more than one step per invocation.
+- Does not hand-edit a rendered view or `plan.json` beyond the single `set-status … documented` transition, approve a gate, or document more than one step per invocation.
+- Does not refuse a step because its type is unmapped — it documents it under **Other configuration** and names the gap.

@@ -31,7 +31,7 @@ dependencies:
 
 Executes exactly one step of a build plan. It reads `plan.json`, confirms the step is currently runnable, marks it `running`, maps the plan's `inputs{}` plus the human's clarification answers plus the outputs of upstream steps onto the Inputs section of the step's owning run-time agent, invokes that agent under a hard artefact-path constraint, stores the returned envelope, and records the run back onto the step. It carries no Salesforce knowledge of its own — every domain decision belongs to the owning agent and the skills that agent reads.
 
-**Scope:** one step per invocation, no org connection, no deploy. The runner moves a step from `pending` to `built` (or to `blocked`); it never moves it further and never approves anything.
+**Scope:** one step per invocation, no deploy. The runner moves a step from `pending` to `built` (or to `failed` or `blocked`); it never moves it further and never approves anything. An org is used only when the plan's `build_mode` is `org-connected` and the step's owning agent needs one to read — never to write, and never to deploy.
 
 ---
 
@@ -54,7 +54,7 @@ Five skill reads is well under the 8–25 design target in `agents/_shared/AGENT
 2. `agents/_shared/AGENT_CONTRACT.md` — the 8-section shape, the Process Observations requirement, and the confidence rubric this agent overrides in Step 8.
 3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence, the atomic-write rule, and the redaction requirement on echoed inputs.
 4. `agents/_shared/REFUSAL_CODES.md` — the canonical enum the refusal block uses.
-5. `standards/build-orchestration.md` — § 4 (step record fields and the status machine), § 5 (who owns tests — not this agent), § 8 (the plan CLI is the only writer of derived state).
+5. `standards/build-orchestration.md` — § 2 (`build_mode`, and that no agent hand-edits `plan.json`), § 3 (the `step:<id>` human gate and what it stops), § 4 (step record fields, the agent-eligibility rule, and the status machine including the `failed → pending` and `running → running` recovery transitions), § 5 (who owns tests — not this agent — and the `check-outputs` precondition on `built`), § 8 (the plan CLI is the only writer of derived state).
 6. `agents/_shared/schemas/build-plan.schema.json` — the field-level truth for `steps[]`, `inputs{}`, `outputs[]`, `depends_on[]` and `runs[]`, so the runner reads and writes only the fields it owns.
 
 ### What the runner has to judge for itself
@@ -92,11 +92,22 @@ Run:
 python3 scripts/build_plan.py next <build_dir>/plan.json
 ```
 
-The command prints the runnable steps as JSON on stdout — `pending` steps in the current milestone whose `depends_on` are all `documented`. When nothing is runnable it prints `[]` on stdout and the reason on stderr; read both, because the reason is what the refusal has to quote. Add `--milestone <id>` to force a milestone other than the first one not fully documented.
+The command prints the runnable steps as JSON on stdout — `pending` steps in the current milestone whose `depends_on` are all `documented` and whose `step:<id>` human gate, if the step has one, is approved. When nothing is runnable it prints `[]` on stdout and the reason on stderr; read both, because the reason is what the refusal has to quote. Add `--milestone <id>` to force a milestone other than the first one not fully documented.
 
-If `step_id` is not in that list, STOP and refuse with `REFUSAL_OUT_OF_SCOPE`, quoting the printed list, the stderr reason, and the step's current `status`. Two failure modes hide behind this check and both are worth naming in the refusal message: the step's predecessor is not documented yet, or the milestone this step belongs to sits behind an unapproved human gate.
+If `step_id` is not in that list, STOP and refuse with `REFUSAL_OUT_OF_SCOPE`, quoting the printed list, the stderr reason, and the step's current `status`. Three failure modes hide behind this check and each is worth naming in the refusal message: the step's predecessor is not documented yet; the milestone this step belongs to sits behind an unapproved human gate; or the step's own `human_gate` is `true` and nobody has approved its `step:<step-id>` gate yet. The third has a remedy the human runs, and the refusal should print it:
 
-One carve-out, and only one: a step whose status is `failed` or `blocked` never appears in `next`, because `next` lists `pending` steps only. Such a step may be re-run when the caller supplied `reason` — `build_plan.py` allows `failed → running` and `blocked → running` — and the refusal above does not apply. Record the caller's `reason` on the run. A step at `built`, `tested` or `documented` gets no carve-out: re-running it is a re-plan decision, not this agent's.
+```bash
+python3 scripts/build_plan.py gate <build_dir>/plan.json step:<step_id> approve --by "<name>" --notes "<what was reviewed>"
+```
+
+This agent never runs that command. A step carrying a human gate is a step where being wrong is not recoverable by re-running it — access changes and deletions — which is exactly why the gate exists.
+
+Two carve-outs, both narrow:
+
+- A step whose status is `blocked` never appears in `next`. It may be re-run when the caller supplied `reason` — `build_plan.py` allows `blocked → running` — and the refusal above does not apply. Record the caller's `reason` on the run.
+- A step whose status is `failed` is reset before it is re-run. `set-status <step> pending` is the documented reset (`failed → pending` is an allowed transition), after which the step appears in `next` like any other and the ordinary path applies. `failed → running` is also allowed for an immediate re-claim with `reason` recorded; prefer the reset, because a step that goes back through `next` is a step whose gates and dependencies were re-checked.
+
+Neither carve-out reaches around a human gate: `set-status <step> running` is refused while the step's `step:<id>` gate is pending, whatever the previous status was. A step at `built`, `tested` or `documented` gets no carve-out at all: re-running it is a re-plan decision, not this agent's.
 
 Never infer runnability by reading `depends_on` yourself. `build_plan.py` owns that computation per `standards/build-orchestration.md` § 8, and a second implementation of it is a second answer.
 
@@ -106,7 +117,11 @@ Never infer runnability by reading `depends_on` yourself. `build_plan.py` owns t
 python3 scripts/build_plan.py set-status <build_dir>/plan.json <step_id> running --started <iso8601-utc>
 ```
 
-This claims the step before any agent work begins, so a crashed run is visible as `running` rather than as a step that silently never started.
+This claims the step before any agent work begins, so a crashed run is visible as `running` rather than as a step that silently never started. `--started` on its own records a run entry, with the agent defaulting to the step's own `agent`.
+
+`set-status … running` is a gate, not a formality. It exits non-zero and writes nothing when the step's `human_gate` is `true` and its `step:<step_id>` gate is not approved, or when the step's milestone is not the current runnable milestone. Treat a non-zero exit as the refusal in Step 2 arriving late: quote what it printed, refuse with `REFUSAL_OUT_OF_SCOPE`, and invoke nothing. Never work around it by editing `plan.json`.
+
+`running → running` is an allowed transition, so re-claiming a step left `running` by a crashed run appends a fresh run rather than erroring — history is never overwritten.
 
 ### Step 4 — Read the owning agent's Inputs section
 
@@ -126,7 +141,7 @@ Rules that make this mapping reviewable rather than improvised:
 
 - A required input of the owning agent with no value from any of the three sources is a hard stop. Refuse with `REFUSAL_MISSING_INPUT`, naming the agent, the input, and the three places that were searched. Never invent a value, and never let the owning agent default it silently.
 - An optional input with no value is left unset. Record it in the envelope's `inputs_received` as absent so the owning agent's own confidence rubric can account for it.
-- If the owning agent requires `target_org_alias` (its frontmatter says `requires_org: true`), STOP with `REFUSAL_INPUT_AMBIGUOUS`: this loop is org-free by contract, so a step assigned to an org-requiring agent is a planning defect, not something the runner works around.
+- If the owning agent's frontmatter says `requires_org: true` **and** the plan's `build_mode` is `design-only`, STOP with `REFUSAL_INPUT_AMBIGUOUS`: § 4 makes that agent ineligible to own the step, so this is a planning defect, not something the runner works around — name the § 4 design-only owner (`metadata-builder` for a metadata step) as the fix. When `build_mode` is `org-connected` the assignment is legal and the org alias comes from the plan's `org` object; pass it as that agent's target-org input and never as anything the runner invents. Nothing in this loop deploys, whichever mode it is in.
 - Anything matching a credential shape per `skills/devops/pipeline-secrets-management` is replaced with `[REDACTED]` before it is echoed anywhere.
 
 ### Step 6 — Invoke the owning agent
@@ -146,12 +161,18 @@ Pass the input map from Step 5, the step's `skills[]`, `templates[]` and `decisi
 
 ### Step 7 — Capture the envelope and the artefacts
 
-Write the returned envelope to `<build_dir>/envelopes/<step_id>/<run_id>.json` verbatim. Then enumerate the files that now exist under `<build_dir>/artefacts/<step_id>/` and compare them against the step's declared `outputs[]`:
+Write the returned envelope to `<build_dir>/envelopes/<step_id>/<run_id>.json` verbatim. Then let the CLI adjudicate the declared outputs, rather than eyeballing the directory:
+
+```bash
+python3 scripts/build_plan.py check-outputs <build_dir>/plan.json <step_id>
+```
+
+It prints `{ok, missing[], empty[], malformed[]}` and exits 1 when not ok: every path in `outputs[]` must exist under the build directory and be non-empty, and every XML file must parse. Quote its JSON into the report. Then enumerate the files that now exist under `<build_dir>/artefacts/<step_id>/` and compare them against the step's declared `outputs[]`:
 
 | Situation | What the runner records |
 |---|---|
 | Every declared output exists | clean built run |
-| A declared output is missing | listed in the report and in Process Observations; confidence drops to MEDIUM |
+| A declared output is missing, empty or malformed | `check-outputs` says so and exits 1; the step cannot go `built` (Step 8). Listed in the report and in Process Observations; confidence drops to MEDIUM at best |
 | A file exists that no output declared | listed as an undeclared artefact; confidence drops to MEDIUM |
 | A file was written outside `artefacts/<step_id>/` | LOW confidence, named explicitly, and flagged for the human — the constraint in Step 6 was violated |
 
@@ -159,9 +180,9 @@ The runner reports mismatches. It does not delete, move or edit what the owning 
 
 ### Step 8 — Set the terminal status
 
-Read the owning agent's envelope. Two outcomes, and only two:
+Read the owning agent's envelope and the `check-outputs` result together. Three outcomes:
 
-**Built.** The agent returned an envelope with no `refusal` block:
+**Built.** The agent returned an envelope with no `refusal` block **and** `check-outputs` exited 0:
 
 ```bash
 python3 scripts/build_plan.py set-status <build_dir>/plan.json <step_id> built \
@@ -170,6 +191,8 @@ python3 scripts/build_plan.py set-status <build_dir>/plan.json <step_id> built \
   --result "<one-line outcome>" \
   --started <iso8601-utc>
 ```
+
+**Failed.** The agent returned normally but `check-outputs` did not pass. `set-status … built` is refused in that case, so do not retry the transition: record `failed` with the `check-outputs` JSON in `--result`, naming which outputs were missing, empty or malformed. A run whose owning agent wrote nothing cannot advance the step, and a step recorded `failed` can be reset later with `set-status <step> pending` once the cause is fixed.
 
 **Blocked.** The agent refused, or its envelope reports a skill gap or an ambiguity it could not resolve:
 
@@ -190,9 +213,9 @@ Overrides the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 
 | Score | Condition |
 |---|---|
-| HIGH | the step was in `next` (or was a Step 2 re-run carve-out), every required input resolved from the plan, the envelope validates against the envelope schema, every declared output exists, and nothing was written outside `artefacts/<step_id>/` |
-| MEDIUM | a declared output is missing, an undeclared artefact appeared, or an optional input had no value and the owning agent defaulted it |
-| LOW | the envelope is missing or fails schema validation, a file landed outside the step's artefact directory, or the step was set `blocked` |
+| HIGH | the step was in `next` (or was a Step 2 carve-out), every required input resolved from the plan, the envelope validates against the envelope schema, `check-outputs` exited 0, and nothing was written outside `artefacts/<step_id>/` |
+| MEDIUM | an undeclared artefact appeared, or an optional input had no value and the owning agent defaulted it |
+| LOW | `check-outputs` reported a missing, empty or malformed output, the envelope is missing or fails schema validation, a file landed outside the step's artefact directory, or the step was set `blocked` |
 
 ---
 
@@ -206,7 +229,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 2. **Confidence** — HIGH / MEDIUM / LOW with the rationale keyed to the Step 9 table.
 3. **The owning agent's envelope** — reproduced verbatim, plus the path it was stored at under `envelopes/<step-id>/`.
 4. **Artefact paths produced** — every file now under `artefacts/<step-id>/`, each marked `declared` or `undeclared` against the step's `outputs[]`, with any declared-but-missing output listed separately.
-5. **The `set-status` invocation** — the exact command line that was run, so the state transition is auditable from the report alone.
+5. **The `check-outputs` result and the `set-status` invocation** — the JSON `check-outputs` printed and the exact `set-status` command line that was run, so the state transition is auditable from the report alone.
 6. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing what was being read when the observation was made.
 7. **Citations** — every skill, standard and schema consulted, plus the owning agent's own citations carried through from its envelope.
 
@@ -254,8 +277,8 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `build_dir` or `step_id` not supplied; `plan.json` absent or unparseable; `step_id` not in `steps[]`; a required input of the owning agent resolves from none of the three sources in Step 5. |
-| `REFUSAL_OUT_OF_SCOPE` | The step is not in the `next` output and does not qualify for the Step 2 re-run carve-out — including the case where its milestone's predecessor gate is unapproved. Also: a caller asking for more than one step, for a deploy, or for a step whose owning agent id is not on the roster. |
-| `REFUSAL_INPUT_AMBIGUOUS` | Two sources in Step 5 bind the same input to different values; the step's `agent` declares `requires_org: true`; the step's `outputs[]` name paths outside `artefacts/<step-id>/`. |
+| `REFUSAL_OUT_OF_SCOPE` | The step is not in the `next` output and does not qualify for a Step 2 carve-out — including the case where its milestone's predecessor gate is unapproved, and the case where its own `step:<id>` human gate is pending (print the `gate` command; never run it). Also: `set-status … running` exiting non-zero; a caller asking for more than one step, for a deploy, or for a step whose owning agent id is not on the roster. |
+| `REFUSAL_INPUT_AMBIGUOUS` | Two sources in Step 5 bind the same input to different values; the step's `agent` declares `requires_org: true` while `build_mode` is `design-only`; the step's `outputs[]` name paths outside `artefacts/<step-id>/`. |
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | The owning agent's refusal is neither a skill gap nor an ambiguity the plan can absorb — the plan itself needs revising, which is a re-plan and a new plan version, not a re-run. |
 
 When the owning agent refuses with a skill gap or an ambiguity, the runner does not refuse: it sets the step `blocked` with that reason and returns normally. A blocked step is a recorded outcome, not an error.
@@ -267,7 +290,7 @@ When the owning agent refuses with a skill gap or an ambiguity, the runner does 
 - Does not deploy to an org, and never runs `sf project deploy start` or any other `sf` write command.
 - Does not run the step's acceptance tests — that is `step-tester`.
 - Does not write PLAN.md, the workbook, `decisions.md` or `traceability.md` — that is `build-doc-keeper`.
-- Does not approve, request or record a human gate.
+- Does not approve a human gate — including the `step:<id>` gate that stands between it and a human-gated step. It prints the command; a human runs it.
 - Does not edit any `plan.json` field beyond the step status transitions and run record it sets through `build_plan.py`; it never hand-edits the file.
 - Does not process more than one step per invocation, and does not auto-chain into the tester.
 - Does not author Salesforce metadata itself, substitute for a blocked step, or freestyle guidance a skill does not carry.

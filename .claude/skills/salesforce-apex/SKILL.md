@@ -91,6 +91,8 @@ rather than a single question:
 
 - `apex-builder` — Generate an Apex scaffold for any canonical surface
 - `apex-refactorer` — Refactor an Apex class to canonical patterns
+- `apex-test-failure-triager` — Diagnose an existing Apex test run failure
+- `automation-transaction-profiler` — Automation Transaction Profiler
 - `security-scanner` — Security audit for Apex, callouts, and sharing
 - `soql-optimizer` — Find and fix SOQL anti-patterns
 - `test-class-generator` — Generate a bulk-safe Apex test class

@@ -71,6 +71,14 @@ solved more than one way, and cite the branch that decided it.
 
 - `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/sharing-selection.md` — OWD vs role hierarchy vs sharing rules vs manual vs Apex managed sharing
 
+## Run-time agents for this domain
+
+Invoke one of these subagents when the ask is a whole workflow
+rather than a single question:
+
+- `access-path-explainer` — Access Path Explainer
+- `security-posture-reviewer` — Security Posture Review
+
 ## Rules
 
 1. Answer from the opened `security` package, never from this router.

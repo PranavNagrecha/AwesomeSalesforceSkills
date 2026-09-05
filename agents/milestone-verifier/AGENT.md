@@ -56,7 +56,7 @@ Seven skill reads, just under the 8–25 design target in `agents/_shared/AGENT_
 2. `agents/_shared/AGENT_CONTRACT.md` — section shape, Process Observations, confidence rubric.
 3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence and the atomic-write rule.
 4. `agents/_shared/REFUSAL_CODES.md` — the refusal enum.
-5. `standards/build-orchestration.md` — § 3 (the G3 gate is the human's, recorded only by `build_plan.py gate`), § 5 (every milestone has at least one acceptance test), § 7 (this agent runs after the milestone's steps, and returns so the human can act).
+5. `standards/build-orchestration.md` — § 2 (`MILESTONE-<id>-REPORT.md` is written by this agent, not rendered, and its path is recorded with `set-milestone`), § 3 (the G3 gate is the human's, recorded only by `build_plan.py gate`, and the conditions under which `gate milestone:Mk approve` is refused), § 5 (every milestone has at least one acceptance test, and the deny-list and shape constraints on the commands it may run), § 7 (this agent runs after the milestone's steps, and returns so the human can act).
 6. `agents/_shared/schemas/build-plan.schema.json` — the milestone and gate fields this agent reads.
 
 ### What the verifier judges for itself
@@ -84,7 +84,9 @@ Seven skill reads, just under the 8–25 design target in `agents/_shared/AGENT_
 
 ### Step 1 — Precondition
 
-Read `<build_dir>/plan.json`. Collect the steps whose `milestone` equals `milestone_id`. Every one must have status `documented`. If any is `pending`, `running`, `built`, `tested`, `failed` or `blocked`, STOP and refuse with `REFUSAL_OUT_OF_SCOPE`, listing each step and its status — a partial milestone cannot be verified, because the references the incomplete steps would have satisfied are exactly the ones the cross-step check is about to look for.
+Read `<build_dir>/plan.json`. Collect the steps whose `milestone` equals `milestone_id`. If any is `pending`, `running`, `built`, `tested` or `failed`, STOP and refuse with `REFUSAL_OUT_OF_SCOPE`, listing each step and its status — a partial milestone cannot be verified, because the references the incomplete steps would have satisfied are exactly the ones the cross-step check is about to look for.
+
+One state is verifiable without being complete: a step at `blocked` **with a recorded `blocked_reason`**. § 3 lets a human approve a milestone whose steps are documented or blocked-with-a-reason, so the report has to be able to describe that milestone rather than refuse it. Verify it, list every blocked step and its reason at the top of the report, and the verdict is `not-ready` — the decision to accept a milestone with a known gap belongs to the human at the gate, and it is only a decision if the report puts the gap in front of them. A `blocked` step with no reason recorded is refused like any other incomplete step.
 
 Confirm too that the preceding milestone's gate is `approved`. Verifying a milestone whose predecessor was never accepted produces a report the human cannot act on.
 
@@ -136,19 +138,28 @@ sf project deploy start --manifest .sfskills/builds/<build-id>/reports/MILESTONE
 
 For a production target the command is `sf project deploy validate` with the same manifest: Salesforce documents it as production-only, it requires Apex tests, and it returns a job id for a later quick deploy. Naming the right one matters — offering the production form for a sandbox sends the human into an error that has nothing to do with their build.
 
-### Step 9 — Write the report and print the gate line
+### Step 9 — Write the report, record it, and print the gate line
 
-Write `<build_dir>/reports/MILESTONE-<milestone_id>-REPORT.md` containing, in order: the milestone and its steps with their artefacts, the reference-resolution table from Step 3, the deployment-order verdict from Step 4, the merged manifest path and its conflicts, the acceptance-test results from Step 6, the manual checklist from Step 7, the optional command from Step 8, and the requirements this milestone closes per the traceability file.
+`MILESTONE-<id>-REPORT.md` is the one build document that is **written, not rendered** (`standards/build-orchestration.md` § 2). Write `<build_dir>/reports/MILESTONE-<milestone_id>-REPORT.md` containing, in order: any blocked steps and their reasons, the milestone and its steps with their artefacts, the reference-resolution table from Step 3, the deployment-order verdict from Step 4, the merged manifest path and its conflicts, the acceptance-test results from Step 6, the manual checklist from Step 7, the optional command from Step 8, and the requirements this milestone closes per the traceability file.
 
-Then print the gate command for the human to run — this agent never runs it:
+The overall verdict is one of three, and it is a recommendation to the human, not a decision: `ready-for-gate` (no unresolved references, no ordering contradiction, no failing acceptance test, no blocked step), `ready-with-findings` (findings the human may accept), or `not-ready` (at least one unresolved reference, ordering contradiction, failing test, or blocked step).
+
+Then record the verdict and the report path — this is the one plan write this agent makes, and it is a subcommand, never a hand edit:
+
+```bash
+python3 scripts/build_plan.py set-milestone <build_dir>/plan.json <milestone_id> \
+  --status verified|rejected --report-path reports/MILESTONE-<milestone_id>-REPORT.md
+```
+
+`--status verified` for `ready-for-gate` and `ready-with-findings`; `rejected` for `not-ready`. That is a statement about what the checks found, not an approval: `milestones[].status` and `report_path` are plan bookkeeping, and the gate record stays empty until a human writes it.
+
+Finally print the gate command for the human to run — this agent never runs it:
 
 ```bash
 python3 scripts/build_plan.py gate <build_dir>/plan.json milestone:<milestone_id> approve --by "<name>"
 ```
 
-The overall verdict is one of three, and it is a recommendation to the human, not a decision: `ready-for-gate` (no unresolved references, no ordering contradiction, no failing acceptance test), `ready-with-findings` (findings the human may accept), or `not-ready` (at least one unresolved reference, ordering contradiction, or failing test).
-
-The report path is returned in this agent's envelope and in its workflow return value. It is not written into `plan.json`: `milestones[].report_path` in `agents/_shared/schemas/build-plan.schema.json` is optional, no `build_plan.py` subcommand sets it, and this agent is not a writer of plan state.
+That command is itself gated: § 3 refuses it unless the plan gate and `milestone:M<k-1>` are both approved and every step in this milestone is documented, or blocked with a recorded reason (which it prints). If the report names a blocked step, say plainly in the report that approving anyway accepts that gap.
 
 ### Step 10 — Confidence
 
@@ -158,7 +169,7 @@ Overrides the default rubric:
 |---|---|
 | HIGH | every step was documented, every reference class in the Step 3 table was resolved with no unclassifiable references, the merged manifest built without conflicts, and every declared acceptance test ran |
 | MEDIUM | some references were unclassifiable, or the merged manifest had a member collision that was reported rather than resolved |
-| LOW | a declared milestone checker was missing, an artefact directory was empty, or the earlier-milestone inventory could not be built |
+| LOW | a declared milestone checker was missing, an artefact directory was empty, a step was blocked, or the earlier-milestone inventory could not be built |
 
 ---
 
@@ -176,9 +187,10 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 6. **Acceptance-test results** — the milestone's own tests, with exit codes.
 7. **Manual checklist** — every deferred manual test, ordered, each with its tick condition.
 8. **Optional validate-only command** — marked optional and human-run.
-9. **Gate line** — the exact `build_plan.py gate` command, unrun.
-10. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the artefact or result behind it.
-11. **Citations** — skills, standards and schemas consulted.
+9. **Gate line** — the exact `build_plan.py gate` command, unrun, with the § 3 conditions it will be checked against.
+10. **The `set-milestone` invocation** — the exact command line that recorded the verdict and the report path.
+11. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the artefact or result behind it.
+12. **Citations** — skills, standards and schemas consulted.
 
 Suggested follow-ups: `deployment-risk-scorer` when the human has an org to score the merged manifest against, and `release-readiness-reviewer` when the milestone is the last one before a release. Recommendations only; this agent invokes neither.
 
@@ -207,7 +219,7 @@ Suggested follow-ups: `deployment-risk-scorer` when the human has an org to scor
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-The acceptance report at `<build_dir>/reports/MILESTONE-<id>-REPORT.md` and the merged manifest beside it are build-scoped outputs written in addition to the pair above.
+The acceptance report at `<build_dir>/reports/MILESTONE-<id>-REPORT.md` and the merged manifest beside it are build-scoped outputs written in addition to the pair above. The report is written directly — `build_plan.py` renders no milestone report — and its path is then recorded with `set-milestone`.
 
 ### Scope Guardrails (Wave 10 contract)
 
@@ -225,7 +237,7 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `build_dir` or `milestone_id` absent; `plan.json` unreadable; `milestone_id` matches no milestone in the plan. |
-| `REFUSAL_OUT_OF_SCOPE` | Any step in the milestone is not `documented`; the preceding milestone's gate is not `approved`; a caller asks for several milestones at once, for a deploy, or for the gate to be approved. |
+| `REFUSAL_OUT_OF_SCOPE` | A step in the milestone is `pending`, `running`, `built`, `tested`, `failed`, or `blocked` with no reason recorded; the preceding milestone's gate is not `approved`; a caller asks for several milestones at once, for a deploy, or for the gate to be approved. |
 | `REFUSAL_INPUT_AMBIGUOUS` | Two steps in the milestone declare the same artefact path with different content, so there is no single artefact set to verify. |
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | Step manifests disagree on the API version, or a reference resolves to two different definitions across milestones — both are decisions about what the build means, not findings this agent can settle. |
 
@@ -237,7 +249,7 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 - Does not deploy, and never runs `sf project deploy start`, `sf project deploy validate`, or any `sf` command at all; the validate-only command is printed for the human.
 - Does not edit, move or delete artefacts, test results or documentation written by other agents in the loop.
 - Does not build or re-build a step, re-run a step's own tests, or change a step's status.
-- Does not touch `plan.json` — its verdict lives in its report and its envelope, and the gate record is the human's.
+- Does not touch `plan.json` beyond the single `set-milestone` call that records this milestone's status and report path. It never hand-edits the file, never sets a step status, and never writes a gate record — the gate is the human's.
 - Does not tick a manual test on the human's behalf.
 - Does not verify more than one milestone per invocation, and does not auto-chain to any other agent.
 - Does not invent a skill path — every citation resolves to a real file.

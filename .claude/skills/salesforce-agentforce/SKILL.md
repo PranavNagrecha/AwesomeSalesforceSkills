@@ -90,6 +90,7 @@ rather than a single question:
 
 - `agentforce-action-reviewer` — Review Agentforce agent/action quality
 - `agentforce-builder` — Scaffold a complete Agentforce action
+- `agentforce-quality-engineer` — Agentforce Quality Engineer
 
 ## Rules
 

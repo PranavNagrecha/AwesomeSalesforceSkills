@@ -76,11 +76,16 @@ solved more than one way, and cite the branch that decided it.
 Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
+- `build-step-runner` — Execute one step of a build plan
 - `changeset-builder` — Build or validate a deployment Change Set manifest
 - `deployment-failure-triager` — Diagnose an existing Salesforce deploy failure
 - `deployment-risk-scorer` — Risk-score a change set before deploy
+- `milestone-verifier` — Cross-step verification + acceptance report for one milestone
+- `multi-org-drift-analyzer` — Multi-Org Drift Analysis
+- `release-readiness-reviewer` — Release Readiness Review
 - `release-train-planner` — Plan or audit a Salesforce release train
 - `sandbox-strategy-designer` — Design or audit sandbox + scratch-org strategy
+- `step-tester` — Run the molecular tests for one built step
 
 ## Rules
 

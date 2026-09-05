@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,035 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 60 run-time agents and 80 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,035 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 68 run-time agents and 90 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -15,9 +15,9 @@ load. This file tells you how to reach the one page you need.
 - **1,035 skill packages** under `${CLAUDE_PLUGIN_ROOT}/skills/<domain>/<slug>/`.
   Each is a `SKILL.md` plus `references/examples.md`, `gotchas.md`,
   `well-architected.md` and `llm-anti-patterns.md`.
-- **60 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
+- **68 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
   exposed as subagents (see the roster at the bottom of this file).
-- **80 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
+- **90 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
 - **Decision trees** under `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/`,
   which route between technologies *before* a skill is opened.
 - **Canonical templates** under `${CLAUDE_PLUGIN_ROOT}/templates/`.
@@ -134,12 +134,12 @@ For a whole workflow rather than a single question, invoke the
 matching subagent. Each reads its full `AGENT.md` playbook, cites
 every skill it consulted, and never deploys to an org.
 
-- **admin** — `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `business-hours-and-holidays-configurator`, `change-impact-planner`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `process-flow-mapper`, `profile-to-permset-migrator`, `sales-stage-designer`, `story-drafter`, `user-access-diff`
+- **admin** — `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `build-doc-keeper`, `build-planner`, `business-hours-and-holidays-configurator`, `change-impact-planner`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `metadata-builder`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `plan-verifier`, `process-flow-mapper`, `profile-to-permset-migrator`, `requirements-clarifier`, `sales-stage-designer`, `story-drafter`, `user-access-diff`
 - **agentforce** — `agentforce-action-reviewer`, `agentforce-builder`, `agentforce-quality-engineer`
 - **apex** — `apex-builder`, `apex-refactorer`, `apex-test-failure-triager`, `automation-transaction-profiler`, `security-scanner`, `soql-optimizer`, `test-class-generator`, `trigger-consolidator`
 - **architect** — `org-health-assessor-v2`, `waf-assessor`
 - **data** — `data-loader-pre-flight`, `data-migration-reconciler`, `data-model-reviewer`, `duplicate-rule-designer`
-- **devops** — `changeset-builder`, `deployment-failure-triager`, `deployment-risk-scorer`, `multi-org-drift-analyzer`, `release-readiness-reviewer`, `release-train-planner`, `sandbox-strategy-designer`
+- **devops** — `build-step-runner`, `changeset-builder`, `deployment-failure-triager`, `deployment-risk-scorer`, `milestone-verifier`, `multi-org-drift-analyzer`, `release-readiness-reviewer`, `release-train-planner`, `sandbox-strategy-designer`, `step-tester`
 - **flow** — `flow-analyzer`, `flow-builder`, `flow-orchestrator-designer`
 - **integration** — `bulk-migration-planner`, `integration-catalog-builder`, `integration-incident-triager`
 - **lwc** — `lwc-auditor`, `lwc-builder`, `lwc-debugger`
