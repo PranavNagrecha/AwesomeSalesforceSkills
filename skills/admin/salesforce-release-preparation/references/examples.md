@@ -67,6 +67,22 @@ The lead admin applies the following triage process:
 
 **Why it works:** Sandbox Preview provides four to six weeks of lead time on LWC rendering issues, deprecated API behavior, and Apex compilation warnings that only surface after an actual org upgrade.
 
+**The row this produced in the run sheet.** The finding is not a ticket comment; it is a line the release readiness review can cite. Note that the item has no Settings field behind it — a deprecated base-component property is not gated by a Release Update — so it is recorded as `metadata_backed: false` with the reason spelled out rather than left off the inventory:
+
+```yaml
+  - id: RN-LWC-QUOTE-TABLE
+    name: "lightning-datatable property deprecated in the release notes"
+    metadata_backed: false
+    not_in_metadata_reason: "Base-component property removal is delivered with the release itself; there is no Setup > Release Updates entry and no Settings field to toggle. Found only by loading the component in a preview sandbox."
+    enforcement_release: "ships with the release - no opt-out"
+    test_owner: "lwc-dev@example.com"
+    reads: "skills/lwc/lwc-performance/SKILL.md"
+    status: tested-in-sandbox
+    evidence: "quoteLineItemTable renders with a console deprecation warning in the Developer Pro preview sandbox; replacement property deployed and warning gone."
+```
+
+Two details make this row useful rather than decorative. `enforcement_release` says *no opt-out* instead of a date, which stops anyone from waiting for a toggle that will never appear. And `status: tested-in-sandbox` — not `complete` — keeps the row open until the fix has ridden to production. Lint it with `python3 scripts/check_salesforce_release_preparation.py --file release-run-sheet.yaml`; a row like this with no `not_in_metadata_reason` is rejected.
+
 ---
 
 ## Anti-Pattern: Reviewing Release Notes in the Week Before Production Upgrade

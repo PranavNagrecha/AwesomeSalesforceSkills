@@ -147,3 +147,142 @@ names.
 **How to avoid.** Be deliberate when API names and labels diverge.
 Alphabetical-sort and "use first value as default" interact in
 non-obvious ways.
+
+---
+
+## Gotcha 10: An unrestricted picklist doesn't just store the string — it grows a new inactive value in the field definition, matched case-insensitively
+
+**What happens.** Everyone describes phantom values as "the record holds
+text that isn't in the picklist". That understates it. The Object
+Reference is explicit: "The API doesn't enforce the list of values for
+advisory (unrestricted) picklist fields on `create()` or `update()`.
+When inserting an unrestricted picklist field that doesn't have a
+PicklistEntry, the system creates an 'inactive' picklist value. This
+value can be promoted to an 'active' picklist value by adding the
+picklist value in the Salesforce user interface. When creating new,
+inactive picklists, the API checks to see if there's a match. This
+check is case-insensitive" (object_reference.txt:2363–2367). So the
+*definition itself* accumulates entries nobody authored, and
+`EMEA-North`, `emea-north` and `EMEA-NORTH` collapse onto whichever one
+arrived first — the CSV's casing is not what ends up in the org.
+
+**When it occurs.** Every API or Data Loader write of an unfamiliar
+value to an unrestricted picklist. It is silent: no error, no row in a
+failure file, nothing in the deploy log.
+
+**How to avoid.** Two consequences to design around. First, the
+Setup "Inactive Values" list on a long-lived unrestricted picklist is
+an inbound-data audit log — read it before assuming the value list is
+what someone designed. Second, when you later flip the field to
+restricted, the case-insensitive collapse means your source system's
+casing may no longer match the stored key; normalise casing on the
+source side before the flip
+(`references/metadata-examples.md` §5).
+
+---
+
+## Gotcha 11: `getPicklistValues()` cannot see the values you retired, so a describe-based audit finds nothing
+
+**What happens.** An agent writes the obvious audit: describe the field,
+loop the entries, flag the ones where `isActive()` is false. It reports
+a clean field. Meanwhile 1,800 records carry a value retired last year.
+`getPicklistValues()` "Returns a list of active `PicklistEntry` objects…
+Only active picklist values are returned"
+(apexrefguide.txt:190848–190849). The inactive entries were filtered out
+before the loop began, so the `!isActive()` branch is unreachable — a
+test that always passes.
+
+**When it occurs.** Any Apex or LLM-authored audit that treats describe
+as the inventory of what the field has ever held. `PicklistValueInfo`
+has the same shape: it "Represents the active picklist values for a
+given picklist field" (object_reference.txt:219760–219761).
+
+**How to avoid.** Orphaned values are only visible as a **set
+difference**: what is stored (a `GROUP BY` on the field) minus what is
+defined (describe). Neither side alone can produce the list.
+`references/metadata-examples.md` §1 is that computation. The one thing
+`PicklistEntry.isActive()` is genuinely useful for is a value set you
+built yourself in memory, not one from `getPicklistValues()`.
+
+---
+
+## Gotcha 12: Restricted rejects the write, but nobody has told you which error code to catch
+
+**What happens.** Turning `restricted` on is documented as a hard stop:
+a restricted picklist is one "whose values are restricted to those
+values defined by a Salesforce admin. Users can't load unapproved values
+through the API" (object_reference.txt:2463–2464), and the element means
+"Whether the picklist's values are limited to only the values defined by
+a Salesforce admin" (api_meta.txt:45847–45849). What is *not* documented
+in the guides is the status code string. Middleware written to branch on
+a specific code — retry, dead-letter, alert — is branching on a string
+somebody remembered.
+
+**When it occurs.** The first inbound message carrying an unlisted value
+after the field is made restricted. Which is often weeks later, when the
+source system adds a value.
+
+**How to avoid.** **UNVERIFIED (2026-09-04):** the code named elsewhere
+in this skill, `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`, does not
+appear in api_rest.txt, apexdev.txt, api_meta.txt, object_reference.txt,
+api_asynch.txt or apexrefguide.txt. Provoke the failure in a sandbox,
+capture the real `errorCode` and `message` from the response, and put
+those strings in the integration runbook. Do not ship error handling
+keyed on a code you have not seen an org emit.
+
+---
+
+## Gotcha 13: Data Loader stopped truncating oversized picklist values at version 15.0 — it fails the row instead
+
+**What happens.** A migration that worked for years starts rejecting
+rows. "Allow field truncation" covers "Email, Multi-select Picklist,
+Phone, Picklist, Text, and Text (Encrypted)". "In Data Loader versions
+14.0 and earlier, Data Loader truncates values for fields of those types
+if they're too large. In Data Loader version 15.0 and later, the load
+operation fails if a value is specified that is too large"
+(salesforce_data_loader.txt:437–452, 1863–1877). The setting is
+`sfdc.truncateFields` in `config.properties` and is selected by default,
+which is why nobody remembers deciding it.
+
+**When it occurs.** Bulk value-replacement runs (this skill's Pattern C
+and `references/metadata-examples.md` §4), especially on multi-select
+picklists where the stored string is the semicolon-joined set and
+therefore grows with every additional selection.
+
+**How to avoid.** Before a replacement run, check the replacement
+value's length against the field, and for multi-selects check the
+longest *combination* rather than the longest single value. Failed rows
+land in the error file, not the log — and the failed-rows file is a
+different file from the unprocessed-rows file
+(`admin/data-import-and-management` → `references/gotchas.md`,
+"Failed Rows and Unprocessed Rows Are Different Files").
+
+---
+
+## Gotcha 14: A label rename survives in formulas and breaks in reports — the two references are not the same reference
+
+**What happens.** `ISPICKVAL(Status__c, "Tier_1")` keeps working after
+the label becomes "Gold", because the formula compares the stored key
+and "the `query()` call always returns the value, not the label"
+(object_reference.txt:2372–2374). A report filter typed as
+`Support Tier equals Tier 1` does not, because a report filter on a
+picklist is bound to a value the admin picked from a list — and the list
+no longer offers that entry. The admin concludes the rename was partial
+and starts changing things.
+
+**When it occurs.** Any label rename on a field with saved reports,
+dashboards, or list views. The identical trap on record types is
+documented in `admin/record-types-and-page-layouts` →
+`references/gotchas.md` § 4, "Reports Filter by Record Type Label —
+Labels Are Not Stable"; picklist values behave the same way and for the
+same reason.
+
+**How to avoid.** Treat a label rename as a change with a dependency
+list, not a cosmetic edit. The `rename-label` action exists in the
+governance record for exactly this
+(`references/metadata-examples.md` §6): formulas, validation rules and
+Apex are greppable in retrieved source and usually need nothing; reports,
+dashboards, list views and hand-typed integration mappings are not
+greppable and usually do. An API-name rename is the opposite problem —
+see § 3 and `admin/picklist-and-value-sets` → `references/gotchas.md`
+§ 3 for the add-Replace-deactivate sequence it actually requires.

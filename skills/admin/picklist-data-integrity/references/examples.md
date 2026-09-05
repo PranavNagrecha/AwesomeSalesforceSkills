@@ -26,6 +26,51 @@ match the filter.
 The wrong choice is leaving the phantom values silently invisible
 to reports.
 
+**What the reconciliation actually looks like.** Neither side of this
+can be read off a single screen: describe returns only active values
+(apexrefguide.txt:190848–190849) and the records return only what is
+stored, so the finding is the difference between two result sets. Run
+`references/metadata-examples.md` §1 and you get:
+
+```text
+=== Account.Region__c ===
+restricted       : false
+defined (active) : {AMER, APAC, EMEA}
+stored           : {AMER=8102, EMEA=5330, APAC=2914, EMEA-North=1187, emea-north=0}
+
+ORPHANED         : "EMEA-North" on 1187 record(s)
+  sample Ids     : (0015g00001AbCdEAAV, 0015g00001AbCdFAAV, 0015g00001AbCdGAAV)
+UNUSED           : none
+```
+
+Two details in that output do the diagnostic work. `restricted: false`
+is why the write succeeded at all. And `emea-north` appearing with a
+count of zero is the tell that the source system has been sending mixed
+casing: the unrestricted write path creates an inactive picklist entry
+and matches it case-insensitively
+(object_reference.txt:2363–2367), so the second casing collapsed onto
+the first rather than becoming a second population of records. See
+`references/gotchas.md` § 10.
+
+Whichever fix is chosen, it gets a governance record before it is
+deployed — `references/metadata-examples.md` §6:
+
+```yaml
+id: PKL-2026-021
+object: Account
+field: Region__c
+value: EMEA-North
+action: add                 # promoting the phantom to a real value
+reason: >
+  Source CRM has used EMEA-North as a first-class region since the FY26
+  territory split. Salesforce never adopted it, so 1187 accounts are
+  invisible to every Region-filtered report.
+affected_records: 1187
+audit_environment: production
+owner: pranav.nagrecha@example.com
+date: 2026-09-04
+```
+
 ---
 
 ## Example 2 — Deactivated value persists on existing records
@@ -45,6 +90,28 @@ to a different active status (`Closed`, `In Progress`,
 business-decided). Then verify zero records have the deactivated
 value. Then optionally use Setup → field → Value → Replace to catch
 any stragglers.
+
+The dashboard cannot answer "how many On Hold cases are left" once the
+value is retired, because its filter is built from the values the
+picklist currently offers. The count has to come from a query, which is
+bound to the stored key and does not care whether the value is active:
+
+```sql
+-- Before the migration: the size of the problem.
+SELECT Status, COUNT(Id)
+FROM Case
+GROUP BY Status
+ORDER BY COUNT(Id) DESC
+-- ... New 4021 / Working 890 / Escalated 233 / On Hold 30
+
+-- After the migration, and again after the deploy: must be zero rows.
+SELECT COUNT(Id) FROM Case WHERE Status = 'On Hold'
+```
+
+Run the second query a second time *after* the deactivation deploys. A
+non-zero result there means something is still writing the retired value
+— a scheduled job, an integration, a Flow — and the migration will need
+repeating once that write path is closed.
 
 ---
 

@@ -2,6 +2,10 @@
 
 Use this template to produce a complete data model documentation package for a Salesforce org or a scoped set of objects.
 
+This is the **human-facing** document. The machine-lintable companion is `data-dictionary.yaml`, checked by
+`scripts/check_data_model_documentation.py --file`; fill that one first and derive the tables below from it,
+so the two cannot drift. The generators that populate both are in `references/worked-examples.md`.
+
 ---
 
 ## Scope

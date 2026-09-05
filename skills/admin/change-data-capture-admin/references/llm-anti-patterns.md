@@ -100,9 +100,17 @@ CDC delivery limits by edition (per 24-hour rolling window):
 When the limit is reached: events are SILENTLY DROPPED for the remainder 
 of the day. No alert, no error, no notification to subscribers.
 
-Monitor: PlatformEventUsageMetric SOQL object
-Alert threshold: 70% of edition limit
+Monitor: PlatformEventUsageMetric (API 50.0+)
+  Name IN ('CHANGE_EVENTS_PUBLISHED', 'CHANGE_EVENTS_DELIVERED')  -- restricted picklist
+  Value                                                           -- the count
+  StartDate / EndDate                                             -- hourly UTC, 60-day max span
+There is no UsageCount, UsageDate, or EventType='ChangeDataCapture' field.
+Per-object figures (EventName) require Enhanced Usage Metrics, API 58.0+.
+
+Alert threshold: 70% of the allocation read from THIS org.
 ```
+
+UNVERIFIED (2026-09-04): the three per-edition numbers above are not printed in the App Limits cheat sheet — its "Platform Event Allocations" section links out to a "Change Data Capture Allocations" page rather than listing values. The correction an assistant should make is "CDC delivery is metered and stops silently at the ceiling; read the ceiling from the org", not a confident recital of 50,000 / 25,000 / 10,000.
 
 **Detection hint:** Any claim that CDC has no limits or delivers unlimited events.
 

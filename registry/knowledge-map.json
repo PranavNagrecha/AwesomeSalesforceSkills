@@ -4861,6 +4861,9 @@
     "data-deployment": [
       "devops/cpq-deployment-patterns"
     ],
+    "data-dictionary": [
+      "admin/data-model-documentation"
+    ],
     "data-display": [
       "lwc/lwc-base-component-recipes"
     ],
@@ -6407,6 +6410,7 @@
       "architect/event-driven-architecture"
     ],
     "event-monitoring": [
+      "admin/change-data-capture-admin",
       "admin/integration-admin-connected-apps",
       "agentforce/agentforce-production-readiness-checklist",
       "architect/salesforce-shield-architecture",
@@ -9520,6 +9524,7 @@
       "omnistudio/omnistudio-field-mapping-governance"
     ],
     "metadata-api": [
+      "admin/change-data-capture-admin",
       "admin/restriction-rules",
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
@@ -11066,6 +11071,9 @@
     "platform-event": [
       "flow/flow-error-notification-patterns",
       "integration/data-cloud-activation-development"
+    ],
+    "platform-event-channel": [
+      "admin/change-data-capture-admin"
     ],
     "platform-event-resume": [
       "flow/pause-elements-and-wait-events"
@@ -12851,6 +12859,7 @@
       "apex/apex-schema-describe"
     ],
     "schema-describe": [
+      "admin/data-model-documentation",
       "admin/record-type-id-management",
       "apex/apex-hardcoded-id-elimination",
       "apex/dynamic-apex"

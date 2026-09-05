@@ -21,6 +21,28 @@ Alternatively, assign via Permission Set:
 
 **Why it works:** Pre-authorized mode gates access on an explicit profile or permission set assignment. The assignment tells Salesforce which users are pre-authorized. Without it, the "approved users" list is empty.
 
+**What the diagnosis looked like.** The failing call and the two queries that separated "the policy
+did not deploy" from "the policy deployed and reaches nobody":
+
+```console
+$ curl -s -X POST https://mycompany.my.salesforce.com/services/oauth2/token     -d grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer     -d assertion=eyJhbGciOiJSUzI1NiJ9...
+{"error":"invalid_grant","error_description":"user hasn't approved this consumer"}
+
+# Q1 — did the policy land? Run as a user with Customize Application.
+$ sf data query -o prod -q "SELECT Name, OptionsAllowAdminApprovedUsersOnly     FROM ConnectedApplication WHERE Name = 'Billing Sync JWT'"
+NAME              OPTIONSALLOWADMINAPPROVEDUSERSONLY
+────────────────  ──────────────────────────────────
+Billing Sync JWT  true                                 <-- policy is correct
+
+# Q2 — does anyone actually hold the grantee permission set?
+$ sf data query -o prod -q "SELECT Assignee.Username, ExpirationDate     FROM PermissionSetAssignment WHERE PermissionSet.Name = 'Billing_Sync_Integration'"
+Total number of records retrieved: 0                   <-- nobody is pre-authorized
+```
+
+Q1 true plus Q2 empty is the signature of this failure: the app is pre-authorized to a permission set
+that reaches no user. The same pair of queries with a *populated* Q2 and a non-null `ExpirationDate`
+is the slower version of the same outage — see `references/gotchas.md` Gotcha 9.
+
 ---
 
 ## Example 2: Monitoring a Connected App Integration for Token Revocations

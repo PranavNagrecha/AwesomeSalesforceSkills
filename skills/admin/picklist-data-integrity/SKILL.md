@@ -14,6 +14,13 @@ triggers:
   - "dependent picklist controller deactivated"
   - "picklist api name vs label mismatch"
   - "mass replace picklist value across records"
+  - "audit records using a picklist value that no longer exists"
+  - "audit picklist values stored on records that are no longer active"
+  - "records still have deactivated picklist value"
+  - "convert picklist to restricted without breaking integration"
+  - "picklist value not in report filter but records exist"
+  - "retire a picklist value safely runbook"
+  - "who owns this picklist value change governance"
 tags:
   - picklist
   - global-value-set
@@ -33,9 +40,9 @@ outputs:
   - "Dependent-picklist mapping (if applicable) including controller-value coverage"
   - "Deactivation / replacement runbook for retiring values"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-09-04
 ---
 
 # Picklist Data Integrity
@@ -80,6 +87,27 @@ data-model design — see `data/data-model-fundamentals` or similar.
   already using the value will still show it in their field —
   filtered out of new edits but persistent on existing records.
 
+## Questions to Ask Before Configuring
+
+Ask these before touching Setup. Every one of them traces to a gotcha in
+`references/gotchas.md`; skipping them produces a change that deploys green and
+leaves records nobody can find.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How many records carry the value we're about to change — measured in production, today?" | Deactivation never removes the value from records (§ 1). The count is the size of the migration you have not planned yet | A number in the governance record, and the decision of whether this is a Setup Replace or a bulk load |
+| "Who writes this field besides users — which integrations, jobs and Flows?" | On an unrestricted picklist an unmatched write silently creates a new inactive value in the definition (§ 10). Those write paths are why the migration will need running twice | The list of write paths to close before the migration, not after |
+| "Is this a label change or an API-name change?" | A label rename keeps every formula and validation rule working and breaks every report filter and hand-typed mapping (§ 3, § 14) | The correct action on the change record — `rename-label` is not `replace` |
+| "Does anything read the value's *label* rather than its API name?" | Reports, dashboards, list views and integration mappings are not greppable; Apex, formulas and Flows are | A hand-checked list to sit beside the `grep -rl` output |
+| "If this value is used on more than one object, is it a Global Value Set?" | GVS changes ripple to every consuming field instantly (§ 5) | The full consumer list, and whether the change is one team's to make |
+| "Is this value the controlling side of a dependency, or the default?" | Deactivating a controller strands dependent values (§ 4); deactivating the default leaves the field with no default | The order of operations, and one extra edit you would otherwise miss |
+| "Where does the decision get written down, and who owns the value list afterwards?" | Value lists rot when the owner is a team name | A committed governance record (`references/metadata-examples.md` §6) with a named person |
+
+What a proper configuration adds over just doing it: the value stops being
+selectable *and* stops being stored, the change is reviewable as a one-line diff
+rather than a silent omission, and the next person can tell from source control
+why a label and its stored key disagree.
+
 ---
 
 ## Core Concepts
@@ -88,7 +116,7 @@ data-model design — see `data/data-model-fundamentals` or similar.
 
 | Setting | UI behavior | API / Apex behavior | Use case |
 |---|---|---|---|
-| **Restricted** | Only listed values selectable | API write rejected if value not in picklist (`INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`) | User-facing classification, status fields, anything where data quality matters |
+| **Restricted** | Only listed values selectable | API write rejected — "Users can't load unapproved values through the API" (object_reference.txt:2463–2464). The code is commonly cited as `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`; **UNVERIFIED (2026-09-04):** that string appears in none of the extracted guides — capture the real code from a sandbox failure (`references/gotchas.md` § 12) | User-facing classification, status fields, anything where data quality matters |
 | **Unrestricted** | Only listed values selectable | API can write ANY string (silently stored) | Integration-target fields where source system has its own value list; phasing migrations |
 
 Unrestricted picklist + integration write = "phantom values" — the
@@ -184,8 +212,10 @@ outside the defined list is wrong. Status, Priority, Type, Category.
 **Trade.** Integration that writes from an external system must
 keep its value list synchronized with the picklist. A new value in
 the source system requires adding it to the Salesforce picklist
-before the integration writes it; otherwise the integration call
-fails with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`.
+before the integration writes it; otherwise the integration call is
+rejected (object_reference.txt:2463–2464). Do not code the middleware's
+error branch against a status-code string you have not seen this org
+emit — see `references/gotchas.md` § 12.
 
 ### Pattern B — Global Value Set for cross-object domain
 
@@ -223,6 +253,10 @@ preserving historical data integrity.
 6. **Optional: replace the deactivated value with the target value
    in the picklist's value-replacement workflow** (Setup → field →
    value → Replace) for any records you missed.
+
+The executable form of steps 1–6 — the audit script, the Setup-Replace-vs-Bulk
+decision, the deploy that must not omit the value, and the three verification
+checks — is `references/metadata-examples.md` §§1, 3, 4, 9.
 
 ### Pattern D — Dependent picklist with controller deactivation
 
@@ -267,11 +301,33 @@ dependent value can't be edited via UI.
 
 ## Recommended Workflow
 
-1. **For new picklist fields:** decide Restricted vs Unrestricted, Global vs Local, per-record-type subset.
-2. **For changes to existing picklists:** inventory usage first.
-3. **For deactivations:** Pattern C (or D for dependents). Always migrate before deactivating.
-4. **For renames:** rename **label** when possible (API name stays stable). Rename **API name** only when label changes don't satisfy the requirement, and treat it as a value migration.
-5. **Validate after any change:** run a sample report grouped by the picklist field; confirm value counts match expectations.
+1. **Audit before deciding.** Run `references/metadata-examples.md` §1 (anonymous
+   Apex) or §2 (SOQL + `PicklistValueInfo`, no Apex) against **production**. It
+   prints ORPHANED (stored, not offered), UNUSED (offered, not stored) and LABEL
+   DRIFT. Neither describe nor the record data can produce this list alone.
+2. **Answer the questions above**, then classify the change as exactly one of
+   `add` / `deactivate` / `replace` / `rename-label`, or as a
+   restricted-conversion (`references/metadata-examples.md` §5 checklist).
+3. **Map the blast radius.** `grep -rl "<VALUE_API_NAME>"` across retrieved
+   validation rules, Flows, Apex and LWC; hand-check reports, dashboards and list
+   views, which are not greppable. Record both in the governance YAML
+   (`references/metadata-examples.md` §6) using
+   `templates/picklist-data-integrity-template.md` §3.
+4. **Migrate the records first, deactivate second.** Pattern C, or Pattern D when
+   a controller is involved. Export the pre-image CSV before the update; re-run
+   the §1 audit until the retiring value's count is zero.
+5. **Edit a retrieved file, never an authored one.** Set `isActive` to `false`
+   and leave the value in the file — a value omitted from a deployed definition
+   is deactivated silently along with everything else you forgot
+   (api_meta.txt:47482–47483).
+6. **Lint, then dry-run, then deploy.**
+   `python3 scripts/check_picklist_data_integrity.py --manifest-dir force-app/main/default --governance-dir governance/picklists`
+   (WARN/ERROR exits 1; INFO does not), then
+   `sf project deploy start --manifest package.xml --dry-run`.
+7. **Verify all three ways.** The value is gone from describe, `SELECT COUNT(Id)
+   … WHERE field = '<value>'` returns zero, and Setup lists it under Inactive
+   Values — not deleted. Then check each record type's available-value list,
+   which a field-level change does not update. `references/metadata-examples.md` §9.
 
 ---
 
@@ -296,6 +352,9 @@ dependent value can't be edited via UI.
 5. **Global Value Set changes ripple to every consuming field.** Plan as coordinated changes. (See `references/gotchas.md` § 5.)
 6. **Per-record-type value assignment is metadata, not a runtime filter** — the user's record type determines the visible value subset. (See `references/gotchas.md` § 6.)
 7. **Inactive values still appear in some reports' historical buckets.** Reports filter by current picklist; field-history-rich reports can show inactive values. (See `references/gotchas.md` § 7.)
+8. **An unrestricted write doesn't just store a string — it adds an inactive value to the definition, matched case-insensitively.** (See `references/gotchas.md` § 10.)
+9. **`getPicklistValues()` returns active entries only**, so a describe-based audit can never see the value you retired. The audit has to be a set difference. (See `references/gotchas.md` § 11.)
+10. **Data Loader 15.0+ fails an oversized picklist value instead of truncating it.** (See `references/gotchas.md` § 13.)
 
 ---
 
@@ -307,12 +366,32 @@ dependent value can't be edited via UI.
 | Migration runbook | For each value retirement: inventory, target, migration script, verification |
 | Phantom-value audit query | SOQL that finds records whose picklist value isn't in the current value list |
 | Dependent-picklist mapping | Controller-value → dependent-value pairs; coverage table |
+| Governance record (YAML) | Per value change: field, value, action, production record count, affected reports / Flows / validation rules / Apex / integrations, owner, date, rollback — `references/metadata-examples.md` §6, linted by `scripts/check_picklist_data_integrity.py --governance-dir` |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are about to change a value on a field that already has data: the stored-vs-defined audit, the deactivation sequence, Setup-Replace-vs-Bulk, the restricted-conversion checklist, the governance record, and the three verification checks |
+| `references/gotchas.md` | Something behaved unexpectedly — a value that survived deactivation, a describe-based audit that found nothing, a load that invented a value, a rename that broke reports but not formulas |
+| `references/examples.md` | You want the failure told as a story with the real output: phantom values from an unrestricted write, a deactivated value still on 30 cases, a controller retired in the wrong order, a GVS rename across six fields |
+| `references/well-architected.md` | You are justifying Restricted-vs-Unrestricted or Global-vs-Local to a reviewer, or you need the sourced line for a claim |
+| `references/llm-anti-patterns.md` | You are reviewing picklist work an AI assistant produced |
+| `templates/picklist-data-integrity-template.md` | You are running an actual value change and want the fill-in worksheet and execution order |
+| `scripts/check_picklist_data_integrity.py` | Before every deploy — lints field metadata and the governance record |
 
 ---
 
 ## Related Skills
 
-- `data/data-model-fundamentals` — when the architectural decision is "picklist vs lookup vs custom metadata".
+- `admin/picklist-and-value-sets` — **read this first if you are creating or wiring the picklist.** It owns `GlobalValueSet`, `StandardValueSet`, the `valueSet` element, the `__gvs` suffix, the retrieve asymmetry and the deploy-omission rule. This skill owns what happens to the data afterwards.
+- `admin/picklist-field-integrity-issues` — when invalid values already exist across an org and you are auditing the mess rather than preventing it.
+- `admin/field-dependency-and-controlling` — when the dependency matrix itself is the subject, not the retirement of a controller value.
+- `admin/record-types-and-page-layouts` — when the per-record-type available-value list is what changed, and for the identical label-instability trap on record types.
+- `admin/data-import-and-management` — when the migration in Pattern C is a real bulk load: batch size, failed-vs-unprocessed rows, blanks not clearing fields.
+- `data/data-model-design-patterns` — when the architectural decision is "picklist vs lookup vs custom metadata".
+- `admin/validation-rules` — when a picklist value combination needs cross-field validation beyond the picklist itself.
 - `flow/flow-time-based-patterns` — when picklist value changes drive scheduled flow paths.
 - `apex/apex-event-bus-subscriber` — when external systems publish picklist-value-changed events that need org-side reconciliation.
-- `admin/validation-rule-design` — when a picklist value combination needs cross-field validation beyond the picklist itself.

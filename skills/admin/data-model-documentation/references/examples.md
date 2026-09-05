@@ -16,6 +16,23 @@
 4. Share the spreadsheet with the business team and ask them to fill in blank Descriptions. This becomes the source-of-truth data dictionary.
 5. After descriptions are populated, update the field metadata in the repo and deploy.
 
+**The joined row set** — describe supplies columns 3–7, the retrieve supplies columns 8–10. Neither
+source alone fills the table, which is why step 3 is a join rather than an export:
+
+```csv
+object,apiName,type,required,externalId,isFormula,relationshipName,description,businessStatus,securityClassification
+Case,ERP_Ticket_Ref__c,STRING,false,true,false,,"Ticket id in the ITSM tool. Upsert key for the inbound sync.",Active,Internal
+Case,Legacy_Priority__c,PICKLIST,false,false,false,,,Hidden,Internal
+Case,Contract__c,REFERENCE,false,false,false,Contract,"Contract the case is worked under. Drives milestone selection.",Active,Internal
+Service_Contract__c,Account__c,REFERENCE,true,false,false,Account,"Master-detail parent. Cascade delete.",Active,Internal
+Service_Contract__c,Days_Remaining__c,DOUBLE,false,false,true,,,Active,Internal
+```
+
+Read the two empty `description` cells as the work order: `Legacy_Priority__c` is already
+`businessStatus: Hidden`, so it needs a deprecation note rather than a purpose; `Days_Remaining__c` is a
+formula (`isFormula` true), so its description should carry the business rule the formula encodes, because
+the formula text itself is not visible to anyone reading the org through the API.
+
 **Why it works:** The Metadata API returns every custom field property in a machine-readable format. Version-controlling the updated metadata means description changes are tracked over time, and future drift can be detected with a git diff.
 
 ---
@@ -33,6 +50,23 @@
 4. Toggle "Show Elements → Field Names" on for the relationship fields only (WhoId, AccountId, etc.).
 5. Export via screenshot. Annotate in a drawing tool: label each arrow with "Lookup" or "Master-Detail", note that Lead conversion creates Contact + Account + Opportunity.
 6. Present the diagram in the workshop. Note that the Lead-to-Opportunity conversion is a Salesforce process, not a direct relationship field.
+
+**The relationship rows the annotations come from** — extracted before the workshop, so the arrows
+in the diagram are asserted from metadata rather than from memory:
+
+| Child object | Field API name | referenceTo | relationshipName | Type | Cascade delete |
+|---|---|---|---|---|---|
+| Opportunity | AccountId | Account | Account | Lookup | No |
+| Opportunity | ContractId | Contract | Contract | Lookup | No |
+| OpportunityLineItem | OpportunityId | Opportunity | Opportunity | Master-Detail | Yes |
+| OpportunityLineItem | PricebookEntryId | PricebookEntry | PricebookEntry | Lookup | No |
+| Quote__c | Opportunity__c | Opportunity | Opportunity | Lookup | No |
+| Task | WhoId | Contact, Lead | Who | Polymorphic lookup | No |
+| Task | WhatId | Account, Opportunity, Case, Contract, ... | What | Polymorphic lookup | No |
+
+The two `Task` rows carry more than one value in `referenceTo`, which is the machine-readable signal that
+they need a note annotation rather than an arrow. Lead conversion has no row at all — it is a platform
+process, not a relationship field, which is why step 6 states it separately.
 
 **Why it works:** Schema Builder visualizes the physical Salesforce relationship model without requiring any custom tooling. Annotating conversion processes (which are not relationship fields) separately prevents the diagram from being misleading about how data moves.
 

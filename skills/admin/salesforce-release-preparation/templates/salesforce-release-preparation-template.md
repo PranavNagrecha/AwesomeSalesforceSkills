@@ -2,6 +2,8 @@
 
 Use this template when running a full release preparation cycle for an upcoming Salesforce seasonal release.
 
+This is the human-readable half of the cycle — the brief people read and sign. The machine-checkable half is `release-run-sheet.yaml`, whose shape is in `references/worked-examples.md` §1 and which `scripts/check_salesforce_release_preparation.py --file` lints. Keep the Release Updates Action Plan table below in step with the run sheet's `release_updates:` rows; the run sheet is the source of truth for owners, statuses and the metadata grounding of each update.
+
 ---
 
 ## Scope

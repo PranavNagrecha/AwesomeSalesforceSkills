@@ -62,6 +62,33 @@ Use this template when configuring or auditing a Connected App for an integratio
 - [ ] Confirm no integration depends on "Use Any API Client" to self-authorize an uninstalled app (blocked since the week of December 8, 2025 when API Access Control is enabled)
 - [ ] Review Refresh Token Policy — tokens older than policy window should be revoked
 
+## Revoke and Rotate Runbook
+
+**Revoke one grant** (there is no DML delete on `OauthToken` — supported calls are
+`describeSObjects()` and `query()` only):
+
+1. As a user with **Customize Application**: `SELECT AppName, UserId, LastUsedDate, DeleteToken FROM OauthToken WHERE AppName = '___'`
+2. Call `https://<MyDomain>.my.salesforce.com/services/oauth2/revoke?token=<DeleteToken>`
+3. Re-run step 1 and confirm the row is gone.
+
+- [ ] Rehearsed once in a sandbox on: ______  (the integration recovered: Y / N)
+
+**Org-wide stop** (ends current sessions): Connected Apps OAuth Usage -> **Block**, or deploy
+`sessionPolicy/policyAction` = `Block`.
+
+**Rotate the key/secret** — pick one and record it:
+
+- [ ] Connected app: `consumerKey` cannot be edited after save -> replacement app + caller cutover. Change window owner: ______
+- [ ] External Client App: set `shouldRotateConsumerKey` / `shouldRotateConsumerSecret` to `true` and deploy with the ignore-warnings attribute, then set both back to `false`.
+
+**Key/secret custody:** which system holds the pair, and who owns it? ______
+
+## Periodic Review
+
+- [ ] App added to `templates/connected-app-review-checklist.yaml` with `owner`, `last-reviewed`, `token-count-query-run`
+- [ ] Review cadence set inside 180 days (SetupAuditTrail retains Setup changes for at least that long)
+- [ ] `python3 scripts/check_integration_admin_connected_apps.py --manifest-dir <dir>` exits 0
+
 ## Notes
 
 (Record any deviations from standard configuration and justification.)

@@ -1,0 +1,46 @@
+# Data dictionary record — fillable shape.
+#
+# Lint with:
+#   python3 ../scripts/check_data_model_documentation.py --file data-dictionary.yaml
+#
+# The one Account entry below is filled in so the file passes the checker as shipped and
+# doubles as the format reference. Replace it; do not append to it. A worked multi-object
+# version is in ../references/worked-examples.md section 5.
+#
+# classification    -> Public | Internal | Confidential | Restricted | MissionCritical
+#                      (the platform securityClassification value set, Metadata API CustomField)
+# business_status   -> Active | DeprecateCandidate | Hidden
+#                      (the platform businessStatus value set, Metadata API CustomField)
+# record_volume     -> integer from SELECT COUNT() FROM <Object>, or the literal: unknown
+# last_reviewed     -> YYYY-MM-DD, the date a human last confirmed these rows
+version: 1
+generated_from:
+  describe_snapshot: snapshots/<date>/describe/
+  metadata_retrieve: snapshots/<date>/force-app/main/default/objects/
+  org_alias: prod
+  retrieved_as: <the permission profile both snapshots were taken under>
+objects:
+  - object: Account
+    label: Account
+    type: standard
+    owner: owner@example.com
+    classification: Internal
+    record_volume: unknown
+    last_reviewed: 2026-09-04
+    review_cadence: quarterly
+    notes: >-
+      Standard object. Standard fields are documented from the Object Reference, not from
+      the retrieve — a CustomObject retrieve returns customisations only.
+    fields:
+      - api_name: Example_Field__c
+        label: Example Field
+        type: Text(255)
+        required: false
+        external_id: false
+        classification: Internal
+        owner: owner@example.com
+        business_status: Active
+        description: >-
+          What the field is for, what values are valid, and what breaks if it changes.
+          One or two sentences. An empty description is a WARN, not an error, so
+          in-progress dictionaries still pass while the debt stays visible.

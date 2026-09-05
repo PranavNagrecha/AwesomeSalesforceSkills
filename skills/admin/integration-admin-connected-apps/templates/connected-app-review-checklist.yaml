@@ -1,0 +1,62 @@
+# Connected App Periodic Review Checklist
+#
+# One entry per connected app in the org. Linted by:
+#   python3 scripts/check_integration_admin_connected_apps.py --manifest-dir <dir holding this file>
+#
+# Every entry under `apps:` must carry `owner`, `last-reviewed`, and
+# `token-count-query-run`. The last one is separate from `last-reviewed` because
+# reading policy off ConnectedApplication does not require Customize Application,
+# but querying OauthToken org-wide does.
+
+review:
+  cycle: quarterly
+  # Keep the cycle inside 180 days. SetupAuditTrail holds Setup changes for
+  # "at least the last 180 days" (Object Reference, SetupAuditTrail), so a longer
+  # gap leaves the previous review with no corroborating evidence.
+  last-completed: 2026-09-01
+  reviewer: platform-security@example.com
+  reviewer-permission: Customize Application
+
+apps:
+  - name: Billing Sync JWT
+    owner: platform-integrations@example.com
+    last-reviewed: 2026-09-01
+    token-count-query-run: 2026-09-01
+    token-count: 3
+    permitted-users: AdminApprovedUsers
+    pre-auth-permission-set: Billing_Sync_Integration
+    assignment-expires: none
+    ip-relaxation: ENFORCE
+    refresh-token-policy: specific_inactivity:7:DAYS
+    integration-user: billing.sync@example.com.prod
+    revoke-rehearsed: 2026-06-14
+    notes: JWT bearer, no interactive login. Egress ranges 203.0.113.10-203.0.113.20.
+
+  - name: Partner Portal Web
+    owner: partner-experience@example.com
+    last-reviewed: 2026-08-28
+    token-count-query-run: 2026-08-28
+    token-count: 412
+    permitted-users: AdminApprovedUsers
+    pre-auth-permission-set: Partner_Portal_Access
+    assignment-expires: none
+    ip-relaxation: ENFORCE_RELAXREFRESH
+    refresh-token-policy: specific_lifetime:90:DAYS
+    integration-user: n/a - end-user delegated
+    revoke-rehearsed: 2026-05-02
+    notes: Web server flow. ENFORCE_RELAXREFRESH justified by partner egress churn.
+
+# Per-app review steps (repeat for every entry above):
+#
+#   1. ConnectedApplication row matches the intended policy
+#      (OptionsAllowAdminApprovedUsersOnly, RefreshTokenValidityPeriod,
+#       OptionsRefreshTokenValidityMetric).
+#   2. OauthToken count recorded. If COUNT() exceeds 2,500, page the query —
+#      query()/queryMore() stops returning rows at 2,500.
+#   3. PermissionSetAssignment for the integration user exists with a null
+#      ExpirationDate.
+#   4. LoginHistory for the integration user over the last 7 days shows only
+#      expected SourceIp values and LoginType values.
+#   5. SetupAuditTrail Section = 'Connected Apps' reviewed for unexplained changes
+#      since the previous review date.
+#   6. Owner confirmed still employed and still accountable for the integration.

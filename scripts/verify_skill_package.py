@@ -54,7 +54,9 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
                 except ET.ParseError as exc:
                     hard.append(f"{p.relative_to(ROOT)}: malformed XML fence — {exc}")
             elif lang in ("apex", "java"):
-                if body.count("{") != body.count("}"):
+                # braces inside string literals (e.g. Mermaid connectors '||--o{') are not code braces
+                code = re.sub(r"'(?:\\.|[^'\\])*'", "''", body)
+                if code.count("{") != code.count("}"):
                     # a labelled excerpt (the 300 chars before the fence say "excerpt") is allowed
                     lead = t[max(0, m.start() - 300):m.start()].lower()
                     if "excerpt" in lead or "excerpt" in body[:200].lower():

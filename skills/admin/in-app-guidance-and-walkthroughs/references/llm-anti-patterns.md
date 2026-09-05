@@ -3,21 +3,27 @@
 Common mistakes AI coding assistants make when generating or advising on In-App Guidance configuration.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Recommending Role-Based or Permission-Set Audience Targeting
+## Anti-Pattern 1: Recommending Role-, Territory-, or Field-Based Audience Targeting
 
-**What the LLM generates:** "Set the audience to users with the Sales Manager role" or "Target users who have the 'Manage In-App Guidance' permission set."
+**What the LLM generates:** "Set the audience to users with the Sales Manager role", "target the EMEA territory", or "show it only to users whose Opportunity count is zero."
 
-**Why it happens:** LLMs generalize from Salesforce's broader access control model (profiles, roles, permission sets) and assume all three targeting axes are available in every UI. Training data may include older Salesforce documentation or community posts predating Spring '25 that speculated about future targeting options.
+**Why it happens:** LLMs generalize from Salesforce's broader access-control model and assume every axis in it — role, territory, queue, record data — is available to every targeting UI. The narrower failure is the mirror image: some training data flattens this to "profiles only", which is also wrong and loses the option that actually solves cohort targeting.
 
 **Correct pattern:**
 
 ```
-In-App Guidance audience targeting supports profiles only as of Spring '25.
-Audience configuration: select one or more profiles from the Profile picker.
-Roles, territories, permission sets, and behavioral conditions are not supported natively.
+uiFormulaRule leftValue accepts exactly three expression forms:
+  {!$Permission.CustomPermission.<name>}     rightValue: true
+  {!$Permission.StandardPermission.<name>}   rightValue: true
+  {!ENCODED:{!ID:$User.Profile.Key}}         rightValue: <profile name>
+
+operator accepts only EQUAL. Permission expressions work on app, Home,
+and record pages only. Roles, territories, queues, and record field values
+are not expressible. For a cohort that is not a profile, create a custom
+permission, grant it via a permission set, and gate on it.
 ```
 
-**Detection hint:** Any response that mentions "role," "territory," "permission set," or "behavior-based" in the context of In-App Guidance audience targeting is incorrect.
+**Detection hint:** Any response that mentions "role", "territory", or a record field in the context of In-App Guidance targeting — and equally, any response that claims profiles are the only option.
 
 ---
 
@@ -31,6 +37,9 @@ Roles, territories, permission sets, and behavioral conditions are not supported
 
 ```
 The free tier allows 3 active walkthroughs at one time.
+  (UNVERIFIED 2026-09-04: figure rests on the Salesforce Help "Limits for
+   In-App Guidance" article, which cannot be fetched; the v62 Metadata API
+   guide states no cap. Confirm against the org's own Setup page.)
 Deactivating a walkthrough frees its slot immediately.
 Previously deactivated walkthroughs remain in Setup > In-App Guidance and can be reactivated.
 AppExchange managed-package prompts do not count against this limit.
@@ -40,21 +49,27 @@ AppExchange managed-package prompts do not count against this limit.
 
 ---
 
-## Anti-Pattern 3: Claiming In-App Guidance Works in Experience Cloud
+## Anti-Pattern 3: Getting the Experience Cloud Answer Wrong in Both Directions
 
-**What the LLM generates:** "Deploy this prompt to your Experience Cloud site to guide partner users through the process."
+**What the LLM generates:** "Deploy this prompt to your Experience Cloud site to guide partner users through the process" — asserted flatly, for any page, with no verification step.
 
 **Why it happens:** LLMs associate "Salesforce" broadly and assume Lightning Experience features extend to all Salesforce-hosted surfaces. Experience Cloud is a Salesforce product, so the inference seems reasonable but is wrong.
+
+**Why the naive correction is also wrong:** "In-App Guidance is Lightning Experience only" is the reflex fix and it overshoots. Both official guides say prompts are added "in Lightning Experience pages or apps or in supported Experience Cloud site pages". The real constraints are that Classic is excluded outright, and that Experience Cloud support is limited to *supported* pages, which the Metadata API guide does not enumerate.
 
 **Correct pattern:**
 
 ```
-In-App Guidance prompts and walkthroughs are Lightning Experience-only.
-They do not render in Salesforce Classic or in Experience Cloud sites (partner portals, customer portals, digital experience sites).
-For Experience Cloud guidance needs, use custom LWC components or Flow-triggered in-app notifications.
+In-App Guidance does not render in Salesforce Classic.
+It does render in supported Experience Cloud site pages (Metadata API Developer
+Guide, Prompt > Special Access Rules; Object Reference, PromptAction).
+Which pages are "supported" is not enumerated in either guide — prove it in a
+sandbox site before committing a partner-facing rollout.
+PromptError.Type NoAccessToApp / NoAccessToPage is the signal that a step
+landed somewhere part of the audience cannot reach.
 ```
 
-**Detection hint:** Any response that mentions deploying In-App Guidance to Experience Cloud, portals, or community sites.
+**Detection hint:** Any response that states In-App Guidance is Lightning-Experience-only without qualification, and any response that promises Experience Cloud support for a specific page type without saying it must be verified.
 
 ---
 
@@ -80,20 +95,27 @@ For processes with more than 5 distinct guidance points, split into two separate
 
 **What the LLM generates:** A targeted prompt configuration that anchors to a specific field or button, with no mention of what happens if that UI element is later removed.
 
-**Why it happens:** LLMs present configuration steps without operational lifecycle context. The silent failure mode (no error surfaced when anchor is removed) is a platform-specific operational detail not commonly documented in general Salesforce tutorials.
+**Why it happens:** LLMs present configuration steps without operational lifecycle context. The degradation mode is a platform-specific detail not commonly documented in general Salesforce tutorials — and the version LLMs do repeat ("it silently stops rendering") is itself wrong in two ways, which is worse than saying nothing.
 
 **Correct pattern:**
 
 ```
-When configuring a targeted prompt, document the anchor element explicitly:
-- Record the field API name or button label in the prompt's Description field
-- Add the anchor element to your deployment checklist as a dependency
-- After any page layout change, audit all targeted prompts to confirm anchors still exist
-If the anchor element is removed, the targeted prompt will silently stop rendering.
-No error or alert is generated for the admin.
+When the anchored element moves or is removed, the targeted prompt does NOT
+stop rendering. Per the Object Reference (PromptError.Type):
+  "The target element has moved or is no longer on your page. Targeted prompts
+   attached to unavailable elements convert to floating prompts."
+A PromptError row is written with Type = ReferenceElementNotFound. Nothing
+notifies the admin, so the row must be queried:
+  SELECT Type, StepNumber, COUNT(Id) FROM PromptError GROUP BY Type, StepNumber
+
+So, when configuring a targeted prompt:
+- Record the field API name or button label in the prompt's description field
+- Add the anchor to the release's dependency list
+- Run the PromptError query in the post-deploy check of any release that
+  touches the page layout or Lightning page, not in a quarterly audit
 ```
 
-**Detection hint:** Any targeted prompt recommendation that does not mention anchor maintenance, layout dependencies, or the silent failure mode.
+**Detection hint:** Any targeted prompt recommendation that does not mention anchor maintenance or layout dependencies — and any response that says the prompt "silently stops rendering" or that "no record of the failure exists".
 
 ---
 

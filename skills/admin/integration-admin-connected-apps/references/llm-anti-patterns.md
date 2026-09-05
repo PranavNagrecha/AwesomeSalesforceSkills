@@ -157,3 +157,101 @@ Already-active sessions keep working; only new authorizations break.
 ```
 
 **Detection hint:** Any recommendation to grant "Use Any API Client" to unblock an OAuth client, or any connected-app troubleshooting list that never mentions "Approve Uninstalled Connected Apps."
+
+---
+
+## Anti-Pattern 7: Writing a Revocation Step as DML Against `OauthToken`
+
+**What the model produces:** A "revoke the integration's access" runbook step written as
+`DELETE FROM OauthToken WHERE ...`, an Apex `delete [SELECT Id FROM OauthToken ...]`, a
+record-triggered Flow, or a Data Loader delete job — all of which look plausible because
+`OauthToken` is a queryable sObject with a `DeleteToken` field.
+
+**Why it is wrong:** The Object Reference lists exactly two supported calls on `OauthToken`:
+`describeSObjects()` and `query()`. There is no `delete()`, so none of those constructs compile or
+run. The `DeleteToken` field is not a flag to update — it is "a token that can be used at the revoke
+OAuth token endpoint to remove this token", used as
+`https://MyDomainName.my.salesforce.com/services/oauth2/revoke?token=(the Delete Token)`.
+
+An Apex version fails a second way even for the *query*: "If you try to use Apex DML operations and
+then query this object in the same call, you get an `UncommittedWork` error." A helper that logs a
+record and then reads `OauthToken` in the same transaction breaks on the read.
+
+**Correct approach:** Query `DeleteToken` as a user with Customize Application, then call the revoke
+endpoint over HTTP. For an org-wide stop, **Block** the app on the Connected Apps OAuth Usage page or
+deploy `sessionPolicy/policyAction` = `Block`.
+
+**Detection hint:** Any generated runbook, Flow, or Apex snippet that deletes, updates or upserts
+`OauthToken`; any Apex helper that performs DML and then queries `OauthToken` without splitting into
+asynchronous calls.
+
+---
+
+## Anti-Pattern 8: Filtering `LoginHistory` by `Application`, `Status`, or `SourceIp`
+
+**What the model produces:** The natural-language request "show me logins through the Billing Sync
+connected app from unexpected IPs" turned into
+`SELECT ... FROM LoginHistory WHERE Application = 'Billing Sync JWT' AND Status = 'Success'` or a
+`WHERE SourceIp != '203.0.113.10'` clause. The field names are real, the fields are returned in
+`SELECT`, and the query reads correctly — it simply cannot be filtered on.
+
+**Why it is wrong:** The Object Reference publishes a closed filterable list for `LoginHistory`:
+`AuthenticationServiceId`, `CipherSuite`, `CountryIso`, `Id`, `LoginTime`, `LoginType`, `LoginUrl`,
+`NetworkId`, `OptionsIsGet`, `OptionsIsPost`, `TlsProtocol`, `UserId`. `Application`, `Status` and
+`SourceIp` carry only `Group, Nillable, Sort`.
+
+**Correct approach:** Filter on `UserId` and `LoginTime`, then read the other columns off the result;
+or aggregate with `GROUP BY Application, LoginType, Status`. When filtering by `LoginType`, quote the
+values exactly — `Application`, `Oauth, Remote Access Client`, `Oauth2, Remote Access 2.0` — two of
+which contain a comma inside the value.
+
+**Detection hint:** Any generated `LoginHistory` SOQL whose `WHERE` clause names a field outside the
+twelve-field list, or that splits `LoginType` values on a comma.
+
+---
+
+## Anti-Pattern 9: Presenting a 2,500-Row Token Query as a Complete Inventory
+
+**What the model produces:** "Here are all the users holding tokens for this app" followed by a
+`SELECT AppName, UserId, LastUsedDate FROM OauthToken` with no count query, no paging, and no caveat
+— and often keyed on `Id`.
+
+**Why it is wrong:** "A `query()` call returns up to 500 rows. A `queryMore()` call returns 500 more,
+up to 2,500 total. No more records are returned after 2,500." The truncation is silent. `OFFSET` is
+capped at 2,000 ("Requesting an offset greater than 2,000 results in a
+`NUMBER_OUTSIDE_VALID_RANGE` error"), and `Id` on this object is "Reserved for future use. Currently,
+the value is always null", so it cannot key or de-duplicate the results. Separately, a query run
+without Customize Application returns only the caller's own tokens, which produces a confident and
+completely wrong "nobody uses this app."
+
+**Correct approach:** Run `SELECT COUNT() FROM OauthToken` first, compare it against the rows
+returned, and page by `UserId` (or `LIMIT 2000 OFFSET n`) when it exceeds 2,500. State the running
+user's permission requirement next to the query.
+
+**Detection hint:** A token-inventory answer with no `COUNT()`, no paging strategy, no mention of
+Customize Application, or a result set of exactly 500 or 2,500 rows described as "all".
+
+---
+
+## Anti-Pattern 10: Claiming a Connected App's Consumer Key or Secret Can Be Rotated by Editing the XML
+
+**What the model produces:** A rotation runbook that says to retrieve the `connectedApp-meta.xml`,
+change `consumerKey` (or `consumerSecret`), and redeploy — sometimes with a diff showing the old and
+new values side by side.
+
+**Why it is wrong:** `consumerKey`: "In API version 32.0 and later, you can set this field's value
+only during creation. After you define and save the value, it can't be edited." `consumerSecret` is
+also uneditable after save and "isn't returned in Metadata API requests", so the retrieved file never
+contained the old value to diff against. The rotation flags exist only on the External Client App's
+`ExtlClntAppGlobalOauthSettings` — `shouldRotateConsumerKey` and `shouldRotateConsumerSecret` — and
+both state: "To maintain security, if this field is set to `true`, you must include the ignore
+warnings attribute in the deploy command." A generated rotation deploy without that attribute is
+rejected, and the model usually reads the rejection as a pipeline bug.
+
+**Correct approach:** For a connected app, rotation is a replacement app plus a coordinated caller
+cutover. For an External Client App, set both flags `true`, deploy with the ignore-warnings
+attribute, then set them back to `false`.
+
+**Detection hint:** Any rotation instruction that edits `consumerKey`/`consumerSecret` in place; any
+ECA rotation deploy command without an ignore-warnings flag; any claim that a retrieved connected app
+file is a complete backup.
