@@ -79,3 +79,86 @@ Use a single `List<Request>` parameter (or the documented list-oriented wrapper 
 **Correct pattern:** Keep Flow wiring and action-choice guidance here; delegate `@InvocableVariable` ordering, tests, and service delegation patterns to `invocable-methods`.
 
 **Detection hint:** Large Apex blocks in response to “how do I configure the Flow Apex action element.”
+
+---
+
+## Anti-Pattern 7: Emitting an `<actionCalls>` element without `flowTransactionModel`
+
+**What the LLM generates:** A tidy-looking fragment with `name`, `label`, `actionName`,
+`actionType`, `connector` and `inputParameters` — and no `<flowTransactionModel>`, because
+the action "obviously runs in the current transaction".
+
+**Why it happens:** Most published flow snippets in training data predate API 51.0, when
+the field did not exist, and the field reads like tuning rather than structure.
+
+**Correct pattern:** `FlowActionCall` marks `actionName`, `actionType` and
+`flowTransactionModel` `Required` (`api_meta.txt` L68462-68466, L68479-68480). Emit
+`<flowTransactionModel>CurrentTransaction</flowTransactionModel>` as the default and
+justify anything else. The guide's own sample sets it even on `chatterPost` (L73259).
+
+**Detection hint:** An `<actionCalls>` block whose child tags do not include
+`flowTransactionModel`.
+
+---
+
+## Anti-Pattern 8: Reaching for `actionType` `flow` to call a subflow
+
+**What the LLM generates:** "Add an Action element with `actionType` set to `flow` and
+`actionName` set to your child flow's API name" — offered from inside a screen or
+autolaunched flow.
+
+**Why it happens:** `flow` is a real value in `InvocableActionType`, and the word matches
+the user's question better than "subflow" does.
+
+**Correct pattern:** From a `processType` of `Flow` or `AutolaunchedFlow`, the legal
+mechanism is a `<subflows>` element (`FlowSubflow`), not an action call — the enum entry
+for `flow` says so in its own sentence (`api_meta.txt` L68749-68753). Emit `<subflows>`
+with `flowName`, `inputAssignments` and `outputAssignments`, and send the user to
+`flow/subflows-and-reusability` for the contract.
+
+**Detection hint:** `<actionType>flow</actionType>` in a document that also contains
+`<processType>Flow</processType>` or `<processType>AutoLaunchedFlow</processType>`.
+
+---
+
+## Anti-Pattern 9: Promising that a fault connector catches an action timeout
+
+**What the LLM generates:** "Wire a fault connector from the action so that timeouts and
+errors both route to your logging path."
+
+**Why it happens:** In most runtimes a timeout *is* an exception, and the LWC local-action
+docs genuinely do route timeouts to the fault connector — so the generalisation looks safe.
+
+**Correct pattern:** For an asynchronous `actionCalls` element these are two different
+connectors: `faultConnector` fires "if the action call results in an error"
+(`api_meta.txt` L68476-68477) and `timeoutConnector` "if an async action execution is timed
+out" (L68532-68534, API 62.0+), enabled by `timeoutPathUsage`
+(`EnableTimeoutPath`, L68536-68540, API 66.0+). Only for an LWC **local action** does the
+guide state that a timeout takes the fault connector (`lwc_guide.txt` L8863). Say which
+case you mean.
+
+**Detection hint:** The word "timeout" in the same recommendation as "fault connector",
+with no mention of `timeoutConnector` or `timeoutPathUsage`.
+
+---
+
+## Anti-Pattern 10: Inventing standard action names and their input parameters
+
+**What the LLM generates:** A confident `<actionCalls>` for "Send Email" or "Submit for
+Approval" with plausible input parameter names (`recipientEmail`, `emailBody`,
+`objectId`) that do not exist.
+
+**Why it happens:** The `InvocableActionType` enum is public and quotable, so the *type* is
+easy to get right; the per-action parameter contracts live in the Actions Developer Guide,
+which is a separate publication, so the *names* get reconstructed from memory.
+
+**Correct pattern:** Only two standard actions' parameter names are demonstrated in the
+Metadata API guide's sample flow — `chatterPost` with `text` and `subjectNameOrId`
+(`api_meta.txt` L73249-73269). For anything else, describe it in the target org first:
+`GET /services/data/vXX.X/actions/standard/<name>` or
+`/actions/custom/<type>/<name>` (`api_rest.txt` L13762-13763, L13918-13919). Mark
+reconstructed parameter names as unverified rather than shipping them silently — see the
+marked `emailAlert` element in `references/metadata-examples.md` § 1.
+
+**Detection hint:** An `<inputParameters><name>` for a non-Apex `actionType` with no
+citation and no "confirm with a describe call" caveat.

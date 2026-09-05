@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "3c141418c6e6be283bd7a773e48bee73a2800d65fc256179000e1950b443dffc",
+  "generated_from_hash": "17d2b5b44d3ba9084e3590c08521f69133bacd9a2bbfcad9a112e6347c37d7b8",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -118827,6 +118827,8 @@
         "0e64e2ee7a55b648d418",
         "0ef34299e59015c71ab5",
         "0f0166dce7398cc2e58e",
+        "101eb214517eb77ed2be",
+        "10b5f4b5619c797d2687",
         "10bd44a66219c30b53f7",
         "131d38d4673b74c40ee2",
         "1639c1082a818d13bb4a",
@@ -118878,6 +118880,7 @@
         "57f156c36edd71fa3c8f",
         "593bf1f9e50e3b1b159c",
         "5b093cedf7eeecf8ce71",
+        "5b45bac025e126180f0c",
         "5b744d665a7e7d07ed09",
         "5db4064d4632378a0871",
         "5f3807957f23e1aa6e3e",
@@ -118976,6 +118979,7 @@
         "d357e325b9db8f85c916",
         "d35829e7b57a5be2ca8f",
         "d4d9c21b4833fadfc3cf",
+        "d581e42d8d9494e9b14a",
         "d6f18f8fd4dcd32f2a97",
         "d7aa5b652d023b031a7d",
         "d7c38d2440080151b0d7",
@@ -119017,7 +119021,7 @@
         "fbd4d5d95e51fe509f81",
         "fed9cc457106b30b85cd"
       ],
-      "content_hash": "cd5d282ef4dc1dcc803201a11a25f679c10b58f932d81b9ac6fcd7d21ecda31a",
+      "content_hash": "32700a1c0672595cb0505c591474e33e7c11ab9bc98079708b99ed8ec85ca92f",
       "dependencies": [
         "apex/invocable-methods"
       ],

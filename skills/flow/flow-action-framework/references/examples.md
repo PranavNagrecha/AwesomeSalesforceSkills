@@ -38,3 +38,61 @@
 **What goes wrong:** Higher maintenance (tests, deployments), loss of self-documenting Flow, and unnecessary governor use for logic the platform already expresses declaratively.
 
 **Correct approach:** Use **Update Records** or **Assignment** plus **Update Records** unless a genuine gap (validation, unsupported logic, reuse outside Flow) forces Apex.
+
+---
+
+## Example 3: Auditing an org's action inventory before a refactor
+
+**Context:** A team inherited 40 flows and wants to know which action families are actually
+in use before consolidating. "Open each one in Flow Builder" is not an answer at that size.
+
+**Problem:** The action *type* is the field that determines limits, packaging obligations,
+fault semantics and transaction behaviour — and it is invisible in the canvas, where an
+Apex action and an External Service action look alike.
+
+**Solution:** Read it out of the retrieved source. Every action call in a flow is an
+`<actionCalls>` element with a required `<actionType>` (`api_meta.txt` L68465-68466), and
+every subflow is a `<subflows>` element, so one pass over the directory gives the whole
+inventory:
+
+```bash
+# every action family in use, with a count, across the retrieved flows
+grep -h -o '<actionType>[^<]*</actionType>' force-app/main/default/flows/*.flow-meta.xml \
+  | sed 's|</\?actionType>||g' | sort | uniq -c | sort -rn
+
+# which flows call Apex, and which class each one names
+grep -l '<actionType>apex</actionType>' force-app/main/default/flows/*.flow-meta.xml \
+  | while read -r f; do
+      printf '%s\n' "$(basename "$f" .flow-meta.xml)"
+      grep -o '<actionName>[^<]*</actionName>' "$f" | sed 's|</\?actionName>|  |g'
+    done
+
+# action calls that ship with no fault path at all
+for f in force-app/main/default/flows/*.flow-meta.xml; do
+  python3 - "$f" <<'PY'
+import sys, xml.etree.ElementTree as ET
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+root = ET.parse(sys.argv[1]).getroot()
+for call in root.findall(f"{NS}actionCalls"):
+    name = call.findtext(f"{NS}name", "")
+    if call.find(f"{NS}faultConnector") is None:
+        print(f"{sys.argv[1]}: {name} ({call.findtext(f'{NS}actionType','')}) has no faultConnector")
+PY
+done
+```
+
+Then reconcile the `apex` rows against the org's real catalogue — the describe call answers
+as the *calling user*, so run it as a representative end user rather than as an admin:
+
+```bash
+curl -s "https://MyDomainName.my.salesforce.com/services/data/v66.0/actions/custom/apex" \
+  -H "Authorization: Bearer $SF_TOKEN"
+```
+
+**Why it works:** The `actionType` value is the only thing in the file that tells you which
+rulebook applies. Once the inventory is grouped by type, the follow-up questions become
+mechanical: every `apex` row needs an Apex-class-access grant and a manifest entry; every
+`emailAlert` row burns the workflow email allocation and needs its template added by hand
+(`api_rest.txt` L13765-13766, L13787-13800); every `externalService` row needs a Named
+Credential. The checker in this skill's `scripts/` automates the fault-connector and
+class-resolution halves of the same pass.
