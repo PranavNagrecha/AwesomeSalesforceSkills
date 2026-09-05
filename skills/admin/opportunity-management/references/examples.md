@@ -39,6 +39,11 @@ Step 3 — Assign Sales Processes to Record Types:
 Step 4 — Configure Path Settings for each record type separately.
 ```
 
+> The `ForecastCategory=` column above uses the **UI / SOQL** vocabulary (`Best Case`, `Commit`, `Most Likely`,
+> `Pipeline`, `Closed`, `Omitted`). The `standardValueSet` file that builds these stages takes a different token
+> set — `BestCase`, `Forecast`, `Pipeline`, `Closed`, `Omitted` — with metadata `Forecast` meaning UI **Commit**.
+> See `references/gotchas.md` Gotcha 13 before transcribing this table into XML.
+
 **Why it works:** Sales Processes act as stage filters. Each record type only exposes the stages relevant to its motion, keeping forecast rollups clean and stage sequences meaningful. The global picklist still owns all values — the process just constrains which values are visible per record type.
 
 ---
@@ -126,10 +131,43 @@ Error Location: Stage field
 
 **What practitioners do:** Go to Setup > Opportunity Stages, find a deprecated stage like "Verbal Commit", and click Delete.
 
-**What goes wrong:** If any Opportunity records still have `StageName = 'Verbal Commit'`, Salesforce deletes the picklist value without reassigning or blocking those records. The Stage field on affected records becomes blank. These records then fail any validation rule that checks `ISBLANK(StageName)`, break SOQL queries relying on StageName, and drop out of all forecast rollups.
+**What goes wrong:** If any Opportunity records still have `StageName = 'Verbal Commit'`, Salesforce deletes the picklist value without reassigning or blocking those records. The Stage field on affected records becomes blank. These records then fail any validation rule that checks `ISBLANK(StageName)`, break SOQL queries relying on StageName, and drop out of all forecast rollups. <!-- UNVERIFIED (2026-09-04): the delete-time behaviour is carried from an earlier revision of this skill; neither api_meta.txt nor object_reference.txt documents what happens to records when a picklist value is deleted. What is grounded is the deactivation path — inactive stage values "are not available in the picklist and are retained for historical purposes only" (object_reference.txt:195512–195514). See references/gotchas.md Gotcha 1. -->
 
-**Correct approach:** Before deleting a Stage picklist value:
-1. Run a SOQL query: `SELECT Id, Name FROM Opportunity WHERE StageName = 'Verbal Commit'`
-2. If records exist, use Data Loader or Flow to bulk-update them to a valid current stage.
-3. Deactivate the picklist value (uncheck "Active") rather than deleting it, to preserve history on closed records.
-4. Only delete if zero records reference the value.
+**Correct approach:** Run the audit below before touching the value set. It separates the two populations
+that need different treatment — open records that must be migrated, and closed records that should keep the
+historical value — and it is the query the checker's INFO finding tells you to run.
+
+```sql
+-- 1. Blast radius, split by open vs closed. Non-zero "Open" means migrate before you touch anything.
+SELECT StageName, IsClosed, COUNT(Id) Records, MIN(CloseDate) Earliest, MAX(CloseDate) Latest
+FROM Opportunity
+WHERE StageName = 'Verbal Commit'
+GROUP BY StageName, IsClosed
+
+-- 2. The exact open records to migrate, exported as the Data Loader update file.
+SELECT Id, Name, OwnerId, RecordType.DeveloperName, StageName, Amount, CloseDate
+FROM Opportunity
+WHERE StageName = 'Verbal Commit' AND IsClosed = FALSE
+ORDER BY RecordType.DeveloperName, CloseDate
+
+-- 3. Post-migration proof. Must return zero rows before the value is deactivated.
+SELECT COUNT(Id) FROM Opportunity WHERE StageName = 'Verbal Commit' AND IsClosed = FALSE
+```
+
+The update file for step 2 needs two columns only — the platform derives the rest:
+
+| Id | StageName |
+|---|---|
+| 0065g00000AbCdEAAV | Negotiation/Review |
+| 0065g00000AbCdFAAV | Negotiation/Review |
+
+Do not add `Probability`, `ForecastCategoryName`, `IsClosed` or `IsWon` to that file. `IsClosed` and `IsWon`
+cannot be set at all, and any `Probability` or `ForecastCategoryName` you supply is overwritten by the new
+stage's defaults in the same transaction (`references/gotchas.md` Gotcha 9).
+
+Then, and only then:
+1. Deactivate the picklist value on the `OpportunityStage` standard value set rather than deleting it —
+   inactive values stay readable on the closed records that still carry them.
+2. Remove it from any `BusinessProcess` that still lists it, and from any `PathAssistant` step whose
+   `picklistValueName` points at it. The checker flags the second one as a WARN.
+3. Only hard-delete if the step-3 count is zero **and** no closed record needs the historical value.

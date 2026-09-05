@@ -57,6 +57,37 @@ Amount > $100K. Modernizing to flow.
 **Don't deactivate the WFR before activating the flow** — the gap
 leaves the field unstamped on records saved during the gap.
 
+**Finding every rule that needs this treatment.** Step 1 above assumes
+you already know which rule to click. On a real org you don't — so pull
+the whole workflow surface first and let the checker count it:
+
+```bash
+# One manifest, every workflow component in the org.
+cat > manifest/workflow-inventory.xml <<'MANIFEST'
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types><members>*</members><name>Workflow</name></types>
+    <version>62.0</version>
+</Package>
+MANIFEST
+
+sf project retrieve start --manifest manifest/workflow-inventory.xml --target-org prod-ro
+
+# Which objects still carry field updates, and how many each?
+python3 skills/admin/workflow-field-update-patterns/scripts/check_workflow_field_update_patterns.py \
+  --manifest-dir force-app/main/default
+
+# The three elements that change the estimate, per object:
+grep -c '<fieldUpdates>'          force-app/main/default/workflows/*.workflow-meta.xml
+grep -l 'reevaluateOnChange>true' force-app/main/default/workflows/*.workflow-meta.xml
+grep -l 'failedMigrationToolVersion' force-app/main/default/workflows/*.workflow-meta.xml
+```
+
+The three `grep` lines are the triage, in cost order: the count is the
+volume, `reevaluateOnChange` is the cascade you have to reconstruct by
+hand (`references/gotchas.md` § 11), and `failedMigrationToolVersion`
+marks the rules the Migrate to Flow tool has already lost to once.
+
 ---
 
 ## Example 4 — Formula field where a flow was reflexively used
@@ -72,6 +103,33 @@ recursion potential.
 **Right answer.** Delete the flow. Create a formula field
 `Display_Name__c = Name & " — " & TEXT(Type)`. Same outcome,
 zero automation cost.
+
+The replacement is one `CustomField` component and no automation at all
+(`force-app/main/default/objects/Account/fields/Display_Name__c.field-meta.xml`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Display_Name__c</fullName>
+    <externalId>false</externalId>
+    <formula>Name &amp; " — " &amp; TEXT(Type)</formula>
+    <formulaTreatBlanksAs>BlankAsBlank</formulaTreatBlanksAs>
+    <label>Display Name</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
+```
+
+Two elements carry the whole decision. `formula` "represents a formula on
+the field" — its presence is what makes the field derived rather than
+stored, so there is no write for any automation to perform. And
+`formulaTreatBlanksAs` is `BlankAsBlank` or `BlankAsZero`
+(api_meta.txt:43422–43425); the flow this replaces had no equivalent
+switch, which is why an unset `Type` produced `"Acme — "` from the flow
+and produces a blank result here. That difference is the one thing to
+check before deleting the flow.
 
 The bias to "build a flow" when a formula fits is one of the most
 common over-engineering patterns in Salesforce admin work.

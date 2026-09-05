@@ -12,17 +12,28 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```
-ForecastCategoryName has exactly five fixed platform values:
-  Pipeline | Best Case | Commit | Closed | Omitted
+ForecastCategoryName is a restricted picklist with SIX fixed values, not five
+(object_reference.txt:195499-195505, 192491-192497):
 
-These cannot be renamed. They are platform-internal values, not standard picklist values.
-To communicate custom terminology, use:
-  - Stage picklist labels (e.g., name a stage "Upside — Proposal Sent" and map it to Best Case)
+  Pipeline | Best Case | Commit | Most Likely | Closed | Omitted
+
+The metadata element that SETS them is a different vocabulary again -- the
+ForecastCategories enumeration on <forecastCategory> (api_meta.txt:47578-47586):
+
+  Pipeline | BestCase | Forecast | Closed | Omitted        <- 'Forecast' == UI 'Commit'
+                                                              'Most Likely' has no token
+
+None of these can be renamed. To communicate custom terminology, use:
+  - Stage picklist labels (e.g., name a stage "Upside — Proposal Sent" and map it to BestCase)
   - Path guidance text per stage
   - Training documentation
 ```
 
-**Detection hint:** Look for instructions saying "rename forecast category" or metadata showing a ForecastCategoryName value not in {Pipeline, Best Case, Commit, Closed, Omitted}.
+**Detection hint:** Two tells, both common. (1) Instructions saying "rename forecast category".
+(2) A `standardValueSet` file carrying a SOQL-vocabulary token — `<forecastCategory>Commit</forecastCategory>`
+or `<forecastCategory>Best Case</forecastCategory>` — which is the far more frequent failure, because it
+happens whenever a stage table is round-tripped through a SOQL export. `scripts/check_opportunity_management.py`
+raises this as an ERROR and names the correct metadata token.
 
 ---
 

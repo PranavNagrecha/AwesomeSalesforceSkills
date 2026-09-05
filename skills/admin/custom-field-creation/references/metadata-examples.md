@@ -256,7 +256,7 @@ How to read it:
         <filterItems>
             <field>Contact.AccountId</field>
             <operation>equals</operation>
-            <valueField>Contract__c.Account__c</valueField>
+            <valueField>$Source.Account__c</valueField>
         </filterItems>
         <filterItems>
             <field>Contact.HasOptedOutOfEmail</field>
@@ -275,6 +275,8 @@ How to read it:
     <type>Lookup</type>
 </CustomField>
 ```
+
+> UNVERIFIED (2026-09-04): the guide documents `valueField` only by purpose, not its syntax. The `$Source.` form above matches `admin/lookup-filter-cross-object-patterns`, which owns lookup filters; retrieve a working filter from your org and copy its exact form before deploying.
 
 How to read it:
 

@@ -80,10 +80,33 @@ and the Account Owner's Region.
   treats Owner specially; some CRTs surface "Account Owner" fields
   directly without needing the third level.
 
-**Why:** Three levels are the practical max in a single CRT. Going
-further (Region of the Owner of the Account on the Case)
-typically needs Account Owner.Region__c on Account itself
-(formula via lookup), or a flattened field via Flow.
+**Why:** The four-object maximum applies to the **join chain**.
+Account and User here are lookup *parents* of Case, so neither
+needs a join slot at all — both are dotted `field` paths on the
+`Case` table. Only child relationships you want to count or list
+spend budget.
+
+Read the design as a decision table before writing any XML:
+
+| Wanted on the row | Reached from | Costs a join slot? | Written as |
+|---|---|---|---|
+| Case number, status | `Case` (base) | no | `field: CaseNumber`, `table: Case` |
+| Account industry | `Case.AccountId` lookup parent | no | `field: Account.Industry`, `table: Case` |
+| Account owner's region | `Account.OwnerId` lookup parent of a lookup parent | no | `field: Account.Owner.Region__c`, `table: Case` |
+| Every Case Comment | `Case` child relationship | **yes** (1 of 4) | `field: CommentBody`, `table: Case.CaseComments` |
+| Count of Cases per Account | requires `Account` as base, not `Case` | changes `baseObject` | new report type |
+
+The last row is the one that forces a decision: a count of
+children is a join, and a join hangs off the base object, so
+"count of Cases per Account" is an Account-based type — not a
+Case-based type with an extra column. `baseObject` cannot be
+edited later, so this is settled before creation, not after.
+
+Deeper lookup paths are fine: the Metadata API guide's own
+sample definition ships a five-segment path
+(`ReportsTo.CreatedBy.Contact.Owner.MobilePhone`). See
+`references/metadata-examples.md` § 3 for the full deployable
+file.
 
 ---
 
@@ -105,6 +128,68 @@ by mistake.
 Hide the other 183. They are still searchable for power users
 but no longer clutter the default field picker. The 60-field
 display limit becomes irrelevant when the layout is this tight.
+
+The curation is expressed entirely in `sections` and
+`checkedByDefault` — the fields you leave out simply have no
+`columns` entry:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Excerpt: two of the three sections from
+     reportTypes/Accounts_Renewal_Tracking.reportType-meta.xml.
+     Wrapped in its real ReportType root so the fragment parses
+     standalone; the full file also carries baseObject, category,
+     deployed, description, join and label. -->
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>Account</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <displayNameOverride>Segment</displayNameOverride>
+            <field>Industry</field>
+            <table>Account</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <displayNameOverride>ARR</displayNameOverride>
+            <field>AnnualRevenue</field>
+            <table>Account</table>
+        </columns>
+        <masterLabel>Account Information</masterLabel>
+    </sections>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Renewal_Date__c</field>
+            <table>Account</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Renewal_Stage__c</field>
+            <table>Account</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <displayNameOverride>Auto-Renew?</displayNameOverride>
+            <field>Auto_Renew__c</field>
+            <table>Account</table>
+        </columns>
+        <masterLabel>Renewal Tracking</masterLabel>
+    </sections>
+</ReportType>
+```
+
+Two things to read off it. `displayNameOverride` is doing the
+real disambiguation work — `ARR` is what the business calls
+`AnnualRevenue`, and renaming it here is why nobody reaches for
+`Amount` by mistake. And `checkedByDefault` is not visibility:
+the `false` columns are still in the picker, they are just not
+pre-selected on a new report. Removing a field from the picker
+means deleting its `columns` element, not flipping the flag.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: workflow-field-update-patterns
-description: "Cross-tool decision matrix for field-update automation in Salesforce — Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update actions. NOT for the full record-save order of execution — use apex/order-of-execution-deep-dive. NOT for building the record-triggered Flow once the tool is chosen — use flow/record-triggered-flow-patterns."
+description: "Cross-tool decision matrix for field-update automation in Salesforce — Before-Save Flow vs After-Save Flow vs Apex Trigger vs the deprecated Workflow Rule + Field Update. Covers the recursion / re-entrancy rules, governor cost per pattern (Before-Save flow is governor-free for the same record), the order-of-execution slot each tool occupies, and the Workflow-Rule-to-Flow migration playbook for field-update actions. NOT for the full record-save order of execution — use apex/order-of-execution-deep-dive. NOT for building the record-triggered Flow once the tool is chosen — use flow/record-triggered-flow-patterns. Trigger keywords: WorkflowFieldUpdate, reevaluateOnChange, onCreateOrTriggeringUpdate, doesRequireRecordChangedToMeetCriteria, failedMigrationToolVersion, Migrate to Flow, workflow-meta.xml, field update deprecated, double writer, second trigger pass."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,15 @@ triggers:
   - "cross-object field update flow vs apex trigger"
   - "field update order of execution slot"
   - "stamp same-record field on save without recursion"
+  - "my trigger runs twice on every save"
+  - "field stopped being set after I deactivated the workflow rule"
+  - "before-save flow assigns the field but the value does not save"
+  - "what replaces reevaluateOnChange in flow"
+  - "flow has no next value operation for a picklist field update"
+  - "cannot add a new field update action to a workflow rule"
+  - "workflow rule and flow both writing the same field"
+  - "trigger.old shows the wrong prior value after a field update"
+  - "how do I inventory every workflow field update in the org"
 tags:
   - field-update
   - automation-selection
@@ -31,9 +40,9 @@ outputs:
   - "Recursion guard if applicable"
   - "Workflow Rule migration plan if replacing legacy automation"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-09-04
 ---
 
 # Workflow Field Update Patterns
@@ -71,6 +80,29 @@ field-update actions (deprecated as of late-2022).
 - **Inventory existing automation on the target object.** Adding a
   new before-save flow to an object that already has 3 triggers and
   2 flows is the recursion-risk territory.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Flow Builder. Each one maps to a specific way this
+goes wrong later; skipping them produces automation that works on the demo
+record and diverges from the legacy behaviour it replaced.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which record does the value land on — this one, its parent, its children, or an unrelated one?" | Same-record is a free before-save Assignment; anything else is a DML and re-enters the save procedure | The tool, the order-of-execution slot, and whether a recursion guard is needed at all |
+| "Is the target field one the platform computes during save — `IsClosed`, `Amount` with line items, `ForecastCategory`, `ActivatedDate`?" | Before-save cannot write those; the workflow field update at step 11 could | The choice between before-save and after-save, before the Flow is built and found to do nothing (§ 13) |
+| "Does the existing rule carry `reevaluateOnChange`, a `targetObject`, or a `workflowTimeTriggers` block?" | Each maps to something Flow does differently, or not at all | The real scope: one Flow, two Flows, or a cascade to rebuild by hand (§§ 11, 16) |
+| "Which Apex triggers already run on this object, and how many times does each run today?" | A field update forces a second update-trigger pass; removing it removes that pass | A measured before/after trigger-entry count instead of a post-deploy incident (§ 10) |
+| "Does anything read this field later in the same transaction?" | Step 3 and step 11 are eight steps apart; readers in between see different values | The list of downstream consumers that have to be re-tested, not just the field itself |
+| "Is the source rule `onCreateOnly`, `onCreateOrTriggeringUpdate`, or `onAllChanges`?" | It maps to a pair of Flow settings, and getting the pair wrong changes fire frequency without any error | The correct `recordTriggerType` plus `doesRequireRecordChangedToMeetCriteria`, verified by parity rows 4 and 6 |
+| "Who owns the field, and what breaks if it stops being written for an hour?" | Decides whether cutover can be a single deploy or needs a dual-write window | The rollback plan, and whether the deploy can go out on a Friday |
+
+What a proper configuration adds over just building the Flow: the replacement
+fires on exactly the saves the old rule fired on, every Apex trigger on the
+object still runs the number of times its author assumed, and the field-history
+row after cutover proves which writer produced the value.
 
 ---
 
@@ -240,11 +272,26 @@ Field Update actions; modernizing to flow.
 | Field Update action | Update Records element setting the same field |
 | Re-evaluate workflow rules after field changes | Default flow behavior (chains downstream automation) |
 
+**Where each `operation` lands.** `WorkflowFieldUpdate.operation` has
+six values and they do not all have a Flow equivalent. The full
+element-by-element mapping — including entry criteria, trigger type and
+time triggers — is the table in `references/metadata-examples.md`.
+
+| `operation` | Replacement |
+|---|---|
+| `Literal` | Assignment with a typed literal value |
+| `Formula` | `formulas` resource + Assignment by `elementReference` |
+| `Null` | Assignment against an empty value; there is no null operator |
+| `LookupValue` | Assignment of the Id; only `User` was ever supported here (§ 15) |
+| `NextValue` / `PreviousValue` | No equivalent — rebuild as an explicit transition map (§ 12) |
+
 **Migration order.** Use Salesforce's Migrate to Flow tool (Setup
 → Workflow Rules → Migrate to Flow). It produces a draft flow that
 you review, test, activate, and only THEN deactivate the original
 Workflow Rule. Don't deactivate first; the gap leaves the field
-unstamped.
+unstamped. Ship the activation and the deactivation as one deploy —
+`references/metadata-examples.md` has the cutover manifest and the
+field-history verification query.
 
 ---
 
@@ -267,13 +314,35 @@ unstamped.
 
 ## Recommended Workflow
 
-1. **Try formula field first.** If the value is derived from same-record fields, no automation is the right answer.
-2. **If automation needed: same record? → before-save flow.**
-3. **Cross-object? → after-save flow.**
-4. **Logic too complex for flow? → Apex trigger** (template + recursion guard).
-5. **Existing Workflow Rule? → Migrate to Flow tool**, test in sandbox, deactivate WFR last.
-6. **Always add an entry condition** that scopes the flow to actual changes (`ISCHANGED()`, status transitions, etc.) — don't run on every save.
-7. **Document the recursion guard** for any after-save flow / trigger that updates fields on the triggering object.
+1. **Inventory before designing.** Retrieve `Workflow` with the wildcard manifest in
+   `references/metadata-examples.md`, then run
+   `python3 scripts/check_workflow_field_update_patterns.py --manifest-dir force-app/main/default`.
+   The inventory block gives the counts that set the scope: field updates per object,
+   `reevaluateOnChange` flags, `targetObject` cross-object updates, time triggers, and rules
+   that already defeated the Migrate to Flow tool.
+2. **Rule the field out of automation entirely.** If the value is a function of same-record
+   fields at read time, it is a formula field — `references/examples.md` Example 4 has the
+   `CustomField` XML and the one behavioural difference (`formulaTreatBlanksAs`) to check
+   before deleting the automation it replaces.
+3. **Answer the seven questions above and route.** `automation-selection.md` Q2 (same record,
+   under ~10s) → before-save Flow; Q4/Q5 (crosses objects, linear) → after-save Flow; Q3
+   (callout retry, savepoints, recursive same-object DML) → Apex on
+   `templates/apex/TriggerHandler.cls`. `flow-pattern-selector.md` Q3 confirms before-save vs
+   after-save; Q5 routes a time trigger to a scheduled path.
+4. **Build from the matching example, not from scratch.**
+   `references/metadata-examples.md` Example 2 (before-save Flow), Example 3 (after-save,
+   `targetObject` case), Example 4 (Apex `beforeUpdate` excerpt). Map every legacy element
+   through the table there; anything with no row is a design decision to record, not to skip.
+5. **Fill `templates/workflow-field-update-patterns-template.md`.** Sections 3 and 4 are the
+   ones that catch migrations: the element-by-element legacy mapping, and the measured
+   trigger-entry count per save before and after the cutover.
+6. **Run the checker against the change, not just the org.** Re-run
+   `check_workflow_field_update_patterns.py --manifest-dir <tree>` on the branch. Zero ERRORs is
+   the deploy gate; the double-writer WARN firing means the cutover is only half-built.
+7. **Parity-test, then cut over in one deploy.** Run the seven-row table from
+   `references/metadata-examples.md` with the legacy rule live, then with it deactivated —
+   identical results both times. Deploy the `Active` Flow and `<active>false</active>` together,
+   then confirm with the field-history query.
 
 ---
 
@@ -286,6 +355,13 @@ unstamped.
 - [ ] Workflow Rule field updates have been migrated (or migration is planned with deactivation gating).
 - [ ] One flow per object per save event (no fragmented per-team flows that all fire).
 - [ ] Apex trigger uses `templates/apex/TriggerHandler.cls` if a trigger is the right answer.
+- [ ] `check_workflow_field_update_patterns.py --manifest-dir` reports zero ERRORs on the branch.
+- [ ] Every legacy element has a row in the mapping table, including `reevaluateOnChange`, `targetObject` and `workflowTimeTriggers` — or a recorded decision that it is intentionally dropped.
+- [ ] Trigger-entry count per save measured before and after the cutover, and any difference accepted in writing.
+- [ ] Target field checked against the "not updateable in before triggers" list before choosing before-save.
+- [ ] Parity table run twice — legacy rule live, then deactivated — with identical results.
+- [ ] Flow activation and rule deactivation ship in the same `package.xml`.
+- [ ] Post-deploy field-history query returns a new row for the field.
 
 ---
 
@@ -298,6 +374,15 @@ unstamped.
 5. **Before-save flows run at step 3, before-update triggers at step 4** — the order is fixed and documented, so a before trigger always sees values the before-save flow already wrote, and can overwrite them. (See `references/gotchas.md` § 5.)
 6. **Cross-object update from a flow fires the target object's automation.** Plan the chain. (See `references/gotchas.md` § 6.)
 7. **Multiple flows on the same object firing on the same save event** all run; ordering is not guaranteed across flows. (See `references/gotchas.md` § 7.)
+8. **`ISCHANGED()` is true on insert** — the value changed from null. Scope the trigger setting deliberately. (See `references/gotchas.md` § 8.)
+9. **Migrate to Flow produces a draft and leaves the source rule active.** Both writers run until you deactivate it. (See `references/gotchas.md` § 9.)
+10. **Retiring a field update deletes a second update-trigger pass** that no Apex author wrote down; trigger behaviour changes in a deploy containing no Apex. (See `references/gotchas.md` § 10.)
+11. **`reevaluateOnChange` restarts every rule on the object, up to five cascades.** Flow has no equivalent element. (See `references/gotchas.md` § 11.)
+12. **`NextValue` / `PreviousValue` walk the picklist's own order** and have no Flow counterpart; rebuild as a transition map. (See `references/gotchas.md` § 12.)
+13. **A before-save Flow cannot write the fields the system computes during save** — the workflow field update at step 11 could. (See `references/gotchas.md` § 13.)
+14. **In the pass after a field update, `Trigger.old` holds pre-update values,** not what the user submitted. (See `references/gotchas.md` § 14.)
+15. **`LookupValue` only ever supported `User`,** despite `lookupValueType` advertising `Queue` and `RecordType`. (See `references/gotchas.md` § 15.)
+16. **A rule with both immediate and time-dependent field updates becomes two Flows,** in different save-time slots. (See `references/gotchas.md` § 16.)
 
 ---
 
@@ -312,10 +397,31 @@ unstamped.
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing the deployable XML: the legacy `Workflow` file, the before-save and after-save Flow replacements, the Apex variant, the element-by-element mapping table, `package.xml`, retrieve/deploy commands, the cutover sequence and the parity test table |
+| `references/gotchas.md` | Sixteen platform behaviours that make a correct-looking field update wrong — the second trigger pass, `reevaluateOnChange`, `NextValue`, before-trigger write restrictions, `Trigger.old`, `LookupValue`, time triggers |
+| `references/examples.md` | Looking for a worked case: after-save done wrong, cross-object counter, a WFR migration with the inventory commands, the formula-field replacement with its `CustomField` XML, the Apex-only case |
+| `references/llm-anti-patterns.md` | Reviewing generated field-update advice — the eight failure modes assistants reproduce from pre-2022 training data |
+| `references/well-architected.md` | Framing the choice against Reliability and Operational Excellence, and for the full source list with line references |
+| `templates/workflow-field-update-patterns-template.md` | Before building or migrating any field update worth reviewing — the decision record, the legacy mapping table, and the cutover checklist |
+| `scripts/check_workflow_field_update_patterns.py` | Inventorying an org, and as the pre-deploy gate on a migration branch (`--manifest-dir`) |
+
+---
+
 ## Related Skills
 
-- `admin/order-of-execution` — broader save-time sequencing; this skill is the field-update slice.
-- `flow/flow-best-practices` — building the chosen flow.
-- `apex/trigger-framework` — building the chosen trigger; canonical template at `templates/apex/TriggerHandler.cls`.
-- `flow/flow-error-notification-patterns` — fault handling for after-save flows.
-- `apex/dynamic-apex` — when an Apex trigger needs Schema describe calls.
+- **admin/process-automation-selection**: Use for the tool-choice decision record and the save-procedure gotchas this skill cross-references rather than restates — step 11's second trigger pass, the recursive-save skip, `failedMigrationToolVersion`.
+- **apex/order-of-execution-deep-dive**: Use when the question is the full 20-step sequence rather than the field-update slice of it.
+- **flow/workflow-rule-to-flow-migration**: Use when migrating a whole rule, including alerts, tasks and outbound messages. This skill covers only the field-update action.
+- **admin/flow-for-admins**: Use for the Flow XML surface in general — element ordering, `filters` vs `filterFormula`, `status` handling, activation.
+- **flow/record-triggered-flow-patterns**: Use to build the replacement Flow once the slot is chosen.
+- **flow/recursion-and-re-entry-prevention**: Use when the after-save variant needs a guard beyond an entry condition.
+- **flow/flow-time-based-patterns**: Use when the source rule carried `workflowTimeTriggers` and the replacement needs scheduled paths.
+- **apex/trigger-framework**: Use when the decision tree routes to Apex; canonical base at `templates/apex/TriggerHandler.cls`.
+- **flow/flow-error-notification-patterns**: Use for fault handling on the after-save variant's DML.
+- **admin/approval-processes**: Use when the field update is an approval action rather than a rule action — the same `WorkflowFieldUpdate` component, a different owner.
+- **admin/formula-fields**: Use when the answer is no automation at all.
+- **apex/dynamic-apex**: Use when the Apex variant needs Schema describe calls.

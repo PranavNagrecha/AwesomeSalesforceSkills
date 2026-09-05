@@ -3034,6 +3034,9 @@
     "bulk-query": [
       "integration/bulk-api-2-patterns"
     ],
+    "bulk-record-type-migration": [
+      "admin/record-type-strategy-at-scale"
+    ],
     "bulk-safe": [
       "apex/invocable-methods"
     ],
@@ -3094,6 +3097,9 @@
     ],
     "business-manager": [
       "admin/b2c-commerce-store-setup"
+    ],
+    "business-process": [
+      "admin/opportunity-management"
     ],
     "business-rules-engine": [
       "apex/clinical-decision-support",
@@ -8644,6 +8650,9 @@
     "layout-assignment": [
       "admin/record-type-strategy-at-scale"
     ],
+    "layout-assignment-matrix": [
+      "admin/record-type-strategy-at-scale"
+    ],
     "lazy-evaluation": [
       "apex/custom-iterators-and-iterables"
     ],
@@ -10379,6 +10388,9 @@
       "admin/sales-process-mapping",
       "agentforce/sales-coach-agent-rollout"
     ],
+    "opportunity-teams": [
+      "admin/opportunity-management"
+    ],
     "opportunity-territory": [
       "admin/enterprise-territory-management"
     ],
@@ -11913,6 +11925,9 @@
       "apex/apex-hardcoded-id-elimination",
       "data/data-loader-picklist-validation-pre-load"
     ],
+    "record-type-consolidation": [
+      "admin/record-type-strategy-at-scale"
+    ],
     "record-type-mapping-drift": [
       "admin/picklist-field-integrity-issues"
     ],
@@ -11929,6 +11944,9 @@
     ],
     "record-visibility": [
       "admin/scoping-rules"
+    ],
+    "recordtypevisibilities": [
+      "admin/record-type-strategy-at-scale"
     ],
     "recurring-automation": [
       "flow/scheduled-flows"

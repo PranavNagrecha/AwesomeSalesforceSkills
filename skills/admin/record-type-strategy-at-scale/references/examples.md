@@ -72,3 +72,42 @@ insert newCase;
 **What goes wrong:** With 6 record types and 40 profiles, the org has 240 layout assignments. When a new region launches, adding one record type creates 40 more assignments. The layouts are nearly identical — the only difference is the section header text. Administrators spend hours maintaining assignment matrices instead of delivering business value.
 
 **Correct approach:** Use a single record type (or two if picklist values genuinely differ) and control field visibility with Dynamic Forms. Use a custom field like `Team__c` to drive component visibility rules. If teams need different default field values, use a Flow on record creation instead of separate record types.
+
+**Proving the six are interchangeable before you merge them.** The argument "they are all the same"
+has to be evidence, not a hunch. Retrieve the record types (named members — `RecordType` takes no
+wildcard) and diff the blocks pairwise; if the only difference is `<label>`, there is no picklist or
+business process reason for the type to exist:
+
+```bash
+sf project retrieve start --metadata \
+  "RecordType:Account.East,RecordType:Account.West,RecordType:Account.Central,RecordType:Account.International,RecordType:Account.Enterprise,RecordType:Account.SMB" \
+  --target-org my-sandbox
+
+# Record types live inside the object file; split out one block per type, then compare.
+for rt in East West Central International Enterprise SMB; do
+  python3 - "$rt" <<'PY' > "/tmp/rt_$rt.xml"
+import re, sys
+src = open('force-app/main/default/objects/Account/Account.object-meta.xml', encoding='utf-8').read()
+name = sys.argv[1]
+m = re.search(r'<recordTypes>\s*<fullName>' + name + r'</fullName>.*?</recordTypes>', src, re.S)
+print(re.sub(r'<label>.*?</label>', '<label>NORMALISED</label>', m.group(0)) if m else '')
+PY
+done
+diff /tmp/rt_East.xml /tmp/rt_West.xml   # empty output = nothing but the label differs
+```
+
+Then size the replacement before building it. The `Team__c` field carries what the six record types
+were carrying, and the record type column collapses to one row:
+
+| | Before | After |
+|---|---|---|
+| Account record types | 6 | 1 (`Standard`) |
+| Profiles | 40 | 40 |
+| `recordTypeVisibilities` entries to maintain | 240 | 40 |
+| `layoutAssignments` entries to maintain | 240 + 40 fallback | 40 fallback only |
+| Cost of the next new region | +40 entries | +1 picklist value on `Team__c` |
+| Field visibility mechanism | 6 near-identical layouts | one FlexiPage, visibility filters on `Team__c` |
+
+The last row is the trade being made, not a free win: field visibility moves from a layout to a
+FlexiPage component filter, which is a UI control and not field-level security (gotchas #4). Design
+the FlexiPage in `admin/dynamic-forms-and-actions`; enforce anything sensitive with FLS regardless.
