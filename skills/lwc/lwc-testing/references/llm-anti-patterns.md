@@ -271,4 +271,115 @@ getCases.getLastConfig();
 
 Three factories exist: `createTestWireAdapter` (generic), `createLdsTestWireAdapter` (LDS shape), `createApexTestWireAdapter` (Apex, also callable imperatively). All are re-exported from `@salesforce/sfdx-lwc-jest`, so no extra dependency is needed. The key mental shift: **there is no separate handle.** The mocked module export is the adapter you call `.emit()` on.
 
+**Grounding note — UNVERIFIED (2026-09-05):** the function names in this section (`create*TestWireAdapter`, `error()`, `getLastConfig()`) come from the `wire-service-jest-util` and `sfdx-lwc-jest` READMEs, not from the Lightning Web Components Developer Guide. What the guide *does* say is the direction of travel: "In Spring '21 and earlier releases, you had to register the wire adapter under test. That code still works, but it isn't recommended" (`lwc_guide unit-testing-using-wire-utility L12562`). For `lightning/ui*Api` adapters the guide never uses a factory at all — it imports `getRecord` and calls `getRecord.emit(mock)` (`L12547-L12554`).
+
 **Detection hint:** grep test files and LWC testing guidance for `registerApexTestWireAdapter`, `registerLdsTestWireAdapter`, `registerTestWireAdapter` — all three are removed. Structural hint: `const someAdapter = register…(someImport)` assigns a *handle* separate from the import; in the 3.x API no such variable exists, so any two-name pattern (`getCases` and `getCasesAdapter` both in scope) is a 2.x tell. Inverted-rule hint: any guidance that lists `jest.mock` as the anti-pattern and `register*` as the fix has the polarity backwards.
+
+
+---
+
+## Anti-Pattern: The suite that cannot go red
+
+**What the LLM generates:**
+
+```javascript
+it('renders the component', () => {
+    const element = createElement('c-order-list', { is: OrderList });
+    document.body.appendChild(element);
+    expect(element).toBeTruthy();
+});
+
+it('shows the error state', async () => {
+    const element = createElement('c-order-list', { is: OrderList });
+    document.body.appendChild(element);
+    await Promise.resolve();
+    expect(element.shadowRoot).not.toBeNull();
+});
+```
+
+**Why it happens:** The generator is optimising for "a test exists for each named
+behaviour" and reaches for the assertion that is guaranteed to hold.
+`expect(element).toBeTruthy()` is true of every object `createElement` can return;
+`expect(element.shadowRoot).not.toBeNull()` is true for any shadow-DOM component
+before, during and after any state change. Both tests pass on a component whose
+body has been deleted. The coverage report still counts the lines they executed,
+so the suite looks like a gate and is a decoration.
+
+**Correct version:** every assertion must name a value the component computes and
+would get wrong.
+
+```javascript
+it('shows the error state when the wire errors', async () => {
+    const element = createElement('c-order-list', { is: OrderList });
+    document.body.appendChild(element);
+
+    getOrders.error({ body: { message: 'Insufficient access' } });
+    await Promise.resolve();
+
+    const alert = element.shadowRoot.querySelector('[data-id="error"]');
+    expect(alert).not.toBeNull();
+    expect(alert.textContent).toBe('Insufficient access');
+    expect(element.shadowRoot.querySelector('[data-id="order-row"]')).toBeNull();
+});
+```
+
+**Detection hint:** grep for `toBeTruthy()`, `toBeDefined()`, and
+`.shadowRoot).not.toBeNull()` as the *only* assertion in a block. Structural tell:
+an `it()` whose description names a state ("error", "empty", "loading") but whose
+body never puts the component into that state. `check_lwc_testing.py` catches the
+extreme case — a test file with zero `expect(` — but not a file full of tautologies;
+that one is a reading job. The mutation check in `references/code-examples.md` is the
+mechanical version: change an expected value and confirm the test goes red.
+
+---
+
+## Anti-Pattern: Mocking the module the component does not import
+
+**What the LLM generates:**
+
+```javascript
+// The component imports getRecord from 'lightning/uiRecordApi'.
+jest.mock('lightning/uiRecordApi', () => ({
+    getRecord: jest.fn(),
+    getFieldValue: jest.fn()
+}));
+
+// …and then, elsewhere in the same file:
+import { getRecord } from 'lightning/uiRecordApi';
+getRecord.emit(mockRecord);   // TypeError: getRecord.emit is not a function
+```
+
+or the mirror image — mocking `@salesforce/apex` (the *helper* module that exports
+`getSObjectValue` and `refreshApex`) when the component imports
+`@salesforce/apex/ContactController.saveContact` (the *generated method* module).
+The two are different specifiers and mocking one does nothing for the other.
+
+**Why it happens:** "Mock the dependency" is generic Jest advice, and the
+`@salesforce` module space has several specifiers that look interchangeable. But
+`lightning/uiRecordApi` already resolves to an sfdx-lwc-jest stub whose exported
+adapters carry `emit()`; replacing it with `jest.fn()`s throws that away. The guide
+is explicit that "the test must reference the same wire adapter as the component
+under test" (`lwc_guide unit-testing-using-wire-utility L12533`), and that a
+`moduleNameMapper` entry is what redirects an import away from the default stub
+(`lwc_guide unit-testing-using-jest-patterns L12646-L12647`).
+
+**Correct version:** import the same specifier the component imports, and leave the
+platform stub in place unless you specifically need different behaviour.
+
+```javascript
+import { getRecord } from 'lightning/uiRecordApi';        // same specifier, stub intact
+import saveContact from '@salesforce/apex/ContactController.saveContact';
+
+jest.mock(
+    '@salesforce/apex/ContactController.saveContact',      // the generated method module
+    () => ({ default: jest.fn() }),
+    { virtual: true }
+);
+```
+
+**Detection hint:** for each `jest.mock('X')`, confirm `X` appears verbatim in the
+component's own import list. Specific tells: `jest.mock('lightning/uiRecordApi')`
+in a file that also calls `.emit()`; `jest.mock('@salesforce/apex')` with no
+`getSObjectValue` or `refreshApex` import anywhere; a `jest.mock` of an
+`@salesforce/*` module missing `{ virtual: true }` — `check_lwc_testing.py` reports
+that last one as an ERROR because the suite will not even load.
