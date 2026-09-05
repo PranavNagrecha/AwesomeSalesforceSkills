@@ -541,7 +541,7 @@ def _decision_issues(decision: dict, where: str, repo_root: Path) -> list[tuple[
 
     if not tree and not source_reference:
         issues.append(("WARN", f"{where}: cites neither a decision_tree nor a source_reference — "
-                               f"record where the choice came from (contract section 1.2)"))
+                               f"record where the choice came from (build-planner Step 4; schema decisions[].source_reference)"))
     return issues
 
 

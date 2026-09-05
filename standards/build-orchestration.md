@@ -158,7 +158,7 @@ third column instead.
 | `ui` | `path-designer`, `object-designer` (layouts), `email-template-modernizer` (templates) | `metadata-builder` | Layout / FlexiPage / PathAssistant XML; ListView; Report + ReportFolder; EmailTemplate | layout + path checkers; list-view filter fields resolve; report + email-template checkers |
 | `data` | `csv-to-object-mapper`, `data-loader-pre-flight` | `bulk-migration-planner` | mapping files, load plan | preflight checker; mapping resolves |
 | `integration` | `bulk-migration-planner`, `integration-catalog-builder` | `bulk-migration-planner` | pattern decision, contracts | integration checkers |
-| `docs` | `config-workbook-author`, `story-drafter` | `story-drafter` (workbook, stories), `metadata-builder` (package.xml, deploy order) | workbook, stories, `package.xml`, the deploy-order note | workbook linter; manifest consistency against the milestone's artefacts |
+| `docs` | `config-workbook-author`, `story-drafter` | `build-doc-keeper` (workbook, traceability, deploy order), `story-drafter` (stories), `metadata-builder` (the build-level `package.xml`) | workbook, traceability matrix, stories, `package.xml`, the deploy-order note | workbook linter; manifest consistency against the milestone's artefacts |
 | `custom` | any roster agent | any roster agent with `requires_org: false` | declared in the step | declared in the step's `acceptance_tests` |
 
 **Agent eligibility.** A step's `agent` is legal only when all three hold:
@@ -183,7 +183,9 @@ has no home for them:
 | Email-to-Case and Web-to-Case intake | `routing` |
 | `package.xml` and the deploy-order note | `docs` |
 
-In a design-only build every one of them is a `metadata-builder` step.
+In a design-only build every one of them is a `metadata-builder` step, with one split inside the `docs` row: `metadata-builder` writes the `package.xml` and the per-step deploy-order note, while the workbook, the traceability matrix and the compiled build-wide deploy order are `build-doc-keeper`'s — it is the agent that wrote those rows step by step, and `config-workbook-author` is `requires_org: true` and therefore ineligible here. User stories, UAT cases and acceptance criteria remain `story-drafter`'s.
+
+`story-drafter` is a Tier-2 agent with no build-layer clause in its contract: it takes `discovery_artifact_path`, `discovery_artifact_kind` and `feature_scope`, and it persists to its own `default_output_dir`. That does not make it ineligible. The planner maps those three inputs from the build directory into the step's `inputs{}` and declares the step's outputs under `artefacts/<step-id>/`; `build-step-runner` relocates what the agent wrote onto those declared paths and records the move. The same accommodation applies to any roster agent a plan borrows for a step.
 
 **Adding a step type is not one edit.** It touches, in this order: this table
 and the artefact map above it; `STEP_TYPES` in `scripts/build_plan.py`; the
@@ -246,6 +248,13 @@ the step is `blocked`, not silently passed. The always-on `manifest` check
 (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`)
 and no `package.xml` exists under the step's artefacts or those of a step it
 depends on.
+
+**Every metadata step declares `artefacts/<step-id>/package.xml` in its
+`outputs[]`.** `metadata-builder` writes one on every run, but an agent-side
+guarantee is invisible to a reader of `plan.json` and invisible to
+`check-outputs`, which only ever confirms paths the plan declared. Declaring it
+turns the manifest the tester reads into a file the plan promised and the CLI
+verifies, on all seven metadata types alike.
 
 `validate` enforces three constraints on declared tests, all ERRORs:
 

@@ -127,6 +127,14 @@ This claims the step before any agent work begins, so a crashed run is visible a
 
 The step's `agent` field names one run-time agent. Open `agents/<that-agent>/AGENT.md` and read its `## Inputs` section in full — plus `agents/<that-agent>/inputs.schema.json` when the agent ships one. That section, not this file, is the authority on what the agent needs and which of its inputs are required.
 
+Read its `## Output Contract` in the same pass and settle one question the rest of this run depends on: **does this agent know about builds at all?** Some owners — the Tier-4 build agents — declare outputs under `artefacts/<step-id>/` and take a `build_dir`. Others are ordinary roster agents the plan borrowed for a step, and they persist to their own `default_output_dir` and know nothing about a build directory:
+
+```bash
+grep -ciE 'artefact|build_dir|build directory|step_id|\.sfskills' agents/<that-agent>/AGENT.md
+```
+
+A zero there is not a defect and not a refusal — the plan is allowed to own a step with any eligible roster agent. It changes two things: the input map in Step 5 supplies that agent's own vocabulary rather than build paths, and Step 7 relocates what it wrote. Record which of the two kinds the owner is; the envelope reports it, and the relocation only makes sense next to it.
+
 ### Step 5 — Build the input map
 
 For each row in the owning agent's Inputs table, resolve a value from exactly these three sources, in priority order:
@@ -153,7 +161,7 @@ The invocation is host-specific; the constraint on it is not.
 
 Either way the instruction handed to the owning agent carries three clauses, verbatim in substance:
 
-1. Write every artefact under `<build_dir>/artefacts/<step_id>/` and nowhere else. No file outside that directory, in either the build directory or the user's repo.
+1. Write every artefact under `<build_dir>/artefacts/<step_id>/` and nowhere else. No file outside that directory, in either the build directory or the user's repo. For an owner whose contract has no notion of a build directory — the Step 4 grep returned zero — this clause is stated as a preference rather than a constraint it can honour: ask for that directory, accept its own `default_output_dir` when that is all it can do, and relocate in Step 7. Do not re-run it, and do not press it into a path shape its Output Contract does not define.
 2. Return the output envelope defined by `agents/_shared/schemas/output-envelope.schema.json`, including its own confidence, Process Observations and citations.
 3. Do not deploy, do not run any `sf` write command, and do not invoke another agent.
 
@@ -176,7 +184,18 @@ It prints `{ok, missing[], empty[], malformed[]}` and exits 1 when not ok: every
 | A file exists that no output declared | listed as an undeclared artefact; confidence drops to MEDIUM |
 | A file was written outside `artefacts/<step_id>/` | LOW confidence, named explicitly, and flagged for the human — the constraint in Step 6 was violated |
 
-The runner reports mismatches. It does not delete, move or edit what the owning agent produced.
+The runner reports mismatches. Within the step's own artefact directory it does not delete, edit or reorganise what the owning agent produced.
+
+**Relocating a build-unaware owner's output.** When Step 4 found the owner has no build-layer contract and it persisted to its own `default_output_dir` — `docs/reports/<agent-id>/<run_id>.md` and its JSON twin are the usual pair — the files are moved into `<build_dir>/artefacts/<step_id>/` onto the paths the step's `outputs[]` declares, and only then is `check-outputs` re-run. This is the one move the runner makes, and it is bounded:
+
+| Rule | Why |
+|---|---|
+| One declared output per produced file, matched by the step's own `outputs[]` order and the agent's Output Contract naming | A rename the runner invents is a rename nobody can trace back to the plan |
+| Copy when the agent's own persistence contract requires the file to stay where it wrote it, move otherwise | The Wave 10 report pair is that agent's deliverable as well as this step's artefact |
+| Contents are never edited, reformatted or split on the way | Relocation changes a path, not an artefact; anything more is this agent authoring, which it does not do |
+| More produced files than declared outputs, fewer, or no obvious mapping | Relocate nothing, record it, and let `check-outputs` fail the step — a guessed mapping produces a green step pointing at the wrong file |
+
+Record every move in the envelope's `extensions.relocations[]` as `{from, to, mode}` with `mode` of `copy` or `move`, list the same lines in the report, and note in Process Observations that the owner had no build-layer contract. The relocation is why the step passed, so it is evidence, not housekeeping — and a step that needs it on every run is a signal that either the owner should gain a build-layer clause or the plan should name a different owner.
 
 ### Step 8 — Set the terminal status
 
@@ -237,7 +256,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 
 ### Envelope shape and location
 
-Two JSON objects pass through this agent and they must not be merged. The workflow return value above has its own shape, validated by `.claude/workflows/build-from-requirements.js`. The envelope has the contract's shape, and everything agent-specific in it — `step_id`, `owning_agent`, `owning_envelope_path`, `artefacts[]` with their `declared` / `undeclared` marks, `missing_outputs[]`, the verbatim `check_outputs` JSON and the `set_status_command` line — hangs off the **`extensions`** object. The envelope is `additionalProperties: false`: a top-level key it does not define fails it outright.
+Two JSON objects pass through this agent and they must not be merged. The workflow return value above has its own shape, validated by `.claude/workflows/build-from-requirements.js`. The envelope has the contract's shape, and everything agent-specific in it — `step_id`, `owning_agent`, `owning_agent_build_aware`, `owning_envelope_path`, `artefacts[]` with their `declared` / `undeclared` marks, `missing_outputs[]`, `relocations[]`, the verbatim `check_outputs` JSON and the `set_status_command` line — hangs off the **`extensions`** object. The envelope is `additionalProperties: false`: a top-level key it does not define fails it outright.
 
 Runs here are per step, so the segment is the step id — `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` with `<run_id>.md` on the same stem. Two envelopes share that directory: the owning agent's, stored verbatim in Step 7, and this agent's own. They are distinguished by run id, never by overwriting, and both need `envelope_path` and `report_path` values that match the schema's build-layer pattern before they are written.
 
@@ -256,7 +275,7 @@ An owning agent's envelope that fails is not silently repaired: it is reported, 
 1. **Summary** — the step id, its owning agent, the terminal status set, and the run id.
 2. **Confidence** — HIGH / MEDIUM / LOW with the rationale keyed to the Step 9 table.
 3. **The owning agent's envelope** — reproduced verbatim, plus the path it was stored at under `envelopes/<step-id>/`.
-4. **Artefact paths produced** — every file now under `artefacts/<step-id>/`, each marked `declared` or `undeclared` against the step's `outputs[]`, with any declared-but-missing output listed separately.
+4. **Artefact paths produced** — every file now under `artefacts/<step-id>/`, each marked `declared` or `undeclared` against the step's `outputs[]`, with any declared-but-missing output listed separately. When the owner had no build-layer contract, a relocation table beneath it: source path, destination path, copy or move, and the declared output each one satisfied.
 5. **The `check-outputs` result and the `set-status` invocation** — the JSON `check-outputs` printed and the exact `set-status` command line that was run, so the state transition is auditable from the report alone.
 6. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing what was being read when the observation was made.
 7. **Citations** — every skill, standard and schema consulted, plus the owning agent's own citations carried through from its envelope.
@@ -322,4 +341,5 @@ When the owning agent refuses with a skill gap or an ambiguity, the runner does 
 - Does not edit any `plan.json` field beyond the step status transitions and run record it sets through `build_plan.py`; it never hand-edits the file.
 - Does not process more than one step per invocation, and does not auto-chain into the tester.
 - Does not author Salesforce metadata itself, substitute for a blocked step, or freestyle guidance a skill does not carry.
+- Does not edit, rename, split or reformat an artefact. The Step 7 relocation moves a build-unaware owner's file onto a path the step's `outputs[]` already declared and records the move; a destination the plan did not name is not a relocation this agent may invent.
 - Does not invent a skill path — every citation resolves to a real file.

@@ -154,7 +154,9 @@ Open every skill the step cites and read the parts that matter: its `## Question
 | Skill covers the step | The skill does not contain the mechanism the step relies on — a skill cited because its slug sounds right but which is silent on what the step must decide is padding. |
 | Gotchas not contradicted | The skill's gotchas say the step's approach fails in the case the requirement actually described, or the step's title or inputs contradict the skill (wrong metadata type name, wrong API-version behaviour, invented permission). |
 | Questions answered | A question in the skill's table that the step's approach depends on has no answer in the clarifications — the plan silently made a decision the skill said to ask about. |
-| Decision branches real | A decision's `branch` names a step that is not in the tree it cites, its quoted branch text is not in that file, or the decision cites no tree and is not flagged `adr_required`. |
+| Decision branches real | A decision's `branch` names a step that is not in the tree it cites, or its quoted branch text is not in that file. |
+| Treeless decision grounded | A decision carries neither `decision_tree` + `branch` nor a `source_reference` that resolves on disk. That is the whole test, and it is a refutation rather than a note: a decision naming its real source only inside `rationale` prose is unsourced as far as anything downstream can tell. `adr_required` is a flag on a grounded decision, never a substitute for the grounding. |
+| Metadata knowledge exists | A cited skill on a metadata step documents no deployable XML anywhere — ``grep -l '^```xml' skills/<domain>/<slug>/references/*.md skills/<domain>/<slug>/SKILL.md skills/<domain>/<slug>/templates/*`` returns nothing. Run it before raising this: the builder's gap rule turns on the fence, not on a file name, so a skill whose XML sits in `references/worked-example-case-intake.md` or in `SKILL.md` is covered and refuting it is a false blocker. |
 | Templates real | A path cited under `templates/` does not exist, or the step hand-writes an idiom a template already owns. |
 | Fit tier holds | Re-tiering the capability against the five-tier rubric gives a different tier than the plan recorded. |
 | No freestyle claim | The step states a Salesforce behaviour no cited skill or official source supports. That is the § 8 skill-gap signal: raise it as a blocker naming the missing fact, never as a suggestion to freestyle. |
@@ -167,7 +169,7 @@ Open every skill the step cites and read the parts that matter: its `## Question
 | At least one test | `acceptance_tests[]` is empty. § 5 requires at least one. |
 | Checker exists | A `checker` test's `command` does not match `^python3 skills/<domain>/<slug>/scripts/check_<name>.py`, names a script that is not at that path — confirm with `ls skills/<domain>/<slug>/scripts/` — or passes a flag the checker does not accept (`python3 <path> --help`). |
 | Outputs listable | The step's `outputs[]` are not paths `build_plan.py check-outputs` could confirm: prose rather than a path, a path outside the build directory, or a file the step's own work would not produce. `set-status … built` is refused until `check-outputs` passes, so an unlistable output is a step that can never advance. |
-| Metadata coverage | A step whose type is a metadata type (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`) has no `xml` test or no `manifest` test; or an `xml` test on a step that emits no XML; or no `package.xml` produced by this step or one it depends on — the always-on `manifest` check **fails** on a metadata step with no manifest, it does not skip. |
+| Metadata coverage | A step whose type is a metadata type (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`) has no `xml` test or no `manifest` test; or an `xml` test on a step that emits no XML; or `artefacts/<step-id>/package.xml` is absent from that step's `outputs[]`. The always-on `manifest` check **fails** on a metadata step with no manifest rather than skipping, and an undeclared manifest is one `check-outputs` never confirms — the builder's promise to write one is not visible in `plan.json` and is not what this lens verifies. |
 | Command safety | A `command` test does not start with `python3 `, references a path outside the repo and the build directory, is not stdlib-only, needs an org, reaches the network, writes outside the build directory, or matches the § 5 deny-list — `sf … deploy`, `sfdx`, `force:source:deploy`, `curl`, `wget`, a pipe into a shell, `bash -c`, `python3 -c`, `rm -rf`, `git push`. Each of these is an ERROR at `validate` time too; a plan that reaches this lens carrying one has already failed mechanics. |
 | Manual test concrete | A `manual` test cannot be ticked at the milestone gate without interpretation — no precondition, no single unambiguous observable outcome. |
 | Pass condition objective | The pass condition is not stated as something checkable (exit 0, parses, member present in `package.xml`). "Looks correct" is a blocker. |
@@ -191,13 +193,21 @@ Merge the verdicts. Any `refuted` lens on any step, any step that returned no ve
 
 Write the `verification` object to `inputs/verification/verification.json` under the build directory and hand it to the CLI. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. This agent never edits `plan.json` by hand:
 
+Run `validate` **before** the write as well as after it, and keep both outputs:
+
 ```bash
+python3 scripts/build_plan.py validate .sfskills/builds/<build-id>/plan.json   # baseline
+
 mkdir -p .sfskills/builds/<build-id>/inputs/verification
 
 python3 scripts/build_plan.py set-verification .sfskills/builds/<build-id>/plan.json \
   --file .sfskills/builds/<build-id>/inputs/verification/verification.json \
   --outcome verified|plan-rejected
 ```
+
+The baseline is what separates a finding about the plan from a finding about this agent's own write. Diff the two WARN and ERROR lists and report any line that appears in one and not the other in Process Observations, naming both runs — a WARN that arrives only after `set-verification` is about the block just written, and a plan-side finding that disappears is a finding this run destroyed. Both counts belong in the report even when they match, because "9 warnings before and after" is the evidence that they were the plan's.
+
+One of those lines has a misleading remedy built into it. `validate` is the source of the treeless-decision WARN, whose message points a reader at "contract section 1.2" — a section `standards/build-orchestration.md` does not have. The rule it means is `agents/build-planner/AGENT.md` Step 4 and the `source_reference` field description in `agents/_shared/schemas/build-plan.schema.json`; cite those when reporting the finding, so the planner is sent somewhere that exists.
 
 `set-verification` writes the `verification` block and sets the build `status` from `--outcome` — `verified` when there are no blockers, `plan-rejected` when there are — and touches nothing else: no existing field is reworded, reordered or deleted, and `history[]` and `human_gates[]` are left alone. The file holds the block itself, with no `"verification":` wrapper around it:
 
@@ -304,6 +314,20 @@ Every (step, lens) pair emits exactly one of these. It is self-contained on purp
 ```
 
 This is the shape `.claude/workflows/plan-verify.js` requires from every fanned-out worker, and a single-session run emits the same objects before merging them.
+
+### The envelope sub-schemas this agent fills
+
+The per-lens object above is this agent's own vocabulary. The envelope it travels in has schemas of its own for four blocks, and all four are strict enough to fail a well-written run on shape alone:
+
+| Block | Shape it must take |
+|---|---|
+| `findings[]` | `id`, `severity` and `title` required. `severity` is `P0`, `P1`, `P2` or `INFO` — those four strings, not `blocker`, `warning` or `high`. Map a blocker to `P0` and a warning to `P1` or `P2`, and say in `detail` which lens raised it. |
+| `findings[].evidence` | an **object**, not a string: `{"source": "repo_scan", "path": "agents/story-drafter/AGENT.md", "detail": "…"}`. The per-lens `evidence[]` array of verbatim lines stays where it is, under `extensions`; the envelope-level field is the structured twin of it. |
+| `followups[]` | `agent` and `because`, both required, `because` at least ten characters. An agent id that does not resolve to a real `agents/<id>/` fails validation. |
+| `observations[]` | `category`, `severity`, `observation` and `evidence` required; `severity` is `info` for `healthy` and `low`/`medium`/`high` otherwise. A `suggested_followup` entry additionally requires `suggested_followup_agent` and `followup_reason` — omitting either is the most common way this block fails. |
+| `citations[]` | `type`, `id` and `used_for` required, plus `path` for everything but an MCP tool. A `decision_tree` citation additionally requires `branch`: this agent cites trees constantly, so a citation naming a tree without the `Q`-number that was checked is rejected. |
+
+Assemble these before running `validate_envelope.py` rather than after, and treat a schema failure the same way this agent treats an unverifiable claim: it is not close enough.
 
 - All six keys are required: `step_id`, `lens`, `verdict`, `blockers[]`, `warnings[]`, `evidence[]`. Empty arrays are values; missing keys are not.
 - `lens` is one of `executability`, `grounding`, `testability`.

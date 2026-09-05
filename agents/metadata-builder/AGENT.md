@@ -69,7 +69,7 @@ Eight skill reads, at the bottom of the 8–25 design target in `agents/_shared/
 4. `skills/admin/escalation-rules` — `businessHoursSource` and `escalationStartTime` semantics plus staged `escalationAction` thresholds; a `routing` or `sla` step covering escalation is unwritable without them, because the time semantics are not derivable from the element names.
 5. `skills/admin/entitlements-and-milestones` — the `EntitlementProcess` / `MilestoneType` shapes and the signed `timeLength` time triggers. An `sla` step that guesses the sign of a warning trigger produces a milestone that fires after the violation it was meant to precede.
 6. `skills/admin/permission-set-architecture` — the `PermissionSet` element set and what belongs in a bundle versus a group, so an `access` step emits permission sets sliced by the plan's personas instead of one omnibus set the human has to unpick.
-7. `skills/admin/email-templates-and-alerts` — the `EmailTemplate` / `EmailFolder` file pairing and the fact that `EmailTemplate` takes no `*` wildcard in a manifest, which changes the `package.xml` fragment a `ui` or `docs` step must write. This skill's deployable shapes live in `references/metadata-and-sender-identity.md` rather than a `metadata-examples.md`; Step 3 names that file explicitly so the Step 3 gap rule does not misfire on it.
+7. `skills/admin/email-templates-and-alerts` — the `EmailTemplate` / `EmailFolder` file pairing and the fact that `EmailTemplate` takes no `*` wildcard in a manifest, which changes the `package.xml` fragment a `ui` or `docs` step must write. Its deployable shapes sit in `references/metadata-and-sender-identity.md`, which is one of several file names across the library that carry XML; Step 3 tests for the XML itself rather than for a name, so no skill has to be special-cased here.
 8. `skills/admin/change-management-and-deployment` — the admin-release `package.xml` shape and the component ordering a deploy actually needs, which is what the deploy-order note in Step 7 is written from rather than from this agent's intuition about dependencies.
 
 Decision trees are read when the step's `decision_trees[]` names one; this agent cites the branch, it does not re-decide it. `standards/decision-trees/automation-selection.md` is the standing case: a step routed to declarative metadata got there through that tree at plan time, and an automation step that turns out to need Apex is handed back rather than re-routed here.
@@ -110,7 +110,7 @@ If `plan.json` is missing, unparseable, or has no such step id, refuse with `REF
 | `routing` | `AssignmentRules`, `AutoResponseRules`, `EscalationRules`, `Queue`, list views |
 | `sla` | `EntitlementProcess`, `MilestoneType`, `EntitlementTemplate`, `BusinessHours` |
 | `ui` | `Layout`, `FlexiPage`, `PathAssistant`, `EmailTemplate` + `EmailFolder`, report and folder metadata |
-| `docs` | the build's `package.xml` and the deploy-order note (shared with `story-drafter`, which owns the narrative half) |
+| `docs` | the build's `package.xml` and the deploy-order note only. `build-doc-keeper` owns the workbook and the traceability set, `story-drafter` owns the user stories, and a `docs` step naming either of those is not this agent's |
 | `automation` | declarative automation only. Apex belongs to `agents/apex-builder`; a step whose inputs describe Apex is handed back, not attempted |
 
 An org-connected plan (`build_mode: org-connected`) normally routes these types to the matching designer agent instead; this agent still builds when the plan names it, and records in the envelope that it ran against an org-connected plan.
@@ -120,11 +120,19 @@ An org-connected plan (`build_mode: org-connected`) normally routes these types 
 For every entry in the step's `skills[]`, read four things in this order and stop at the first that is absent:
 
 1. `SKILL.md` — the guidance and the `## Questions to Ask Before Configuring` table.
-2. The skill's deployable-XML reference — `references/metadata-examples.md` for seven of the eight skills in Mandatory Reads. `skills/admin/email-templates-and-alerts` carries the same content under `references/metadata-and-sender-identity.md`; that file, when present, satisfies this step for that skill. No third alias is accepted — a skill with neither file has no documented element set for this agent to copy.
+2. The skill's deployable XML, wherever that skill keeps it. The file name is not the test; a fenced XML block is. Run the test rather than reasoning about aliases:
+
+   ````bash
+   grep -l '^```xml' skills/<domain>/<slug>/references/*.md skills/<domain>/<slug>/SKILL.md skills/<domain>/<slug>/templates/* 2>/dev/null
+   ````
+
+   Every path that comes back is read in full. `references/metadata-examples.md` is the common name and `references/metadata-and-sender-identity.md` is another, but so is any other file under `references/` that carries a fence, and XML living in `SKILL.md` or under `templates/` counts identically. There is no alias list to maintain and no file this agent refuses on its name.
 3. The skill's own `templates/` directory — the placeholder shapes to fill rather than re-derive.
 4. `references/gotchas.md` — the deploy-time traps that decide element order, activation flags and what has to ship in the same request.
 
-**The gap rule.** A cited skill with no deployable-XML reference file is not something to work around. Stop, and take the blocked exit in Step 8 with `--blocked-reason "skill-gap"`, naming the skill, the file that was looked for, and the specific knowledge that was missing — the metadata type, and which of its elements the step needed. That message is the deepen-a-skill signal `standards/build-orchestration.md` § 8 describes; a vague "needs more detail" wastes it.
+**The gap rule.** It fires on one condition only: the grep in item 2 returned no path at all, so the skill documents no XML anywhere — not under `references/`, not in `SKILL.md`, not under `templates/`. A skill that carries a fence in a file with an unexpected name is covered, and blocking it would be this agent misreading its own rule. When the condition does hold, stop and take the blocked exit in Step 8 with `--blocked-reason "skill-gap"`, quoting the grep that returned nothing and naming the metadata type and the specific elements the step needed. That message is the deepen-a-skill signal `standards/build-orchestration.md` § 8 describes; a vague "needs more detail" wastes it.
+
+A thin fence is not a gap either. When the skill documents the type but not the one element this step needs, finish reading, then decide at Step 5 rule 1 — an element the inventory cannot supply is what blocks, and the block names the element rather than the file.
 
 Build one **element inventory** as you read: every element name, every enum value, and every attribute the cited references document, each tagged with the file and heading it came from. That inventory is the whole vocabulary available to Step 5. Nothing enters an emitted file that is not in it.
 
@@ -148,7 +156,7 @@ Write source-format files under `<build_dir>/artefacts/<step_id>/` and nowhere e
 Three rules govern what goes in them:
 
 1. **Every element name and enum value comes from the Step 3 inventory.** Not from memory, not from a similar type, not from what the element "obviously" ought to be called. An element the step needs that the inventory does not carry sends the step to the Step 3 gap rule — a real element this agent could not confirm is worth more as a recorded gap than as a guess that deploys wrong.
-2. **The step's declared `outputs[]` is the file list.** Write each declared path; write nothing else. A file the step did not declare is a planning mismatch — record it and let the human see it, rather than quietly widening the step.
+2. **The step's declared `outputs[]` is the metadata file list.** Write each declared path; write no other metadata. A metadata file the step did not declare is a planning mismatch — record it and let the human see it, rather than quietly widening the step. The two files Steps 6 and 7 write, `package.xml` and `deploy-order.md`, are outside this rule: they are produced on every run whether or not the plan named them, because the tester's manifest check reads the first and the human's deploy reads the second.
 3. **Copy the skill's template, then substitute.** Where the skill ships a template for the type, fill it; where it ships only a worked example, adapt that example's structure and say in the decision record which example was adapted.
 
 Order matters inside several of these files (rule entries, escalation actions, milestone triggers), and the order is a decision the Step 4 answers drive, not the order the questions happened to be read in.
@@ -156,6 +164,8 @@ Order matters inside several of these files (rule entries, escalation actions, m
 ### Step 6 — Write the `package.xml` fragment
 
 Write `<build_dir>/artefacts/<step_id>/package.xml`: one `<types>` block per metadata type present in the step, `<members>` naming each component by the name the Metadata API uses for it, `<name>` naming the type, and a `<version>` matching `api_version`.
+
+**This file is written on every run of this agent, without exception**, and the plan is expected to say so: `agents/build-planner/AGENT.md` Step 6 requires every metadata-type step to list `artefacts/<step-id>/package.xml` in its `outputs[]`, which is what lets `check-outputs` and the § 5 manifest check confirm the file rather than trust an agent-side habit no reader of `plan.json` can see. A step that omits it is still built and the manifest is still written; record the omission as an undeclared artefact in Process Observations so the plan gets the line added.
 
 Two constraints that are easy to get wrong and that the tester's always-on manifest check will catch either way: name members explicitly rather than with `*` when the type's skill documents that the type takes no wildcard (`EmailTemplate` is the standing example, per Mandatory Reads entry 7), and make the manifest agree with the files on disk in both directions — every file covered by a member, every explicit member backed by a file.
 

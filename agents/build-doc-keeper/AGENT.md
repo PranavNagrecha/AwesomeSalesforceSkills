@@ -30,6 +30,8 @@ dependencies:
 
 After a step passes its tests, this agent brings the build's documentation up to date with what actually happened: it re-renders PLAN.md from the plan, appends any decision the step's envelope recorded to the decisions log, writes the step's rows into the configuration workbook in the canonical 10-section row format, updates the traceability rows that join a requirement to the step, its artefacts and its test result, and then marks the step `documented`. Every sentence it writes is sourced from the plan, the envelope, or the test results — it documents the build, it does not narrate it.
 
+It has a second job at the end of a build. Because it is the agent that has been writing `workbook/` rows and `traceability.md` all along, it is also the one that compiles them into the finished documents a human is handed — the configuration workbook, the traceability matrix and the deploy order across every milestone. A plan schedules that as a `docs` step it owns, and in a design-only build it is the only eligible agent for it: `config-workbook-author` declares `requires_org: true` and `story-drafter` produces stories rather than a workbook.
+
 **Scope:** one step per invocation, and only the documentation surfaces it owns. Re-running it on the same step replaces that step's rows rather than adding a second copy.
 
 ---
@@ -53,7 +55,7 @@ Four skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRA
 2. `agents/_shared/AGENT_CONTRACT.md` — section shape, Process Observations, confidence rubric.
 3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence and the atomic-write rule.
 4. `agents/_shared/REFUSAL_CODES.md` — the refusal enum.
-5. `standards/build-orchestration.md` — § 2 (which files in a build directory are rendered and must never be hand-edited, and that no agent hand-edits `plan.json`), § 4 (the step types Step 4 maps to workbook sections, and the rule that this map carries a default section so a new type never breaks a documentation run), § 6 (this agent's one job), § 8 (a skill gap recorded in `decisions.md` is the signal to deepen a skill).
+5. `standards/build-orchestration.md` — § 2 (which files in a build directory are rendered and must never be hand-edited, and that no agent hand-edits `plan.json`), § 4 (the step types Step 4 maps to workbook sections, and the rule that this map carries a default section so a new type never breaks a documentation run), § 6 (this agent's row in the Tier-4 table, which names the per-step job; the § 4 `docs` row is where its second one, compiling the final set, is assigned), § 8 (a skill gap recorded in `decisions.md` is the signal to deepen a skill).
 6. `agents/_shared/schemas/build-plan.schema.json` — the fields this agent reads and the ones it must leave alone, including the `type` enum whose members Step 4 maps to workbook sections.
 
 ### The formats this agent emits
@@ -69,7 +71,9 @@ Four skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRA
 | Input | Required | Example |
 |---|---|---|
 | `build_dir` | yes | `.sfskills/builds/case-onboarding/` |
-| `step_id` | yes | `M1-S04` — the `M<n>-S<nn>` form the build-plan schema requires; its status in `plan.json` must be `tested` |
+| `step_id` | yes | `M1-S04` — the `M<n>-S<nn>` form the build-plan schema requires. In the ordinary run its status must be `tested`; in a compile run (below) it is the `docs` step this agent owns, and its status is `running` because the runner has just claimed it |
+
+**Two runs, told apart by the step record, never by a flag.** Read the step named by `step_id`: when its `agent` is some other agent, this is the ordinary per-step run and Steps 1-9 apply as written. When its `agent` is `build-doc-keeper` and its `type` is `docs`, this is the **compile run** — Step 10 replaces Steps 3-9, and the precondition is the step's own, not `tested`. Nothing else distinguishes them, so a caller cannot put the agent in the wrong mode by passing an argument.
 
 ---
 
@@ -175,27 +179,48 @@ python3 scripts/build_plan.py set-status <build_dir>/plan.json <step_id> documen
 
 `documented` is the status that makes downstream steps runnable, so it is set only after every write above has succeeded.
 
-### Step 10 — Confidence
+### Step 10 — The compile run: assemble the final documents
+
+Taken instead of Steps 3-9 when the step named by `step_id` is a `docs` step this agent owns. Nothing new is decided here: every sentence in every document below already exists as a row this agent wrote during the build, and compiling is collation plus a cover, never a fresh pass over the artefacts.
+
+**Precondition.** The step is `running`, claimed by `agents/build-step-runner`. Read the steps it lists in `depends_on`: each must be `documented`, because a step that has not been documented has no rows to collect and a workbook missing a section is worse than a workbook that says the section is outstanding. A `depends_on` step at any other status stops the run with `REFUSAL_OUT_OF_SCOPE` naming the step and its status; a step outside `depends_on` that is merely undocumented is reported as an outstanding section rather than refused.
+
+**Sources.** `workbook/*.md`, `traceability.md`, `decisions.md`, and `plan.json` for milestone order and gate records. Not the artefact files: they were read once, at the time, for the `target_value` cell, and re-reading them at the end would let the compiled document disagree with the rows it is compiled from.
+
+**What is written**, onto the paths the step's `outputs[]` declares and nowhere else:
+
+| Document | Content |
+|---|---|
+| the configuration workbook | the ten canonical sections in `skills/admin/configuration-workbook-authoring` order, each carrying the rows already written under `workbook/`, plus **Other configuration** whenever it has rows. A section with no rows is present and says so — an absent section reads as an oversight, a present empty one as a fact |
+| the traceability matrix | every row of `traceability.md` in the canonical column order, with a coverage line beneath it: requirements with no step, steps with no requirement, and manual tests still outstanding. Those three counts are the point of compiling it |
+| the deploy order | the build-wide sequence, milestone by milestone, built from the per-step `deploy-order.md` files `metadata-builder` wrote and the milestone order in `plan.json`. Cross-step dependencies are stated as they were recorded, and a conflict between two steps' notes is reported rather than silently resolved |
+| the decision log | `decisions.md` as it stands, with the blocked steps and their reasons listed together at the end — that list is the build's own deepen-a-skill worklist |
+
+**What the compile run does not do.** It does not set the step's status: the runner reads this agent's envelope and writes the terminal status, and two writers of one transition is how a run record ends up disagreeing with itself. It does not write outside `artefacts/<step-id>/` on this run — the per-step documents under `workbook/` and `traceability.md` are its sources now, not its targets, and it re-renders neither. It adds no row that is not already in a source file: a gap in the sources is compiled as a gap and named in the report.
+
+**Idempotence.** Each declared output is rewritten in full from the sources, so a second compile run over unchanged sources produces byte-identical files. Step 8's row-keyed replacement does not apply here, because nothing is appended.
+
+### Step 11 — Confidence
 
 Overrides the default rubric:
 
 | Score | Condition |
 |---|---|
-| HIGH | every artefact produced a workbook row, every row carries a real `source_req_id` and a verification step, every requirement the step serves has a traceability row, and re-running produced no duplicates |
-| MEDIUM | an artefact could not be placed in a section without judgment, a step type fell through to the **Other configuration** default, or a requirement id had to be inferred from a clarification answer rather than read from the step |
-| LOW | a row had to be written with an empty `source_req_id` or an empty verification cell, or the step's test results were unreadable |
+| HIGH | every artefact produced a workbook row, every row carries a real `source_req_id` and a verification step, every requirement the step serves has a traceability row, and re-running produced no duplicates. On a compile run: every `depends_on` step was `documented`, every declared output was written, and the coverage line reports no requirement without a step |
+| MEDIUM | an artefact could not be placed in a section without judgment, a step type fell through to the **Other configuration** default, or a requirement id had to be inferred from a clarification answer rather than read from the step. On a compile run: a section compiled empty, or two per-step deploy-order notes disagreed and the conflict was reported rather than resolved |
+| LOW | a row had to be written with an empty `source_req_id` or an empty verification cell, or the step's test results were unreadable. On a compile run: a source file was missing or unreadable, so a compiled document is short of what the build actually produced |
 
-### Step 11 — Self-validate the envelope before returning
+### Step 12 — Self-validate the envelope before returning
 
-The documents are written and the step is `documented`; one file is left. Assemble the envelope with the Step 3–7 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` and `…/<run_id>.md`, then check it:
+The documents are written and the step is `documented` — or, on a compile run, the compiled set is on disk and the runner has yet to write the status; one file is left either way. Assemble the envelope with the Step 3–7 results — or the Step 10 results on a compile run — under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` and `…/<run_id>.md`, then check it:
 
 ```bash
 python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
 ```
 
-`OK <path>` ends the run. Watch the one hazard specific to this agent: `files_updated[]` names build documents, and naming them does not make them envelopes — the list is a value under `extensions`, the documents stay under the build directory, and nothing is copied into `envelopes/` to make it easier to find.
+`OK <path>` ends the run. On a compile run this is the last thing the agent does before returning, because the status transition belongs to the runner. Watch the one hazard specific to this agent: `files_updated[]` names build documents, and naming them does not make them envelopes — the list is a value under `extensions`, the documents stay under the build directory, and nothing is copied into `envelopes/` to make it easier to find.
 
-Then return the Step 9 status and the workflow object above it.
+Then return the Step 9 status — or, on a compile run, the Step 10 outcome and the build-step return object below — and the workflow object above it.
 
 ---
 
@@ -205,7 +230,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 
 ### Envelope shape and location
 
-The documentation payload travels in **`extensions`**: `step_id`, `files_updated[]`, `workbook_rows[]`, `traceability_rows[]`, `decisions_appended[]` and `rows_replaced[]`. The envelope's own field set is fixed and it is `additionalProperties: false`, so a key invented at the top level fails the document even when everything under it is right.
+The documentation payload travels in **`extensions`**: `step_id`, `mode` (`per-step` or `compile`), `files_updated[]`, `workbook_rows[]`, `traceability_rows[]`, `decisions_appended[]` and `rows_replaced[]`. A compile run adds `compiled_documents[]` — one entry per declared output with the sources it was built from — and `coverage`, carrying the three counts the traceability matrix's coverage line states. The envelope's own field set is fixed and it is `additionalProperties: false`, so a key invented at the top level fails the document even when everything under it is right.
 
 This is a per-step run, so its envelope is `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` with `<run_id>.md` on the same stem, and `envelope_path` and `report_path` carry those strings. The same directory already holds the step's other envelopes — the owning agent's and the tester's — under their own run ids. Reading one (Step 1) and writing another are both this agent's business, and neither operation may overwrite the other's file.
 
@@ -222,13 +247,14 @@ python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S0
 ### Deliverables
 
 1. **Summary** — step id, files updated, row counts written and replaced, and the status set.
-2. **Confidence** — HIGH / MEDIUM / LOW keyed to the Step 10 table.
+2. **Confidence** — HIGH / MEDIUM / LOW keyed to the Step 11 table.
 3. **Workbook rows written** — the rows themselves, in the canonical row format, with the section each landed in.
 4. **Traceability rows written** — requirement to step to artefact to test result.
 5. **Decisions appended** — each with its date, step, citation and reason; explicitly "none" when the envelope recorded none.
-6. **Idempotence note** — which rows were replaced versus newly written on this run.
-7. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the file it came from.
-8. **Citations** — skills, standards and schemas consulted.
+6. **Compiled documents** — compile run only: one row per declared output, giving the path written, the source files it was collated from, and the section or row count it carries, followed by the coverage line (requirements with no step, steps with no requirement, manual tests outstanding).
+7. **Idempotence note** — which rows were replaced versus newly written on this run.
+8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the file it came from.
+9. **Citations** — skills, standards and schemas consulted.
 
 Suggested follow-ups: `milestone-verifier` once every step in the milestone is documented, and `config-workbook-author` when the build's workbook is to be compiled into a release-level document. Recommendations only.
 
@@ -245,6 +271,8 @@ Suggested follow-ups: `milestone-verifier` once every step in the milestone is d
 }
 ```
 
+On a compile run the return object is the one `agents/build-step-runner` expects from any step owner instead — `step_id`, `status` of `built` or `blocked`, and `artefacts[]` listing the compiled documents under `artefacts/<step-id>/` — because on that run this agent is a step owner, and the runner is what writes the status.
+
 `step_id` and `status` are required. `status` is `documented` only when every write in Steps 2–8 succeeded and `build_plan.py set-status … documented` returned 0; otherwise it is `failed`, and `notes` says which write did not land. The workflow treats anything but `documented` as the step not having completed, so this field must report the status actually recorded in `plan.json` rather than the intended one.
 
 ### Persistence (Wave 10 contract)
@@ -258,7 +286,7 @@ The documentation this agent maintains lives in the build directory — `PLAN.md
 
 ### Scope Guardrails (Wave 10 contract)
 
-- Canonical data surface: `plan.json`, the step's envelope, `tests/<step-id>/results.json`, and the step's artefact files read read-only for the `target_value` cell (Step 4). No org probes, and nothing inferred from an artefact beyond the value it literally carries.
+- Canonical data surface: `plan.json`, the step's envelope, `tests/<step-id>/results.json`, and the step's artefact files read read-only for the `target_value` cell (Step 4). On a compile run: `workbook/`, `traceability.md`, `decisions.md`, the per-step `deploy-order.md` files and `plan.json`, and nothing else. No org probes, and nothing inferred from an artefact beyond the value it literally carries.
 - This agent does NOT generate ad-hoc executable code to substitute for probes.
 - This agent does NOT install dependencies into the consumer's project. Converting the workbook to a spreadsheet is a caller-side concern.
 - Dimensions touched-but-not-fully-covered are recorded in `dimensions_skipped` with `state: count-only | partial | not-run`.
@@ -272,7 +300,7 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `build_dir` or `step_id` absent; `plan.json` unreadable; `tests/<step-id>/results.json` missing for a step claiming `tested`. |
-| `REFUSAL_OUT_OF_SCOPE` | Step status is not `tested`. Also: a request to document a whole milestone at once, to edit a rendered view by hand, or to write documentation for a step that does not exist. |
+| `REFUSAL_OUT_OF_SCOPE` | Step status is not `tested` on a per-step run, or a `depends_on` step is not `documented` on a compile run. Also: a request to document a whole milestone at once, to edit a rendered view by hand, or to write documentation for a step that does not exist. |
 | `REFUSAL_INPUT_AMBIGUOUS` | Two different `req_id` values claim the same artefact. A step whose artefacts straddle two sections is split across both; a step whose type this map does not name goes to **Other configuration** with the gap flagged — neither is a refusal, because refusing to document a tested step leaves it stranded at `tested` forever. |
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | An artefact has no `source_req_id` anywhere in the plan — an undocumented requirement is scope that arrived without an approval trail, and a row invented for it would make the traceability matrix fiction. |
 
@@ -285,7 +313,8 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 - Does not run or re-run tests, and does not change a test verdict.
 - Does not hand-edit `PLAN.md`, `CLARIFICATIONS.md` or any other rendered view — those are regenerated through `build_plan.py`.
 - Does not touch `plan.json` beyond the single status transition and run record it sets through the CLI.
-- Does not write files outside `PLAN.md`, `decisions.md`, `traceability.md`, `workbook/` and its own deliverable pair.
+- Does not write files outside `PLAN.md`, `decisions.md`, `traceability.md`, `workbook/` and its own deliverable pair — plus, on a compile run and only there, the paths that step's `outputs[]` declares under `artefacts/<step-id>/`.
+- Does not compile a document from the artefact files. The compile run collates rows it already wrote; re-deriving content from XML at the end would let the finished workbook disagree with the build record it is supposed to summarise.
 - Does not approve or record a human gate, and does not decide whether a milestone is acceptable.
 - Does not process more than one step per invocation, and does not auto-chain into the milestone verifier.
 - Does not invent a skill path — every citation resolves to a real file.

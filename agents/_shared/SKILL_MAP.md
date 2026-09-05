@@ -154,7 +154,7 @@ under the classifier's `Mandatory Reads` section.
 - `architect/architecture-decision-records`, `architect/license-optimization-strategy`
 - `architect/nfr-definition-for-salesforce`
 - `standards/decision-trees/automation-selection.md`
-- Harness: `designer_base`. Also the build layer's design-only owner of workbook and story `docs` steps (`standards/build-orchestration.md` § 4).
+- Harness: `designer_base`. Also the build layer's design-only owner of user-story `docs` steps (`standards/build-orchestration.md` § 4); the workbook and traceability compile run belongs to `build-doc-keeper`.
 
 ---
 
