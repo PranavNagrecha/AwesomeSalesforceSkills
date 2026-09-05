@@ -28,6 +28,7 @@ triggers:
   - "make an apex action accept a generic sObject collection from a flow"
   - "invoke a custom invocable action from Apex or REST"
   - "write a test class for an invocable method with 200 inputs"
+  - "call apex from a flow action"
 inputs:
   - "Flow or action use case and expected record volume"
   - "whether the action needs complex request or response fields"

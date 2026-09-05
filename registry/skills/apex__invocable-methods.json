@@ -176,7 +176,7 @@
     "fa3c984349b28e33a71b",
     "fa87545fd8e930ca880d"
   ],
-  "content_hash": "437aac8736e00d31add4e4ded0faca09b1617dd97866c14ad099f8cb7734a8f9",
+  "content_hash": "2c179fb3bf2af46f7e3d2d970f887bcb34ad77ded7a8e1c0235f616ea04ec6da",
   "dependencies": [],
   "description": "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output', 'callout=true', 'flowTransactionModel', 'Invocable.Action', 'action returns wrong record', 'output list size'. NOT for wiring the action into Flow Builder \u2014 use flow/flow-action-framework. NOT for an Agentforce agent action \u2014 use agentforce/custom-agent-actions-apex.",
   "file_location": "skills/apex/invocable-methods",
