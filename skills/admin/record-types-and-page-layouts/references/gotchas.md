@@ -2,7 +2,7 @@
 
 ---
 
-## Changing a Record's Record Type Can Wipe Picklist Values
+## 1. Changing a Record's Record Type Can Wipe Picklist Values
 
 **What happens:** An admin bulk-reassigns 5,000 Opportunity records from "New Business" RT to "Renewal" RT (because the company restructured its sales motion). After the reassignment, users report that the Stage field on 3,000 records is now blank. "Prospecting" and "Discovery" exist on New Business RT but not on Renewal RT. When the RT changed, those picklist values were cleared because they're not valid on the new RT.
 
@@ -26,7 +26,7 @@ AND ISPICKVAL(StageName, 'Prospecting')
 
 ---
 
-## Record Types and Person Accounts — Design Them Separately
+## 2. Record Types and Person Accounts — Design Them Separately
 
 **What happens:** An org enables Person Accounts. The admin creates Record Types for Business Accounts and assigns them. Later, someone creates a Person Account and gets an error or unexpected RT assignment. The RT model for Person Accounts and Business Accounts is governed by the same object but behaves differently — Person Account RTs must be designed with the Person Account user profile in mind, and Business Account RTs must be hidden from Person Account creation.
 
@@ -40,7 +40,7 @@ AND ISPICKVAL(StageName, 'Prospecting')
 
 ---
 
-## New Profiles Don't Inherit Record Type Assignments
+## 3. New Profiles Don't Inherit Record Type Assignments
 
 **What happens:** A managed AppExchange package is installed and creates a new custom Profile. Users assigned to that Profile try to create Accounts and can't select any Record Type (or are forced to the Master RT with all picklist values). The admin doesn't know until users report it because no alert fires when a new Profile is created with no RT assignments.
 
@@ -63,7 +63,7 @@ ORDER BY Profile.Name
 
 ---
 
-## Reports Filter by Record Type Label — Labels Are Not Stable
+## 4. Reports Filter by Record Type Label — Labels Are Not Stable
 
 **What happens:** A business analyst builds 20 reports filtered by "Opportunity Type = New Business". An admin renames the Record Type label from "New Business" to "New Logo" (rebranding). Every one of those 20 reports now returns zero results — they're filtering for "New Business" which no longer exists. The analyst doesn't notice immediately. A week later, an executive dashboard shows zero pipeline.
 
@@ -77,7 +77,7 @@ ORDER BY Profile.Name
 
 ---
 
-## Page Layouts Are Not Security Controls
+## 5. Page Layouts Are Not Security Controls
 
 **What happens:** An admin hides the `Salary__c` field on the page layout for non-HR users, assuming this restricts access. A power user opens the field in a report or accesses it via the API. The field is visible. The admin says "I hid it on the layout." Yes, but the layout is a UX control — it affects what appears on the record detail page, not what the user can access through other means.
 
@@ -88,3 +88,83 @@ ORDER BY Profile.Name
 - Page layout: controls what appears on the record page
 - FLS: controls whether the user can see or edit the field AT ALL, in any context
 - Both are needed: FLS for security, page layout for UX
+
+---
+
+## 6. `businessProcess` Is Required on Four Objects and Forbidden on All Others
+
+**What happens:** An admin copies a working Opportunity record type block as a starting point for a record type on `Warranty_Claim__c`, keeps the `<businessProcess>` element, and the deploy fails. Later the same admin writes a Case record type without a `<businessProcess>` element and that deploy fails too — with a different message. Neither failure mentions the pairing rule.
+
+**When it bites you:** Any hand-written or LLM-generated record type XML; any copy-paste between objects; any scratch-org rebuild where the business process was created in Setup but never captured in source.
+
+**How to avoid it:**
+- The Metadata API guide states `businessProcess` "is required in record types for lead, opportunity, solution, and case, and not allowed otherwise". Treat that as a hard four-object list.
+- The Object Reference states the narrower rule on the sObject side — `RecordType.BusinessProcessId` is "required for Opportunity and Lead record types in API version 17.0 and later". The two documents disagree on Case and Solution; supplying the process on all four satisfies both.
+- Inside the `<CustomObject>` definition, use the **bare** process name (`Customer Support Process`). Object-qualify it (`Case.Customer Support Process`) only in `package.xml` members and retrieve results. The guide calls out this exact mistake: "As the record type is already defined within the object, don't prefix the object name."
+- Deploy the `businessProcesses` block and the `recordTypes` block in the same `CustomObject` file. A record type naming a process that isn't in the org yet fails on the reference, not on the pairing rule, which sends you hunting in the wrong place.
+
+---
+
+## 7. Retrieving a Record Type or Layout Rewrites the Profiles in the Same Package
+
+**What happens:** A developer retrieves just the Case object and its layouts to review a change, commits the diff, and the pull request shows large unrelated additions inside three profile files. On the next retrieve — this time without the layouts — the same profile files lose those blocks again. The team concludes profiles are "unstable" and starts ignoring profile diffs.
+
+**When it bites you:** Every partial retrieve. The guide states the rule twice, once under `RecordType` and once under `Layout`: retrieving a component of that type "makes the component appear in any Profile and PermissionSet components that are retrieved in the same package."
+
+**How to avoid it:**
+- Profile and permission set content is a *function of what else is in the manifest*, not a fixed file. Fix one manifest per object domain and always retrieve with it, so consecutive retrieves are comparable.
+- Never deploy a profile retrieved from a narrow manifest into an org configured from a wider one — the assignments absent from your file are absent because they weren't requested, and the deploy removes them.
+- When reviewing a profile diff, check the manifest before the diff. A block that appeared or vanished is usually a manifest change, not an org change.
+
+---
+
+## 8. Deactivating a Record Type Makes Its Profile and Permission Set Assignments Untrackable
+
+**What happens:** An admin deactivates a retired record type instead of deleting it (because records still reference it), then retrieves the profiles for a release. The `recordTypeVisibilities` entries for that record type are gone from every file. Someone assumes an unauthorised change removed them, reinstates them by hand, and the deploy fails or silently drops them.
+
+**When it bites you:** Any lifecycle where a record type is deactivated rather than deleted. The guide is explicit on both types: `Profile.recordTypeVisibilities` "isn't retrieved or deployed for inactive record types" in API version 29.0 and later, and `PermissionSet.recordTypeVisibilities` "is never retrieved or deployed for inactive record types".
+
+**How to avoid it:**
+- Before deactivating, capture the current visibility matrix — a `RecordType` SOQL plus the profile files, committed as a snapshot — because after deactivation source control can no longer describe it.
+- Do not attempt to re-add visibility entries for an inactive record type by hand. Reactivate first (`active` back to `true`), deploy, then deploy the visibility.
+- Deactivation is not the safe half-measure it looks like: it makes the record type unselectable *and* unauditable, while existing records keep pointing at it. Prefer a full reassign-then-delete plan (gotchas #1) when the record type is genuinely retired.
+
+---
+
+## 9. The Metadata API Does Not Round-Trip the Whole Record-Type Picklist Matrix
+
+**What happens:** A team treats the retrieved `CustomObject` file as the authoritative record of which picklist values each record type exposes. They rebuild a scratch org from source, and Person Account record types come back with only the standard values on a Contact-sourced picklist. Custom values that existed in the source org are simply missing, and nothing in the retrieve reported a gap.
+
+**When it bites you:** Person Account orgs, and any object where a picklist is shared with Contact. The guide carries two separate notes under `RecordType`: Metadata API "doesn't retrieve custom picklist values on person account record types, if the picklist exists on a contact" — retrieving standard picklist values only — and it "doesn't retrieve specific picklist fields that are associated with a record type."
+
+**How to avoid it:**
+- Do not use "it's in source control" as evidence that the picklist matrix is complete on a Person Account object. Verify in Setup, per record type, per picklist.
+- Keep a written picklist-by-record-type matrix (the design template in this skill has one) as the human-readable source of truth, and diff it against the org rather than against the retrieved XML.
+- On scratch-org rebuilds of Person Account orgs, add an explicit post-build verification step for record-type picklist values; it is the one part of the model the retrieve will not tell you is wrong.
+
+---
+
+## 10. Record Type Labels, Names, and Descriptions Are Readable by Every User With Object Access
+
+**What happens:** An admin creates record types named `VIP_Executive_Escalation` and `Layoff_Severance_Case`, and writes descriptions explaining who the confidential process applies to. A user with plain read access on the object — no create access, not assigned to those record types — enumerates all of them through the API and learns the whole taxonomy.
+
+**When it bites you:** Any org where record type naming encodes something confidential: a customer tier, an internal investigation type, an unannounced product line, an HR process. The `RecordType` metadata type and the `RecordType` standard object both carry the same warning: "Users with access to an object can read all record type information for that object. We strongly recommend against storing sensitive information in the record type description, name, or label." `BusinessProcess` carries the identical warning for its description, name, and picklist values.
+
+**How to avoid it:**
+- Name record types after the process shape, not after the sensitive attribute. `Escalated_Case` rather than `VIP_Executive_Escalation`.
+- Profile assignment governs create and edit access for a record type, not read access. A user not enabled for a record type "can't create records with that record type, but can access records associated with that record type" — record type assignment restricts nothing about reading.
+- Sensitive attributes belong in a separate object or in fields with real access controls, which is the guide's own recommendation.
+
+---
+
+## 11. `Required` on a Page Layout Is a Property of the Layout, Not of the Field
+
+**What happens:** A business analyst marks `Subject` as required on the Customer Support layout and reports the requirement as done. Cases created through the API, through a Flow, through the Internal IT layout, and through a quick action that uses a different layout all save with a blank `Subject`. Nothing errors; the analyst discovers it in a report months later.
+
+**When it bites you:** Every time layout-level `Required` is used as a data-quality control — which is the default assumption, because the Setup UI presents it as a property of the field on that page.
+
+**How to avoid it:**
+- `LayoutItem.behavior` has three values — `Edit`, `Required`, `Readonly` — and the guide defines `Required` as "the layout field can be edited and is required". Its scope is that layout item, on that layout. Every other entry point is unaffected.
+- Enforce the requirement where it actually binds: `required` on the field definition (all contexts), or a validation rule scoped by `RecordType.DeveloperName` (all save paths, but selectively by process). Layout `Required` on top of either is a UX affordance, not the control.
+- Explicitly setting `behavior` on a Knowledge article layout raises an exception, per the guide — the one object where you must leave it out entirely.
+- The same scoping trap applies in reverse: a field that is `Readonly` on one layout is fully editable on another, and read-only on a layout is not field-level security (gotchas #5).

@@ -96,3 +96,150 @@ AND(
 - Bypass with `NOT($Permission.Bypass_Validation_Rules)` on a Custom Permission granted by Permission Set.
 - Rank: Custom Permission > User checkbox > Profile name > hardcoded `005` Id. Never ship the last two as the design.
 - Name-picklists ("who owns this") are not `Lookup(User)` — they cannot deactivate, reassign, or report as people.
+
+---
+
+## A Workflow Field Update Re-Saves the Record and Validation Rules Do Not Run Again
+
+**What happens:** The order of execution runs custom validation rules at step 5, then saves at step 7, then
+runs workflow rules at step 11. When a workflow rule has a field update, the platform "updates the record
+again" and "runs system validations again" — but the Apex Developer Guide is explicit that at that point
+"custom validation rules, flows, duplicate rules, processes built with Process Builder, and escalation rules
+aren't run again." A workflow field update can therefore leave a committed record in exactly the state your
+validation rule exists to prevent.
+
+**When it bites you:** Legacy orgs still carrying workflow rules. A rule enforces "Discount cannot exceed
+20%", a workflow field update sets Discount to 25% when Tier changes, and the record commits at 25%. The
+audit report shows records that violate an active rule and nobody can reproduce it by hand.
+
+**How to avoid it:**
+- Inventory workflow field updates on every object before trusting a validation rule as an invariant.
+- Migrate the workflow field update to a before-save record-triggered flow (step 3) — that runs *before*
+  validation at step 5, so the validation rule sees the flow's value and can reject it.
+- Where the invariant genuinely must hold in the database, back it with a `@InvocableMethod`-free before-save
+  flow plus the validation rule, not the validation rule alone.
+- Treat "records exist that violate an active rule" as a workflow-field-update symptom until proven otherwise.
+
+---
+
+## Opportunity Validation Rules Do Not Fire When a Line Item Changes the Opportunity
+
+**What happens:** The Apex Developer Guide states that before and after triggers *and validation rules* don't
+fire for an opportunity when you modify an opportunity product on the opportunity, or when an opportunity
+product schedule changes an opportunity product — even if the opportunity product changes the opportunity.
+Roll-up summary fields still update and workflow rules still run. So `Amount` moves, the roll-up recalculates,
+and the rule guarding `Amount` never evaluates.
+
+**When it bites you:** Any Opportunity rule written against `Amount`, `TotalOpportunityQuantity`, or a
+roll-up summary of line items. The rule tests perfectly when an admin edits Amount by hand and is inert in
+the actual business process, which is line-item driven.
+
+**How to avoid it:**
+- Never guard a line-item-derived Opportunity field with an Opportunity validation rule.
+- Put the rule on `OpportunityLineItem` instead, where the user's edit actually lands.
+- If the invariant is genuinely opportunity-level (total discount across all lines), a record-triggered flow
+  or trigger on `OpportunityLineItem` that re-checks the parent is the only surface that sees the change —
+  see `flow/record-triggered-flow-patterns`.
+
+---
+
+## errorDisplayField Silently Relocates to Top of Page
+
+**What happens:** `errorDisplayField` names the field the error appears next to. The Metadata API Developer
+Guide's ValidationRule field table adds the condition nobody reads: "If you do not specify a value **or the
+field isn't visible on the page layout**, the value changes automatically to Top of Page." Removing a field
+from one layout, or shipping a new record type with a lean layout, moves the error message without touching
+the rule, without a deploy, and without a warning.
+
+**When it bites you:** After a page-layout change or a new record type. Users on the affected layout report a
+banner at the top of the page with no indication of which field to fix; users on the original layout see the
+inline error and cannot reproduce the complaint.
+
+**How to avoid it:**
+- Add `errorDisplayField` to the change-impact list for any field removed from a layout.
+- Assert on it in Apex: `Database.Error.getFields()` returns the field the error attached to, so a test can
+  fail when the error silently relocates (see `references/metadata-examples.md`, Test 1).
+- Write the error message so it names its own field. A message that reads correctly at the top of the page
+  costs nothing and survives the relocation.
+
+---
+
+## VLOOKUP Stops Seeing Org Data Inside Apex Tests as of API 28.0
+
+**What happens:** In API version 27.0 and earlier, the `VLOOKUP` validation rule function always looked up org
+data in addition to test data when fired by a running Apex test. Starting with version 28.0 it no longer
+accesses organization data from a running test — it sees only data the test created, unless the test class or
+method is annotated `@IsTest(SeeAllData=true)`. The same rule therefore behaves differently in a test and in
+production.
+
+**When it bites you:** A rule that validates a value against a Custom Object lookup table (approved product
+codes, valid country codes, allowed discount tiers). The lookup table is org data seeded once by an admin. In
+a test it is empty, `VLOOKUP` returns nothing, and the rule either passes everything or blocks everything —
+the opposite of what production does.
+
+**How to avoid it:**
+- Any test that exercises a `VLOOKUP`-based rule must either create the lookup rows itself or be annotated
+  `@IsTest(SeeAllData=true)`.
+- Prefer Custom Metadata Types over a Custom Object for lookup tables the rule reads — they are visible in
+  tests without `SeeAllData`, and validation rules on custom metadata types have been supported since API
+  version 40.0.
+- A `VLOOKUP` rule with a green test is not evidence the rule works. Verify it manually in a sandbox that has
+  the lookup data.
+
+---
+
+## ValidationRule Does Not Support the Wildcard in package.xml
+
+**What happens:** The Metadata API Developer Guide states plainly that ValidationRule "doesn't support the
+wildcard character `*` (asterisk) in the package.xml manifest file." A manifest with
+`<members>*</members><name>ValidationRule</name>` does not error usefully — it simply retrieves nothing, and
+the deploy that follows is missing every rule while reporting success.
+
+**When it bites you:** Building a change set manifest by hand, or scripting an org-comparison retrieve. The
+diff comes back clean because the rules were never retrieved, and the release goes out without them.
+
+**How to avoid it:**
+- Name each rule explicitly as `Object.RuleName`, or retrieve the enclosing object with
+  `<name>CustomObject</name>` — retrieving the object returns every rule on it.
+- After any wildcard-based retrieve, count the `<validationRules>` elements you got against the count in
+  Setup before you trust the diff.
+- `references/metadata-examples.md` has both manifest shapes.
+
+---
+
+## Translated Error Messages Live in a Separate Metadata Type
+
+**What happens:** `errorMessage` on the rule is the default-language string only. Every translated version is
+a `ValidationRuleTranslation` entry — `name` plus `errorMessage` — inside a `CustomObjectTranslation`
+component, deployed as a separate file per language. Deploying the object, or the rule, carries none of them.
+
+**When it bites you:** Multi-language orgs. A rule is edited in English, deploys cleanly, and non-English
+users keep seeing the old message — or see the English one — because the translation was never touched. The
+guide also warns that retrieving or deploying translations from a package can override existing translations,
+which appear in the Rename Tabs and Labels UI until reset.
+
+**How to avoid it:**
+- Add `CustomObjectTranslation` for every active language to the same manifest whenever a rule's
+  `errorMessage` changes.
+- Make "message changed → translations updated" a line in the rule's change history, not a tribal habit.
+- Rewording an error message is a translation-affecting change even when the logic is untouched.
+
+---
+
+## Compound Fields Cannot Be Used in a Validation Rule at All
+
+**What happens:** As of API version 20.0, validation rules can't have compound fields. Compound fields include
+addresses, first and last names, dependent picklists, and dependent lookups. `ISBLANK(BillingAddress)` or a
+rule that treats `Name` on Contact as one value does not fail at save time with a helpful message — it fails
+when the formula is compiled, at deploy or at save in Setup.
+
+**When it bites you:** "Billing address is required before an Account can be activated" is the single most
+requested validation rule and the compound field `BillingAddress` cannot express it.
+
+**How to avoid it:**
+- Validate the **components**: `BillingStreet`, `BillingCity`, `BillingPostalCode`, `BillingCountry` — each is
+  an ordinary field and each works in a formula.
+- For a person's name, validate `FirstName` and `LastName` separately, not `Name`.
+- For a dependent picklist, `ISPICKVAL` the controlling and dependent fields independently; the dependency
+  itself is enforced by the field configuration, not by the rule.
+- `admin/formula-fields` covers which field types are addressable in formula syntax generally.

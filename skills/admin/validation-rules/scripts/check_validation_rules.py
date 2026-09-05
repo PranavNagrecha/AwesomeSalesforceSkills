@@ -7,11 +7,26 @@ import argparse
 import json
 import sys
 import xml.etree.ElementTree as ET
+from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 
 
-METADATA_SUFFIXES = (".object-meta.xml", ".validationRule-meta.xml")
+# `.object` is metadata format (rules embedded in <CustomObject>);
+# `.object-meta.xml` and `.validationRule-meta.xml` are DX source format.
+METADATA_SUFFIXES = (".object", ".object-meta.xml", ".validationRule-meta.xml")
 SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+
+# Metadata API Developer Guide, ValidationRule: "As of API version 20.0,
+# validation rules can't have compound fields." Uppercase; matched against the
+# uppercased formula text.
+COMPOUND_FIELDS = (
+    "BILLINGADDRESS",
+    "SHIPPINGADDRESS",
+    "MAILINGADDRESS",
+    "OTHERADDRESS",
+    "GEOCODEACCURACY",
+)
 
 
 def local_name(tag: str) -> str:
@@ -19,10 +34,45 @@ def local_name(tag: str) -> str:
 
 
 def child_text(element: ET.Element, child_name: str) -> str:
+    """Text of the first matching child, or "" when the child is absent.
+
+    Deliberately loops instead of `element.find(a) or element.find(b)`:
+    a childless ElementTree Element is falsy, so `or` chains on find() silently
+    discard real leaf elements such as <active>false</active>.
+    """
     for child in element:
         if local_name(child.tag) == child_name:
             return (child.text or "").strip()
     return ""
+
+
+def has_child(element: ET.Element, child_name: str) -> bool:
+    """True when the child element is present, even if it is empty."""
+    for child in element:
+        if local_name(child.tag) == child_name:
+            return True
+    return False
+
+
+@dataclass(frozen=True)
+class Rule:
+    full_name: str
+    active: bool
+    formula: str
+    error_message: str
+    error_display_field: str
+    has_error_message_element: bool
+
+
+def read_rule(element: ET.Element, fallback_name: str) -> Rule:
+    return Rule(
+        full_name=child_text(element, "fullName") or fallback_name,
+        active=child_text(element, "active").lower() == "true",
+        formula=child_text(element, "errorConditionFormula"),
+        error_message=child_text(element, "errorMessage"),
+        error_display_field=child_text(element, "errorDisplayField"),
+        has_error_message_element=has_child(element, "errorMessage"),
+    )
 
 
 def iter_metadata_files(paths: list[Path]) -> list[Path]:
@@ -55,41 +105,85 @@ def emit_result(findings: list[str], summary: str) -> int:
     return 1 if normalized else 0
 
 
-def collect_rules(path: Path) -> list[tuple[str, bool, str, str]]:
+def collect_rules(path: Path) -> list[Rule]:
+    """Read every ValidationRule in a file.
+
+    Two shapes are supported: the metadata-format `.object` file, where rules
+    are repeated `<validationRules>` children of `<CustomObject>`, and the DX
+    source-format file whose root element is `<ValidationRule>` itself.
+    """
     root = ET.parse(path).getroot()
     root_type = local_name(root.tag)
-    rules: list[tuple[str, bool, str, str]] = []
+    rules: list[Rule] = []
 
     if root_type == "ValidationRule":
-        full_name = child_text(root, "fullName") or path.stem
-        active = child_text(root, "active").lower() == "true"
-        formula = child_text(root, "errorConditionFormula")
-        error_message = child_text(root, "errorMessage")
-        rules.append((full_name, active, formula, error_message))
+        rules.append(read_rule(root, fallback_name=path.stem))
         return rules
 
     if root_type != "CustomObject":
         return rules
 
     for child in root:
-        if local_name(child.tag) != "validationRules":
-            continue
-        full_name = child_text(child, "fullName") or "<unnamed rule>"
-        active = child_text(child, "active").lower() == "true"
-        formula = child_text(child, "errorConditionFormula")
-        error_message = child_text(child, "errorMessage")
-        rules.append((full_name, active, formula, error_message))
+        if local_name(child.tag) == "validationRules":
+            rules.append(read_rule(child, fallback_name="<unnamed rule>"))
     return rules
 
 
-def audit_rule(path: Path, name: str, active: bool, formula: str, error_message: str) -> list[str]:
-    findings: list[str] = []
-    upper_formula = formula.upper()
-    normalized_error = error_message.strip().lower()
+# Metadata API Developer Guide, ValidationRule: "The message must be 255
+# characters or less."
+ERROR_MESSAGE_MAX = 255
 
+
+def audit_rule(path: Path, rule: Rule) -> list[str]:
+    findings: list[str] = []
+    name = rule.full_name
+    upper_formula = rule.formula.upper()
+    message = rule.error_message
+    normalized_error = message.strip().lower()
+
+    # --- errorMessage: required, capped at 255, and useless when generic -----
+    if rule.active and not message.strip():
+        findings.append(
+            f"CRITICAL {path}::{name}: active rule has an empty or missing errorMessage; "
+            "errorMessage is a required element and the user sees nothing actionable"
+        )
+    elif not rule.has_error_message_element:
+        findings.append(
+            f"HIGH {path}::{name}: no errorMessage element; the deploy will be rejected"
+        )
+
+    if len(message) > ERROR_MESSAGE_MAX:
+        findings.append(
+            f"HIGH {path}::{name}: errorMessage is {len(message)} characters; "
+            f"the platform cap is {ERROR_MESSAGE_MAX}"
+        )
+    elif message.strip() and (len(message.strip()) < 20 or "validation error" in normalized_error):
+        findings.append(
+            f"MEDIUM {path}::{name}: error message is too generic to act on"
+        )
+
+    # --- $Profile.Name gating is an anti-pattern -----------------------------
+    if "$PROFILE.NAME" in upper_formula:
+        findings.append(
+            f"HIGH {path}::{name}: formula gates on $Profile.Name; a renamed profile "
+            "silently changes who the rule applies to. Use a Custom Permission"
+        )
+
+    if "$USER.ID" in upper_formula or "'005" in rule.formula or '"005' in rule.formula:
+        findings.append(
+            f"HIGH {path}::{name}: formula appears to reference a hardcoded User Id; "
+            "it dies when that person leaves"
+        )
+
+    # --- formula correctness -------------------------------------------------
     if "PRIORVALUE(" in upper_formula and "ISNEW()" not in upper_formula:
         findings.append(
             f"HIGH {path}::{name}: PRIORVALUE is used without an ISNEW guard"
+        )
+
+    if "ISCHANGED(" in upper_formula and "ISNEW()" not in upper_formula:
+        findings.append(
+            f"MEDIUM {path}::{name}: ISCHANGED without an ISNEW guard also fires on insert"
         )
 
     if "RECORDTYPE.NAME" in upper_formula:
@@ -107,14 +201,23 @@ def audit_rule(path: Path, name: str, active: bool, formula: str, error_message:
             f"REVIEW {path}::{name}: picklist logic has no explicit blank guard"
         )
 
-    if active and "$PERMISSION." not in upper_formula:
+    # Compound fields are not allowed in validation rules as of API version 20.0
+    for compound in COMPOUND_FIELDS:
+        if compound in upper_formula:
+            findings.append(
+                f"HIGH {path}::{name}: references the compound field {compound}; "
+                "validation rules can't use compound fields (API 20.0+). "
+                "Validate the component fields instead"
+            )
+            break
+
+    # --- bypass guard --------------------------------------------------------
+    # Custom metadata type rules (API 40.0+) fire on the metadata record save,
+    # not on business-record DML, so a data-load bypass is not expected there.
+    is_custom_metadata_type = "__MDT" in path.name.upper()
+    if rule.active and not is_custom_metadata_type and "$PERMISSION." not in upper_formula:
         findings.append(
             f"REVIEW {path}::{name}: no custom-permission bypass detected; confirm data-load and integration strategy"
-        )
-
-    if not error_message or len(error_message.strip()) < 20 or "validation error" in normalized_error:
-        findings.append(
-            f"MEDIUM {path}::{name}: error message is missing or too generic"
         )
 
     return findings
@@ -122,12 +225,41 @@ def audit_rule(path: Path, name: str, active: bool, formula: str, error_message:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Scan validation rule metadata for formula and error-message issues."
+        description=(
+            "Scan ValidationRule metadata for formula, bypass and error-message "
+            "issues. Reads both the metadata-format `.object` shape and the DX "
+            "source-format `.validationRule-meta.xml` shape."
+        )
     )
-    parser.add_argument("paths", nargs="+", help="Files or directories to scan")
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        help="Files or directories to scan (equivalent to --manifest-dir for a directory)",
+    )
+    parser.add_argument(
+        "--manifest-dir",
+        action="append",
+        default=[],
+        metavar="DIR",
+        help=(
+            "Directory to scan recursively, e.g. force-app/main/default/objects. "
+            "Repeatable."
+        ),
+    )
     args = parser.parse_args()
 
-    files = iter_metadata_files([Path(value) for value in args.paths])
+    targets = [Path(value) for value in list(args.paths) + list(args.manifest_dir)]
+    if not targets:
+        parser.error("provide at least one path or --manifest-dir")
+
+    missing = [str(target) for target in targets if not target.exists()]
+    if missing:
+        return emit_result(
+            [f"HIGH path does not exist: {', '.join(missing)}"],
+            f"Scanned 0 file(s); {len(missing)} supplied path(s) do not exist.",
+        )
+
+    files = iter_metadata_files(targets)
     if not files:
         return emit_result(
             ["HIGH no validation rule metadata files found"],
@@ -136,12 +268,33 @@ def main() -> int:
 
     findings: list[str] = []
     rule_count = 0
-    for path in files:
-        for rule in collect_rules(path):
-            rule_count += 1
-            findings.extend(audit_rule(path, *rule))
+    # fullName -> the files it was seen in. A rule name repeated across two
+    # files is either a botched source-format split or two objects fighting
+    # over one name in a manifest; both deploy unpredictably.
+    seen_names: dict[str, list[str]] = defaultdict(list)
 
-    summary = f"Scanned {rule_count} validation rule(s) across {len(files)} file(s); {len(findings)} finding(s) detected."
+    for path in files:
+        try:
+            rules = collect_rules(path)
+        except ET.ParseError as exc:
+            findings.append(f"CRITICAL {path}: file is not well-formed XML ({exc})")
+            continue
+        for rule in rules:
+            rule_count += 1
+            seen_names[rule.full_name].append(str(path))
+            findings.extend(audit_rule(path, rule))
+
+    for full_name, sources in sorted(seen_names.items()):
+        if len(sources) > 1:
+            findings.append(
+                f"HIGH {full_name}: duplicate rule fullName in {len(sources)} files "
+                f"({', '.join(sorted(sources))})"
+            )
+
+    summary = (
+        f"Scanned {rule_count} validation rule(s) across {len(files)} file(s); "
+        f"{len(findings)} finding(s) detected."
+    )
     return emit_result(findings, summary)
 
 

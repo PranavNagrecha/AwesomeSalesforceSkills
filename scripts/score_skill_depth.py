@@ -82,10 +82,11 @@ def score_skill(skill_dir: Path) -> dict:
     templates = list((skill_dir / "templates").glob("*")) if (skill_dir / "templates").exists() else []
     template_text = "".join(_read(p) for p in templates if p.is_file())
 
-    triggers = re.findall(r'^\s*-\s*"(.*)"\s*$', fm[fm.find("triggers:"):] if "triggers:" in fm else "", re.M)
-    # stop at the next top-level key
-    if "triggers:" in fm:
-        block = fm[fm.find("triggers:"):]
+    triggers: list[str] = []
+    # anchor on the YAML key at line start; the description prose may contain "triggers:"
+    key = re.search(r"^triggers:", fm, re.M)
+    if key:
+        block = fm[key.start():]
         nxt = re.search(r"\n[a-z][a-z-]*:", block[9:])
         block = block[: nxt.start() + 9] if nxt else block
         triggers = re.findall(r'^\s*-\s*"(.*)"\s*$', block, re.M)

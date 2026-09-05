@@ -1,6 +1,6 @@
 ---
 name: object-creation-and-design
-description: "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for designing the fields on the object - use admin/custom-field-creation. NOT for sharing rules or role hierarchy configuration - use admin/sharing-and-visibility. NOT for lookup-vs-master-detail and junction design - use data/data-model-design-patterns."
+description: "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for designing the fields on the object - use admin/custom-field-creation. NOT for sharing rules or role hierarchy configuration - use admin/sharing-and-visibility. NOT for lookup-vs-master-detail and junction design - use data/data-model-design-patterns. More triggers: 'custom object records not showing in search', 'sharing model greyed out on my object', 'auto number restarted at 1 after deploy', 'cannot create a queue for my custom object', 'CustomObject deploy failed enableBulkApi', 'field history tracking shows no rows'."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -8,14 +8,18 @@ well-architected-pillars:
   - Scalability
   - Operational Excellence
 triggers:
-  - "how do I create a new custom object in Salesforce"
-  - "what sharing model should I pick when creating a custom object"
-  - "I need to set up a new object with activities and history tracking"
-  - "how do I create a tab for a custom object so users can see it"
-  - "what features can I enable when creating a custom object"
-  - "what are the limits on custom objects per Salesforce edition"
+  - "create a new custom object in Salesforce"
+  - "pick the org-wide default sharing model for a new custom object"
+  - "custom object records do not show up in global search or SOSL"
   - "my custom object does not appear in the navigation bar"
-  - "creating and configuring a custom object"
+  - "sharing model is greyed out and I cannot create a sharing rule on my object"
+  - "cannot create a queue or assignment rule for a master-detail child object"
+  - "auto number restarted at 1 after redeploying the object"
+  - "CustomObject deploy fails with enableBulkApi or enableSharing error"
+  - "field history tracking is on but the history related list is empty"
+  - "records loaded through the API show a record ID instead of a name"
+  - "set up a custom object tab and its profile visibility"
+  - "write a deployable object-meta.xml for a new custom object"
 tags:
   - custom-objects
   - object-design
@@ -35,9 +39,9 @@ outputs:
   - "Tab creation steps"
   - "Review checklist before deploying the object to production"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # Object Creation and Design
@@ -62,18 +66,42 @@ The most common wrong assumption: "I can change the sharing model later." Changi
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before opening Object Manager. Each one maps to a decision that is fixed at save or expensive to reverse, and to a gotcha in `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who owns a record, and does anything ever need to route or reassign one?" | An object on the detail side of a master-detail relationship has no Owner field, so it can never have a queue, a sharing rule, or a manual share (gotchas #5) | The relationship type and the OWD together, decided once instead of twice |
+| "Does the name of a record carry business meaning, or is it just a label?" | Fixes Text vs Auto Number, which cannot be changed after save; an API insert with an unmapped Text name silently stores the record ID as the name (gotchas #9) | The `nameField` block, including `displayFormat` and `startingNumber` if Auto Number |
+| "Which field changes must be auditable, and who is asking?" | `enableHistory` tracks nothing on its own, the ceiling is twenty fields per object, and there is no retention lever without Field Audit Trail (gotchas #11) | The tracked-field list, with a named audit reason per field |
+| "Will users find these records by typing a name into search?" | Search is off by default on new custom objects and is switched off again after 120 unsearched days (gotchas #8) | An explicit `enableSearch` value and a search check in the post-deploy test |
+| "Does an integration read or write this object, and through which API?" | `enableBulkApi`, `enableSharing` and `enableStreamingApi` deploy as a set; an External ID field is far cheaper to add now than after the first load | The API surface, the three flags set consistently, and the External ID decision |
+| "How many custom objects does the org already have, including managed packages?" | Managed-package objects consume the same edition allocation, so the headroom is smaller than the object list suggests (gotchas #4) | A real number from Setup rather than a count of the objects someone remembers |
+| "Is this org an Experience Cloud org?" | `externalSharingModel` is a second OWD that governs external users and is separate from `sharingModel` | A deliberate external OWD instead of whatever the org default happened to be |
+
+What a proper configuration adds over just creating the object: the permanent choices (API name, name field type, relationship side) are made once with the routing and audit requirements already known, and the object arrives in production searchable, tracked, deployable and owned rather than needing a second pass that the platform will not allow.
+
+---
+
 ## Core Concepts
 
 ### 1. Object Name and API Name Are Permanent
 
 The **Object Name** (API name) is set at creation and cannot be changed after the object is saved. Salesforce appends `__c` automatically; the full API name for an object with Object Name `Project_Request` is `Project_Request__c`.
 
-Rules for the Object Name:
-- Maximum 40 characters (the name itself, before `__c`)
-- Alphanumeric characters and underscores only
-- Must start with a letter
-- Cannot end with an underscore
-- Cannot contain consecutive underscores
+Rules for the Object Name — the Metadata API states them for the component `fullName`: it "can contain only underscores and alphanumeric characters. It must be unique, begin with a letter, not include spaces, not end with an underscore, and not contain two consecutive underscores" (api_meta.txt L47322–47332):
+
+| Rule | Effect if broken |
+|---|---|
+| Alphanumeric characters and underscores only, no spaces | Deploy or save rejected |
+| Must begin with a letter | Deploy or save rejected |
+| Cannot end with an underscore | Deploy or save rejected |
+| Cannot contain two consecutive underscores | Deploy or save rejected — `__` is reserved as the namespace and suffix separator |
+| Must be unique in the org | Collides with an existing object, including managed-package objects |
+| Maximum 40 characters, before `__c` | Save rejected. UNVERIFIED (2026-09-04): the 40-character figure is not stated for `CustomObject` in the Metadata API Developer Guide or the Object Reference; the guide gives it for other components' `fullName`, and help.salesforce.com cannot be fetched to confirm it for custom objects. The other five rules above are quoted from the guide. |
+
+The object `label` and `description` do have grounded limits: labels should be "unique across all standard, custom, and external objects in the org" (api_meta.txt L42168–42171), and `description` takes "a maximum of 1000 characters" (api_meta.txt L42007).
 
 The **Label** and **Plural Label** are user-facing and can be changed any time via Setup. Choose the Object Name carefully — every piece of code, formula, flow reference, integration mapping, and change set that references this object uses the API name. Renaming requires a find-and-replace across all org metadata.
 
@@ -81,20 +109,28 @@ The **Record Name** field type is also permanent after save: either **Text** (us
 
 ### 2. Features Cannot Be Disabled Once Enabled
 
-The following features can be enabled on a custom object and **cannot be disabled after enabling**:
+The following features can be enabled on a custom object and are documented in this skill as **not disable-able after enabling**:
 
-| Feature | What it enables | Important note |
-|---------|----------------|----------------|
-| Allow Activities | Tasks and Events can be logged on records | Cannot be turned off after first activity is logged |
-| Track Field History | Tracks changes to up to 20 fields per object | History records are retained for 18 months. Cannot be turned off. |
-| Allow in Chatter | Feed posts on record pages | Cannot be turned off once Chatter posts exist on records |
+| Feature | Metadata element | What it enables | Important note |
+|---|---|---|---|
+| Allow Activities | `enableActivities` | Tasks and Events can be logged on records | Cannot be turned off after the first activity is logged |
+| Track Field History | `enableHistory` | Turns on the History framework; `trackHistory` on each field selects what is captured | Cannot be turned off |
+| Allow in Chatter | `enableFeeds` | Feed posts on record pages | Cannot be turned off once Chatter posts exist on records |
 
-Features that can safely be toggled at any time:
-- Allow Reports
-- Allow Bulk API Access
-- Allow Streaming API Access
-- Search (global search indexing)
-- Allow Notes
+UNVERIFIED (2026-09-04): the "cannot be turned off" claims in this table are not stated in the Metadata API Developer Guide or the Object Reference, where `enableActivities`, `enableHistory` and `enableFeeds` are plain booleans with no one-way constraint recorded; the supporting Salesforce Help pages listed in `references/well-architected.md` cannot be fetched to re-confirm them. Two things the guides *do* say cut against the strongest reading: field-level tracking can be switched off ("in the online application, you can specify which fields are tracked or not tracked at any time" — object_reference.txt L110675), and turning it off "stops further changes from being recorded, but the history data is not deleted" (object_reference.txt L110677). Treat these as one-way *in practice* — the data and framework associations persist even where a checkbox clears — and verify against the org before telling a customer a checkbox is permanently locked.
+
+Retention is also narrower than "18 months" suggests: 18 months is the default and maximum of `archiveAfterMonths` on `HistoryRetentionPolicy`, a component "only available to users with the RetainFieldHistory permission" (api_meta.txt L44075–44077, L44098–44105). Without Field Audit Trail it is not a setting the org has. The twenty-field ceiling is grounded: "up to a total of twenty fields (standard or custom) can be tracked for a given object" (object_reference.txt L110674).
+
+Features that are ordinary toggles, with the caveats that matter:
+
+| Feature | Metadata element | Caveat |
+|---|---|---|
+| Allow Reports | `enableReports` | — |
+| Allow Bulk API Access | `enableBulkApi` | Must be deployed together with `enableSharing` and `enableStreamingApi` (api_meta.txt L42013–42019) |
+| Allow Streaming API Access | `enableStreamingApi` | Same trio |
+| Allow Sharing | `enableSharing` | Same trio |
+| Search | `enableSearch` | Off by default on new custom objects since API 35.0, and switched off again after 120 unsearched days (api_meta.txt L42062–42071) |
+| Allow Notes | — | — |
 
 Enable only the features that are known to be required. Adding Activities to an object that will have millions of records has storage and query-plan implications. History tracking consumes storage and counts against the History object query row limits.
 
@@ -102,14 +138,16 @@ Enable only the features that are known to be required. Adding Activities to an 
 
 The OWD for a custom object controls the **baseline access** any user has to records they do not own. All sharing expansions (sharing rules, manual sharing, role hierarchy) grant access above the OWD floor — they cannot restrict below it.
 
-| OWD Setting | Who can read | Who can edit |
-|-------------|-------------|-------------|
-| Private | Record owner and users above in role hierarchy | Record owner and users above in role hierarchy |
-| Public Read Only | All internal users | Record owner and users above in role hierarchy |
-| Public Read/Write | All internal users | All internal users |
-| Controlled by Parent | Inherited from master-detail parent record | Inherited from master-detail parent record |
+| OWD Setting | `sharingModel` value | Who can read | Who can edit |
+|---|---|---|---|
+| Private | `Private` | Record owner and users above in role hierarchy | Record owner and users above in role hierarchy |
+| Public Read Only | `Read` | All internal users | Record owner and users above in role hierarchy |
+| Public Read/Write | `ReadWrite` | All internal users | All internal users |
+| Controlled by Parent | `ControlledByParent` | Inherited from master-detail parent record | Inherited from master-detail parent record |
 
-> Note: **Public Read/Write/Transfer** (which also allows any user to change record ownership) is available only on the standard Case and Lead objects — it is not a valid OWD option for custom objects.
+The full `SharingModel` enum also contains `ReadWriteTransfer`, `FullAccess`, `ControlledByCampaign` and `ControlledByLeadOrContact`, but the guide scopes them: "accounts, opportunities, and custom objects support `Private`, `Read` and `ReadWrite` values" (api_meta.txt L45801–45814). **Public Read/Write/Transfer**, which also lets any user change record ownership, is therefore not an option on a custom object. `ControlledByParent` is what a detail object carries and is not a free choice — it follows from the master-detail relationship.
+
+`sharingModel` is settable through the Metadata API only from version 30.0; in version 29.0 and earlier "this field is read-only ... you must use the Salesforce user interface" (api_meta.txt L42250–42256). `externalSharingModel` is a second, separate OWD governing external users (api_meta.txt L42132–42134).
 
 **Controlled by Parent** is only available when the object has at least one Master-Detail relationship. When this OWD is selected, users can only access child records if they can access the parent — manual sharing and sharing rules cannot be created for the child object.
 
@@ -125,6 +163,8 @@ Choose the most restrictive OWD that satisfies the baseline access requirement, 
 | Enterprise | 200 |
 | Performance, Unlimited | 2,000 |
 | Developer | 400 |
+
+UNVERIFIED (2026-09-04): the per-edition numbers above are carried forward from the edition-allocation pages listed in `references/well-architected.md`; they are not stated in the Metadata API Developer Guide or the Object Reference, and help.salesforce.com cannot be fetched to re-confirm them for Summer '26. Use the live count in Setup rather than this table when the answer decides whether a project can proceed.
 
 These limits count all custom objects in the org, including those from installed managed packages. Check the current count in Setup → Company Information → Used Custom Objects before planning a data model that adds many objects. Approaching the limit blocks object creation.
 
@@ -148,7 +188,7 @@ These limits count all custom objects in the org, including those from installed
 8. **Optionally** check "Launch New Custom Tab Wizard after saving" to proceed directly to tab setup. Or skip and create the tab separately.
 9. Click **Save**.
 10. If Track Field History was enabled, immediately go to Fields & Relationships → **Set History Tracking** and select which fields (up to 20) to track. Enabling the feature without configuring fields means nothing is tracked.
-9. After saving: create the required fields (see `custom-field-creation` skill), set up page layouts and record types if needed.
+11. After saving: create the required fields (`admin/custom-field-creation`), then page layouts and record types if needed (`admin/record-types-and-page-layouts`).
 
 ### Pattern 2: Review / Audit — Validate an Existing Custom Object Configuration
 
@@ -197,13 +237,13 @@ Note: A tab is required for end users to see the object in the navigation and in
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the questions above and fill `templates/object-creation-and-design-template.md` — the permanent choices (API name, `nameField` type, master-detail vs lookup, OWD) are settled here, not in Setup
+2. Check headroom — Setup → Company Information → Used Custom Objects for the live count including managed-package objects, and confirm the target object does not already exist under a different label
+3. Write the metadata — copy the object, field, master-detail and tab shapes from `references/metadata-examples.md`, keeping `enableSearch`, the `enableBulkApi`/`enableSharing`/`enableStreamingApi` trio and `externalSharingModel` explicit rather than defaulted
+4. Run the checker — `python3 scripts/check_object_creation_and_design.py --manifest-dir force-app/main/default` and clear every ISSUE and WARN before deploying
+5. Deploy to a sandbox with `sf project deploy start --manifest manifest/package.xml --dry-run` first, then for real; keep `Profile` and `PermissionSet` out of the same manifest unless the access change is intentional (`references/gotchas.md` #10)
+6. Verify in the org — the four Setup checks and the two SOQL queries at the end of `references/metadata-examples.md`, including a record edit that must produce a `__History` row
+7. Hand off — record the tracked-field audit reasons and the `startingNumber` value in the object description, then continue with `admin/custom-field-creation` and `admin/permission-set-architecture`
 
 ---
 
@@ -222,7 +262,10 @@ Before deploying the object to production:
 - [ ] Tab created if the object is user-facing; tab visibility set per profile.
 - [ ] Object is included in the deployment artifact (change set or SFDX manifest) along with any page layouts and profiles.
 - [ ] Custom object count verified against edition limit before creating additional objects.
-- [ ] External ID field planned if external systems will reference records by a non-Salesforce ID.
+- [ ] `enableSearch` set explicitly if users must find records by name; search is off by default on new custom objects.
+- [ ] `enableBulkApi`, `enableSharing` and `enableStreamingApi` set as a set, or all left alone.
+- [ ] `externalSharingModel` set deliberately if the org has Experience Cloud enabled.
+- [ ] `scripts/check_object_creation_and_design.py --manifest-dir <source>` run clean against the metadata being deployed.
 
 ---
 
@@ -233,6 +276,12 @@ Before deploying the object to production:
 2. **Activities and Track Field History cannot be disabled after enabling** — If you enable Activities on a config/lookup object (e.g. a Status master table), that object is now permanently associated with the Activity framework. The feature checkbox becomes read-only after the first Activity record is linked or after the first field history entry is created. Enable these only when there is a real user need.
 
 3. **Custom objects count includes managed package objects** — The per-edition limit on custom objects counts all objects in the org, including those installed via managed packages (e.g. Salesforce CPQ, Health Cloud, NPSP). An Enterprise org licensed for 200 custom objects may already have 80+ consumed by managed packages. Always check Setup → Company Information → Used Custom Objects before beginning a large data model design.
+
+4. **A detail object has no Owner, so nothing can route to it** — put a custom object on the detail side of a master-detail relationship and it can never have a queue, a sharing rule, or a manual share. This is the single most expensive object-design mistake to reverse.
+
+5. **Two defaults bite silently** — new custom objects are not searchable, and an Auto Number `startingNumber` cannot be retrieved, so a routine retrieve-edit-redeploy drops it.
+
+Deeper treatment, with the guide lines each behaviour rests on, in `references/gotchas.md`.
 
 ---
 
@@ -247,10 +296,24 @@ Before deploying the object to production:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `CustomObject`, `CustomField` and `CustomTab` XML, the package.xml, and the post-deploy verification |
+| `references/gotchas.md` | Eleven platform behaviours that break object designs — Owner-less detail objects, lost auto-number counters, search defaults, whole-file replacement |
+| `references/examples.md` | Two worked object builds plus the "enable everything just in case" anti-pattern |
+| `references/well-architected.md` | Justifying the OWD and name-field trade-offs, and the source list behind the claims in this skill |
+| `references/llm-anti-patterns.md` | Self-checking generated object configuration before handing it over |
+
+---
+
 ## Related Skills
 
-- `custom-field-creation` — use immediately after object creation to add fields to the new object
-- `sharing-and-visibility` — use when configuring sharing rules, role hierarchy, and access above the OWD baseline
-- `data-model-design-patterns` — use when deciding whether to create a new object vs. adding fields to an existing one, or selecting relationship types
-- `record-types-and-page-layouts` — use when the object requires multiple record types with different page layouts per user profile
-- `permission-set-architecture` — use when designing profile and permission set access to the new object's CRUD permissions
+- admin/custom-field-creation — the fields on the object, immediately after it exists
+- admin/lookup-and-relationship-design — choosing lookup vs master-detail, which decides whether the object can have an Owner at all
+- admin/sharing-and-visibility — sharing rules, role hierarchy and everything that opens access above the OWD floor
+- admin/record-types-and-page-layouts — record types and per-profile layouts once the object is saved
+- admin/list-views-and-compact-layouts — the list views and the compact layout named by `compactLayoutAssignment`
+- admin/permission-set-architecture — object and tab access, which the object file itself does not grant
+- data/data-model-design-patterns — whether a new object is the right answer at all, and junction-object design

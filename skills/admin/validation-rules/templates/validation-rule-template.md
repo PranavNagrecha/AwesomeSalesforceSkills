@@ -8,33 +8,34 @@ Use one of these for each validation rule in your org. Store completed copies in
 
 | Property | Value |
 |----------|-------|
-| **Object** | TODO: e.g. Opportunity |
-| **Rule API Name** | TODO: e.g. `Opportunity_CloseDate_RequiredWhenClosed` |
-| **Rule Label** | TODO: e.g. "Close Date Required When Closed" |
+| **Object** | `<Object API name>` — e.g. Opportunity |
+| **Rule API Name** | `<Object>_<Field_or_Concept>_<Action>` — e.g. `Opportunity_CloseDate_RequiredWhenClosed` |
+| **Rule Label** | `<human-readable label>` — e.g. "Close Date Required When Closed" |
 | **Status** | Active / Inactive |
-| **Author** | TODO |
-| **Deployment Date** | TODO: YYYY-MM-DD |
-| **Last Reviewed** | TODO: YYYY-MM-DD |
-| **Business Owner** | TODO: Name / Team |
+| **Author** | `<name>` |
+| **Deployment Date** | `<YYYY-MM-DD>` |
+| **Last Reviewed** | `<YYYY-MM-DD>` |
+| **Business Owner** | `<name or team>` |
 
 ---
 
 ## Business Justification
 
-**Problem this solves:**
-TODO: What data quality issue does this rule prevent? Be specific.
+**Problem this solves:** what data-quality issue does this rule prevent? Be specific.
+
 e.g. "Opportunities were being closed without a Close Date, which broke the revenue forecast report and the Mulesoft integration that uses CloseDate for contract generation."
 
-**Business rule in plain English:**
-TODO: One sentence. e.g. "Close Date is required whenever an Opportunity Stage is Closed Won or Closed Lost."
+**Business rule in plain English:** one sentence.
+
+e.g. "Close Date is required whenever an Opportunity Stage is Closed Won or Closed Lost."
 
 ---
 
 ## Formula
 
 ```
-TODO: Paste formula here
-
+// Paste the errorConditionFormula here, in the canonical order:
+// bypass, then relevance gate, then business condition.
 // Example:
 AND(
   OR(
@@ -46,8 +47,8 @@ AND(
 )
 ```
 
-**Formula explanation:**
-TODO: Describe what each clause does in plain English.
+**Formula explanation:** what each clause does in plain English.
+
 - Line 1-3: Checks if Stage is Closed Won or Closed Lost
 - Line 4: Checks if Close Date is blank
 - Line 5: Excludes users with the bypass Custom Permission
@@ -56,11 +57,13 @@ TODO: Describe what each clause does in plain English.
 
 ## Error Message
 
-**Text:**
-TODO: Full error message text
+**Text:** the full message, 255 characters or fewer.
+
 e.g. "Close Date is required when an Opportunity is Closed. Enter a Close Date to save this record."
 
-**Placement:** ☐ Field-level (on: TODO field name) / ☐ Page-level (top of page)
+**Placement:** ☐ Field-level — `errorDisplayField` = `<field API name>` / ☐ Page-level (top of page)
+
+If field-level: confirm the field is on the page layout for every record type in scope. When it is not, `errorDisplayField` changes automatically to Top of Page.
 
 ---
 
@@ -68,8 +71,8 @@ e.g. "Close Date is required when an Opportunity is Closed. Enter a Close Date t
 
 | Dimension | Value |
 |-----------|-------|
-| Record Types | ☐ All record types / ☐ Specific: TODO |
-| User scope | ☐ All users / ☐ Specific bypass: TODO Custom Permission name |
+| Record Types | ☐ All record types / ☐ Specific: `<RecordType.DeveloperName list>` |
+| User scope | ☐ All users / ☐ Specific bypass: `<Custom Permission API name>` |
 | Trigger condition | ☐ Insert and Edit / ☐ Insert only (uses ISNEW()) / ☐ Edit only |
 
 ---
@@ -78,9 +81,9 @@ e.g. "Close Date is required when an Opportunity is Closed. Enter a Close Date t
 
 | Bypass Type | Implementation | Who Has It |
 |-------------|---------------|------------|
-| ☐ Custom Permission | Permission: `TODO` — granted via Permission Set: `TODO` | TODO: Integration user, Admin |
-| ☐ Record Type exclusion | Record Types excluded: TODO | N/A |
-| ☐ Profile check | Profile: TODO | N/A — not recommended, document if used |
+| ☐ Custom Permission | Permission: `<API name>` — granted via Permission Set: `<API name>` | `<integration user, migration user, admin>` |
+| ☐ Record Type exclusion | Record Types excluded: `<DeveloperName list>` | N/A |
+| ☐ Profile check | Profile: `<name>` | N/A — not recommended; `$Profile.Name` breaks silently when the profile is renamed |
 | ☐ No bypass | ⚠️ Flag: data migrations and integrations will be affected | — |
 
 ---
@@ -89,22 +92,23 @@ e.g. "Close Date is required when an Opportunity is Closed. Enter a Close Date t
 
 | Scenario | Setup | Expected Result | Tested By | Date |
 |----------|-------|----------------|-----------|------|
-| Valid record — should save | TODO: Describe valid state | ✅ No error | TODO | |
-| Invalid record — should error | TODO: Describe invalid state | ✅ Error shown: "[error message]" | TODO | |
-| Bypass user — should save | Assign bypass perm set, set invalid state | ✅ No error (bypass active) | TODO | |
-| Integration user | API call with invalid data + bypass PS | ✅ No error | TODO | |
-| Wrong Record Type | If scoped: test with out-of-scope RT | ✅ No error (rule doesn't apply) | TODO | |
-| PRIORVALUE (if used) | Test on new record (insert) | ✅ No unexpected error | TODO | |
+| Valid record — should save | `<describe the valid state>` | No error | `<tester>` | |
+| Invalid record — should error | `<describe the invalid state>` | Error shown, attached to the `errorDisplayField` | `<tester>` | |
+| Bypass user — should save | Assign the bypass Permission Set, set the invalid state | No error (bypass active) | `<tester>` | |
+| Integration user | API call with invalid data + bypass PS | No error | `<tester>` | |
+| Wrong Record Type | If scoped: save with an out-of-scope record type | No error (rule doesn't apply) | `<tester>` | |
+| PRIORVALUE (if used) | Insert a new record | No unexpected error (`NOT(ISNEW())` guard holds) | `<tester>` | |
+| Apex regression | `OpportunityValidationRuleTest` from `references/metadata-examples.md` | Both tests pass: rule fires, bypass suppresses | `<tester>` | |
 
 ---
 
 ## Dependencies and Related Rules
 
-**Conflicts with:** TODO: List any rules that might conflict (opposite conditions on same fields)
+**Conflicts with:** rules with opposite conditions on the same fields. Evaluation order across rules is not guaranteed, so two rules must never depend on each other's outcome.
 
-**Depends on:** TODO: List any rules or automations that must run before/after this rule
+**Depends on:** automations that run before this rule in the order of execution — before-save flows (step 3) and before triggers (step 4) both write values this rule (step 5) will see. Note any workflow field update on these fields: validation rules are **not** re-run after a workflow field update re-saves the record.
 
-**Affects integrations:** ☐ Yes — TODO: name of integration | ☐ No
+**Affects integrations:** ☐ Yes — `<integration name>` | ☐ No
 
 **Affects data loads:** ☐ Yes — bypass required | ☐ No
 
@@ -114,4 +118,6 @@ e.g. "Close Date is required when an Opportunity is Closed. Enter a Close Date t
 
 | Date | Change | Author | Reason |
 |------|--------|--------|--------|
-| TODO | Created | TODO | TODO |
+| `<YYYY-MM-DD>` | Created | `<name>` | `<why now>` |
+
+Any change to `errorMessage` is a translation-affecting change: update the matching `ValidationRuleTranslation` entry in the `CustomObjectTranslation` for every active language in the same deploy.

@@ -1,6 +1,6 @@
 ---
 name: record-types-and-page-layouts
-description: "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for layout explosion across many profiles — use admin/record-type-strategy-at-scale. NOT for sharing rules — use admin/sharing-and-visibility. NOT for FLS — use admin/permission-sets-vs-profiles."
+description: "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms', 'business process', 'recordTypeVisibilities', 'layoutAssignments', 'record type deploy failed', 'businessProcess required', 'layout assignment matrix'. NOT for layout explosion across many profiles — use admin/record-type-strategy-at-scale. NOT for sharing rules — use admin/sharing-and-visibility. NOT for FLS — use admin/permission-sets-vs-profiles."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,12 +14,20 @@ triggers:
   - "record type missing after package install"
   - "how do I simplify too many page layouts"
   - "dynamic forms not showing the right fields"
+  - "record type deploy fails with businessProcess required"
+  - "record type deploy fails with businessProcess not allowed"
+  - "wildcard package.xml did not retrieve any record types"
+  - "recordTypeVisibilities disappeared from the profile after retrieve"
+  - "permission set will not let me assign a page layout"
+  - "picklist values went blank after a record type change"
+  - "required field on the layout is still blank on API-created records"
+  - "which profile gets which page layout for this record type"
 inputs: ["process differences", "page requirements", "picklist variation needs"]
 outputs: ["record type strategy", "layout simplification findings", "ui model recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in UX and data architecture. Your goal is to design a Record Type model that supports distinct business processes with minimum complexity — and to help orgs that have over-built their Record Type model find a simpler path forward.
@@ -35,6 +43,22 @@ Gather if not available:
 - Are the differences in picklist values, page layouts, or both?
 - Is Lightning Experience enabled? (Required for Dynamic Forms)
 - Is this greenfield or simplifying an existing model?
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Object Manager. Each one maps to a way this model fails in production, and an LLM that skips them produces a record type that deploys cleanly and nobody can select.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which picklist values differ between these processes, field by field?" | If nothing differs, the requirement is a layout or a Dynamic Forms problem, not a record type | The `picklistValues` blocks, and the evidence that a record type is warranted at all |
+| "Is this object Lead, Opportunity, Solution, or Case?" | Those four require a `businessProcess`; every other object forbids one, and both mistakes are deploy failures | Whether a `BusinessProcess` must be authored alongside the record type (gotchas #6) |
+| "Which profile does each affected user actually hold?" | Permission sets grant record type *visibility* only — the default record type and the page layout assignment exist solely on `Profile` | The profile × record type × layout matrix, not a per-record-type layout list |
+| "Do records already exist on the record type we are changing or retiring?" | Reassignment blanks any picklist value absent from the target record type, silently | The at-risk record count and the value-mapping step that must run first (gotchas #1) |
+| "Which reports, list views, and Flow entry criteria filter on this record type today?" | Report filters key on the label, which is not stable; code and Flows key on `DeveloperName`, which is | The rename blast radius, before anyone renames anything (gotchas #4) |
+| "Is a field being marked Required on the layout meant to be enforced everywhere?" | Layout `Required` binds to that layout only — API, Flow, and every other layout ignore it | A decision between field-level `required` and a record-type-scoped validation rule (gotchas #11) |
+| "Are Person Accounts enabled on this org?" | Person Account record types are a separate model, and the Metadata API will not round-trip their custom picklist values | A separate design track and a manual verification step for the picklist matrix (gotchas #2, #9) |
+
+What a proper configuration adds over just creating the record type: the record type is selectable by the right users with the right default, every profile lands on an intended page layout instead of falling through to a default, the picklist matrix survives a scratch-org rebuild, and no existing record loses a field value on the way there.
 
 ## How This Skill Works
 
@@ -116,13 +140,13 @@ The Master Record Type:
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Justify the record type — run the "Do you actually need a Record Type?" table above. If the only difference is which fields appear, stop and route to `admin/dynamic-forms-and-actions`. Record the outcome in `templates/record-type-design-template.md`
+2. Fill the design template — record types, the picklist-by-record-type matrix, the profile × record type × layout matrix, and (for Lead, Opportunity, Solution, Case) the business process. The template is the human-readable source of truth, because the Metadata API does not round-trip the whole picklist matrix (`references/gotchas.md` #9)
+3. Write the metadata — copy the shapes in `references/metadata-examples.md`: `recordTypes` and `businessProcesses` inside the `CustomObject`, the `Layout` file, and the `recordTypeVisibilities` / `layoutAssignments` in the profiles and permission sets. Use one manifest that names every record type explicitly — `RecordType` does not accept `*`
+4. Check before deploying — `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default`. It flags layout assignments pointing at inactive record types, missing business processes on the four objects that need them, record types nobody can see, and objects past the count threshold
+5. Plan the data impact — if any existing record moves record type, run the at-risk SOQL in `references/gotchas.md` #1 and migrate the picklist values *before* the reassignment
+6. Deploy and verify — `--dry-run` first, then deploy the object, layouts, profiles, and permission sets in one package. Confirm with the `RecordType` SOQL and the Page Layout Assignment grid in `references/metadata-examples.md`
+7. Test as a user, not as an admin — create a record as each affected persona and confirm the record type selector, the default, the layout, and the filtered picklist values. System Administrator sees everything and will not reproduce the failure
 
 ---
 
@@ -134,6 +158,9 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - **Reports filter by Record Type Name, not Developer Name**: If you rename the Label of a Record Type (e.g. "New Biz" → "New Business"), all report filters using that RT name break. Developer Name is stable; Label is not. Document this before any RT renaming.
 - **Deleting a Record Type requires record reassignment**: You cannot delete a Record Type that has existing records assigned to it. You must first bulk-update those records to a different RT. In large orgs, this can be a significant data operation. Always check record count before planning a deletion.
 - **Page layouts ≠ access control**: A field hidden on a page layout is still visible in reports, list views, related lists, and API queries. If you need to hide a field from a user, use FLS — not a page layout. Page layouts are UX tools, not security tools.
+- **`businessProcess` is mandatory on four objects and banned everywhere else**: Lead, Opportunity, Solution, and Case record types must name one; every other object rejects one. Both directions fail the deploy (`references/gotchas.md` #6).
+- **A permission set cannot assign a page layout or a default record type**: `PermissionSet.recordTypeVisibilities` carries only `recordType` and `visible`. `layoutAssignments` and `default` exist only on `Profile`, so a profile-free assignment model still leaves layouts on the profile (`references/gotchas.md` #8, `references/metadata-examples.md`).
+- **`RecordType` does not accept the `*` wildcard in package.xml**: a wildcard manifest retrieves the object and its layouts but no record types, so a "full" source snapshot quietly omits them (`references/metadata-examples.md`).
 
 ## Proactive Triggers
 
@@ -152,8 +179,26 @@ Surface these WITHOUT being asked:
 | Migration plan                    | RT reassignment steps + picklist impact assessment + sandbox steps  |
 | Do I need a Record Type?          | Decision framework result + recommended alternative if no            |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `RecordType`, `BusinessProcess`, `Layout`, and profile/permission-set assignment XML, the package.xml, and the verification SOQL |
+| `references/gotchas.md` | Eleven platform behaviours that cause most record type and layout incidents — picklist wipes, deploy failures, profile-diff noise, and layout `Required` that enforces nothing |
+| `references/examples.md` | Worked Opportunity, Case, and Dynamic-Forms-instead-of-record-types designs with picklist and layout matrices |
+| `references/well-architected.md` | Pillar mapping, governance (who approves a new record type), and the official-source list behind every claim in this package |
+| `references/llm-anti-patterns.md` | Self-checking generated output — the five ways an assistant gets record types wrong |
+| `templates/record-type-design-template.md` | Capturing the design before building it: the decision, the matrices, the migration plan, and the test protocol |
+
+---
+
 ## Related Skills
 
 - **admin/permission-sets-vs-profiles**: Use when Record Type availability or defaults are really an access-assignment problem. NOT when the main question is page design or picklist architecture.
 - **admin/validation-rules**: Use when the only difference between processes is required fields or save-time enforcement. NOT when you truly need different picklist sets or page experiences.
 - **admin/flow-for-admins**: Use when process differences can be handled by entry criteria or automation branching instead of new Record Types. NOT when the requirement is record-create UX or picklist segmentation.
+- **admin/dynamic-forms-and-actions**: Use when the only difference between processes is which fields appear, and the org is Lightning. NOT when picklist values differ by process.
+- **admin/record-type-strategy-at-scale**: Use when the record type and layout count has already exploded across many objects or profiles. NOT for designing a single object's model.
+- **admin/record-type-id-management**: Use when code, Flows, or data loads need to resolve a Record Type Id without hardcoding it. NOT for the design decision itself.
+- **admin/picklist-and-value-sets**: Use when the underlying value set (global vs local, restricted, dependent) is the real question. NOT for which record type exposes which subset.
+- **admin/permission-set-architecture**: Use when the assignment side needs designing — which permission set grants record type visibility, and which profile still owns the default and the layout.

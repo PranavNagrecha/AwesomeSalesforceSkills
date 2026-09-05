@@ -1,6 +1,6 @@
 ---
 name: validation-rules
-description: "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation — use admin/flow-for-admins for that."
+description: "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality', 'errorConditionFormula', 'errorDisplayField', 'errorMessage 255 characters', 'ValidationRule metadata', 'validationRule-meta.xml', 'deploy validation rule inactive', 'bypass custom permission', 'FIELD_CUSTOM_VALIDATION_EXCEPTION', 'validation rule on custom metadata type', 'compound field validation rule'. NOT for Flow-based validation — use admin/flow-for-admins for that."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -9,6 +9,7 @@ well-architected-pillars:
 tags: ["validation-rules", "data-quality", "bypass", "formulas", "integrations"]
 triggers:
   - "validation rule is blocking an API integration"
+  - "validation rule blocks data loader import"
   - "rule is firing when it should not"
   - "how do I bypass a validation rule for admins"
   - "validation rule not triggering on insert"
@@ -16,12 +17,21 @@ triggers:
   - "user checkbox bypass instead of custom permission"
   - "hardcoded user id in validation rule"
   - "how do I write a validation rule with multiple conditions"
-inputs: ["business rule", "exception path", "integration constraints"]
-outputs: ["validation design guidance", "rule review findings", "bypass recommendations"]
+  - "write the validation rule XML so I can deploy it"
+  - "deploy a validation rule but leave it inactive"
+  - "validation rule error message shows at top of page instead of next to the field"
+  - "records exist that violate an active validation rule"
+  - "validation rule wont fire when the opportunity line item changes the amount"
+  - "wildcard in package.xml is not retrieving my validation rules"
+  - "error message is too long to save the validation rule"
+  - "write an apex test that proves the validation rule fires"
+  - "cant write a validation rule on the billing address"
+inputs: ["business rule", "exception path", "integration constraints", "object and field API names", "record types in scope", "which users or integrations must bypass"]
+outputs: ["validation design guidance", "rule review findings", "bypass recommendations", "deployable ValidationRule XML plus package.xml", "Apex tests that assert the rule fires and that the bypass suppresses it"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.
@@ -36,6 +46,24 @@ Gather if not available:
 - Are there Record Types this rule should be scoped to?
 - Does an integration or data loader write to this object?
 - Does an admin or specific user need to bypass this rule?
+
+## Questions to Ask Before Configuring
+
+Ask these before writing a formula. Each one traces to a behaviour in `references/gotchas.md` that no amount of formula care recovers from once the rule ships.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which field does the user actually edit to cause this — the one on the record, or a child record?" | Validation rules don't fire on an Opportunity when an opportunity product changes it, so a rule guarding `Amount` never runs in a line-item-driven process | The right object for the rule, or a decision to use a record-triggered flow on the child instead |
+| "Is any workflow field update or automation writing this field after save?" | Custom validation rules are not re-run after a workflow field update re-saves the record, so the rule is not a database invariant | Either a migration of that field update to a before-save flow, or an explicit acceptance that violating records will exist |
+| "Which users and integrations must be able to save a record the rule would reject?" | Every rule with no bypass blocks every data load and every API write that doesn't meet the condition | The Custom Permission name and the Permission Set that carries it, per `templates/admin/validation-rule-patterns.md` |
+| "Is the field the error should attach to on every layout for every record type in scope?" | `errorDisplayField` silently changes to Top of Page when the field isn't visible on the layout | Either a confirmed layout, or an error message written to read correctly at the top of the page |
+| "Does the message fit in 255 characters and name both the problem and the fix?" | `errorMessage` is capped at 255 characters; a rule that can't say what to do generates a support ticket per occurrence | The final message text, not a placeholder to be filled in at deploy time |
+| "Does the data already violate this rule today?" | Validation rules fire on update as well as insert, so an active rule on dirty data blocks every edit of every violating record except the one that happens to satisfy the rule | A decision to deploy with `active=false` and a named cleanup owner, or a count proving the data is clean |
+| "Does the formula touch an address, a person name, or a dependent picklist?" | Validation rules can't use compound fields as of API version 20.0 | A rewrite against the component fields (`BillingStreet`, `BillingCity`, `FirstName`, `LastName`) before anyone starts typing |
+
+What a proper configuration adds over just writing the formula: the rule is scoped to the object where the edit actually happens, carries a bypass that data loads and integrations can use without anyone deactivating anything in production, attaches its error to a field that exists on the layout, and ships inactive when the existing data can't yet satisfy it.
+
+---
 
 ## How This Skill Works
 
@@ -73,9 +101,11 @@ Rule fires unexpectedly, integration is failing, or rule isn't firing when it sh
 4. Check if the API/integration is being caught — REST API respects validation rules by default
 
 **Rule doesn't fire:**
-1. Is the rule Active? (Deactivated rules are silent)
-2. Is the formula evaluating to TRUE for the invalid case? Test in Developer Console formula evaluator
+1. Is the rule Active? (Deactivated rules are silent, and a rule shipped with `active=false` looks identical in source control to one shipped active)
+2. Turn on a debug log with the **Validation** category and reproduce the save. That category records the rule name and whether the rule evaluated true or false — it answers "did my rule run and what did it decide" directly, which no amount of reading the formula does
 3. Is a bypass mechanism active? (Custom Permission, RecordType condition, Profile condition)
+4. Did the edit land on this object at all? An Opportunity rule does not fire when an opportunity product changes the Opportunity — see `references/gotchas.md`
+5. Did a workflow field update write the offending value *after* validation ran? Validation rules are not re-run when a workflow field update re-saves the record
 
 ## Formula Best Practices
 
@@ -137,15 +167,33 @@ Enter a Close Date to save this record."
 Error placement: Use **field-level** error messages when the error is about one specific field. Use **page-level** (top of page) only when the error spans multiple fields.
 
 
+## The Deployable Surface
+
+A validation rule is a `ValidationRule` component, available in **API version 12.0 and later**. In metadata format it is a `<validationRules>` element inside the object's `.object` file; in DX source format it is its own `.validationRule-meta.xml` file. Same six elements either way:
+
+| Element | Required | The part that surprises people |
+|---|---|---|
+| `fullName` | yes | Must start with a letter, can't end with `_`, can't contain two consecutive underscores |
+| `active` | yes | `false` deploys a real but dormant rule — the correct way to land a rule ahead of a data cleanup |
+| `description` | no | The only place the business justification survives a sandbox refresh |
+| `errorConditionFormula` | yes | Fires when it returns **true**. `<` and `&` must be XML-escaped |
+| `errorDisplayField` | no | Changes automatically to Top of Page if omitted **or if the field isn't visible on the page layout** |
+| `errorMessage` | yes | Hard cap of **255 characters** |
+
+Two version gates that change what you can write: as of **API 20.0** rules can't use compound fields (addresses, first and last names, dependent picklists, dependent lookups); as of **API 40.0** rules are supported on custom metadata types.
+
+`ValidationRule` **doesn't support the `*` wildcard in package.xml** — name each rule `Object.RuleName`, or retrieve the enclosing `CustomObject`. Full XML, manifests, `sf` commands, the Tooling API verification query and both Apex tests are in `references/metadata-examples.md`.
+
+
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Locate the edit.** Confirm which object the user's change actually lands on, and whether a workflow field update or a before-save flow writes the same field afterwards. `references/gotchas.md` covers both cases where the rule you are about to write will not run.
+2. **Retrieve what exists.** `sf project retrieve start --metadata "CustomObject:<Object>"` — never a `*` wildcard on `ValidationRule`, which the type does not support. Read the existing `<validationRules>` elements for a rule that already covers this, and for a rule that contradicts it.
+3. **Compose the formula in the canonical order** — bypass, then relevance gate, then business condition — from `templates/admin/validation-rule-patterns.md`. The formula describes the **invalid** state; it fires when it evaluates to TRUE.
+4. **Write the XML** from `references/metadata-examples.md`: `active`, `description` (business justification and bypass name), `errorConditionFormula`, `errorDisplayField`, `errorMessage` under 255 characters. Set `active=false` if existing data would violate the rule.
+5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it fails on empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, and unguarded `PRIORVALUE`, and warns on a missing `$Permission` bypass.
+6. **Write both tests** from `references/metadata-examples.md`: one that asserts the rule fires and attaches to the right field via `Database.Error.getFields()`, and one under `System.runAs` that asserts the bypass permission suppresses it. Without the second, nothing catches the removal of the bypass clause.
+7. **Validate-only, then deploy, then verify.** `sf project deploy validate` proves the formula compiles; the Tooling API query in `references/metadata-examples.md` proves the rules landed with the intended `Active` state. Record the rule in `templates/validation-rule-template.md` so the next admin knows why it exists.
 
 ---
 
@@ -181,8 +229,26 @@ Surface these WITHOUT being asked:
 | Troubleshoot a rule            | Step-by-step diagnosis + likely root cause + fix                        |
 | Bypass pattern                 | Custom Permission setup + formula snippet                               |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `ValidationRule` XML (both metadata and DX source shapes), the package.xml, the `sf retrieve`/`deploy`/`validate` commands, the Tooling API verification query, and the two Apex tests |
+| `references/gotchas.md` | Thirteen platform behaviours that make a correct-looking rule not run, not block, or not display where you put it |
+| `references/examples.md` | Formula patterns by requirement shape: conditional-required, date-in-future, record-type-scoped, cross-object, bypass |
+| `references/llm-anti-patterns.md` | Self-checking generated output — inverted formulas, missing bypass, and the rest |
+| `references/well-architected.md` | Pillar mapping, governance and review cadence, and the source list behind every claim in this package |
+| `templates/validation-rule-template.md` | Documenting a shipped rule: justification, scope, bypass, test scenarios, change history |
+| `scripts/check_validation_rules.py` | Linting retrieved or authored rule metadata before a deploy |
+
+---
+
 ## Related Skills
 
+- **admin/formula-fields**: Use for formula syntax itself — operators, functions, field-type behaviour, and which fields are addressable. NOT for rule scoping or bypass design.
+- **admin/record-types-and-page-layouts**: Use when scoping a rule by record type, or when `errorDisplayField` has relocated because the field left a layout. NOT for writing the condition.
 - **admin/flow-for-admins**: Use when the validation logic needs queries, orchestration, or reusable automation across objects. NOT when a formula can enforce the rule cleanly.
+- **flow/record-triggered-flow-patterns**: Use when the check belongs on a child object, or when a before-save flow should repair the data at step 3 instead of a rule rejecting it at step 5. NOT for declarative field-level checks on the same record.
 - **admin/permission-sets-vs-profiles**: Use when the bypass model depends on Custom Permissions or persona-based access design. NOT for writing the validation formula itself.
-- **security/fls-crud**: Use when you need to understand how hidden fields still affect saves or Apex enforcement. NOT for declarative rule design.
+- **data/data-loader-and-tools**: Use when planning the load that a rule will block, and when deciding whether the bypass permission is assigned for the window or permanently. NOT for rule authoring.
+- **apex/apex-stripinaccessible-and-fls-enforcement**: Use when you need to understand how hidden or inaccessible fields still affect saves and Apex enforcement. NOT for declarative rule design.

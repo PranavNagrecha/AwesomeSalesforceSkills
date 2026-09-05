@@ -1,6 +1,6 @@
 ---
 name: formula-fields
-description: "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for a formula field slowing a SOQL query or blocking an index — use apex/formula-field-performance-and-limits. NOT for Formula resources inside a Flow — use flow/flow-formula-and-expression-patterns."
+description: "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow', 'formulaTreatBlanksAs', 'BlankAsZero', 'blank field handling', 'field-meta.xml formula', 'CustomField formula deploy', 'formula returns blank', 'formula field read-only on data load'. NOT for a formula field slowing a SOQL query or blocking an index — use apex/formula-field-performance-and-limits. NOT for Formula resources inside a Flow — use flow/flow-formula-and-expression-patterns."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,12 +15,18 @@ triggers:
   - "formula field returns null when it should not"
   - "how do I reference a field from a related object in a formula"
   - "formula works in sandbox but not production"
+  - "currency formula returns blank when the discount field is empty"
+  - "data loader says the formula field is not writeable"
+  - "deploy fails with an XML parse error on a field-meta.xml formula"
+  - "should blank fields be treated as zero or blank in this formula"
+  - "text formula value is cut off partway through"
+  - "wildcard does not work for CustomField in package.xml"
 inputs: ["formula requirement", "source fields", "reporting use case"]
 outputs: ["formula design guidance", "formula risk findings", "alternative pattern recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in formula field design. Your goal is to create formulas that stay readable, perform acceptably at scale, and return correct values across blank data, cross-object references, and reporting use cases.
@@ -36,6 +42,25 @@ Gather if not available:
 - How many parent relationships does the formula traverse?
 - Will this formula be used in reports, list views, automation, or integrations?
 - What null or blank states must be handled explicitly?
+
+## Questions to Ask Before Configuring
+
+Answer these before opening the field editor. Each one maps to a gotcha in `references/gotchas.md`;
+skipping them produces a formula that compiles and is still wrong.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does anything need yesterday's value of this number?" | A formula recalculates from current data on every read, so it cannot hold a snapshot | A decision to stamp a real field via Flow instead, and the lifecycle moment that stamps it |
+| "Which referenced fields can legitimately be blank, and what should blank mean for each?" | `formulaTreatBlanksAs` is one switch for the whole formula — `BlankAsZero` or `BlankAsBlank`, no per-reference override | The explicit enum value plus the `ISBLANK()` guards for every reference the switch gets wrong |
+| "Is anything writing to this field today — a data load, a Flow, an integration?" | Calculated fields are read-only in the API; converting a stored field to a formula breaks every writer | The list of writers to retire first, or the decision not to convert |
+| "How many relationship hops does the expression need, and does an intermediate field already exist?" | Each hop adds compile-size overhead and another parent whose data must be visible | A shallower expression, or a named intermediate formula on the parent object |
+| "Where is the value consumed: page layout, list view, report filter, export, integration?" | Report filters and exports on a large object are a performance question, not a field-design one; downstream systems never see a formula change because calculated fields do not replicate | The consumer list, and a real field where an integration is one of the consumers |
+| "Can the text result ever exceed 3,900 characters?" | Text calculated field results are truncated at that length with no error | A different design when the answer is yes, before anyone reports missing text |
+| "Who owns this formula and what business rule does it encode?" | Nothing else in the metadata records intent; a formula has no comments | A `description` value written before the field is created, not after an audit |
+
+What a proper configuration adds over just doing it: the blank-handling choice is deliberate and
+recorded in the XML rather than defaulted, no integration or load is silently broken by a read-only
+field, and the next admin can read the business rule off the field instead of reverse-engineering it.
 
 ## How This Skill Works
 
@@ -92,13 +117,25 @@ Use this when a formula returns the wrong value, behaves inconsistently, or caus
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the questions above and fill `templates/formula-field-design-template.md` — the return
+   type, the blank-handling decision, the consumer list, and the test cases are the design.
+2. Confirm a formula is still the right tool against the Formula Field Decision Matrix. A value that
+   must be frozen, written by an integration, or replicated downstream is a stored field.
+3. Write the field as XML, not in Setup: `references/metadata-examples.md` has the deployable
+   `CustomField` shapes for text, cross-object, checkbox, and currency return types, plus the
+   `package.xml` (members are `Object.Field__c`; no `*` wildcard) and the escaping rules for
+   `&`, `<`, and `"` inside `<formula>`.
+4. Run `python3 scripts/check_formula_fields.py --manifest-dir <objects dir>` and clear every
+   finding or record why it is accepted. It catches missing `description`, missing
+   `formulaTreatBlanksAs` on numeric return types, traversal depth, and environment-specific
+   `$Profile` / `$User.Id` references.
+5. Deploy with `--dry-run` first. A retrieve only reads what already saved, so a validate-only run
+   is the first point at which a new formula is compiled and the cheapest place to fail.
+6. Verify with the blank-row query in `references/metadata-examples.md`, not with a happy-path
+   record: query records where the referenced field is genuinely null and confirm the result matches
+   the `formulaTreatBlanksAs` you chose.
+7. Walk the test-case table in the template against real records — happy path, blank, zero, and
+   missing parent — and record the results next to the design.
 
 ---
 
@@ -111,6 +148,12 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | Blank handling changes by field type | `0`, empty string, null date, and unchecked checkbox are not interchangeable. |
 | Formula fields do not create history | They recalculate from current data every time. |
 | `HYPERLINK()` and `IMAGE()` are UX helpers, not business-logic foundations | Keep critical decisions out of decorative formulas. |
+| `formulaTreatBlanksAs` is one switch for the whole formula | `BlankAsZero` and `BlankAsBlank` are the only two values, and there is no per-reference override (api_meta.txt:43424-43426). |
+| Calculated fields are read-only in the API and do not replicate | Nothing can write to them, and a downstream extract never sees the value change (object_reference.txt:2207-2211). |
+| `CustomField` takes no `*` wildcard in `package.xml` | Every formula field is listed as `Object.Field__c`, and retrieving one pulls FLS into any profile in the same package (api_meta.txt:43983-43984, 43251-43252). |
+
+The deployable XML for all of this is in `references/metadata-examples.md`; the full treatment of
+each behaviour is in `references/gotchas.md`.
 
 ## Proactive Triggers
 
@@ -132,9 +175,28 @@ Surface these WITHOUT being asked:
 | Formula review | Readability, performance, and correctness findings |
 | Debug wrong formula result | Edge-case walkthrough and likely root cause |
 | Formula vs Flow decision | Clear recommendation on whether the value should be calculated or stored |
+| Deployable field | `objects/<Object>/fields/<Name>__c.field-meta.xml` plus the `package.xml` entry and the verification query (`references/metadata-examples.md`) |
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `CustomField` XML for a formula, the `package.xml`, the retrieve/deploy commands, and the post-deploy verification query |
+| `references/gotchas.md` | Ten platform behaviours that make a formula wrong after it compiles — blank handling, read-only writes, replication, XML escaping, wildcards, truncation |
+| `references/examples.md` | Looking for a worked formula expression: health status, cross-object display, safe division, navigation link |
+| `references/llm-anti-patterns.md` | Checking a generated formula, and for the three formula size limits and the relationship-count ceiling |
+| `references/well-architected.md` | Framing the design against Performance, Reliability, and Operational Excellence, and for the source list |
+| `templates/formula-field-design-template.md` | Before creating or rewriting any formula worth reviewing |
+
+---
 
 ## Related Skills
 
 - **admin/validation-rules**: Use when the formula is meant to block saves or enforce data entry. NOT for derived display values.
+- **admin/custom-field-creation**: Use for the surrounding `CustomField` decisions — naming, FLS, layouts — and for converting a stored field to a formula or back.
+- **admin/lookup-filter-cross-object-patterns**: Use when the requirement is to constrain a lookup rather than display a parent value; lookup filters and cross-object formulas traverse the same relationships for different reasons.
 - **admin/reports-and-dashboards**: Use when the main concern is how formulas affect reporting or dashboard design. NOT for writing the formula itself.
 - **admin/flow-for-admins**: Use when the business needs a stored outcome, lifecycle snapshot, or complex branching. NOT for lightweight real-time calculations.
+- **flow/record-triggered-flow-patterns**: Use to build the before-save Flow that stamps a real field when the value must be frozen or replicated.
+- **flow/flow-formula-and-expression-patterns**: Use for Formula resources inside a Flow; the same function names are evaluated by a different engine.
+- **apex/formula-field-performance-and-limits**: Use when the formula is slowing a SOQL query, a report filter, or an index.

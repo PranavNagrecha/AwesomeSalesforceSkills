@@ -22,24 +22,33 @@ Fill in every section before submitting for review or including in a deployment.
 
 ## Features Enabled
 
-| Feature | Enable? | Justification |
-|---------|---------|--------------|
-| Allow Reports | ☐ Yes  ☐ No | |
-| Allow Activities (Tasks & Events) | ☐ Yes  ☐ No | |
-| Track Field History | ☐ Yes  ☐ No | |
-| Allow Notes | ☐ Yes  ☐ No | |
-| Allow Bulk API Access | ☐ Yes  ☐ No | |
-| Allow Streaming API Access | ☐ Yes  ☐ No | |
-| Enable Chatter Feed Tracking | ☐ Yes  ☐ No | |
-| Search (global search indexing) | ☐ Yes  ☐ No | |
+| Feature | Metadata element | Enable? | Justification |
+|---|---|---|---|
+| Allow Reports | `enableReports` | ☐ Yes  ☐ No | |
+| Allow Activities (Tasks & Events) | `enableActivities` | ☐ Yes  ☐ No | |
+| Track Field History | `enableHistory` | ☐ Yes  ☐ No | |
+| Allow Notes | — | ☐ Yes  ☐ No | |
+| Allow Bulk API Access | `enableBulkApi` | ☐ Yes  ☐ No | |
+| Allow Sharing | `enableSharing` | ☐ Yes  ☐ No | |
+| Allow Streaming API Access | `enableStreamingApi` | ☐ Yes  ☐ No | |
+| Enable Chatter Feed Tracking | `enableFeeds` | ☐ Yes  ☐ No | |
+| Search (global search and SOSL) | `enableSearch` | ☐ Yes  ☐ No | |
 
-> **Reminder:** Activities and Track Field History **cannot be disabled** after enabling.
+> **Reminder 1:** Activities and Track Field History are treated as one-way in this skill — see the marked note in `SKILL.md` § Core Concepts 2 before promising a customer a checkbox can be cleared.
+> **Reminder 2:** `enableBulkApi`, `enableSharing` and `enableStreamingApi` deploy as a set — all three or none.
+> **Reminder 3:** Search is off by default on new custom objects. Leaving the row blank means "not searchable".
 
 ---
 
 ## Sharing Model (Org-Wide Default)
 
-**Selected OWD:** ☐ Private  ☐ Public Read Only  ☐ Public Read/Write  ☐ Controlled by Parent
+**Selected internal OWD (`sharingModel`):** ☐ Private  ☐ Public Read Only (`Read`)  ☐ Public Read/Write (`ReadWrite`)  ☐ Controlled by Parent (`ControlledByParent`)
+
+**External OWD (`externalSharingModel`), if the org has Experience Cloud:** ☐ Private  ☐ `Read`  ☐ `ReadWrite`  ☐ N/A — no external users
+
+**Does this object sit on the detail side of a master-detail relationship?** ☐ Yes  ☐ No
+
+> If Yes: the OWD is fixed at Controlled by Parent, the object has no Owner field, and it can never have a queue, a sharing rule, or a manual share. Confirm nothing in the requirements needs to route or reassign these records.
 
 **Justification:**
 
@@ -81,6 +90,9 @@ Fill in every section before submitting for review or including in a deployment.
 - [ ] Tab created and visibility configured per profile
 - [ ] Deployment artifact includes object metadata, page layouts, and profile/permission set updates
 - [ ] Custom object count checked against edition limit before deployment
+- [ ] `enableSearch` set explicitly; `enableBulkApi` / `enableSharing` / `enableStreamingApi` set as a set or all omitted
+- [ ] Auto Number `startingNumber` recorded here and in the object description — it cannot be retrieved from the org
+- [ ] `scripts/check_object_creation_and_design.py --manifest-dir <source>` run clean
 
 ---
 
