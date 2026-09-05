@@ -6,7 +6,7 @@ The two pieces a routing solution needs from this skill: a **Classic** email tem
 
 | Piece | package.xml `<name>` | File in a DX project |
 |---|---|---|
-| Email folder | `EmailFolder` | `email/Support_Templates-meta.xml` (folder metadata, and the folder itself as a directory) |
+| Email folder | `EmailFolder` | `email/Support_Templates.emailFolder-meta.xml` (the guide's naming rule is `FolderName.folderType-meta.xml`, alongside the folder directory itself) |
 | Classic email template | `EmailTemplate` (no `*` wildcard; list `Folder/Developer_Name` explicitly) | `email/Support_Templates/Case_Web_Acknowledgement.email` (body) + `Case_Web_Acknowledgement.email-meta.xml` |
 
 Rules reference the template as `Support_Templates/Case_Web_Acknowledgement`. Templates in the shared unfiled folder are referenced as `unfiled$public/<Developer_Name>`.

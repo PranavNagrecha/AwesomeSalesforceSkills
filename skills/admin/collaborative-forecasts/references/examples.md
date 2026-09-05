@@ -41,17 +41,20 @@ Closed Lost           → Omitted
 Loading SE quotas for Forecast Type 2 via Data Loader:
 ```
 Object: ForecastingQuota
-Required fields:
+Loadable fields:
   QuotaOwnerId       = <UserId of SE rep>
-  StartDate          = 2025-01-01   (first day of period — must be exact)
-  QuotaAmount        = 50000
+  StartDate          = 2025-01-01   (any day in the target month; stored as the 1st)
+  QuotaAmount        = 50000        (QuotaQuantity instead, for a quantity type)
   ForecastingTypeId  = <Id of "SE Overlay Splits" ForecastingType>
   CurrencyIsoCode    = USD
+Never load: PeriodId (read only), IsAmount, IsQuantity (derived from the type)
 ```
 
-To retrieve the ForecastingTypeId before loading:
+To retrieve the ForecastingTypeId before loading, and confirm the measure the type expects:
 ```soql
-SELECT Id, DeveloperName, Name FROM ForecastingType
+SELECT Id, DeveloperName, MasterLabel, IsActive, IsAmount, IsQuantity, CanDisplayQuotas
+FROM ForecastingType
+WHERE IsActive = TRUE
 ```
 
 **Why it works:** Split-based types roll up only the split percentage credited to each rep, isolating SE overlay revenue from the AE's direct Amount. The two types appear as separate tabs on the Forecasts page. Cumulative rollup means the Commit column already includes Closed Won deals, which matches finance reporting expectations.
@@ -73,15 +76,47 @@ SELECT Id, DeveloperName, Name FROM ForecastingType
 5. Save the mapping.
 6. Refresh the Forecasts tab and confirm pipeline totals are restored.
 
+In metadata terms the whole defect is one missing element on one standard value. This is the diff the release should have carried:
+
+```diff
+     <standardValue>
+         <fullName>Pilot</fullName>
+         <default>false</default>
++        <forecastCategory>BestCase</forecastCategory>
+         <probability>40</probability>
+     </standardValue>
+```
+
+Confirm the blast radius before and after with the stage picklist itself, which is queryable:
+
+```sql
+-- Which stages are unmapped or Omitted, and how much open pipeline sits in each?
+SELECT StageName, COUNT(Id) opps, SUM(Amount) openAmount
+FROM Opportunity
+WHERE IsClosed = FALSE AND ForecastCategoryName = 'Omitted'
+GROUP BY StageName
+ORDER BY SUM(Amount) DESC
+
+-- The stage-to-category map as the platform sees it. Note the two vocabularies:
+-- ForecastCategory returns 'Forecast' where ForecastCategoryName returns 'Commit'.
+SELECT MasterLabel, ApiName, IsActive, IsClosed, IsWon,
+       ForecastCategory, ForecastCategoryName, DefaultProbability
+FROM OpportunityStage
+ORDER BY SortOrder
+```
+
 ```
 Before fix:
-  Pilot → Omitted   (excluded from all rollups — $2M invisible)
+  Pilot → (no forecastCategory)  →  Omitted   (excluded from all rollups — $2M invisible)
 
 After fix:
-  Pilot → Best Case (included in Pipeline, Best Case, and Commit cumulative rollups)
+  Pilot → BestCase in metadata   →  Best Case (feeds bestcaseforecast, and openpipeline,
+                                               which is Pipeline + Best Case + Most Likely + Commit)
 ```
 
 **Why it works:** Forecast category mapping is applied to all open opportunities in real time. Once the stage is remapped to a non-Omitted category, those opportunities re-enter all forecast rollups immediately — no data migration or adjustment is required.
+
+**The durable fix is the release, not the click.** Deploying `StandardValueSet: OpportunityStage` with the stage *and* its `forecastCategory` in one change makes the mapping reviewable in a pull request, which is where an unmapped stage is visible and Setup is where it is not. Note the metadata enum spelling while you are there: `BestCase`, and `Forecast` for the category everyone calls Commit — see `references/gotchas.md` Gotcha 10.
 
 ---
 

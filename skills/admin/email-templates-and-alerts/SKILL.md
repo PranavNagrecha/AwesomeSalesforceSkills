@@ -17,12 +17,15 @@ triggers:
   - "workflow email not firing on record save"
   - "org wide email address not working"
   - "email template not rendering correctly"
+  - "deploy an email alert that sends from an org-wide email address"
+  - "email alert deployed successfully but no email was sent"
+  - "add more than 5 cc addresses to an email alert"
 inputs: ["notification scenario", "audience", "sender requirements"]
 outputs: ["email design guidance", "template governance findings", "notification recommendations"]
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 You are a Salesforce Admin expert in declarative email design. Your goal is to send the right email to the right audience with the right sender identity, without spamming users, breaking merge-field context, or creating an unmaintainable notification mess.
@@ -108,13 +111,13 @@ Use this when emails are wrong, duplicated, not sent, or missing merge values.
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Fill the plan first** — complete `templates/email-template-plan.md`: purpose, audience, trigger event, sender identity, merge context, duplicate-prevention rule. The plan's Overview table is what decides whether this is an Email Alert at all, or a marketing-tool job.
+2. **Decide the template family before writing XML** — a template consumed by an assignment, auto-response, or escalation rule must be Classic (`uiType` `Aloha`); Lightning templates aren't packageable. The coupling between `uiType`, `type`, `style`, and `letterhead` is a two-shapes-only table in `references/gotchas.md`.
+3. **Confirm the sender exists in the target org** — org-wide email addresses have no metadata type, so run the `OrgWideEmailAddress` query in `references/metadata-and-sender-identity.md` against the *destination* org and check `IsVerified` before deploying anything that references it.
+4. **Author folder, template, and alert together** — `references/metadata-and-sender-identity.md` carries the deployable `EmailFolder`, `.email` body, `EmailTemplate` `-meta.xml`, package.xml (no `*` wildcard for templates), and the `sf project retrieve/deploy` commands. Pair every alert with at least one `recipients` or `ccEmails` entry.
+5. **Run the checker on the source directory** — `python3 scripts/check_email_templates.py force-app/main/default/email` flags hardcoded sender addresses, templates with no merge fields, and undocumented subject lines. Treat every `REVIEW` finding as a question to answer, not noise to suppress.
+6. **Test the send, not the save** — deploy to a sandbox, fire the real trigger against a record whose optional lookups are *empty*, and confirm: one email (not two), the expected From address, every merge field resolved, and — for Email-to-Case — the thread token intact. Worked scenarios in `references/examples.md`.
+7. **Record the decision** — write the sender, recipient model, and duplicate-prevention rule back into the completed plan and keep it beside the metadata; the next admin inherits the alert without the reasoning otherwise.
 
 ---
 
@@ -154,7 +157,12 @@ Surface these WITHOUT being asked:
 | File | Read it when |
 |---|---|
 | `references/metadata-and-sender-identity.md` | Deploying a Classic template and folder, and verifying the org-wide email address a rule sends from |
-| `references/gotchas.md` | Duplicate sends, merge context, sender identity, marketing misuse |
+| `references/gotchas.md` | An alert deploys but sends nothing, sends from the wrong address, sends twice, or a merge field renders blank |
+| `references/examples.md` | You want a worked SLA-breach, approval-reminder, or status-change pattern to start from |
+| `references/well-architected.md` | Justifying notification design against the pillars, or citing the official sources behind a claim here |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated email templates or alert metadata before it reaches an org |
+
+Fill `templates/email-template-plan.md` before any of the above; run `scripts/check_email_templates.py` after.
 
 ---
 
