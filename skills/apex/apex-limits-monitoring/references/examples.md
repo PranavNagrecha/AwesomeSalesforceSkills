@@ -1,5 +1,11 @@
 # Examples — Apex Limits Monitoring
 
+Worked scenarios. The **deployable** versions — `LimitGuard`, `OrgLimitsPoller`,
+`Limit_Snapshot__c`, `Limit_Threshold__mdt`, the test class and the manifest — are in
+`references/code-examples.md`. The examples here show the reasoning that produces them and
+the two artefacts that live outside the org: the CI regression baseline and the debug-log
+block you read after the fact.
+
 ## Example 1: Guard Clause Pattern in a Service Layer Method
 
 **Context:** A service class method is called from a trigger handler and queries related Account records. The trigger fires in bulk (up to 200 records), and the query inside the method runs per invocation, potentially exhausting the 100 SOQL ceiling in a synchronous context.
@@ -227,3 +233,90 @@ try {
 **What goes wrong:** `System.LimitException` is not a catchable exception. The Apex runtime terminates the transaction before any `catch` block can run. This code compiles without error but provides zero protection.
 
 **Correct approach:** Use a guard clause checking `Limits.getLimitQueries() - Limits.getQueries()` before the SOQL statement. Prevention, not recovery, is the correct strategy.
+
+---
+
+## Example 4: A CI Limit-Consumption Baseline That Fails the Build on a Regression
+
+**Context:** a refactor adds one query inside a helper called from a trigger handler. Every test still passes — the org has 40 test records, so nothing gets near a ceiling. Six weeks later a customer with 190 records in a batch hits the SOQL wall.
+
+**Problem:** test pass/fail says nothing about consumption. The only per-test-method consumption record the platform keeps is `ApexTestResultLimits`, and it has to be queried deliberately after an asynchronous run (Object Reference, `object_reference L32693–32700`).
+
+**Solution:** commit a baseline of what each test method is allowed to consume, and diff every CI run against it.
+
+`ci/limits-baseline.csv` — committed, reviewed like any other file. Tolerance is per row because a data-heavy test legitimately consumes more than a unit test:
+
+```text
+class,method,cpu_max,soql_max,query_rows_max,dml_max,dml_rows_max,tolerance_pct
+OrderServiceTest,syncCreatesShipments,1800,14,900,4,220,15
+OrderServiceTest,syncHandlesEmptyList,120,1,0,0,0,25
+ContactServiceTest,bulkEnrichTwoHundred,4200,9,2400,3,400,10
+LimitGuardTest,nearSoqlFlipsOnceTheCeilingIsApproached,900,60,60,0,0,20
+```
+
+The query that produces the current run's numbers. `ApexTestRunResultId` scopes it to one run; without that filter the object returns every historical row:
+
+```soql
+SELECT ApexTestResult.ApexClass.Name  className,
+       ApexTestResult.MethodName      methodName,
+       LimitContext, Cpu, Soql, QueryRows, Dml, DmlRows,
+       Callouts, Sosl, Email, AsyncCalls, MobilePush, LimitExceptions
+FROM   ApexTestResultLimits
+WHERE  ApexTestResult.ApexTestRunResultId = '707000000000001'
+ORDER  BY Cpu DESC
+```
+
+Three preconditions decide whether that query returns anything at all, and all three are easy to break silently: the measured work must sit between `Test.startTest()` and `Test.stopTest()`, the run must be asynchronous, and only the default namespace is captured. A row of zeros means the gate is broken, not that the code got faster.
+
+**Why it works:** the baseline turns an invisible drift into a diff a reviewer reads. `LimitContext` on each row states whether that method ran under synchronous or asynchronous ceilings, so a method that silently moved contexts — a helper promoted into a Queueable, say — shows up as a context change rather than as an unexplained jump in headroom. Heap is not covered: there is no heap column on the object, so a heap regression needs an explicit `Limits.getHeapSize()` assertion inside the test.
+
+---
+
+## Example 5: Reading the Per-Namespace Block After the Fact
+
+**Context:** a save on Account intermittently fails with "Too many SOQL queries: 101", but the code path issues eleven queries and the guard reports plenty of headroom.
+
+**Problem:** `Limits.getQueries()` reports *your namespace's* consumption. A certified managed package in the same transaction has its own 100-query allocation, and the transaction also has a cumulative cross-namespace ceiling (Apex Developer Guide, `apexdev L19666–19680`). The guard is reading one column of a wider table.
+
+**Solution:** capture a debug log at FINEST for the Apex Profiling category and read the `CUMULATIVE_LIMIT_USAGE` block, which prints one `LIMIT_USAGE_FOR_NS` section per namespace. This is the guide's own sample output (`apexdev L38274–38289`):
+
+```text
+16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE
+16:06:58.49 (49590539)|LIMIT_USAGE_FOR_NS|(default)|
+  Number of SOQL queries: 11 out of 100
+  Number of query rows: 240 out of 50000
+  Number of SOSL queries: 0 out of 20
+  Number of DML statements: 3 out of 150
+  Number of DML rows: 210 out of 10000
+  Maximum CPU time: 1840 out of 10000
+  Maximum heap size: 0 out of 6000000
+  Number of callouts: 0 out of 100
+  Number of Email Invocations: 0 out of 10
+  Number of future calls: 0 out of 50
+  Number of queueable jobs added to the queue: 0 out of 50
+  Number of Mobile Apex push calls: 0 out of 10
+
+16:06:58.49 (49590539)|LIMIT_USAGE_FOR_NS|vendorpkg|
+  Number of SOQL queries: 97 out of 100
+  Number of query rows: 41200 out of 50000
+  Number of DML statements: 2 out of 150
+
+16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE_END
+```
+
+Two levels matter when you set the trace flag: `CUMULATIVE_LIMIT_USAGE` is logged at INFO and above (`apexdev L38557–38558`), but `LIMIT_USAGE_FOR_NS` — the per-namespace breakdown that answers this question — needs FINEST on the Apex Profiling category (`apexdev L38930`). A log captured at INFO shows the block boundaries and nothing between them.
+
+Correlate the log to the failing request through `ApexLog.RequestIdentifier`, whose whole purpose is this: "Use this request identifier to correlate multiple debug logs triggered by the same request" (Object Reference, `object_reference L31363–31368`):
+
+```soql
+SELECT Id, Operation, Status, DurationMilliseconds, LogLength,
+       RequestIdentifier, StartTime, Location
+FROM   ApexLog
+WHERE  Status != 'Success'
+AND    StartTime = LAST_N_HOURS:4
+ORDER  BY StartTime DESC
+```
+
+`ApexLog` carries no limit columns — `DurationMilliseconds` is wall clock, not CPU — so the numbers only exist inside `LogFile`/the log body. `Location` also tells you how long the row will survive: `Monitoring` logs are "maintained for seven days or until a user deletes them", `SystemLog` logs for 24 hours (`object_reference L31306–31312`).
+
+**Why it works:** it separates "my code is over budget" from "the transaction is over budget", which the `Limits` class alone cannot distinguish. Once the vendor namespace is identified as the consumer, the fix is a sequencing or configuration change in that package's setup, not another guard in your handler.
