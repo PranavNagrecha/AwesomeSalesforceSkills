@@ -231,6 +231,144 @@ a new entry naming the one it supersedes.
 - **Grounded in:** `envelopes/M1-S02/2026-09-06T04-05-00Z.json` →
   `extensions.elements_not_grounded_and_not_written[1]` and `[2]`;
   `artefacts/M1-S02/deploy-order.md` § "Elements this step could NOT ground".
+
+## D-M2S01-01 — The consumer list in the custom permission's description is read from `M3-S01`'s declared outputs
+
+- **Date:** 2026-09-06
+- **Step:** `M2-S01` (`access`)
+- **Agent:** `metadata-builder` (run `2026-09-06T07-00-00Z`)
+- **Kind:** design trade-off, recorded by the owning agent as an answer taken from a downstream step
+- **What was recorded:** the `<description>` on
+  `customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml` names its two consumers
+  by API name — `Case.Priority_Required_On_Agent_Save` and `Case.Origin_Must_Be_Known` — and says they
+  belong to `M3-S01`. The skill's Questions-to-Ask row "Which contexts read it — validation rule,
+  formula, Flow, Apex, LWC, component visibility?" was answered "validation rule only" from
+  `plan.json` `steps[M3-S01].outputs[]` and its `inputs.note`, not from any clarification answer.
+- **Alternative rejected:** leaving the description as an unnamed org-wide off switch ("bypasses Case
+  validation"). Rejected because a bypass whose scope is not enumerated cannot be reviewed later —
+  a reader cannot tell whether a third rule was added under it, and `custom-permissions` treats the
+  named-rules form as the reviewable one.
+- **Also rejected:** waiting for a clarification that names the rules. None of the plan's 97 questions
+  does; Q56 names the mechanism (a Custom Permission on an integration permission set) and stops there.
+- **What this makes fragile, stated rather than hidden:** the description is now a claim about a step
+  that has not run. If `M3-S01` renames either rule or adds a third, the description is stale and
+  **nothing detects it** — `check_custom_permissions.py` reads the grant, not the description text.
+- **Grounded in:** `skills/admin/custom-permissions/references/metadata-examples.md` § 2 (bypass shape,
+  description names the consumers); `plan.json` `steps[M3-S01].outputs[]`;
+  `envelopes/M2-S01/2026-09-06T07-00-00Z.json` → `extensions.decision_record[1]` and `[5]`.
+
+## D-M2S01-02 — `ApiEnabled` is deliberately NOT granted by this permission set
+
+- **Date:** 2026-09-06
+- **Step:** `M2-S01` (`access`)
+- **Agent:** `metadata-builder` (run `2026-09-06T07-00-00Z`)
+- **Kind:** design trade-off — an omission recorded rather than an absence left to be noticed
+- **What was recorded:** `Case_Intake_Integration` carries no `<userPermissions>` block at all, and
+  specifically no `ApiEnabled`. The Email-to-Case / Web-to-Case identity plainly needs API access; this
+  build does not model where it comes from.
+- **Alternative rejected:** granting `ApiEnabled` here because the population is an integration
+  identity and it is the obvious thing it needs. Rejected on two independent grounds, either of which
+  is sufficient: (a) nothing in `requirement.md` or any answered clarification says whether API access
+  arrives through this permission set, another one, or the identity's own base access — so the grant
+  would be the agent's own; (b) `ApiEnabled` is in `check_access_model.py`'s `DANGEROUS_PERMISSIONS`
+  set, so adding it would fail the step's second declared acceptance test, and it would also break the
+  step's `manual` test, which requires this set to grant the custom permission **and nothing else**.
+- **Consequence, stated for the gate:** the permission set as built is not sufficient on its own to let
+  the integration identity create Cases through the API. A human granting that access does it somewhere
+  this build does not model, and no artefact here will show it missing.
+- **Grounded in:** `skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py`
+  (`DANGEROUS_PERMISSIONS`); `plan.json` `steps[M2-S01].acceptance_tests[1]` and `[4]`;
+  `artefacts/M2-S01/deploy-order.md` § "Elements this step could NOT ground";
+  `envelopes/M2-S01/2026-09-06T07-00-00Z.json` → `process_observations[4]` (ambiguous, low).
+
+## D-M2S01-03 — The grant is permanent, and needs no step-up activation: two skill DEFAULTS, not answers
+
+- **Date:** 2026-09-06
+- **Step:** `M2-S01` (`access`)
+- **Agent:** `metadata-builder` (run `2026-09-06T07-00-00Z`)
+- **Kind:** design trade-off, recorded by the owning agent as a default
+- **What was recorded:** two of the fourteen deduplicated Questions-to-Ask rows for this step were
+  answered from the cited skill's own documented default rather than from `plan.json`, because neither
+  question exists among the plan's 97:
+  1. *"Is the grant permanent, or should it expire?"* → **permanent**. The population is a standing
+     automated-process identity, not a data-fix window, which is the case
+     `admin/permission-set-expiration` and the skill's `Temp_<Purpose>` route exist for. Note the
+     mechanical fact underneath: no expiry is expressible in this build's artefacts anyway —
+     an expiration rides on `PermissionSetAssignment`, which is record data.
+  2. *"Does any permission need step-up activation?"* → **no**;
+     `<hasActivationRequired>false</hasActivationRequired>`, which is what the cited skill's § 1 and
+     § 2 examples carry "on purpose" and what its § 3 note requires of anything destined for a PSG —
+     relevant because `M2-S02` owns the PSGs.
+- **Alternative rejected:** blocking the step until the two questions are asked. Rejected because
+  neither is a *gap in a skill* — both skills document a default — and blocking a step on a question
+  nobody was asked strands a milestone. Recorded as a default so the gate can overturn either one.
+- **Why this is filed as one entry and not two:** they are the same dimension in the builder's own
+  record — `dimensions_skipped[0]`, `question-coverage`, state `partial`, `confidence_impact: LOW` —
+  and they are the reason that run's confidence is MEDIUM rather than HIGH.
+- **Grounded in:** `skills/admin/custom-permissions` Questions-to-Ask (expiry row);
+  `skills/admin/permission-set-architecture/references/metadata-examples.md` § 1 and its § 3 note;
+  `envelopes/M2-S01/2026-09-06T07-00-00Z.json` → `dimensions_skipped[0]`,
+  `extensions.decision_record[6]` and `[11]`.
+
+## D-M2S01-04 — The permission set keeps the name the plan declared, against the template's form
+
+- **Date:** 2026-09-06
+- **Step:** `M2-S01` (`access`)
+- **Agent:** `metadata-builder` (run `2026-09-06T07-00-00Z`)
+- **Kind:** deviation from a template, recorded rather than corrected
+- **What was recorded:** the permission set is `Case_Intake_Integration`.
+  `templates/admin/permission-set-patterns.md` gives integration bundles the form
+  `Integration_<System>_Bundle` and feature sets the form `Feat_<Feature>`, so the built name matches
+  neither.
+- **Alternative rejected:** renaming it to `Integration_Case_Intake_Bundle` to match the template.
+  Rejected because `plan.json` declares the output path
+  `artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml`, and a declared
+  output path is not the owning agent's to rename: `standards/build-orchestration.md` § 5 makes
+  `check-outputs` confirm exactly the paths the plan declared, so a rename would have left the step
+  unable to reach `built`.
+- **The load-bearing detail:** the step's `templates[]` is **empty**. No template was cited on this
+  step, so there was no cited authority to weigh the declared path against — the divergence is visible
+  only because the builder went looking. Two agents have now raised it and neither could adjudicate it
+  (`metadata-builder` `process_observations[3]`, `step-tester` `process_observations` → ambiguous).
+- **Decision required at the M2 gate — a human's, not this agent's:** accept `Case_Intake_Integration`
+  as the build's name, or re-plan the output path at v6 and let the template form win. Deciding it now
+  is cheap; deciding it after `M2-S02` and `M2-S03` have added five more permission sets in whatever
+  form they declare is a convention argument across eight files.
+- **Grounded in:** `templates/admin/permission-set-patterns.md`; `plan.json`
+  `steps[M2-S01].outputs[1]` and `steps[M2-S01].templates` (empty);
+  `artefacts/M2-S01/deploy-order.md` § "Elements this step could NOT ground";
+  `envelopes/M2-S01/2026-09-06T07-00-00Z.json` → `process_observations[3]`.
+
+## D-M2S01-05 — Correction of record: `deploy-order.md`'s "reports an INFO" sentence is false
+
+- **Date:** 2026-09-06
+- **Step:** `M2-S01` (`access`)
+- **Agent:** raised by `step-tester` (run `2026-09-06T07-30-00Z`) against
+  `metadata-builder`'s `artefacts/M2-S01/deploy-order.md`
+- **Kind:** deviation — a built artefact's own text disagrees with the run it describes
+- **What was recorded:** `artefacts/M2-S01/deploy-order.md` states, under "`check_custom_permissions.py`
+  cannot see that dependency at this scope", that with no validation rule in the scanned tree "the
+  checker reports `Consumers: 0` and an INFO, and exits 0". The first and third clauses are right; the
+  middle one is false. The run printed `Summary: 0 error(s), 0 warning(s), 0 info.`
+  (`tests/M2-S01/check_custom_permissions.stdout.txt`).
+- **Why no INFO fires:** `check_custom_permissions.py` L301–308 raises its INFO for a permission that is
+  **defined but ungranted**. `Bypass_Case_Intake_Validation` **is** granted — by
+  `Case_Intake_Integration` — so the condition is not met. A zero-consumer permission is not the same
+  thing as an ungranted one, and the sentence conflates them.
+- **Alternative rejected:** editing `deploy-order.md` to fix the sentence. Refused, not deferred:
+  `agents/build-doc-keeper/AGENT.md` — "Does not build, edit, move or delete artefacts. It opens them
+  read-only for the `target_value` cell". The correction is recorded here and in workbook row
+  `CWB-OTHER-007`, and the artefact is left byte-identical.
+- **What is NOT wrong:** the plan's own acceptance-test description states the counterfactual correctly
+  ("removing the grant entirely still exits 0 with an INFO" — that is the ungranted case, and it is
+  accurate). Only the `deploy-order.md` restatement drifts. The conclusion both documents draw — that
+  exit 0 says nothing about the consumer side — stands on its own and is unaffected.
+- **Remedy owner:** `metadata-builder`, on any re-run of this step. Until then this entry is the record.
+- **Grounded in:** `tests/M2-S01/check_custom_permissions.stdout.txt`;
+  `skills/admin/custom-permissions/scripts/check_custom_permissions.py` L301–308;
+  `envelopes/M2-S01/2026-09-06T07-30-00Z.json` → `process_observations[3]` (concerning, low);
+  `plan.json` `steps[M2-S01].acceptance_tests[0].description`.
+
 ---
 
 # Open items for the planner — plan-verifier v5 non-blocking warnings
@@ -332,3 +470,45 @@ step — `M1-S02` passed every executable test it declares.
   `metadata-builder`-owned step. Raised by `metadata-builder` on both steps
   (`extensions.artefacts[…].declared: false`) and by `step-tester` on M1-S02 (Process Observations →
   Ambiguous, third bullet).
+
+---
+
+# Open items for the planner — raised by the M2-S01 documentation run
+
+Same standing as the two sections above and for the same reason: these are plan-file text and
+plan-file records, and `standards/build-orchestration.md` § 2 gives `build_plan.py` sole authority over
+them. Neither blocks the step — `M2-S01` passed every executable test it declares.
+
+## O-M2S01-01 — F-01's remedy names `M2-S01`, but `layoutAssignments` is `M2-S03`'s in plan v5
+
+- **Date:** 2026-09-06 · **Recorded by:** `build-doc-keeper`, from the M2-S01 builder envelope and
+  reproduced against the plan in this pass
+- `reports/MILESTONE-M1-REPORT.md` finding **F-01** — the HIGH finding the M1 gate was really for —
+  explains that every record-type-to-layout check in `check_record_type_layouts.py` reads from
+  `layoutAssignments`, that `collect()` populates them only from `Profile` and `PermissionSet` roots,
+  and then says: "`layoutAssignments` lives only on `Profile`, which is **`M2-S01`**'s." The go/no-go
+  list at § 11 repeats the pointer.
+- **In plan version 5 it is not.** `M2-S01` declares four outputs — one `CustomPermission`, one
+  `PermissionSet`, `package.xml`, `deploy-order.md` — and no `Profile`. The profiles are **`M2-S03`**,
+  "Minimal base profiles carrying only default app, default record type and layout assignment", whose
+  declared outputs are `artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml`,
+  `.../Acme Support Tier 2.profile-meta.xml` and `.../Acme Billing.profile-meta.xml`.
+- **The stale pointer has been copied forward twice more, into places a re-plan does not reach.** Both
+  are gate records in `plan.json.human_gates[]`, rendered into `PLAN.md`: the `milestone:M1` approval
+  note reads "F-01 (layout↔record-type assertion needs Profile layoutAssignments — **M2-S01**) carried
+  to M2", and the `step:M2-S01` gate note opens "**Profiles step.** Approved for the dry run so F-01
+  … can be closed at M2 scope." The step that gate approves builds no profile, so the reason recorded
+  for approving it is not a reason about that step.
+- **Nothing is broken by this.** `M2-S01` built what plan v5 asked for, and `M2-S03` will build the
+  profiles. The defect is navigational: a reader closing F-01 goes to the wrong step, finds no
+  `layoutAssignments`, and has no way to tell whether the remedy was dropped or renumbered. That is the
+  same class of defect as F-01 itself — a document asserting a check that was not where it said.
+- **Remedy at v6:** repoint F-01's remedy and its § 11 go/no-go line to `M2-S03`. The two gate notes are
+  written records of a human's decision and are **not** rewritable by anyone; the correction belongs in
+  the M2 milestone report, which should state that the `step:M2-S01` note describes `M2-S03`'s content.
+- **Already partly mitigated in the artefacts:** `artefacts/M2-S01/deploy-order.md` carries a whole
+  section — "Record types and page layouts: what this step does NOT carry" — that names `M2-S03`, gives
+  the exact `Case.Support` / `Case.Billing` and `Case-Case Support Layout` / `Case-Case Billing Layout`
+  member forms the profiles must reuse, and states that `check_record_type_layouts.py` still has zero
+  `layoutAssignments` to resolve anywhere under `artefacts/` until `M2-S03` deploys. The builder wrote
+  that section for exactly this reason.

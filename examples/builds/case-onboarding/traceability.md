@@ -34,6 +34,8 @@ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py \
 | REQ-012 | Q5 | Finance work a billing case on a page of its own, with no severity concept on it | M1-S02 | `Layout:Case-Case Billing Layout` | metadata-builder | — | M1-S02-T1 | checker | In UAT | `artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml` | pass — same run as REQ-011, same exit, its own `INFO` finding, and the same named cross-reference gap. Eight fields, identical to the Support layout minus `Severity__c` and the `emptySpace`. Neither layout is assigned to anyone yet: `layoutAssignments` lives only on `Profile`, which is M2-S01's, so both deploy and neither is reachable — recorded in `artefacts/M1-S02/deploy-order.md` and in workbook Section 2's preamble. |
 | REQ-013 | Q24 | A case logged by hand goes through the active assignment rule from the page the agent uses | M1-S02 | `Layout:Case-Case Support Layout` | metadata-builder | — | TC-M1S02-01 | manual | In UAT | `artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml` \| `artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml` | outstanding — manual, ticked at the M1 gate, and **tickable only in part**. Machine coverage: `xml` parsed, `manifest` resolved both members ↔ both files. Disk evidence in `tests/M1-S02/manual-evidence.stdout`: `<showRunAssignmentRulesCheckbox>` present and `true` on both layouts, so the **presence** reading passes; the test's literal **positional** reading ("`<layoutSections>` is preceded by the checkbox") fails on both, because the cited skill's own example places every `show*` element after the final `</layoutSections>` and both artefacts match it exactly. The tester applied the presence reading and recorded why. Q24's "defaulted on" half is **unproven and unprovable from the artefacts** — no element in the cited skill's inventory pre-checks the box (`decisions.md` D-M1S02-03). The gate must either accept the narrowing or route the remainder to a recorded Setup step. **Why `artefact` names one layout and `artefact_paths` names two:** `check_rtm.py` applies its pipe-delimited multi-value split to the story and test id columns only — `artefact` is read as a single value (script L626 versus L592–593) — so the column names the layout the requirement carries the most traffic on (support intake is ~460 cases a day against billing's share of the rest) and both files stay in `artefact_paths`. The element is identical on both. |
 | REQ-014 | Q57 | Every field a validation rule attaches its error to is visible on the page where that error appears | M1-S02 | `Layout:Case-Case Billing Layout` | metadata-builder | — | TC-M1S02-01 | manual | In UAT | `artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml` \| `artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml` | outstanding — manual, and **not file-checkable at M1-S02 time**. `Priority` and `Origin` are present on both layouts, which is what assumption **A13** needs for the two rules `M3-S01` declares (`Priority_Required_On_Agent_Save`, `Origin_Must_Be_Known`). But no `ValidationRule` metadata exists anywhere under `artefacts/` yet — `M3-S01` is `pending` — so there is no `errorDisplayField` to resolve and nothing to check against. Carry-forward the M1 gate should see: `Severity__c` is on the Support layout only, so a third Case rule attaching its error to that field would fail A13 on the Billing layout. Q57 is **deferred**; A13 is the standing assumption at `risk: medium`. **Why `artefact` names the Billing layout:** same single-value column as REQ-013, and this is the layout the assumption is at risk on — it is the one missing `Severity__c`. Both files are in `artefact_paths`. |
+| REQ-015 | Q56 | Cases created by the email and web intake channels are never blocked by a Case validation rule written for agent-entered cases | M2-S01 | `CustomPermission:Bypass_Case_Intake_Validation` | metadata-builder | — | M2-S01-T1 | checker | In Build | `artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml` | pass — `check_custom_permissions.py --manifest-dir artefacts/M2-S01` exit 0: `Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0`, coverage row `Bypass_Case_Intake_Validation  0  permission set 'Case_Intake_Integration'`, `0 error(s), 0 warning(s), 0 info`. Also `xml` (3 of 3 parsed) and `manifest` (2 members ↔ 2 files, both directions). **What that exit proves:** the grant is not dangling — the permission set names a permission a file in the tree defines. **What it does not:** the consumer side. `Consumers` is 0 because no validation rule is in scope, and deleting the grant entirely would still exit 0 (the plan's own test description says so). The consumer cross-reference is M3's milestone test, which runs the same checker at `--manifest-dir artefacts --strict` once `M3-S01` writes `Priority_Required_On_Agent_Save` and `Origin_Must_Be_Known` — each carrying `NOT($Permission.Bypass_Case_Intake_Validation)` as its outer AND term. **Status is `In Build`, not `In UAT`:** `M3-S01` is `pending` and depends on this step, so a step that serves this requirement remains. The consumer names written into the permission's `<description>` come from `plan.json` `steps[M3-S01].outputs[]`, not from any clarification — `decisions.md` D-M2S01-01. |
+| REQ-016 | Q56 | The intake bypass is held by an integration-only grant that carries nothing else and reaches no human user | M2-S01 | `PermissionSet:Case_Intake_Integration` | metadata-builder | — | TC-M2S01-01 | manual | In UAT | `artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml` \| `artefacts/M2-S01/deploy-order.md` | machine half **pass**, manual half **outstanding**. Machine: `check_access_model.py --manifest-dir artefacts/M2-S01` exit 0, `score 100`, `Scanned 1 access-model metadata file(s); 0 finding(s)` — no dangerous system permission rides along; the checker returns 1 on any finding and exits 1 on an empty directory (W09, confirmed from source), so exit 0 stands for a file actually scanned. Plus `check_permission_set_architecture.py` exit 0 (`No issues found.`, the builder's self-check, not a declared test), `manifest` two-way and `xml` parse. Manual: **`TC-M2S01-01`**, ticked at the M2 gate. The file-checkable half is already evidenced — `tests/M2-S01/manual-evidence.stdout.txt` records four top-level elements, one grant-bearing element present (`customPermissions`), thirteen absent, `ASSERTION 'grants the bypass and nothing else': HOLDS`, and both the post-deploy instruction and the named owner `PRESENT` in `deploy-order.md`. **The residue is not evidenceable in this build at all:** whether the assignment was made to the integration identity and to no human user is `PermissionSetAssignment` record data, not metadata, which is why plan-verifier blocker **B01** rewrote this test as an assertion over the artefacts rather than over an org. Two recorded absences the gate should see: `ApiEnabled` is deliberately not granted (`decisions.md` D-M2S01-02) and the grant carries no expiry (D-M2S01-03). Q10 (additive, no strip phase) and Q8 (LicenseId left empty) are the two answers that shape what this set does **not** carry. |
 
 ---
 
@@ -61,6 +63,8 @@ key is auditable rather than invented. Ids are stable and are never reused.
 | REQ-012 | L8 — "Finance queries arrive at billing@acme.example and should be worked by Finance" | Q5 (answered), Q83 (answered), A26 |
 | REQ-013 | L7 — "Agents also log about 20 cases a day by hand"; L9 — "Within the first minute of a case being created it must have an owner" | Q24 (answered; built in half — D-M1S02-03) |
 | REQ-014 | L9–L11 — "priority must be set from what the form or email tells us" (the error has to be visible to the person setting it) | Q5 (answered) + Q57 (**deferred**) → assumption A13 |
+| REQ-015 | L6–L8 — ~400 email and ~60 web cases a day arrive without a human at the keyboard; L9–L11 — every one of them must land complete within the first minute | Q56 (answered) |
+| REQ-016 | L6–L8 — the same two automated channels, which are the only population that needs the bypass; L8 — Finance work is a separate population, and neither it nor Tier 1 is in scope for this grant | Q56 (answered) + Q10 (answered — additive, no strip phase) + Q8 (answered — LicenseId left empty) |
 
 ---
 
@@ -197,3 +201,72 @@ standing in for it is recorded — A13, `risk: medium` — but a reader should s
 a question nobody answered rather than on a decision somebody made. The same is true of the
 `Q24` cell on REQ-013 in a different way: Q24 **is** answered, and only half of the answer could be
 built.
+
+---
+
+## What M2-S01 rests on — one answered clarification, one verifier blocker, one forward reference
+
+Unlike `A1` on `M1-S01`, this step needs no assumption at all and therefore no planner fix on
+`assumptions[].steps[]`. Three linkages instead, and all three are already on file:
+
+- **Q56, answered and blocking** — "Which users and integrations must be able to save a Case the rule
+  would reject?" Its `answer_shape` is literally "The Custom Permission name and the Permission Set
+  that carries it", which is this step's two artefacts. Both rows above name it as `source`. **Q10**
+  (additive grant model) and **Q8** (LicenseId left empty) are the second-order answers, recorded on
+  `REQ-016` because they decide what the permission set does *not* carry rather than what it does.
+- **Plan-verifier blocker B01** — the reason this step's `manual` acceptance test is an assertion over
+  `permissionsets/Case_Intake_Integration.permissionset-meta.xml` and `deploy-order.md` rather than
+  over an org. `PermissionSetAssignment` is record data, so the original wording could never have been
+  ticked in a `design-only` build. The rewrite is what makes `TC-M2S01-01` executable at the M2 gate,
+  and it is why `REQ-016`'s manual half has file evidence already captured while its residue has none.
+- **`M3-S01`, forward** — `depends_on: ["M1-S01", "M2-S01"]`, and its two validation rules are the
+  only consumers this permission will ever have. That direction matters twice over: the consumer names
+  in the permission's `<description>` are read from `M3-S01`'s declared `outputs[]` (D-M2S01-01), and
+  the deploy ordering is load-bearing in the opposite direction — a validation rule naming a
+  `$Permission` that does not exist does **not** fail the deploy, it evaluates to `false` silently, so
+  every API-created Case would be blocked from the moment `M3-S01` landed until this step did
+  (`custom-permissions/references/gotchas.md` #4, restated in `artefacts/M2-S01/deploy-order.md`).
+
+## Coverage, as far as M2-S01
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M2-S01` — three of
+twenty-two steps documented:
+
+- **Requirements with no step:** not yet computable. Sixteen `REQ-XXX` ids exist and all sixteen have a
+  step; ids are minted when a step delivers them, so the requirement lines no documented step serves
+  yet (routing, SLA, email, sandbox proof) carry no id.
+- **Steps with no requirement:** 0 of the documented set. Both of M2-S01's manifest members are named
+  by a row above, as were both of M1-S02's and all ten of M1-S01's.
+- **Manual tests outstanding:** 4 — `TC-M1S01-01`, `TC-M1S01-02` and `TC-M1S02-01` at the M1 gate
+  (which is now `approved`, with those three ticked on the readings the M1 report states), and
+  **`TC-M2S01-01`** at the M2 gate. `TC-M2S01-01` is the first case in the build whose residue is not
+  merely deferred but **unevidenceable in this build class**: `PermissionSetAssignment` is record data.
+  Compiled into the UAT case shape in this step's doc-keeper envelope
+  (`envelopes/M2-S01/2026-09-06T08-15-00Z.md`); the pack itself is `M5-S04`'s declared output and is
+  not written on a per-step run.
+
+## Linter result — after M2-S01
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..
+traceability.md: 16 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 1 warning(s)
+exit 0
+```
+
+Every one of the sixteen rows resolves its artefact against a real component at build scope. The three
+orphans are unchanged and are M1-S01's file-stem keys — `BusinessProcess:Support_Process`,
+`BusinessProcess:Billing_Process`, `CompactLayout:Case.Case_Intake` — explained under "Linter result"
+above (`decisions.md` D-M1S01-03). **M2-S01 adds no orphan:** both member forms
+(`Bypass_Case_Intake_Validation`, `Case_Intake_Integration`) are byte-identical to their file stems, so
+the checker's two index keys agree, as they did for M1-S02's layouts.
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts/M2-S01 --repo-root ../../..
+traceability.md: 16 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 14 warning(s)
+exit 0
+```
+
+The step-scoped run is recorded for symmetry with the two M1 runs. Its fourteen warnings are the scope,
+not a finding: the fourteen M1 rows name components that are not under `artefacts/M2-S01/`. A matrix
+spanning steps has no single correct `--manifest-dir` below the build root — the third consecutive step
+at which that is true, and worth knowing before `M5-S04` compiles it.

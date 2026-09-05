@@ -2804,7 +2804,7 @@
           "expected": "ticked at the M2 milestone gate from the artefacts on disk"
         }
       ],
-      "status": "tested",
+      "status": "documented",
       "runs": [
         {
           "agent": "metadata-builder",
@@ -2823,6 +2823,12 @@
           "started": "2026-09-06T07:30:00Z",
           "envelope_path": "envelopes/M2-S01/2026-09-06T07-30-00Z.json",
           "result": "ran 4, failed 0, manual 1"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-06T08:15:00Z",
+          "envelope_path": "envelopes/M2-S01/2026-09-06T08-15-00Z.json",
+          "result": "workbook rows 4; traceability rows 2; decisions appended 5"
         }
       ],
       "human_gate": true
