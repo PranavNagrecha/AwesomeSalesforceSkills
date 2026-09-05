@@ -5363,7 +5363,8 @@
     "deep-linking": [
       "admin/fsl-mobile-app-setup",
       "apex/fsl-mobile-app-extensions",
-      "lwc/lwc-navigation-mixin"
+      "lwc/lwc-navigation-mixin",
+      "lwc/navigation-and-routing"
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
@@ -14004,6 +14005,9 @@
     "story-splitting": [
       "admin/user-story-writing-for-salesforce"
     ],
+    "strategy-pattern": [
+      "apex/apex-design-patterns"
+    ],
     "streaming": [
       "integration/pub-sub-api-patterns",
       "lwc/lwc-server-sent-events"
@@ -14720,6 +14724,7 @@
       "admin/managed-package-installation-and-upgrade"
     ],
     "unit-of-work": [
+      "apex/apex-design-patterns",
       "apex/fflib-enterprise-patterns"
     ],
     "unit-tests": [
@@ -14761,6 +14766,9 @@
       "integration/idempotent-integration-patterns",
       "integration/sis-integration-patterns",
       "omnistudio/dataraptor-load-and-extract"
+    ],
+    "url-addressable": [
+      "lwc/navigation-and-routing"
     ],
     "url-state": [
       "lwc/navigation-and-routing"
