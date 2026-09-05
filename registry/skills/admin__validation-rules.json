@@ -54,6 +54,7 @@
     "5e9007e774a57d24713b",
     "5e9511fbb2738b05d3cb",
     "5f21cb437b73b6cfc27d",
+    "614fc74bfc8c083abde9",
     "650a9badf999c0d91f7f",
     "665c13949a6e6d48422b",
     "6aaf2e25cccaf27a8ba5",
@@ -134,7 +135,7 @@
     "fd70dd14ea3fe93ed579",
     "fe250dc56e05828960dd"
   ],
-  "content_hash": "17e27d3a8751880220d6425b36760c2faa3475769adf6e58380bf4953fb23cb8",
+  "content_hash": "3618aa444b0ce1d07e7c8b451af8c0cd03ba6706cf828285355bcda6421576f5",
   "dependencies": [],
   "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality', 'errorConditionFormula', 'errorDisplayField', 'errorMessage 255 characters', 'ValidationRule metadata', 'validationRule-meta.xml', 'deploy validation rule inactive', 'bypass custom permission', 'FIELD_CUSTOM_VALIDATION_EXCEPTION', 'validation rule on custom metadata type', 'compound field validation rule'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
   "file_location": "skills/admin/validation-rules",
@@ -188,7 +189,7 @@
   "templates": [
     "skills/admin/validation-rules/templates/validation-rule-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

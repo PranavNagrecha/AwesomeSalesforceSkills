@@ -29,9 +29,9 @@ triggers:
 inputs: ["business rule", "exception path", "integration constraints", "object and field API names", "record types in scope", "which users or integrations must bypass"]
 outputs: ["validation design guidance", "rule review findings", "bypass recommendations", "deployable ValidationRule XML plus package.xml", "Apex tests that assert the rule fires and that the bypass suppresses it"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.
@@ -191,7 +191,7 @@ Two version gates that change what you can write: as of **API 20.0** rules can't
 2. **Retrieve what exists.** `sf project retrieve start --metadata "CustomObject:<Object>"` — never a `*` wildcard on `ValidationRule`, which the type does not support. Read the existing `<validationRules>` elements for a rule that already covers this, and for a rule that contradicts it.
 3. **Compose the formula in the canonical order** — bypass, then relevance gate, then business condition — from `templates/admin/validation-rule-patterns.md`. The formula describes the **invalid** state; it fires when it evaluates to TRUE.
 4. **Write the XML** from `references/metadata-examples.md`: `active`, `description` (business justification and bypass name), `errorConditionFormula`, `errorDisplayField`, `errorMessage` under 255 characters. Set `active=false` if existing data would violate the rule.
-5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it fails on empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, and unguarded `PRIORVALUE`, and warns on a missing `$Permission` bypass.
+5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it exits 1 on CRITICAL/HIGH findings (empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, unguarded `PRIORVALUE`) and reports MEDIUM/LOW/REVIEW advisories (picklist blank guards, missing `$Permission` bypass) without failing; add `--strict` to fail on any finding.
 6. **Write both tests** from `references/metadata-examples.md`: one that asserts the rule fires and attaches to the right field via `Database.Error.getFields()`, and one under `System.runAs` that asserts the bypass permission suppresses it. Without the second, nothing catches the removal of the bypass clause.
 7. **Validate-only, then deploy, then verify.** `sf project deploy validate` proves the formula compiles; the Tooling API query in `references/metadata-examples.md` proves the rules landed with the intended `Active` state. Record the rule in `templates/validation-rule-template.md` so the next admin knows why it exists.
 

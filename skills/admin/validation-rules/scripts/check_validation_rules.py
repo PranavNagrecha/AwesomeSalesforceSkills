@@ -96,13 +96,27 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+BLOCKING_SEVERITIES = {"CRITICAL", "HIGH"}
+
+
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
+    """Print the JSON report and return the exit code.
+
+    Exit 1 only on CRITICAL/HIGH findings (platform facts that will fail or
+    misbehave at deploy or run time). MEDIUM/LOW/REVIEW are advisory and exit 0
+    so a build that produced correct rules with natural formulas stays green;
+    pass --strict to promote every finding to a failure.
+    """
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
-    print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    blocking = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
+    print(json.dumps({"score": score, "findings": normalized, "summary": summary,
+                      "blocking": len(blocking)}, indent=2))
     if normalized:
-        print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+        print(f"WARN: {len(normalized)} finding(s) detected ({len(blocking)} blocking)", file=sys.stderr)
+    if blocking:
+        return 1
+    return 1 if (strict and normalized) else 0
 
 
 def collect_rules(path: Path) -> list[Rule]:
@@ -246,6 +260,11 @@ def main() -> int:
             "Repeatable."
         ),
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding, including MEDIUM/LOW/REVIEW advisories.",
+    )
     args = parser.parse_args()
 
     targets = [Path(value) for value in list(args.paths) + list(args.manifest_dir)]
@@ -295,7 +314,7 @@ def main() -> int:
         f"Scanned {rule_count} validation rule(s) across {len(files)} file(s); "
         f"{len(findings)} finding(s) detected."
     )
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, strict=args.strict)
 
 
 if __name__ == "__main__":
