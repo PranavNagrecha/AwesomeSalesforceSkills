@@ -25,6 +25,7 @@ triggers:
   - "does salesforce require test coverage to activate a flow"
   - "wire sf flow run test into a ci pipeline"
   - "cannot mock an apex action inside a flow test"
+  - "write a flow test for a record-triggered flow before activating it"
 inputs:
   - "which flow type is under test and which paths are business-critical"
   - "what test data is required for happy, edge, and failure scenarios"
