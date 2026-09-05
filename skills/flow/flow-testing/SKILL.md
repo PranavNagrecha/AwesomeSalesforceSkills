@@ -1,6 +1,6 @@
 ---
 name: flow-testing
-description: "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior — use flow/flow-debugging."
+description: "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior — use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -18,6 +18,13 @@ triggers:
   - "how should i test flow fault paths"
   - "debug flow interview results"
   - "screen flow custom component testing"
+  - "write a flowtest for a record triggered flow"
+  - "assert a flow fault path fired in a test"
+  - "run an autolaunched flow from an apex test class"
+  - "flowtest passes but the flow breaks in production"
+  - "does salesforce require test coverage to activate a flow"
+  - "wire sf flow run test into a ci pipeline"
+  - "cannot mock an apex action inside a flow test"
 inputs:
   - "which flow type is under test and which paths are business-critical"
   - "what test data is required for happy, edge, and failure scenarios"
@@ -27,16 +34,16 @@ outputs:
   - "review findings for missing test coverage, weak data setup, or manual-only validation"
   - "guidance on combining Flow Tests, debug runs, and component-level tests where needed"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 Use this skill when a Flow works in a demo but nobody can yet prove it is safe to change. Flow testing is not one tool — it is a test STRATEGY that combines declarative Flow Tests where they fit, focused debug runs for diagnosis, deliberate test data, and extra coverage at custom component or Apex boundaries when the Flow itself is not the whole system.
 
 Unlike Apex, Flow does not have a forced test-coverage gate at deploy time. This makes flow testing strictly a discipline problem, not a tooling problem. Teams that rely on "I clicked through it once in sandbox" as their coverage story are one change away from a production incident with no regression safety net. This skill exists to make that discipline concrete.
 
-**FlowTest scope expansion (Spring '26, API 66.0+).** Flow Tests are no longer record-triggered-only. The FlowTest metadata type documents testing **record-triggered, autolaunched, and Data Cloud-triggered** flows before activation. The **`testType`** field (`FlowTestType`, API 66.0+) supports **`WithAssertion`** — automated comparison of actual flow outcomes against user-defined expected outcomes. Wire CI with `sf flow run test` (see `devops/github-actions-for-salesforce` and `apex/tooling-api-patterns`).
+**What FlowTest reaches, in the guide's own words.** "Before you activate a record-triggered, autolaunched, or Data Cloud-triggered flow, you can test it to verify its expected results and identify flow run-time failures" (`api_meta.txt` L73961–73962). Screen, scheduled-only and platform-event-triggered flows are absent from that list, and there is no other declarative flow-test surface — see Gotcha 7. Components carry the `.flowtest` suffix, live in the `flowtests` folder, and exist from API version 55.0 (L73976–73980). The `testType` field (`FlowTestType`) is required from API version 66.0 and has one value, `WithAssertion` — "the automated comparison of the actual flow outcome with the user-defined expected outcome that assertions define" (L74042–74051). Run them with `sf flow run test`, the command the `flowtesting` namespace page names (`apexrefguide.txt` L158183–158187); see `devops/github-actions-for-salesforce`. **UNVERIFIED (2026-09-05):** the mapping from API version 66.0 to a named seasonal release, and the claim that FlowTest was record-triggered-only before it, are not stated in any corpus file — the guides give API version gates per field and nothing else.
 
 ## Before Starting
 
@@ -47,7 +54,21 @@ Gather if not available:
 - Is the flow record-triggered, screen, scheduled, or auto-launched, and what test surface is appropriate for that type?
 - Which parts of the behavior live outside the flow itself (Apex actions, custom LWC screen components, external integrations)?
 - What test data does the org have? (Test Data Factory Apex class? Sample records in a scratch org?)
-- Is the Flow deployed to sandbox or prod? (Flow Tests work differently in each.)
+- Is the flow Draft or Active, and in which org? FlowTest is positioned as a pre-activation check (`api_meta.txt` L73961), so a flow already Active in production is being tested after the fact, not before.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which flow type is this — record-triggered, autolaunched, Data Cloud-triggered, screen, scheduled, or platform-event? | `FlowTest` covers only the first three (`api_meta.txt` L73961–73962), and `Flow.Interview.start()` only autolaunched and user-provisioning flows (`apexrefguide.txt` L158164–158177). Gotchas 7 and 10. | Decides the deliverable before any work starts: a `.flowtest-meta.xml`, an Apex driver, or a scripted manual pass with Jest at the component boundary. |
+| If record-triggered: `Create`, `Update`, `CreateAndUpdate` or `Delete`? | `Update` needs both the before and after record image in the `Start` test point (`api_meta.txt` L74296–74320). Gotcha 8. | Tells you whether the test needs `InputTriggeringRecordUpdated` as well as `InputTriggeringRecordInitial`, and which field must differ between them. |
+| What does each branch leave behind in a named variable or a record field? | Assertions fire only at `Start` and `Finish` (`api_meta.txt` L74143–74150). Gotcha 5. | Gives every branch an assertion target. "Nothing" is a finding: the flow needs a variable added before it can be tested at all. |
+| Does the flow call invocable Apex, an External Service, or send email? | `isUseMockOuput` is "Reserved for future use" (`api_meta.txt` L74152) — nothing in a flow test is mocked. Gotcha 6. | Tells you which org may safely run the tests, and which behaviour has to move behind an invocable method so `HttpCalloutMock` can cover it. |
+| Who runs this in production, and what is `runInMode` set to? | `DefaultMode` means launch context decides user vs system context (`api_meta.txt` L68374–68380); version selection also differs between a flow user and a flow admin (`apexrefguide.txt` L158178–158181). Gotcha 14. | Supplies the `System.runAs` subject and exposes whether the user-context path has ever executed outside an admin session. |
+| Does the flow read configuration from a custom object? | Apex test data isolation "applies to all code running in test context" (`apexdev.txt` L40760–40761). Gotcha 11. | Tells you what `@TestSetup` must create — or that the configuration belongs in Custom Metadata, which the isolation rule exempts. |
+| What does the release gate require today, and does the repo still ship `flowDefinitions/`? | Active version numbers in flow definitions override the `status` field in the flows (`api_meta.txt` L73925–73930). Gotcha 13, and the unsatisfiable-gate anti-pattern in `references/well-architected.md`. | Confirms the version you tested is the version users get, and catches a gate that cannot be met for screen flows. |
+
+What a proper configuration adds over just doing it: a test suite shaped by these answers proves the branch a change touched, in the version that actually runs, for the user who actually runs it — where a suite written without them proves that one happy path once worked for an admin.
 
 ## Core Concepts
 
@@ -160,7 +181,7 @@ Flow Test: "Fault path fires when DML validation blocks Update"
 
 **When to use:** Flows that depend on complex data setups (multi-object relationships, specific role hierarchies, picklist values).
 
-**Structure:** An Apex `@IsTest` `TestDataFactory` class creates the needed records. Flow Tests use "Run Flow Debug" with the records fabricated via this factory (or via Connect Test Setup in sandbox).
+**Structure:** An Apex `@IsTest` `TestDataFactory` class creates the needed records — start from `templates/apex/tests/TestDataFactory.cls`, do not fork it. A `FlowTest` points at that class through `flowTestDataSources`, whose `dataSourceType` has one value, `ApexClass`, from API version 66.0 (`api_meta.txt` L74070–74090). Pair it with `isolatedObjectExternalKeys`, which names the fields that identify unique records in the isolated test data and explicitly excludes lookup fields (L74092–74128).
 
 Alternative: a scratch-org seed script (SFDX tree export/import) that loads a canonical test dataset. Repeatable + CI-friendly.
 
@@ -189,13 +210,36 @@ Alternative: a scratch-org seed script (SFDX tree export/import) that loads a ca
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; build the path matrix first
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Inventory the gap before designing anything.** Run
+   `python3 skills/flow/flow-testing/scripts/check_flow_testing.py --manifest-dir force-app/main/default`.
+   It reports Active flows with no `FlowTest` naming them, tests whose `flowApiName`
+   resolves to no flow in the tree, tests with a `Start` point and no `Finish` assertions,
+   test points with zero assertions, update-triggered tests missing the initial record
+   image, and Apex classes touching `Flow.Interview` with no assertion. That output is the
+   worklist; the path matrix below fills the gaps it names.
+2. **Classify by flow type, then build the path matrix.** Answer the first question in the
+   table above. Record-triggered, autolaunched and Data Cloud-triggered flows get
+   `FlowTest` components; autolaunched flows may also get an Apex driver; everything else
+   gets Jest plus a scripted manual pass. Then list the outcomes each branch must produce
+   and the variable or field that proves it.
+3. **Author the FlowTest pair from `references/metadata-examples.md`.** §2 is the
+   happy-path shape — two test points, assertions on both `Start` and `Finish`, both record
+   images for an update trigger, a `HasError` assertion proving the fault route stayed
+   quiet. §3 is the negative path at the boundary value. One condition per assertion, each
+   with an `errorMessage` naming the suspect element.
+4. **Cover what FlowTest structurally cannot reach, in Apex.** §5 of the same file drives
+   an autolaunched flow through `Flow.Interview` with input variables, asserts
+   `getVariableValue` and then queries the record. Use it for bulk behaviour, user context
+   via `System.runAs`, mocked callouts, and any flow type `FlowTest` does not list.
+5. **Deploy in the order in `references/metadata-examples.md` and run both suites.** Objects,
+   then flows as `Draft`, then `flowtests`, then Apex — `Flow.Interview.<FlowApiName>` will
+   not compile before the flow exists. Then `sf flow run test` and
+   `sf apex run test --class-names <YourFlowTestClass>`.
+6. **Read `elementsNotCovered` from the deploy result, not a percentage.** Walk the list
+   per element and classify each as a real gap or a structurally unreachable route, as in
+   `references/examples.md` Example 3. Record the accepted ones with their reason.
+7. **Re-run the checker and record what remains.** Fill in
+   `templates/flow-testing-template.md` with the residual gaps and why each is accepted.
 
 ---
 
@@ -206,10 +250,10 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 3. **Fault handling needs its own test data** — failures rarely prove themselves unless data is arranged to trigger them intentionally.
 4. **A flow can be correct while its boundary dependency is wrong** — orchestration coverage does not replace Apex or component tests.
 5. **Flow Tests do NOT enforce coverage at deploy time** — unlike Apex. A flow can be deployed to production with zero tests. This is a discipline problem, not a tool problem.
-6. **Flow Tests run with the current user's permissions** — tests may pass in a System Admin's context but fail for the actual users. Test with `runAs()` equivalents or multiple user contexts.
-7. **Screen flow tests can't fully automate custom LWC interaction** — manual steps inevitable for some scenarios; Jest fills the LWC gap.
-8. **Record-triggered flow tests don't inherently cover bulk** — a 200-record Bulk API insert triggers 200 interviews; Flow Tests run one interview. Use Apex for bulk coverage.
-9. **Mocking external callouts in Flow Tests is harder than in Apex** — External Services callouts typically require Apex test setup.
+6. **Admin-context testing hides user-context failures** — `System.runAs` plus a `with sharing` launching class on API version 62.0 or later is what makes an Apex-driven flow honour the running user's sharing (`apexrefguide.txt` L157958–157963). **UNVERIFIED (2026-09-05):** the corpus states nothing about which user context a `FlowTest` component executes in.
+7. **There is no FlowTest for a screen flow at all** — the type covers record-triggered, autolaunched and Data Cloud-triggered flows only (`api_meta.txt` L73961–73962). Jest plus a scripted manual pass is the whole story there.
+8. **A FlowTest exercises one interview** — the `Start` point takes a single `$Record` image per parameter type (`api_meta.txt` L74296–74320), so nothing about bulk behaviour is proven. Use an Apex test that inserts a realistic batch. **UNVERIFIED (2026-09-05):** the often-quoted "200 interviews per 200-record DML" ratio is not stated in `api_meta.txt` or `apexdev.txt`.
+9. **Nothing inside a flow test is mocked** — `isUseMockOuput` is documented as "Reserved for future use" (`api_meta.txt` L74152), so an Apex action, External Services callout or email alert fires for real when the test runs.
 10. **Test failures in Flow are harder to debug than Apex** — less tooling, less stack trace detail. Prefer clear test names and narrow scope per test.
 
 ## Proactive Triggers
@@ -234,6 +278,16 @@ Surface these WITHOUT being asked:
 | Test strategy | Recommendation across Flow Tests, debug usage, and boundary tests |
 | Test-data plan | TestDataFactory class design or scratch-org seed approach |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing the artifacts: a record-triggered flow, its happy-path and negative-path `FlowTest` components, an autolaunched flow, the Apex `Flow.Interview` driver, `package.xml`, deploy order and the SOQL verification. |
+| `references/gotchas.md` | A test is green and the flow is broken, or a test will not deploy. Fourteen documented platform behaviours with the guide line ranges. |
+| `references/llm-anti-patterns.md` | You are reviewing generated test advice — eight failure modes, including Apex-driving a record-triggered flow and quoting a flow coverage percentage. |
+| `references/examples.md` | You need a worked path matrix, the split between flow-level and component-level coverage, or the coverage-worklist reading of a deploy result. |
+| `references/well-architected.md` | You are choosing between `FlowTest` and Apex as the driver, or need the sourced claim behind a statement in this package. |
+
 ## Related Skills
 
 - **flow/fault-handling** — alongside this skill when failure behavior needs redesign as well as test coverage.
@@ -241,3 +295,7 @@ Surface these WITHOUT being asked:
 - **flow/flow-bulkification** — when bulk-test coverage is the gap.
 - **apex/trigger-framework** — when the flow's boundary is Apex and trigger-framework tests cover that side.
 - **lwc/lwc-testing** — companion skill for Jest tests on custom LWC screen components.
+- **flow/flow-governance** — owns the release rule ("FlowTest present before Active") and `Flow.settings`; this skill only produces the tests that rule asks for.
+- **flow/record-triggered-flow-patterns** — owns `triggerType` / `recordTriggerType` selection and the guide's narrower availability wording; read it before arguing about which trigger type a test should target.
+- **flow/flow-interview-debugging** — owns the debug-log side: which Workflow-category events exist and at which level they appear.
+- **apex/test-data-factory-patterns** — how to extend `templates/apex/tests/TestDataFactory.cls` for custom objects without forking it.
