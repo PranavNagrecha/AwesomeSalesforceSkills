@@ -1,156 +1,187 @@
 # LLM Anti-Patterns — Campaign Planning And Attribution
 
-Common mistakes AI coding assistants make when generating or advising on Campaign Planning And Attribution. These patterns help the consuming agent self-check its own output.
+Ways an AI assistant gets campaign attribution wrong. Each entry names the wrong output,
+why the model produces it, what the guides actually say, and the corrected form.
+Line references are into the Summer '26 (v62) text extracts of
+[api_meta.pdf](https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf)
+and [object_reference.pdf](https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf).
 
-## Anti-Pattern 1: Treating Standard Campaign Influence and Customizable Campaign Influence as the Same Feature
+## Anti-Pattern 1: Telling the User to "Enable Customizable Campaign Influence First"
 
-**What the LLM generates:** Advice like "enable Campaign Influence in Setup and configure your attribution model" — conflating the legacy auto-association system with CCI. Or code that queries `CampaignInfluence` while assuming standard influence rules are producing the records, when CCI was actually the intended framework.
+**What the assistant produces:** A step-one instruction to go to Setup and switch CCI on,
+often framed as irreversible.
 
-**Why it happens:** Both features are called "Campaign Influence" in documentation and the Setup menu. Training data contains references to both without clearly distinguishing them. LLMs pattern-match on the shared name and merge the two systems into one conceptual model.
+**Why it happens:** Years of blog posts opened that way, and the training data is
+dominated by the era when 1.0 was the default.
 
-**Correct pattern:**
+**What the guide says:** `CampaignSettings.enableCampaignInfluence2` — "Indicates whether
+Customizable Campaign Influence is enabled (true) or not (false). When true, Campaign
+Influence 1.0 is hidden from users and is no longer active. **The default value is
+true**" (api_meta.txt:111568–111571).
 
-```
-Standard Campaign Influence (legacy):
-- Automatically creates CampaignInfluence records based on time-window rules
-- Only one model active at a time
-- Configured via: Setup > Campaign Influence > Auto-Association Rules
-
-Customizable Campaign Influence (CCI):
-- Requires explicit enablement: Setup > Campaign Influence > Customizable Campaign Influence
-- Supports multiple simultaneous models (first-touch, last-touch, even, custom)
-- Standard influence auto-association should be DISABLED before CCI is used
-- CampaignInfluence records include a ModelId field to distinguish which model produced them
-```
-
-**Detection hint:** If the response describes attribution models but does not mention "Customizable Campaign Influence" by name, or does not reference the `ModelId` field on `CampaignInfluence`, it may be conflating the two systems.
+**Corrected output:** Tell the user to retrieve `settings/Campaign.settings-meta.xml`
+and read the flag. If it is true, the feature is on and 1.0 is already inactive; the
+work is model configuration, not enablement.
 
 ---
 
-## Anti-Pattern 2: Advising That Campaign Hierarchy Rollup Fields Update in Real Time
+## Anti-Pattern 2: Describing CCI and Campaign Influence 1.0 as Coexisting and Conflicting
 
-**What the LLM generates:** Statements like "when you close an opportunity linked to a child campaign, the parent campaign's `AmountWonOpportunities` will immediately reflect the new total" — or automation designs that trigger from a parent Campaign rollup field change expecting real-time behavior.
+**What the assistant produces:** A cleanup plan for "duplicate `CampaignInfluence`
+records written by both systems", and a step to disable auto-association rules before
+CCI can be trusted.
 
-**Why it happens:** LLMs understand that rollup fields aggregate child data but often fail to distinguish between formula fields (which recalculate on read) and scheduled-batch rollup fields (which update asynchronously). Campaign Hierarchy rollups fall into the latter category, but this is a non-obvious platform constraint that does not surface prominently in general Salesforce documentation.
+**Why it happens:** "Two systems, therefore two sets of records" is a plausible
+inference, and nothing in the phrasing of most sources rules it out.
 
-**Correct pattern:**
+**What the guide says:** They are mutually exclusive by contract.
+`enableAutoCampInfluenceDisabled` requires `enableCampaignInfluence2` to be **false**
+(api_meta.txt:111556–111559), and the Object Reference stamps "This information applies
+only to Customizable Campaign Influence and not to Campaign Influence 1.0" on both
+`CampaignInfluence` and `CampaignInfluenceModel` (object_reference.txt:57898, 58007).
+Campaign Influence 1.0 does not write `CampaignInfluence` rows.
 
-```
-Campaign Hierarchy rollup fields (AmountWonOpportunities, ActualCost, NumberOfLeads, etc.)
-are updated by Salesforce's batch scheduler — NOT in real time.
-
-- Do NOT build automation that depends on these fields as real-time event sources
-- Do NOT tell stakeholders that parent Campaign totals are live during active campaigns
-- For real-time opportunity revenue, query the Opportunity object directly
-- For real-time campaign spend, query child Campaign ActualCost directly
-- Use parent Campaign rollups for historical/retrospective program-level reporting only
-```
-
-**Detection hint:** Any response that says "immediately reflects," "updates automatically when," or "triggers on parent Campaign change" in the context of Campaign Hierarchy rollup fields is likely incorrect.
+**Corrected output:** State the exclusion, and drop the cleanup phase from the plan.
 
 ---
 
-## Anti-Pattern 3: Claiming CCI Works Without Contact Roles on Opportunities
+## Anti-Pattern 3: Treating `ActualCost` on the Parent as the Hierarchy Rollup
 
-**What the LLM generates:** CCI setup instructions that describe enabling the feature and configuring models, but omit any mention of Contact Role requirements. Or debugging advice that checks CCI model configuration without checking for missing Contact Roles on the Opportunity.
+**What the assistant produces:** A program ROI report or formula built on `ActualCost`
+and `AmountWonOpportunities` on the parent campaign, described as "summed from children".
 
-**Why it happens:** Contact Role is a separate related list on the Opportunity and its role as a prerequisite for CCI attribution is easy to overlook. Training data emphasizes model configuration steps (the "how to set up CCI" path) more than the Contact Role dependency (the "why is CCI not producing records" path).
+**Why it happens:** Those are the field names a human says out loud, and the guide's
+hierarchy fields have long, easy-to-skip names.
 
-**Correct pattern:**
+**What the guide says:** `ActualCost` is "the amount of money spent to run the campaign"
+(object_reference.txt:57100–57105) — that campaign. Hierarchy aggregation lives in
+`HierarchyActualCost`, `HierarchyAmountWonOpportunities` and siblings
+(object_reference.txt:57273–57359), with a second family named `TotalAmountAllWonOpportunities`,
+`TotalNumberofResponses` and so on (object_reference.txt:57704–57810).
 
-```
-CCI attribution chain:
-Opportunity -> OpportunityContactRole -> Contact -> CampaignMember -> Campaign
-
-If any link in this chain is missing, CampaignInfluence records are NOT created.
-
-Prerequisite check before assuming CCI is misconfigured:
-SELECT Id, Name, (SELECT ContactId FROM OpportunityContactRoles)
-FROM Opportunity
-WHERE Id = '<opportunity_id>'
-
-If OpportunityContactRoles is empty -> no CampaignInfluence records will exist.
-Fix: add Contact Role, then re-run influence calculation.
-```
-
-**Detection hint:** CCI setup guidance that does not mention "Contact Role" or `OpportunityContactRole` is likely incomplete.
+**Corrected output:** Name the `Hierarchy*` or `Total*` field explicitly, and say which
+family the report uses. Flag that `HierarchyNumberOfLeads` and
+`HierarchyNumberOfResponses` are documented with type `currency` despite holding counts
+(object_reference.txt:57338, 57354).
 
 ---
 
-## Anti-Pattern 4: Suggesting More Than 5 Campaign Hierarchy Levels
+## Anti-Pattern 4: Querying `CampaignInfluence.Revenue`
 
-**What the LLM generates:** Campaign Hierarchy designs with 6 or more levels (e.g., Global > Region > Country > Business Unit > Program > Campaign > Tactic), or advice to "add as many hierarchy levels as your program structure needs."
+**What the assistant produces:** SOQL, a report column, or Apex referencing a `Revenue`
+field on `CampaignInfluence`, usually as `SELECT CampaignId, Influence, Revenue …`.
 
-**Why it happens:** LLMs extrapolate from tree/hierarchy concepts in software without knowing Salesforce's hard platform limit. The 5-level restriction is not obvious from general Salesforce documentation and is rarely mentioned in attribution-focused training material.
+**Why it happens:** "Attributed revenue" is the phrase everyone uses, and `Revenue` is
+the obvious field name for it.
 
-**Correct pattern:**
+**What the guide says:** The field is `RevenueShare` — "the amount of revenue from the
+related opportunity attributed to the campaign" (object_reference.txt:57987–57992). The
+complete field list is `CampaignId`, `CampaignMemberId`, `ContactId`, `Influence`,
+`ModelId`, `OpportunityContactRoleId`, `OpportunityId`, `RevenueShare`
+(object_reference.txt:57915–57992), and two of those — `CampaignMemberId` and
+`OpportunityContactRoleId` — are documented as "Not available in the UI".
 
-```
-Campaign Hierarchy: maximum 5 levels (root + 4 child levels)
-- Salesforce enforces this at the API and UI layer — there is no configuration to increase it
-- Design hierarchies with this constraint in mind from the start
-
-Recommended level mapping (example):
-Level 1: Program (e.g., Q1 Pipeline Drive)
-Level 2: Channel (e.g., Events, Email, Paid)
-Level 3: Tactic (e.g., Specific Webinar, Specific Email Series)
-
-Use Campaign custom fields (Region, Product Line, Segment) to encode additional dimensions
-instead of burning hierarchy levels on dimensional attributes.
-```
-
-**Detection hint:** Any Campaign Hierarchy design with more than 4 "->" arrows (indicating 5+ levels) exceeds the platform limit.
+**Corrected output:** `RevenueShare` for currency, `Influence` for the percentage of the
+opportunity's `Amount`. When designing a report type, note which two fields the report
+builder will not offer.
 
 ---
 
-## Anti-Pattern 5: Treating MCAE Multi-Touch Attribution Model Outputs as Queryable Salesforce Records
+## Anti-Pattern 5: Asserting Time-Decay and U-Shaped Models with Weightings
 
-**What the LLM generates:** SOQL queries against `CampaignInfluence` filtering by a "time-decay" or "U-shaped" model, or advice to build Flows/automation that use MCAE multi-touch attribution scores from standard Salesforce objects.
+**What the assistant produces:** A confident table of native or MCAE model types
+including time-decay and position-based, often with "first and last touches each receive
+40%, middle touches split the remaining 20%".
 
-**Why it happens:** CCI's `CampaignInfluence` object and MCAE's Multi-Touch Attribution App are both described as "attribution" systems. LLMs merge them into a single model where all attribution data is queryable via SOQL. The key distinction — that MCAE multi-touch models are CRM Analytics reporting-layer constructs, not Salesforce database records — is subtle and easily missed.
+**Why it happens:** Those are the standard marketing-attribution vocabulary and the
+percentages are conventional across the industry — so they generate fluently, with no
+signal that they are unsourced for Salesforce specifically.
 
-**Correct pattern:**
+**What the guide says:** Nothing. `grep -i "time.decay\\|u-shaped\\|position-based\\|multi-touch"`
+over `object_reference.txt` and `api_meta.txt` returns no hits. The only model vocabulary
+the guides define is the six-value `ModelType` picklist: Primary Campaign Source, Custom,
+First Touch, Last Touch, Even Distribution, Data-Driven (object_reference.txt:58105–58118).
 
-```
-MCAE Multi-Touch Attribution (time-decay, U-shaped / position-based):
-- Results exist ONLY in CRM Analytics datasets (B2B Marketing Analytics)
-- They are NOT written to CampaignInfluence records in Salesforce
-- They CANNOT be queried via SOQL
-- They CANNOT be used in native Salesforce reports or Flows
-- Access point: CRM Analytics dashboards only
-
-For queryable attribution records -> use CCI (CampaignInfluence object)
-  Supported models: first-touch, last-touch, even-distribution, custom Apex models
-  Not supported natively: time-decay, U-shaped
-
-If time-decay or U-shaped data is needed outside CRM Analytics:
-  Export via Data Cloud or CRM Analytics scheduled dataflow
-```
-
-**Detection hint:** Any response that includes a SOQL query on `CampaignInfluence` with a `ModelId` referencing "time-decay" or "U-shaped" does not reflect how MCAE multi-touch attribution works.
+**Corrected output:** Give the six `ModelType` values as the grounded list. Present any
+Account Engagement model names or weightings as a vendor claim to confirm in the org,
+marked UNVERIFIED with the date — never as a platform fact.
 
 ---
 
-## Anti-Pattern 6: Recommending CCI Configuration Without Disabling Standard Campaign Influence First
+## Anti-Pattern 6: Stating a Maximum Campaign Hierarchy Depth
 
-**What the LLM generates:** Step-by-step CCI setup that begins with "go to Setup > Campaign Influence and enable Customizable Campaign Influence" without first checking whether standard Campaign Influence auto-association rules are active.
+**What the assistant produces:** "Salesforce supports up to 5 levels of Campaign
+Hierarchy", sometimes elaborated as "root plus 4 children levels", and a design
+validated against it.
 
-**Why it happens:** CCI setup documentation focuses on the new feature's configuration steps. The prerequisite of disabling the legacy auto-association system is a migration concern that is treated as a footnote, and LLMs often omit footnotes from generated setup guides.
+**Why it happens:** The figure is repeated widely enough to read as settled, and a
+number feels more helpful than an admission of uncertainty.
 
-**Correct pattern:**
+**What the guide says:** No maximum appears in the Object Reference's `Campaign` section,
+in the Metadata API guide, or in the App Limits cheat sheet — `grep -i campaign` over
+`salesforce_app_limits_cheatsheet.txt` returns zero rows.
 
-```
-Before enabling CCI:
-1. Navigate to Setup > Campaign Influence > Auto-Association Rules
-2. Note any active rules (screenshot or document them for reference)
-3. DISABLE all active auto-association rules
-4. Verify existing CampaignInfluence records — decide whether to archive or leave them
-5. NOW enable Customizable Campaign Influence
-6. Configure CCI models from scratch
+**Corrected output:** Say the number is not in the official references you can cite, mark
+it UNVERIFIED with the date, and tell the user to confirm it in the target org. The
+design advice that follows — encode dimensions as Campaign fields rather than as levels
+— stands regardless of what the ceiling turns out to be.
 
-Rationale: With both systems active, CampaignInfluence records from the legacy system
-and from CCI models co-exist with no clear visual distinction in reports.
-Attribution figures become unreliable and difficult to audit.
-```
+---
 
-**Detection hint:** CCI setup guidance that does not mention "Auto-Association Rules" or "disable standard Campaign Influence" is likely skipping this prerequisite step.
+## Anti-Pattern 7: Claiming a Bad Campaign Member Status "Fails" or "Is Dropped"
+
+**What the assistant produces:** Advice that a load carrying an undefined member status
+will error, or that Account Engagement "silently drops the record" — followed by a
+troubleshooting plan that looks for failures.
+
+**Why it happens:** Salesforce rejects most invalid picklist values, so generalising is
+reasonable. The failure mode here is the opposite of the general rule.
+
+**What the guide says:** "If the specified Status value isn't a valid status, the API
+assigns the default status to the Status field and updates the HasResponded field with
+the associated value. However, if the given Campaign doesn't have a default status, the
+API assigns the value specified in the call to the Status field, and the HasResponded
+field is set to false" (object_reference.txt:58572–58577). The row inserts either way.
+
+**Corrected output:** Warn that the load will report success and the funnel will be
+wrong. Direct the reconciliation at counts per status, not at an error log, and note that
+the status must be sent as **text**, never as a `CampaignMemberStatus` Id
+(object_reference.txt:58504–58513).
+
+---
+
+## Anti-Pattern 8: Presenting Opportunity Contact Roles as a Documented CCI Requirement
+
+**What the assistant produces:** "CCI produces no records without Contact Roles on the
+Opportunity" stated as platform behaviour, usually as the first thing to check when
+attribution is empty.
+
+**Why it happens:** It is good operational advice and is almost certainly true in
+practice, which makes it read like a documented rule.
+
+**What the guide says:** The requirement is not stated. What is documented is that
+`CampaignInfluence` carries `ContactId` and `OpportunityContactRoleId` fields
+(object_reference.txt:57941–57946, 57963–57969) — circumstantial support, not a quoted
+rule.
+
+**Corrected output:** Keep the advice, label the mechanism UNVERIFIED with the date, and
+give the user a check they can run in their own org rather than a claim they will repeat.
+
+---
+
+## Anti-Pattern 9: Recommending Model Deactivation as a Reversible Cleanup
+
+**What the assistant produces:** "Deactivate the old model to tidy the picker — you can
+always turn it back on."
+
+**Why it happens:** Active/inactive flags are reversible almost everywhere else on the
+platform.
+
+**What the guide says:** "Active models can generate campaign influence records.
+**Deactivating a model deletes its campaign influence records.** Custom models are always
+active and this field is ignored" (api_meta.txt:31892–31895).
+
+**Corrected output:** Call `isActive` a data-retention flag. Recommend changing
+`isDefaultModel` when the goal is visibility, exporting the rows first when deactivation
+is genuinely wanted, and treating a deploy that flips `isActive` to false as a
+data-deleting change that belongs in release change control.

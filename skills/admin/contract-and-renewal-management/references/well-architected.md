@@ -6,7 +6,7 @@
 
 - **Operational Excellence** — Amendment and renewal processes that are well-defined and repeatable reduce manual errors. Configure CPQ Settings (renewal term, co-termination behavior, auto-renewal) deliberately and document the choices. Build monitoring for async amendment jobs so failures surface immediately rather than silently. Include the amendment/renewal flow in end-to-end UAT for any CPQ deployment.
 
-- **Performance** — Synchronous amendment processing has a practical ceiling of ~200 subscription lines before governor limits become a risk. Contracts at scale (enterprise accounts with hundreds of subscribed products) require the async `SBQQ.ContractManipulationAPI.amend()` path. Failing to plan for scale results in amendment failures during business-critical renewal events — a high-impact operational outage.
+- **Performance** — Synchronous amendment processing has a practical ceiling of ~200 subscription lines before governor limits become a risk. **UNVERIFIED (2026-09-05): that ceiling is a CPQ community rule of thumb, not a published limit — the App Limits Cheat Sheet carries no Contract or Order limits and the CPQ package is outside every platform guide. Treat it as a prompt to measure, not as a number to quote.** Contracts at scale (enterprise accounts with hundreds of subscribed products) require the async `SBQQ.ContractManipulationAPI.amend()` path. Failing to plan for scale results in amendment failures during business-critical renewal events — a high-impact operational outage.
 
 ## Architectural Tradeoffs
 
@@ -26,9 +26,25 @@
 
 ## Official Sources Used
 
-- Salesforce CPQ Contract Fields Reference — https://help.salesforce.com/s/articleView?id=sf.cpq_contract_fields.htm
-- Amend Your Contracts and Assets (Salesforce CPQ) — https://help.salesforce.com/s/articleView?id=sf.cpq_amend_contracts.htm
-- CPQ Amendment Fields and Settings — https://help.salesforce.com/s/articleView?id=sf.cpq_amendment_fields.htm
-- Salesforce CPQ Large-Scale Amendment and Renewal (KA-000384875) — https://help.salesforce.com/s/articleView?id=000384875&type=1
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- SBQQ__Subscription__c Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_sbqq__subscription__c.htm
+Platform sources — read as extracted plain text from the Summer '26 / v62 PDFs; every
+line reference below is a `sed`/`grep -n` line number in that extraction.
+
+- Salesforce Object Reference, `Contract` object — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf (L80851–L81537: `AccountId` required, `ActivatedById`/`ActivatedDate`, `ContractTerm`, `EndDate` read-only and calculated (L81153–L81160), `OwnerExpirationNotice` restricted to 15/30/45/60/90/120 (L81230–L81236), `Pricebook2Id`, `Status` vs `StatusCode` (L81470–L81490), and the Usage paragraph behind the whole activation-lock argument (L81520–L81525))
+- Salesforce Object Reference, `ContractStatus` object — same PDF (L82233–L82300: the status-category model, and the claim that `Terminated` and `Expired` "are defined but are not available for use via the API" at L82295–L82296, which is Gotcha 10)
+- Salesforce Object Reference, `ContractLineItem` and `ContractContactRole` — same PDF (L81545–L81661: `ContractLineItem` "represents a product covered by a service contract (customer support agreement)" with a required `AssetId`, which is Gotcha 9 and the reason commercial lines belong on `Order`)
+- Salesforce Object Reference, `Order` and `OrderItem` — same PDF (L196122–L197120 and L199076–L200184: `ContractId` and `AccountId` updatable only while `StatusCode` is `Draft`, `IsReductionOrder`, `OriginalOrderId`/`OriginalOrderItemId`, `EffectiveDate`, `AvailableQuantity` (L199127–L199135), the Order activation rules and the "Orders Without Price Books" constraints — Gotcha 11 and the `OrderSettings` guidance in `metadata-examples.md` §2)
+- Metadata API Developer Guide, `ContractSettings` and `OrderSettings` — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (L113209–L113246 and L123644–L123731: the two documented `ContractSettings` elements, the eight `OrderSettings` elements with their `enableOrders` dependencies, both sample definitions and the package.xml sample that `metadata-examples.md` §1, §2 and §7 are built from)
+- Metadata API Developer Guide, `StandardValueSet` / `StandardValue` / `CustomValue` — same PDF (L130740–L130829, L47474–L47534, L142098, L142689: the `ContractStatus` and `OrderStatus` value-set names, the field set available on each value, the "must contain at least one picklist value" rule, and the note that omitted values are deactivated on deploy)
+- Metadata API Developer Guide, `ValidationRule`, `CustomField`, `FlowStart` / `FlowSchedule` — same PDF (L45363–L45448, L43204–L43690, L71335–L72560: `errorConditionFormula` / `errorMessage` / `errorDisplayField`, the no-compound-fields rule, `formula` and `formulaTreatBlanksAs`, `trackHistory` needing `enableHistory`, and `triggerType: Scheduled` requiring `schedule` — the basis for `metadata-examples.md` §4, §5 and §6)
+- Salesforce App Limits Cheat Sheet — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf (**negative result**, recorded deliberately: it publishes no Contract or Order edition or volume limits. Every "contract" hit in it refers to the customer's Salesforce contract, and every "order" hit to SOQL `ORDER BY`. This is why the CPQ line-count thresholds in `SKILL.md` carry an UNVERIFIED marker rather than a citation.)
+
+CPQ sources — Salesforce CPQ is a managed package. `SBQQ__` returns zero hits across the
+Object Reference, the Metadata API Developer Guide, the Apex Developer Guide and the Apex
+Reference Guide, so nothing in Gotchas 1–5 or the CPQ patterns can be line-cited above.
+Those claims rest on the CPQ product documentation:
+
+- Salesforce CPQ Contract Fields Reference — https://help.salesforce.com/s/articleView?id=sf.cpq_contract_fields.htm (CPQ contract and subscription field semantics)
+- Amend Your Contracts and Assets (Salesforce CPQ) — https://help.salesforce.com/s/articleView?id=sf.cpq_amend_contracts.htm (amendment quote generation and the locked-line behaviour in Gotcha 1)
+- CPQ Amendment Fields and Settings — https://help.salesforce.com/s/articleView?id=sf.cpq_amendment_fields.htm (co-termination modes behind Gotcha 2 and the renewal-pricing contrast in Gotcha 3)
+- Salesforce CPQ Large-Scale Amendment and Renewal (KA-000384875) — https://help.salesforce.com/s/articleView?id=000384875&type=1 (the async amendment path and its monitoring, Gotcha 5)
+- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (the Reliability / Operational Excellence / Performance framing above)

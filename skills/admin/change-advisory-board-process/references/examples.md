@@ -71,7 +71,7 @@ fi
 
 ## Example 3: Seasonal Release Freeze Coordination
 
-**Context:** A healthcare technology company plans to deploy a new integration (Named Credential + Remote Site Setting + three Apex classes) during the second week of February. Their Salesforce org is on NA production, which is scheduled for the Spring '25 upgrade on February 15 (Wave 1).
+**Context:** A healthcare technology company plans to deploy a new integration (Named Credential + Remote Site Setting + three Apex classes) during the second week of February. Their Salesforce org is on NA production, which is scheduled for the Spring '25 upgrade on February 15. UNVERIFIED (2026-09-05): the specific date and its wave number are illustrative for this example — instance upgrade dates come from Salesforce Trust and are not asserted in any extracted guide. The Metadata API Developer Guide states only that "Salesforce performs major service upgrades three times per year" and directs you to Trust for your instance (api_meta.txt L2115–2125).
 
 **Problem:** The team's sandbox is already on the Spring '25 preview. The planned deployment has been tested and passes in sandbox. However, if deployed to production on February 12, the production org is still on Winter '25. The Named Credential authentication behavior changed between Winter '25 and Spring '25. The deployment may succeed but behave differently than tested until production upgrades on February 15.
 
@@ -85,7 +85,46 @@ The CAB change calendar maintains a rolling lookup of Salesforce upgrade windows
    - Proceed on February 12 with explicit CAB sign-off acknowledging the drift risk and a rollback plan if behavior differs post-upgrade.
 3. The team elects to reschedule to February 17. The change ticket is updated with the new deployment date and marked pending re-approval.
 
-**Why it works:** The seasonal release risk is codified in the process, not left to practitioner awareness. The CAB calendar integration surfaces the risk automatically and creates a documented decision point.
+The rolling freeze register the ITSM form checks against is a single file the release manager owns. It is deliberately not a calendar app: the exception approver has to be a role, and the source of each date has to be citable.
+
+```yaml
+# governance/freeze-register.yaml — read by the ITSM change form and by
+# scripts/check_change_advisory_board_process.py (as the record's `freezes:` list)
+freeze_register:
+  owner: release-manager
+  reviewed: 2026-01-05
+  lookup_rule: >-
+    A planned window overlapping any range below is blocked. Overlap is inclusive
+    on both ends. The only unblock is a written exception from exception_approver
+    recorded on the CR.
+  freezes:
+    - name: "Salesforce major service upgrade — NA production instance"
+      start: 2026-02-13
+      end: 2026-02-16
+      source: "Salesforce Trust — instance upgrade schedule"
+      reason: >-
+        The Metadata API guide advises avoiding deployments during a service upgrade:
+        a deploy interrupted by downtime has component deployment and validation
+        retried from the beginning after the service is restored (api_meta.txt L2115-2125).
+      exception_approver: org-owner
+    - name: "Preview-drift window — sandbox on the new release, production is not"
+      start: 2026-01-09
+      end: 2026-02-16
+      source: "admin/salesforce-release-preparation run sheet, this cycle"
+      reason: >-
+        Evidence captured in a preview sandbox does not describe the production runtime.
+        Normal changes stay open but require test evidence from a non-preview sandbox.
+      severity: soft            # soft = extra evidence required, not blocked
+      exception_approver: release-manager
+    - name: "Open enrolment — clinical operations"
+      start: 2026-11-01
+      end: 2026-11-30
+      source: "Business — Head of Clinical Ops"
+      severity: hard
+      exception_approver: org-owner
+```
+
+**Why it works:** The seasonal release risk is codified in the process, not left to practitioner awareness. The CAB calendar integration surfaces the risk automatically and creates a documented decision point. The `severity` field is what stops a single register from being either too blunt (everything blocked) or useless (everything advisory).
 
 ---
 

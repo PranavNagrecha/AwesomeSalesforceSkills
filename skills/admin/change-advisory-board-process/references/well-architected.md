@@ -26,9 +26,65 @@
 
 ## Official Sources Used
 
-- Salesforce Well-Architected — Intentional Governance: https://architect.salesforce.com/well-architected/easy/intentional
-- Salesforce DevOps Center Overview: https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm
-- Salesforce Help — Getting Started: Governance: Change Management (Article 000388899): https://help.salesforce.com/s/articleView?id=000388899
-- Salesforce Trust Calendar (upgrade schedule): https://trust.salesforce.com
-- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Metadata API Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+**Official Salesforce documentation** (v62 / Summer '26 PDF extractions; line numbers are into
+the extracted text, so the section titles are given alongside):
+
+- Metadata API Developer Guide — `deploy()` **DeployOptions** table, §"deploy()"
+  (`checkOnly`, `ignoreWarnings`, `rollbackOnError`, `runTests`, `singlePackage`, `testLevel`
+  and its five-value enum; `NoTestRun` restricted to development environments; `RunLocalTests`
+  the production default when Apex is present; the Master-Detail ↔ Lookup `checkOnly`
+  restriction). Supports the deploy-options table in `worked-examples.md` §5, Gotcha 7, and the
+  `check_deploy_options` check. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide — §"Deploy a Recently Validated Component Set Without Tests" and
+  §"deployRecentValidation()" ("validated successfully for the target environment within the
+  last 10 days"). Supports Gotcha 6 and the `check_quick_deploy` check. Same PDF.
+- Metadata API Developer Guide — §"Slow Deployments" ("avoid running deployments during the
+  service upgrade"; a deploy interrupted by downtime has "both component deployment and
+  validation… retried from the beginning"; "Salesforce performs major service upgrades three
+  times per year"). Supports the freeze-window rule and the deploy-window-vs-freeze check.
+  Same PDF.
+- Metadata API Developer Guide — §"cancelDeploy()" (a deployment with status `Finalizing
+  Deploy` can't be cancelled in API 65.0+; below that, cancellation may succeed while data is
+  still committed) and the `DeployResult` field table (`createdBy` / `canceledBy`,
+  API 30.0+; the `DeployStatus` enum including `SucceededPartial`). Supports Gotcha 9 and the
+  deploy-evidence step in the workflow. Same PDF.
+- Metadata API Developer Guide — §"Metadata API Edit Access" (Modify Metadata Through Metadata
+  API Functions is enabled automatically by **Deploy Change Sets** or **Author Apex**; it does
+  not govern Setup-UI edits) and §"Deleting Components in a Deployment"
+  (`destructiveChangesPre`/`Post`, no wildcards). Supports Gotcha 10 and the manifests in
+  `worked-examples.md` §4. Same PDF.
+- Object Reference for the Salesforce Platform — **SetupAuditTrail** (Setup-area changes for at
+  least 180 days; `Action` / `Section` / `Display` / `DelegateUser` / `CreatedByContext`;
+  `query()` and `retrieve()` only; aggregate queries unsupported). Supports Gotcha 8 and the
+  post-window verification SOQL. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Best Practices for Deployments with Large Data Volumes — §"Defer Sharing Calculation"
+  (suspending sharing-rule and group-membership calculation during large configuration changes
+  that "might lead to very long sharing rule evaluations or timeouts"). Supports the risk signal
+  that separates sharing changes from list views in the classification matrix. (Cited by guide
+  title and section; the PDF filename for this guide was not verified from this environment, so
+  no URL is given rather than a guessed one.)
+
+**Salesforce Architects / Trust:**
+
+- Salesforce Well-Architected — Intentional Governance (the Security and Operational Excellence
+  framing at the top of this file): https://architect.salesforce.com/well-architected/easy/intentional
+- Salesforce Well-Architected Overview (pillar definitions used in "Relevant Pillars"):
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Salesforce Trust (the instance upgrade schedule the freeze register is built from — the
+  Metadata API guide points here explicitly for "whether your Salesforce instance is due for an
+  upgrade"): https://trust.salesforce.com
+
+**Repo standards and sibling artefacts this skill defers to rather than restates:**
+
+- `skills/admin/devops-process-documentation/references/worked-examples.md` §1b — the
+  `change_request` record and its state machine. The CAB decision record here attaches to the
+  `Approved` transition of that machine and joins on `Change_Request__c.Name`.
+- `skills/admin/salesforce-release-preparation/SKILL.md` — Release Updates posture, the release
+  run sheet, and the Sandbox Preview opt-in rules the freeze register consumes as an input.
+- `skills/admin/sandbox-strategy/SKILL.md` — sandbox types and refresh floors (the Full sandbox
+  refresh interval is the constraint the rehearsal window has to fit inside).
+- `skills/admin/uat-and-acceptance-criteria/` and
+  `skills/admin/stakeholder-raci-for-sf-projects/` — the UAT pack and RACI cited as
+  `test_evidence` entries on the decision record.
+- `agents/field-impact-analyzer/AGENT.md` (`/analyze-field-impact`) — produces the blast-radius
+  report the decision record imports rather than estimating in the meeting.

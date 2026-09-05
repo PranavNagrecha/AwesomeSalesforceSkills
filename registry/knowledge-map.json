@@ -4226,6 +4226,7 @@
       "apex/cpq-api-and-automation"
     ],
     "contract-lifecycle": [
+      "admin/contract-and-renewal-management",
       "admin/industries-communications-setup"
     ],
     "contract-renewal": [
@@ -10522,6 +10523,9 @@
     "ordering": [
       "apex/cpq-test-automation",
       "apex/soql-null-ordering-patterns"
+    ],
+    "orders": [
+      "admin/contract-and-renewal-management"
     ],
     "org-assessment": [
       "architect/well-architected-review"

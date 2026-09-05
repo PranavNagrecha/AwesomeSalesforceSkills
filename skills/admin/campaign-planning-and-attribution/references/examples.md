@@ -1,5 +1,9 @@
 # Examples — Campaign Planning And Attribution
 
+Three worked designs and one anti-pattern. For the full end-to-end build — deployable
+XML, package.xml, retrieve/deploy commands and acceptance tests — see
+`references/worked-examples.md`.
+
 ## Example 1: Multi-Level Campaign Hierarchy for a Quarterly Demand-Gen Program
 
 **Context:** A B2B SaaS company runs a "Q1 Pipeline Drive" that spans three channels: a webinar series, a paid LinkedIn campaign, and a nurture email track. Marketing ops wants a single Campaign record to show total program ROI without manually aggregating channel spend.
@@ -8,25 +12,36 @@
 
 **Solution:**
 
-Create the following Campaign structure in Salesforce:
-
-```
-Q1 Pipeline Drive (Type: Program, Level 1)
-├── Q1 Webinar Series (Type: Event, Level 2)
-├── Q1 LinkedIn Paid (Type: Advertising, Level 2)
-└── Q1 Nurture Track (Type: Email, Level 2)
+```text
+Q1 Pipeline Drive          (Type: Other,         ParentId: null)
+├── Q1 Webinar Series      (Type: Webinar,       ParentId: Q1 Pipeline Drive)
+├── Q1 LinkedIn Paid       (Type: Advertisement, ParentId: Q1 Pipeline Drive)
+└── Q1 Nurture Track       (Type: Email,         ParentId: Q1 Pipeline Drive)
 ```
 
 Configuration steps:
-1. Create the parent Campaign "Q1 Pipeline Drive". Set `BudgetedCost = 50000` and `ExpectedRevenue = 300000`.
-2. Create the three child Campaigns with `ParentId` pointing to the parent.
-3. As spend is confirmed per channel, populate `ActualCost` on each child Campaign.
-4. Build a Campaign report filtered to the parent Campaign (using hierarchy filter) using rollup fields:
-   - `ActualCost` (summed from children automatically)
-   - `AmountWonOpportunities` (summed from children)
-   - ROI formula: `(AmountWonOpportunities - ActualCost) / ActualCost`
 
-**Why it works:** Salesforce's Campaign Hierarchy rollup mechanism aggregates `ActualCost`, `NumberOfLeads`, `NumberOfContacts`, `NumberOfResponses`, `AmountAllOpportunities`, and `AmountWonOpportunities` from all descendants up to the root. No custom code is required. The rollup is batch-updated by Salesforce, so the parent record always reflects the cumulative sum of all child records.
+1. Create the parent Campaign "Q1 Pipeline Drive". Set `BudgetedCost = 50000` and `ExpectedRevenue = 300000` — both are documented as the campaign's own budget and expected generation (object_reference.txt:57146–57152, 57255–57271).
+2. Create the three child Campaigns with `ParentId` pointing to the parent. `ParentId` is the lookup to `Campaign`; `ParentCampaign` is the read-only "campaign above the selected campaign in the campaign hierarchy" (object_reference.txt:57634–57653).
+3. As spend is confirmed per channel, populate `ActualCost` on each **child** Campaign.
+4. Build the program report on the **hierarchy** fields, not the short names:
+
+```sql
+SELECT Id, Name, Type, IsActive, ParentId,
+       ActualCost,                       -- this campaign's own spend
+       HierarchyActualCost,              -- Total Actual Cost in Hierarchy
+       HierarchyBudgetedCost,
+       HierarchyExpectedRevenue,
+       HierarchyAmountAllOpportunities,
+       HierarchyAmountWonOpportunities,  -- Value Won Opportunities in Hierarchy
+       HierarchyNumberOfResponses
+FROM Campaign
+WHERE Name = 'Q1 Pipeline Drive'
+```
+
+ROI on the program is then `(HierarchyAmountWonOpportunities - HierarchyActualCost) / HierarchyActualCost` — a report formula, computed at display time.
+
+**Why it works:** The `Hierarchy*` family is defined as calculated fields "for the campaigns in a campaign hierarchy" (object_reference.txt:57273–57359), so the aggregation is the platform's, not yours. What breaks the naive version is naming: `ActualCost` on the parent is "the amount of money spent to run the campaign" — the parent alone (object_reference.txt:57100–57105). A parent whose own spend is zero shows zero, and the report looks broken. A parallel family, `TotalAmountAllWonOpportunities` / `TotalNumberofResponses` and siblings (object_reference.txt:57704–57810), reports the same hierarchy; pick one family per report and note which in the description.
 
 ---
 
@@ -34,67 +49,85 @@ Configuration steps:
 
 **Context:** A revenue operations team needs to report on which campaigns "opened the door" (first touch) vs. which campaigns "closed the deal" (last touch). They need both views simultaneously to justify top-of-funnel awareness spend vs. bottom-of-funnel conversion spend.
 
-**Problem:** Standard Campaign Influence (non-customizable) only supports one active model at a time. Running two separate analyses requires exporting data outside Salesforce. There is also no way to weight campaigns differently in standard influence.
+**Problem:** Only one model can be the default, and only the default model's records appear on campaigns and opportunities. A design that expects both views in the page layout will disappoint whichever model loses.
 
 **Solution:**
 
-Enable and configure Customizable Campaign Influence with two models:
+1. Retrieve `settings/Campaign.settings-meta.xml` and read `enableCampaignInfluence2`. It defaults to true (api_meta.txt:111568–111571), so the usual first step is confirming, not enabling.
+2. Deploy two `CampaignInfluenceModel` files. `isDefaultModel` is required on both; exactly one is true. Set `isModelLocked` true so the API is the single writer, and choose `recordPreference` deliberately — `RecordsWithAttribution` suppresses zero-credit rows (api_meta.txt:31920–31926).
+3. The default model drives three UI surfaces and nothing else: the Campaign Influence related list on opportunities, the Influenced Opportunities related list on campaigns, and the Campaign Statistics section on campaigns (object_reference.txt:58055–58066). Both models are equally queryable.
+4. Verify with SOQL. The attributed-money field is `RevenueShare`; there is no `Revenue` field on this object (object_reference.txt:57987–57992):
 
-1. Navigate to Setup > Campaign Influence > enable "Customizable Campaign Influence".
-2. Create Model 1 — "First Touch":
-   - Influence Type: Primary Campaign Source (first campaign contact was a member of)
-   - Mark as Primary Model
-3. Create Model 2 — "Last Touch":
-   - Influence Type: Campaign Last Touch (most recent campaign activity before opportunity creation or close)
-4. Ensure all Opportunities have Contact Roles populated. This can be automated via a Flow that creates a Contact Role when a Contact's Campaign Member status reaches "Responded".
-5. Once Opportunities are created, query `CampaignInfluence` records to verify:
-
-```soql
-SELECT CampaignId, OpportunityId, ContactId, Influence, Revenue, ModelId
+```sql
+SELECT Model.DeveloperName, Model.ModelType, Model.IsDefaultModel,
+       Campaign.Name, Opportunity.Name, Opportunity.Amount,
+       Influence, RevenueShare
 FROM CampaignInfluence
 WHERE Opportunity.StageName = 'Closed Won'
-ORDER BY OpportunityId, ModelId
+ORDER BY Model.DeveloperName, RevenueShare DESC
 ```
 
-6. Build two separate Campaign Influence report types — one for each model — and display them in a side-by-side dashboard.
+5. Build **one** custom report type on `CampaignInfluence` joined to `Opportunity`, and group by `ModelId` in the report. Two report types, one per model, is duplicated maintenance for a column difference.
 
-**Why it works:** CCI creates separate `CampaignInfluence` records per model per opportunity. Each model's records are independent, so first-touch and last-touch attribution can be reported simultaneously without interference. The `Revenue` field on each `CampaignInfluence` record reflects the attributed portion of the Opportunity amount per that model.
+**Why it works:** CCI writes independent `CampaignInfluence` rows per model per opportunity, and `ModelId` is a first-class filterable field, so both views coexist in data. What does not coexist is UI prominence — that is the `isDefaultModel` decision, and it belongs in the design document rather than in a deploy diff. Note that `CampaignInfluenceModel` is read-only as an sObject (supported calls are `describeSObjects()`, `query()`, `retrieve()` only, object_reference.txt:58011–58012), so the model itself is created by deploy or Setup, never by DML.
 
 ---
 
-## Example 3: Campaign Member Status Alignment for MCAE Attribution
+## Example 3: Repairing Campaign Member Statuses After a Silent Coercion
 
-**Context:** An org uses MCAE to send emails and drive webinar registrations. Attribution data is sparse — many Opportunities show zero campaign influence despite strong email engagement preceding the deal.
+**Context:** An org loads webinar attendance from an events platform each week. Attribution looks thin — few members show as responded, though the events platform reports high attendance.
 
-**Problem:** The Campaign Member Status picklist for the Email Campaign Type was never configured. MCAE attempted to write "Opened" and "Clicked" member statuses but failed silently because those values did not exist in the picklist. As a result, engagement was never recorded as Campaign Member records, and CCI had no member data to attribute.
+**Problem:** The load sends `Status = 'Attended'`, but the webinar campaigns were cloned from a template whose status set is `Sent` / `Responded`. Nothing errored. Every row inserted with `Status = 'Sent'`, because the API "assigns the default status to the Status field" when the supplied value is not valid for that campaign (object_reference.txt:58572–58577). The success count was 100% each week.
 
 **Solution:**
 
-For each Campaign Type that MCAE writes to, configure the following statuses in Setup > Campaign Member Statuses:
+First, find every campaign whose status set cannot accept the load. This is the diagnostic, not a fix:
 
-| Status Value | Responded | Salesforce Default |
-|---|---|---|
-| Sent | No | Yes |
-| Opened | No | No (must add) |
-| Clicked | No | No (must add) |
-| Responded | Yes | No (must add) |
-| Unsubscribed | No | No (must add) |
+```sql
+SELECT CampaignId, Campaign.Name, Label, IsDefault, HasResponded, SortOrder
+FROM CampaignMemberStatus
+WHERE Campaign.Type = 'Webinar'
+  AND Campaign.IsActive = true
+ORDER BY CampaignId, SortOrder
+```
 
-Configuration steps:
-1. Navigate to Setup > Campaign Member Statuses.
-2. For the Email Campaign Type, add: Sent, Opened, Clicked, Responded, Unsubscribed.
-3. Set `Responded = true` on "Responded" only.
-4. Re-sync MCAE campaign membership for affected campaigns (MCAE > Campaigns > Sync).
-5. Verify `CampaignMember` records appear with the correct statuses.
+Then define the intended set once, in the plan record, so it is reviewable:
 
-**Why it works:** MCAE writes Campaign Member records with specific status strings. If the status string does not exist in the picklist, MCAE drops the record. Once statuses are correctly configured, MCAE retroactively writes previously missing member records on re-sync, which then feeds CCI attribution.
+```yaml
+member_status_sets:
+  - set_id: event
+    applies_to_campaign_type: Webinar
+    statuses:
+      - label: Invited
+        is_default: true      # least harmful default: a coercion under-reports
+        has_responded: false
+        sort_order: 1
+      - label: Registered
+        is_default: false
+        has_responded: true
+        sort_order: 2
+      - label: Attended
+        is_default: false
+        has_responded: true
+        sort_order: 3
+      - label: No Show
+        is_default: false
+        has_responded: false
+        sort_order: 4
+```
+
+Apply it per campaign — `CampaignMemberStatus` is an sObject, not a metadata type, so this is record work and cannot be deployed. Order matters: promote `Invited` to default **before** removing anything, because a status that is the default or in use cannot be deleted (object_reference.txt:58609), and every campaign must have a default and at least one responded status from API version 39.0 onward (object_reference.txt:58627, 58636).
+
+Finally, re-drive the affected members by updating `Status` with the **text** value — an Id from `CampaignMemberStatus` coerces on every row (object_reference.txt:58504–58513) — and reconcile by counts per status, never by success count.
+
+**Why it works:** `HasResponded` on the member is read-only and is moved only by `Status`; `Campaign.NumberOfResponses` and `HierarchyNumberOfResponses` count members "with a Member Status equivalent to 'Responded'" (object_reference.txt:57585–57591, 57353–57359). Fixing the status vocabulary is therefore the whole fix — nothing downstream needs recalculating by hand.
 
 ---
 
-## Anti-Pattern: Using Parent Campaign `AmountWonOpportunities` in Real-Time Automation
+## Anti-Pattern: Automating on a Calculated Campaign Field
 
-**What practitioners do:** Build a Flow or Apex trigger that fires when a parent Campaign's `AmountWonOpportunities` exceeds a threshold (e.g., to send an alert or update a milestone record).
+**What practitioners do:** Build a Flow or Apex trigger that fires when a parent Campaign's `HierarchyAmountWonOpportunities` or `ActualCost` crosses a threshold, to send an alert or update a milestone record.
 
-**What goes wrong:** `AmountWonOpportunities` on a Campaign is a rollup summary field updated by Salesforce's batch scheduler, not a formula field. It does not update in real time when a child opportunity closes. The Flow or trigger fires late or not at all during the campaign's active period, making the automation unreliable. Teams discover the lag only after a milestone alert fails to fire during a live campaign.
+**What goes wrong:** The `Hierarchy*` and `Total*` fields are documented as *calculated* fields (object_reference.txt:57273–57359, 57704–57810). The Object Reference publishes no refresh cadence or SLA for them, so an automation that treats a change on one as an event has no contract to rely on — UNVERIFIED (2026-09-05): the widely-repeated "updates every few hours" figure has no source in the extracts. Worse, `HierarchyNumberOfLeads` and `HierarchyNumberOfResponses` are typed `currency` despite holding counts (object_reference.txt:57338, 57354), so a comparison written against an `Integer` variable behaves unexpectedly.
 
-**Correct approach:** Trigger automation on the Opportunity close event directly (using a Flow on the Opportunity object, stage = Closed Won), then look up the parent Campaign hierarchy from the Opportunity's Campaign field. Do not rely on Campaign rollup fields as an event source.
+**Correct approach:** Trigger from the record that actually changes — an Opportunity reaching Closed Won, or a `CampaignMember` status change — and walk up to the campaign from there. Read the hierarchy fields when a human or a report asks for them, not as an event source.

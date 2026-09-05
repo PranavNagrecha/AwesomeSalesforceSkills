@@ -111,3 +111,65 @@ which may be higher than what the customer was paying.
 ```
 
 **Detection hint:** Any statement that renewal quotes "inherit" or "preserve" contract pricing without qualifying that `SBQQ__ContractedPrice__c` records are required for this to work is misleading. Flag it.
+
+---
+
+## Anti-Pattern 6: Activating a Contract or Order in the Same DML as the Field Edits
+
+**What the LLM generates:** A single `update` that sets `Status = 'Activated'` alongside signature dates, an owner, or custom fields — in Apex, in a Flow's Update Records element, or as one Data Loader file:
+
+```apex
+// WRONG — the platform rejects this whole update.
+c.CompanySignedDate = Date.today();
+c.CustomerSignedDate = Date.today();
+c.Status = 'Activated';
+update c;
+```
+
+**Why it happens:** Batching field changes into one DML is the correct instinct everywhere else on the platform, and nothing in the field metadata hints otherwise — `Status`, `CompanySignedDate` and `CustomerSignedDate` all carry the `Update` property.
+
+**Correct pattern:**
+
+```apex
+// Pass 1 — everything except Status, while the record is still Draft.
+c.CompanySignedDate = signedByUs;
+c.CustomerSignedDate = signedByThem;
+c.Renewal_Owner__c = renewalDeskUserId;
+update c;
+
+// Pass 2 — Status alone. Irreversible: after this the status cannot change
+// and the record cannot be deleted.
+Contract activation = new Contract(Id = c.Id, Status = 'Activated');
+update activation;
+```
+
+The Object Reference is explicit for both objects: "the `Status` field is the only field you can update when activating the Contract", and the same sentence appears for Order.
+
+**Detection hint:** Any DML, Flow Update Records element, or CSV column set that includes `Status` *and* any other field on `Contract` or `Order`. Flag it regardless of how the status value is spelled.
+
+---
+
+## Anti-Pattern 7: Filtering Contracts on the `Status` Label Instead of the `StatusCode` Category
+
+**What the LLM generates:** Renewal queries, report filters, Flow entry criteria and validation rules keyed on `Status = 'Activated'` — and, related, advice to "check the `IsActivated` field", which does not exist on `Contract`.
+
+**Why it happens:** `Status` is the visible field and `Activated` is its out-of-the-box label, so the label reads like the state. `StatusCode` looks like an internal duplicate rather than the category the label belongs to. The invented `IsActivated` comes from generalising the platform's `IsClosed` / `IsWon` convention.
+
+**Correct pattern:**
+
+```sql
+-- Correct: StatusCode is the category, so any Activated-category label matches.
+SELECT Id, ContractNumber, EndDate, Status, StatusCode
+FROM Contract
+WHERE StatusCode = 'Activated'
+  AND EndDate >= TODAY
+  AND EndDate <= :cutoffDate
+
+-- Wrong: matches only the literal label. A contract whose Status is
+-- 'Activated - Renewal Pending' is in the Activated category and is missed.
+-- WHERE Status = 'Activated'
+```
+
+There is no `IsActivated` boolean. Activation is evidenced by `StatusCode = 'Activated'`, with `ActivatedById` and `ActivatedDate` recording who and when.
+
+**Detection hint:** Grep generated SOQL, formulas and Flow conditions for `Status = 'Activated'` on `Contract` or `Order` without a nearby `StatusCode`, and for any reference to `Contract.IsActivated`. Formulas are the exception that still needs care: they cannot reach the category, so an `ISPICKVAL(Status, ...)` gate must enumerate every Activated-category label rather than assume one.

@@ -1,6 +1,6 @@
 ---
 name: change-advisory-board-process
-description: "Design, implement, or audit a Change Advisory Board (CAB) process for Salesforce deployments: change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for scoring how risky one release is - use admin/deployment-risk-assessment. NOT for executing or troubleshooting the deployment itself - use admin/change-management-and-deployment."
+description: "Design, implement, or audit a Change Advisory Board (CAB) process for Salesforce deployments: change classification (standard, normal, emergency), required approvals, deployment gate sequencing, and integration with external ITSM tooling. NOT for scoring how risky one release is - use admin/deployment-risk-assessment. NOT for executing or troubleshooting the deployment itself - use admin/change-management-and-deployment. Also covers: the CAB charter (membership, quorum, decision rights), the CAB decision record artefact and its linter, the change classification matrix, the deployOptions a CAB decision pins (checkOnly, testLevel, rollbackOnError, ignoreWarnings, runTests), the 10-day quick-deploy validity window, the deploy-window vs freeze-register check, and the emergency (ECAB) path with its mandatory retrospective."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,6 +15,10 @@ triggers:
   - "Who needs to approve permission set or sharing rule changes before production deployment?"
   - "How do we coordinate Salesforce deployments with the seasonal release upgrade window?"
   - "We need an emergency change process for urgent Salesforce hotfixes that bypasses the normal CAB cycle"
+  - "which Salesforce metadata types need CAB approval and which are pre-authorised"
+  - "can we quick-deploy a validation the CAB approved three weeks ago"
+  - "the deploy window falls inside the Salesforce upgrade weekend"
+  - "our CAB approved a change set and a component was added after the vote"
 tags:
   - change-advisory-board
   - cab-process
@@ -40,9 +44,9 @@ outputs:
 dependencies:
   - admin/deployment-risk-assessment
   - admin/devops-process-documentation
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-09-05
 ---
 
 # Change Advisory Board Process
@@ -57,10 +61,30 @@ Gather this context before working on anything in this domain:
 
 - Confirm whether the organization already has an enterprise ITSM platform (ServiceNow, Jira Service Management, etc.) — the CAB process must integrate with it, not replace it.
 - Identify which Salesforce metadata types are in-scope for high-risk classification: Profile/Permission Set changes, Sharing Rules, Validation Rules affecting critical objects, Flow/Process Builder automation, Named Credentials, Remote Site Settings, and any Connected App OAuth scopes.
-- Establish the next Salesforce seasonal release dates (Spring, Summer, Winter). The sandbox preview window opens approximately 4–6 weeks before the production upgrade, and the production upgrade is rolled out in three waves over several weekends. Deployments staged in or near this window may encounter platform-behavior drift between sandbox and production.
+- Establish the next Salesforce seasonal release dates (Spring, Summer, Winter). The sandbox preview window opens approximately 4–6 weeks before the production upgrade, and the production upgrade is rolled out in three waves over several weekends. Deployments staged in or near this window may encounter platform-behavior drift between sandbox and production. UNVERIFIED (2026-09-05): the "approximately 4–6 weeks" preview lead time and the three-weekend wave structure are not asserted in any of the extracted guides, and help.salesforce.com cannot be fetched from this environment. What the Metadata API Developer Guide does state is that "Salesforce performs major service upgrades three times per year" and that you should "avoid running deployments during the service upgrade", checking Salesforce Trust for your instance's date (api_meta.txt L2115–2125). Take the instance-specific dates from Trust and the preview rules from `admin/salesforce-release-preparation`; do not hard-code the interval.
 - Confirm whether regulated-industry requirements apply (GovCloud for US Federal/HIPAA orgs applies additional Significant Change Notification obligations to the Salesforce trust team).
 
 ---
+
+## Questions to Ask Before Configuring
+
+Ask these before writing a charter or approving anything. Each one traces to a gotcha, and a
+board that skipped them produces an approval that reads well and enforces nothing.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which single role can say no and not be outvoted, and on what exactly?" | A quorum expressed only as a number lets three admins approve a sharing change. Veto scope is the difference between a board and a headcount | `required_roles` per tier in the charter, plus a named veto scope and its escalation route |
+| "Which org was the validation run against, and on what date?" | A validated set qualifies for deployment without re-running tests only for the target environment it ran against, and only for 10 days (Gotcha 6) | `validation_id`, `validation_target_org` and `validation_date` on the decision record, which the checker enforces |
+| "What is the rollback in metadata terms, and has anyone actually run it?" | Cancelling a running deploy is not an undo — a deployment in `Finalizing Deploy` cannot be cancelled at all (Gotcha 9) | A pinned previous package, an owner, an RTO, and the manual Setup steps no package can carry |
+| "Who in production holds Author Apex, Deploy Change Sets, Modify All Data, or Modify Metadata Through Metadata API Functions?" | That set, not the set with pipeline credentials, is the gate's real perimeter — and `Author Apex` grants metadata deployment as a side effect (Gotcha 10) | A reviewed access list, and an honest statement of which paths the gate does not cover |
+| "Which instance is this org on, and when is its next service upgrade?" | Salesforce advises avoiding deployments during a service upgrade; an interrupted deploy is retried from the beginning (`api_meta.txt` L2115–2125) | A freeze register with a citable source and a named exception approver per range, instead of someone's recollection |
+| "Does anything in this package delete a component or convert a relationship field?" | Destructive changes are an ordering decision, and `checkOnly` cannot validate a Master-Detail ↔ Lookup conversion at all (Gotcha 7) | The right evidence artefact for the tier — a full sandbox deploy where a validation would always come back red |
+| "What evidence closes each approval condition, and who owns it after the deploy?" | Conditions attached to a vote are the thing that silently evaporates between the meeting and the window | `conditions[].owner` and `conditions[].blocks`, and a dated post-implementation review that checks them off |
+
+What a proper CAB process adds over just approving deployments: the board's decision is a
+linted, version-controlled record pinned to one package, one set of deploy options and one
+window — so an auditor, and the next release, can reconstruct what was approved and on what
+evidence rather than reading a thread.
 
 ## Core Concepts
 
@@ -101,6 +125,56 @@ Certain metadata types carry inherently higher risk and must always route throug
 | Connected App OAuth scopes | Changes what external systems can access |
 | ValidationRule (on critical objects) | Can silently block data entry for users |
 | CustomMetadata / CustomSetting | Can alter behavior of Apex and automations globally |
+
+### What the Board Is Actually Approving: a Package Plus Its Deploy Options
+
+A CAB that approves "the change" has approved a range of behaviours. The same package deployed
+with different `DeployOptions` is a different deployment, so the decision record pins them. What
+the Metadata API Developer Guide states about each:
+
+| Option | What the guide says | Consequence for the decision |
+|---|---|---|
+| `checkOnly` | `true` performs "a test deployment (validation) of components without saving the components in the target org" (L3095–3099) | The validation is the evidence, not the change. Record its id, its target org and its date |
+| `testLevel` | Enum: `NoTestRun`, `RunSpecifiedTests`, `RunRelevantTests` (beta), `RunLocalTests`, `RunAllTestsInOrg`. `NoTestRun` "applies only to deployments to development environments". `RunLocalTests` "is the default for production deployments that include Apex classes or triggers" (L4280–4329) | `NoTestRun` on a production window is an error, not a shortcut |
+| `rollbackOnError` | "This parameter must be set to `true` if you're deploying to a production org" (L4255–4260) | With it false the deploy can land as `SucceededPartial` (L7451) — a half-applied package nobody reviewed |
+| `ignoreWarnings` | Defaults to `false`; "Don't set this argument to `true` for deployments to production organizations" (L7390–7392) | With it true, warnings are reported as successes and the deploy log stops being evidence |
+| `runTests` | "A list of Apex tests to run… To use this option, set `testLevel` to `RunSpecifiedTests`" (L3132–3135) | A `runTests` list under any other test level is silently inert |
+
+**The quick-deploy window is 10 days and is bound to one org.** A validated component set can be
+deployed without re-running Apex tests only when "the components have been validated successfully
+**for the target environment** within the last **10 days**", the target org's Apex tests passed,
+and coverage requirements are met (`api_meta.txt` L4863–4869). A validation against UAT is not an
+approval input for a production deploy, and an approval that predates the window by more than ten
+days has expired. See `references/gotchas.md` Gotcha 6.
+
+**Deployment windows and service upgrades.** The guide's own guidance is to "avoid running
+deployments during the service upgrade", because a file-based deployment interrupted by downtime
+has "both component deployment and validation… retried from the beginning after the service is
+restored" — and it names Salesforce Trust as where to check whether your instance is due
+(`api_meta.txt` L2115–2125). That is the platform basis for the freeze register; the
+instance-specific dates and the Release Updates posture come from
+`admin/salesforce-release-preparation`.
+
+### The CAB Decision Record
+
+The board's output is one YAML file per decision, committed beside the release manifest so the
+approval and the package it approved are versioned together. Its shape, filled in for a real
+release, is `references/worked-examples.md` §3; `scripts/check_change_advisory_board_process.py`
+lints it. The blocks it must carry:
+
+| Block | Holds | Checked by the linter |
+|---|---|---|
+| `classification` / `decision` | The tier and the outcome, from fixed enums | Value is in the enum |
+| `board[]` | One row per member with a `vote`, not attendance | Quorum met for the tier; charter's `required_roles` among the voters; no unresolved veto under an approval |
+| `risk` + `blast_radius` | Level, rationale, and an *imported* blast radius citing the analysis that produced it | Level in enum; rationale non-empty; blast radius names a source and at least one metadata type |
+| `test_evidence[]` | UAT pack, validation result, RACI, run sheet — each by path | Every path resolves to a real file under `--manifest-dir` |
+| `rollback` | Pinned previous package, owner, RTO, manual steps | Method and owner present; `rehearsed: true` required at `risk.level: high` |
+| `deploy_window` + `freezes[]` | Target org, window, deploy options, quick-deploy fields, freeze ranges | Window does not overlap a freeze; options and quick-deploy validity as above |
+| `post_implementation_review` | Date and owner | Mandatory for `emergency`; warned for `normal` |
+
+The record lives outside the org. Salesforce ships no CAB feature, no change-record standard
+object and no way for the org to gate its own deployment pipeline — which is why the enforcement
+point is the pipeline and the evidence point is this file.
 
 ---
 
@@ -148,15 +222,38 @@ Certain metadata types carry inherently higher risk and must always route throug
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Inventory the current metadata scope.** Enumerate all metadata types in the planned deployment. Use `sf project generate manifest` or review the PR diff. Cross-reference each type against the high-risk metadata list to determine the minimum CAB tier.
-2. **Classify the change.** Apply the change classification matrix. If any single metadata type in the deployment maps to Normal, the entire deployment is Normal (no mixing tiers in a single change). Document the classification rationale in the change ticket.
-3. **Raise the change request in the ITSM tool.** Populate all required fields: classification tier, description of change, impacted business processes, rollback plan, test evidence (sandbox deployment log, test class results), planned deployment window, and approver assignments.
-4. **Obtain required approvals.** Normal changes require sign-off from: Salesforce Admin or Release Manager, affected Business Process Owner(s), and Security/IT for any access or integration changes. Emergency changes require the ECAB quorum (minimum 2 named approvers). Do not proceed until the change request reaches Approved status.
-5. **Verify deployment window is clear.** Check the Salesforce Trust calendar (trust.salesforce.com) for upcoming upgrade windows. Confirm the planned deploy window is not within 7 days of a production upgrade wave. If it is, either reschedule or escalate to confirm explicit CAB acceptance of the elevated risk.
-6. **Execute deployment and capture evidence.** Run the deployment through the approved pipeline. Attach the deployment log and any post-deployment validation results to the change ticket. Mark the ticket Implemented.
-7. **Conduct post-implementation review.** For Normal changes, confirm no unintended impacts within 24 hours. For Emergency changes, schedule the mandatory post-implementation review within 5 business days and capture lessons learned.
+1. **Write or re-read the charter first.** `references/worked-examples.md` §1 is a filled-in
+   `cab-charter.yaml`. Fix `quorum` per tier, `required_roles` per tier, veto scope, and the
+   `exception_approver` for a freeze. Everything downstream reads these; a decision record cannot
+   be linted against a charter that does not exist.
+2. **Build the classification matrix from the package's metadata types, not from intent.**
+   Enumerate the types with `sf project generate manifest` or from the PR diff, then apply
+   `references/worked-examples.md` §2. Highest tier wins for the whole package. Record why
+   `ValidationRule` and `SharingRules` outrank `ListView` — the risk signal, not the folder name.
+3. **Import the blast radius; do not estimate it in the meeting.** Run `/analyze-field-impact`
+   (`agents/field-impact-analyzer/AGENT.md`) or the equivalent and cite its report path in
+   `blast_radius.source`. Pull the rollback shape from `devops/rollback-and-hotfix-strategy` and
+   the pre-deploy evidence set from `devops/pre-deployment-checklist`.
+4. **Fill in the decision record.** Copy `references/worked-examples.md` §3. Pin the deploy
+   options and, if quick-deploying, all three quick-deploy fields. Attach the four practice
+   artefacts as `test_evidence`: the UAT pack (`admin/uat-and-acceptance-criteria`), the
+   validation result, the RACI (`admin/stakeholder-raci-for-sf-projects`) and the release run
+   sheet (`admin/salesforce-release-preparation`).
+5. **Lint it before the meeting, not after.** Run
+   `python3 scripts/check_change_advisory_board_process.py --manifest-dir <artefacts>`. It exits
+   1 on: an enum violation, quorum or a required role missing, an empty risk or blast-radius
+   block, a rollback with no owner (or unrehearsed at high risk), an evidence path that does not
+   resolve, a window overlapping a freeze, an invalid `testLevel` or `rollbackOnError: false` on
+   production, an expired or wrong-org quick deploy, and an emergency record with no
+   retrospective date. Every failure is something the board would otherwise discover afterwards.
+6. **Deploy inside the window and capture platform-side evidence.** `sf project deploy report`
+   gives `createdByName` and whether tests ran; a `SetupAuditTrail` query over the window
+   (`references/worked-examples.md` §5) surfaces Setup activity that was *not* in the approved
+   package. Both belong on the CR.
+7. **Hold the post-implementation review and feed it back into the charter.** Use
+   `references/worked-examples.md` §7. Close each condition by id, record what the blast-radius
+   estimate got wrong, and report the emergency:normal ratio. A charter that never changes after
+   a PIR is a charter nobody is reading.
 
 ---
 
@@ -202,6 +299,20 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | Writing anything. Holds the Acme case-intake release end to end — the charter, the classification matrix, the filled-in decision record, the package and destructive manifests, the deploy-options table with its grounding, the emergency record, and the post-implementation review |
+| `references/gotchas.md` | Before approving, and when a board decision is challenged afterwards. Eleven platform behaviours that turn a well-run meeting into an unenforced approval |
+| `references/examples.md` | Choosing an enforcement mechanism. Three scenarios — PR-time classification, an ECAB flow deployment, and a freeze-register collision — with the gate scripts and the register file |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated CAB guidance, especially anything that proposes a Salesforce Approval Process or a `Deployment_Request__c` object as the gate |
+| `references/well-architected.md` | Justifying the process weight to a sponsor: pillar mapping, the three tradeoffs, and the full source list with the claim each one supports |
+| `scripts/check_change_advisory_board_process.py` | Every time a decision record changes. `--manifest-dir <dir>`, or `--file <record>`; `--charter` to point at a charter outside the scanned tree |
+| `templates/change-advisory-board-process-template.md` | Starting from blank: the section skeleton for the charter, matrix, approval workflow, freeze calendar and ITSM gate spec |
+
+---
+
 ## Related Skills
 
 - admin/deployment-risk-assessment — Use before classifying a change to assess blast radius, rollback complexity, and data impact of the planned deployment
@@ -210,3 +321,10 @@ Non-obvious platform behaviors that cause real production problems:
 - devops/pre-deployment-checklist — Use to execute the technical pre-flight checks that feed evidence into the CAB change ticket
 - devops/release-management — Use for the broader release planning context within which individual CAB-approved changes are scheduled
 - devops/deployment-monitoring — Use post-deployment to generate the evidence artifacts required by the CAB post-implementation review
+- admin/change-management-and-deployment — Use to execute the deployment the CAB approved: manifests, deploy order, and the CLI mechanics this skill only gates
+- admin/salesforce-release-preparation — Use to build the freeze register's inputs: instance upgrade dates, Release Updates posture for the cycle, and the Sandbox Preview opt-in decision
+- admin/stakeholder-raci-for-sf-projects — Use to produce the RACI cited as `test_evidence` on the decision record; it names the accountable party the board otherwise assumes
+- admin/uat-and-acceptance-criteria — Use to produce the UAT pack cited as `test_evidence`; the board reviews its sign-off rather than re-testing
+- admin/sandbox-strategy — Use to check that the rollback rehearsal has an environment to run in and that its refresh floor fits inside the release cadence
+- devops/rollback-and-hotfix-strategy — Use to design the rollback the decision record pins, including the manual Setup steps no package can carry
+- devops/post-deployment-validation — Use to define the checks whose results close the post-implementation review
