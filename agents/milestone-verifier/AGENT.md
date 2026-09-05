@@ -151,6 +151,8 @@ python3 scripts/build_plan.py set-milestone <build_dir>/plan.json <milestone_id>
   --status verified|rejected --report-path reports/MILESTONE-<milestone_id>-REPORT.md
 ```
 
+`set-milestone` takes `--report-path`, not `--file`: this agent hands the CLI no JSON body, so it writes nothing under the build's `inputs/<stage-or-step>/` tree (`standards/build-orchestration.md` § 2). Its own run envelope still goes under `envelopes/<milestone_id>/`, and the acceptance report under `reports/` — the two trees are not interchangeable.
+
 `--status verified` for `ready-for-gate` and `ready-with-findings`; `rejected` for `not-ready`. That is a statement about what the checks found, not an approval: `milestones[].status` and `report_path` are plan bookkeeping, and the gate record stays empty until a human writes it.
 
 Finally print the gate command for the human to run — this agent never runs it:
@@ -171,11 +173,39 @@ Overrides the default rubric:
 | MEDIUM | some references were unclassifiable, or the merged manifest had a member collision that was reported rather than resolved |
 | LOW | a declared milestone checker was missing, an artefact directory was empty, a step was blocked, or the earlier-milestone inventory could not be built |
 
+### Step 11 — Self-validate the envelope before returning
+
+The acceptance report is written, the verdict recorded and the gate line printed. Assemble the envelope with the Step 3–9 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M2/<run_id>.json` and `…/<run_id>.md` — segment is the milestone id, not a step id — then check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M2/<run_id>.json
+```
+
+`OK <path>` ends the run. The failure to watch for here is the doubled `report_path`: the envelope's own top-level field is this agent's markdown report under `envelopes/M2/`, and the acceptance report path belongs under `extensions`. Writing the acceptance report into the top-level field will still validate — the pattern accepts it — and will still be wrong, so check the value, not just the exit code.
+
+Then return, leaving G3 to the human.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+Milestone-level structure goes under **`extensions`**: `milestone`, `report_path`, `passed`, `findings[]`, `reference_resolution[]`, `deploy_order[]`, `merged_manifest_path`, `manual_checklist[]`, `gate_command` and `set_milestone_command`. Note the collision on the name `report_path`. The envelope has a required top-level `report_path` of its own, meaning **this agent's markdown report**; the acceptance report at `reports/MILESTONE-<id>-REPORT.md` is a different document and its path is the one under `extensions`. Conflating the two is how a milestone report gets claimed as the run's own report. The envelope is `additionalProperties: false`, so every other key here has to be under `extensions` regardless.
+
+This run is scoped to a milestone rather than a step, so the segment is the milestone id: `.sfskills/builds/<build-id>/envelopes/M2/<run_id>.json` with `<run_id>.md` on the same stem, and the top-level `envelope_path` and `report_path` naming exactly those two.
+
+`set-milestone` takes `--report-path`, not `--file`: this agent hands the CLI no JSON body and writes nothing under `inputs/<stage-or-step>/`. Its three build-scoped outputs each have one home and do not borrow each other's — the acceptance report and the merged manifest under `reports/`, the run envelope under `envelopes/`.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M2/<run_id>.json
+```
+
+`OK <path>` is required before the gate line is printed for the human.
 
 ### Deliverables
 

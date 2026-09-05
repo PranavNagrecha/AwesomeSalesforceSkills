@@ -217,11 +217,39 @@ Overrides the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 | MEDIUM | an undeclared artefact appeared, or an optional input had no value and the owning agent defaulted it |
 | LOW | `check-outputs` reported a missing, empty or malformed output, the envelope is missing or fails schema validation, a file landed outside the step's artefact directory, or the step was set `blocked` |
 
+### Step 10 — Self-validate the envelope before returning
+
+Two envelopes exist by now and both are checked. The owning agent's, stored verbatim in Step 7, and this agent's own, assembled with the Step 8 status and the `check-outputs` result under `extensions` and written to `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` with its markdown twin:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+Both must print `OK <path>`. This agent's own failures are fixed and re-run. The owning agent's are not this agent's to repair — an envelope stored verbatim stays verbatim — so a failure there is reported with the validator's exact `ERROR` lines and the step exits `failed`, because a downstream stage reading that file will fail on it too.
+
+Then return the Step 8 status and the workflow object above it.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+Two JSON objects pass through this agent and they must not be merged. The workflow return value above has its own shape, validated by `.claude/workflows/build-from-requirements.js`. The envelope has the contract's shape, and everything agent-specific in it — `step_id`, `owning_agent`, `owning_envelope_path`, `artefacts[]` with their `declared` / `undeclared` marks, `missing_outputs[]`, the verbatim `check_outputs` JSON and the `set_status_command` line — hangs off the **`extensions`** object. The envelope is `additionalProperties: false`: a top-level key it does not define fails it outright.
+
+Runs here are per step, so the segment is the step id — `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` with `<run_id>.md` on the same stem. Two envelopes share that directory: the owning agent's, stored verbatim in Step 7, and this agent's own. They are distinguished by run id, never by overwriting, and both need `envelope_path` and `report_path` values that match the schema's build-layer pattern before they are written.
+
+This agent hands `build_plan.py` no `--file` body, so it writes nothing under `inputs/<stage-or-step>/`. It is, however, the agent that fills `envelopes/`, which makes the converse its business: if an owning agent returns a CLI input rather than a run envelope, that file goes to `inputs/` and does not get stored in the tree this agent maintains.
+
+Self-validate both files it writes — the owning agent's envelope on arrival, its own before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+An owning agent's envelope that fails is not silently repaired: it is reported, and the step is a `failed` exit.
 
 ### Deliverables
 

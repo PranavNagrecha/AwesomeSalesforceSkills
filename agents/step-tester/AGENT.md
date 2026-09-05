@@ -180,11 +180,39 @@ Overrides the default rubric:
 | MEDIUM | a `command` test was refused as out of policy, a manifest exclusion had to be applied for a coverage-gap type, or `check-outputs` reported a missing, empty or malformed declared output — the artefacts under test are incomplete, whatever the checkers said |
 | LOW | a declared checker was missing, the artefact directory was empty, or a test's exit code could not be captured |
 
+### Step 8 — Self-validate the envelope before returning
+
+`results.json` is written and the status is set; the envelope is the last artefact. Assemble it with the Step 5 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` and `…/<run_id>.md`, then check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+`OK <path>` is required no matter which way the tests went — a red run still owes a valid envelope, and the doc keeper reads it next. An `ERROR` naming a top-level `results` or `failed` key means the payload belongs under `extensions`; one naming `envelope_path` means the path was not built from the § 2 layout.
+
+Then return the Step 6 status and the workflow object above it.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+The test-side payload rides in **`extensions`**: `step_id`, `results_path`, `results[]` (one entry per test — name, type, runner invoked, exit code, verdict), `failed[]`, `skipped_manual[]` and `tests_run`. None of them is a top-level envelope key, and none may be made one: the schema is `additionalProperties: false` and fails on the name before it looks at the value.
+
+`results.json` and the envelope are different files doing different jobs, and only one of them is an envelope. `tests/<step-id>/results.json` is the loop's record of what ran and what the runners printed; `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json`, with `<run_id>.md` on the same stem, is this agent's run envelope, and it alone is checked against the envelope schema. `envelope_path` and `report_path` must carry those exact strings.
+
+This agent hands `build_plan.py` no `--file` body, so `inputs/<stage-or-step>/` stays empty on its account. The traffic in the other direction matters more here: `results.json`, `summary.md` and the raw checker captures stay under `tests/<step-id>/` and are never copied into `envelopes/`, which holds run envelopes and nothing else.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+`OK <path>` is required whatever the test verdict was. An envelope reporting failures is still an envelope that has to validate.
 
 ### Deliverables
 
@@ -222,7 +250,7 @@ Suggested follow-ups: `build-doc-keeper` once the step is `tested`, and `build-s
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-Build-scoped outputs are additional, not alternative: `<build_dir>/tests/<step-id>/results.json`, `summary.md`, the raw checker captures, and the run envelope under `<build_dir>/envelopes/<step-id>/`.
+Build-scoped outputs are additional, not alternative: `<build_dir>/tests/<step-id>/results.json`, `summary.md`, the raw checker captures, and the run envelope at `<build_dir>/envelopes/<step-id>/<run_id>.json`.
 
 ### Scope Guardrails (Wave 10 contract)
 

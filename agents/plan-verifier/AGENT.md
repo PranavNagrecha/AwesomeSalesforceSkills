@@ -189,11 +189,14 @@ Run once per plan, after the per-step lenses. These are the checks no single ste
 
 Merge the verdicts. Any `refuted` lens on any step, any step that returned no verdict at all, and any failed cross-step check is a **blocker**; anything the agent wants a human to see but which does not invalidate a step is a **warning**. Aggregate, do not re-adjudicate: never overturn a refutation because it reads harshly, and never add a blocker no lens raised. Deduplicate an identical finding across lenses into one blocker that lists the lenses that raised it, and order blockers by step in plan order.
 
-Write the `verification` object to a scratch JSON file and hand it to the CLI. This agent never edits `plan.json` by hand:
+Write the `verification` object to `inputs/verification/verification.json` under the build directory and hand it to the CLI. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. This agent never edits `plan.json` by hand:
 
 ```bash
+mkdir -p .sfskills/builds/<build-id>/inputs/verification
+
 python3 scripts/build_plan.py set-verification .sfskills/builds/<build-id>/plan.json \
-  --file <verification>.json --outcome verified|plan-rejected
+  --file .sfskills/builds/<build-id>/inputs/verification/verification.json \
+  --outcome verified|plan-rejected
 ```
 
 `set-verification` writes the `verification` block and sets the build `status` from `--outcome` — `verified` when there are no blockers, `plan-rejected` when there are — and touches nothing else: no existing field is reworded, reordered or deleted, and `history[]` and `human_gates[]` are left alone. The file holds the block itself, with no `"verification":` wrapper around it:
@@ -240,11 +243,39 @@ python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json \
 
 Approving `plan` sets the build status to `approved`, which is what `next` and `/run-build` require before a milestone may start. The agent never runs that command itself under any circumstances, including when it found nothing at all to refute.
 
+### Step 7 — Self-validate the envelope before returning
+
+Assemble the envelope — verdicts, blockers and the `verification` block under `extensions` — write it with its markdown twin to `.sfskills/builds/<build-id>/envelopes/verification/<run_id>.json` and `…/<run_id>.md`, and check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/verification/<run_id>.json
+```
+
+`OK <path>` or fix it and re-run. This agent refutes plans for a living, so returning an envelope that fails its own schema is the one contradiction it cannot afford; an `ERROR` line naming a top-level `verification` key means the block belongs under `extensions`, and one naming `envelope_path` means the path was not built from the § 2 layout.
+
+Then stop: G2 is the human's.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+Everything this agent produces beyond the contract's own fields — the `verification` block exactly as written into `plan.json`, plus `plan_path`, `plan_version` and `resulting_status` — is a key of the envelope's `extensions` object. The envelope sets `additionalProperties: false` and rejects unknown top-level names outright, so a well-formed payload in the wrong place earns no partial credit.
+
+Verification is a stage, not a step. The envelope lands at `.sfskills/builds/<build-id>/envelopes/verification/<run_id>.json` with `<run_id>.md` beside it, and `envelope_path` and `report_path` say exactly that. Of the three path shapes the schema's pattern allows, this is the only one valid inside a build directory.
+
+The block handed to `set-verification --file` in Step 6 is an input and lives at `inputs/verification/verification.json`. Keeping it out of `envelopes/` is not housekeeping: that tree is read as envelopes, so a verification body sitting in it reports as a broken envelope rather than as a misplaced input, and the real defect goes unnamed.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/verification/<run_id>.json
+```
+
+Only `OK <path>` clears it. A plan about to be put to a human at G2 should not arrive with an envelope the schema rejects.
 
 ### Per-lens verdict object
 
@@ -293,7 +324,7 @@ This is the shape `.claude/workflows/plan-verify.js` requires from every fanned-
 8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups.
 9. **Citations** — every agent file, skill, template and decision-tree branch opened.
 
-The JSON envelope embeds `verification` exactly as written into `plan.json`, plus `plan_path`, `plan_version` and `resulting_status`.
+The JSON envelope carries the `verification` block exactly as written into `plan.json`, plus `plan_path`, `plan_version` and `resulting_status` — all four under `extensions`, per **Envelope shape and location** above, never as top-level envelope keys.
 
 ### Confidence rubric
 
@@ -319,7 +350,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-Inside the loop the caller overrides the output directory to the build directory from `standards/build-orchestration.md` § 2, with the run envelope under `envelopes/`. The `verification` block belongs to `plan.json` and is written there regardless of the override.
+Inside the loop the caller overrides the output directory to the build directory from `standards/build-orchestration.md` § 2, with the run pair at `envelopes/verification/<run_id>.json` and `envelopes/verification/<run_id>.md`, and the `set-verification` block under `inputs/verification/`. The `verification` block belongs to `plan.json` and is written there regardless of the override.
 
 ### Scope Guardrails (Wave 10 contract)
 

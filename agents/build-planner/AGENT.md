@@ -214,10 +214,13 @@ Three rules govern this whole step and are worth stating flatly: **agents only f
 
 ### Step 7 — Write, validate, render
 
-Never edit `plan.json` by hand. Write the plan body — `scope` (in, out, `fit_gap`), `decisions`, `milestones`, `steps` — to a scratch JSON file and hand it to the CLI, which replaces all five in one validated write and sets `status: "planned"`. Then the gates, then validate, then render:
+Never edit `plan.json` by hand. Write the plan body — `scope` (in, out, `fit_gap`), `decisions`, `milestones`, `steps` — to `inputs/plan/plan-body.json` under the build directory and hand it to the CLI, which replaces all five in one validated write and sets `status: "planned"`. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. Then the gates, then validate, then render:
 
 ```bash
-python3 scripts/build_plan.py set-plan     .sfskills/builds/<build-id>/plan.json --file <plan-body>.json
+mkdir -p .sfskills/builds/<build-id>/inputs/plan
+
+python3 scripts/build_plan.py set-plan     .sfskills/builds/<build-id>/plan.json \
+  --file .sfskills/builds/<build-id>/inputs/plan/plan-body.json
 python3 scripts/build_plan.py ensure-gates .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py validate     .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py render       .sfskills/builds/<build-id>/plan.json
@@ -229,11 +232,39 @@ python3 scripts/build_plan.py render       .sfskills/builds/<build-id>/plan.json
 
 `validate` rejects an unknown step type, an agent that is not eligible under the four checks in Step 6, a skill that does not resolve, a dependency cycle, a step or milestone with no acceptance test, a milestone whose `steps[]` does not match its members, a missing gate, a `checker` test whose script is not on disk, and any test `command` that matches the § 5 deploy deny-list. Fix every error and re-run until it exits 0 — finishing with a plan that does not validate hands the verifier a file it will reject on mechanics instead of on substance. Report the next command in the loop, [`/verify-plan`](../../commands/verify-plan.md), and stop.
 
+### Step 8 — Self-validate the envelope before returning
+
+The plan is written; the envelope is not the plan. Assemble it with the Step 7 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/plan/<run_id>.json` and `…/<run_id>.md`, then check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/plan/<run_id>.json
+```
+
+Only `OK <path>` finishes the step. Two mistakes account for most `ERROR` lines here and both are worth re-reading before the first run rather than after it: `steps[]` or `decisions[]` written at the envelope's top level, where `additionalProperties: false` rejects them regardless of content, and an `envelope_path` that does not match one of the schema's three permitted shapes.
+
+Then stop: the plan goes to the verifier next, and to the human at G2.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+`extensions` is where this agent's structure lives — `plan_path`, `plan_version`, `scope`, `fit_gap[]`, `decisions[]`, `milestones[]`, `steps[]`, `blocked_steps[]` and `validate_result` are keys of that object, not of the envelope. The envelope closes itself with `additionalProperties: false`, so any of them written one level up fails validation on the key name alone, however correct the value beneath it.
+
+This is a plan-level run rather than a per-step one, so the directory segment is the stage: `.sfskills/builds/<build-id>/envelopes/plan/<run_id>.json`, with the markdown report `<run_id>.md` on the same stem alongside. `envelope_path` and `report_path` carry those literal strings. The schema's pattern recognises three shapes and no fourth, so an invented path is rejected outright rather than misfiled.
+
+The `set-plan` body written in Step 7 is an input, not an envelope, and lives at `inputs/plan/plan-body.json`. `envelopes/` is reserved for agent run envelopes; a plan body parked there is read by `validate_envelope.py` as an envelope with none of the required fields, which is how the dry run surfaced this rule.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/plan/<run_id>.json
+```
+
+`OK <path>`, or fix and re-run. The verifier reads this envelope next and has no way to repair it.
 
 ### Deliverables
 
@@ -247,7 +278,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups.
 9. **Citations** — every skill, template, decision-tree branch and roster file consulted.
 
-The JSON envelope embeds `plan_path`, `plan_version`, `scope`, `fit_gap[]`, `decisions[]`, `milestones[]`, `steps[]`, `blocked_steps[]` and `validate_result`.
+All nine of those travel in the JSON envelope under `extensions`, per **Envelope shape and location** above — none of them is a top-level envelope key.
 
 ### Confidence rubric
 
@@ -273,7 +304,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-Inside the loop the caller overrides the output directory to the build directory from `standards/build-orchestration.md` § 2, with the run envelope under `envelopes/`. `plan.json` is loop state rather than a deliverable and is always written under the build directory; `PLAN.md` is rendered from it and never hand-edited.
+Inside the loop the caller overrides the output directory to the build directory from `standards/build-orchestration.md` § 2, with the run pair at `envelopes/plan/<run_id>.json` and `envelopes/plan/<run_id>.md`, and the `set-plan` body under `inputs/plan/`. `plan.json` is loop state rather than a deliverable and is always written under the build directory; `PLAN.md` is rendered from it and never hand-edited.
 
 ### Scope Guardrails (Wave 10 contract)
 

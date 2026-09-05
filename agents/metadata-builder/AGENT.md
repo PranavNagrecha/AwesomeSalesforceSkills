@@ -229,11 +229,39 @@ Overrides the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 | MEDIUM | a documented skill default stood in for an unanswered question, a checker passed only on the third repair pass, or the step declared an output whose type the cited skills document only by worked example rather than by element table |
 | LOW | `check-outputs` is not ok, a declared output is missing, a file landed outside `artefacts/<step_id>/`, or the step ended blocked |
 
+### Step 11 — Self-validate the envelope before returning
+
+The artefacts are on disk and `check-outputs` has adjudicated them. Assemble the envelope with the Step 4–9 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M1-S03/<run_id>.json` and `…/<run_id>.md`, then check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S03/<run_id>.json
+```
+
+`OK <path>` is required on both exits this agent has, `built` and `blocked` — a block is a result, not an excuse for an unvalidated envelope. An `ERROR` naming a top-level `artefacts` key means the list belongs under `extensions`; the workflow return object above keeps `artefacts` at its own top level, and the two shapes are not the same document.
+
+Then return the Step 9 outcome and the workflow object above it.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+The build payload goes under **`extensions`**: `step_id`, `artefacts[]`, `blocked_reason`, `decision_record[]`, `checker_results[]` and the verbatim `check_outputs` JSON. The envelope schema is closed — `additionalProperties: false` — so a top-level `artefacts` key is a validation failure rather than a harmless variation, and the workflow return object above is a separate shape that does not license one.
+
+The runner stores this agent's envelope under the step it built: `.sfskills/builds/<build-id>/envelopes/M1-S03/<run_id>.json`, with `<run_id>.md` on the same stem. Whether the pair is written here or handed back for `build-step-runner` to store, `envelope_path` and `report_path` must already carry those strings when the envelope leaves this agent — nothing downstream rewrites them, and the schema's build-layer pattern accepts no other shape.
+
+Metadata is not an envelope. The XML, the `package.xml` fragment and `deploy-order.md` go under `artefacts/<step-id>/` and never into `envelopes/`. This agent hands the CLI no `--file` body either, so it writes nothing under `inputs/<stage-or-step>/`.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S03/<run_id>.json
+```
+
+`OK <path>` is required on a `blocked` exit as much as on a `built` one.
 
 ### Deliverables
 
@@ -271,7 +299,7 @@ Suggested follow-ups are recommendations only: `agents/step-tester` on the step 
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-The build-scoped outputs are additional, not alternative: the metadata, `package.xml` and `deploy-order.md` under `<build_dir>/artefacts/<step-id>/`, and the run envelope the runner stores under `<build_dir>/envelopes/<step-id>/`. `default_output_dir` in the frontmatter names the agent's own report directory; the build directory is supplied per invocation and is never a default.
+The build-scoped outputs are additional, not alternative: the metadata, `package.xml` and `deploy-order.md` under `<build_dir>/artefacts/<step-id>/`, and the run envelope the runner stores at `<build_dir>/envelopes/<step-id>/<run_id>.json`. `default_output_dir` in the frontmatter names the agent's own report directory; the build directory is supplied per invocation and is never a default.
 
 ### Scope Guardrails (Wave 10 contract)
 

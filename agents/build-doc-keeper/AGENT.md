@@ -185,11 +185,39 @@ Overrides the default rubric:
 | MEDIUM | an artefact could not be placed in a section without judgment, a step type fell through to the **Other configuration** default, or a requirement id had to be inferred from a clarification answer rather than read from the step |
 | LOW | a row had to be written with an empty `source_req_id` or an empty verification cell, or the step's test results were unreadable |
 
+### Step 11 — Self-validate the envelope before returning
+
+The documents are written and the step is `documented`; one file is left. Assemble the envelope with the Step 3–7 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` and `…/<run_id>.md`, then check it:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+`OK <path>` ends the run. Watch the one hazard specific to this agent: `files_updated[]` names build documents, and naming them does not make them envelopes — the list is a value under `extensions`, the documents stay under the build directory, and nothing is copied into `envelopes/` to make it easier to find.
+
+Then return the Step 9 status and the workflow object above it.
+
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+The documentation payload travels in **`extensions`**: `step_id`, `files_updated[]`, `workbook_rows[]`, `traceability_rows[]`, `decisions_appended[]` and `rows_replaced[]`. The envelope's own field set is fixed and it is `additionalProperties: false`, so a key invented at the top level fails the document even when everything under it is right.
+
+This is a per-step run, so its envelope is `.sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json` with `<run_id>.md` on the same stem, and `envelope_path` and `report_path` carry those strings. The same directory already holds the step's other envelopes — the owning agent's and the tester's — under their own run ids. Reading one (Step 1) and writing another are both this agent's business, and neither operation may overwrite the other's file.
+
+Nothing this agent produces goes to the CLI as a `--file` body, so it leaves `inputs/<stage-or-step>/` alone. Nor do its documentation outputs belong in the envelope tree: `PLAN.md`, `decisions.md`, `traceability.md` and everything under `workbook/` are build documents, not envelopes, and stay where § 2 puts them.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S04/<run_id>.json
+```
+
+`OK <path>` or fix and re-run. This agent's job is keeping the build's record straight; an invalid record of its own run is the wrong place to start.
 
 ### Deliverables
 

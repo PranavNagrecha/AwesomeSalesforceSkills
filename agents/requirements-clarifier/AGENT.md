@@ -64,9 +64,9 @@ Arguments the agent expects: a path to the requirement text, optionally a build 
 
 ### Question harvesting
 7. `skills/admin/requirements-gathering-for-sf` — supplies the seven generic interview questions every requirement gets regardless of topic (volume, licence, sharing layer, integration source, exception path) and the catalogue row shape answers are written back into; without it the agent asks only what the topic skills happen to ask, and a requirement whose topic skills say nothing about volume ships a plan sized on ten records.
-8. `skills/admin/configuration-workbook-authoring` — the ten canonical sections are the grouping and ordering key for the question set, so questions arrive in the order a build consumes them instead of in whatever order `search_knowledge.py` returned the skills.
+8. `skills/admin/configuration-workbook-authoring` — the ten canonical sections are the checklist of what a finished configuration has to have decided, which is how this agent notices a section no harvested question touches and asks for it anyway. It is **not** the `group` vocabulary: grouping uses the `standards/build-orchestration.md` § 4 step types (Step 5), because a group is a claim about which build step consumes the answer, and a workbook section is a claim about where the built result gets written up.
 9. `skills/admin/acceptance-criteria-given-when-then` — a blocking question is only worth asking if its answer can be written as a testable Given/When/Then line; this supplies the `answer_shape` field, which is what stops "what is the SLA?" being answered "fast".
-10. `skills/admin/stakeholder-raci-for-sf-projects` — every question needs a role that is Accountable for answering it, so `CLARIFICATIONS.md` routes each question to a named role rather than to "the business" and the human at G1 knows who to chase.
+10. `skills/admin/stakeholder-raci-for-sf-projects` — supplies the role vocabulary the `owner_role` field is drawn from. `build_plan.py render` prints that field under each question as **Who can answer**, so it is the single place the human at G1 learns whom to chase for an answer; without the skill the field degrades to "the business", which names nobody. Nothing routes a question anywhere — `CLARIFICATIONS.md` is a flat rendered document, and the "routing" is a human reading a role name and forwarding the question themselves. A role that is not in the skill's vocabulary is a role the requester has to translate before they can act on it.
 
 ### Output handoff
 11. `skills/admin/agent-output-formats` — the loop's deliverables are markdown and JSON only; when a stakeholder wants the question set as a spreadsheet to circulate, this is the conversion path the agent points at instead of adding a dependency to the caller's project.
@@ -105,7 +105,11 @@ python3 scripts/build_plan.py init \
   --requirement <requirement_path>
 ```
 
-`--build-dir`, `--title` and `--requirement` are all required; `--build-id` defaults to the directory name and `--force` is what overwrites an existing `plan.json`. `--repo-root` is accepted by every subcommand and defaults to this checkout; it is the root against which a plan's citations get resolved later, so pass it only when invoking from outside the repo.
+`--build-dir`, `--title` and `--requirement` are all required; `--build-id` defaults to the directory name and `--force` is what overwrites an existing `plan.json`. `--repo-root` is accepted by every subcommand and defaults to this checkout; it is the root against which a plan's citations get resolved later, so pass it only when invoking from outside the repo. `--org-alias` is not this agent's flag: omitting it leaves the build `design-only`, which is the correct default for a stage that never reads an org, and only the human who has an org to offer supplies it.
+
+`--now <ISO-8601>` overrides the `created` timestamp, which otherwise is UTC-now. `created` is the only non-deterministic field `init` writes and `PLAN.md` renders it, so pass `--now` whenever the run has to be reproducible — a fixture, a regression build, or a re-run that will be diffed byte-for-byte against an earlier one. Without it two identical runs produce two different plans.
+
+`init` also fills `requirement.summary` mechanically: the first non-heading line of `requirement.md`, truncated at 400 characters, or a "see `requirement.md`" placeholder when the file has no prose line at all. That is a stand-in, not a summary. The schema asks for a one-paragraph restatement and `PLAN.md` prints it under `## Requirement` as the build's own statement of what is being built, and **this agent is its only writer** — `set-clarifications --summary` is the sole subcommand that can set the field, so no later stage will fix a placeholder left behind here. Write the real restatement in Step 5.
 
 `init` creates the § 2 directory layout, copies the requirement verbatim to `requirement.md`, writes a minimal `plan.json` at `status: intake` with the `clarifications` and `plan` gate records already present as `pending`, and renders `PLAN.md` + `CLARIFICATIONS.md`. The agent therefore never adds a gate record; `ensure-gates` is the planner's call, once milestones exist.
 
@@ -124,6 +128,14 @@ python3 scripts/search_knowledge.py "<noun phrase or capability>"
 Run one search per phrase, not one search for the whole requirement: "cases arrive by email and must be answered in four business hours" is at least four searches (case intake, email-to-case, queues and assignment, business hours and SLA).
 
 If every search returns nothing, the retrieval index has not been built for this clone — that is "no index", not "no coverage" (`AGENT_RULES.md`, retrieval rules). Stop and tell the human to run `python3 scripts/bootstrap.py`; do not fall back to asking questions from memory.
+
+Confirm which of the two it is before reporting it, and confirm it with a search rather than with a verdict. `python3 scripts/bootstrap.py --verify-only` runs the verification phase without building anything, but its pass/fail is not a retrieval verdict: it also fails when the count of slash commands installed under `.claude/commands/` differs from the count in `commands/`, and prints `BOOTSTRAP FAILED` for that alone on a clone whose index is perfectly healthy. Do not read the word FAILED as an answer to this question. The check that settles it is narrower — **does `scripts/search_knowledge.py` return results at all?** Run one control search on a term the library certainly covers:
+
+```bash
+python3 scripts/search_knowledge.py "permission set"
+```
+
+Results back means the index is fine and the empty searches are a real coverage signal to record in `capability_coverage[]`, whatever `--verify-only` concluded about commands. Nothing back means the index is absent and there is nothing to clarify from — refuse with `REFUSAL_NEEDS_HUMAN_REVIEW` and name the bootstrap command.
 
 ### Step 3 — Keep only skills that carry a question table
 
@@ -152,7 +164,7 @@ Open each kept skill and take **every row** of its table — the three columns a
   "owner_role": "Service Operations lead",
   "owner_hint": "business-hours-and-holidays-configurator",
   "default_source": "skill-guidance",
-  "group": "sla-and-calendars"
+  "group": "sla"
 }
 ```
 
@@ -164,7 +176,7 @@ Rules for the fields the agent decides rather than copies:
 - **`proposed_default`** — propose one only from the skill's own guidance (its `What a good answer adds` cell, its Decision Guidance, its worked examples) or from an explicit statement in the requirement text. When the skill offers no basis, omit the key and set `default_source: "none"`. Never invent a Salesforce fact to fill a default; an invented default that the human accepts at G1 becomes an unsourced design decision three stages later.
 - **`answer_shape`** — the `What a good answer adds` cell, rewritten as the shape of an acceptable answer per `skills/admin/acceptance-criteria-given-when-then`.
 - **`owner_role`** — resolve from `skills/admin/stakeholder-raci-for-sf-projects`; fall back to the requester named in the requirement text, and to `null` when it names none.
-- **`owner_hint`** — the run-time agent likely to consume the answer. Confirm `agents/<id>/AGENT.md` exists, its frontmatter says `class: runtime`, and its `status` is not `deprecated`, before writing it. Leave it null rather than guess.
+- **`owner_hint`** — the run-time agent likely to consume the answer, and it must be an agent that could legally own the step that consumes it. Apply the full eligibility rule from `standards/build-orchestration.md` § 4, the same three conditions `build_plan.py validate` enforces as ERRORs on a step's `agent`: (1) `agents/<id>/AGENT.md` exists and its frontmatter says `class: runtime`; (2) its `status` is a non-deprecated value of the `agent-frontmatter` schema enum — `stable` or `beta`, never `deprecated`, so no Wave-3b stub; and (3) **either** the build is `org-connected` **or** that agent declares `requires_org: false`. The third condition is the one a hint written from memory gets wrong. Read `build_mode` out of `plan.json` before writing any hint: `init` defaults to `design-only`, and in a design-only build every org-requiring designer — `object-designer`, `permission-set-architect`, `flow-builder`, the routing, SLA and path designers — is ineligible, so the hint for any question that ends in metadata is `metadata-builder`, which is exactly what the § 4 design-only column says. Naming an org-requiring agent in a design-only build hands the planner a hint the validator will reject the moment it becomes a step. Leave it null rather than guess.
 
 Then add the generic set: every row of `skills/admin/requirements-gathering-for-sf` § Questions to Ask Before Configuring, tagged with the same `source_skill` id. These apply to every requirement — volume, licence, sharing layer, data origin, exception path — and topic skills routinely assume them.
 
@@ -172,24 +184,38 @@ Finally, dedupe **by meaning, not by string**. Two skills asking "who owns this 
 
 ### Step 5 — Group, order, and write the plan
 
-Group by topic using the workbook sections from `skills/admin/configuration-workbook-authoring` as the grouping vocabulary (objects and fields, access, automation, routing, SLA, UI, data, integration, docs). Order: every blocking question first, grouped; then the informational ones in the same group order. Number `Q1…Qn` in final display order so a human can answer top to bottom — the id is what `ingest-answers` round-trips on, so it must not change once rendered.
+`group` is free text to the schema but it is not free vocabulary here, because it is what tells the planner which build step an answer feeds. The vocabulary is the **step-type list in `standards/build-orchestration.md` § 4** — `object-model`, `access`, `automation`, `validation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom` — plus one group for questions that shape how the build is proved rather than what it configures: `testing-and-environments` (which sandbox, what seed data, who runs UAT, what the acceptance evidence is). Note `validation` is a step type in its own right: validation-rule questions group under `validation`, not under `object-model`. Use the § 4 spelling exactly. The workbook sections in `skills/admin/configuration-workbook-authoring` are the doc keeper's vocabulary for where a *built* row is written up; a group named for one of them ("SLA and calendars", "objects and fields") reads fine to a human and tells the planner nothing, because it matches no step type.
 
-Write the ordered clarification array to a scratch JSON file, then hand it to the CLI. The agent never edits `plan.json` itself:
+`render` prints each group as a `### <group>` heading, inside `## Blocking` and again inside `## Informational`, with each question under it as `#### <id> — status: <status>`. Group headings come out in **first-appearance order** — nothing sorts them behind the agent's back — so the order of `clarifications[]` is exactly the order the human reads, and any question left without a `group` lands last under a heading called `Other`. Order: every blocking question first, grouped; then the informational ones in the same group order. Number `Q1…Qn` in final display order so a human can answer top to bottom — the id is what `ingest-answers` round-trips on, so it must not change once rendered.
+
+Write the ordered clarification array to `inputs/clarifications/clarifications.json` under the build directory, then hand it to the CLI. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where JSON handed to a `set-*` `--file` belongs. It is **not** an envelope and it does not go under `envelopes/`: that tree holds agent run envelopes only, and a `clarifications.json` parked there is what `scripts/validate_envelope.py` reports as a malformed envelope. The agent never edits `plan.json` itself:
 
 ```bash
+mkdir -p .sfskills/builds/<build-id>/inputs/clarifications
+# write the array to inputs/clarifications/clarifications.json, then:
+
 python3 scripts/build_plan.py set-clarifications .sfskills/builds/<build-id>/plan.json \
-  --file <path-to-the-clarifications-array>.json
+  --file .sfskills/builds/<build-id>/inputs/clarifications/clarifications.json \
+  --summary "<one-paragraph restatement of the requirement>"
 python3 scripts/build_plan.py validate .sfskills/builds/<build-id>/plan.json
 python3 scripts/build_plan.py render   .sfskills/builds/<build-id>/plan.json
 ```
 
-`set-clarifications` replaces `clarifications[]` wholesale, sets the build `status` to `clarifying`, and validates before it writes — so a malformed question set is rejected rather than landed. Every subcommand except `init` takes the **path to `plan.json`** as a positional argument; there is no `--build-dir` flag outside `init`. `validate` WARNs on every blocking question still open; that is the expected state at this stage, not a failure. An ERROR is a failure, and is fixed before rendering. `CLARIFICATIONS.md` is a rendered view: the agent writes through the CLI and lets `build_plan.py` render it, never the other way round.
+`set-clarifications` replaces `clarifications[]` wholesale, sets the build `status` to `clarifying`, and validates before it writes — so a malformed question set is rejected rather than landed. `--summary` is optional to the CLI and mandatory to this agent: it overwrites the mechanical first-line `requirement.summary` that `init` derived (Step 1) with the one-paragraph restatement the schema asks for and `PLAN.md` prints, and it is the only writer of that field anywhere in the loop. On success the command prints one summary line —
+
+```text
+clarifications written: 24 question(s), 11 blocking; status -> clarifying; requirement.summary updated
+```
+
+— and the blocking count in it is the number of questions the human must answer or explicitly defer before G1 will open (every clarification this agent writes lands at `status: open`). Quote that line in the report rather than recounting by hand: it is the CLI's own count of what landed, not the agent's count of what it meant to write.
+
+Every subcommand except `init` takes the **path to `plan.json`** as a positional argument; there is no `--build-dir` flag outside `init`. `validate` WARNs on every blocking question still open; that is the expected state at this stage, not a failure. An ERROR is a failure, and is fixed before rendering. `CLARIFICATIONS.md` is a rendered view: the agent writes through the CLI and lets `build_plan.py` render it, never the other way round.
 
 ### Step 6 — Stop at G1 and hand the loop back
 
 Report the counts (total, blocking, informational, defaults proposed, defaults absent) and tell the human exactly how to answer:
 
-1. **Answer in `CLARIFICATIONS.md`.** Every question carries an `Answer:` line. Write the answer on that line; copy the proposed default onto it to accept the default; write `DEFER: <reason>` to defer a blocking question. An answer may run to several lines: every non-heading line after `Answer:`, up to the next `### Q` heading or a `---` rule, is part of that answer and is joined with newlines. This is the one rendered view a human is meant to type into — the answers are read back out of it rather than left sitting there.
+1. **Answer in `CLARIFICATIONS.md`.** The rendered file is grouped: `## Blocking` then `## Informational`, each holding the `### <group>` headings in the order the agent wrote them, and each question under its group as a `#### Q<n> — status: <status>` heading carrying one `Answer:` line. Write the answer on that line, under that heading; copy the proposed default onto it to accept the default; write `DEFER: <reason>` to defer a blocking question. An answer may run to several lines: every non-heading line after `Answer:`, up to the next heading (`#### Q<n>`, `### <group>`, `## Informational`) or a `---` rule, is part of that answer and is joined with newlines. This is the one rendered view a human is meant to type into — the answers are read back out of it rather than left sitting there.
 2. **Read the answers back into `plan.json`:**
 
    ```bash
@@ -207,13 +233,41 @@ Report the counts (total, blocking, informational, defaults proposed, defaults a
    The gate is named `clarifications` and the decision word (`approve` / `reject`) is the second positional argument.
 4. **Then run [`/plan-build`](../../commands/plan-build.md)** against the same build directory.
 
-Then stop. The agent does not run `ingest-answers` for the human, and it never runs `gate`.
+The agent does not run `ingest-answers` for the human, and it never runs `gate`.
+
+### Step 7 — Self-validate the envelope, then stop
+
+Assemble the JSON envelope with its agent-specific payload under `extensions`, write it beside its markdown twin at `.sfskills/builds/<build-id>/envelopes/clarifications/<run_id>.json`, and check it before returning anything to the caller:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/clarifications/<run_id>.json
+```
+
+`OK <path>` is the only result that ends the run. An `ERROR` line names the pointer that failed: a payload key written at the top level instead of under `extensions` is the common one, a `report_path` outside the schema's three permitted shapes the other. Fix and re-run. Note the asymmetry this step guards — `clarifications.json` went to `inputs/clarifications/`, this envelope goes to `envelopes/clarifications/`, and the two directories are not interchangeable.
+
+Then stop: the loop belongs to the human until G1 is recorded.
 
 ---
 
 ## Output Contract
 
 Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas/output-envelope.schema.json`.
+
+### Envelope shape and location
+
+The envelope schema is `additionalProperties: false`, so this agent's payload — the clarification records, the coverage table, the dedupe pairs — cannot sit at the envelope's top level under names of its own invention. It goes under **`extensions`**, the one open object the schema defines for exactly this case, whose keys belong to the agent and whose readers are expected to tolerate ones they have never seen.
+
+Stage 1 has no step id, so the directory segment is the stage name. The pair is `.sfskills/builds/<build-id>/envelopes/clarifications/<run_id>.json` and `.sfskills/builds/<build-id>/envelopes/clarifications/<run_id>.md`, same stem, and those two strings are what `envelope_path` and `report_path` must literally contain. The schema's pattern admits three path shapes and this is the only one valid inside a build, so a path assembled any other way fails validation rather than quietly landing where the planner will not look for it.
+
+The clarifications array is not an envelope and does not belong in that tree. It is a CLI input, and `standards/build-orchestration.md` § 2 gives inputs their own home at `inputs/clarifications/clarifications.json` (Step 5). The dry run that prompted this section put it under `envelopes/`, where `validate_envelope.py` duly read it as an envelope missing every required field.
+
+Self-validate before returning:
+
+```bash
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/clarifications/<run_id>.json
+```
+
+Anything but `OK <path>` is fixed and the command re-run — never noted in the report as a known issue and returned anyway.
 
 ### Deliverables
 
@@ -225,7 +279,24 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 6. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups.
 7. **Citations** — every skill, standard and script consulted.
 
-The JSON envelope embeds `clarifications[]` (the Step 4 records in display order, including the non-schema keys `CLARIFICATIONS.md` does not render), `capability_coverage[]` (the Step 3 table), `skills_without_question_table[]`, `deduped_pairs[]`, and `build_dir`.
+### What the human sees, and what only the envelope carries
+
+`render` is selective, and the split matters when deciding what to repeat in the markdown report. Under each `#### <id>` heading `CLARIFICATIONS.md` prints, in this order and only when the field is non-empty:
+
+| Rendered as | From |
+|---|---|
+| `#### <id> — status: <status>` | `id`, `status` |
+| **Question:** | `question` |
+| **Why it matters:** | `why` |
+| **Who can answer:** | `owner_role` |
+| **Answer shape:** | `answer_shape` |
+| **From skill:** | `source_skill` |
+| **Proposed default:** | `proposed_default` |
+| `Answer:` | `answer` — blank until `ingest-answers` runs |
+
+`kind` reaches the human only as the `## Blocking` / `## Informational` section a question sits in, and `group` only as the `### <group>` heading above it. Everything else stays in `plan.json` and the envelope and is never rendered: `owner_hint`, `default_source`, `also_asked_by[]`. A human who needs to see one of those — most often that a default has `default_source: "none"`, which renders as no **Proposed default** line at all rather than as an explicit absence — must be told in the agent's own markdown report, because `CLARIFICATIONS.md` will not say it.
+
+The JSON envelope carries this agent's structured payload under the schema's top-level **`extensions`** object: `extensions.clarifications[]` (the Step 4 records in display order, including the keys `CLARIFICATIONS.md` does not render), `extensions.capability_coverage[]` (the Step 3 table), `extensions.skills_without_question_table[]`, `extensions.deduped_pairs[]`, and `extensions.build_dir`.
 
 ### Confidence rubric
 
@@ -251,7 +322,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 - Atomic write: both succeed or neither is left on disk.
 - Interactive opt-out: `--no-persist` flag.
 
-Inside the build loop the caller overrides the output directory to the build directory named in `standards/build-orchestration.md` § 2 — `.sfskills/builds/<build-id>/`, with the run envelope under `envelopes/`. The frontmatter default above is the absent-override path required by the deliverable contract; the loop always supplies the override. `plan.json` and `CLARIFICATIONS.md` are loop state, not deliverables, and are always written under the build directory regardless of the override.
+Inside the build loop the caller overrides the output directory to the build directory named in `standards/build-orchestration.md` § 2 — `.sfskills/builds/<build-id>/`, with the run pair at `envelopes/clarifications/<run_id>.json` and `envelopes/clarifications/<run_id>.md`. The frontmatter default above is the absent-override path required by the deliverable contract; the loop always supplies the override. `plan.json` and `CLARIFICATIONS.md` are loop state, not deliverables, and are always written under the build directory regardless of the override.
 
 ### Scope Guardrails (Wave 10 contract)
 
@@ -287,6 +358,8 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 - Never caps or trims the question set to keep it short, and never drops a question because the answer seems obvious from the requirement — it proposes that reading as the default instead.
 - Never writes scope, fit-gap, decisions, milestones or steps — that is the planner's output, and writing it here would let unanswered questions harden into a plan.
 - Never hand-edits `plan.json`. `set-clarifications --file` is the writer of `clarifications[]`; a surgical JSON edit is a defect, not a shortcut.
+- Never writes a `--file` input under `envelopes/`. That tree holds run envelopes only; CLI inputs live under `inputs/<stage-or-step>/`.
+- Never returns an envelope it has not run `scripts/validate_envelope.py` against, and never carries its own payload as top-level envelope keys instead of under `extensions`.
 - Never hand-edits `CLARIFICATIONS.md`, `PLAN.md` or any other rendered view; it writes through the CLI and calls `build_plan.py render`.
 - Never writes outside the build directory and its own report path.
 - Never auto-chains to the planner or any other agent.
