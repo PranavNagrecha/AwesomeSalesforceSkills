@@ -1,5 +1,40 @@
 #!/usr/bin/env python3
-"""Audit Apex event publication and subscriber patterns."""
+"""check_platform_events_apex.py — audit an Apex platform-event publish/subscribe slice.
+
+Stdlib only. Point --manifest-dir at a source tree (for example
+force-app/main/default) and it walks every .cls, .trigger and *.object-meta.xml
+under it.
+
+Rules (each maps to a gotcha in ../references/gotchas.md):
+
+  R1  EventBus.publish(...) result is discarded
+      -> apexrefguide L214561-214565: publish never throws for a rejected event;
+         the SaveResult is the only failure signal.
+  R2  EventBus.publish(...) called inside a loop
+      -> apexdev L19598 / L19635: 150 publish-immediately calls, or one DML
+         statement per publish-after-commit call, per transaction.
+  R3  __e trigger declared with any event other than `after insert`
+      -> a platform event subscriber has exactly one context.
+  R4  DML or SOQL directly inside a for-each loop over an __e collection
+      -> apexdev L19862: the platform-event trigger batch size is 2,000.
+  R5  EventBus.RetryableException thrown with no read of
+      EventBus.TriggerContext.currentContext().retries in the same file
+      -> object_reference L131382-131390: exceeding the retry budget puts the
+         subscription into Status = Error, where it stops receiving events.
+  R6  A *__e.object-meta.xml with no <publishBehavior> element
+      -> api_meta L42228-42229: the default is PublishImmediately, which fires
+         even when the transaction rolls back.
+  R7  A test method that publishes an event but never calls
+      Test.getEventBus().deliver() or Test.getEventBus().fail()
+      -> apexrefguide L157686-157712: stopTest() does not flush the event bus.
+  R8  setResumeCheckpoint(...) called before the work for that event completes
+      (advisory heuristic: the checkpoint is the first statement in the loop
+      body, or precedes the only DML in the loop)
+      -> apexrefguide L157866-157874: the trigger resumes AFTER the checkpoint,
+         so checkpointing early silently skips unprocessed events.
+
+Exit codes: 0 clean, 1 findings or a missing --manifest-dir.
+"""
 
 from __future__ import annotations
 
@@ -7,90 +42,306 @@ import argparse
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
+APEX_SUFFIXES = {".cls", ".trigger"}
+OBJECT_SUFFIX = ".object-meta.xml"
+MDAPI_NS = "http://soap.sforce.com/2006/04/metadata"
 
-TEXT_SUFFIXES = {".cls", ".trigger"}
-LOOP_RE = re.compile(r"\b(for|while)\b")
-PUBLISH_RE = re.compile(r"\bEventBus\.publish\s*\(", re.IGNORECASE)
-SAVE_RESULT_RE = re.compile(r"SaveResult|isSuccess\s*\(|getErrors\s*\(", re.IGNORECASE)
-EVENT_TRIGGER_RE = re.compile(r"trigger\s+\w+\s+on\s+\w+__e\s*\(", re.IGNORECASE)
 SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+
+PUBLISH_RE = re.compile(r"\bEventBus\s*\.\s*publish(?:WithAccessLevel)?\s*\(")
+ASSIGNED_PUBLISH_RE = re.compile(
+    r"(?:List\s*<\s*Database\.SaveResult\s*>|Database\.SaveResult|\w+)\s*(?:\w+\s*)?=\s*EventBus\s*\.\s*publish"
+)
+RETURN_PUBLISH_RE = re.compile(r"\breturn\s+EventBus\s*\.\s*publish")
+EVENT_TRIGGER_RE = re.compile(
+    r"\btrigger\s+(\w+)\s+on\s+(\w+__e)\s*\(([^)]*)\)", re.IGNORECASE
+)
+LOOP_HEAD_RE = re.compile(r"\b(?:for|while|do)\b\s*[({]")
+EVENT_FOREACH_RE = re.compile(r"\bfor\s*\(\s*(\w+__e)\s+(\w+)\s*:", re.IGNORECASE)
+DML_RE = re.compile(r"\b(?:insert|update|upsert|delete|undelete|merge)\s+[\w(\[]")
+DATABASE_DML_RE = re.compile(r"\bDatabase\s*\.\s*(?:insert|update|upsert|delete|undelete|convertLead)\s*\(")
+SOQL_RE = re.compile(r"\[\s*SELECT\b", re.IGNORECASE)
+RETRYABLE_THROW_RE = re.compile(r"\bthrow\s+new\s+EventBus\s*\.\s*RetryableException\b")
+RETRIES_READ_RE = re.compile(r"\bTriggerContext\s*\.\s*currentContext\s*\(\s*\)\s*\.\s*retries\b|\.\s*retries\b")
+CHECKPOINT_RE = re.compile(r"\bsetResumeCheckpoint\s*\(")
+DELIVER_RE = re.compile(r"\bTest\s*\.\s*getEventBus\s*\(\s*\)\s*\.\s*(?:deliver|fail)\s*\(")
+TESTMETHOD_RE = re.compile(
+    r"@IsTest[^\n]*\n(?:\s*(?:static|private|public|global|void|\w+)\s+)*?\s*(?:static\s+)?void\s+(\w+)\s*\(",
+    re.IGNORECASE,
+)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Check Apex event publication and trigger-subscriber anti-patterns.")
-    parser.add_argument("--manifest-dir", default=".", help="Root directory to scan for Apex files.")
+    parser = argparse.ArgumentParser(
+        description="Check an Apex platform-event publish/subscribe slice.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument(
+        "--manifest-dir",
+        default=".",
+        help="Root of the source tree to scan (e.g. force-app/main/default).",
+    )
     return parser.parse_args()
 
 
 def normalize_finding(finding: str) -> dict[str, str]:
     severity, _, remainder = finding.partition(" ")
-    location = ""
-    message = remainder
+    location, message = "", remainder
     if ": " in remainder:
         location, message = remainder.split(": ", 1)
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, exit_code: int) -> int:
     normalized = [normalize_finding(item) for item in findings]
-    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
+    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(f["severity"], 0) for f in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    return exit_code
 
 
-def iter_files(root: Path) -> list[Path]:
-    return sorted(path for path in root.rglob("*") if path.is_file() and path.suffix.lower() in TEXT_SUFFIXES)
+def strip_noise(src: str) -> str:
+    """Blank comments and string literals, preserving line count and offsets."""
+    out = list(src)
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "'":
+            j = i + 1
+            while j < n and src[j] != "'":
+                j += 2 if src[j] == "\\" else 1
+            for k in range(i, min(j + 1, n)):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = j + 1
+            continue
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            j = n if j < 0 else j
+            for k in range(i, j):
+                out[k] = " "
+            i = j
+            continue
+        if src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            for k in range(i, min(j, n)):
+                if out[k] != "\n":
+                    out[k] = " "
+            i = j
+            continue
+        i += 1
+    return "".join(out)
 
 
-def audit_file(path: Path) -> list[str]:
+def line_of(text: str, index: int) -> int:
+    return text.count("\n", 0, index) + 1
+
+
+def block_end(text: str, open_brace: int) -> int:
+    """Index just past the matching close brace for the '{' at open_brace."""
+    depth = 0
+    for i in range(open_brace, len(text)):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return i + 1
+    return len(text)
+
+
+def loop_bodies(code: str) -> list[tuple[int, int, str]]:
+    """(start, end, header) for each loop body, brace-delimited only."""
+    bodies = []
+    for m in LOOP_HEAD_RE.finditer(code):
+        brace = code.find("{", m.start())
+        if brace == -1:
+            continue
+        # a '{' more than a header away is a single-statement loop; skip it
+        if "\n" in code[m.end() : brace] and code[m.end() : brace].count(";") > 2:
+            continue
+        bodies.append((brace, block_end(code, brace), code[m.start() : brace]))
+    return bodies
+
+
+def audit_apex(path: Path, rel: str) -> list[str]:
+    raw = path.read_text(encoding="utf-8", errors="ignore")
+    code = strip_noise(raw)
     findings: list[str] = []
-    text = path.read_text(encoding="utf-8", errors="ignore")
-    lines = text.splitlines()
-    loop_depth = 0
+    # A test class deliberately drives the publish path; a discarded result there
+    # is a weaker signal than in production code, so it is reported at REVIEW.
+    is_test = bool(re.search(r"@IsTest\b", raw, re.IGNORECASE))
 
-    for line_number, raw_line in enumerate(lines, start=1):
-        line = raw_line.strip()
-        if LOOP_RE.search(line) and "for each" not in line.lower():
-            loop_depth += line.count("{") or 1
+    # R1 — publish result discarded
+    for m in PUBLISH_RE.finditer(code):
+        # the statement may wrap across lines, so scan back to the previous
+        # statement or block boundary rather than to the previous newline
+        stmt_start = max(code.rfind(ch, 0, m.start()) for ch in ";{}") + 1
+        stmt = code[stmt_start : code.find(";", m.start()) + 1]
+        if not (ASSIGNED_PUBLISH_RE.search(stmt) or RETURN_PUBLISH_RE.search(stmt)):
+            findings.append(
+                f"{'REVIEW' if is_test else 'HIGH'} {rel}:{line_of(code, m.start())}: EventBus.publish result is "
+                "discarded; publish does not throw for a rejected event, so the SaveResult is the only failure signal (R1)"
+            )
 
-        if loop_depth > 0 and PUBLISH_RE.search(line):
-            findings.append(f"HIGH {path}:{line_number}: `EventBus.publish()` appears inside a loop")
+    # R2 — publish inside a loop
+    for start, end, _ in loop_bodies(code):
+        for m in PUBLISH_RE.finditer(code, start, end):
+            findings.append(
+                f"HIGH {rel}:{line_of(code, m.start())}: EventBus.publish inside a loop; "
+                "collect the events and publish the list once (R2)"
+            )
 
-        if "}" in line and loop_depth > 0:
-            loop_depth = max(0, loop_depth - line.count("}"))
+    # R3 — __e trigger context
+    for m in EVENT_TRIGGER_RE.finditer(code):
+        name, event, events = m.group(1), m.group(2), m.group(3)
+        declared = {e.strip().lower() for e in events.split(",") if e.strip()}
+        if declared != {"after insert"}:
+            findings.append(
+                f"CRITICAL {rel}:{line_of(code, m.start())}: trigger {name} on {event} declares "
+                f"({', '.join(sorted(declared)) or 'nothing'}); a platform event subscriber runs only in after insert (R3)"
+            )
 
-    if PUBLISH_RE.search(text) and not SAVE_RESULT_RE.search(text):
-        findings.append(f"REVIEW {path}: event publication found without obvious publish-result inspection")
+    # R4 — DML/SOQL inside a for-each over an __e collection
+    for m in EVENT_FOREACH_RE.finditer(code):
+        brace = code.find("{", m.start())
+        if brace == -1:
+            continue
+        end = block_end(code, brace)
+        body = code[brace:end]
+        # nested loop bodies are still inside this loop, so scan the whole body
+        for pattern, label in ((DML_RE, "DML"), (DATABASE_DML_RE, "Database DML"), (SOQL_RE, "SOQL")):
+            hit = pattern.search(body)
+            if hit:
+                findings.append(
+                    f"HIGH {rel}:{line_of(code, brace + hit.start())}: {label} inside the loop over "
+                    f"{m.group(1)} records; the default platform-event trigger batch is 2,000 events (R4)"
+                )
+                break
 
-    if path.suffix.lower() == ".trigger" and EVENT_TRIGGER_RE.search(text):
-        if "before insert" in text.lower():
-            findings.append(f"CRITICAL {path}: platform event trigger appears to declare `before insert` instead of subscriber `after insert`")
-        if text.count("System.enqueueJob(") == 0 and len(lines) > 25:
-            findings.append(f"REVIEW {path}: platform event trigger is fairly heavy; confirm logic should not be delegated to a worker class")
+    # R5 — RetryableException without a retry-count guard
+    throws = list(RETRYABLE_THROW_RE.finditer(code))
+    if throws and not RETRIES_READ_RE.search(code):
+        findings.append(
+            f"CRITICAL {rel}:{line_of(code, throws[0].start())}: EventBus.RetryableException is thrown with no read "
+            "of EventBus.TriggerContext.currentContext().retries; exceeding the budget puts the subscription into "
+            "Status = Error and it later resumes from the tip, skipping the backlog (R5)"
+        )
 
+    # R7 — test method publishes without driving the bus
+    if "@IsTest" in raw or "@isTest" in raw:
+        for m in TESTMETHOD_RE.finditer(code):
+            brace = code.find("{", m.end())
+            if brace == -1:
+                continue
+            body = code[brace : block_end(code, brace)]
+            if PUBLISH_RE.search(body) and not DELIVER_RE.search(body):
+                findings.append(
+                    f"HIGH {rel}:{line_of(code, m.start())}: test method {m.group(1)} publishes an event but never "
+                    "calls Test.getEventBus().deliver() or .fail(); stopTest() does not flush the event bus (R7)"
+                )
+
+    # R8 — checkpoint set before the work (advisory)
+    for start, end, header in loop_bodies(code):
+        body = code[start:end]
+        cp = CHECKPOINT_RE.search(body)
+        if not cp:
+            continue
+        work = None
+        for pattern in (DML_RE, DATABASE_DML_RE, SOQL_RE):
+            hit = pattern.search(body)
+            if hit and (work is None or hit.start() < work):
+                work = hit.start()
+        first_stmt = body.find(";")
+        if work is not None and cp.start() < work:
+            findings.append(
+                f"REVIEW {rel}:{line_of(code, start + cp.start())}: setResumeCheckpoint appears before the "
+                "SOQL/DML for that event; the trigger resumes AFTER the checkpoint, so an early checkpoint "
+                "silently skips unprocessed events (R8)"
+            )
+        elif work is None and first_stmt != -1 and cp.start() <= first_stmt:
+            findings.append(
+                f"REVIEW {rel}:{line_of(code, start + cp.start())}: setResumeCheckpoint is the first statement in "
+                "the loop body; confirm the work for that event has completed before checkpointing (R8)"
+            )
+
+    return findings
+
+
+def audit_object(path: Path, rel: str) -> list[str]:
+    if not path.name.endswith(OBJECT_SUFFIX):
+        return []
+    if not path.name[: -len(OBJECT_SUFFIX)].endswith("__e"):
+        return []
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        return [f"HIGH {rel}: platform event object file does not parse — {exc}"]
+
+    def child(tag: str):
+        node = root.find(f"{{{MDAPI_NS}}}{tag}")
+        if node is None:
+            node = root.find(tag)
+        return node
+
+    findings: list[str] = []
+    behavior = child("publishBehavior")
+    if behavior is None:
+        findings.append(
+            f"HIGH {rel}: platform event definition has no <publishBehavior>; the default is "
+            "PublishImmediately, which publishes even when the transaction rolls back (R6)"
+        )
+    elif (behavior.text or "").strip() not in ("PublishAfterCommit", "PublishImmediately"):
+        findings.append(
+            f"HIGH {rel}: <publishBehavior> is '{(behavior.text or '').strip()}'; valid values are "
+            "PublishAfterCommit and PublishImmediately (R6)"
+        )
+
+    event_type = child("eventType")
+    if event_type is not None and (event_type.text or "").strip() == "StandardVolume":
+        findings.append(
+            f"MEDIUM {rel}: <eventType>StandardVolume</eventType> is deprecated; new events use HighVolume "
+            "and existing ones migrate with PlatformEventMigration (R6)"
+        )
     return findings
 
 
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
-    if not root.exists():
-        return emit_result([f"HIGH {root}: manifest directory not found"], "Scanned 0 Apex files; manifest directory was missing.")
+    if not root.exists() or not root.is_dir():
+        return emit_result(
+            [f"HIGH {root}: manifest directory not found"],
+            "Scanned nothing; --manifest-dir does not point at a directory.",
+            1,
+        )
 
-    files = iter_files(root)
-    if not files:
-        return emit_result([f"HIGH {root}: no Apex files found"], "Scanned 0 Apex files; no .cls or .trigger files were found.")
+    apex_files = sorted(p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in APEX_SUFFIXES)
+    object_files = sorted(p for p in root.rglob(f"*{OBJECT_SUFFIX}") if p.is_file())
+    if not apex_files and not object_files:
+        return emit_result(
+            [],
+            f"WARN: no .cls, .trigger or *{OBJECT_SUFFIX} files found under {root}; nothing to check.",
+            0,
+        )
 
     findings: list[str] = []
-    for path in files:
-        findings.extend(audit_file(path))
+    for path in apex_files:
+        findings.extend(audit_apex(path, str(path)))
+    for path in object_files:
+        findings.extend(audit_object(path, str(path)))
 
-    summary = f"Scanned {len(files)} Apex file(s); {len(findings)} platform-event finding(s) detected."
-    return emit_result(findings, summary)
+    summary = (
+        f"Scanned {len(apex_files)} Apex file(s) and {len(object_files)} object file(s); "
+        f"{len(findings)} platform-event finding(s)."
+    )
+    return emit_result(findings, summary, 1 if findings else 0)
 
 
 if __name__ == "__main__":

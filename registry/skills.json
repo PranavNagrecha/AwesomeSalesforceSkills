@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "a1e5d0459ce40d0a5e7d1e008768370d3bb3729f0084440f2a1fca457923814e",
+  "generated_from_hash": "066d0b31ac2188b19844545f21d14daee93edf485a5f74a6906b4e20daca1176",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -74106,7 +74106,7 @@
         "fb1414d2eff46c73760e",
         "fd852e2107b16fa43cb4"
       ],
-      "content_hash": "5283a38b3fd84d139a565e257694e486479fbc1ece1be72524061cb28fcb7d53",
+      "content_hash": "b2b5aa28bf35c182f447c4102d697e3937747ed1e74242f5c6e987159f484560",
       "dependencies": [],
       "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event', 'publishBehavior', 'PublishAfterCommit', 'EventBus.RetryableException', 'Test.getEventBus().deliver()', 'EventBusSubscriber', 'PlatformEventSubscriberConfig', 'publish callback'. NOT for external publishers or subscribers \u2014 use integration/platform-events-integration. NOT for subscriber batch size and retries \u2014 use apex/apex-event-bus-subscriber.",
       "file_location": "skills/apex/platform-events-apex",
@@ -74574,7 +74574,7 @@
         "fed893ab64b5636996b3",
         "fef26f91df03544fccbe"
       ],
-      "content_hash": "4e43f01c3d606024b804a51f2df1a037ec25a56944e4a0bef11ba8052794c6b5",
+      "content_hash": "d201500a05ceab12bdd462f7273c5abb56ad0dbcec474b2903eb96bd194cd3ae",
       "dependencies": [],
       "description": "Use when debugging or preventing recursive Apex trigger behavior \u2014 self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for how to structure the trigger handler itself \u2014 use apex/trigger-framework. NOT for switching a trigger off for a data load \u2014 use apex/apex-trigger-bypass-and-killswitch-patterns. Also: 'maximum trigger depth exceeded', 'stack depth 16', 'hasRun flag', 'processed Id set', 'apex flow loop', 'workflow field update refires trigger', 'guard skipped records over 200'.",
       "file_location": "skills/apex/recursive-trigger-prevention",

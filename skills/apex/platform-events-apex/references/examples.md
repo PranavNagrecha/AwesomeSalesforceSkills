@@ -67,3 +67,42 @@ trigger InvoiceSyncEventTrigger on Invoice_Sync_Requested__e (after insert) {
 **What goes wrong:** Payload duplication grows, ownership becomes unclear, and consumers cannot tell whether the event represents a business action or just DML noise.
 
 **Correct approach:** Use CDC when row changes are the product. Use Platform Events when the message is a business-defined signal.
+
+---
+
+## Example 3: Proving A Subscriber Is Actually Alive Before You Trust It
+
+**Context:** An `Order_Approved__e` subscriber has been deployed for a month. Downstream reports a gap. The trigger code looks fine and its test class is green.
+
+**Problem:** A green test proves the handler works when an event is handed to it. It proves nothing about whether the subscription is still receiving events. A subscriber that exceeded its `RetryableException` budget sits in `Status = Error` — *"disconnected and stopped receiving published events"* — and when it is later fixed it *"resumes automatically from the tip, starting from new events"* (`object_reference` L131382–131390), so the backlog is gone and no test ever fails.
+
+**Solution:** Make the subscription's runtime state a first-class monitored artifact, not something you look at during an incident.
+
+```sql
+-- Run this on a schedule, not just when someone complains.
+-- EventBusSubscriber is read-only and internal-users-only (object_reference L131272-131283).
+SELECT Topic,
+       Name,                -- the trigger name
+       Type,                -- 'ApexTrigger'; blank for a flow Pause element
+       Status,              -- Running | Error | Suspended | Repartitioning
+       Retries,             -- climbing = RetryableException is firing
+       LastError,           -- the message from the last EventBus.RetryableException
+       LastProcessed,       -- replaces Position as of API 66.0
+       LastPublished,       -- replaces Tip as of API 66.0
+       IsPartitioned
+FROM EventBusSubscriber
+WHERE Topic IN ('Order_Approved__e', 'Invoice_Sync_Requested__e')
+ORDER BY Topic
+```
+
+Read the result like this:
+
+| Observation | What it means | Action |
+|---|---|---|
+| `Status = Running`, `Retries = 0` | healthy | none |
+| `Status = Running`, `Retries` climbing | a failure is being classified as transient when it may not be | inspect `LastError`; check the retry cap is below nine |
+| `Status = Error` | the retry budget was exceeded; events are being dropped on the floor | fix and re-save the trigger, then reconcile the gap from your own publisher log — the subscription resumes from the tip, not from the gap |
+| `Status = Suspended` | an admin or an internal error disconnected it | resume from the subscription detail page on the platform event |
+| `LastPublished = -1` | expected on a `HighVolume` event — *"For high-volume platform events and change events, the value for Tip isn't available and is always -1"* (`object_reference` L131338–131340) | do not compute lag from these columns; use your own `Correlation_Id__c` timestamps |
+
+**Why it works:** The two failure modes that actually lose events in production — a subscription in `Error` and a subscription silently retrying — are both invisible from Apex and both visible in one SOQL query. Alerting on it turns a month-long gap into a same-day one.
