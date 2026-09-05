@@ -3782,6 +3782,9 @@
     "collaborative-forecasts": [
       "admin/collaborative-forecasts"
     ],
+    "collection-choice-set": [
+      "flow/flow-dynamic-choices"
+    ],
     "collection-filter": [
       "flow/flow-collection-processing"
     ],
@@ -11099,6 +11102,9 @@
     "picklist-audit": [
       "admin/picklist-field-integrity-issues"
     ],
+    "picklist-choice-set": [
+      "flow/flow-dynamic-choices"
+    ],
     "picklist-integrity": [
       "admin/picklist-field-integrity-issues"
     ],
@@ -11991,6 +11997,9 @@
     ],
     "record-action": [
       "lwc/lwc-quick-actions"
+    ],
+    "record-choice-set": [
+      "flow/flow-dynamic-choices"
     ],
     "record-filter": [
       "admin/scoping-rules"
