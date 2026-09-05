@@ -3779,6 +3779,9 @@
     "collection-filter": [
       "flow/flow-collection-processing"
     ],
+    "collection-processor": [
+      "flow/flow-loop-element-patterns"
+    ],
     "collection-runner": [
       "devops/postman-for-salesforce"
     ],
@@ -8457,6 +8460,9 @@
     ],
     "iterable": [
       "apex/custom-iterators-and-iterables"
+    ],
+    "iteration-order": [
+      "flow/flow-loop-element-patterns"
     ],
     "iterator": [
       "apex/custom-iterators-and-iterables"
