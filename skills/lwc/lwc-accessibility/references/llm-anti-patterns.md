@@ -89,7 +89,16 @@ export default class MyModal extends LightningModal {
 }
 ```
 
-`LightningModal` handles focus trap, Escape key, and return-to-trigger focus automatically.
+`LightningModal` is the supported dialog surface: you extend `LightningModal` instead of
+`LightningElement`, and open it with the class's `open()` method, which resolves with the
+result the modal returns (`use-dialog-modal` L10375, L10377, L10387-L10388).
+
+UNVERIFIED (2026-09-05): the specific claims that `LightningModal` traps focus, closes on
+Escape, and returns focus to the launching element are not stated on the `use-dialog-modal` page of
+the LWC Developer Guide; that page only says it implements the SLDS modals blueprint (L10374)
+and points to the Component Reference, which is not in the extracted corpus. Until it is
+verified, still restore focus explicitly in the caller (see `references/examples.md` Example 2)
+rather than assuming the base class does it.
 
 **Detection hint:** `slds-modal` class in HTML template without `LightningModal` base class in the JS file.
 
@@ -185,3 +194,63 @@ handleSave() {
 ```
 
 **Detection hint:** Dynamic content toggled via boolean flag with no subsequent `focus()` call or `role="status"` / `role="alert"` on the container.
+
+---
+
+## Anti-Pattern 7: Wiring `aria-labelledby` or `for` across two components
+
+**What the LLM generates:**
+
+```html
+<!-- parent.html -->
+<template>
+    <c-field-label></c-field-label>
+    <c-field-input aria-labelledby="amount-label"></c-field-input>
+</template>
+```
+
+**Why it happens:** The pattern is correct in plain HTML and in most component frameworks, so it is
+heavily represented in training data. LWC scopes template ids and, in native shadow DOM, cannot link
+ids and ARIA attributes between elements in separate templates
+(`create-components-accessibility-attributes` L4034-L4036). Nothing errors — the attribute renders
+and associates nothing.
+
+**Correct pattern:** Put the label and the control in one template so LWC links them automatically,
+or, when the split is unavoidable, render both in light DOM so they share a shadow root
+(`create-light-dom` L3188, L3242).
+
+```html
+<!-- accessibleInputField.html — one template owns both halves -->
+<template>
+    <label for="field-input">{label}</label>
+    <input id="field-input" lwc:ref="input" type="text" />
+</template>
+```
+
+**Detection hint:** an `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-owns`, or `for`
+value that is a literal string, where no element in the *same* `.html` file declares that `id`.
+
+---
+
+## Anti-Pattern 8: Numbering the tab order with `tabindex`
+
+**What the LLM generates:**
+
+```html
+<div tabindex="1" onkeydown={handleKey}>First</div>
+<div tabindex="2" onkeydown={handleKey}>Second</div>
+```
+
+**Why it happens:** Positive `tabindex` is legal HTML and appears throughout general web tutorials.
+LWC supports only `0` and `-1`: `0` places the element in the standard sequential navigation order,
+`-1` removes it from that order while keeping it programmatically focusable
+(`create-components-focus` L4044). Positive values are also a WCAG-hostile pattern in plain HTML,
+because they reorder the whole page, not just the component.
+
+**Correct pattern:** Fix the DOM order, and use semantic elements that are focusable already
+(`create-components-focus` L4043). Reserve `tabindex="-1"` for a node you intend to focus
+programmatically, such as an error summary. If the component sets `delegatesFocus`, use no
+`tabindex` at all — the guide states the two must not be combined (L4065).
+
+**Detection hint:** `tabindex` with any value other than `0`, `-1`, or a bound expression, or any
+`tabindex` in a component whose JS declares `delegatesFocus`.
