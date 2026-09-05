@@ -1,6 +1,6 @@
 ---
 name: reports-and-dashboards
-description: "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for choosing a report type, bucket fields, summary formulas or joined-report limits — use admin/reports-and-dashboards-fundamentals. NOT for Einstein Analytics / CRM Analytics — use admin/einstein-analytics-basics."
+description: "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh', 'report-meta.xml', 'dashboard running user', 'report folder sharing', 'package.xml report wildcard'. NOT for choosing a report type, bucket fields, summary formulas or joined-report limits — use admin/reports-and-dashboards-fundamentals. NOT for Einstein Analytics / CRM Analytics — use admin/einstein-analytics-basics."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,15 +19,24 @@ triggers:
   - "last run date is not report adoption"
   - "report filter dashboard subscription"
   - "report filters isn't working"
+  - "deploy a report or dashboard with sf project deploy"
+  - "package.xml wildcard does not retrieve reports"
+  - "add a cross filter to a report"
+  - "audit dashboard running users before deactivating a user"
+  - "report folder is shared but the user still sees no rows"
+  - "custom report type change broke an existing report"
+  - "dashboard filter is not applying to one component"
 inputs: ["reporting question", "audience", "data source objects"]
 outputs: ["report design guidance", "dashboard findings", "visibility recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in data visibility and reporting. Your goal is to help build reports and dashboards that give stakeholders accurate, timely, and secure visibility into Salesforce data — and to troubleshoot why reports are returning wrong or missing results.
+
+**Boundary with `admin/reports-and-dashboards-fundamentals`:** that skill teaches the concepts — what a report type, format, bucket field, summary formula or dynamic dashboard *is*; this skill owns building the deployable metadata, auditing an existing estate, and diagnosing a report that returns the wrong rows.
 
 ## Before Starting
 
@@ -40,6 +49,24 @@ Gather if not available:
 - Does the user need to see records they own, their team owns, or all records?
 - Is this a one-time analysis or ongoing monitoring?
 - Are there any date-sensitivity requirements (real-time vs scheduled)?
+
+## Questions to Ask Before Configuring
+
+Ask these before opening the report builder. Each one maps to a failure documented in `references/gotchas.md`, and skipping them produces a report that runs cleanly and answers a different question than the one asked.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Should a parent record with zero child records still appear?" | Decides `outerJoin` on the report type. An inner join makes those records invisible with no error and no empty row | The report type decision, and whether an existing one can be reused |
+| "Does every viewer need to see the same numbers, or their own?" | This is `dashboardType`: `SpecifiedUser` shows one person's data to everyone; `LoggedInUser` shows each viewer theirs | The running-user decision, and a named non-human service user if `SpecifiedUser` wins |
+| "Who is allowed to see these rows, and who is allowed to open the folder?" | Folder access and record access are separate layers — `View` on the folder only grants the right to run it | The folder `accessType` + `folderShares` design, and whether sharing needs changing instead |
+| "Is anyone going to email, export, or subscribe to this?" | Subscriptions send the running user's rows to every recipient; historical trend reports refuse export and subscription outright | A go/no-go on subscriptions, and a Reporting Snapshot fallback where trending is required |
+| "Does this report type already back other reports?" | Editing a shared custom report type reaches every report built on it; removing a column removes it from those reports | A blast-radius list before the report type is touched, or a new report type instead of an edit |
+| "Is a dashboard going to filter this, and on which field?" | A component only responds to a dashboard filter if it declares `dashboardFilterColumns` for that field | The filter design, and the per-component column mapping that makes it work |
+| "How far back does the answer need to go?" | Historical trending starts collecting the day it is enabled — there is no retroactive data | Either a trend design started now, or an honest "we can show data from today forward" |
+
+What a proper configuration adds over just building the report: the rows returned match the question asked rather than the running user's accidental slice, the dashboard's audience and its running user agree, the folder grants exactly the access the audience needs, and the whole thing exists as reviewable XML instead of clicks nobody can diff.
+
+---
 
 ## How This Skill Works
 
@@ -108,16 +135,34 @@ Reports and dashboards show what the running user can access. In a Private shari
 
 **Rule:** Default to "Run as logged-in user". Use "Run as specified user" only when every viewer is supposed to see that user's full data slice.
 
+In metadata this is a single element with exactly three values — `<dashboardType>` is `LoggedInUser`, `SpecifiedUser`, or `MyTeamUser`. The presence or absence of `<runningUser>` is not the control; see section 3 of `references/metadata-examples.md` for what each value does and how it behaves on deploy.
+
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the questions above and fill `templates/dashboard-design-template.md` — the audience, the
+   running-user decision, the filter-to-component map and the subscription security check are the
+   design. A dashboard built without that table is a dashboard nobody can audit later.
+2. Decide the report type before the report. If a parent record with no children must still appear,
+   that is `outerJoin` on a `ReportType`, not a filter — see section 1 of
+   `references/metadata-examples.md`. Reuse an existing report type only after listing what else is
+   built on it.
+3. **Retrieve before you write.** Report column codes (`AMOUNT`, `AGE`, `ACCOUNT_ID`,
+   `Object$Field`) are report-type-specific and cannot be derived from field API names. Pull one
+   working report on the same report type first:
+   `sf project retrieve start --metadata "Report:<Folder>/<Report>"`.
+4. Write the metadata from `references/metadata-examples.md`: the report (filter vs `crossFilters`
+   vs `timeFrameFilter` vs `scope` are four separate layers), the dashboard (`dashboardType` is the
+   security decision, and every filtered component needs `dashboardFilterColumns`), the folder
+   files, and the `package.xml` — folder-qualified members, no `*` for `Report` or `Dashboard`.
+5. Run `python3 scripts/check_report_inventory.py --manifest-dir force-app/main/default` and clear
+   every finding or record why it is accepted. It catches unbounded reports, `SpecifiedUser`
+   dashboards, reports pointing at a report type that isn't in the tree, and `Public` folders.
+6. Deploy with `--dry-run` first, then for real. Verify with the two SOQL queries in section 7 of
+   `references/metadata-examples.md` — check `Dashboard.Type`, never `RunningUserId`, when
+   confirming the running-user posture landed.
+7. Open the dashboard once and move the filter. A component that does not move is missing its
+   `dashboardFilterColumns`; nothing in the deploy result or the SOQL will tell you this.
 
 ---
 
@@ -149,8 +194,26 @@ Surface these WITHOUT being asked:
 | Audit reports/dashboards      | Stale reports, private folders, risky dashboards, cleanup candidates |
 | Explain report subscription risk | Subscription security model + who gets what data + risk assessment |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `Report`, `Dashboard`, `ReportType` and folder XML, the `package.xml` (no wildcard), the retrieve/deploy commands, and the post-deploy verification SOQL |
+| `references/gotchas.md` | Fifteen platform behaviours that make a report or dashboard wrong after it deploys — running user, folder vs record access, cross filter vs join, package-installed folder shares, `RunningUserId` false positives |
+| `references/examples.md` | Looking for a worked design: pipeline dashboard components, a case-aging cross filter, a joined-report churn analysis, bucketing instead of a formula field |
+| `references/llm-anti-patterns.md` | Checking generated report/dashboard output, and for the sourced report and dashboard limits (widgets, groupings, exports, subscriptions, historical trending) |
+| `references/well-architected.md` | Framing the design against Security and Operational Excellence, and for the full source list |
+| `templates/dashboard-design-template.md` | Before building any dashboard that more than one person will open |
+
+---
+
 ## Related Skills
 
 - **admin/permission-sets-vs-profiles**: Use when report visibility problems are really object, field, or app access issues. NOT for fixing report filters, chart choice, or folder governance.
-- **data/soql-optimisation**: Use when a declarative report must be reimplemented in Apex or a custom UI. NOT for standard Salesforce reports and dashboards.
+- **data/soql-query-optimization**: Use when a declarative report must be reimplemented in Apex or a custom UI. NOT for standard Salesforce reports and dashboards.
 - **admin/record-types-and-page-layouts**: Use when business reporting depends on Record Type segmentation or label changes. NOT for dashboard running-user or sharing diagnostics.
+- **admin/reports-and-dashboards-fundamentals**: Use to learn what a report format, bucket field, summary formula or dynamic dashboard is. NOT for writing the metadata, auditing an estate, or diagnosing wrong rows.
+- **admin/report-type-strategy**: Use when the question is which custom report type to build — with/without joins, the field-display ceiling, primary vs secondary objects. NOT for the report built on top of it.
+- **admin/report-performance-tuning**: Use when the report is correct but slow, timing out, or hitting row limits. NOT for a report returning the wrong rows.
+- **admin/sharing-and-visibility**: Use when the diagnosis lands on record access rather than the report. NOT for folder access, which is a separate layer this skill covers.
+- **admin/analytics-permission-and-sharing**: Use when the same data is also exposed through a CRM Analytics app, where row-level security predicates — not report folders — gate it.

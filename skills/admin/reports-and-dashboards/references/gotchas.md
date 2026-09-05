@@ -116,13 +116,13 @@
 
 ---
 
-## Mixed Report `filterScope` on One Dashboard Silently Undercounts
+## Mixed Report `scope` on One Dashboard Silently Undercounts
 
-**What happens:** Neighbouring tiles mix `organization` and `team` (or `mine`) with no UI cue. Readers compare 2,400 vs 13,000 as if they were the same population.
+**What happens:** `scope` lives on the *report*, not on the dashboard component, so neighbouring tiles can sit on reports with different scopes with no UI cue. The Metadata API guide defines `scope` as "the scope of data on which you run the report" — whether it runs against all opportunities, ones you own, or ones your team owns — and notes that the valid values depend on the report type (for Accounts reports: `MyAccounts`, `MyTeamsAccounts`, `AllAccounts`; the guide's own sample report uses `organization`). Readers compare 2,400 against 13,000 as if they were the same population.
 
 **When it bites you:** Pipeline health / KPI dashboards cloned from a personal report.
 
-**How to avoid it:** QA every component's scope against the dashboard's intended audience. Org-wide tiles cannot sit next to team-scoped tiles unless the title says so. Record sharing, report `filterScope`, and dashboard running user are **three independent layers**.
+**How to avoid it:** Open each `*.report-meta.xml` behind the dashboard and compare their `<scope>` values before shipping. Org-wide tiles cannot sit next to owner- or team-scoped tiles unless the title says so. Record sharing, report `scope`, and dashboard `dashboardType` are **three independent layers**, and none of them is visible from the dashboard XML alone.
 
 ---
 
@@ -138,6 +138,113 @@
 
 ## Zero Dashboard Filters Produce Clone Farms
 
-**What happens:** Twelve identical 6-component dashboards instead of one dashboard with `dashboardFilters`. Year-stamped and person-named copies follow.
+**What happens:** Twelve identical 6-component dashboards instead of one dashboard with `dashboardFilters`. Year-stamped and person-named copies follow. Each clone is 6 more source reports to keep alive, and the twelfth copy silently drifts from the first.
+
+**When it bites you:** Any request phrased as "the same dashboard but for <region / year / rep>", and any org where the requester has Manage on the folder and can clone without asking. The clone is faster to produce than the filter, so it wins by default unless someone stops it.
 
 **How to avoid it:** Filter-first. A clone per company / year / person is a smell. Salesforce-shipped dashboards often already demonstrate filters — copy that, not the 12 folders.
+
+
+---
+
+## A Deployed Dashboard With a Bad `runningUser` Silently Becomes Yours
+
+**What happens:** `runningUser` takes a *username*. The Metadata API guide states that when you deploy a dashboard and the value in that field "is not defined or does not correspond to a valid user, the field is populated with the username of the user performing the deployment." There is no error, no warning, and no line in the deploy result. A `SpecifiedUser` dashboard promoted from sandbox — where the running user was `ops@acme.com.uat` — lands in production running as the release engineer, who typically has the broadest access in the org.
+
+**When it bites you:** Every sandbox-to-production promotion where usernames carry a sandbox suffix. Also any deploy from a repo where the running user left the company between the commit and the release.
+
+**How to avoid it:**
+- Treat `runningUser` as an environment-specific value, like a Named Credential endpoint. Substitute it per target org rather than committing one username to a shared branch.
+- After every deploy of a `SpecifiedUser` dashboard, verify in the org: `SELECT DeveloperName, Type, RunningUserId FROM Dashboard WHERE FolderName = '<folder>'`. Compare `RunningUserId` to the user you intended, not to the XML you deployed.
+- Prefer `LoggedInUser`, which needs no `runningUser` element at all and therefore cannot drift.
+
+---
+
+## `RunningUserId` Is Populated on Dashboards That Don't Have a Running User
+
+**What happens:** An admin writes an audit query to find every dashboard that bypasses viewer access: `WHERE RunningUserId != null`. It returns essentially every dashboard in the org. The Object Reference explains why — for a dashboard created in Lightning Experience and configured to run as the viewing user, `RunningUserId` returns the user ID of the *dashboard creator*; for one created in Salesforce Classic and set to run as the logged-in user, it returns the *last specified running user*. The field is never null in practice, so the query has no discriminating power.
+
+**When it bites you:** Any governance sweep, offboarding checklist, or security review that inventories dashboards through SOQL rather than through metadata.
+
+**How to avoid it:**
+- Filter on `Dashboard.Type` instead. It is a restricted picklist with exactly three values — `SpecifiedUser`, `LoggedInUser`, `MyTeamUser` — and only `SpecifiedUser` bypasses the viewer's own access.
+- In metadata, the equivalent check is `<dashboardType>`, not the presence of `<runningUser>`.
+- A dashboard audit that reports "N dashboards have a running user" without splitting by `Type` has produced a number, not a finding.
+
+---
+
+## A Dashboard Filter Silently Skips Any Component That Doesn't Declare Its Column
+
+**What happens:** The filter renders at the top of the dashboard, its picklist works, and most tiles respond. One tile never moves. The cause is structural rather than a field mismatch: the Metadata API guide states that "each report-based component must have a dashboard filter column that defines the column that the filter applies to." A component whose XML lacks the matching `<dashboardFilterColumns><column>` entry is not filtered — it renders its full, unfiltered result next to filtered neighbours.
+
+**When it bites you:** Components added to an existing dashboard after the filter was created, and components cloned from a dashboard that had no filters. The result reads as a data discrepancy, not a configuration gap.
+
+**How to avoid it:**
+- Every filtered component needs one `dashboardFilterColumns` entry per dashboard filter it must respond to. Three filters on a dashboard means three entries on each participating component.
+- After adding a filter or a component, change the filter value and confirm each tile's number actually changes. A tile that holds still is the failure signal.
+- In review, diff the count of `<dashboardFilters>` blocks against the count of `<dashboardFilterColumns>` entries inside each `<components>` block.
+
+---
+
+## `accessType: Public` on a Report Folder Includes Portal Users
+
+**What happens:** An admin sets a report folder to `Public`, meaning "everyone at the company." The Metadata API guide defines the four `accessType` values precisely: `Shared` is "accessible only by the specified set of users"; `Public` is "accessible by all users, **including portal users**"; `PublicInternal` is "accessible by all users, excluding portal users"; `Hidden` is hidden from all. `Public` is the widest setting in the platform, and in an org with an Experience Cloud site or a Customer Portal it exposes the folder to external users.
+
+**When it bites you:** Orgs that enable a partner or customer portal *after* the reporting estate was built. The folder setting doesn't change; its blast radius does.
+
+**How to avoid it:**
+- `PublicInternal` is the setting that matches what most orgs mean by "public." Reserve `Public` for content that is genuinely acceptable to a partner or customer.
+- `publicFolderAccess` (`ReadOnly` / `ReadWrite`) only takes effect when `accessType` is `Public` — setting it on a `Shared` folder does nothing and can create a false sense that access was constrained.
+- Sweep `*.reportFolder-meta.xml` and `*.dashboardFolder-meta.xml` for `<accessType>Public</accessType>` before enabling any portal.
+
+---
+
+## Folder Sharing Is Dropped During Package Installation
+
+**What happens:** A team ships a reporting bundle as a managed or unlocked package with the folder shares carefully modelled in `folderShares`. In the subscriber org the folders arrive and the reports arrive; the sharing does not. The Metadata API guide carries this as an explicit Important note: "During package installation, FolderShare for DashboardFolder and ReportFolder is ignored."
+
+**When it bites you:** ISV packages, unlocked-package delivery of reporting content, and any "reporting starter pack" installed rather than deployed.
+
+**How to avoid it:**
+- Split the delivery: package the reports, dashboards and report types; apply folder sharing as a separate post-install metadata deploy or a documented Setup step.
+- A direct `sf project deploy` of the same folder XML *does* carry `folderShares` — the exclusion is specific to package **installation**. Know which mechanism the customer will use.
+- Add a post-install verification step that reads folder access back, rather than assuming it landed.
+
+---
+
+## An Outer Join and a `with` Cross Filter Cancel Each Other Out
+
+**What happens:** An admin builds a report type with `<outerJoin>true</outerJoin>` so that Accounts with no Cases still appear, then adds a cross filter — `operation` `with`, `relatedTable` `Case` — to see accounts that have open cases. The childless Accounts the outer join was built to include are removed again by the cross filter. The report type change looks like it did nothing.
+
+**When it bites you:** Reports assembled by two people, or over two sessions — someone fixes the join, someone else adds the cross filter, and neither sees the other's layer.
+
+**How to avoid it:**
+- `outerJoin` and `crossFilters` are independent mechanisms: the join decides which rows the report type can *produce*; the cross filter decides which parents survive based on child existence. They stack, they don't merge.
+- "Records WITHOUT related records" is `operation` `without` on the cross filter — not an outer join, and not a `!=` field filter. An outer join alone returns both populations mixed together.
+- When the requirement is "with or without," add the outer join and add **no** cross filter on that relationship.
+
+---
+
+## `baseObject` on a Report Type Is Permanent, and the Join Rules Are Directional
+
+**What happens:** A report type is created on the wrong primary object — Contacts when the requirement was Accounts. The guide is explicit: `baseObject` is required and "You can't edit this field after initial creation." The only remedy is a new report type and the migration of every report built on the old one. Two further constraints bite when a team tries to widen an existing report type instead: a maximum of **four objects** can be joined in one custom report type, and once an outer join appears in a join sequence, "an inner join isn't allowed if there has been an outer join earlier in the join sequence."
+
+**When it bites you:** Report types that grow over years, and any attempt to "just add one more object" to a four-object type.
+
+**How to avoid it:**
+- Settle the primary object against the question the report answers — the object whose records must appear even when nothing else exists — before creating the report type.
+- Order the joins so that any required inner joins come before any outer join. If the required order can't satisfy that, the design needs two report types, not one.
+- Before editing a shared report type, list what depends on it: `SELECT Id, Name, FolderName FROM Report` and match on the report type in the retrieved XML. Removing a column from a report type removes it from every report that displays it.
+
+---
+
+## `Report` and `Dashboard` Reject the Wildcard; `ReportType` Accepts It
+
+**What happens:** One `package.xml` contains all three types. The `ReportType` section uses `<members>*</members>` and works. The engineer copies the pattern to the `Report` and `Dashboard` sections, the deploy succeeds, and zero reports move. The Metadata API guide states the restriction separately for each type: `Report`, `Dashboard`, `Folder` and `FolderShare` do not support the wildcard; `ReportType` does. A wildcard on an unsupported type is not an error — it just matches nothing.
+
+**When it bites you:** Hand-written manifests, and CI pipelines that generate a manifest by templating one pattern across every type in a change.
+
+**How to avoid it:**
+- Enumerate `Report` and `Dashboard` members explicitly, folder-qualified and using developer names: `<members>Revenue_Ops/Open_Cases_By_Owner</members>`.
+- Build the list with two passes of `listMetadata()` — first `ReportFolder` (or `DashboardFolder`) with `folder` = `*` to get folder names, then `Report` (or `Dashboard`) once per folder.
+- Treat a report or dashboard member containing a space as a bug: the manifest wants developer names, and a space almost always means a label was pasted in.

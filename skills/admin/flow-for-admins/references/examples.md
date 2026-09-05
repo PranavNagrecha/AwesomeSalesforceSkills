@@ -74,7 +74,53 @@ Please contact [Admin Email] and reference Lead ID: {!$Record.Id}"
 
 **Flow type:** Scheduled Flow
 
-**Key consideration:** Scheduled Flows have a limit of 250,000 interviews per run, and each record processed is one interview. For large datasets, consider Batch Apex instead.
+**Key consideration:** each record the schedule's query returns starts one interview. The org-wide
+ceiling is 250,000 schedule-triggered interviews per rolling 24 hours (or user licences x 200,
+whichever is greater) — a *per-day, org-wide* number, not a per-run one, so several scheduled flows
+share it. The repo's routing line sits well below that: above roughly 50,000 records per run,
+`standards/decision-trees/flow-pattern-selector.md` Q6 sends you to Apex Scheduled + Batchable, and
+`automation-selection.md` Q10 agrees. Count the records in a report before you build.
+
+```sql
+-- Pre-flight: how many interviews will one run actually start?
+SELECT COUNT(Id) FROM Lead
+WHERE LastActivityDate < LAST_N_DAYS:30
+  AND Status NOT IN ('Converted', 'Unresponsive', 'Closed')
+```
+
+The `start` element that produces that schedule — note there is no entry-criteria transition gate
+here, because a scheduled flow has no "prior" record to compare against; the query filter *is* the
+entry criteria:
+
+```xml
+<start>
+    <locationX>50</locationX>
+    <locationY>0</locationY>
+    <connector>
+        <targetReference>Loop_Stale_Leads</targetReference>
+    </connector>
+    <filterLogic>and</filterLogic>
+    <filters>
+        <field>Status</field>
+        <operator>NotEqualTo</operator>
+        <value>
+            <stringValue>Converted</stringValue>
+        </value>
+    </filters>
+    <object>Lead</object>
+    <schedule>
+        <frequency>Weekly</frequency>
+        <startDate>2026-09-07</startDate>
+        <startTime>06:00:00.000Z</startTime>
+    </schedule>
+    <triggerType>Scheduled</triggerType>
+</start>
+```
+
+`FlowSchedule` carries `frequency` (`Once` / `Daily` / `Weekly`), `startDate`, and `startTime`, and
+"the time of day when the flow runs, based on the org's default time zone" — not the author's
+(Metadata API Developer Guide, *FlowSchedule*, api_meta.txt:71335–71382). `schedule` is required when
+`triggerType` is `Scheduled` (api_meta.txt:72462–72463).
 
 **Structure:**
 
@@ -99,7 +145,12 @@ Please contact [Admin Email] and reference Lead ID: {!$Record.Id}"
 [END]
 ```
 
-**Why the LIMIT:** Without a LIMIT, if 50,000 Leads match the criteria, the Scheduled Flow tries to process all of them. For very large volumes, use Batch Apex. The LIMIT makes the behaviour predictable.
+**Why the LIMIT:** without one, every matching Lead starts an interview, and the run's cost is
+whatever the data happens to be that week. `FlowRecordLookup.limit` accepts values "between 2 and
+20,000… supported only when `getFirstRecordOnly` is `false`" and is available from API version 63.0
+(Metadata API Developer Guide, *FlowRecordLookup*, api_meta.txt:71177–71183). A bounded run that
+processes the backlog over several weeks is more operable than an unbounded one that fails on the
+week the data spikes.
 
 ---
 

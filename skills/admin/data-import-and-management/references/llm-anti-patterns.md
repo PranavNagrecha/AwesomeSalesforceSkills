@@ -15,12 +15,13 @@ These patterns help the consuming agent self-check its own output.
 Tool selection by volume and object:
 - < 50,000 records AND supported object → Data Import Wizard.
   (Accounts, Contacts, Leads, Solutions, Campaign Members, Custom Objects)
-- 50,000 - 5,000,000 records → Data Loader (uses Bulk API).
+- 50,000 - 5,000,000 records → Data Loader, with Use Bulk API selected.
+  (Data Loader defaults to the SOAP-based API; Bulk API is a setting you turn on.)
 - > 5,000,000 records → Data Loader with Bulk API 2.0 or third-party ETL.
 - Unsupported objects (Opportunities, Cases, etc.) → Data Loader regardless of volume.
 
 Data Import Wizard limits:
-- 50,000 records per import.
+- Fewer than 50,000 records per import, and fewer than 50 fields on the target object.
 - Does not support all standard objects.
 - Does not support hard delete.
 ```
@@ -127,3 +128,63 @@ Data load rollback strategy:
 ```
 
 **Detection hint:** If the output does not mention saving success/error files or planning for rollback after a failed load, the recovery strategy is missing. Search for `rollback`, `success file`, or `error file`.
+
+---
+
+## Anti-Pattern 6: Generating a process-conf.xml with a plaintext password and a SOAP-era batch size
+
+**What the LLM generates:**
+
+```xml
+<map>
+    <!-- excerpt: the configOverrideMap <map> of one process-conf.xml bean -->
+    <entry key="sfdc.password" value="MyPassword123!"/>
+    <entry key="sfdc.useBulkApi" value="true"/>
+    <entry key="sfdc.loadBatchSize" value="200"/>
+    <entry key="process.operation" value="Upsert"/>
+</map>
+```
+
+**Why it happens:** Three separate pattern-matches, each individually plausible. The password field looks like any other config value. `200` is the number that appears next to `sfdc.loadBatchSize` in the parameter reference, because that table describes the SOAP path. And `Upsert` is capitalised the way it is in the UI. All three are wrong here: the Data Loader Guide requires the password to be `encrypt.bat` output decryptable by `process.encryptionKeyFile`; the Bulk API ceiling is 10,000, and 200 wastes the 15,000-batch 24-hour allocation; and operation values are lowercase.
+
+**Correct pattern:**
+
+```xml
+<map>
+    <!-- excerpt: the configOverrideMap <map> of one process-conf.xml bean.
+         Password produced by:
+         encrypt.bat -e PASSWORD+SECURITYTOKEN C:\Migration\Config\dataLoader.key -->
+    <entry key="sfdc.password" value="e8a68b73992a7a54"/>
+    <entry key="process.encryptionKeyFile" value="C:\Migration\Config\dataLoader.key"/>
+    <entry key="sfdc.useBulkApi" value="true"/>
+    <entry key="sfdc.bulkApiSerialMode" value="true"/>
+    <entry key="sfdc.loadBatchSize" value="5000"/>
+    <entry key="process.operation" value="upsert"/>
+    <entry key="sfdc.externalIdField" value="Legacy_Account_Id__c"/>
+</map>
+```
+
+**Detection hint:** Run `python3 scripts/check_load_plan.py --manifest-dir <config dir>`. It flags all four: a password that is not hex, a password with no key file, a batch size wrong for the enabled API, and an operation value outside the documented lowercase set. If the generated config also sets `sfdc.externalIdField` on an `insert`, the checker WARNs on that too — that combination is how an LLM produces a load that looks idempotent and is not.
+
+---
+
+## Anti-Pattern 7: Declaring a load reconciled after reading only the error file
+
+**What the LLM generates:** "The load completed. Check `accountUpsert_error.csv` — if it is empty, all records loaded successfully."
+
+**Why it happens:** The two-file mental model (success + error) is correct for Data Loader's SOAP path and wrong for Bulk API 2.0, which exposes a third resource. A job that failed mid-run, was aborted, or exhausted the daily batch allocation leaves rows that are in neither the success nor the failed file. An empty error file on such a job means "nothing was rejected", not "everything landed".
+
+**Correct pattern:**
+
+```bash
+JOB=7505fEXAMPLE4C2AAM
+for R in successfulResults failedResults unprocessedrecords; do
+  curl -s -H "Authorization: Bearer $SF_TOKEN" \
+    "$SF_HOST/services/data/v62.0/jobs/ingest/$JOB/$R/" -o "$JOB.$R.csv"
+done
+# The identity that must hold:
+#   source rows == successfulResults + failedResults + unprocessedrecords
+# And separately, target-org COUNT() must match the success count.
+```
+
+**Detection hint:** If the output names `failedResults` without `unprocessedrecords`, or reconciles on two numbers instead of four, the reconciliation is incomplete. Search for `error file` or `failedResults` and check whether unprocessed records are mentioned at all.

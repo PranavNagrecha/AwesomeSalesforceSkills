@@ -48,6 +48,44 @@ Why: A Sales Manager should see their team's pipeline (role hierarchy access), n
 
 **Why cross-filter instead of a formula field:** A cross-filter handles "records WITHOUT a related record" declaratively, with no formula field needed. It directly queries the relationship.
 
+**The same requirement expressed as metadata.** Two separate elements do two separate jobs — `filter` narrows rows on the Case itself, `crossFilters` removes Cases that have any related Activity:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Excerpt: only the filter and cross-filter elements of the report are shown. A deployable
+         file also needs name, reportType, format and columns - see references/metadata-examples.md. -->
+    <filter>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <column>STATUS</column>
+            <operator>notEqual</operator>
+            <value>Closed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>CREATED_DATE</column>
+            <operator>lessOrEqual</operator>
+            <value>LAST_N_DAYS:30</value>
+        </criteriaItems>
+    </filter>
+    <crossFilters>
+        <operation>without</operation>
+        <primaryTableColumn>CASES.ID</primaryTableColumn>
+        <relatedTable>Task</relatedTable>
+        <relatedTableJoinColumn>WhatId</relatedTableJoinColumn>
+    </crossFilters>
+</Report>
+```
+
+Read it as: `operation` is `without` (not a `!=` field filter), `relatedTable` names the child object, and `relatedTableJoinColumn` names the child field that joins back to the parent. A `<criteriaItems>` block *inside* `crossFilters` would sub-filter the child — "Cases without **open** Tasks" rather than "Cases without any Task"; up to five sub-filters are allowed. Omit it and the cross filter matches on existence alone.
+
+> **UNVERIFIED (2026-09-04) — `CASES.ID` and `WhatId` are unconfirmed for this cross filter.**
+> They follow the shape of the Metadata API guide's own cross-filter sample
+> (`primaryTableColumn` `ACCOUNT_ID`, `relatedTable` `Case`, `relatedTableJoinColumn` `Account`),
+> but the guide publishes no codes for a Cases-to-Activities cross filter. Retrieve a working
+> report before deploying this snippet. The `operation` / `relatedTable` /
+> `relatedTableJoinColumn` structure itself is from the guide's field table.
+
 **Columns to include:**
 - Case Number
 - Subject

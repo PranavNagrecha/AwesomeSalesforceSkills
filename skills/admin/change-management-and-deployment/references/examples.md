@@ -34,4 +34,42 @@
 3. define production sequence explicitly
 4. keep data rollback separate from metadata rollback
 
-**Lesson:** one release window can contain both metadata and data, but they must not share one vague rollback sentence.
+**The deploy contract, written down before the window.** This is what the release plan
+hands to whoever runs the pipeline. Every value is chosen; none is left to a default.
+
+```yaml
+release: 2026-09-12-opportunity-stage-realignment
+target_org: production
+vehicle: sf CLI              # decision matrix row 3 - weekly cadence, 4 environments
+
+deploy_options:
+  checkOnly:        true     # pass 1 only; pass 2 is a quick deploy of this validation
+  rollbackOnError:  true     # required in production; set explicitly in sandbox too
+  testLevel:        RunLocalTests
+  runTests:         []       # empty - only read when testLevel is RunSpecifiedTests
+  purgeOnDelete:    false    # inert in production anyway; deletions go to the Recycle Bin
+  ignoreWarnings:   false
+  allowMissingFiles: false   # the guide says do not set this for production
+
+manifests:
+  package:              manifest/package.xml
+  destructive_pre:      null
+  destructive_post:     manifest/destructiveChangesPost.xml   # retires Stage_Legacy__c
+
+validation:
+  run_on:        2026-09-09          # 3 days before the window
+  expires_on:    2026-09-19          # 10-day quick-deploy clock
+  target:        production          # NOT staging - a staging validation licenses nothing here
+
+sequence:
+  1_metadata:    "validated package, quick deploy"
+  2_data:        "bulk update of open Opportunities - separate job, separate owner"
+  3_activation:  "activate Opportunity_Stage_Router flow"
+
+backout:
+  metadata: "redeploy manifest/pre-release/ (retrieved 2026-09-08, before any change)"
+  data:     "restore StageName from the pre-load export - NOT covered by the metadata backout"
+  fastest:  "deactivate Opportunity_Stage_Router; leaves fields in place, stops the behaviour"
+```
+
+**Lesson:** one release window can contain both metadata and data, but they must not share one vague rollback sentence. Note that `backout.metadata` and `backout.data` are two different jobs with two different owners — redeploying the old manifest does not un-edit the records the release touched.

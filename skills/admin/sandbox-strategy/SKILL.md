@@ -1,6 +1,6 @@
 ---
 name: sandbox-strategy
-description: "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for how many environments a program needs and how they map to branches - use devops/environment-strategy. NOT for re-seeding reference data after a refresh - use data/sandbox-refresh-data-strategies."
+description: "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for how many environments a program needs and how they map to branches - use devops/environment-strategy. NOT for re-seeding reference data after a refresh - use data/sandbox-refresh-data-strategies. Also covers: SandboxPostCopy Apex class, SandboxInfo and SandboxProcess Tooling API, SandboxSettings metadata, sandbox topology table, refresh calendar."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -17,12 +17,21 @@ triggers:
   - "how many sandboxes does my org need"
   - "check how many sandbox licenses my edition includes"
   - "create a partial copy sandbox"
+  - "write a SandboxPostCopy class to scrub data after refresh"
+  - "SandboxPostCopy script did not run after the sandbox copy"
+  - "post-copy Apex failed with insufficient access after sandbox creation"
+  - "clone a sandbox from another sandbox instead of production"
+  - "refresh a sandbox through the API instead of Setup"
+  - "monitor sandbox copy progress with SandboxProcess"
+  - "build a sandbox refresh calendar for the release train"
+  - "which sandbox type should each environment in the ladder be"
+  - "stop sandbox expiration emails for inactive sandboxes"
 inputs: ["environment goals", "refresh cadence", "data sensitivity"]
-outputs: ["sandbox topology recommendation", "environment governance findings", "refresh checklist"]
+outputs: ["sandbox topology table", "refresh calendar", "SandboxPostCopy class and test", "environment governance findings", "post-refresh runbook"]
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in sandbox planning and environment hygiene. Your goal is to give each team the right environment for the job, keep production data protected in non-production, and prevent refreshes from becoming operational chaos.
@@ -39,6 +48,26 @@ Gather if not available:
 - What sensitive data exists, and what masking rules apply?
 - Is the team using DevOps Center, source control, or mostly manual change sets?
 - Are there compliance or Gov Cloud constraints that change data-handling rules?
+
+## Questions to Ask Before Configuring
+
+Ask these before anyone clicks Create in Setup → Sandboxes. Each one closes a failure this
+skill has a gotcha for, and an environment ladder designed without the answers looks correct
+on a slide and breaks on its first refresh.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the org's actual sandbox allocation, and how much of it is already spent?" | Enterprise Edition ships zero Developer Pro and zero Full sandboxes; a higher-tier license may already be consumed by a lower-tier sandbox | A real license budget instead of a topology the org cannot provision |
+| "Which environments will hold copied production records, and who may read them?" | Only Partial Copy and Full copy data; that answer decides where masking, a post-copy class, and access review are mandatory | The subset of rows that need a `SandboxPostCopy` class rather than a note |
+| "What is the longest refresh floor any environment in the ladder has to respect?" | The Full sandbox's 29-day floor is the constraint the release calendar must bend around, not the other way round | A refresh calendar whose cells are all achievable |
+| "Which objects must a Partial Copy template select, and who decides?" | A Partial Copy cannot be created at all until a template exists, and the template silently defines what QA can test | A named template owner and an object list, before the license is consumed |
+| "What does each environment's post-copy automation have to do, and can the Automated Process user do it?" | The post-copy class runs as an invisible user with incomplete object access — scrubs written naively fail quietly | A class scoped to what that user can actually reach, plus a manual fallback |
+| "Which settings, endpoints, and credentials in each environment must never point at production after a copy?" | Integration endpoints and scheduled jobs survive a refresh still aimed at live systems | The seed values the post-copy class writes, per environment |
+| "Who owns each environment, and who approves its refresh?" | An environment with no owner is the one that gets refreshed over someone's uncommitted work | A named owner per row of the topology table |
+
+What a proper configuration adds over just creating sandboxes on request: every environment
+has a type justified by its purpose, a cadence that respects its platform refresh floor, a
+post-copy class that leaves it safe to use, and an owner who is accountable for both.
 
 ## How This Skill Works
 
@@ -124,15 +153,46 @@ Enterprise Edition ships with no Developer Pro or Full sandbox by default — th
 | DevOps Center needs the right sandbox type | Source-tracked work belongs in Developer sandboxes, not in Partial Copy by habit. |
 
 
+## The Deployable Surface
+
+Most of a sandbox strategy is a decision, but three pieces are real artifacts that belong in
+source control and in a deploy. `references/metadata-examples.md` carries all three:
+
+| Artifact | What it is | Why it is the deployable part |
+|---|---|---|
+| `settings/Sandbox.settings` (`SandboxSettings`) | One boolean, `disableSandboxExpirationEmails`, deployed to the **source (production)** org | The only sandbox metadata type. There is no metadata type for sandbox type, cadence, template, or masking. |
+| A `SandboxPostCopy` Apex class + test | Registered on the sandbox record at create/refresh time; scrubs data and seeds environment config | This is what turns "we mask after refresh" from an intention into a repeatable step |
+| `SandboxInfo` / `SandboxProcess` (Tooling API) | Create, clone (`SourceId`), refresh (update the same record), and poll copy status | Makes the refresh calendar executable instead of a Setup chore someone forgets |
+
+A refresh is not a refresh until the post-copy class has run to completion. A copy status of
+"complete" with a failed post-copy script leaves an environment that emails real customers.
+
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Read the allocation, not the wish list.** Setup → Sandboxes, and record how many of each
+   type the org owns and how many are consumed — remembering that a Full license may already
+   be provisioning a Developer-sized sandbox. Answer the seven questions in *Questions to Ask
+   Before Configuring* before designing anything.
+2. **Fill the topology table** in `templates/sandbox-strategy-template.md`: one row per
+   environment with type, purpose, data policy, refresh floor, cadence, post-copy class, and
+   owner. Use the type matrix and capacity tables above to justify every type choice; a row
+   that cannot name why it is not one type cheaper is not justified.
+3. **Build the refresh calendar** from the floors, not from preference — the 29-day Full floor
+   sets the shape. Use the calendar shape in `references/metadata-examples.md` Part 4 and
+   remember that simultaneous refresh requests are processed in series.
+4. **Write the post-copy class** from `references/metadata-examples.md` Part 2. Pin its DML to
+   system mode, and test it with `Test.testSandboxPostCopyScript(..., RunAsAutoProcUser = true)`
+   — the four-argument overload hides exactly the permission failures this class fails on.
+5. **Lint the plan** with `python3 scripts/check_sandbox_plan.py <plan.md>` for the strategy
+   document, and `python3 scripts/check_sandbox_plan.py --manifest-dir force-app/main/default`
+   for the post-copy class and `Sandbox.settings`. Fix every HIGH before circulating.
+6. **Hand the audit to the agent, not to this skill.** For an org-wide review of an existing
+   estate — sprawl, unused licenses, drift between environments — run
+   `agents/sandbox-strategy-designer/AGENT.md` (`/design-sandbox-strategy`), which owns the
+   audit procedure and reads this skill for the topology and deployable pieces.
+7. **Record the deviations.** Every environment that breaks a rule in the topology table (two
+   Full sandboxes, production data with no masking, a cadence below a floor) gets a written
+   justification in the strategy document or it gets changed.
 
 ---
 
@@ -171,8 +231,28 @@ Surface these WITHOUT being asked:
 | Refresh troubleshooting | Root-cause path for broken post-refresh behavior |
 | Environment policy | Clear rules for refresh, masking, and release usage |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing the `SandboxPostCopy` class or its test, deploying `Sandbox.settings`, creating / cloning / refreshing a sandbox through `SandboxInfo`, polling `SandboxProcess`, or filling the topology table and refresh calendar |
+| `references/gotchas.md` | A refresh completed but the environment is not usable: post-copy script failed, a deploy that passed in the sandbox failed in production, the sandbox hit an API ceiling, or a sandbox disappeared |
+| `references/examples.md` | Sizing a program: which ladder shape fits a two-admin team, a DevOps Center rollout, or a regulated implementation |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated sandbox guidance before acting on it — especially anything that recommends a Full sandbox per developer |
+| `references/well-architected.md` | Justifying the topology against the pillars, or chasing the official source behind a limit stated here |
+| `templates/sandbox-strategy-template.md` | Capturing the environment inventory, cadence, data policy, post-refresh runbook, and release path as the deliverable |
+| `scripts/check_sandbox_plan.py` | Linting the strategy document, or linting a `SandboxPostCopy` class and `Sandbox.settings` in a DX tree before deploying |
+
+---
+
 ## Related Skills
 
+- **devops/environment-strategy**: Use when the question is how many environments a program needs and how they map to branches and the release train. This skill picks the type for each; that one decides the ladder shape.
+- **devops/sandbox-refresh-and-templates**: Use for the refresh mechanics and what a sandbox template can and cannot seed. NOT for which type each environment should be.
+- **devops/sandbox-data-isolation-gotchas**: Use when a refreshed sandbox has already reached production — emailed real customers, fired a scheduled job at a live API, or leaked PII. It owns the full `.invalid` / deliverability / endpoint inventory this skill only points at.
+- **devops/metadata-diff-between-sandboxes**: Use when the problem is drift between two environments rather than the topology itself.
+- **data/sandbox-refresh-data-strategies**: Use when re-seeding reference and test data after a refresh is the real work. NOT for environment topology or refresh cadence.
+- **admin/sandbox-post-refresh-automation**: Use when costing and automating the post-refresh runbook that every cadence in the calendar implies.
 - **admin/change-management-and-deployment**: Use when promotion flow and release controls are the main issue. NOT for sandbox-type selection.
 - **admin/connected-apps-and-auth**: Use when refreshes keep breaking external auth or endpoint configuration. NOT for overall environment topology.
 - **admin/data-import-and-management**: Use when sandbox seeding or cutover data strategy is the real challenge. NOT for environment governance.

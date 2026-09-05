@@ -18,6 +18,28 @@
 
 **Why this works:** Parent objects exist before child rows arrive, every file can be rerun idempotently, and reconciliation can be done by External ID instead of by row count alone.
 
+**Allocation budget, worked before the window is booked.** Bulk API 2.0 creates one batch per 10,000
+records, and the 15,000-batch / 150,000,000-record allocations are per rolling 24 hours and shared
+between Bulk API and Bulk API 2.0 (App Limits Cheat Sheet):
+
+```text
+Accounts    400,000 rows / 10,000 =    40 batches
+Contacts  1,200,000 rows / 10,000 =   120 batches
+Cases       900,000 rows / 10,000 =    90 batches
+Rehearsal + one full re-run       = x 3
+                                    -------------
+                                      750 batches   of 15,000 allowed  -> 5% used
+Records moved 2,500,000 x 3       = 7,500,000       of 150,000,000     -> 5% used
+
+File sizing (Bulk API 2.0): 150 MB per job after base64, which inflates the upload
+by roughly 50%, so keep each uploaded CSV under 100 MB.
+  Contacts 1.2M rows x ~180 bytes = ~216 MB  ->  split into 3 jobs of 400,000
+```
+
+The allocation is not the constraint here; **file size is**, and it is what dictates that the Contact
+load is three jobs rather than one. Confirm the split before the runbook is signed off, because
+discovering it mid-window turns one job into three unplanned ones.
+
 ---
 
 ## Example: Upsert File with Safe Match Key

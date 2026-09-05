@@ -7,14 +7,14 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Use Process Builder to update the Account Rating when an Opportunity closes."
 
-**Why it happens:** LLMs trained on pre-2025 content reference Process Builder and Workflow Rules as viable options. Both tools ceased functioning after December 2025. All new automation should be built with Flow. Existing Process Builder and Workflow Rule logic should be migrated.
+**Why it happens:** LLMs trained on pre-2025 content reference Process Builder and Workflow Rules as viable options. Both reached end of support on 31 December 2025. The correction an assistant usually over-shoots: they did not stop *executing*. Existing rules and processes still run and can still be activated, deactivated and edited — they simply receive no fixes and no enhancements, which is exactly why they rot quietly. Build nothing new in them; migrate existing logic. UNVERIFIED (2026-09-04): the end-of-support date is not stated in the extracted Metadata API, Apex Developer or Object Reference guides; `standards/decision-trees/automation-selection.md` sources it to Salesforce Help article 001096524, which cannot be fetched here.
 
 **Correct pattern:**
 
 ```
 Automation tool status:
-- Workflow Rules: RETIRED (Dec 2025). Migrate to Flow.
-- Process Builder: RETIRED (Dec 2025). Migrate to Flow.
+- Workflow Rules: END OF SUPPORT 31 Dec 2025 — still executes, no fixes. Migrate to Flow.
+- Process Builder: END OF SUPPORT 31 Dec 2025 — still executes, no fixes. Migrate to Flow.
 - Flow: CURRENT. All new automation uses Flow.
 - Apex triggers: CURRENT. Use for complex scenarios beyond Flow's capabilities.
 
@@ -60,26 +60,44 @@ Use the simplest tool that handles the requirement.
 
 **What the LLM generates:** "Create a Before-Save Flow for field validation and an After-Save Flow for the related record update. They will run independently."
 
-**Why it happens:** LLMs describe automations as isolated. Salesforce has a defined order of execution: validation rules fire before triggers, Before-Save flows fire before After-Save flows, and multiple flows on the same object fire in a defined (but not always predictable) order. Conflicting automations cause unexpected behavior.
+**Why it happens:** LLMs describe automations as isolated, and when they do quote the order of execution they routinely get the positions wrong — most often putting validation rules and before triggers on the wrong side of each other, or after-save flows before after triggers. The real sequence is numbered in the Apex Developer Guide and is worth pasting rather than recalling.
 
-**Correct pattern:**
+**Correct pattern** — the step numbers below are the guide's own, from *Triggers and Order of Execution* (apexdev.txt L15414–L15489):
 
 ```
-Salesforce order of execution (simplified):
-1. System validation (required fields, field format).
-2. Before-Save Flows (record-triggered, before save).
-3. Validation Rules.
-4. Duplicate Rules.
-5. Apex Before Triggers.
-6. Record saved to database (not committed).
-7. After-Save Flows (record-triggered, after save).
-8. Apex After Triggers.
-9. Assignment Rules, Escalation Rules.
-10. Transaction committed.
+Salesforce order of execution (server side, the automation-relevant steps):
+ 1. Load the original record (or initialize it for an upsert).
+ 2. Load new field values from the request; run system validation.
+ 3. Record-triggered flows configured to run BEFORE the record is saved.
+ 4. All BEFORE triggers.
+ 5. Most system validation again, plus custom validation rules.
+ 6. Duplicate rules (a blocking duplicate stops here — no after triggers, no workflow).
+ 7. Save the record to the database, not yet committed.
+ 8. All AFTER triggers.
+ 9. Assignment rules.
+10. Auto-response rules.
+11. Workflow rules. A workflow FIELD UPDATE then re-saves the record and re-runs
+    before update AND after update triggers one more time, and only one more time.
+    Validation rules, flows, duplicate rules, Process Builder and escalation rules
+    do NOT run again in that pass.
+12. Escalation rules.
+13. Process Builder processes and workflow-launched flows, in no guaranteed order.
+14. Record-triggered flows configured to run AFTER the record is saved.
+15. Entitlement rules.
+16-17. Roll-up summary recalculation on parent, then grandparent.
+18. Criteria Based Sharing evaluation.
+19. Commit all DML.
+20. Post-commit logic: email, enqueued async Apex, async paths in record-triggered flows.
+
+Note: during a RECURSIVE save, Salesforce skips steps 9 through 17 — which
+means after-save record-triggered flows (14) and assignment rules (9) do not
+fire on records another automation put back through the save procedure.
 
 Design considerations:
-- If two automations on the same object conflict, the execution
-  order determines which "wins."
+- Before-save flow (3) runs BEFORE before triggers (4), so it cannot see anything
+  the trigger computes; after-save flow (14) runs AFTER after triggers (8).
+- If two automations on the same object conflict, the execution order determines
+  which "wins."
 - Use ONE Flow per object per trigger timing where possible
   (consolidate logic into one Before-Save Flow per object).
 - Document all automations per object in a single inventory.

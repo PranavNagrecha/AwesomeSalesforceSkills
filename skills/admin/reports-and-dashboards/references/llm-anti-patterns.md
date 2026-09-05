@@ -268,10 +268,10 @@ belongs. Both are wrong by construction, before the org is ever contacted.
 
 ---
 
-## Anti-Pattern: Mixing `organization` and `team` Tiles Without Saying So
+## Anti-Pattern: Mixing Report Scopes Across Tiles Without Saying So
 
 **What the LLM generates:** A six-component "pipeline health" dashboard cloned from mixed personal and org reports.
 
-**Correct pattern:** Every component's `filterScope` matches the dashboard's audience. Titles that compare counts must share a scope. Sharing, report scope, and dashboard running user are three layers.
+**Correct pattern:** Every *source report's* `scope` matches the dashboard's audience. Titles that compare counts must share a scope. Record sharing, report `scope`, and dashboard `dashboardType` are three layers.
 
-**Detection hint:** Dashboard XML with both `<filterScope>organization</filterScope>` and `<filterScope>team</filterScope>` (or `mine`) in neighbouring components.
+**Detection hint:** `scope` is a `Report` element, not a `Dashboard` one — grep the `*.report-meta.xml` files behind the components, not the dashboard file. Two source reports on one dashboard with different `<scope>` values (`organization` vs an owner-scoped value such as `MyAccounts`) is the smell. Valid values depend on the report type, so an unrecognised value is a reason to retrieve, not to rewrite.

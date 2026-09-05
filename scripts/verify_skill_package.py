@@ -55,7 +55,12 @@ def verify(skill_dir: Path) -> tuple[list[str], list[str]]:
                     hard.append(f"{p.relative_to(ROOT)}: malformed XML fence — {exc}")
             elif lang in ("apex", "java"):
                 if body.count("{") != body.count("}"):
-                    hard.append(f"{p.relative_to(ROOT)}: unbalanced braces in {lang} fence")
+                    # a labelled excerpt (the 300 chars before the fence say "excerpt") is allowed
+                    lead = t[max(0, m.start() - 300):m.start()].lower()
+                    if "excerpt" in lead or "excerpt" in body[:200].lower():
+                        info.append(f"{p.relative_to(ROOT)}: {lang} excerpt with unbalanced braces (labelled, allowed)")
+                    else:
+                        hard.append(f"{p.relative_to(ROOT)}: unbalanced braces in {lang} fence")
 
     # TODOs across the package
     for p in skill_dir.rglob("*"):

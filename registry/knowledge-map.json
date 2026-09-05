@@ -5297,6 +5297,9 @@
       "integration/azure-salesforce-patterns",
       "omnistudio/calculation-procedures"
     ],
+    "decision-record": [
+      "admin/process-automation-selection"
+    ],
     "decision-rights": [
       "admin/stakeholder-raci-for-sf-projects"
     ],

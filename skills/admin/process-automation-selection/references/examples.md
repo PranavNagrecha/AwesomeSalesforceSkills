@@ -34,6 +34,28 @@ If admin-owned orchestration is still valuable, expose a narrow invocable action
 
 **Why it works:** The requirement needs more control than a purely declarative path provides safely.
 
+**Show the work, not the verdict.** The reviewable output of this example is the two lines of
+the decision record that justify the escalation, and the inventory row that shows what was
+already on the object:
+
+```yaml
+tree_steps_cited:
+  - "automation-selection.md Q3 — complex exception handling with rollback (savepoints)"
+  - "async-selection.md Q1 — 200 records, < 60s, so nothing leaves the sync transaction"
+rejected:
+  - alternative: after_save_record_triggered_flow
+    reason: "A fault path routes the interview to an error handler; it does not undo DML already performed in the same interview."
+```
+
+| Object | Surface | API name | Timing | Owns |
+|---|---|---|---|---|
+| Opportunity | Flow | `Opp_Before_Save_Defaults` | `RecordBeforeSave` / `TriggerOrder` 10 | Stage-derived fields on the Opportunity |
+| Opportunity | Apex trigger | `OpportunityTrigger` | before update, after update | Onboarding child creation + rollback |
+
+Two surfaces, two owners, no shared field — which is what makes the split defensible rather
+than accidental. The full record shape and the queries that produce that table are in
+`references/decision-record-examples.md`.
+
 ---
 
 ## Anti-Pattern: Legacy Tool Stays Because It Is Familiar
