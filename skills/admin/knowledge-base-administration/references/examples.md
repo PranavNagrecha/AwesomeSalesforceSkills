@@ -66,4 +66,29 @@ Authors set Validation Status to "Ready for Review" and submit for approval. The
 
 **What goes wrong:** Object-level read permission on `Knowledge__kav` grants the ability to read any article the user can reach — but Salesforce still applies Data Category visibility as a separate layer. Without category visibility assigned, users may see all articles (if no groups are active) or no articles (if groups are active but visibility is unassigned). The permission set alone cannot segment article visibility by audience.
 
+**How to prove which layer is failing** — run these two in order as the affected user, then as an admin. The pair separates "no object access" from "no category visibility", which look identical to the user:
+
+```sql
+-- 1. Object + FLS layer. Rows here means the user can reach the object at all.
+--    PublishStatus is mandatory in the WHERE clause for any article query.
+SELECT COUNT() FROM Knowledge__kav WHERE PublishStatus = 'Online'
+
+-- 2. Category layer. Same query, scoped to one group's category. Zero rows here
+--    while query 1 returns rows is the category-visibility failure, not a permission gap.
+SELECT Id, ArticleNumber, Title FROM Knowledge__kav
+WHERE PublishStatus = 'Online'
+WITH DATA CATEGORY Support_Topics__c AT Internal_Procedures__c
+```
+
+Read the result against this table before changing anything:
+
+| Query 1 (object) | Query 2 (category) | What is actually wrong | Where to fix it |
+|---|---|---|---|
+| 0 rows | 0 rows | No object read on `Knowledge__kav`, or no Knowledge User feature licence | Permission set `objectPermissions`, and the **Knowledge User** checkbox on the User record |
+| rows | 0 rows for every group | Category visibility is `NONE`, or was stranded on a profile nobody uses | `Profile` → `categoryGroupVisibilities`, or the role's category visibility |
+| rows | 0 rows for one group only | That group is inactive, or is not assigned to `KnowledgeArticleVersion` | The group's `active` flag and `objectUsage` |
+| rows | rows | Access is fine — the articles genuinely carry no category from that group | Classify the articles; unclassified articles are invisible to standard users |
+
+The `WITH DATA CATEGORY` clause suffixes both the group and the category with `__c`, which is easy to miss because neither carries that suffix anywhere in the metadata XML.
+
 **Correct approach:** Object-level permissions (profiles/permission sets) control whether a user can interact with the Knowledge object at all. Data Category visibility controls which specific articles that user can see. Both layers must be configured. Assign Data Category Group visibility through Roles (preferred for scale) or Profiles/Permission Sets (for fine-grained overrides), in addition to granting object-level read access.

@@ -67,7 +67,9 @@ Work through items in order. Tick as complete.
 - [ ] Record types created in Object Manager > Knowledge > Record Types
 - [ ] Page layouts created and assigned to record types
 - [ ] Record types assigned to appropriate author profiles
-- [ ] Data Category Groups created (confirm total active groups for Knowledge is 5 or fewer)
+- [ ] Data Category Groups created; total active groups within the org's cap (size per `architect/knowledge-taxonomy-design`)
+- [ ] Each group has `<active>true</active>` and `<objectUsage><object>KnowledgeArticleVersion</object></objectUsage>`
+- [ ] `python3 scripts/check_knowledge_base_administration.py --manifest-dir <retrieved-metadata-dir>` run clean
 - [ ] Category hierarchy built to reflect content taxonomy
 - [ ] Category visibility assigned to roles/profiles for each audience segment
 - [ ] Guest user default category access configured (if public Knowledge surface exists)

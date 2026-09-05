@@ -42,3 +42,34 @@ Field Dependencies provide UI-level filtering without any custom code — low co
 - Salesforce Developer Limits & Allocations — Picklist: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_picklist.htm
 - Metadata API Developer Guide — GlobalValueSet: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_globalvalueset.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+### Metadata and API sources used for `references/metadata-examples.md` and gotchas 9–14
+
+Salesforce Metadata API Developer Guide (Summer '26 / v62 PDF):
+https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+
+- `GlobalValueSet` type — file suffix, folder, `masterLabel` / `customValue` / `sorted` / `description`, the 1,000-value ceiling, the sample definition, the `__gvs` developer-name suffix from API 57.0, and wildcard support in `package.xml` (metadata-examples §1, §7; Gotcha 14)
+- `CustomValue` type — `fullName` / `label` / `default` / `isActive` / `color` / `description`, the "values missing from a component definition get deactivated when deployed" rule, and the retrieve asymmetry between global and non-global unrestricted picklists (metadata-examples §1; Gotchas 9 and 10)
+- `StandardValue` type — the stage-specific `forecastCategory` enum and `probability`, plus `closed` for Case and Task Status, `converted` for Lead Status, `won` for Opportunity Stage (metadata-examples §3, §4; Gotcha 12)
+- `StandardValueSet` type — file suffix and folder, "must contain at least one picklist value", the record-type visibility note for values loaded through the Metadata API, and the absence of wildcard support (metadata-examples §3, §7; Gotchas 5 and 11)
+- `ValueSet` / `ValueSetValuesDefinition` / `ValueSettings` types — `restricted`, `valueSetName` vs `valueSetDefinition`, `controllingField`, and "you can add field dependency values via the Metadata API but not remove them" (metadata-examples §2, §6; Gotcha 13)
+- `CustomField` → `valueSet` — "a custom picklist that uses a global value set is restricted" and "either a valueSetDefinition or a valueName specified, but never both" (metadata-examples §2; checker ERROR and WARN)
+- `GlobalValueSetTranslation` / `ValueTranslation` — file naming, `masterLabel` as the pairing key, and the untranslated-value comment convention (metadata-examples §5)
+- Appendix C, StandardValueSet Names and Standard Picklist Fields — the field-name-to-set-name mapping (`Opportunity.StageName` → `OpportunityStage`, `Case.Status` → `CaseStatus`, `Lead.Status` → `LeadStatus`, `Account.Industry` → `Industry`), case sensitivity, and footnotes 2 and 3 for sets that cannot be inserted/deleted or read at all (metadata-examples §7; Gotcha 11)
+
+Salesforce Object Reference (Summer '26 / v62 PDF):
+https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+
+- Picklist Field Type — "the API doesn't enforce the list of values for advisory (unrestricted) picklist fields on `create()` or `update()`", the inactive-value-on-insert behaviour, and "always use the value when inserting or updating a field. The `query()` call always returns the value, not the label" (Questions to Ask; Gotcha 3; metadata-examples §1)
+- Field property glossary, "Restricted picklist" — "a picklist whose values are restricted to those values defined by a Salesforce admin. Users can't load unapproved values through the API" (Core Concepts; checker WARN on unrestricted global-set-backed fields)
+
+Salesforce Apex Reference Guide (Summer '26 / v62 PDF):
+https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/apexrefguide.pdf
+
+- `Schema.DescribeFieldResult` — `getPicklistValues()` ("only active picklist values are returned"), `isRestrictedPicklist()`, `isDependentPicklist()`, `getController()` (metadata-examples §9 verification)
+- `Schema.PicklistEntry` — `getLabel()`, `getValue()`, `isActive()`, `isDefaultValue()` and "only one item in a picklist can be designated as the default" (metadata-examples §9; checker ERROR on multiple defaults)
+
+Not used, and why: the Salesforce Developer Limits and Allocations Quick Reference
+(`salesforce_app_limits_cheatsheet`) has no picklist section in the Summer '26 edition, so the
+1,000-value and 500-value figures in `SKILL.md` continue to rest on the Salesforce Help articles
+listed above rather than on the cheat sheet.

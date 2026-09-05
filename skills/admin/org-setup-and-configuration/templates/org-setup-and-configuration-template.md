@@ -35,6 +35,9 @@ Use this template when setting up or reviewing org-level configuration settings.
 | Update Connected App callback URLs to new domain | | |
 | Update IdP / SSO metadata with new domain | | |
 | Deploy to Users | | |
+| Confirm enhanced domains (`myDomainSuffix` = `MySalesforce`, not `MySalesforceLimited`) | | |
+| Re-assert `redirectPriorMyDomain` — it resets to `true` on every new domain deploy | | |
+| `canOnlyLoginWithMyDomainUrl`: production value ______ / sandbox value ______ (must differ) | | |
 
 **My Domain URL:** `https://_________________.my.salesforce.com`
 
@@ -44,9 +47,10 @@ Use this template when setting up or reviewing org-level configuration settings.
 
 | Setting | Required Value | Configured Value | Status |
 |---------|---------------|-----------------|--------|
-| MFA enforcement org-wide toggle | Enabled | | |
+| MFA enforcement org-wide toggle (`enableMFADirectUILoginOptIn`) | Enabled | | |
 | SSO users: IdP enforces MFA (exempts Salesforce MFA) | Confirmed | | |
 | API-only integration users: OAuth JWT/client creds OR waiver applied | Confirmed | | |
+| **Waive Multi-Factor Authentication for Exempt Users** holders enumerated — this permission OVERRIDES the org toggle | Listed below | | |
 
 ---
 
@@ -54,13 +58,17 @@ Use this template when setting up or reviewing org-level configuration settings.
 
 **Path:** Setup > Security > Session Settings
 
-| Setting | Recommended | Current | Status |
-|---------|------------|---------|--------|
-| Session timeout | 2 hours (or lower for regulated) | | |
-| Require secure connections (HTTPS) | Enabled | | |
-| Lock sessions to IP | Disabled (unless no mobile users) | | |
-| Force logout on session timeout | Enabled | | |
-| Clickjack protection (non-setup pages) | Same origin only | | |
+| Setting | Recommended | Metadata field (`sessionSettings`) | Current | Status |
+|---|---|---|---|---|
+| Session timeout | 2 hours (or lower for regulated) | `sessionTimeout` = `TwoHours` — enum, not minutes | | |
+| Timeout warning popup shown | Yes | `disableTimeoutWarning` = `false` — `true` means NO warning | | |
+| Force logout on session timeout | Enabled | `forceLogoutOnSessionTimeout` = `true` | | |
+| Lock sessions to IP | Disabled (unless no mobile/VPN users) | `lockSessionsToIp` = `false` | | |
+| Lock sessions to domain | Enabled | `lockSessionsToDomain` = `true` | | |
+| Clickjack protection (non-setup Salesforce pages) | Enabled | `enableClickjackNonsetupSFDC` = `true` | | |
+| Clickjack protection (setup pages) | Enabled | `enableClickjackSetup` = `true` | | |
+| MFA required for direct UI logins | Enabled | `enableMFADirectUILoginOptIn` = `true` | | |
+| Login IP Ranges enforced on every request | Per policy | `enforceIpRangesEveryRequest` | | |
 
 ---
 
@@ -68,13 +76,14 @@ Use this template when setting up or reviewing org-level configuration settings.
 
 **Path:** Setup > Security > Password Policies
 
-| Setting | Recommended | Current | Status |
-|---------|------------|---------|--------|
-| Minimum password length | 10+ characters | | |
-| Password complexity | Alpha + numeric + special | | |
-| Password expiration | 90 days (or Never if SSO+MFA only) | | |
-| Maximum invalid login attempts | 5 or fewer | | |
-| Lockout effective period | 15–30 minutes | | |
+| Setting | Recommended | Metadata field (`passwordPolicies`) | Current | Status |
+|---|---|---|---|---|
+| Minimum password length | 10+ characters | `minimumPasswordLength` — a number 5–50, default 8 | | |
+| Password complexity | Alpha + numeric + special | `complexity` = `UpperLowerCaseNumericSpecialCharacters` | | |
+| Password expiration | 90 days (or `Never` if SSO+MFA only) | `expiration` = `NinetyDays` \| `Never` | | |
+| Maximum invalid login attempts | 5 or fewer | `maxLoginAttempts` = `FiveAttempts` — enum, not a number | | |
+| Lockout effective period | 15–30 minutes | `lockoutInterval` = `ThirtyMinutes` | | |
+| Passwords remembered | 10+ | `historyRestriction` — 0–24, default 3 | | |
 
 - [ ] "Expire All Passwords" triggered if policy was tightened from a prior setting
 
@@ -84,10 +93,12 @@ Use this template when setting up or reviewing org-level configuration settings.
 
 **Path:** Setup > Security > Network Access
 
-| Range | CIDR | Purpose | Date Added |
-|-------|------|---------|------------|
-| | | | |
-| | | | |
+> Deploying `Security.settings` REPLACES this list. Record every range that must survive the next deploy, not just the new one.
+
+| Range description | Start IP | End IP | Purpose | Date Added |
+|---|---|---|---|---|
+| | | | | |
+| | | | | |
 
 ---
 
@@ -101,7 +112,7 @@ Use this template when setting up or reviewing org-level configuration settings.
 | | | | |
 
 - [ ] No wildcard domains in the list
-- [ ] All `script-src` entries have documented justification
+- [ ] Every entry grants only the directive(s) the browser console violation named (`isApplicableTo*`), each with a documented justification — there is no `script-src` grant in this type
 - [ ] Stale/unused entries removed
 
 ---

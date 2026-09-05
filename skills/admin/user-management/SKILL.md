@@ -1,16 +1,24 @@
 ---
 name: user-management
-description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model — use admin/permission-set-architecture. NOT for who can see which records — use admin/sharing-and-visibility."
+description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model — use admin/permission-set-architecture. NOT for who can see which records — use admin/sharing-and-visibility. Also covers: bulk user loads by CSV, Bulk API 2.0 upsert on Username, the UserLogin freeze object, licence and permission-set-licence reclamation, Role metadata deployment, and the offboarding checklist as SOQL."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security
   - Operational Excellence
 triggers:
-  - "how do I add a new user in Salesforce"
-  - "how to deactivate a user who left the company"
-  - "freeze a user account without deactivating"
-  - "assign a license to a user in Salesforce"
+  - "add a new user in Salesforce"
+  - "deactivate a user who left the company"
+  - "freeze a user account without deactivating it"
+  - "bulk load users from a CSV with Data Loader"
+  - "freeze multiple users at once"
+  - "duplicate username error when creating a user"
+  - "deactivated user still shows as a queue member"
+  - "permission set license still used after the user left"
+  - "blank column did not clear the field in a user update"
+  - "MIXED_DML_OPERATION when creating a user in a test"
+  - "removed login hours from the profile but users are still locked out"
+  - "find users who have not logged in for 90 days"
   - "set up delegated administration so a manager can reset passwords"
   - "restrict user login to certain hours or IP addresses"
   - "user cannot log in after hours or from home office"
@@ -31,9 +39,9 @@ outputs:
   - "Login restriction settings (hours and IP ranges per profile)"
   - "User deactivation or freeze checklist with reassignment steps"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # User Management
@@ -52,6 +60,29 @@ Gather this context before working on any user management task:
 | Profile selection | Identify the right profile. Profile controls object permissions, FLS, page layouts, tab visibility, login hours, and IP restrictions. |
 | Role hierarchy | Determine if the user needs a role. Roles affect record access through hierarchy — a user without a role sees only records they own if OWD is Private. |
 | Offboarding status | When deactivating, determine whether to reassign open records, reassign approval processes, and whether to freeze first. |
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup or writing the CSV. Users are records, not metadata, and records
+cannot be rolled back by redeploying — the Object Reference's own warning is that "because users can
+never be deleted, we recommend that you exercise caution when creating them."
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the username convention, and does it already exist in a sandbox?" | `Username` is unique across **all** Salesforce orgs, not just this one, and a taken username is never released | The exact suffix rule, and a pre-load uniqueness check instead of a failed batch |
+| "Is this one user, or a batch — and will the job be re-run?" | One user is a Setup click; a batch is a CSV whose second run must upsert on `Username` rather than create | The tool choice (Setup / Data Loader / `composite/sobjects`) and whether `allOrNone` is on |
+| "Which permission set **licences** does this person need, and who is holding the spare ones?" | PSLs are counted separately from user licences and are not released by deactivation | A reclamation list of PSLs held by inactive users, run before buying more |
+| "Is this person going to be a record owner, an approver, a queue member, or a manager of other users?" | Each one is a separate offboarding query later; none is cleaned up by deactivation | The offboarding checklist for this user, written at provisioning time |
+| "Do they need role-hierarchy visibility, and is the role already deployed?" | `Role` is metadata and deploys ahead of the user load; a user created with a role in the same transaction as ordinary records hits mixed DML | Deploy order: roles and profiles first, users second, permission sets third |
+| "Are login hours or IP ranges in scope, and is this the right lever?" | Both live on the Profile and therefore apply to everyone sharing it, and neither ends an existing session | Either a profile change, or a hand-off to `security/ip-range-and-login-flow-strategy` |
+| "Who is allowed to do this next time?" | Creating an internal user needs Manage Internal Users; freezing needs Manage Users; reading PSL assignments needs View Setup and Configuration or Assign Permission Sets | A delegated group scoped to real profiles, not a second System Administrator |
+
+What a proper configuration adds over just clicking New User: the load is re-runnable and validated
+before it touches the org, every licence the person consumes is known and reclaimable, and the day
+they leave there is a checklist that finds their queues, approvals, reports and permission set
+licences instead of a deactivation that silently leaves all four behind.
 
 ---
 
@@ -168,13 +199,39 @@ A user with no role sits outside the hierarchy and can only see records they own
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
+1. **Answer the questions above and pick the lane.** One user with no licence question is a Setup
+   click. Anything with a batch, a licence constraint, or an offboarding tail goes through
+   `templates/user-management-template.md` and the artefacts in
+   `references/metadata-examples.md`.
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+2. **Check capacity before you build anything.** Run the `UserLicense`, `PermissionSetLicense` and
+   `PermissionSetLicenseAssign` queries in `references/metadata-examples.md` section 7. Reclaim PSLs
+   held by inactive users first. Never filter on `UserLicense.UsedLicenses` — it is not filterable in
+   API v64.0 and later.
+
+3. **Deploy the metadata that users point at, before the users.** `Role` files (section 2) and the
+   `Profile` `userLicense` / `loginHours` / `loginIpRanges` blocks (section 3), via the `package.xml`
+   in section 4. Validate with `sf project deploy validate` first — a role deploy triggers sharing work.
+
+4. **Build the load artefact and lint it before it touches the org.** Author the CSV from section 1
+   or the `composite/sobjects` payload from section 6, then run
+   `python3 scripts/check_user_management.py --manifest-dir force-app/main/default --csv users.csv`.
+   It fails the file on duplicate usernames, missing required columns and non-multiple-of-60 login
+   hours — all of which are irreversible or confusing once loaded.
+
+5. **Load, then assign permission sets as a separate call.** Users and their
+   `PermissionSetAssignment` rows cannot go in one `composite/sobjects` request; Setup-area objects
+   cannot be batched with others. Use `allOrNone: true` so a partial failure does not leave you
+   guessing which globally-unique usernames were consumed.
+
+6. **For offboarding, run the sequence in order:** freeze via `UserLogin.IsFrozen` (a two-step
+   query-then-update, section 8) → work every query in section 9 → delete
+   `PermissionSetLicenseAssign` rows → set `User.IsActive = false`. Use `#N/A`, not a blank cell, for
+   any field you intend to clear.
+
+7. **Verify against the org, not the deploy result.** Run the combined verification query at the end
+   of `references/metadata-examples.md`, then walk the Review Checklist below. Record anything you
+   deviated from in the template's Notes section.
 
 ---
 
@@ -192,6 +249,9 @@ Run through these before marking a user management task complete:
 - [ ] Login hours and IP ranges on the profile match the security policy for this user group
 - [ ] Delegated admin groups include only the profiles that delegates should be able to manage
 - [ ] System Administrator count verified — org must retain at least one active System Admin
+- [ ] For bulk loads: CSV linted with `scripts/check_user_management.py --csv` before import (no duplicate usernames, all required columns present)
+- [ ] For deactivated users: `PermissionSetLicenseAssign` rows deleted — permission set licences are NOT released by deactivation
+- [ ] For any field cleared in a Bulk API update: written as `#N/A`, not left blank, and re-queried to confirm
 
 ---
 
@@ -218,8 +278,29 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing the user CSV, the `Role` or `Profile` XML, the `composite/sobjects` payload, the freeze/deactivate sequence, or any of the licence and offboarding queries |
+| `references/gotchas.md` | Something worked in Setup but not through the API, or a deactivation left something behind |
+| `references/examples.md` | Working a full scenario end to end — onboarding, emergency offboarding, delegated admin |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated user-management advice before acting on it |
+| `references/well-architected.md` | Justifying the licence, delegation or login-restriction decision, and for the source list behind every claim in this package |
+| `templates/user-management-template.md` | Capturing an actual provisioning, offboarding or delegation task |
+
+---
+
 ## Related Skills
 
-- permission-set-architecture — Use alongside user-management to assign fine-grained permissions on top of a base profile
-- sharing-and-visibility — Role hierarchy is configured here, but sharing behavior (OWD, sharing rules) is covered separately
-- object-creation-and-design — Object permissions are set on profiles; consult this skill when a new object requires access to be granted to user groups
+- `admin/permission-set-architecture` — Designing the permission set and PSG model that sits on top of the base profile. This skill assigns; that one designs.
+- `admin/permission-sets-vs-profiles` — Deciding what belongs on the profile versus a permission set before you pick a profile here
+- `admin/delegated-administration` — The full delegated group model. Pattern 3 below is the provisioning-side summary only
+- `admin/integration-user-management` — Service accounts and API-only users, which have a different licence and login-restriction shape from employees
+- `admin/user-access-policies` — Automating assignment changes across users as criteria change, instead of per-user edits
+- `admin/mass-transfer-ownership` — Reassigning the records that offboarding query 1 in `references/metadata-examples.md` turns up
+- `admin/sharing-and-visibility` — Role hierarchy behaviour, OWD and sharing rules. Roles are deployed here; what a role grants is decided there
+- `admin/object-creation-and-design` — Object permissions live on profiles; read this when a new object needs access granted to user groups
+- `security/mfa-enforcement-patterns` — MFA and session policy, the controls login hours cannot provide
+- `security/ip-range-and-login-flow-strategy` — Per-user and risk-based login control when profile-wide IP ranges are too blunt
+- `security/login-forensics` — Failed-login clustering, geography and session anomalies beyond the `LoginHistory` query in this skill

@@ -1,6 +1,6 @@
 ---
 name: picklist-and-value-sets
-description: "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for why the API or an integration ignores a dependency matrix - use admin/field-dependency-and-controlling. NOT for cleaning up degraded, unrestricted or orphaned picklist values - use admin/picklist-field-integrity-issues. NOT for record type picklist filtering - use admin/record-types-and-page-layouts."
+description: "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for why the API or an integration ignores a dependency matrix - use admin/field-dependency-and-controlling. NOT for cleaning up degraded, unrestricted or orphaned picklist values - use admin/picklist-field-integrity-issues. NOT for record type picklist filtering - use admin/record-types-and-page-layouts. Keywords: GlobalValueSet, StandardValueSet, __gvs suffix, customValue, valueSetName, valueSetDefinition, restricted picklist, GlobalValueSetTranslation, OpportunityStage, CaseStatus."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -28,6 +28,14 @@ triggers:
   - "consolidate or rationalize picklist values across objects"
   - "duplicate or near-duplicate picklist values cluttering reports"
   - "dependent picklist controlling field setup"
+  - "deploy a global value set and the values I left out got deactivated"
+  - "retrieve picklist values but only the active ones come back"
+  - "standardvalueset wildcard in package.xml returns nothing"
+  - "add a new opportunity stage with probability and forecast category"
+  - "case status closed flag not marking cases closed"
+  - "remove a value from the dependent picklist matrix via metadata api"
+  - "global value set __gvs suffix deploy error invalid fullname"
+  - "translate global picklist values into another language"
 inputs:
   - "Object and field names for the picklist field(s) involved"
   - "Whether values need to be shared across multiple objects or are object-specific"
@@ -39,9 +47,9 @@ outputs:
   - "Data replacement plan for existing records when renaming/retiring values"
   - "Picklist design document using the provided template"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-04
 ---
 
 # Picklist and Value Sets
@@ -58,6 +66,28 @@ Gather this context before working on anything in this area:
 - **Is there a controlling/dependent requirement?** Which field controls which? Is the controlling field a standard picklist, custom picklist, or checkbox?
 - **How many existing records carry the old value?** Mass replacement via Setup creates a background job — plan for data volume.
 - **Are there dependent flows, validation rules, or Apex logic** that check specific picklist values by string? These must be updated when renaming or retiring values.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup or writing a `.globalValueSet-meta.xml`. Each one maps to a
+documented platform behaviour that is expensive to discover after the deploy.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does this exact value list already exist on another object, and is it a global value set or three copies?" | Decides `valueSetName` vs `valueSetDefinition`. A field bound to a global set is restricted and its values can only be edited at the set (api_meta.txt:43704–43711) | The one metadata file that owns the values, and the fields that inherit it |
+| "Which of these values will code, reports, or an integration compare against by string?" | `fullName` is the stored key; `label` is display. "Always use the value when inserting or updating a field. The `query()` call always returns the value, not the label" (object_reference.txt:2372–2374) | A value naming decision made once, before rows exist, instead of a Replace job later |
+| "Is the org's existing set going to be retrieved before I edit it?" | Omitting a value from a deployed file deactivates it (api_meta.txt:47482–47483). A hand-authored file is a mass deactivation | A retrieve-edit-deploy loop instead of a from-scratch file |
+| "Is this a standard picklist, and if so which StandardValueSet name?" | Standard picklists are `StandardValueSet`, the names differ from the field names, and the type takes no wildcard (api_meta.txt:130826–130828, Appendix C) | The exact `package.xml` members, checked against Appendix C footnotes 2 and 3 for sets that cannot be inserted or read at all |
+| "Does anything about this field depend on the value set staying open — a data load, a legacy integration?" | Unrestricted picklists let the API mint values: "the system creates an 'inactive' picklist value" (object_reference.txt:2364–2366) | An explicit `restricted` decision rather than the default drifting into a cleanup project |
+| "Will any of these values be the dependent side of a controlling field?" | A global-set-backed field can control but cannot be dependent, and matrix entries added via the API cannot be removed via the API (api_meta.txt:45855–45860) | The dependency design settled before the field type is locked in — `admin/field-dependency-and-controlling` |
+| "How many records already carry the values I am about to retire?" | Deactivate keeps them, Delete nulls them with no undo, Replace runs a background job | A count per value from the SOQL in `references/metadata-examples.md` §9, and a Replace/Deactivate/Delete decision per value |
+
+What a proper configuration adds over just adding the values: the value set has one owner file, the
+stored API names are the ones code already compares against, retiring a value is a reversible
+`isActive` flip rather than a silent null-out, and the deploy is a diff against a retrieve instead
+of a file that deactivates whatever it forgot to mention.
 
 ---
 
@@ -205,13 +235,27 @@ If a custom picklist field was created as object-local and you later decide the 
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above** and record the answers in
+   `templates/picklist-and-value-sets-template.md`. Sections 1 and 2 of that template are the
+   Global-Value-Set-vs-local decision and the value list with API name, label and active flag.
+2. **Count the data before deciding anything about existing values.** Run the `GROUP BY` query in
+   `references/metadata-examples.md` §9 per field. A value with rows is a Replace job; a value with
+   zero rows is the only one safe to Delete.
+3. **Retrieve, never author from scratch.** `sf project retrieve start --metadata
+   "GlobalValueSet:<Name>__gvs"` (wildcard works) and each `StandardValueSet:<Name>` by name
+   (no wildcard). Edit the retrieved file — a file missing values deactivates them on deploy.
+4. **Write the metadata** from `references/metadata-examples.md`: §1 global value set, §2 the field
+   that consumes it, §3/§4 standard value sets, §5 translations, §6 the `valueSettings` shape (design
+   the matrix in `admin/field-dependency-and-controlling` first), §7 `package.xml`.
+5. **Lint** — `python3 scripts/check_picklist_and_value_sets.py --manifest-dir
+   force-app/main/default`. It fails on duplicate `fullName` in one set, more than one `default`,
+   `valueSetName` alongside `valueSetDefinition`, and an `OpportunityStage` value missing
+   `probability` or `forecastCategory`; it warns on an unrestricted global-set-backed field.
+6. **Dry-run then deploy** (§8), and diff the dry-run output against the retrieve from step 3 —
+   deactivations show up there, not in the file you wrote.
+7. **Verify in the org, not in the deploy log** — run the anonymous Apex in §9. `getPicklistValues()`
+   returns only active values, so a deactivated value should be absent from the output. Re-run the
+   `GROUP BY` from step 2 after any Replace job. Then walk the Review Checklist below.
 
 ---
 
@@ -251,8 +295,25 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing any `GlobalValueSet`, `StandardValueSet`, `GlobalValueSetTranslation` or picklist `CustomField` XML — plus the `package.xml` wildcard rules, retrieve/deploy commands, and the Apex + SOQL verification pair |
+| `references/gotchas.md` | Before deactivating, renaming, deleting or replacing any value, and before trusting a retrieved file to be complete |
+| `references/examples.md` | Working a concrete case end to end: a Replace across 12,000 records, consolidating three drifted fields into one global set, a country/state dependency |
+| `references/llm-anti-patterns.md` | Reviewing generated picklist metadata or generated advice about picklist values |
+| `references/well-architected.md` | Framing global-vs-local and dependency-vs-validation-rule as a tradeoff, and for the source list |
+| `templates/picklist-and-value-sets-template.md` | Before creating or restructuring any value set worth reviewing — it is the artifact steps 1 and 2 of the workflow produce |
+| `scripts/check_picklist_and_value_sets.py` | Step 5 of the workflow, and in CI on any branch that touches `globalValueSets/`, `standardValueSets/` or a picklist field |
+
+---
+
 ## Related Skills
 
-- `custom-field-creation` — use when the field itself needs to be created (type selection, FLS, layout); this skill handles picklist-specific design and value management
-- `record-types-and-page-layouts` — use when record type determines which picklist values a user sees (per-record-type picklist value filtering is configured on the Record Type, not the field dependency)
-- `formula-fields` — use when a field's value is computed from a picklist using `ISPICKVAL()` or `TEXT()`
+- `admin/custom-field-creation` — use when the field itself needs to be created (type selection, FLS, layout); this skill handles picklist-specific design and value management
+- `admin/field-dependency-and-controlling` — use for the dependency matrix design itself: which controlling value maps to which dependent value, checkbox controllers, LWC combobox behaviour, and why the API ignores the matrix. This skill owns only the `valueSettings` XML shape
+- `admin/record-types-and-page-layouts` — use when record type determines which picklist values a user sees (per-record-type picklist value filtering is configured on the Record Type, not the field dependency)
+- `admin/picklist-data-integrity` — use for the value-deactivation runbook and picklist governance across an existing estate
+- `admin/picklist-field-integrity-issues` — use when invalid or orphaned values already exist in the data and need auditing and cleanup
+- `admin/formula-fields` — use when a field's value is computed from a picklist using `ISPICKVAL()` or `TEXT()`

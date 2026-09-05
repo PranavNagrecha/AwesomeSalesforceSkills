@@ -27,11 +27,19 @@
 
 **Solution:**
 
-1. Open browser DevTools > Console. Copy the blocked domain and directive from the CSP error message.
+1. Open browser DevTools > Console. Copy the blocked domain and directive from the CSP error message. Read it as three facts — the violated directive, the blocked origin, and the effective policy:
+
+```text
+Refused to frame 'https://analytics.thirdparty.com/' because it violates the
+following Content Security Policy directive: "frame-src 'self'".
+   ^^^^^                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^     ^^^^^^^^^
+   directive to grant   the exact origin to trust            current policy
+```
+
 2. Navigate to **Setup > Security > CSP Trusted Sites > New Trusted Site**.
-3. Name: `ThirdPartyAnalytics`. URL: `https://analytics.thirdparty.com`. Check only **frame-src** (since the violation is iframe embedding, not script or fetch).
+3. Name: `ThirdPartyAnalytics`. URL: `https://analytics.thirdparty.com`. Check only **frame-src** (since the violation is iframe embedding, not script or fetch) — that is `isApplicableToFrameSrc` in the metadata, and every other `isApplicableTo*` field stays `false`.
 4. Save. Refresh the Lightning page.
-5. If additional violations appear (e.g., the embedded dashboard itself loads scripts from another subdomain), repeat for each blocked domain/directive pair.
+5. If additional violations appear (e.g., the embedded dashboard itself loads scripts from another subdomain), repeat for each blocked domain/directive pair. Each console line names exactly one directive; do not pre-emptively grant the others.
 
 **Why it works:** Lightning Experience CSP is a browser-enforced whitelist. Each directive must be explicitly permitted per domain. Adding only the necessary directive (`frame-src`) follows the principle of least-privilege — do not check all directives when only one is needed.
 
@@ -42,6 +50,24 @@
 **Context:** An org has the default 90-day password expiration policy. The project team does User Acceptance Testing 60 days before go-live, creating user accounts for 200 test users. At go-live, these accounts are reused for production — but 30 days have elapsed since their creation, leaving only 30 days before mandatory expiry.
 
 **Problem:** Thirty days after go-live, 200 users are simultaneously prompted to change their password. Support is overwhelmed. Some users cannot log in until the password reset completes.
+
+**Detect it before it lands.** `User.PasswordExpirationDate` (dateTime; API version 63.0 and later, per the Object Reference) exposes the cliff directly — group the active user base by expiry week and the spike is visible weeks ahead:
+
+```sql
+SELECT PasswordExpirationDate, COUNT(Id) userCount
+FROM User
+WHERE IsActive = true
+  AND PasswordExpirationDate != NULL
+  AND PasswordExpirationDate <= NEXT_N_DAYS:60
+GROUP BY PasswordExpirationDate
+ORDER BY PasswordExpirationDate
+```
+
+```bash
+sf data query --target-org production --query "SELECT PasswordExpirationDate, COUNT(Id) userCount FROM User WHERE IsActive = true AND PasswordExpirationDate != NULL AND PasswordExpirationDate <= NEXT_N_DAYS:60 GROUP BY PasswordExpirationDate ORDER BY PasswordExpirationDate"
+```
+
+Any single row whose `userCount` is a meaningful fraction of the org's active users is a support incident with a date on it. SSO-only users have no Salesforce password expiry to report, so a small result set in an SSO org is the expected answer, not a broken query.
 
 **Solution (preventive):** After UAT is complete, use the **Expire All Passwords** button at the bottom of **Setup > Security > Password Policies** immediately before go-live. This resets the password age clock for all users and gives the full 90-day window from go-live day.
 

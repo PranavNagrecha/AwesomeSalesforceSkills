@@ -4,7 +4,7 @@
 
 ### Scalability
 
-ETM must be designed with scale in mind from the start. The 1,000-territory-per-model limit (default) is a hard ceiling in Enterprise Edition — exceeding it requires a Salesforce Support request to raise the limit for Performance/Unlimited editions (up to 20,000). Territory hierarchies that are too deep (7+ levels) create complex forecast rollups and slow system-defined group recalculation. Account assignment rules evaluated across hundreds of thousands of accounts can produce multi-hour background jobs. Design hierarchies to be as flat as practical, and cluster rules by specificity to reduce evaluation time.
+ETM must be designed with scale in mind from the start. The commonly cited ceiling — 1,000 territories per model by default, up to 20,000 on request — is **UNVERIFIED (2026-09-04): it does not appear in the Salesforce App Limits Cheat Sheet (a case-insensitive grep for "territor" across that document returns nothing) nor in the Metadata API or Object Reference sections for the Territory2 types.** Treat it as a planning assumption to confirm in Salesforce Help, not as a number to design a ceiling against. Territory hierarchies that are too deep (7+ levels) create complex forecast rollups and slow system-defined group recalculation. Account assignment rules evaluated across hundreds of thousands of accounts can produce multi-hour background jobs. Design hierarchies to be as flat as practical, and cluster rules by specificity to reduce evaluation time.
 
 Large UserTerritory2Association tables (many users in many territories) also affect sharing group recalculation performance. Audit membership regularly and remove stale assignments.
 
@@ -15,7 +15,8 @@ Territory management is an ongoing operational process, not a one-time setup. Se
 - A defined change management process for territory restructuring (Planning state → preview run → stakeholder sign-off → activation window).
 - A schedule for running assignment rules at the model level after bulk account imports or data cleansing operations.
 - Monitoring of `Territory2AlignmentLog` as a health indicator — stale timestamps mean rules may not reflect current account data.
-- Deployment of territory metadata (Territory2Model, Territory2Type, Territory2, AccountTerritoryAssignmentRule) via Metadata API between sandbox and production to ensure consistency and auditability.
+- Deployment of territory metadata (`Territory2Settings`, `Territory2Model`, `Territory2Type`, `Territory2`, `Territory2Rule`) as a **source deploy** between sandbox and production. Change sets and packaging are not available for these types, so the release train has to accommodate ETM rather than the reverse — and the deploying user needs Manage Territories.
+- A standing check that the run after each deploy actually happened: Metadata API cannot run assignment rules, so a clean deploy with no follow-up run leaves the org configured and unassigned.
 
 ### Security
 
@@ -23,7 +24,9 @@ Territory membership grants at minimum Read access to assigned accounts regardle
 
 - An account assigned to a territory will be visible to all users who are territory members at that level or above (via TerritoryAndSubordinates sharing groups). Validate that territory boundaries align with your intended data access model.
 - Territory access is additive — it cannot be used to restrict visibility below OWD. If your OWD for Account is Private and you need selective access, ETM provides it correctly. If OWD is Public Read/Write, territory membership has no restrictive effect.
-- `Territory2ObjSharingConfig` controls whether territory members get Read or Read/Write access to related Opportunities and Contacts. Over-provisioning (granting Read/Write when only Read is needed) is an anti-pattern.
+- Access to related Opportunities, Contacts and Cases is set per territory on the `Territory2` component (`opportunityAccessLevel`, `contactAccessLevel`, `caseAccessLevel`, valid values `None` / `Read` / `Edit`), falling back to the `default*AccessLevel` fields in `Territory2Settings` when omitted. Over-provisioning — `Edit` where `Read` would do — is an anti-pattern, and it is invisible in the UI because each territory carries its own value.
+- `Territory2ObjSharingConfig` is not that control. It is a `query`/`update`-only SOAP object (API 56.0+) for the objects enabled through `Territory2Settings.supportedObjects`, whose only documented `objectType` is `Lead`. Any runbook telling you to deploy it is describing something that does not exist.
+- `t2ForecastAccessLevel` in `Territory2Settings` grants users in a parent territory access to opportunities assigned to its **child** territories "regardless of who owns the opportunities". `Edit` there is a much broader grant than it appears at the settings level; `View` is the conservative default.
 
 ### Reliability
 
@@ -64,18 +67,18 @@ Territory-based forecasting decouples the forecast hierarchy from the org chart.
 
 ## Official Sources Used
 
-- Salesforce Sales Territories Implementation Guide (Spring '26) — territory model states, limits, assignment rules, opportunity territory assignment, forecast by territory, metadata deployment
-  URL: https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/salesforce_implementing_territory_mgmt2_guide.pdf
-- Salesforce Help: Allocations and Considerations for Territories — numeric limits (territories per model, active model constraint)
-  URL: https://help.salesforce.com/s/articleView?id=sf.tm2_allocations.htm&language=en_US&type=5
-- Salesforce Help: Territory Hierarchy — hierarchy structure and parent-child relationships
-  URL: https://help.salesforce.com/s/articleView?id=sales.tm2_territory_hierarchy.htm&language=en_US&type=5
-- Salesforce Help: Setting Up and Managing Territory Assignments — assignment rules behavior
-  URL: https://help.salesforce.com/s/articleView?id=sales.tm2_assign_accounts_to_territories.htm&language=en_US&type=5
-- Salesforce Record Access Under the Hood (local knowledge) — territory system-defined sharing groups (Territory group, TerritoryAndSubordinates group)
-- Salesforce Well-Architected Overview — architecture quality framing
-  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Metadata API Developer Guide — Territory2 metadata types and deployment
-  URL: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
-- Object Reference (AccountTerritoryAssignmentRule) — assignment rule object semantics
-  URL: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountterritoryassignmentrule.htm
+- **Metadata API Developer Guide (Summer '26 / v62)** — `Territory2` (access-level enums and their OWD constraints, `parentTerritory` developer-name rule, `ruleAssociations` / `Territory2RuleAssociation.inherited`, `objectAccessLevels`, "triggers … do not fire during a deploy()", "don't support packaging or change sets"), `Territory2Model` ("initial state is Planning", deploy permitted only for Planning or Active, retrieve state exclusions, cascade delete, developer-name conflict), `Territory2Rule` (`active` / `booleanFilter` / `objectType` Account-only / `ruleItems`, the `FilterOperation` enumeration, the 10-rule-item cap, implicit sort order, "Rules can't be run via Metadata API", relaxed FLS for deploy), `Territory2Type` (`priority` required, unique, highest wins, ties assign nothing), `Territory2Settings` (`enableTerritoryManagement2` exclusivity, `default*AccessLevel`, `opportunityFilterSettings`, `supportedObjects` = Lead only, `t2ForecastAccessLevel`, `tm2BypassRealignAccInsert`, `tm2EnableUserAssignmentLog`). Supports Scalability, Operational Excellence, Security and Reliability above, and every XML block in `references/metadata-examples.md`.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- **Object Reference for the Salesforce Platform (Summer '26 / v62)** — `Territory2Model.State` full picklist and `LastRunRulesEndDate` / `LastOppTerrAssignEndDate` (the audit checks in Mode 2), `Territory2` access-level picklist spellings that differ from Metadata API (Gotcha 8), `Territory2AlignmentLog` fields (the completion check), `ObjectTerritory2Association.AssociationCause` and its 12-hour post-delete query window, `UserTerritory2Association` supported calls and `RoleInTerritory2` values (Gotcha 14), `ObjectTerritory2AssignmentRule` vs the legacy `AccountTerritoryAssignmentRule` whose `TerritoryId` points at `Territory` (Gotcha 6), `Territory2ObjSharingConfig` (Gotcha 13), `AccountShare.RowCause` values `Territory` / `Territory2AssociationManual` / deprecated `TerritoryManual` (the Security section and the verification SOQL), `Opportunity.IsExcludedFromTerritory2Filter`.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- **Apex Reference Guide (Summer '26 / v62)** — `TerritoryMgmt.OpportunityTerritory2AssignmentFilter` and the `OppTerrAssignDefaultLogicFilter` reference implementation. Grounds the claim that filter-based OTA is Apex rather than configuration (Gotcha 10), the three-valued return-map contract, and the direction of territory type priority (`Priority > tp.priority` — highest integer wins), which corrects the earlier "lower integer = higher priority" statement in this skill.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/apexrefguide.pdf
+- **Bulk API 2.0 and Bulk API Developer Guide (Summer '26 / v62)** — "Updating territory hierarchies" listed among the operations that increase lock contention and may require serial concurrency mode; `ObjectTerritory2Association` listed among the objects that support PK chunking. Supports the realignment-window guidance in Gotcha 14 and the Scalability section.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_asynch.pdf
+- **Salesforce App Limits Cheat Sheet (Summer '26 / v62)** — used as a *negative* source: it contains no territory allocations at all, which is why the territory-count ceiling in this skill now carries an UNVERIFIED marker instead of a bare number.
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf
+- **Salesforce Sales Territories Implementation Guide** — territory model states, assignment rule behaviour, forecast by territory. Supports the model-lifecycle and forecast framing in Core Concepts.
+  https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/salesforce_implementing_territory_mgmt2_guide.pdf
+- **Salesforce Well-Architected** — the pillar framing used to organise this file.
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- **Local knowledge: Salesforce Record Access Under the Hood** — territory system-defined sharing groups (Territory group, TerritoryAndSubordinates group). Supports the group-recalculation cost discussion in Scalability. Cross-referenced against `admin/sharing-and-visibility` rather than restated here.

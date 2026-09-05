@@ -4807,6 +4807,9 @@
       "apex/service-cloud-rest-api",
       "architect/knowledge-taxonomy-design"
     ],
+    "data-category-visibility": [
+      "admin/knowledge-base-administration"
+    ],
     "data-classification": [
       "data/analytics-data-governance",
       "data/data-quality-and-governance",
@@ -8589,6 +8592,9 @@
     ],
     "knowledge-management": [
       "architect/case-deflection-strategy"
+    ],
+    "knowledge-settings": [
+      "admin/knowledge-base-administration"
     ],
     "knowledge-vs-external-cms": [
       "architect/knowledge-vs-external-cms"

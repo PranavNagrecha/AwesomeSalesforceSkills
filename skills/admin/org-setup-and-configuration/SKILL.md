@@ -1,6 +1,6 @@
 ---
 name: org-setup-and-configuration
-description: "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config)."
+description: "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Owns these settings as deployable Settings metadata (Security.settings, MyDomain.settings, Company.settings, Language.settings) and the order in which a new org is stood up. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites', 'Security.settings', 'SecuritySettings metadata', 'MyDomainSettings', 'settings-meta.xml', 'enhanced domains', 'deploy org settings', 'new org setup order', 'sessionTimeout enum', 'lockSessionsToIp', 'enableAdminLoginAsAnyUser'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,19 +19,30 @@ triggers:
   - "set password expiration and complexity rules for the org"
   - "add a trusted IP range so users skip email verification"
   - "CSP trusted site blocked external resource on Lightning page"
+  - "deploying Security.settings wiped our trusted IP ranges"
+  - "sessionTimeout deploy failed with an invalid enum value"
+  - "stand up a brand new production org in the right order"
+  - "changing myDomainName in MyDomain.settings does nothing"
+  - "users on cellular keep getting logged out of Salesforce"
+  - "MFA is enabled org-wide but some users are never prompted"
+  - "what order do I configure My Domain, MFA and session settings"
+  - "how do I tell if enhanced domains are on from the metadata"
 inputs:
   - "target org type (production, sandbox, scratch org, developer org)"
   - "identity provider or SSO requirements if applicable"
   - "list of external domains that must load on Lightning pages (for CSP)"
   - "network access requirements: office IP ranges, VPN ranges"
+  - "retrieved settings/ directory from the target org (Security, MyDomain, Company, Language)"
 outputs:
   - "step-by-step configuration guidance for each org-level setting"
   - "review checklist confirming all settings are configured and deployed"
   - "decision table for session, password, and IP settings"
+  - "deployable settings/*.settings-meta.xml plus the package.xml that carries them"
+  - "verification SOQL against the Organization object"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-04
 ---
 
 # Org Setup And Configuration
@@ -53,7 +64,61 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup or writing a `.settings` file. Each one maps to a documented platform behaviour that turns a "successful" deploy into an incident.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Has anyone retrieved this org's `Security.settings` yet, and where is it?" | `networkAccess` is replace-in-place: deploying a file with one IP range deletes every other range in the org | A retrieved baseline file to edit, plus the current trusted-IP list to diff against |
+| "Is My Domain already registered and deployed, and is it enhanced?" | The domain name is read-only in the API — it cannot be promoted from a sandbox, and `myDomainSuffix` is the only enhanced-domains signal | The stand-up order: domain first, then SSO callbacks, then MFA |
+| "Who holds the MFA waiver permission today?" | The **Waive Multi-Factor Authentication for Exempt Users** permission overrides the org-wide MFA setting | The exempt-user inventory, so "MFA is on" means something |
+| "What fraction of users are on cellular, VPN, or shifting NAT egress?" | `lockSessionsToIp` invalidates a session the moment the source IP changes | A yes/no on IP-locking with a stated user population behind it |
+| "What is the real timeout requirement in minutes, and what enum is nearest?" | `sessionTimeout` is an enum — there is no 45-minute option, and a number fails the deploy | The rounding decision recorded before it becomes a deploy error |
+| "Which environments must differ, and which must match?" | `canOnlyLoginWithMyDomainUrl` set to `true` in a sandbox disables the Sandboxes-page Log In action | A per-environment value list, so a diff tool does not "fix" a deliberate divergence |
+| "Which Connected Apps, IdP configs, and CSP entries reference the current URLs?" | A domain change breaks callbacks; an API-version bump changes CSP default-grant behaviour | The blast-radius list to re-verify after the deploy |
+
+What a proper configuration adds over just clicking through Setup: the org's authentication baseline exists as a reviewable, diffable file that can be validated before it lands, the settings that genuinely cannot be deployed are named rather than silently assumed, and the exceptions — waivers, per-environment divergences, IP-locking carve-outs — are written down instead of discovered by a locked-out user.
+
+---
+
 ## Core Concepts
+
+### Org-Wide Settings Are Deployable Metadata, With Sharp Edges
+
+Most of what this skill configures is one metadata type per Setup page, retrieved and deployed as a single file. "Each settings component gets stored in a single file in the `settings` directory … The filename uses the format `Setting feature.settings`" (Metadata API Developer Guide, `Settings`). The manifest name is always `Settings`; the member is the type name minus the suffix, so `SecuritySettings` is `<members>Security</members>`.
+
+| Setup area | Metadata type | Manifest member | File |
+|---|---|---|---|
+| Session Settings, Password Policies, Network Access, SSO, login-as | `SecuritySettings` | `Security` | `settings/Security.settings-meta.xml` |
+| My Domain routing, redirects, cookies | `MyDomainSettings` | `MyDomain` | `settings/MyDomain.settings-meta.xml` |
+| Fiscal year | `CompanySettings` | `Company` | `settings/Company.settings-meta.xml` |
+| ICU locale formats, translation, end-user languages | `LanguageSettings` | `Language` | `settings/Language.settings-meta.xml` |
+| CSP Trusted Sites / Trusted URLs | `CspTrustedSite` (not a settings file) | site name or `*` | `cspTrustedSites/<Name>.cspTrustedSite-meta.xml` |
+
+Three constraints govern every deploy of these files:
+
+1. **Whole containers replace, they do not merge.** Documented explicitly for `networkAccess.ipRanges`: deploy every range you want to keep, or the ones you omit are gone. Always retrieve before you edit.
+2. **Some fields are read-only in the API.** `myDomainName`, `myDomainSuffix`, `domainPartition`, `edgeRoutingMethod` and `useEdge` are all marked read-only — the domain is a Setup action, not a promotable artefact.
+3. **Not everything is in the API at all.** "Not all feature settings are available in Metadata API," and for unsupported types "you must do it manually in each of your organizations." Check the Metadata Coverage report before promising a setting will travel.
+
+The org's default locale, time zone and currency are not in any of these files — they are updatable fields on the `Organization` standard object (`DefaultLocaleSidKey`, `TimeZoneSidKey`, `LanguageLocaleKey`). See `references/metadata-examples.md` for the deployable files, the package.xml, and the verification SOQL.
+
+### Stand-Up Order For A New Org
+
+Order matters because each step's output is the next step's input, and two of the steps are irreversible.
+
+| # | Step | Blocks | Why this position |
+|---|---|---|---|
+| 1 | Company Information: locale, time zone, currency, fiscal year | Everything date- or money-shaped | These become baked into records; changing fiscal year can purge quotas and adjustments |
+| 2 | Register My Domain, test, then Deploy to Users | SSO, OAuth, Lightning, packages | The login URL every later step references |
+| 3 | Update Connected App callbacks and IdP metadata | SSO cutover | Must happen against the final domain, not the old one |
+| 4 | `Security.settings`: session, password, network access, login-as | User provisioning | The baseline every user inherits on creation |
+| 5 | MFA enforcement plus the waiver inventory | Go-live | Needs step 3 done, so SSO users are exempt via the IdP rather than double-prompted |
+| 6 | CSP Trusted Sites | Lightning pages with external content | Needs the component inventory, which usually lands last |
+
+Steps 1 and 2 are the irreversible ones in practice: fiscal-year changes can purge forecast data, and a deployed My Domain becomes the org's identity across every integration.
+
 
 ### MFA Is Required For All Direct UI Logins
 
@@ -82,24 +147,31 @@ Navigate to: **Setup > Security > Session Settings**
 
 Key settings:
 
-| Setting | Behavior |
-|---|---|
-| Timeout value | Ranges from 15 minutes to 24 hours. The default is 2 hours. For regulated orgs, 15–30 minutes is recommended. |
-| Lock sessions to the IP address from which they originated | Prevents session hijacking by invalidating the session if requests arrive from a different IP. Has a side effect for users on mobile networks or DHCP-assigned IPs — sessions can break unexpectedly. |
-| Force logout on session timeout | On timeout, the user is logged out rather than silently having their session invalidated. Improves user experience when combined with short timeouts. |
-| Require secure connections (HTTPS) | Should always be enabled. Prevents plain-HTTP access. |
-| Clickjack protection for non-setup Salesforce pages | Prevents the org pages from being embedded in iframes on external sites. Should be set to **Allow framing by same origin only** unless there is a specific requirement to embed. |
+| Setting | Metadata field | Behavior |
+|---|---|---|
+| Timeout value | `sessionTimeout` | An enum, not a number of minutes. The documented members are `FifteenMinutes`, `ThirtyMinutes`, `SixtyMinutes`, `NinetyMinutes` (API 58.0+), `TwoHours`, `FourHours`, `EightHours`, `TwelveHours`, `TwentyFourHours` (API 38.0+) — so 15 minutes to 24 hours, with no 45-minute option. UNVERIFIED (2026-09-04): the commonly cited 2-hour default is not stated as a default in the `SessionSettings` field table; check the target org rather than assuming. For regulated orgs, 15–30 minutes is recommended. |
+| Lock sessions to the IP address from which they originated | `lockSessionsToIp` | Invalidates the session if requests arrive from a different IP. Breaks users on cellular, shifting VPN egress, or DHCP/NAT pools. |
+| Force logout on session timeout | `forceLogoutOnSessionTimeout` | `true` (the documented default): at timeout the session becomes invalid, the browser refreshes and returns to the login page. |
+| Show the timeout warning popup | `disableTimeoutWarning` | Inverted: `true` **disables** the warning. Independent of forced logout — set both explicitly. |
+| Require secure connections (HTTPS) | `requireHttps` | "Enabled by default for security reasons and can't be disabled." The field exists only in API versions 40.0–60.0; `enableRequireHttpsConnection` is deprecated from 47.0. It is not a lever you set on a current API version. |
+| Clickjack protection | `enableClickjackSetup`, `enableClickjackNonsetupSFDC`, `enableClickjackNonsetupUser`, `enableClickjackNonsetupUserHeaderless` | Four separate booleans, not one dropdown: setup pages, non-setup Salesforce pages, and customer Visualforce pages with and without standard headers. Enable all four unless a specific page must be framed externally. |
 
 ### Password Policies Are Org-Wide By Default But Can Be Overridden Per Profile
 
-Password policies govern complexity, minimum length, expiration, and lockout. The org-wide policy lives at **Setup > Security > Password Policies**. Individual profiles can override these settings — go to **Setup > Profiles > [Profile Name]** and scroll to Password Policies.
+Password policies govern complexity, minimum length, expiration, and lockout. The org-wide policy lives at **Setup > Security > Password Policies** and deploys as the `passwordPolicies` container inside `Security.settings`. Individual profiles can override these settings in Setup — go to **Setup > Profiles > [Profile Name]** and scroll to Password Policies.
 
-Org-wide defaults (Salesforce baseline):
-- Minimum length: 8 characters
-- Complexity requirement: Must mix alpha and numeric (configurable to require special characters)
-- Password expiration: 90 days (can be disabled or extended to 180 days or Never)
-- Maximum invalid login attempts: 10 (can be reduced to 3 or 5 for higher-security orgs)
-- Lockout effective period: 15 minutes after too many failed attempts
+That profile-level override does **not** travel in a `Profile` deploy: the `Profile` metadata type's field table contains no password-policy fields at all (it carries `loginHours` and `loginIpRanges`, but nothing about passwords). Treat profile password overrides as per-org manual configuration and record them in the template, or the promoted org-wide policy will silently be the only thing that moves between environments.
+
+Documented platform defaults and their metadata fields:
+
+| Policy | Field | Default | Range |
+|---|---|---|---|
+| Minimum length | `minimumPasswordLength` | 8 | a number, 5 to 50 |
+| Complexity | `complexity` | `AlphaNumeric` | up to `Any3UpperLowerCaseNumericSpecialCharacters` (API 46.0+) |
+| Expiration | `expiration` | `NinetyDays` | `Never`, `ThirtyDays`, `SixtyDays`, `NinetyDays`, `SixMonths`, `OneYear` — there is no 180-day member |
+| Max invalid login attempts | `maxLoginAttempts` | `TenAttempts` | `NoLimit`, `ThreeAttempts`, `FiveAttempts`, `TenAttempts` |
+| Lockout period | `lockoutInterval` | `FifteenMinutes` | `FifteenMinutes`, `ThirtyMinutes`, `SixtyMinutes`, `Forever` |
+| Passwords remembered | `historyRestriction` | 3 | 0 to 24 (24 max applies to API 31.0+) |
 
 ### Trusted IP Ranges Bypass Email Verification But Not MFA
 
@@ -183,13 +255,13 @@ Alternatively, convert API integrations to OAuth 2.0 JWT bearer flow or Connecte
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above**, then retrieve the current state — `sf project retrieve start --metadata "Settings:Security" "Settings:MyDomain" "Settings:Company" "Settings:Language"`. Never author a settings file from a template; `networkAccess` replaces rather than merges, so the retrieved file is the only safe starting point (`references/gotchas.md` gotcha 6).
+2. **Fix the stand-up position** using the order table above. If My Domain is not yet deployed, stop and do that first — steps 3 to 6 all reference the final login URL, and `myDomainName` cannot be deployed (gotcha 7).
+3. **Edit the retrieved files** against the field tables and enum lists in `references/metadata-examples.md`. Every value in `sessionTimeout`, `maxLoginAttempts`, `lockoutInterval`, `complexity` and `expiration` must be one of the documented enum members — the guide's lists are reproduced there so you do not have to guess (gotcha 9).
+4. **Lint before you deploy** — `python3 scripts/check_org_setup_and_configuration.py --manifest-dir force-app/main/default`. It catches invalid enums, a password minimum below the platform default, IP-locking and admin-login-as risk flags, a non-enhanced My Domain suffix, and duplicate `Settings` members in package.xml.
+5. **Validate, then deploy to a sandbox first** — `sf project deploy validate`, then `sf project deploy start` against the sandbox. Confirm `Organization.IsSandbox` is `true` before you run it and `false` before you repeat it in production.
+6. **Verify in the org, not in the file** — run the `Organization` verification SOQL and walk the 8-row Setup checklist at the end of `references/metadata-examples.md`. Re-retrieve `Settings:Security` and diff: the stored value is the only proof the enum you wrote is the enum the org kept.
+7. **Record the exceptions** in `templates/org-setup-and-configuration-template.md` — MFA waiver holders, per-environment divergences such as `canOnlyLoginWithMyDomainUrl`, and every CSP trusted site with its business justification. These are the items no gate can re-derive later.
 
 ---
 
@@ -199,25 +271,32 @@ Run through these before marking work in this area complete:
 
 - [ ] My Domain is registered, deployed, and all users log in via the custom domain URL.
 - [ ] MFA is enforced org-wide (or via IdP) for all human UI users.
-- [ ] Session timeout reflects org security policy (default 2 hours; lower for regulated orgs).
+- [ ] Session timeout is a documented `sessionTimeout` enum member that matches org security policy (`TwoHours` as a baseline; `FifteenMinutes`/`ThirtyMinutes` for regulated orgs).
 - [ ] HTTPS-only and clickjack protection are enabled in Session Settings.
 - [ ] Password policy minimum length is at least 10 characters with complexity requirements.
 - [ ] Trusted IP ranges added for office/VPN networks; no unnecessary CIDR ranges included.
 - [ ] CSP Trusted Sites entries exist only for domains actually required; no wildcard entries.
 - [ ] API-only integration users either use OAuth flows or have an explicit MFA waiver policy.
 - [ ] Settings have been verified in a sandbox before deploying to production.
+- [ ] `Security.settings` was **retrieved** from the target org before editing, and the deployed `ipRanges` list contains every range that must survive.
+- [ ] Every enum value (`sessionTimeout`, `maxLoginAttempts`, `lockoutInterval`, `complexity`, `expiration`) is a documented member, not a number or an invented name.
+- [ ] `scripts/check_org_setup_and_configuration.py --manifest-dir <path>` reports no ERROR, and every WARN and INFO has been read and accepted rather than tuned away.
+- [ ] Per-environment divergences (`canOnlyLoginWithMyDomainUrl`, and any others) are recorded in the template so a later diff does not "fix" them.
+- [ ] The MFA waiver-permission holder list has been enumerated — the org-wide toggle alone does not prove enforcement.
+- [ ] Profile-level password overrides, which do not travel in a `Profile` deploy, are documented as manual per-org configuration.
+- [ ] `SELECT IsSandbox, InstanceName FROM Organization` was run against the target org before the production deploy.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The five that bite most often are below. `references/gotchas.md` carries all thirteen with the full **What happens / When it occurs / How to avoid** treatment, including the deploy-time behaviours that only appear once these settings are source-controlled: `networkAccess` replacing rather than merging, `myDomainName` being read-only in the API, `redirectPriorMyDomain` resetting on every domain deploy, the enum-vs-number trap, the MFA waiver overriding the org switch, `disableTimeoutWarning` being inverted, `canOnlyLoginWithMyDomainUrl` disabling the sandbox Log In action, and the CSP default-grant behaviour changing across API versions.
 
 1. **My Domain changes break hardcoded login URLs in integrations** — After deploying My Domain, any external system that uses the old `login.salesforce.com` or `test.salesforce.com` URL in OAuth callbacks or SAML redirects must be updated to the new `mycompany.my.salesforce.com` URL. This includes managed packages, Connected Apps, and IdP configurations.
 2. **Locking sessions to IP breaks mobile users** — The "Lock sessions to IP address" setting in Session Settings causes session invalidation whenever the client IP changes. Mobile users on cellular networks change IP frequently; enabling this causes unexpected logouts. Do not enable for orgs with significant mobile usage.
 3. **Trusted IP ranges skip email verification, not MFA** — A common misunderstanding is that adding an office IP to Network Access (Trusted IP Ranges) will remove MFA prompts for those users. It does not. It only removes the one-time email identity verification challenge that occurs on new browsers. MFA challenges remain unless explicitly waived.
 4. **CSP violations appear only in browser console** — When a CSP Trusted Site is missing or misconfigured, users see a generic "resource blocked" or silent failure — not a Salesforce error. Always open DevTools/Console when diagnosing missing images, broken API calls, or missing styles on Lightning pages.
-5. **Password policy changes do not force an immediate reset** — Tightening the password policy (e.g., reducing expiration from 90 to 30 days) does not immediately expire existing passwords. The new policy applies at the user's next natural expiration or manual reset. If an immediate reset is required, use the mass "Expire Passwords" button at the bottom of the Password Policies page.
+5. **Password policy changes do not force an immediate reset** — Tightening the password policy (e.g., reducing expiration from 90 to 30 days) does not immediately expire existing passwords. The new policy applies at the user's next natural expiration or manual reset. If an immediate reset is required, use the mass **Expire All Passwords** action at the bottom of the Password Policies page.
 
 ---
 
@@ -228,6 +307,22 @@ Non-obvious platform behaviors that cause real production problems:
 | Org settings configuration checklist | Completed review checklist confirming all org-level settings are configured |
 | CSP Trusted Sites list | Documented list of external domains and directive types with business justification |
 | My Domain deployment status | Confirmation that My Domain is deployed and all callback URLs are updated |
+| `settings/*.settings-meta.xml` + `package.xml` | The deployable org baseline: Security, MyDomain, Company, Language (`references/metadata-examples.md`) |
+| Checker output | `scripts/check_org_setup_and_configuration.py` findings, with each WARN/INFO accepted or actioned |
+| Exception register | MFA waiver holders, per-environment divergences, profile-level password overrides, CSP entries with justification |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing the deployable XML: `Security.settings`, `MyDomain.settings`, `Company.settings`, `Language.settings`, `CspTrustedSite`, package.xml, retrieve/deploy commands, verification SOQL |
+| `references/gotchas.md` | Before any settings deploy — the thirteen platform behaviours that turn a green deploy into a lockout |
+| `references/examples.md` | Working an end-to-end scenario: new-org go-live, a CSP violation, a password-expiry cliff |
+| `references/well-architected.md` | Justifying a tradeoff (Salesforce MFA vs IdP MFA, timeout vs convenience, IP-locking vs MFA) and finding the official sources |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated org-setup guidance before acting on it |
+| `templates/org-setup-and-configuration-template.md` | Recording the work: settings values, waiver holders, IP ranges, CSP justifications |
 
 ---
 
@@ -235,4 +330,11 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `security/org-hardening-and-baseline-config` — use when the goal is auditing/reviewing security controls across the org baseline, not initial configuration.
 - `admin/user-management` — use when the goal is profile-level login hours, per-user login IP restrictions, or freezing/deactivating users.
-- `admin/permission-sets-vs-profiles` — use when configuring which users require MFA via the system permission rather than the org-wide toggle.
+- `admin/permission-sets-vs-profiles` — use when configuring which users require MFA via the system permission rather than the org-wide toggle, or when placing `loginIpRanges` on a Profile.
+- `security/mfa-enforcement-patterns` — use when designing the MFA rollout itself: verification methods, enrolment waves, exemption policy.
+- `security/mfa-enforcement-strategy` — use when the question is the org-level MFA position and its compliance framing rather than the setting that expresses it.
+- `security/session-management-and-timeout` — use when the session policy needs designing across profiles, Connected Apps and Experience Cloud rather than expressed as one org value.
+- `security/session-high-assurance-policies` — use when specific operations must demand a stronger session than the org baseline.
+- `security/ip-range-and-login-flow-strategy` — use when deciding between trusted IP ranges, profile login IP ranges, and Login Flows as the network control.
+- `security/oauth-redirect-and-domain-strategy` — use when a My Domain change affects OAuth callbacks, redirect URIs, or hard-coded URLs in integrations.
+- `admin/salesforce-release-preparation` — use when a seasonal release or Release Update changes one of these settings' defaults.

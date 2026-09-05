@@ -101,4 +101,28 @@ Step 6 — Deactivate:
 
 **What goes wrong:** Time is wasted filling in a full user form that cannot be saved. In urgent onboarding situations this causes frustration and delay.
 
+**The query that answers it in one pass:**
+
+```sql
+-- Do NOT write "WHERE UsedLicenses >= TotalLicenses" -- UserLicense.UsedLicenses is not
+-- filterable in a WHERE clause in API v64.0 and later. Fetch, then compare in the client.
+SELECT MasterLabel, LicenseDefinitionKey, Status, TotalLicenses, UsedLicenses
+FROM UserLicense
+WHERE Status = 'Active'
+ORDER BY MasterLabel
+```
+
+| MasterLabel | LicenseDefinitionKey | TotalLicenses | UsedLicenses | Headroom |
+|---|---|---|---|---|
+| Salesforce | SFDC | 150 | 150 | **0 — this load fails** |
+| Salesforce Platform | AUL | 40 | 31 | 9 |
+| Identity | — | 100 | 12 | 88 |
+| Chatter Free | PID_CHATTER | 5000 | 214 | 4786 |
+
+Headroom of 0 on the row you need is the answer before the form is opened. `UsedLicenses` is defined
+as the licences "assigned to **active** users," so the fix is to find and deactivate a dormant
+account — the 90-day query in `references/metadata-examples.md` section 10 — or to buy a seat. Note
+that reclaiming a *user* licence this way does **not** reclaim any permission set licence the
+dormant user still holds; that is a separate `PermissionSetLicenseAssign` delete.
+
 **Correct approach:** Before creating any user, check Setup → Company Information → User Licenses to confirm available licenses. If no licenses are available, either deactivate an unused user to free one up, or contact Salesforce Account Executive to add licenses. Only start user creation after confirming a license is available.

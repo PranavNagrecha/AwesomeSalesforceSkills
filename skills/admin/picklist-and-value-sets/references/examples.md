@@ -18,6 +18,31 @@
 
 **Why it works:** The Replace job updates the stored value in the database. Simply renaming the label in the picklist edit screen changes only the display label, not the stored API value. Flows, Apex (`ISPICKVAL`), and SOQL string literals match against the stored value — so only a Replace job plus downstream code updates makes the change complete.
 
+**The three numbers that gate this job.** Run all three before step 2 and again after step 4; the Replace is done when row 1 reads zero and row 2 has grown by the same amount.
+
+```sql
+-- 1. How many rows still carry the old stored value (the job's remaining work).
+SELECT COUNT(Id) FROM Opportunity WHERE Product_Line__c = 'Platform Basic'
+
+-- 2. How many rows carry the new one (should equal the starting count of #1 when done).
+SELECT COUNT(Id) FROM Opportunity WHERE Product_Line__c = 'Core'
+
+-- 3. Rows the Replace will not touch: soft-deleted records keep their original value.
+--    ALL ROWS reads the Recycle Bin; undelete one after the job and it comes back stale.
+SELECT COUNT(Id) FROM Opportunity
+WHERE Product_Line__c = 'Platform Basic' AND IsDeleted = true
+ALL ROWS
+```
+
+| Checkpoint | Expected | If it is not |
+|---|---|---|
+| #1 before the job | the full population, e.g. 12,000 | a filter is wrong, or the label was already renamed and you are querying a string no record stores |
+| #1 after the job | 0 | the job is still running, or records were locked by an approval process |
+| #2 after the job | starting #1 + any pre-existing `Core` rows | some rows failed the Replace — check for validation rules that fire on `Product_Line__c` |
+| #3 at any time | usually 0 | those rows will resurface with `Platform Basic` on undelete; either purge the Recycle Bin or accept a second cleanup pass |
+
+Query #3 is the part practitioners skip. The Replace job does not reach records in the Recycle Bin, so a restore three weeks later reintroduces a value everyone believes was retired.
+
 ---
 
 ## Example 2: Setting Up Region as a Shared Global Value Set

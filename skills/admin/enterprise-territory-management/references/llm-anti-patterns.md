@@ -66,18 +66,18 @@ Territory model activation considerations:
 **Correct pattern:**
 
 ```
-Territory assignment rule constraints:
-1. Rules can only reference Account fields (standard and custom).
-2. Cross-object fields (Owner.Role, Parent.Name) are NOT available.
-3. Supported operators vary by field type:
-   - Text: equals, not equal, starts with, contains.
-   - Number/Currency: equals, not equal, greater than, less than, between.
-   - Picklist: equals, not equal.
-4. For criteria not supported by rules (e.g., Owner's role):
-   - Create a formula field on Account that surfaces the needed value.
-   - Use that formula field in the assignment rule criteria.
-5. Rules evaluate Account field values at the time of rule execution,
-   not at the time of Account creation.
+Territory2Rule constraints (Metadata API Developer Guide, Territory2Rule):
+1. objectType is documented as Account only.
+2. A rule holds at most 10 <ruleItems>.
+3. <operation> is a closed enumeration. There is no "between", and no
+   "greater_than" despite the guide's own sample showing it:
+     equals, notEqual, lessThan, greaterThan, lessOrEqual, greaterOrEqual,
+     contains, notContain, startsWith, includes, excludes,
+     within  (DISTANCE criteria only)
+4. <booleanFilter> numbering starts at 1 and must be contiguous. Item order
+   is derived from position in the XML, so reordering renumbers the filter.
+5. For criteria the rule cannot express, surface the value in a formula field
+   on Account and test that field instead.
 ```
 
 **Detection hint:** If the output uses cross-object references or unsupported operators in territory assignment rules, the rule will not save. Search for dot notation (e.g., `Owner.`) in rule criteria.
@@ -123,19 +123,67 @@ Design the hierarchy with Territory Types:
 **Correct pattern:**
 
 ```
-Opportunity territory assignment is NOT automatic by default:
-1. Enable Opportunity Territory Assignment:
-   Setup → Territory Settings → Enable "Opportunity Territory Assignment."
-2. Choose the assignment mechanism:
-   - Filter-based assignment: Opportunities are assigned to territories
-     based on configurable filters (Account territory, Opportunity fields).
-   - Manual assignment: users select the territory on the Opportunity.
-3. If filter-based: configure the Opportunity Territory Assignment filter
-   under the active territory model.
-4. Existing Opportunities are NOT retroactively assigned.
-   Run "Run Opportunity Territory Assignment" to process existing records.
-5. For forecasting by territory: territory assignment on Opportunities
-   is a prerequisite.
+Opportunity territory assignment is neither automatic nor declarative.
+Filter-based OTA is an Apex class, wired through Territory2Settings:
+
+  <opportunityFilterSettings>
+      <apexClassName>OppTerrAssignDefaultLogicFilter</apexClassName>
+      <enableFilter>true</enableFilter>
+      <runOnCreate>true</runOnCreate>
+      <runMultiThreaded>false</runMultiThreaded>
+  </opportunityFilterSettings>
+
+The class implements TerritoryMgmt.OpportunityTerritory2AssignmentFilter:
+  public Map<Id,Id> getOpportunityTerritory2Assignments(List<Id> opportunityIds)
+
+Contract details that decide whether it is correct:
+1. Salesforce supplies only opportunities whose
+   IsExcludedFromTerritory2Filter is false.
+2. The return map is three-valued:
+     oppId -> territoryId  assigns that territory
+     oppId -> null         CLEARS any existing Territory2Id
+     oppId absent          leaves Territory2Id untouched
+   Returning null for everything unclassifiable strips correct territories.
+3. Default logic (per the guide's reference implementation): 0 territories
+   on the account -> null; 1 -> that territory; 2+ -> the one whose
+   territory type Priority is numerically HIGHEST, unless two tie, in which
+   case null.
+4. runMultiThreaded=true only for opportunity or opportunity product splits,
+   and only if the Apex is safe under multithreading.
+5. Territory assignment on the Opportunity is a prerequisite for territory
+   forecasting.
 ```
 
 **Detection hint:** If the output assumes Opportunities inherit territory from their Account without configuring Opportunity Territory Assignment, the assignment is missing. Search for `Opportunity Territory Assignment` in the setup instructions.
+
+
+---
+
+## Anti-Pattern 6: Naming Objects and Metadata That Belong to a Different Feature
+
+**What the LLM generates:** "Query `AccountTerritoryAssignmentRule` to audit your territory rules," "deploy `Territory2ObjSharingConfig` to set Opportunity access for territory members," or "add the territory model to your change set."
+
+**Why it happens:** Three plausible-sounding names, each attached to something real, none of them the thing being described. `AccountTerritoryAssignmentRule` exists but belongs to the original Territory Management feature — its `TerritoryId` refers to `Territory`, and its Object Reference entry cross-references `Territory` and `UserTerritory`. `Territory2ObjSharingConfig` exists but is a `query`/`update`-only SOAP object (API 56.0+) for the objects enabled through `Territory2Settings.supportedObjects`, documented as `Lead` only. Change sets exist but cannot carry these components at all. Both objects' entries open with "Available if Sales Territories has been enabled," so the availability line does not disambiguate them.
+
+**Correct pattern:**
+
+```
+Wrong                              Right
+---------------------------------  --------------------------------------------
+AccountTerritoryAssignmentRule     ObjectTerritory2AssignmentRule (SOAP)
+                                   Territory2Rule (Metadata API)
+AccountTerritoryAssignmentRuleItem ObjectTerritory2AssignmentRuleItem
+Territory (metadata type)          Territory2
+UserTerritory                      UserTerritory2Association
+"Territory2ObjSharingConfig        <opportunityAccessLevel>, <contactAccessLevel>,
+ controls Opp/Contact access"       <caseAccessLevel> on each Territory2;
+                                   defaults in Territory2Settings
+"add it to the change set"         source deploy only - every Territory2* type's
+                                   Usage section says "don't support packaging or
+                                   change sets and aren't supported in CRUD calls"
+"rules run after the deploy"       "Rules can't be run via Metadata API" - the run
+                                   is user-initiated and logged in
+                                   Territory2AlignmentLog
+```
+
+**Detection hint:** Any object or metadata name in ETM output that does not contain `Territory2` is suspect — check it against the Object Reference before acting. Any deployment plan that mentions a change set for territory components is wrong regardless of how the rest of it reads.

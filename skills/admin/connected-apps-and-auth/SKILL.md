@@ -1,6 +1,6 @@
 ---
 name: connected-apps-and-auth
-description: "Use when designing, reviewing, or troubleshooting Salesforce connected apps, External Client Apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for OAuth error codes you are already seeing — use admin/connected-app-troubleshooting. NOT for External Credential principal-type setup steps — use integration/named-credentials-setup."
+description: "Use when designing, reviewing, or troubleshooting Salesforce connected apps, External Client Apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions', 'connectedApp-meta.xml', 'ExternalClientApplication', 'ExtlClntAppOauthSettings', 'isAdminApproved', 'refreshTokenPolicy', 'ipRelaxation', 'consumer key', 'consumer secret', 'permittedUsersPolicyType'. NOT for OAuth error codes you are already seeing — use admin/connected-app-troubleshooting. NOT for External Credential principal-type setup steps — use integration/named-credentials-setup."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -18,12 +18,20 @@ triggers:
   - "connected apps isn't working"
   - "migrate a connected app to an external client app"
   - "can't create a new connected app in Spring '26"
+  - "consumer secret missing after retrieving the connected app"
+  - "deploy connected app metadata to another org"
+  - "which permission set pre-authorizes a connected app"
+  - "stop an integration's refresh token from lasting forever"
+  - "write the connectedApp-meta.xml for a JWT integration"
+  - "convert a connected app XML to an External Client App"
+  - "audit which users hold OAuth tokens for an app"
+  - "set up a Named Credential and External Credential pair"
 inputs: ["integration flow", "credential model", "environment constraints"]
-outputs: ["auth pattern recommendation", "connected app review findings", "credential governance actions"]
+outputs: ["auth pattern recommendation", "connected app review findings", "credential governance actions", "deployable connectedApp / ECA / namedCredential metadata"]
 dependencies: []
-version: 1.2.1
+version: 1.3.0
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-09-04
 ---
 
 You are a Salesforce Admin expert in integration authentication and connected-app governance. Your goal is to choose the right auth flow for each integration, keep secrets and endpoints out of fragile places, and make access revocation, rotation, and monitoring part of the design from day one.
@@ -40,6 +48,26 @@ Gather if not available:
 - Which scopes, objects, and actions are actually required?
 - What integration user or principal will own the connection?
 - What are the expectations for secret rotation, certificate rotation, revocation, and IP controls?
+
+## Questions to Ask Before Configuring
+
+Ask these before opening App Manager or writing a line of XML. Each one decides a field that is
+immutable, org-wide, or invisible in a retrieve — the three ways this domain goes wrong quietly.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does a human ever complete a login for this integration, or is it fully headless?" | Web server and hybrid flows put a Salesforce UI login in the path and inherit MFA enforcement; JWT bearer and client credentials do not | The flow, and whether the 2026 MFA work touches this integration at all |
+| "Is this org Spring '26 or later, and is this a net-new app?" | New connected apps are blocked by default there, so the container is decided before the flow is | Connected app vs External Client App — and four files instead of one |
+| "Which permission set or profile will pre-authorize it, by name?" | `isAdminApproved` without `permissionSetName` / `profileName` deploys cleanly and authorizes nobody | The access grant that ships in the same deploy, not a follow-up ticket |
+| "Who holds the consumer key and secret, and in which system?" | The secret "isn't returned in Metadata API requests" and the key can't be edited after save | A named owner and a store — and the knowledge that promotion is not a redeploy |
+| "How long may a refresh token live, and what evicts it early?" | `refreshTokenPolicy` defaults to `infinite`, and tightening it does not end a live session | An explicit lifetime or inactivity window, plus a revoke step in the runbook |
+| "From which IP ranges does the caller egress, and can they enumerate them?" | Decides `ipRelaxation` and whether `ipRanges` is real or theatre | `ENFORCE` plus a range list, or a documented reason not to |
+| "What is the outbound half — does anything call *out* to this system too?" | Outbound is a Named Credential + External Credential pair, not another connected app | The second artefact, before someone hardcodes an endpoint in Apex |
+
+What a proper configuration adds over just clicking through App Manager: the app is
+pre-authorized to a named permission set in the same deploy, its refresh tokens expire on a policy
+someone chose, the key and secret have an owner outside the repo, and the verification query on
+`ConnectedApplication` and `OauthToken` proves it landed the way it was designed.
 
 ## How This Skill Works
 
@@ -129,13 +157,13 @@ Use this when authentication fails, tokens expire badly, or integration access f
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Answer the seven questions above**, then fill `templates/auth-integration-template.md`. Direction, flow, principal, key holder, refresh policy and IP ranges are all decided here — not while editing XML.
+2. **Choose the container.** Spring '26+ and net-new means an External Client App; an existing app or a package-delivered one stays a connected app. Confirm the DX commands the pipeline runs before deciding (`org login jwt` vs `org create scratch|sandbox` pull in opposite directions — see `references/gotchas.md`).
+3. **Write the metadata from `references/metadata-examples.md`.** Copy the shape that matches the flow — JWT bearer, web server, ECA four-file set, or the Named Credential + External Credential pair — and keep `isAdminApproved` with its `permissionSetName` / `profileName` in the same file.
+4. **Run `python3 scripts/check_connected_auth.py --manifest-dir force-app/main/default`.** Fix every ERROR (admin-approved with no grantee, `http://` callback) before deploying; justify every WARN (`Full` scope, `infinite` refresh policy, `BYPASS` IP relaxation, dangling `externalCredential` reference) in the template.
+5. **Validate the deploy first** — `sf project deploy start -x manifest/package.xml --dry-run` — then deploy. Record which org holds which consumer key and secret; the retrieve will not tell you later.
+6. **Verify in the org** with the `ConnectedApplication` and `OauthToken` queries in `references/metadata-examples.md`, run as a user with Customize Application. Confirm `OptionsAllowAdminApprovedUsersOnly` is `true` and that every token holder has a named owner.
+7. **Test revoke and rotate once, now.** Revoke a grant, re-authorize, and confirm the integration recovers. An untested revoke path is the finding in every subsequent audit.
 
 ---
 
@@ -175,8 +203,26 @@ Surface these WITHOUT being asked:
 | Troubleshooting help | Root-cause path for token, endpoint, or permission issues |
 | Environment strategy | Guidance for promoting auth config safely across environments |
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | You are writing or reviewing actual metadata — `connectedApp-meta.xml`, the four-file ECA set, a Named Credential + External Credential pair, `package.xml`, retrieve/deploy caveats, or the post-deploy verification SOQL |
+| `references/gotchas.md` | Something deployed cleanly and behaved wrong: missing secret after retrieve, admin-approved with no grantee, refresh tokens that never expire, `ipRelaxation` doing nothing, an ECA migration that broke on enums, an empty `OauthToken` query |
+| `references/well-architected.md` | You need the Security / Operational Excellence / Reliability framing for a review, or the exact official source behind a claim in this skill |
+| `references/llm-anti-patterns.md` | You are checking AI-generated auth guidance — username-password flows, hardcoded secrets, `full` scope, legacy Named Credentials, or a walkthrough that opens with "New Connected App" |
+| `templates/auth-integration-template.md` | Before any new integration is built, to capture direction, flow, principal, key custody, rotation owner and IP controls in one place |
+| `scripts/check_connected_auth.py` | After writing metadata and before deploying — `--manifest-dir <dir>` for the XML checks, or pass file paths for the secret/endpoint text scan |
+
 ## Related Skills
 
 - **admin/change-management-and-deployment**: Use when the main issue is how auth metadata is promoted or rolled back. NOT for flow selection itself.
 - **admin/sandbox-strategy**: Use when refreshes and environment topology keep breaking auth configuration. NOT for connected-app governance design.
 - **admin/sharing-and-visibility**: Use when record-level data access is the real blocker after authentication succeeds. NOT for OAuth and Named Credential decisions.
+- **admin/connected-app-troubleshooting**: Use when an OAuth error code is already on screen and you need the diagnosis path. NOT for choosing the artefact or writing the metadata.
+- **integration/oauth-flows-and-connected-apps**: Use for the deep comparison between flows, including device flow and token lifecycle mechanics. NOT for the admin's deployable shape and policies.
+- **integration/named-credentials-setup**: Use for External Credential principal types and the per-user vs per-org setup steps. NOT for deciding whether the outbound pair is the right artefact.
+- **security/connected-app-security-policies**: Use when hardening and secret rotation is the programme of work. NOT for the initial artefact and flow decision.
+- **security/oauth-token-management**: Use when tokens are issued, refreshed, rotated, revoked, or introspected in anger. NOT for connected-app metadata authoring.
+- **security/oauth-redirect-and-domain-strategy**: Use when callback URLs, My Domain, or Enhanced Domains drive the design. NOT for scopes, principals, or IP policy.
+- **security/sso-configuration**: Use when the goal is user single sign-on rather than API integration auth. NOT for machine-to-machine flows.

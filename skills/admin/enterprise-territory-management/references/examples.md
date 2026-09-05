@@ -9,7 +9,7 @@
 **Solution:**
 
 Territory Type configuration:
-- Type Name: "Geographic" — priority value: 10
+- Type Name: "Geographic" — `priority` 10 (only one type in play, so the value is uncontested; it matters in Example 2)
 
 Territory Model: "FY26 North America" (created in Planning state)
 
@@ -30,10 +30,12 @@ North America (root)
     └── Canada West   (BC, AB, SK, MB, NT, NU, YT)
 ```
 
-Account Assignment Rule example for "US Southeast":
+Account Assignment Rule example for "US Southeast" — one `Territory2Rule` in the model's `rules` folder, associated to the US Southeast territory through `ruleAssociations`:
 - Rule Name: Southeast States
-- Criteria: `BillingState EQUALS "VA", "NC", "SC", "GA", "FL", "AL", "MS", "TN", "KY", "WV", "AR", "LA", "DE", "MD"`
-- IsActive: true (auto-runs on account create/update)
+- Criteria: `BillingState equals VA,NC,SC,GA,FL,AL,MS,TN,KY,WV,AR,LA,DE,MD`
+- `active`: true (auto-runs on account create/update, except on accounts where `IsExcludedFromRealign` is true)
+
+The 14 states fit in a single rule item, so no `booleanFilter` is needed. A rule is capped at 10 rule items, which is the real constraint on how many *distinct fields* one rule can test — not how many values one field can match.
 
 Deployment sequence:
 1. Build hierarchy and rules in Planning state.
@@ -55,8 +57,10 @@ Deployment sequence:
 **Solution:** Add a second territory type and a named account overlay branch within the same active territory model.
 
 Territory Types (updated):
-- "Geographic" — priority: 10
-- "Named Account" — priority: 5 (lower integer = higher priority; named account territories win OTA tie-breaking over geo)
+- "Geographic" — `priority` 10
+- "Named Account" — `priority` 20
+
+The direction matters and is easy to get backwards. The Metadata API guide states that "the account-assigned territory whose territory type priority is **highest** is then assigned to the opportunity," and the reference Apex filter keeps the territory with the numerically greater priority. So Named Account needs the **larger** integer (20) to beat Geographic (10). The two values must also be distinct — priority is required to be unique per type — and if an account somehow lands in two territories tied at the top priority, the documented outcome is that the opportunity gets no territory at all.
 
 Territory hierarchy addition to the FY26 North America model:
 ```
@@ -69,9 +73,10 @@ North America (root)
 ```
 
 Assignment rule for "Strategic Rep 1 Named Accounts":
-- Criteria: Custom field `Named_Account_Owner__c EQUALS "Rep 1"` (set on account record)
-  OR: Account Name EQUALS "Acme Corp", "Global Dynamics", ... (explicit list)
-- IsActive: true
+- Criteria: custom field `Named_Account_Owner__c equals Rep 1` (set on the account record)
+- `active`: true
+
+Prefer the custom-field form over an explicit account-name list. A name list burns rule items — ten is the cap — and every roster change becomes a metadata deploy rather than a data edit.
 
 Each strategic rep is assigned as a territory member of their individual named account territory leaf. They are not added to geographic territories.
 
@@ -89,4 +94,32 @@ Forecast configuration:
 
 **What goes wrong:** Accounts that should be assigned to multiple territories end up in an inconsistent state — assigned to the territories whose rules have been run but not yet to others. Reports and forecast data are unreliable until all rules have been run. The partial-run state can persist for days in large orgs, creating confusion about whether accounts are correctly assigned.
 
-**Correct approach:** After model activation (or any significant structural rule change), run assignment rules at the Territory Model level — from the Territory Model detail page, click "Run Assignment Rules." This evaluates all rules across all territories in a single background job and produces consistent assignments. Territory-level rule runs are appropriate only for incremental, isolated changes to a single territory after initial assignment is complete.
+**Correct approach:** After model activation (or any significant structural rule change), run assignment rules once at the **model** level. That evaluates all rules across all territories in a single background job and produces consistent assignments. Territory-level runs are for incremental, isolated changes to one territory after initial assignment is complete.
+
+**How to tell which happened.** `Territory2AlignmentLog.Territory2Id` is documented as null when "the assignment rule run was for the territory model" and populated when it was for a single territory. That one field distinguishes the two patterns after the fact:
+
+```sql
+-- A healthy post-activation run: ONE row, Territory2Id null, Status finished.
+-- The territory-by-territory anti-pattern shows up as many rows with Territory2Id
+-- populated, spread over hours or days, and no model-level row at all.
+SELECT Id,
+       Territory2ModelId,
+       Territory2Id,
+       Territory2.Name,
+       Status,
+       StartTime,
+       EndTime,
+       RunAsId
+FROM Territory2AlignmentLog
+WHERE Territory2ModelId = '0MIxx0000004CDbGAM'
+  AND StartTime = LAST_N_DAYS:7
+ORDER BY StartTime DESC
+
+-- Cross-check against the model itself. LastRunRulesEndDate should be recent
+-- and later than the newest account data change you care about.
+SELECT Id, DeveloperName, State, ActivatedDate, LastRunRulesEndDate
+FROM Territory2Model
+WHERE State = 'Active'
+```
+
+Read the result this way: no rows at all means the deploy landed and nothing was ever run — Metadata API cannot run rules, so a clean deploy is not evidence of assignment. Rows with a null `Territory2Id` are model-level runs. A scatter of rows with populated `Territory2Id` and no model-level row is the anti-pattern in progress, and territory assignment should be treated as unreliable until a model-level run completes.
