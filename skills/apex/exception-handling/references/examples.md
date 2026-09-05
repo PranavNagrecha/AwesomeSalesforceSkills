@@ -90,6 +90,72 @@ public with sharing class OpportunitySubmissionService {
 
 ---
 
+## Example 3: Rollback Then Notify — The Savepoint / Callout Order
+
+**Context:** A nightly reconciliation writes `Adjustment__c` rows. If any row is rejected the whole
+adjustment must be discarded and the operations team notified over HTTP.
+
+**Problem:** Rolling back to the savepoint feels like it cleans the transaction, so the callout goes in
+the catch block straight after `Database.rollback(sp)`. It fails with `System.CalloutException`, the
+notification is never sent, and the caller receives a callout error instead of the DML error.
+
+**Solution:** roll back, *release*, then call out.
+
+```apex
+public with sharing class AdjustmentReconciler {
+
+    public class ReconcileException extends Exception {}
+
+    public void run(List<Adjustment__c> adjustments, String runId) {
+        Savepoint sp = Database.setSavepoint();   // costs one DML STATEMENT, not a row
+        try {
+            insert adjustments;
+            Database.releaseSavepoint(sp);        // success path: release before returning
+        } catch (DmlException e) {
+            Database.rollback(sp);
+            Database.releaseSavepoint(sp);        // WITHOUT this line the next line throws
+
+            HttpRequest req = new HttpRequest();
+            req.setEndpoint('callout:Reconcile_Ops/v1/alerts');
+            req.setMethod('POST');
+            req.setBody(JSON.serialize(new Map<String, Object>{
+                'runId'        => runId,
+                'failedRows'   => e.getNumDml(),
+                'firstBadRow'  => e.getDmlIndex(0),
+                'statusCode'   => String.valueOf(e.getDmlType(0))
+            }));
+            new Http().send(req);
+
+            ApplicationLogger.error('AdjustmentReconciler.run', e);
+            ApplicationLogger.flush();
+            throw new ReconcileException('Adjustment run ' + runId + ' was rolled back.', e);
+        }
+    }
+}
+```
+
+**Why it works:** the guide's own worked example puts `Database.rollback(sp)` and
+`Database.releaseSavepoint(sp)` before `makeACallout()` and notes that the callout then succeeds
+(Apex Developer Guide, `apexdev` L8730–8741). The payload carries `getDmlIndex(0)` rather than `0`,
+because the loop counter and the original row position are different numbers
+(`apexrefguide` L215140).
+
+**Verify it after a real run:** the two facts worth checking in the org are that nothing committed and
+that exactly one log row exists per failed run — not one per failed row.
+
+```sql
+-- Nothing from the failed run survived the rollback.
+SELECT COUNT(Id) FROM Adjustment__c WHERE Run_Id__c = 'RUN-2026-09-05'
+
+-- Exactly one ERROR row per failed run, with the DmlException type preserved.
+SELECT Source__c, Exception_Type__c, Request_Id__c, Message__c, CreatedDate
+FROM Application_Log__c
+WHERE Source__c = 'AdjustmentReconciler.run' AND CreatedDate = TODAY
+ORDER BY CreatedDate DESC
+```
+
+---
+
 ## Anti-Pattern: Catch Everything, Log Nothing Useful, Return Null
 
 **What practitioners do:** They wrap the whole method in `try/catch (Exception e)`, call `System.debug(e)`, and return `null`.

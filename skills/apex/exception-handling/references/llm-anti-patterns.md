@@ -51,7 +51,7 @@ try {
 }
 ```
 
-**Why it happens:** LLMs use `catch (Exception e)` as a universal safety net. This catches `QueryException`, `DmlException`, `CalloutException`, `NullPointerException`, and `LimitException` identically — losing the ability to handle each failure mode appropriately (retry callouts, report DML field errors, etc.).
+**Why it happens:** LLMs use `catch (Exception e)` as a universal safety net. It catches `QueryException`, `DmlException`, `CalloutException` and `NullPointerException` identically, losing the ability to handle each failure mode appropriately (retry callouts, report DML field errors, and so on). It is also a false safety net for the failure most likely to end the transaction: `System.LimitException` is uncatchable, and "when exceptions are uncatchable, catch blocks, as well as finally blocks if any, aren’t executed" (Apex Developer Guide, `apexdev` L39722–39728). The generic catch buys nothing there and hides everything else.
 
 **Correct pattern:**
 
@@ -93,7 +93,7 @@ public static void saveRecord(Account a) {
 }
 ```
 
-**Why it happens:** LLMs pass the raw exception message to `AuraHandledException`. This exposes internal field names, validation rule messages, and stack traces to the UI — potentially leaking sensitive schema details to end users.
+**Why it happens:** LLMs pass the raw exception message to `AuraHandledException`. A `DmlException` message is built for operators, not users — the guide's own sample reads `System.DmlException: Insert failed. First exception on row 0; first error: REQUIRED_FIELD_MISSING, Required fields are missing: [Description, Price, Total Inventory]` (`apexdev` L39754–39757) — so the status code, the validation-rule text and the field API names all reach the browser. The stack trace does not: the client error "doesn’t include the `body.stackTrace` property" for an `AuraHandledException` (Lightning Web Components Developer Guide, page `apex-error-handling`, `lwc_guide` L7522). The leak is schema and rule text, not the trace.
 
 **Correct pattern:**
 
@@ -227,3 +227,140 @@ throw new ServiceException('Account save failed: validation error on Status__c')
 ```
 
 **Detection hint:** More than 3 levels of exception class inheritance in a single project.
+
+---
+
+## Anti-Pattern 7: A negative test with no `Assert.fail()` after the call that should throw
+
+**What the LLM generates:**
+
+```apex
+@IsTest
+static void testInvalidInputThrows() {
+    try {
+        IntakeService.submit(null);
+    } catch (IntakeException e) {
+        Assert.areEqual('Input required', e.getMessage());
+    }
+}
+```
+
+**Why it happens:** The shape looks complete — there is a `try`, a `catch`, and an assertion. But if the
+method stops throwing, the `catch` block never runs, no assertion executes, and the test still passes.
+The regression it exists to catch is exactly the one it cannot see.
+
+**Correct pattern:**
+
+```apex
+@IsTest
+static void testInvalidInputThrows() {
+    try {
+        IntakeService.submit(null);
+        Assert.fail('Expected IntakeException for a null payload.');
+    } catch (IntakeException e) {
+        Assert.areEqual('Input required', e.getMessage());
+        Assert.isInstanceOfType(e.getCause(), NullPointerException.class);
+    }
+}
+```
+
+`Assert.fail(msg)` is documented for exactly this shape and is safe inside the `try`, because the
+assertion failure it raises cannot be caught by the surrounding `catch`: "You can’t, however, catch the
+assertion failure in the try/catch block even though it’s logged as an exception" (Apex Reference Guide,
+`apexrefguide` L200594–200595).
+
+**Detection hint:** a `try` block inside an `@IsTest` method whose last statement is a method call, with
+a `catch` that contains assertions and no `Assert.fail` / `System.assert(false, ...)` above it.
+
+---
+
+## Anti-Pattern 8: Wrapping an entire Queueable `execute` in `try/catch` to "stop the job failing"
+
+**What the LLM generates:**
+
+```apex
+public void execute(QueueableContext ctx) {
+    try {
+        doAllTheWork();
+    } catch (Exception e) {
+        System.debug('Job failed: ' + e.getMessage());
+    }
+}
+```
+
+**Why it happens:** The assistant reasons that a caught exception means a job that does not fail. On the
+platform the two failures that actually kill async jobs — governor limits and assertion failures — are
+uncatchable, so neither this `catch` nor a `finally` beside it executes (Apex Developer Guide,
+`apexdev` L39722–39728). The job still shows `Failed`, and the swallow has removed the only signal for
+the failures that *were* catchable.
+
+**Correct pattern:**
+
+```apex
+public void execute(QueueableContext ctx) {
+    System.attachFinalizer(new IntakeFinalizer());
+    doAllTheWork();   // let it throw
+}
+
+public class IntakeFinalizer implements Finalizer {
+    public void execute(FinalizerContext ctx) {
+        if (ctx.getResult() == ParentJobResult.UNHANDLED_EXCEPTION) {
+            ApplicationLogger.error('IntakeQueueable', ctx.getException());
+            ApplicationLogger.flush();
+        }
+    }
+}
+```
+
+`FinalizerContext.getResult()` returns `SUCCESS` or `UNHANDLED_EXCEPTION`, and `getException()` "returns
+the exception with which the Queueable job failed when `getResult` is `UNHANDLED_EXCEPTION`"
+(`apexdev` L16330–16336). The finalizer runs in its own transaction, so its log write survives the
+job's rollback.
+
+**Detection hint:** a class implementing `Queueable` or `Batchable` whose `execute` body is one
+`try { ... } catch (Exception e) { ... }` with no `System.attachFinalizer` and no
+`Database.RaisesPlatformEvents` on the class declaration.
+
+---
+
+## Anti-Pattern 9: Calling out from a catch block that still holds an open savepoint
+
+**What the LLM generates:**
+
+```apex
+Savepoint sp = Database.setSavepoint();
+try {
+    insert records;
+} catch (DmlException e) {
+    Database.rollback(sp);
+    notifyOpsTeam(e.getMessage());   // HTTP callout
+}
+```
+
+**Why it happens:** The rollback reads as "the transaction is clean now", so the callout looks safe. It
+is not: the savepoint is rolled back but still *active*, and the callout raises a
+`System.CalloutException` carrying "All active Savepoints must be released before making callouts."
+(`apexdev` L8742–8750). The compensating notification never goes out, and the new exception replaces the
+`DmlException` the caller was meant to receive.
+
+**Correct pattern:**
+
+```apex
+Savepoint sp = Database.setSavepoint();
+try {
+    insert records;
+} catch (DmlException e) {
+    Database.rollback(sp);
+    Database.releaseSavepoint(sp);   // required before any callout
+    notifyOpsTeam(summarize(e));
+    throw CaseIntakeException.of(CaseIntakeException.Code.ROW_REJECTED, 'Intake failed.', e);
+}
+```
+
+The order — roll back, release, then call out — is the guide's own worked example (`apexdev`
+L8730–8741). Note that `releaseSavepoint` also releases every savepoint created after it, and that a
+later `Database.rollback` on a released savepoint raises `System.InvalidOperationException`
+(`apexdev` L8776–8781).
+
+**Detection hint:** `Database.setSavepoint` in a method that also contains `Http().send`, `callout:`, or
+a `@future(callout=true)` invocation, with no `Database.releaseSavepoint` between them.
