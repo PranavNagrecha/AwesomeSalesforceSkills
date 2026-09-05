@@ -112,3 +112,69 @@ does not run — silently, with no error.
 **Detection hint:** flag any claim that a cascading parent or
 grandparent save runs assignment rules, workflow rules, after-save
 Flows, entitlement rules, or its own roll-ups.
+
+## Anti-Pattern 8: Claim A Duplicate Rule Cannot See A Before-Save Flow's Write
+
+**What the LLM generates:** "Duplicate rules evaluate the record as submitted,
+so a value your before-save flow computes won't be considered — put the
+normalization in a before trigger instead." Sometimes phrased as "duplicate
+matching happens before automation".
+
+**Why it happens:** the model knows duplicate rules are "early" and knows
+before-save flows are "early", and resolves the ambiguity by ordering them the
+way the words sound. The two are adjacent enough in the list that the guess is
+never obviously wrong in a review.
+
+**Correct pattern:** the direction is the other way. Before-save flows are
+step 3; duplicate rules are step 6. The rule matches on whatever the flow
+wrote. The same is true of custom validation rules at step 5. The consequence
+the answer usually misses matters more than the ordering: a block action ends
+the transaction there, so nothing at step 7 or later runs — no after trigger,
+no after-save flow, no flow fault path, no log row.
+
+**Detection hint:** flag any claim that a duplicate rule, a matching rule or a
+custom validation rule sees "the submitted value" rather than the
+flow-populated one. Flag any fault-handling design that expects a duplicate
+block to be caught by a flow.
+
+## Anti-Pattern 9: Treat A Flow-Published Platform Event As Part Of The Transaction
+
+**What the LLM generates:** "Publish the event from the after-save flow — if
+the transaction rolls back, the event won't be delivered, so the subscriber
+stays consistent."
+
+**Why it happens:** the model generalizes from Apex `Database.rollback` and
+from the existence of `PublishAfterCommit`, and assumes transactional
+semantics are the default. They are not.
+
+**Correct pattern:** `publishBehavior` on the event definition decides this,
+and the default is `PublishImmediately` — the message goes out when the publish
+executes, whether or not the transaction succeeds. An after-save flow publishes
+at step 14, and steps 15 through 19 can still fail. If the event means "this
+record changed", the definition needs `PublishAfterCommit`.
+
+**Detection hint:** flag any claim that a rollback un-publishes an event, or
+that publishing from a flow is safe by default. Ask which `publishBehavior` the
+event declares; if the answer does not name one, the answer is
+`PublishImmediately`.
+
+## Anti-Pattern 10: Invent A Ranking For Two Flows In The Same Step
+
+**What the LLM generates:** "Flows in the same context run in the order they
+were activated" — or by API name, or by version number, or "alphabetically".
+Sometimes it invents a Flow Trigger Explorer behaviour to justify it.
+
+**Why it happens:** the question ("which of my two after-save flows runs
+first?") demands an answer, and every plausible-sounding tiebreak is
+unfalsifiable from the docs. Saying "undefined" feels like a non-answer.
+
+**Correct pattern:** the order of execution names step 3 and step 14 once each
+and never ranks flows inside them. `triggerOrder` (int, 1–2,000, API 54.0 and
+later) is the only rank the Metadata API exposes, and it is nullable. What
+happens when two flows declare the *same* `triggerOrder`, or when neither
+declares one, is not documented in the Metadata API guide, the Object
+Reference or the Apex Developer Guide — the guide defers to a Salesforce Help
+page. Say so, and fix the metadata instead of reasoning about it.
+
+**Detection hint:** flag any stated tiebreak for co-resident flows that is not
+`triggerOrder`. Flag confident answers about `triggerOrder` ties.

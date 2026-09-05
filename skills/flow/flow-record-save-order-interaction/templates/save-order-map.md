@@ -8,7 +8,14 @@ High-traffic events (insert/update):
 
 ## Automations Registered
 
-Step numbers follow the Apex Developer Guide's 20-step list.
+Step numbers follow the Apex Developer Guide's 20-step list
+(`apexdev.txt` L15416-L15489). Generate the flow rows mechanically rather than
+typing them:
+
+```bash
+python3 skills/flow/flow-record-save-order-interaction/scripts/check_flow_record_save_order_interaction.py \
+    --manifest-dir force-app/main/default --map-only
+```
 
 | Step | Platform Action                      | Automation Name | Owner | Purpose |
 |------|--------------------------------------|-----------------|-------|---------|
@@ -45,4 +52,10 @@ Step numbers follow the Apex Developer Guide's 20-step list.
 - [ ] Before-save flow limited to same-record field updates.
 - [ ] No parent after-save Flow (step 14) relied on to fire from a child
       roll-up — a recursive save skips steps 9–17.
+- [ ] Every co-resident Active flow on this object declares `triggerOrder`.
+- [ ] Any platform event published from a flow here declares
+      `publishBehavior` deliberately (the default is `PublishImmediately`,
+      which fires before the step-19 commit).
+- [ ] Every `AsyncAfterCommit` path has its own failure and replay story — it
+      runs at step 20 and cannot roll the save back.
 - [ ] Recursion guards documented.
