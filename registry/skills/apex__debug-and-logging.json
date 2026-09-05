@@ -156,7 +156,7 @@
     "fb5e1d4613abce19f371",
     "ff220b4b270f0404948c"
   ],
-  "content_hash": "66896908387936b720d8a96fb468ea90a40770587fd9499e69868d07c83bc2e8",
+  "content_hash": "25ec59b6f165de7fda5e1b0d0baf81df1a0e00e77054287409de01194a661689",
   "dependencies": [],
   "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs', 'log truncated', 'publish immediately', 'correlation id', 'Limits snapshot', 'log lost on rollback', 'Test.getEventBus().deliver()'. NOT for trace flag setup, reading a log, or the Developer Console \u2014 use apex/debug-logs-and-developer-console. NOT for building a custom Log__c framework \u2014 use apex/custom-logging-and-monitoring.",
   "file_location": "skills/apex/debug-and-logging",

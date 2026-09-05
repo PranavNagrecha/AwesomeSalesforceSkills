@@ -21,7 +21,7 @@ public class AccountService {
 }
 ```
 
-**Why it happens:** LLMs add `System.debug` statements as the default logging mechanism because it is the simplest. But debug logs are transient (auto-purged after 24 hours), not queryable, and the per-record debugging adds CPU overhead at scale. In production, debug logs are often disabled or truncated.
+**Why it happens:** LLMs add `System.debug` statements as the default logging mechanism because it is the simplest. But debug logs are transient — "System debug logs are retained for 24 hours. Monitoring debug logs are retained for seven days" (Apex Developer Guide L38118) — not queryable, and the per-record debugging adds CPU overhead at scale. A log over 20 MB is silently trimmed, and the lines removed "can be removed from any location, not just the start of the debug log" (L38115–38117), so the statement you needed may be the one that went.
 
 **Correct pattern:**
 
@@ -60,7 +60,7 @@ System.debug('Account processed: ' + account.Id);
 ```apex
 System.debug(LoggingLevel.FINE, 'Account processed: ' + account.Id);
 System.debug(LoggingLevel.ERROR, 'Failed to process account: ' + account.Id + ' — ' + e.getMessage());
-System.debug(LoggingLevel.WARN, 'Approaching governor limit: ' + Limits.getQueries() + '/100 SOQL');
+System.debug(LoggingLevel.WARN, 'Approaching governor limit: ' + Limits.getQueries() + '/' + Limits.getLimitQueries());
 ```
 
 **Detection hint:** `System\.debug\(` without `LoggingLevel\.` as the first argument.
@@ -142,7 +142,7 @@ System.debug('API Key: ' + apiSettings.API_Key__c);
 System.debug('Auth token: ' + response.getHeader('Authorization'));
 ```
 
-**Why it happens:** LLMs add debugging for all variables without considering data sensitivity. Debug logs can be viewed by any user with "Manage Users" or "View All Data" permissions, and they persist in the system for up to 24 hours. Logging PII or secrets creates a compliance and security risk.
+**Why it happens:** LLMs add debugging for all variables without considering data sensitivity. The platform scrubs exactly one thing for you — "Session IDs are replaced with `SESSION_ID_REMOVED` in Apex debug logs" (Apex Developer Guide L38133) — and nothing else. At `FINEST` the log "includes details of all Apex variable assignments" (L38171–38175), so a password held in a local string is in the file. Retention is 24 hours for system logs and seven days for monitoring logs (L38118). UNVERIFIED (2026-09-05): which permissions grant a user access to another user's debug log is documented on help.salesforce.com, which is not in the grounding corpus — do not repeat a specific permission name without checking.
 
 **Correct pattern:**
 
@@ -173,7 +173,7 @@ for (Account a : accounts) {
 }
 ```
 
-**Why it happens:** LLMs generate per-event log inserts. Calling `insert` per log entry inside a loop quickly hits the 150 DML statement limit. Logging should be buffered and flushed in a single DML or published as platform events.
+**Why it happens:** LLMs generate per-event log inserts. Calling `insert` per log entry inside a loop quickly hits the DML statement ceiling — the limit block written into every debug log reads "Number of DML statements: 0 out of 150" (Apex Developer Guide L38279). Logging should be buffered and flushed in a single DML or published as platform events. Note the meters differ: publish-after-commit events count against that same DML limit, publish-immediately events against "a separate event publishing limit of 150 `EventBus.publish()` calls" (Apex Reference Guide L214524–214528).
 
 **Correct pattern:**
 
@@ -203,3 +203,91 @@ Logger.flush(); // One DML for all log entries
 ```
 
 **Detection hint:** `insert new.*Log__c` inside a `for` or `while` loop.
+
+---
+
+## Anti-Pattern 7: Building a log platform event and leaving `publishBehavior` at the default
+
+**What the LLM generates:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <label>Log Event</label>
+    <pluralLabel>Log Events</pluralLabel>
+    <eventType>HighVolume</eventType>
+</CustomObject>
+```
+
+**Why it happens:** The model knows platform events are the durable-logging answer but treats the
+publish behaviour as boilerplate. Two failure modes follow. If a human later sets it to
+`PublishAfterCommit` — which is what the Setup UI's wording nudges toward — the log for the failing
+transaction is discarded with the rollback: "If the transaction fails, the event message isn't
+published" (api_meta L42222–42224). And an unstated behaviour is invisible in code review.
+
+**Correct pattern:** state it, and route only ERROR/FATAL down it so the 150-call publish-immediate
+limit is not spent on breadcrumbs.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <label>Log Event</label>
+    <pluralLabel>Log Events</pluralLabel>
+    <eventType>HighVolume</eventType>
+    <publishBehavior>PublishImmediately</publishBehavior>
+</CustomObject>
+```
+
+**Detection hint:** a `.object-meta.xml` whose `fullName`/directory ends in `__e` and whose name
+matches `Log|Error|Audit|Trace`, with no `<publishBehavior>` element.
+
+---
+
+## Anti-Pattern 8: A test that publishes a log event and asserts on the subscriber without `Test.getEventBus().deliver()`
+
+**What the LLM generates:**
+
+```apex
+@IsTest
+static void logsError() {
+    Test.startTest();
+    LogService.error('X', new MyException('boom'));
+    LogService.flush();
+    Test.stopTest();
+
+    System.assertEquals(1, [SELECT COUNT() FROM Application_Log__c]);
+}
+```
+
+**Why it happens:** The model assumes `Test.stopTest()` flushes every async path the way it does for
+`@future` and Queueable. Platform event delivery to an Apex subscriber is not one of them — the guide
+tells you to call `deliver()` explicitly and to "Enclose `Test.getEventBus().deliver()` within the
+`Test.startTest()` and `Test.stopTest()` statement block" (Apex Reference Guide L157701). The
+assertion then fails against an empty table and the next move is usually to weaken the assertion,
+which is how a logging path ships untested.
+
+**Correct pattern:**
+
+```apex
+@IsTest
+static void logsError() {
+    Test.startTest();
+    LogService.error('X', new MyException('boom'));
+    LogService.flush();
+    Test.getEventBus().deliver();
+    Test.stopTest();
+
+    List<Application_Log__c> rows = [SELECT Severity__c, Request_Id__c FROM Application_Log__c];
+    System.assertEquals(1, rows.size(), 'Subscriber should have written one row');
+    System.assertEquals('ERROR', rows[0].Severity__c, 'Severity should round-trip');
+}
+```
+
+If a downstream process publishes further events, call `deliver()` again — "If further platform
+events are published by downstream processes, add `Test.getEventBus().deliver();` to deliver the event
+messages for each process" (Apex Developer Guide L17938–17940).
+
+**Detection hint:** a test method containing `EventBus.publish` or a `Log`/`Event` service call, plus
+a SOQL assertion, with no `Test.getEventBus().deliver()` between them.
