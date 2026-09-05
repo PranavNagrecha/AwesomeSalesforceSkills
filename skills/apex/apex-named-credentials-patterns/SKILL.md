@@ -1,18 +1,26 @@
 ---
 name: apex-named-credentials-patterns
-description: "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex'. NOT for Named Credential setup in the Salesforce Setup UI — use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) — use apex/callouts-and-http-integrations."
+description: "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex', 'namedCredentialType SecuredEndpoint', 'externalCredentialPrincipalAccesses', 'generateAuthorizationHeader', 'allowMergeFieldsInHeader', 'migrate legacy named credential', 'Remote Site Setting vs Named Credential'. NOT for Named Credential setup in the Salesforce Setup UI — use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) — use apex/callouts-and-http-integrations."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security
   - Reliability
 triggers:
-  - named credential custom header formula apex how to pass oauth token
-  - per-user oauth named credential apex token inspection
-  - UserExternalCredential query apex check if user has authenticated
-  - callout colon prefix named credential apex syntax
-  - enhanced model external credential vs named credential apex confusion
-  - named credential not working with continuation async callout
+  - "named credential custom header formula apex how to pass oauth token"
+  - "per-user oauth named credential apex token inspection"
+  - "UserExternalCredential query apex check if user has authenticated"
+  - "callout colon prefix named credential apex syntax"
+  - "enhanced model external credential vs named credential apex confusion"
+  - "named credential not working with continuation async callout"
+  - "write the externalCredential and namedCredential xml for a SecuredEndpoint callout"
+  - "migrate a legacy named credential to external credential without breaking apex"
+  - "grant a permission set access to an external credential principal"
+  - "named credential callout returns 401 but the credential is configured"
+  - "replace remote site setting and hardcoded api token with a named credential"
+  - "deploy named credential and apex to sandbox without changing the endpoint in code"
+  - "test an apex callout that goes through a named credential"
+  - "stop apex from setting the authorization header twice on a named credential callout"
 tags:
   - named-credentials
   - callouts
@@ -24,52 +32,75 @@ inputs:
   - "Auth type in use: OAuth, Basic, or Custom Headers"
   - "Whether per-user (Named Principal) or org-wide (Per-User Principal) auth is needed"
   - "Any custom header formula tokens required in the callout"
+  - "Which permission set grants the External Credential principal, and who the callout runs as"
 outputs:
   - "Apex callout implementation using Named Credential with correct syntax"
   - "Custom header formula token usage for injecting OAuth tokens or credentials"
   - "UserExternalCredential SOQL query for per-user token status checks"
   - "Guidance on Enhanced vs. Legacy model differences affecting Apex code"
+  - "Deployable ExternalCredential + NamedCredential + PermissionSet metadata with deploy order"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-19
+updated: 2026-09-05
 ---
 
 # Apex Named Credentials Patterns
 
-Use this skill when writing Apex that makes authenticated outbound callouts through Named Credentials — covering the `callout:` URL prefix, custom header formula tokens for injecting OAuth or Basic auth values, the `UserExternalCredential` SObject API for per-user token inspection, and the behavioral differences between the legacy and enhanced Named Credential models that affect Apex code.
+Use this skill when writing Apex that makes authenticated outbound callouts through Named Credentials — covering the `callout:` URL prefix, the `{!$Credential.*}` merge fields for injecting credential values into headers and bodies, the `ExternalCredential` / `NamedCredential` / `PermissionSet` metadata a developer actually deploys, and the behavioral differences between the legacy and `SecuredEndpoint` models that affect Apex code.
+
+Boundary: `integration/named-credentials-setup` owns the declarative security design. This skill owns how Apex consumes it and the metadata shapes a developer deploys alongside the code.
 
 ---
 
 ## Before Starting
 
 - Is the org using the **legacy model** (single Named Credential with embedded auth config) or the **enhanced model** (External Credential for auth + Named Credential for endpoint, introduced Spring '22)?  The two models have different metadata shapes but the same `callout:` URL syntax in Apex.
-- Does the use case require **per-user auth** (each user authenticates individually with OAuth) or **org-wide auth** (all users share one credential set)? Per-user auth requires querying `UserExternalCredential` to check whether a given user has an active token before making the callout.
-- Are there **custom header fields** defined on the Named Credential that inject OAuth tokens or credentials? These use the `{!$Credential.*}` formula syntax and only resolve at callout time — they are not available inside Apex code at compile or run time.
-- Named Credentials automatically exempt the endpoint host from Remote Site Settings. In **managed packages**, the subscriber org may still need Remote Site Settings if the Named Credential is not part of the package. Confirm the distribution model before relying on this exemption.
+- Does the use case require **per-user auth** (each user authenticates individually with OAuth) or **org-wide auth** (all users share one credential set)? The choice determines which principal type the External Credential declares and how failures surface to the user.
+- Are there **credential values** the endpoint needs in a header or body that the platform will not supply on its own? Those use `{!$Credential.*}` merge fields, which are written in Apex but gated by two flags on the Named Credential.
+- Which **permission set** grants the External Credential principal, and does the user the callout runs as hold it? Batch, Queueable, Scheduled and `@future` Apex do not necessarily run as the person who started the work.
+- Named Credentials automatically exempt the endpoint host from Remote Site Settings. In **managed packages**, the credential also needs an `AllowedManagedPackageNamespaces` parameter naming the package. Confirm the distribution model before relying on the exemption.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What is the Named Credential's API name, and does a credential with that exact name exist in every org you will deploy to? | `callout:` resolves by API name. Same-name credentials with different URL parameters are the platform's own portability mechanism (`apexdev` L34327–34331) — the reason callout code never needs an environment check. | You get one Apex class that deploys unchanged to scratch, sandbox and production, and a deploy-time check the checker can enforce (`NC-APEX-003`). |
+| Is the credential `Legacy` or `SecuredEndpoint`? | Every field the legacy shape relies on is deprecated at API 56.0 (`api_meta` L89950–90240). Building new Apex on it means building on a deprecated surface, and hand-authored files mix the two shapes silently. See gotchas 1 and 5. | You write the right XML the first time instead of deploying a `SecuredEndpoint` credential whose URL sits in a legacy-only `<endpoint>` element and is therefore ignored. |
+| Named principal or per-user principal? | `NamedPrincipal` shares one identity; `PerUserPrincipal` gives per-user access control (`api_meta` L63806–63808). Only the named principal works for Batch, Queueable and Scheduled Apex. It also changes what admin edits cost — see gotcha 10. | The async design is settled before the code is written, and the external system's audit trail is a deliberate choice rather than a side effect. |
+| Which permission set grants the principal, and is it assigned to the user the callout runs as? | A principal is inert until `externalCredentialPrincipalAccesses` grants it (`api_meta` L94794–94796). Nothing in the deploy fails without it. See gotcha 6 and anti-pattern 8. | The change set includes the grant and the assignment step, so the integration works on first run instead of returning 401 for every user. |
+| Who owns the `Authorization` header — the platform or your Apex? | `generateAuthorizationHeader` defaults to `true` (`api_meta` L90039–90046). Apex adding its own on top is a collision that surfaces as a 401. See gotcha 4. | One owner, encoded in metadata that travels with the code, instead of an implicit default nobody deployed. |
+| Does the endpoint need a credential value in a specific header name or in the body? | That is what `{!$Credential.*}` merge fields are for, and they need `allowMergeFieldsInHeader` / `allowMergeFieldsInBody`, both defaulting to `false` (`api_meta` L89914–89940). See gotchas 2 and 3. | The flags ship with the Apex that depends on them, so the endpoint receives the credential rather than the literal merge-field text. |
+| What kind of transaction makes the callout — synchronous, Queueable, Batch, or a Continuation? | Timeout budget, principal choice and framework support all follow from this. Continuations do accept `callout:` endpoints; the documented exclusion is Private Connect (`apexdev` L36006–36070). See gotcha 11. | The right timeout and the right mocking API (`Test.setMock` vs `Test.setContinuationResponse`) are chosen up front rather than discovered in a failing test. |
+
+**What a proper configuration adds over just doing it:** a hardcoded endpoint and a concatenated `Authorization` header will call the API successfully today — what the credential model buys is that the secret is never in source or in an export, the endpoint changes per org without a code change, and access is granted and revoked with the same permission sets that govern everything else.
 
 ---
 
 ## Core Concepts
 
-### Legacy vs. Enhanced Named Credential Model
+### Legacy vs. `SecuredEndpoint` Named Credential Model
 
-The **legacy model** combines the endpoint URL and authentication configuration in a single Named Credential metadata record. The **enhanced model** (Spring '22+) separates them:
+The **legacy model** combines the endpoint URL and authentication configuration in a single Named Credential metadata record. The **enhanced model** (`namedCredentialType` `SecuredEndpoint`, Spring '22+) separates them:
 
-- **External Credential** — holds the authentication protocol, OAuth flow configuration, principals, and per-user identity mapping.
+- **External Credential** — holds the authentication protocol, principals, and auth parameters.
 - **Named Credential** — holds the endpoint URL and references an External Credential.
 
-From **Apex code, both models use exactly the same `callout:` URL syntax**. The difference is invisible to the Apex developer in normal callout code. The split matters when you need to inspect or manage per-user auth state via the `UserExternalCredential` SObject (enhanced model only) or when configuring multiple Named Credentials that share the same auth config.
+From **Apex code, both models use exactly the same `callout:` URL syntax**. The difference is invisible in ordinary callout code and highly visible in the metadata you deploy. `namedCredentialType` valid values are `Legacy`, `PrivateEndpoint`, `SecuredEndpoint`, and `Standard` (reserved for internal use), available in API version 56.0 and later (`api_meta` L90140–90152).
+
+| Concern | Legacy | `SecuredEndpoint` |
+|---|---|---|
+| Endpoint URL | `<endpoint>` (deprecated at 56.0) | `namedCredentialParameters` with `parameterType` `Url` |
+| Auth protocol | `<protocol>` (deprecated at 56.0) | `ExternalCredential.authenticationProtocol` |
+| Identity | `<principalType>` (deprecated at 56.0) | `ExternalCredentialParameter` `NamedPrincipal` / `PerUserPrincipal` |
+| Who may use it | Profile / user-level credential entry | `PermissionSet.externalCredentialPrincipalAccesses` (API 59.0+) |
+| Files to deploy | 1 | 3 (EC, NC, permission set) |
 
 ### The `callout:` URL Prefix
 
-Named Credentials are referenced in Apex via the `callout:` URL prefix. The syntax is:
-
-```
-callout:<Named_Credential_API_Name>[/path][?query_string]
-```
-
-The Named Credential API name is case-sensitive. The trailing path is optional; the Named Credential endpoint URL and the Apex-supplied path are concatenated at runtime by the platform.
+"A named credential URL contains the scheme `callout:`, the name of the named credential, and an optional path. For example: `callout:My_Named_Credential/some_path`" (`apexdev` L34332–34334). A query string is appended with `?`: `callout:My_Named_Credential/some_path?format=json` (`apexdev` L34335–34337).
 
 ```apex
 HttpRequest req = new HttpRequest();
@@ -78,120 +109,106 @@ req.setMethod('GET');
 HttpResponse res = new Http().send(req);
 ```
 
-The platform injects authentication headers, resolves formula tokens in custom headers, and validates Remote Site Settings on the endpoint automatically. **You must never construct the full endpoint URL with credentials hard-coded.**
+The name is the **Named Credential's** API name, never the External Credential's. The platform resolves the endpoint, applies authentication, and skips the Remote Site Settings requirement for that host (`apexdev` L34319–34322).
 
-### Custom Header Formula Tokens
+### `{!$Credential.*}` Merge Fields — an Apex-Side Feature
 
-Named Credential records (both models) support **custom header fields** that can embed runtime-resolved formula tokens. These are set in the Named Credential setup UI, not in Apex. At callout time, the platform evaluates these formulas and injects the resulting values as HTTP headers.
+The Apex Developer Guide's section is titled "Merge Fields for Apex Callouts That Use Named Credentials", and its examples are Apex, not Setup (`apexdev` L34456–34513):
 
-Available formula tokens (Apex Developer Guide — Named Credentials):
+```apex
+req.setHeader('X-Username', '{!$Credential.Username}');
+req.setHeader('Authorization', '{!$Credential.OAuthToken}');
+req.setBody('Password:{!HTMLENCODE($Credential.Password)}');
+```
 
-| Token | Resolves to |
-|---|---|
-| `{!$Credential.OAuthToken}` | The active OAuth access token for the current user or org-wide principal |
-| `{!$Credential.Username}` | The username stored in the credential |
-| `{!$Credential.Password}` | The password stored in the credential |
+| Merge field | Resolves to | Available when |
+|---|---|---|
+| `{!$Credential.Username}` / `{!$Credential.Password}` | Username / password of the running user | Password authentication |
+| `{!$Credential.OAuthToken}` | OAuth token of the running user | OAuth authentication |
+| `{!$Credential.AuthorizationMethod}` | `Basic`, `Bearer`, or `null` | Depends on protocol |
+| `{!$Credential.AuthorizationHeaderValue}` | Base-64 `user:pass`, OAuth token, or `null` | Depends on protocol |
+| `{!$Credential.OAuthConsumerKey}` | Consumer key | OAuth authentication |
 
-**Key constraint:** Formula tokens are evaluated by the platform at callout time on the server side. They **cannot be read back in Apex code** — you cannot call `System.Label` or any getter to obtain the resolved token value in your Apex logic. They are write-only from the Apex developer's perspective.
+Two flags gate them, both defaulting to `false`: `allowMergeFieldsInHeader` and `allowMergeFieldsInBody` (`api_meta` L89914–89940). `HTMLENCODE` is the only formula function permitted around a merge field, and only in bodies (`apexdev` L34508–34513). Apex never sees the resolved value — the substitution happens on the platform side at callout time.
 
-**Formula tokens are only valid inside Named Credential custom header fields.** Attempting to use `{!$Credential.OAuthToken}` inside an Apex string literal, a request body, or a URL path does not resolve — the literal string is sent verbatim.
+### Principals and Who May Use Them
 
-### UserExternalCredential SObject (Enhanced Model)
+`ExternalCredentialParameter.parameterType` `NamedPrincipal` means "the parameter uses the same set of user credentials for all users who access the external system"; `PerUserPrincipal` "provides access control at the individual user level" (`api_meta` L63806–63808). Access is granted from the permission set side:
 
-The `UserExternalCredential` SObject exists only in orgs using the enhanced model. It records the per-user auth association between a Salesforce User and an External Credential Principal. Querying it lets Apex determine whether a specific user has an active (or any) token before initiating a callout on their behalf.
+```xml
+<externalCredentialPrincipalAccesses>
+    <enabled>true</enabled>
+    <externalCredentialPrincipal>Partner_Orders_EC-PartnerOrdersNamedPrincipal</externalCredentialPrincipal>
+</externalCredentialPrincipalAccesses>
+```
 
-Key fields:
+The value is the External Credential name and the principal name joined by a **dash** (`api_meta` L94995–94999), available in API version 59.0 and later. Before 58.0 the link ran the other way, from `ExternalCredentialParameter.principal` to a permission set — that field "is removed in API version 58.0 and later" (`api_meta` L63830–63831).
 
-| Field | Description |
-|---|---|
-| `ExternalCredentialId` | 18-char ID of the External Credential record |
-| `UserId` | 18-char ID of the Salesforce User |
-| `PrincipalType` | `NamedPrincipal` or `PerUserPrincipal` |
+For a **per-user** principal, Apex may want to know whether the running user has authenticated before it calls. Treat that gate as an optimisation, not a contract: the `UserExternalCredential` and `ExternalCredential` **objects** are not documented in the Object Reference used to ground this skill, so run `sf sobject describe` against the target org before coding against a field list (gotcha 12). Handle 401 and 403 in the callout path regardless.
 
-A `UserExternalCredential` record existing for a user indicates the user has completed the OAuth flow. Absence means the user has not authenticated and the callout will fail with an auth error. Use this SObject to gate callouts or present the user with a re-authentication prompt.
+### Callout Limits That Bite Named Credential Code
 
-### Callout Limits and Constraints
+- Default timeout **10 seconds**; per-callout maximum **120,000 ms**; **120-second** cumulative budget across all callouts in one transaction (`apexdev` L35844–35857).
+- Maximum **100** callouts per transaction (`apexdev` L35844).
+- Continuations accept a named credential URL (`apexdev` L36006–36018). The documented exclusion is Private Connect (`apexdev` L36069–36070). Limits there: three parallel callouts, 120-second maximum (`apexdev` L36299, L36303).
+- Running a `callout:` in Execute Anonymous requires **Customize Application** (`apexdev` L14761–14762).
 
-Named Credential callouts are subject to the same Apex callout limits as all other callouts (Apex Developer Guide — Callout Limits):
-
-- Maximum callout timeout: **120 seconds** (10 seconds default if not explicitly set via `req.setTimeout()`).
-- Maximum callouts per transaction: **100**.
-- Named Credentials are **not compatible with the Continuation framework** (async Visualforce/Aura callouts). Continuation requires a full URL endpoint with Remote Site Settings; the `callout:` prefix is not supported.
+Deeper coverage of the limits themselves belongs to `integration/callout-limits-and-async-patterns`.
 
 ---
 
 ## Common Patterns
 
-### Callout With Named Credential and Custom OAuth Header Injection
+### Environment-Portable Callout Through a `SecuredEndpoint` Credential
 
-**When to use:** The external API requires the OAuth access token in a custom header (e.g., `X-API-Token`) rather than the standard `Authorization` header, and the Named Credential has a custom header field with `{!$Credential.OAuthToken}` configured.
+**When to use:** the default. One Apex class deploys unchanged everywhere; each org's credential carries its own URL parameter under the same API name.
 
-**How it works:** The Named Credential admin configures a custom header (e.g., `X-API-Token`) with the formula `{!$Credential.OAuthToken}` in the Setup UI. In Apex, the developer references the Named Credential with the standard `callout:` prefix. The platform evaluates the formula and injects the header automatically.
-
-```apex
-public class CustomerServiceCallout {
-    public static HttpResponse fetchCustomer(String customerId) {
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:CustomerServiceNC/api/v1/customers/' + customerId);
-        req.setMethod('GET');
-        req.setTimeout(30000); // 30 seconds; max is 120000
-
-        // No explicit auth header needed here.
-        // The Named Credential's custom header formula {!$Credential.OAuthToken}
-        // injects the OAuth token at callout time.
-
-        HttpResponse res = new Http().send(req);
-        return res;
-    }
-}
-```
-
-**Why not the alternative:** Do not manually retrieve the token from a Custom Setting or Custom Metadata and set `req.setHeader('Authorization', 'Bearer ' + token)`. This stores credentials in the Salesforce database outside the Protected credential vault, bypasses token refresh handling, and is an anti-pattern per the Salesforce Well-Architected Security pillar.
-
-### Per-User Token Status Check via UserExternalCredential
-
-**When to use:** The integration uses per-user OAuth and the UX should prompt the user to authenticate if they have not yet completed the OAuth flow, rather than letting a callout fail with a cryptic auth error.
-
-**How it works:** Query `UserExternalCredential` for the current user and the target External Credential ID before making the callout. If no record exists, surface a re-auth URL or a friendly error.
+**How it works:** the Apex names the credential and a path; the platform supplies the base URL, the authentication, and the Remote Site exemption. Build on `templates/apex/HttpClient.cls`, which composes `'callout:' + namedCredential + path` for you.
 
 ```apex
-public class AuthStatusChecker {
-    /**
-     * Returns true if the current user has an active UserExternalCredential
-     * for the given External Credential API name.
-     *
-     * @param externalCredentialApiName  e.g. 'CustomerService_EC'
-     */
-    public static Boolean isUserAuthenticated(String externalCredentialApiName) {
-        // Resolve the External Credential ID from the API name.
-        // ExternalCredential is a setup object — use SOQL on it.
-        List<ExternalCredential> ecs = [
-            SELECT Id
-            FROM ExternalCredential
-            WHERE DeveloperName = :externalCredentialApiName
-            LIMIT 1
-        ];
-        if (ecs.isEmpty()) {
-            return false;
-        }
-        Id ecId = ecs[0].Id;
-
-        // Check if the current user has a UserExternalCredential record
-        // with PerUserPrincipal type.
-        List<UserExternalCredential> uecs = [
-            SELECT Id, PrincipalType
-            FROM UserExternalCredential
-            WHERE UserId = :UserInfo.getUserId()
-              AND ExternalCredentialId = :ecId
-              AND PrincipalType = 'PerUserPrincipal'
-            LIMIT 1
-        ];
-        return !uecs.isEmpty();
-    }
-}
+HttpClient.Response res = new HttpClient()
+    .namedCredential('Partner_Orders_NC')
+    .path('/v2/orders/' + EncodingUtil.urlEncode(externalId, 'UTF-8'))
+    .method('GET')
+    .timeoutMs(20000)
+    .retryOnTransient(false)   // HttpClient's backoff is a busy-wait; retry from a Queueable
+    .send();
 ```
 
-**Why not the alternative:** Do not attempt the callout and inspect the HTTP 401 response status as a proxy for "user not authenticated." That approach wastes a callout, can confuse application-level 401s (the API rejecting the request) with auth-layer 401s (no token available), and counts against the 100-callout-per-transaction limit.
+**Why not the alternative:** an `if (isSandbox)` branch or a Custom Setting holding the base URL reimplements, worse, the portability the platform already provides — and gives you a second place for production and sandbox to drift apart.
+
+### Endpoint That Needs the Credential in a Non-Standard Header
+
+**When to use:** the API wants the token in `X-Api-Key`, or wants `Authorization` in a shape the platform's generated header does not match.
+
+**How it works:** turn off the platform's header, turn on header merge fields, and write the header in Apex.
+
+```apex
+// Named Credential: generateAuthorizationHeader = false, allowMergeFieldsInHeader = true
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:Partner_Orders_NC/v2/orders');
+req.setHeader('Authorization', 'Bearer {!$Credential.Password}');
+req.setHeader('Accept', 'application/json');
+```
+
+**Why not the alternative:** reading a token from a Custom Setting or Custom Label to build the same header puts the secret in the database, outside the credential vault, deployable to any sandbox without rotation, and visible in an export.
+
+### Replacing a Remote Site Setting Plus a Hardcoded Secret
+
+**When to use:** an inherited integration that calls a literal URL with a concatenated `Authorization` header.
+
+**How it works:** deploy External Credential → Named Credential → permission set, change one line of Apex, delete the Remote Site Setting last.
+
+```apex
+// Before
+req.setEndpoint('https://api.acme-corp.com/v2/orders/' + id);
+req.setHeader('Authorization', 'Bearer ' + System.Label.Acme_Token);
+
+// After — endpoint and auth both move out of source
+req.setEndpoint('callout:Acme_Orders_NC/v2/orders/' + id);
+```
+
+**Why not the alternative:** leaving the Remote Site Setting in place after the migration hides the fact that some other code path still calls the host directly — the checker's `NC-RSS-001` advisory exists to surface exactly that.
 
 ---
 
@@ -199,47 +216,55 @@ public class AuthStatusChecker {
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Standard REST callout to authenticated endpoint | `callout:NCName/path` in `setEndpoint()` | Platform injects auth, handles Remote Site Settings |
-| OAuth token must appear in a custom header, not Authorization | Configure formula `{!$Credential.OAuthToken}` in Named Credential custom header field | Formula is evaluated at callout time; no Apex token handling needed |
-| Need to check if current user has authenticated (per-user OAuth) | Query `UserExternalCredential` for UserId + ExternalCredentialId before callout | Avoids callout failure; enables proactive re-auth prompt |
-| Async Visualforce or Aura page needing callout | Use standard synchronous callout with `callout:` prefix; Continuation framework is NOT supported | Continuation does not support the `callout:` prefix |
-| Legacy model org, single Named Credential | Same `callout:` syntax; no `UserExternalCredential` SObject available | Behavioral model differs; `UserExternalCredential` is enhanced model only |
-| Managed package distribution | Verify subscriber org Remote Site Settings if Named Credential not included in package | Named Credentials in packages do not automatically provision RSSettings in subscriber |
-| Token formula in request body or URL path | Not supported — use an alternative approach (custom header field only) | `{!$Credential.*}` tokens only resolve in Named Credential custom header fields |
+| Standard REST callout to an authenticated endpoint | `callout:NCName/path` in `setEndpoint()` | Platform resolves endpoint, applies auth, skips Remote Site Settings |
+| Token must appear in a custom header name | `generateAuthorizationHeader` false + `allowMergeFieldsInHeader` true + `setHeader` with `{!$Credential.*}` | The merge field resolves platform-side; the secret never enters Apex |
+| Credential value needed inside the request body | `allowMergeFieldsInBody` true + `{!HTMLENCODE($Credential.Password)}` | `HTMLENCODE` is the only supported wrapper, and only in bodies |
+| Long-running callout from a Visualforce page | Continuation with a `callout:` endpoint | Named credential URLs are supported there (`apexdev` L36006–36018) |
+| Same callout must traverse a private connection | `namedCredentialType` `PrivateEndpoint` + Queueable | Async callouts are not supported over Private Connect |
+| Async job (Batch / Queueable / Scheduled) | `NamedPrincipal` | The running user is not the person who queued the work |
+| External system must attribute actions to individuals | `PerUserPrincipal` + 401/403 re-auth path | Per-user access control at the cost of an onboarding flow |
+| Managed package calling a subscriber's credential | Add `AllowedManagedPackageNamespaces` to the credential | Namespaced packages are named explicitly on the credential |
+| Inherited legacy credential still working | Leave it, plan the migration | Every legacy field is deprecated at 56.0 — new work goes on `SecuredEndpoint` |
 
 ---
 
 ## Recommended Workflow
 
-1. **Confirm the Named Credential model** — check Setup > Named Credentials and determine whether the org uses the legacy model (single record) or the enhanced model (External Credential + Named Credential pair). This determines whether `UserExternalCredential` is available and whether custom header formulas are configured on the Named Credential or External Credential.
-2. **Identify auth requirements** — determine whether the callout uses OAuth (Bearer token), Basic auth (username/password), or custom headers. For per-user OAuth, note which External Credential principal type is configured (`PerUserPrincipal`).
-3. **Write the Apex callout** — use `callout:<NCApiName>/path` in `setEndpoint()`. Set an explicit timeout. Do not manually construct auth headers; rely on the Named Credential custom header formulas.
-4. **Add a pre-callout auth gate if needed** — for per-user OAuth flows, query `UserExternalCredential` before the callout and return a graceful error or redirect if no record exists.
-5. **Write unit tests with mock** — Named Credential callouts require `HttpCalloutMock` in test context. Verify status codes, mock response bodies, and test both authenticated and unauthenticated paths.
-6. **Validate** — run `python3 check_apex_named_credentials_patterns.py --manifest-dir <project_root>` and confirm no hardcoded endpoint or credential anti-patterns are present.
+1. **Identify the credential and its model.** Get the Named Credential API name from the requester, then confirm the shape: `sf data query --query "SELECT DeveloperName, CalloutOptionsGenerateAuthorizationHeader, CalloutOptionsAllowMergeFieldsInHeader FROM NamedCredential"`. A populated `Endpoint` or `PrincipalType` means legacy (both are legacy-only and deprecated at 56.0). Work through the **Questions to Ask** table before writing anything.
+2. **Author or amend the metadata.** Follow `references/code-examples.md` sections 1–3 for the `ExternalCredential`, `NamedCredential` and `PermissionSet` XML. Settle the two decisions the Apex depends on here, not later: who owns the `Authorization` header (`generateAuthorizationHeader`), and whether merge fields are needed (`allowMergeFieldsInHeader` / `allowMergeFieldsInBody`).
+3. **Write the Apex against `templates/apex/HttpClient.cls`.** Name the credential, set an explicit timeout, and branch on 401/403 separately from other non-2xx codes so an access failure reads as an access failure. Section 4 of `references/code-examples.md` is the reference implementation.
+4. **Write the test with `templates/apex/tests/MockHttpResponseGenerator.cls`.** Cover the success shape, the endpoint's not-found code, and the 401 path. Do not assert on `req.getEndpoint()` inside the mock — route on the path substring instead (section 6 explains why).
+5. **Run the checker.** `python3 scripts/check_apex_named_credentials_patterns.py --manifest-dir force-app --strict`. It resolves every `callout:` name against the credentials in the tree, flags a legacy `namedCredentialType`, catches a `SecuredEndpoint` credential with no `externalCredential` link, and reports an Authorization header that collides with the platform's.
+6. **Deploy in dependency order and verify.** External Credential → Named Credential → permission set → Apex, then the two steps no deploy performs: a human entering the credential values against the principal in Setup, and `sf org assign permset`. Verify with the `NamedCredential` SOQL in section 8 and `sf apex run test`.
+7. **Retire what the credential replaced.** Delete the Remote Site Setting and the Custom Label or Custom Setting that held the old secret, and rotate the secret — it was in source control, so it is compromised.
 
 ---
 
 ## Review Checklist
 
-- [ ] All callout endpoints use `callout:<NCApiName>` prefix — no hardcoded base URLs with credentials.
-- [ ] No credentials (tokens, passwords) set via `req.setHeader()` directly in Apex code.
-- [ ] `req.setTimeout()` is set explicitly; default 10-second timeout is almost always too short.
-- [ ] Per-user OAuth flows check `UserExternalCredential` before attempting the callout.
-- [ ] Tests use `HttpCalloutMock` and cover non-200 response codes.
-- [ ] Named Credentials are not used with the Continuation framework.
-- [ ] Formula tokens (`{!$Credential.OAuthToken}`) are only configured in Named Credential custom header fields, not in Apex string literals or request bodies.
-- [ ] Managed package distribution scenarios account for Remote Site Settings in subscriber orgs.
+- [ ] All callout endpoints use the `callout:<NCApiName>` prefix — no literal base URLs.
+- [ ] Every `callout:` name resolves to a Named Credential that exists in the target org.
+- [ ] `generateAuthorizationHeader` is deployed explicitly, and exactly one side sets `Authorization`.
+- [ ] Any `{!$Credential.*}` merge field is paired with the matching `allowMergeFields*` flag in the same change.
+- [ ] `HTMLENCODE` appears only around body merge fields, never header ones.
+- [ ] The External Credential declares a principal, and a permission set grants it.
+- [ ] The permission set is assigned to the user the callout actually runs as, including in async contexts.
+- [ ] `req.setTimeout()` is set explicitly; the 10-second default is almost always too short.
+- [ ] Tests use `HttpCalloutMock` (or `Test.setContinuationResponse` for Continuations) and cover 401.
+- [ ] No secret remains in a Custom Label, Custom Setting, or Custom Metadata record after migration.
+- [ ] `check_apex_named_credentials_patterns.py --strict` is clean.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Named Credentials cannot be used with the Continuation framework** — the `callout:` prefix is incompatible with Visualforce/Aura Continuation async callouts. Attempting to use `callout:NCName` as the Continuation endpoint URL results in a runtime error. Use synchronous callouts from Queueable instead if async behavior is needed.
-2. **Formula tokens only resolve in Named Credential custom header fields, not in Apex** — `{!$Credential.OAuthToken}` in an Apex string literal or request body is sent as the literal text `{!$Credential.OAuthToken}` to the external system. Developers expecting it to be replaced at runtime are surprised when the API rejects the malformed token.
-3. **Remote Site Settings exemption does not automatically apply in managed packages** — when a Named Credential is in a managed package, the subscriber org does not automatically receive a Remote Site Settings entry for the endpoint. If any code path in the package makes a direct URL callout (bypassing the Named Credential), it will fail. Always use the `callout:` prefix consistently.
-4. **UserExternalCredential is only available in the enhanced model** — querying this SObject in a legacy-model org throws a compile error or runtime exception. Guard with a feature check or document the org model requirement clearly.
-5. **Per-user token expiry is not reflected in UserExternalCredential** — a `UserExternalCredential` record existing does not guarantee the token is valid; it only means the user completed the OAuth flow at some point. A 401 from the external API is the only signal that the token has expired and the user must re-authenticate.
+Full detail, with line citations, in `references/gotchas.md`. The five that most often break a first deployment:
+
+1. **A `SecuredEndpoint` credential's URL belongs in a `Url` parameter.** `<endpoint>` is legacy-only and deprecated at API 56.0, so a copied file can carry a URL the modern type ignores.
+2. **`generateAuthorizationHeader` is `true` unless you deploy `false`.** Apex that adds its own `Authorization` on top collides with the platform's.
+3. **Merge fields are Apex-side, but inert until the flags are on.** Both `allowMergeFields*` fields default to `false`; the literal text reaches the endpoint instead of the credential value.
+4. **The principal grant lives on the permission set from API 59.0.** `ExternalCredentialParameter.principal` was removed at 58.0; without `externalCredentialPrincipalAccesses` every callout is unauthorized.
+5. **Continuations do support `callout:`.** The widely repeated incompatibility is not in the guide; the documented exclusion is Private Connect.
 
 ---
 
@@ -247,15 +272,34 @@ public class AuthStatusChecker {
 
 | Artifact | Description |
 |---|---|
-| Apex callout class | `Http().send()` call using `callout:NCName/path` with explicit timeout and no hardcoded auth |
-| Pre-callout auth gate | SOQL-based `UserExternalCredential` check returning boolean auth status for current user |
-| Named Credential review findings | List of anti-patterns found (hardcoded endpoints, inline tokens, missing timeout, Continuation misuse) |
+| `ExternalCredential` XML | `authenticationProtocol`, a `NamedPrincipal` or `PerUserPrincipal` parameter, and any `AuthHeader` / `AuthParameter` entries |
+| `NamedCredential` XML | `SecuredEndpoint` with `Url` and `Authentication` parameters, plus explicit `generateAuthorizationHeader` and `allowMergeFields*` flags |
+| `PermissionSet` fragment | `externalCredentialPrincipalAccesses` granting `<EC>-<principal>` |
+| Apex client class + `-meta.xml` | `callout:` endpoint via `templates/apex/HttpClient.cls`, explicit timeout, 401/403 branch |
+| Apex test class | `MockHttpResponseGenerator` covering success, not-found and 401 |
+| `package.xml` + deploy order | EC → NC → PermissionSet → Apex, with the manual credential-entry and assignment steps called out |
+| Checker report | `NC-APEX-*`, `NC-META-*`, `NC-XREF-*`, `NC-PERM-*`, `NC-RSS-*` findings by severity |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/code-examples.md` | You are writing the deployable artifacts: External Credential, Named Credential, permission set, Apex client, test, `package.xml`, deploy order, and verification queries |
+| `references/gotchas.md` | A callout fails for a reason the code does not explain, or you are hand-authoring credential XML |
+| `references/llm-anti-patterns.md` | Reviewing generated Apex or credential XML, or self-checking your own output |
+| `references/examples.md` | You want a worked scenario end to end, including the before/after of a migration |
+| `references/well-architected.md` | Choosing between the legacy and `SecuredEndpoint` models, or between principal types, and needing the tradeoff written down |
 
 ---
 
 ## Related Skills
 
-- `integration/named-credentials-setup` — use for creating or configuring Named Credentials and External Credentials in the Setup UI. This skill covers only the Apex consumption patterns.
-- `apex/callouts-and-http-integrations` — use for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns, error handling) that apply regardless of Named Credentials.
-- `apex/apex-queueable-patterns` — use when Named Credential callouts need to run asynchronously outside a synchronous transaction.
-- `apex/callout-limits-and-async-patterns` — use when hitting the 100 callout per transaction limit or designing retry/backoff for callout failures.
+- `integration/named-credentials-setup` — the declarative security design: choosing an auth protocol, configuring OAuth and JWT flows, and the Setup-side work. This skill covers the Apex consumption and the metadata a developer deploys.
+- `apex/callouts-and-http-integrations` — general HTTP callout mechanics (`HttpRequest`, `HttpResponse`, uncommitted-work errors, error handling) that apply regardless of Named Credentials.
+- `apex/apex-http-callout-mocking` — multi-response and per-endpoint mock design when one canned response is not enough.
+- `apex/apex-queueable-patterns` — moving a Named Credential callout out of a synchronous transaction.
+- `integration/callout-limits-and-async-patterns` — the 100-callout ceiling, the cumulative timeout budget, and retry design.
+- `security/oauth-token-management` — token issuance, refresh, rotation and revocation for the Connected App behind an OAuth External Credential.
+- `integration/private-connect-setup` — when `namedCredentialType` must be `PrivateEndpoint` and async callouts are therefore off the table.

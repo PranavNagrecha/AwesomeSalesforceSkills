@@ -1,14 +1,49 @@
 #!/usr/bin/env python3
-"""Checker script for Apex Named Credentials Patterns skill.
+"""check_apex_named_credentials_patterns.py — static checks for Named Credential usage.
 
-Scans Apex source files (.cls) and Named Credential metadata (.namedCredential,
-.externalCredential) for common anti-patterns documented in this skill.
+Scans a Salesforce source tree for the failure modes documented in the
+apex-named-credentials-patterns skill: secrets that ended up in Apex, `callout:`
+references that resolve to nothing, credentials still on the deprecated legacy
+shape, `SecuredEndpoint` credentials with no authentication link, principals that
+nothing grants, and Apex fighting the platform over the Authorization header.
 
-Uses stdlib only — no pip dependencies.
+Stdlib only. Never compiles Apex — every Apex rule is a regex heuristic, and the
+rule table below says so where it matters.
 
-Usage:
-    python3 check_apex_named_credentials_patterns.py [--help]
-    python3 check_apex_named_credentials_patterns.py --manifest-dir path/to/metadata
+Rules
+-----
+    NC-APEX-001  WARN      setEndpoint() with a literal http(s) URL while the tree
+                           also contains Named Credentials.
+    NC-APEX-002  ERROR     a literal http(s) endpoint in a file that also builds an
+                           Authorization header from string literals — a credential
+                           in source control.
+    NC-APEX-003  ERROR     callout:<Name> naming a Named Credential that is not in
+                           the tree (only raised when the tree has any).
+    NC-META-001  WARN      NamedCredential with namedCredentialType Legacy — every
+                           field that makes it work is deprecated at API 56.0.
+    NC-META-002  ERROR     SecuredEndpoint NamedCredential with no Authentication
+                           parameter carrying an externalCredential.
+    NC-META-003  WARN      ExternalCredential with no NamedPrincipal or
+                           PerUserPrincipal parameter — nothing to grant.
+    NC-XREF-001  WARN      Apex sets an Authorization header while the Named
+                           Credential it calls still generates one
+                           (generateAuthorizationHeader defaults to true).
+    NC-PERM-001  ADVISORY  the tree has an ExternalCredential and permission sets,
+                           but no externalCredentialPrincipalAccesses grant.
+    NC-RSS-001   ADVISORY  a RemoteSiteSetting covers the same host as a Named
+                           Credential's Url parameter.
+
+Exit status
+-----------
+    0  no ERROR findings (WARN and ADVISORY do not fail the run)
+    1  at least one ERROR, or --manifest-dir does not exist
+
+    --strict promotes every WARN to ERROR. ADVISORY is never promoted.
+
+Usage
+-----
+    python3 check_apex_named_credentials_patterns.py --manifest-dir force-app
+    python3 check_apex_named_credentials_patterns.py --manifest-dir force-app --strict
 """
 
 from __future__ import annotations
@@ -16,176 +51,458 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import urlparse
 
+ERROR = "ERROR"
+WARN = "WARN"
+ADVISORY = "ADVISORY"
 
-# ---------------------------------------------------------------------------
-# Patterns that indicate anti-patterns in Apex code
-# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# Apex regexes
+# --------------------------------------------------------------------------
 
-# Hard-coded HTTPS endpoint in setEndpoint (should use callout: prefix)
-HARDCODED_ENDPOINT_PATTERN = re.compile(
-    r'setEndpoint\s*\(\s*["\']https?://',
+# setEndpoint('https://...') / setEndpoint("http://...")
+LITERAL_ENDPOINT_RE = re.compile(
+    r"""setEndpoint\s*\(\s*(['"])(https?://[^'"]*)\1""",
     re.IGNORECASE,
 )
 
-# setHeader for Authorization — credentials injected manually
-AUTH_HEADER_PATTERN = re.compile(
-    r'setHeader\s*\(\s*["\']Authorization["\']',
-    re.IGNORECASE,
-)
+# callout:Some_Name — the name runs until a /, ?, quote, or concatenation.
+CALLOUT_REF_RE = re.compile(r"""callout:([A-Za-z][A-Za-z0-9_]*)""")
 
-# {!$Credential.*} in Apex string literals (inside double-quoted strings)
-FORMULA_TOKEN_IN_APEX_PATTERN = re.compile(
-    r'"[^"]*\{\s*!\s*\$Credential\.[^}]+\}[^"]*"',
-)
-
-# Continuation with callout: prefix — not supported
-CONTINUATION_WITH_CALLOUT_PATTERN = re.compile(
-    r'new\s+Continuation\s*\(.*?\).*?setEndpoint\s*\(\s*["\']callout:',
+# setHeader('Authorization', <value up to the closing paren>)
+AUTH_HEADER_RE = re.compile(
+    r"""setHeader\s*\(\s*(['"])Authorization\1\s*,\s*(?P<value>[^;]*?)\)\s*;""",
     re.IGNORECASE | re.DOTALL,
 )
 
-# Missing timeout: setEndpoint used without setTimeout in the same file
-# (heuristic — check if setTimeout is absent in files that do callouts)
-SET_ENDPOINT_PATTERN = re.compile(r'setEndpoint\s*\(', re.IGNORECASE)
-SET_TIMEOUT_PATTERN = re.compile(r'setTimeout\s*\(', re.IGNORECASE)
+# A quoted literal that is not a merge field, e.g. 'Bearer ' or 'Basic abc123'.
+QUOTED_LITERAL_RE = re.compile(r"""(['"])((?:(?!\1).)*)\1""", re.DOTALL)
 
-# Credential-like values in Custom Label / Custom Setting reads near setHeader
-CUSTOM_LABEL_IN_HEADER = re.compile(
-    r'setHeader\s*\([^)]+System\.Label\.',
-    re.IGNORECASE,
-)
+MERGE_FIELD_MARKER = "{!$credential"
 
 
-def check_apex_files(manifest_dir: Path) -> list[str]:
-    """Check Apex .cls files for Named Credential anti-patterns."""
-    issues: list[str] = []
+# --------------------------------------------------------------------------
+# XML helpers
+# --------------------------------------------------------------------------
 
-    cls_files = list(manifest_dir.rglob("*.cls"))
-    if not cls_files:
-        return issues
 
-    for cls_file in cls_files:
+def strip_ns(tag: str) -> str:
+    """'{http://...}foo' -> 'foo'."""
+    return tag.rsplit("}", 1)[-1] if "}" in tag else tag
+
+
+def child(element, name: str):
+    """First direct child named `name`, or None.
+
+    Written as an explicit `is not None` walk on purpose: a leaf Element is
+    falsy in ElementTree, so `a.find(x) or a.find(y)` silently drops real
+    elements that happen to have no children.
+    """
+    if element is None:
+        return None
+    for sub in element:
+        if strip_ns(sub.tag) == name:
+            return sub
+    return None
+
+
+def child_text(element, name: str) -> str:
+    """Stripped text of the first direct child named `name`, or ''."""
+    sub = child(element, name)
+    if sub is None or sub.text is None:
+        return ""
+    return sub.text.strip()
+
+
+def children(element, name: str) -> list:
+    """All direct children named `name`."""
+    if element is None:
+        return []
+    return [sub for sub in element if strip_ns(sub.tag) == name]
+
+
+def parse_xml(path: Path):
+    """Return the root element, or None when the file cannot be parsed."""
+    try:
+        return ET.parse(path).getroot()
+    except (ET.ParseError, OSError):
+        return None
+
+
+def api_name(path: Path) -> str:
+    """'Partner_Orders_NC.namedCredential-meta.xml' -> 'Partner_Orders_NC'."""
+    return path.name.split(".", 1)[0]
+
+
+def host_of(url: str) -> str:
+    try:
+        return (urlparse(url.strip()).hostname or "").lower()
+    except ValueError:
+        return ""
+
+
+# --------------------------------------------------------------------------
+# Source-tree model
+# --------------------------------------------------------------------------
+
+
+class Tree:
+    """Everything the rules need, collected in one pass."""
+
+    def __init__(self, root: Path) -> None:
+        self.root = root
+        self.apex: list[Path] = sorted(
+            p for p in root.rglob("*.cls") if not p.name.endswith("-meta.xml")
+        )
+        self.named_credentials = self._collect("namedCredential")
+        self.external_credentials = self._collect("externalCredential")
+        self.permission_sets = self._collect("permissionset")
+        self.remote_sites = self._collect("remoteSite")
+
+    def _collect(self, suffix: str) -> list[Path]:
+        found = list(self.root.rglob(f"*.{suffix}"))
+        found += list(self.root.rglob(f"*.{suffix}-meta.xml"))
+        return sorted(set(found))
+
+    def is_empty(self) -> bool:
+        return not (
+            self.apex
+            or self.named_credentials
+            or self.external_credentials
+            or self.permission_sets
+            or self.remote_sites
+        )
+
+    def rel(self, path: Path) -> str:
         try:
-            source = cls_file.read_text(encoding="utf-8", errors="replace")
+            return str(path.relative_to(self.root))
+        except ValueError:
+            return str(path)
+
+
+class Finding:
+    def __init__(self, severity: str, rule: str, where: str, message: str) -> None:
+        self.severity = severity
+        self.rule = rule
+        self.where = where
+        self.message = message
+
+    def render(self, effective: str) -> str:
+        return f"{effective}: [{self.rule}] {self.where}: {self.message}"
+
+
+# --------------------------------------------------------------------------
+# Metadata analysis
+# --------------------------------------------------------------------------
+
+
+def read_named_credentials(tree: Tree) -> dict:
+    """name -> {'path', 'type', 'external_credential', 'generates_auth', 'url'}."""
+    out: dict[str, dict] = {}
+    for path in tree.named_credentials:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        params = children(root, "namedCredentialParameters")
+
+        external_credential = ""
+        url = ""
+        for param in params:
+            ptype = child_text(param, "parameterType")
+            if ptype == "Authentication":
+                value = child_text(param, "externalCredential")
+                if value:
+                    external_credential = value
+            elif ptype == "Url":
+                value = child_text(param, "parameterValue")
+                if value:
+                    url = value
+
+        # generateAuthorizationHeader defaults to true when absent
+        # (api_meta L90080-90088).
+        raw_gah = child_text(root, "generateAuthorizationHeader")
+        generates_auth = raw_gah.lower() != "false"
+
+        out[api_name(path)] = {
+            "path": path,
+            "type": child_text(root, "namedCredentialType"),
+            "external_credential": external_credential,
+            "generates_auth": generates_auth,
+            "url": url or child_text(root, "endpoint"),
+        }
+    return out
+
+
+def check_named_credentials(tree: Tree, creds: dict) -> list[Finding]:
+    findings: list[Finding] = []
+    for name, meta in sorted(creds.items()):
+        where = tree.rel(meta["path"])
+        if meta["type"] == "Legacy":
+            findings.append(
+                Finding(
+                    WARN,
+                    "NC-META-001",
+                    where,
+                    f"'{name}' is namedCredentialType Legacy. Every field the legacy "
+                    "shape depends on (endpoint, protocol, principalType, username, "
+                    "password, oauthToken, authProvider, certificate) is deprecated in "
+                    "API version 56.0. Migrate to SecuredEndpoint with an "
+                    "ExternalCredential.",
+                )
+            )
+        if meta["type"] == "SecuredEndpoint" and not meta["external_credential"]:
+            findings.append(
+                Finding(
+                    ERROR,
+                    "NC-META-002",
+                    where,
+                    f"'{name}' is SecuredEndpoint but has no namedCredentialParameters "
+                    "entry with parameterType Authentication carrying an "
+                    "<externalCredential>. Callouts through it cannot authenticate. "
+                    "Note that externalCredential is a child of the parameter, not a "
+                    "top-level element.",
+                )
+            )
+    return findings
+
+
+def check_external_credentials(tree: Tree) -> tuple[list[Finding], list[str]]:
+    """Returns (findings, external credential API names present in the tree)."""
+    findings: list[Finding] = []
+    names: list[str] = []
+    principal_types = {"NamedPrincipal", "PerUserPrincipal"}
+
+    for path in tree.external_credentials:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        name = api_name(path)
+        names.append(name)
+
+        params = children(root, "externalCredentialParameters")
+        principals = [
+            p for p in params if child_text(p, "parameterType") in principal_types
+        ]
+        if not principals:
+            findings.append(
+                Finding(
+                    WARN,
+                    "NC-META-003",
+                    tree.rel(path),
+                    f"'{name}' declares no principal — no externalCredentialParameters "
+                    "entry has parameterType NamedPrincipal or PerUserPrincipal. There "
+                    "is nothing for a permission set to grant, so every callout through "
+                    "it will fail authorization.",
+                )
+            )
+    return findings, names
+
+
+def check_permission_sets(tree: Tree, ec_names: list[str]) -> list[Finding]:
+    if not ec_names or not tree.permission_sets:
+        return []
+
+    granted = False
+    for path in tree.permission_sets:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        if children(root, "externalCredentialPrincipalAccesses"):
+            granted = True
+            break
+
+    if granted:
+        return []
+    return [
+        Finding(
+            ADVISORY,
+            "NC-PERM-001",
+            tree.rel(tree.permission_sets[0].parent),
+            "the tree defines ExternalCredential(s) "
+            f"({', '.join(sorted(ec_names))}) and {len(tree.permission_sets)} "
+            "permission set(s), but no permission set carries "
+            "externalCredentialPrincipalAccesses. A principal is inert until a "
+            "permission set grants it and that set is assigned to the running user. "
+            "Harmless if the grant lives in another repository.",
+        )
+    ]
+
+
+def check_remote_sites(tree: Tree, creds: dict) -> list[Finding]:
+    findings: list[Finding] = []
+    cred_hosts: dict[str, str] = {}
+    for name, meta in creds.items():
+        host = host_of(meta["url"])
+        if host:
+            cred_hosts.setdefault(host, name)
+
+    for path in tree.remote_sites:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        host = host_of(child_text(root, "url"))
+        if host and host in cred_hosts:
+            findings.append(
+                Finding(
+                    ADVISORY,
+                    "NC-RSS-001",
+                    tree.rel(path),
+                    f"remote site setting covers '{host}', which is also the host of "
+                    f"Named Credential '{cred_hosts[host]}'. Callouts that go through "
+                    "the credential do not need a remote site setting; one that remains "
+                    "usually means some code path still calls the host directly.",
+                )
+            )
+    return findings
+
+
+# --------------------------------------------------------------------------
+# Apex analysis
+# --------------------------------------------------------------------------
+
+
+def _authorization_values(source: str) -> list[str]:
+    return [m.group("value") for m in AUTH_HEADER_RE.finditer(source)]
+
+
+def _has_literal_secret(value: str) -> bool:
+    """True when an Authorization value is built from a non-merge-field literal.
+
+    'Bearer {!$Credential.Password}' is fine — the secret stays in the vault.
+    'Bearer ' + token  is not: whatever `token` is, the scheme prefix is a literal
+    and the value is assembled in Apex rather than by the platform.
+    """
+    if MERGE_FIELD_MARKER in value.lower():
+        return False
+    return bool(QUOTED_LITERAL_RE.search(value))
+
+
+def check_apex(tree: Tree, creds: dict) -> list[Finding]:
+    findings: list[Finding] = []
+    known = set(creds)
+
+    for path in tree.apex:
+        try:
+            source = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
+        where = tree.rel(path)
 
-        rel = cls_file.relative_to(manifest_dir)
+        literal_endpoints = [m.group(2) for m in LITERAL_ENDPOINT_RE.finditer(source)]
+        auth_values = _authorization_values(source)
+        referenced = sorted(set(CALLOUT_REF_RE.findall(source)))
 
-        # Anti-pattern 1: hardcoded HTTPS endpoint
-        if HARDCODED_ENDPOINT_PATTERN.search(source):
-            issues.append(
-                f"{rel}: setEndpoint() uses a hardcoded HTTPS URL. "
-                "Use 'callout:<NamedCredentialApiName>/path' instead."
+        # NC-APEX-002 — a literal endpoint plus a hand-built Authorization header.
+        secret_values = [v for v in auth_values if _has_literal_secret(v)]
+        if literal_endpoints and secret_values:
+            findings.append(
+                Finding(
+                    ERROR,
+                    "NC-APEX-002",
+                    where,
+                    f"literal endpoint {literal_endpoints[0]!r} together with an "
+                    "Authorization header assembled from string literals in Apex. The "
+                    "credential is in source control. Move the endpoint to a Named "
+                    "Credential and let the platform generate the header, or use a "
+                    "{!$Credential.*} merge field.",
+                )
+            )
+        elif literal_endpoints and known:
+            # NC-APEX-001 — literal endpoint in a tree that does use credentials.
+            findings.append(
+                Finding(
+                    WARN,
+                    "NC-APEX-001",
+                    where,
+                    f"setEndpoint() uses the literal URL {literal_endpoints[0]!r} while "
+                    f"the tree defines {len(known)} Named Credential(s). Use "
+                    "'callout:<NamedCredentialApiName>/path' so the endpoint stays "
+                    "environment-portable and the auth stays out of code.",
+                )
             )
 
-        # Anti-pattern 2: manual Authorization header
-        if AUTH_HEADER_PATTERN.search(source):
-            issues.append(
-                f"{rel}: setHeader('Authorization', ...) found. "
-                "Auth headers should be injected via Named Credential custom header formulas, "
-                "not set manually in Apex."
-            )
+        # NC-APEX-003 — callout: naming a credential the tree does not define.
+        if known:
+            for name in referenced:
+                if name not in known:
+                    findings.append(
+                        Finding(
+                            ERROR,
+                            "NC-APEX-003",
+                            where,
+                            f"'callout:{name}' does not resolve — no "
+                            f"{name}.namedCredential-meta.xml in the tree. Check for a "
+                            "typo, or for the External Credential name used where the "
+                            "Named Credential name belongs.",
+                        )
+                    )
 
-        # Anti-pattern 3: Custom Label credential in header
-        if CUSTOM_LABEL_IN_HEADER.search(source):
-            issues.append(
-                f"{rel}: setHeader() uses a System.Label value. "
-                "Credentials stored in Custom Labels are not encrypted. "
-                "Use a Named Credential instead."
-            )
+        # NC-XREF-001 — Apex header versus platform-generated header.
+        if auth_values:
+            for name in referenced:
+                meta = creds.get(name)
+                if meta is not None and meta["generates_auth"]:
+                    findings.append(
+                        Finding(
+                            WARN,
+                            "NC-XREF-001",
+                            where,
+                            f"this file sets an Authorization header and calls "
+                            f"'callout:{name}', whose generateAuthorizationHeader is "
+                            "true (or absent, which defaults to true). Both sides are "
+                            "supplying the header. Set "
+                            "<generateAuthorizationHeader>false</generateAuthorizationHeader> "
+                            "if Apex owns it, or drop the setHeader call if the platform "
+                            "does. Heuristic: this rule pairs any Authorization header in "
+                            "the file with any callout: reference in the same file.",
+                        )
+                    )
 
-        # Anti-pattern 4: formula token in Apex string literal
-        if FORMULA_TOKEN_IN_APEX_PATTERN.search(source):
-            issues.append(
-                f"{rel}: {{!$Credential.*}} formula token found in an Apex string literal. "
-                "These tokens only resolve inside Named Credential custom header fields "
-                "configured in the Setup UI, not in Apex code."
-            )
-
-        # Anti-pattern 5: Continuation with callout: prefix
-        if CONTINUATION_WITH_CALLOUT_PATTERN.search(source):
-            issues.append(
-                f"{rel}: Continuation framework used with 'callout:' endpoint prefix. "
-                "The callout: prefix is not supported by the Continuation framework. "
-                "Use a Queueable (Database.AllowsCallouts) for async Named Credential callouts."
-            )
-
-        # Warning: callout without explicit timeout
-        if SET_ENDPOINT_PATTERN.search(source) and not SET_TIMEOUT_PATTERN.search(source):
-            issues.append(
-                f"{rel}: callout endpoint is set but no setTimeout() found in this file. "
-                "The default callout timeout is 10 seconds. "
-                "Consider setting an explicit timeout (max 120 000 ms)."
-            )
-
-    return issues
+    return findings
 
 
-def check_named_credential_metadata(manifest_dir: Path) -> list[str]:
-    """Check Named Credential XML metadata for common issues."""
-    issues: list[str] = []
-
-    nc_files = (
-        list(manifest_dir.rglob("*.namedCredential"))
-        + list(manifest_dir.rglob("*.namedCredential-meta.xml"))
-    )
-
-    for nc_file in nc_files:
-        try:
-            content = nc_file.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        rel = nc_file.relative_to(manifest_dir)
-
-        # Flag Named Credentials that have allowFormula disabled (blocks formula tokens)
-        if "<allowFormula>false</allowFormula>" in content:
-            issues.append(
-                f"{rel}: Named Credential has allowFormula=false. "
-                "Custom header formula tokens such as {{!$Credential.OAuthToken}} "
-                "will not be evaluated. Enable formula support if custom headers are needed."
-            )
-
-        # Warn if endpoint is plain HTTP (not HTTPS) — security concern
-        endpoint_match = re.search(r"<endpoint>(http://[^<]+)</endpoint>", content)
-        if endpoint_match:
-            issues.append(
-                f"{rel}: Named Credential endpoint uses plain HTTP: "
-                f"{endpoint_match.group(1)}. "
-                "All external endpoints should use HTTPS."
-            )
-
-    return issues
+# --------------------------------------------------------------------------
+# Driver
+# --------------------------------------------------------------------------
 
 
-def check_apex_named_credentials_patterns(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
+def run(manifest_dir: Path) -> tuple[list[Finding], bool]:
+    """Returns (findings, tree_was_empty)."""
+    tree = Tree(manifest_dir)
+    if tree.is_empty():
+        return [], True
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    issues.extend(check_apex_files(manifest_dir))
-    issues.extend(check_named_credential_metadata(manifest_dir))
-
-    return issues
+    creds = read_named_credentials(tree)
+    findings: list[Finding] = []
+    findings += check_named_credentials(tree, creds)
+    ec_findings, ec_names = check_external_credentials(tree)
+    findings += ec_findings
+    findings += check_permission_sets(tree, ec_names)
+    findings += check_remote_sites(tree, creds)
+    findings += check_apex(tree, creds)
+    return findings, False
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Check Apex source files and Named Credential metadata for "
-            "anti-patterns documented in the apex-named-credentials-patterns skill."
+            "Check Apex source and Named Credential / External Credential metadata "
+            "for the anti-patterns documented in the apex-named-credentials-patterns "
+            "skill."
         ),
     )
     parser.add_argument(
         "--manifest-dir",
         default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
+        help="Root of the Salesforce source tree to scan (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote every WARN to ERROR. ADVISORY findings are never promoted.",
     )
     return parser.parse_args()
 
@@ -193,16 +510,46 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_apex_named_credentials_patterns(manifest_dir)
 
-    if not issues:
-        print("No Named Credential anti-patterns found.")
+    if not manifest_dir.is_dir():
+        print(f"ERROR: --manifest-dir not found or not a directory: {manifest_dir}", file=sys.stderr)
+        return 1
+
+    findings, empty = run(manifest_dir)
+
+    if empty:
+        print(
+            f"WARN: no Apex classes or credential metadata found under {manifest_dir}. "
+            "Point --manifest-dir at the package directory (for example force-app).",
+            file=sys.stderr,
+        )
         return 0
 
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
+    if not findings:
+        print("OK: no Named Credential findings.")
+        return 0
 
-    return 1
+    order = {ERROR: 0, WARN: 1, ADVISORY: 2}
+    findings.sort(key=lambda f: (order[f.severity], f.rule, f.where))
+
+    failed = 0
+    counts = {ERROR: 0, WARN: 0, ADVISORY: 0}
+    for finding in findings:
+        effective = finding.severity
+        if args.strict and effective == WARN:
+            effective = ERROR
+        counts[finding.severity] += 1
+        if effective == ERROR:
+            failed += 1
+        print(finding.render(effective), file=sys.stderr)
+
+    print(
+        f"\n{counts[ERROR]} error(s), {counts[WARN]} warning(s), "
+        f"{counts[ADVISORY]} advisory"
+        + (" — --strict is on, warnings fail the run" if args.strict else ""),
+        file=sys.stderr,
+    )
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

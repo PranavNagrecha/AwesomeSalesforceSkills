@@ -1,37 +1,52 @@
 # Examples — Apex Named Credentials Patterns
 
-## Example 1: Callout Using Named Credential With Custom OAuth Header Formula Token
+Worked scenarios. The deployable artefacts themselves — External Credential, Named
+Credential, permission set, client, test, `package.xml` — are in
+`references/code-examples.md`; these examples cover the decisions around them.
 
-**Context:** An external REST API requires the OAuth access token in the `X-Auth-Token` request header rather than the standard `Authorization: Bearer` header. The Named Credential is configured in the enhanced model with a custom header field `X-Auth-Token` set to `{!$Credential.OAuthToken}`. The Apex developer's job is to write the callout; the platform handles token injection.
+Citations use the short forms defined at the top of `references/gotchas.md`.
 
-**Problem:** Developers unfamiliar with the custom header formula approach manually read the OAuth token from a Custom Setting or Custom Label and call `req.setHeader('X-Auth-Token', token)`. This exposes the token in the Salesforce database outside the Protected credential vault, does not handle token refresh automatically, and violates the Well-Architected Security pillar.
+---
 
-**Solution:**
+## Example 1: The External API Wants the Token in `X-Auth-Token`, Not `Authorization`
+
+**Context:** A REST API expects the access token in a custom header named `X-Auth-Token`.
+The org has a `SecuredEndpoint` Named Credential (`ExternalCatalogNC`) pointing at an
+External Credential (`ExternalCatalogEC`). The Apex developer's job is to get the credential
+value into a header the platform does not generate on its own.
+
+**Problem:** Two wrong turns are common here, in opposite directions. One is to read the
+token from a Custom Setting or Custom Label and set the header by concatenation — which puts
+the secret in the database outside the credential vault, deployable to any sandbox without
+rotation. The other is to believe `{!$Credential.*}` cannot be used from Apex at all, and
+conclude the requirement cannot be met with a Named Credential.
+
+**Solution:** Use the merge field in Apex, and deploy the flag that makes it resolve.
 
 ```apex
 /**
- * Callout to a REST API that uses a Named Credential with a custom OAuth
- * header formula token.
+ * Callout to a REST API that wants the credential in a custom header.
  *
- * Prerequisites (setup — NOT in this Apex):
- *   - Named Credential API name: ExternalCatalogNC
- *   - External Credential: ExternalCatalogEC (OAuth 2.0 Client Credentials flow)
- *   - Named Credential custom header:
- *       Name:  X-Auth-Token
- *       Value: {!$Credential.OAuthToken}
+ * Prerequisites (metadata, not Apex):
+ *   Named Credential ExternalCatalogNC
+ *     <allowMergeFieldsInHeader>true</allowMergeFieldsInHeader>   <- without this the
+ *                                                                    literal text is sent
+ *     <generateAuthorizationHeader>false</generateAuthorizationHeader>
+ *   External Credential ExternalCatalogEC with a principal, granted by a permission set.
  *
- * At callout time the platform evaluates {!$Credential.OAuthToken} and
- * injects the active access token into the X-Auth-Token header automatically.
- * The Apex developer does NOT set this header in code.
+ * The Apex never holds the token. The platform substitutes the merge field at callout
+ * time; there is no getter that returns the resolved value.
  */
-public class ProductCatalogService {
+public with sharing class ProductCatalogService {
 
     private static final String NC_NAME = 'ExternalCatalogNC';
 
+    public class CatalogException extends Exception {}
+
     /**
-     * Fetch a product by ID from the external catalog API.
-     * @param productId  External system product identifier (not a Salesforce ID)
-     * @return  Parsed product name, or null if not found
+     * Fetch a product by its external identifier.
+     * @param productId external system product identifier (not a Salesforce Id)
+     * @return the product name, or null when the catalog reports 404
      */
     public static String fetchProductName(String productId) {
         if (String.isBlank(productId)) {
@@ -39,148 +54,223 @@ public class ProductCatalogService {
         }
 
         HttpRequest req = new HttpRequest();
-        // callout: prefix — platform resolves endpoint, injects auth headers
-        req.setEndpoint('callout:' + NC_NAME + '/products/' + EncodingUtil.urlEncode(productId, 'UTF-8'));
+        req.setEndpoint('callout:' + NC_NAME + '/products/'
+            + EncodingUtil.urlEncode(productId, 'UTF-8'));
         req.setMethod('GET');
-        req.setTimeout(30000); // 30 s; platform max is 120 000 ms
+        // Documented merge field. Requires allowMergeFieldsInHeader on the credential
+        // (apexdev L34456-34507). HTMLENCODE is NOT permitted on a header merge field.
+        req.setHeader('X-Auth-Token', '{!$Credential.OAuthToken}');
+        req.setHeader('Accept', 'application/json');
+        req.setTimeout(30000);
 
         HttpResponse res = new Http().send(req);
 
         if (res.getStatusCode() == 200) {
-            Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
+            Map<String, Object> body =
+                (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
             return (String) body.get('name');
-        } else if (res.getStatusCode() == 404) {
+        }
+        if (res.getStatusCode() == 404) {
             return null;
-        } else {
-            throw new CalloutException(
-                'Unexpected response from ExternalCatalogNC: HTTP ' + res.getStatusCode()
-                + ' — ' + res.getStatus()
+        }
+        if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
+            throw new CatalogException(
+                'Catalog rejected the credential. Check that allowMergeFieldsInHeader is '
+                + 'true on ' + NC_NAME + ' and that the running user is assigned the '
+                + 'permission set granting the ExternalCatalogEC principal.'
             );
         }
+        throw new CatalogException('Catalog returned HTTP ' + res.getStatusCode());
     }
 }
 ```
 
-**Why it works:** The `callout:ExternalCatalogNC/products/{id}` endpoint is processed by the platform before the HTTP request is sent. The platform resolves the Named Credential's endpoint URL, evaluates any custom header formulas (including `{!$Credential.OAuthToken}`), and appends the resulting headers to the outgoing request. The Apex code never touches authentication data directly. If the token has expired, the platform's OAuth refresh flow kicks in transparently (for refresh-token flows) or the callout fails with a 401 that the caller can detect and handle.
+**Why it works:** the substitution is platform-side. Salesforce publishes the same shape in
+its own sample — `request.setHeader('Authorization', 'Bearer {!$Credential.Password}')`
+against a `callout:bitly/v4/shorten` endpoint (`apexrefguide` L196211–196226). The secret
+stays in the vault; Apex carries only the merge field.
+
+**How to tell it is misconfigured:** if the API rejects the call and echoes the header value
+back as `{!$Credential.OAuthToken}`, the merge field did not resolve — check
+`allowMergeFieldsInHeader`, which defaults to `false` (`api_meta` L89914–89940). Confirm from
+the org rather than from the repo:
+
+```soql
+SELECT DeveloperName,
+       CalloutOptionsAllowMergeFieldsInHeader,
+       CalloutOptionsAllowMergeFieldsInBody,
+       CalloutOptionsGenerateAuthorizationHeader
+FROM NamedCredential
+WHERE DeveloperName = 'ExternalCatalogNC'
+```
 
 ---
 
-## Example 2: Querying UserExternalCredential for Per-User Token Status
+## Example 2: Per-User OAuth — Prompting Before the Callout Instead of After the 401
 
-**Context:** A Lightning component allows users to browse data from an external SaaS system using per-user OAuth. Before making any callout, the component needs to know whether the current user has authenticated so it can show a "Connect your account" prompt instead of a broken data table.
+**Context:** A Lightning component browses data from an external SaaS system using a
+`PerUserPrincipal` External Credential. Each user authenticates individually. The component
+should show "Connect your account" rather than an empty table with a stack trace behind it.
 
-**Problem:** Developers either skip the pre-auth check and let the callout fail with a confusing HTTP 401, or they make a test callout on page load just to see if auth works — wasting one of the 100 allowed callouts per transaction.
+**Problem:** The tempting design is a SOQL pre-flight against `UserExternalCredential`, gated
+on a row existing. Two things are wrong with treating that as the answer.
 
-**Solution:**
+**UNVERIFIED (2026-09-05):** neither `UserExternalCredential` nor `ExternalCredential`
+appears as a documented standard object in the Object Reference used to ground this skill —
+the sole occurrence of `UserExternalCredential` is a value inside an unrelated picklist list
+at `object_reference` L142361. Their queryability and field names are unconfirmed here, so
+any query against them must be written against a describe from the target org, not from
+memory or from a generated field list:
+
+```bash
+sf sobject describe --sobject UserExternalCredential --target-org myorg | \
+    python3 -c "import json,sys; d=json.load(sys.stdin); print(d['queryable']); print([f['name'] for f in d['fields'] if f['filterable']])"
+```
+
+And even with a correct schema, a row is a historical fact rather than a live one: the user
+completed a flow at some point, which is not the same as holding a valid token now.
+
+**Solution:** Make the 401/403 branch the load-bearing part, and treat any pre-flight gate as
+a pure UX optimisation layered on top.
 
 ```apex
-/**
- * AuraEnabled controller that checks per-user auth status before callouts.
- *
- * Prerequisites (setup — NOT in this Apex):
- *   - External Credential API name: SaasSystemEC
- *   - External Credential principal type: PerUserPrincipal
- *   - Named Credential API name: SaasSystemNC (references SaasSystemEC)
- */
-public with sharing class SaasAuthController {
+public with sharing class SaasDataController {
 
-    /**
-     * Returns true if the running user has authenticated with the SaaS system
-     * via the PerUserPrincipal OAuth flow.
-     *
-     * @param externalCredentialDevName  Developer name of the External Credential,
-     *                                   e.g. 'SaasSystemEC'
-     */
-    @AuraEnabled(cacheable=true)
-    public static Boolean isUserAuthenticated(String externalCredentialDevName) {
-        // Step 1: Resolve External Credential ID from developer name.
-        // ExternalCredential is a Setup object; WITH USER_MODE enforces object and
-        // field permissions on the read. Do not use WITH SECURITY_ENFORCED here —
-        // it was removed in API 67.0 (Summer '26) and does not compile at 67.0+.
-        List<ExternalCredential> ecs = [
-            SELECT Id
-            FROM ExternalCredential
-            WHERE DeveloperName = :externalCredentialDevName
-            WITH USER_MODE
-            LIMIT 1
-        ];
-        if (ecs.isEmpty()) {
-            // Named Credential setup is missing or mis-configured.
-            return false;
-        }
+    public class NotConnectedException extends Exception {}
 
-        // Step 2: Check if the current user has a PerUserPrincipal record.
-        // UserExternalCredential exists only in enhanced-model orgs.
-        List<UserExternalCredential> uecs = [
-            SELECT Id, PrincipalType
-            FROM UserExternalCredential
-            WHERE UserId       = :UserInfo.getUserId()
-              AND ExternalCredentialId = :ecs[0].Id
-              AND PrincipalType = 'PerUserPrincipal'
-            LIMIT 1
-        ];
-        return !uecs.isEmpty();
-    }
-
-    /**
-     * Fetches data from the SaaS system for the current user.
-     * Throws a user-friendly AuraHandledException if the user is not authenticated.
-     */
     @AuraEnabled
-    public static List<Map<String, Object>> fetchData(String externalCredentialDevName) {
-        if (!isUserAuthenticated(externalCredentialDevName)) {
-            throw new AuraHandledException(
-                'You have not connected your SaaS System account. '
-                + 'Please authenticate from the component settings.'
-            );
-        }
-
+    public static List<Object> fetchItems() {
         HttpRequest req = new HttpRequest();
         req.setEndpoint('callout:SaasSystemNC/api/v1/items');
         req.setMethod('GET');
         req.setTimeout(30000);
 
         HttpResponse res = new Http().send(req);
-        if (res.getStatusCode() == 200) {
-            return (List<Map<String, Object>>) JSON.deserializeUntyped(res.getBody());
+
+        if (res.getStatusCode() == 401 || res.getStatusCode() == 403) {
+            // The single reliable signal that this user has no usable credential.
+            // Works whether the pre-flight gate exists or not.
+            throw new AuraHandledException(
+                'Connect your SaaS System account to view this data.'
+            );
         }
-        throw new AuraHandledException('API error: HTTP ' + res.getStatusCode());
+        if (res.getStatusCode() != 200) {
+            throw new AuraHandledException('SaaS System error: HTTP ' + res.getStatusCode());
+        }
+        return (List<Object>) JSON.deserializeUntyped(res.getBody());
     }
 }
 ```
 
-**Why it works:** The `UserExternalCredential` query is a cheap SOQL read (no callout consumed) that answers "has this user ever authenticated?" with high confidence. The two-step flow — resolve External Credential ID, then check `UserExternalCredential` — is necessary because `UserExternalCredential` records are keyed by the Internal Salesforce ID of the External Credential record, not by its developer name. Note the `WITH USER_MODE` clause on the `ExternalCredential` query to respect FLS and object permissions, and the use of `with sharing` on the class to enforce record-level visibility. `WITH USER_MODE` is the read idiom from API 57.0 up; the older `WITH SECURITY_ENFORCED` was removed in API 67.0 (Summer '26) and fails to compile there with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release — a class pinned at 66.0 or below still compiles the old clause on a Summer '26 org. At 57.0–66.0 it is legacy tech debt to migrate to `WITH USER_MODE`; at 56.0 and below it is the idiom available at that version, and raising the class's `apiVersion` beats hardening it in place.
+**Why it works:** the component renders the connect prompt from a signal the platform
+actually produces, on every request, for every reason the credential might be unusable —
+never authenticated, token expired, refresh failed, principal grant revoked. A pre-flight
+query can suppress one avoidable callout on a first page load; it cannot replace this branch.
+See gotcha 12 and LLM anti-pattern 7.
 
 ---
 
-## Anti-Pattern: Using a Hardcoded Endpoint Instead of the `callout:` Prefix
+## Example 3: Migrating a Remote Site Setting and a Custom Label Token
 
-**What practitioners do:**
+**Context:** An inherited class calls `https://api.acme-corp.com` directly with a bearer token
+read from a Custom Label. A Remote Site Setting exists for the host. Nothing is broken; the
+secret is simply in source control and in every sandbox refresh.
+
+**What practitioners inherit:**
 
 ```apex
-// WRONG: hardcoded base URL + token from Custom Label
+// WRONG: literal endpoint + credential assembled in Apex
 HttpRequest req = new HttpRequest();
 req.setEndpoint('https://api.acme-corp.com/v2/orders/' + orderId);
 req.setMethod('GET');
 req.setHeader('Authorization', 'Bearer ' + System.Label.Acme_OAuth_Token);
-Http http = new Http();
-HttpResponse res = http.send(req);
+HttpResponse res = new Http().send(req);
 ```
 
 **What goes wrong:**
-- The OAuth token is stored in a Custom Label — plaintext, visible to anyone with access to the org's Setup UI and deployable to any sandbox without rotation.
-- Token expiry is never handled: when the token rotates, every callout fails until a developer manually updates the Custom Label.
-- The base URL must be in Remote Site Settings manually; Named Credentials handle this automatically.
-- Hard-coding endpoint base URLs in Apex makes them environment-specific; Named Credentials can have different values per sandbox vs. production.
 
-**Correct approach:**
+- The token sits in a Custom Label: readable in Setup, included in exports, and copied into
+  every sandbox without rotation.
+- Rotation is a code-adjacent deployment rather than a Setup change, so nobody does it.
+- The base URL is environment-specific, which forces either an `isSandbox` branch or a second
+  Custom Label to hold the URL.
+- The Remote Site Setting must be maintained by hand for the host.
+
+**Correct approach — the Apex side is one line:**
 
 ```apex
-// CORRECT: Named Credential handles endpoint, auth, and Remote Site Settings
+// CORRECT: endpoint and auth both leave the source tree
 HttpRequest req = new HttpRequest();
-req.setEndpoint('callout:AcmeCorpNC/v2/orders/' + orderId);
+req.setEndpoint('callout:Acme_Orders_NC/v2/orders/' + orderId);
 req.setMethod('GET');
 req.setTimeout(30000);
-// No setHeader for auth — the Named Credential custom header formula injects it
 HttpResponse res = new Http().send(req);
 ```
+
+**The migration, in order:**
+
+```bash
+# 1-3. Metadata first. Shapes in references/code-examples.md sections 1-3.
+sf project deploy start --metadata ExternalCredential:Acme_Orders_EC
+sf project deploy start --metadata NamedCredential:Acme_Orders_NC
+sf project deploy start --metadata PermissionSet:Acme_Orders_API_Caller
+
+# 4. A human enters the token against the principal in Setup. No deploy can do this.
+# 5. Grant it to whoever the callout runs as.
+sf org assign permset --name Acme_Orders_API_Caller
+
+# 6. Now the one-line Apex change, with its tests.
+sf project deploy start --manifest manifest/package.xml \
+  --test-level RunSpecifiedTests --tests AcmeOrderServiceTest
+
+# 7. Prove nothing still calls the host directly, THEN delete the remote site setting.
+python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py \
+    --manifest-dir force-app --strict
+
+# 8. Delete the Custom Label and rotate the token. It was in git history; it is compromised.
+```
+
+Step 7 is the one teams skip. The checker's `NC-RSS-001` advisory fires while a Remote Site
+Setting still covers the same host as a Named Credential's `Url` parameter — usually because
+one code path was missed. Deleting the setting before that is clean turns a working
+integration into a runtime failure.
+
+---
+
+## Example 4: Shipping the Credential in a Managed Package
+
+**Context:** An ISV package calls a partner API. Two distribution choices exist, and they use
+different `NamedCredentialParameter` types.
+
+**Subscriber creates the credential; packaged code calls through it.** The subscriber's
+credential must name the package's namespace, or packaged Apex is not among the callers it
+permits. `AllowedManagedPackageNamespaces` "Allows managed packages identified by specified
+namespaces to use the named credential and make callouts through it"
+(`api_meta` L90315–90317):
+
+```xml
+<namedCredentialParameters>
+    <parameterName>AllowedNamespaces</parameterName>
+    <parameterType>AllowedManagedPackageNamespaces</parameterType>
+    <parameterValue>acmeisv</parameterValue>
+    <description>Lets the acmeisv package call through this credential.</description>
+</namedCredentialParameters>
+```
+
+**ISV ships the credential; the subscriber may or may not edit it.** `ManagedByNamespace`
+"Specifies the manageability capabilities for a packaged named credential. The
+`parameterValue` indicates whether the named credential uses subscriber-controlled or
+developer-controlled manageability" (`api_meta` L90342–90346). Decide it explicitly rather
+than defaulting — it determines whether a subscriber can repoint the endpoint at their own
+sandbox.
+
+The permission set that grants the principal changes shape when packaged too. Unpackaged, the
+value is `Acme_Orders_EC-AcmeOrdersPrincipal`; packaged, it gains a namespace prefix and two
+underscores: `acmeisv__Acme_Orders_EC-AcmeOrdersPrincipal` (`api_meta` L94999–95003). The
+packaged permission set and its development twin therefore do not carry identical XML, which
+is worth a comment in the repo before someone "fixes" the difference.
+
+**UNVERIFIED (2026-09-05):** whether the `AllowedManagedPackageNamespaces` allowlist is empty
+by default, and therefore whether packaged code is blocked without it. The guide states what
+the parameter permits, not what happens in its absence. Confirm against a real subscriber org
+before writing setup instructions that depend on the answer.
