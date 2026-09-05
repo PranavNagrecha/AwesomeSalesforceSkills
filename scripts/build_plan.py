@@ -498,7 +498,7 @@ def _branch_in_tree(text: str, branch: str) -> bool:
 
 
 def _decision_issues(decision: dict, where: str, repo_root: Path) -> list[tuple[str, str]]:
-    """Contract section 1.2: a decision cites a branch that is really in the tree.
+    """Grounding rule (build-planner Step 4): a decision cites a branch that is really in the tree.
 
     The failure this exists to catch is a plausible-looking citation: a real
     tree path plus a branch id the tree does not have, or a branch id with no
@@ -1847,6 +1847,24 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
     if args.by:
         verification["by"] = args.by
     verification.setdefault("verified_at", _now(args.at))
+    archived = None
+    if args.outcome == "plan-rejected":
+        # Contract § 3: a rejected plan is superseded by a new plan version.
+        # This is the second route to plan-rejected (the first is `gate plan
+        # reject`); both must archive the rejected body so the planner's
+        # re-plan never overwrites v<n> in place.
+        snapshot = copy.deepcopy(plan)
+        snapshot.pop("history", None)
+        plan.setdefault("history", []).append({
+            "version": snapshot["version"],
+            "status": snapshot.get("status"),
+            "superseded_at": verification["verified_at"],
+            "superseded_by": args.by or "plan-verifier",
+            "reason": "plan-verifier outcome plan-rejected",
+            "plan": snapshot,
+        })
+        plan["version"] = int(plan["version"]) + 1
+        archived = snapshot["version"]
     plan["verification"] = verification
     plan["status"] = args.outcome
     schema = load_schema(args.schema)
@@ -1855,7 +1873,8 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
         return rc
     lenses = ", ".join(f"{l.get('lens')}={l.get('verdict')}"
                        for l in verification.get("lenses") or []) or "no lenses recorded"
-    print(f"verification written ({lenses}); build status -> {args.outcome}")
+    tail = f", plan version -> {plan['version']} (v{archived} archived in history[])" if archived else ""
+    print(f"verification written ({lenses}); build status -> {args.outcome}{tail}")
     return 0
 
 
