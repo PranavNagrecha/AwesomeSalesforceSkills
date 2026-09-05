@@ -1,0 +1,6 @@
+XML files found: 3
+  PARSED  artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml  root=<CustomPermission>
+  PARSED  artefacts/M2-S01/package.xml  root=<Package>
+  PARSED  artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml  root=<PermissionSet>
+
+Result: 3/3 parsed, 0 failed

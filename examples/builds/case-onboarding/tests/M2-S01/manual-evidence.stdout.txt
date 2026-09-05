@@ -1,0 +1,29 @@
+File: artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml
+Top-level child elements (4), in document order:
+  1. <label>  = Case Intake Integration
+  2. <description>  = Carries the Case intake validation bypass for the Email-to-Case and Web-to-Case automated-process identity. Assigned to the integration identity only, never to a human user. Grants nothing else. Owner: Security architect; reviewed each release.
+  3. <hasActivationRequired>  = false
+  4. <customPermissions>  { enabled=true, name=Bypass_Case_Intake_Validation }
+
+Grant-bearing elements present / absent:
+  absent     <objectPermissions>
+  absent     <fieldPermissions>
+  absent     <userPermissions>
+  absent     <classAccesses>
+  absent     <pageAccesses>
+  absent     <recordTypeVisibilities>
+  absent     <tabSettings>
+  absent     <applicationVisibilities>
+  absent     <flowAccesses>
+  absent     <customSettingAccesses>
+  absent     <customMetadataTypeAccesses>
+  absent     <externalDataSourceAccesses>
+  absent     <externalCredentialPrincipalAccesses>
+  PRESENT x1  <customPermissions>
+
+Grants present: [('customPermissions', 1)]
+customPermissions granted: [('Bypass_Case_Intake_Validation', 'true')]
+
+ASSERTION 'grants the bypass and nothing else': HOLDS
+deploy-order.md post-deploy assignment instruction: PRESENT
+deploy-order.md named owner for that assignment: PRESENT ("Security architect")

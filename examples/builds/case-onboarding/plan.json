@@ -2367,7 +2367,7 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending"
+      "status": "building"
     },
     {
       "id": "M3",
@@ -2804,8 +2804,27 @@
           "expected": "ticked at the M2 milestone gate from the artefacts on disk"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "tested",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-06T07:00:00Z",
+          "envelope_path": "envelopes/M2-S01/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-06T07:00:00Z",
+          "envelope_path": "envelopes/M2-S01/2026-09-06T07-00-00Z.json",
+          "result": "Built 4 declared artefacts (CustomPermission Bypass_Case_Intake_Validation, PermissionSet Case_Intake_Integration, package.xml, deploy-order.md); both declared checkers exit 0 first pass; check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-06T07:30:00Z",
+          "envelope_path": "envelopes/M2-S01/2026-09-06T07-30-00Z.json",
+          "result": "ran 4, failed 0, manual 1"
+        }
+      ],
       "human_gate": true
     },
     {
@@ -4263,7 +4282,10 @@
     },
     {
       "name": "step:M2-S01",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-05T21:15:08Z",
+      "notes": "Profiles step. Approved for the dry run so F-01 (layout↔record-type assertion needs Profile layoutAssignments) can be closed at M2 scope. Real deployment needs the security owner's signature on every access step."
     },
     {
       "name": "step:M2-S02",

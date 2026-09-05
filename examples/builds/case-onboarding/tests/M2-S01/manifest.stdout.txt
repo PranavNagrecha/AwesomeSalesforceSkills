@@ -1,0 +1,16 @@
+Manifest: artefacts/M2-S01/package.xml (exists=True)
+
+Derived from files:
+  CustomPermission: Bypass_Case_Intake_Validation
+  PermissionSet: Case_Intake_Integration
+Excluded from both directions:
+  artefacts/M2-S01/deploy-order.md -- not a source-format metadata file (no metadata suffix); documentation artefact
+  artefacts/M2-S01/package.xml -- the manifest itself
+
+Declared in manifest:
+  CustomPermission: Bypass_Case_Intake_Validation
+  PermissionSet: Case_Intake_Integration
+  wildcards: none
+
+file -> manifest (every derived member covered): PASS
+manifest -> file (every named member has a file): PASS

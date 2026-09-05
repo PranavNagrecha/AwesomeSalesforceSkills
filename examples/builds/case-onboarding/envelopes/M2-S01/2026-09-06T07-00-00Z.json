@@ -1,0 +1,435 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-06T07-00-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S01/2026-09-06T07-00-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S01/2026-09-06T07-00-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S01",
+    "api_version": "62.0 (defaulted \u2014 plan.json carries no api_version; M1 report F-06 records the same default twice in M1)",
+    "step_inputs.custom_permission": "Bypass_Case_Intake_Validation",
+    "step_inputs.answers": [
+      "Q56",
+      "Q10"
+    ],
+    "invoked_by": "build-step-runner, executing this AGENT.md inline (the runner's Step 6 'any other host' path); Step 9's set-status commands were therefore skipped and left to the runner",
+    "persist": "--no-persist \u2014 the caller restricted writes to the build directory, so the docs/reports/metadata-builder/ pair required by the Wave 10 persistence contract was not written; this envelope pair under envelopes/M2-S01/ is the only persisted copy"
+  },
+  "summary": "Built M2-S01 (access, design-only, owner metadata-builder) into four artefacts: the CustomPermission Bypass_Case_Intake_Validation, the PermissionSet Case_Intake_Integration that grants it and nothing else, a two-type package.xml at API 62.0, and deploy-order.md. Every element written comes from the Step 3 inventory built out of admin/custom-permissions references/metadata-examples.md \u00a7 2 and \u00a7 5 and admin/permission-set-architecture references/metadata-examples.md \u00a7 1, \u00a7 2 and \u00a7 5. Both declared checkers exited 0 on the first pass with zero findings, the two cited-skill checkers that ship one were also run, all three XML files parse, and check-outputs returned ok. The step's outputs are a custom permission and a permission set \u2014 no Profile \u2014 so no layoutAssignments or recordTypeVisibilities are written here; deploy-order.md records that M2-S03 carries the profile layout assignments that M1 report finding F-01 needs, with the exact Case.Support / Case.Billing and Case-Case Support Layout / Case-Case Billing Layout member forms taken from artefacts/M1-S02/deploy-order.md.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10: HIGH on four of its five conditions \u2014 every emitted element traced to the Step 3 inventory, both declared checkers exited 0 on the first pass, check-outputs returned ok, and every declared output was written with nothing outside artefacts/M2-S01/. MEDIUM because the fifth is not met: two Questions-to-Ask rows were answered from a documented skill default rather than from the plan (custom-permissions' expiry row and permission-set-architecture's activation row), and one row \u2014 'which contexts read it' \u2014 was answered from a downstream step's declared outputs (M3-S01) rather than from an answered clarification.",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Two of the fourteen deduplicated Questions-to-Ask rows were answered from the cited skill's own documented default rather than from plan.json: 'Is the grant permanent, or should it expire?' (custom-permissions) and 'Does any permission need step-up activation?' (permission-set-architecture, answered false per its \u00a7 1 note). Neither is a query failure; neither clarification exists in the plan's 97 questions.",
+      "confidence_impact": "LOW"
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "admin/validation-rules is cited on the step and ships check_validation_rules.py, which exits 1 at --manifest-dir artefacts/M2-S01 with 'no validation rule metadata files found'. That is the checker firing on an empty scope, not on a defect: this step declares no validation-rule output and writing one to satisfy it would widen the step past outputs[]. It is not one of the step's declared acceptance tests, and no repair pass was spent on it.",
+      "confidence_impact": "LOW"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "Both declared checkers exited 0 on the first pass with zero findings, so no repair pass was needed and the three-pass ceiling in Step 8 was not approached.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S01",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access",
+      "observation": "check_access_model.py returns 1 on ANY finding (emit_result, script line 152-160), so its exit 0 here is a stronger statement than a severity threshold would be: the permission set carries no dangerous system permission, no profile-only element, and no object grant at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "reports/MILESTONE-M1-REPORT.md finding F-01 and its go/no-go list both name M2-S01 as the step that carries layoutAssignments ('layoutAssignments is M2-S01's'), but in plan version 5 M2-S01's outputs[] contains no Profile \u2014 the profiles are M2-S03's, whose title is 'Minimal base profiles carrying only default app, default record type and layout assignment'. The report was written against an earlier step numbering and its remedy now points at the wrong step id.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "naming",
+      "observation": "The declared output path names the permission set Case_Intake_Integration, while templates/admin/permission-set-patterns.md gives integration bundles the form Integration_<System>_Bundle and feature sets Feat_<Feature>; the step's templates[] is empty, so no template was cited to resolve the divergence and the declared path was written as-is.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/admin/permission-set-patterns.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access",
+      "observation": "Nothing on file says where the Email-to-Case / Web-to-Case identity gets ApiEnabled, and this permission set deliberately does not grant it \u2014 the step's own manual acceptance test requires the set to grant the custom permission and nothing else, and ApiEnabled is in check_access_model.py's DANGEROUS_PERMISSIONS, so granting it here would fail the step's second declared checker.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "testing",
+      "observation": "The step is built and its four declared outputs exist; the molecular tests it declares have not been run by this agent.",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because standards/build-orchestration.md \u00a7 5 gives the tester, not the builder, the job of running the step's declared acceptance tests and writing tests/M2-S01/results.json.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S01",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "invocation_path": "under-runner (Step 9 set-status skipped; the runner sets the terminal status)",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml",
+        "type": "CustomPermission",
+        "source": "skills/admin/custom-permissions/references/metadata-examples.md \u00a7 2 (bypass shape, description names the consumers)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "source": "skills/admin/custom-permissions/references/metadata-examples.md \u00a7 5 (the permission set that grants it) + skills/admin/permission-set-architecture/references/metadata-examples.md \u00a7 2 (label/description/hasActivationRequired ordering)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S01/package.xml",
+        "type": "Package manifest",
+        "source": "skills/admin/custom-permissions/references/metadata-examples.md 'package.xml' + skills/admin/permission-set-architecture/references/metadata-examples.md \u00a7 5",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S01/deploy-order.md",
+        "type": "deploy-order note",
+        "source": "skills/admin/change-management-and-deployment/references/metadata-examples.md \u00a7 1 and \u00a7 3 + the cited skills' gotchas",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "What exactly does holding this permission let someone do, in one sentence?",
+        "answer": "Save a Case that the Case intake validation rules would reject, because it was created through the API by Email-to-Case or Web-to-Case.",
+        "source": "clarification Q56",
+        "element": "CustomPermission/description",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Which contexts read it \u2014 validation rule, formula, Flow, Apex, LWC, component visibility?",
+        "answer": "Validation rule only. M3-S01 declares exactly two consumers: Case.Priority_Required_On_Agent_Save and Case.Origin_Must_Be_Known, each carrying NOT($Permission.Bypass_Case_Intake_Validation).",
+        "source": "upstream/downstream artefact \u2014 plan.json steps[M3-S01].outputs[] and inputs.note",
+        "element": "CustomPermission/description consumer list; no requiredPermission",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Does anything already hold this access through a profile?",
+        "answer": "No. build_mode is design-only and no Profile exists anywhere under artefacts/; the grant is authored on a permission set, which is the skill's own instruction (gotcha 1).",
+        "source": "step inputs + repo scan of artefacts/",
+        "element": "PermissionSet/customPermissions (not Profile/customPermissions)",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Does another custom permission have to be on for this one to make sense?",
+        "answer": "No \u2014 nothing in requirement.md or the answered clarifications names a second gate.",
+        "source": "requirement.md (weakest source, used as fallback)",
+        "element": "no requiredPermission element written",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Who revokes it, and what proves it was revoked?",
+        "answer": "The Security architect (owner_role recorded on Q56 and Q10). Proof is the SetupEntityAccess -> PermissionSetAssignment query, not a metadata diff (gotcha 8).",
+        "source": "clarification Q56 / Q10 owner_role",
+        "element": "description text on both files + the 'Post-deploy step' section of deploy-order.md",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Is this a bypass? If so, which named rules does it suppress?",
+        "answer": "Yes. The two M3-S01 rules are named in the description rather than left as an unnamed org-wide off switch.",
+        "source": "clarification Q56 + plan.json steps[M3-S01].outputs[]",
+        "element": "CustomPermission/description",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Is the grant permanent, or should it expire?",
+        "answer": "Permanent. DEFAULT \u2014 no clarification covers expiry, and the grant is to a standing automated-process identity rather than a data-fix window, which is the case the skill's Temp_<Purpose> / permission-set-expiration route exists for.",
+        "source": "skill default (admin/custom-permissions Questions row; admin/permission-set-expiration named but not invoked)",
+        "element": "no ExpirationDate is expressible in metadata anyway \u2014 PermissionSetAssignment is record data",
+        "skill": "admin/custom-permissions"
+      },
+      {
+        "question": "Which user or permission set license does every person in this persona hold?",
+        "answer": "LicenseId left empty. Q8 answers this explicitly for the build's permission sets, and the population here is one automated-process identity whose licence is not on file.",
+        "source": "clarification Q8 (via the deduplicated Questions list; Q10 confirms the model is additive)",
+        "element": "no <license> element written",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Which objects does this capability touch, and at what CRUD level?",
+        "answer": "None. The set is a pure feature-access slice; the step's manual acceptance test requires no objectPermissions and no fieldPermissions.",
+        "source": "step inputs + the step's own acceptance_tests[4]",
+        "element": "no objectPermissions, no fieldPermissions",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Does anything here need View All Records or Modify All Records?",
+        "answer": "No.",
+        "source": "step inputs + the step's acceptance_tests[1]",
+        "element": "no objectPermissions at all, so no viewAllRecords/modifyAllRecords",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Is this bundle for a named person or for a standing role that changes people?",
+        "answer": "A standing non-human identity \u2014 the Email-to-Case / Web-to-Case automated process. Recorded in the description and in deploy-order.md as a post-deploy assignment with a named owner.",
+        "source": "clarification Q56",
+        "element": "PermissionSet/description",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Does any permission need step-up activation?",
+        "answer": "No. DEFAULT \u2014 hasActivationRequired false, which is what the skill's \u00a7 1 and \u00a7 2 examples carry 'on purpose' and what the \u00a7 3 note requires of anything destined for a PSG.",
+        "source": "skill default (admin/permission-set-architecture references/metadata-examples.md \u00a7 1)",
+        "element": "<hasActivationRequired>false</hasActivationRequired>",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Who checks the group after deploy, and against which user?",
+        "answer": "Not applicable \u2014 this step writes no PermissionSetGroup, so there is no recalculation state machine to poll. M2-S02 owns the PSGs.",
+        "source": "plan.json steps[M2-S02].outputs[]",
+        "element": "no PermissionSetGroup written",
+        "skill": "admin/permission-set-architecture"
+      },
+      {
+        "question": "Which users and integrations must be able to save a record the rule would reject?",
+        "answer": "The Email-to-Case and Web-to-Case identity, through this custom permission on this permission set. This is Q56 verbatim and it is why the step exists at all.",
+        "source": "clarification Q56",
+        "element": "the whole step",
+        "skill": "admin/validation-rules"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": true,
+        "output": "Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0. Coverage: Bypass_Case_Intake_Validation  0  permission set 'Case_Intake_Integration'. Summary: 0 error(s), 0 warning(s), 0 info."
+      },
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": true,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 1 access-model metadata file(s); 0 finding(s) detected.\"}"
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": false,
+        "output": "No issues found.",
+        "note": "Run because admin/permission-set-architecture is cited on the step and ships a checker (Step 8). Not one of the step's declared acceptance tests."
+      },
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "declared_acceptance_test": false,
+        "output": "{\"score\": 90, \"findings\": [{\"severity\": \"HIGH\", \"message\": \"no validation rule metadata files found\"}], \"summary\": \"Scanned 0 validation rule metadata file(s); no files matched the provided paths.\", \"blocking\": 1}",
+        "note": "Fires on an empty scope, not on a defect. admin/validation-rules is cited on this step for the NOT($Permission.X) bypass contract the M3-S01 rules will carry, not because this step writes a rule; the step declares no validation-rule output and Step 5 rule 2 forbids writing one it did not declare. Not a declared acceptance test for M2-S01; the rules and this checker are M3-S01's."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M2-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": false,
+        "output": "3 file(s) parsed"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "check_outputs_exit_code": 0,
+    "not_grounded": [
+      "The --dry-run spelling in deploy-order.md's sandbox validate command. skills/admin/change-management-and-deployment/references/metadata-examples.md \u00a7 3 documents only 'sf project deploy validate' and carries its own UNVERIFIED (2026-09-04) caveat on sf CLI flag spellings. --dry-run is grounded instead in skills/devops/deployment-error-troubleshooting/SKILL.md lines 144 and 172, which name it as the checkOnly deploy \u2014 a skill outside this step's skills[], cited in the note for the flag only. Written this way to close M1 report finding F-08 ('emit the --dry-run form when the target is a sandbox') without inventing a flag.",
+      "The 255-character limit was verified against the CustomPermission description (250 chars) because check_custom_permissions.py enforces it. No documented character limit for PermissionSet/description appears in either cited reference; the 244-character value written here was kept short by choice, not by a checked bound."
+    ],
+    "f01_disposition": "This step's outputs[] are one CustomPermission and one PermissionSet. No Profile, therefore no layoutAssignments and no recordTypeVisibilities \u2014 'No layout element on PermissionSet at all' (skills/admin/permission-sets-vs-profiles/references/metadata-examples.md element table), the same fact artefacts/M1-S02/deploy-order.md records from the layout side. deploy-order.md \u00a7 'Record types and page layouts: what this step does NOT carry' names M2-S03 as the step whose three profiles carry the assignments, and restates the exact forms they must use: record types Case.Support / Case.Billing, layouts Case-Case Support Layout / Case-Case Billing Layout."
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "Questions-to-Ask table, the DeveloperName rules, and the validation-rule bypass pattern"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "\u00a7 2 bypass CustomPermission shape, \u00a7 5 the PermissionSet that grants it, the file-location table, the package.xml sample, and the definition-before-grant deploy order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/gotchas.md",
+      "used_for": "#1 grant through a permission set, #4 the API name is immutable and a missing permission evaluates false, #7 isLicensed is read-only, #8 a diff is not revocation evidence, #9 the 255-char description limit"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/templates/custom-permissions-template.md",
+      "used_for": "the context checklist (API name, label, consumer contexts, description, grant path) that structured the decision record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+      "used_for": "declared acceptance test 1; also read to confirm the ERROR condition is a dangling grant and the description ceiling is 255"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Questions-to-Ask table and the capability-not-person naming principle"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "\u00a7 1 and \u00a7 2 the PermissionSet element set and element ordering, the license-empty note, hasActivationRequired false, \u00a7 4 that PermissionSetAssignment is record data, \u00a7 5 the file-location table and manifest shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+      "used_for": "cited-skill checker run in Step 8 (exit 0)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the Questions row 'Which users and integrations must be able to save a record the rule would reject?' \u2014 the row Q56 answers and the reason this step exists"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/metadata-examples.md",
+      "used_for": "read per Step 3 for the cited skill's deployable shapes; no ValidationRule is written by this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+      "used_for": "cited-skill checker run in Step 8 (exit 1 on an empty scope, recorded not repaired)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "the Profile-vs-PermissionSet element table \u2014 'No layout element on PermissionSet at all' \u2014 which is the grounding for the F-01 disposition"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+      "used_for": "declared acceptance test 2; also read to confirm any finding returns 1 and that ApiEnabled is in DANGEROUS_PERMISSIONS"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "\u00a7 1 the admin-release manifest shape and \u00a7 3 the validate sequence and --test-level semantics, for deploy-order.md"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-troubleshooting",
+      "path": "skills/devops/deployment-error-troubleshooting/SKILL.md",
+      "used_for": "the sf project deploy start --dry-run (checkOnly) spelling for the sandbox form, closing M1 report finding F-08; outside this step's skills[] and cited for the flag only"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/permission-set-patterns.md",
+      "path": "templates/admin/permission-set-patterns.md",
+      "used_for": "the PS taxonomy and Integration_<System>_Bundle naming, against which the declared Case_Intake_Integration name was compared and the divergence recorded"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "'The canonical VR shape' \u2014 bypass first, NOT($Permission.Bypass_Validation_<Domain>) \u2014 the contract the M3-S01 consumers will carry"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 build_mode and the no-hand-edit rule, \u00a7 4 the access row and the status machine, \u00a7 5 the package.xml-in-outputs rule and who runs the tests, \u00a7 8 that a knowledge gap is a deepen-a-skill signal"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{} and outputs[]"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "this envelope's shape, including that artefacts[] belongs under extensions"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "standards/build-orchestration.md \u00a7 5 gives the tester the job of running M2-S01's declared acceptance tests and writing tests/M2-S01/results.json; this agent ran the checkers only to repair its own output."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S01 is tested, the workbook, decisions log and traceability rows for the bypass and the integration permission set are due, including the F-01 step-id correction recorded in Process Observations."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "step_id": "M2-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "B01: rewritten as an assertion over an artefact this design-only build actually produces. PermissionSetAssignment is record data, not metadata, so no artefact here can record who holds the permission. Given the bypass exists to let API-created cases skip the Case validation rules, when permissionsets/Case_Intake_Integration.permissionset-meta.xml is read, then it grants Bypass_Case_Intake_Validation and nothing else — no objectPermissions, no fieldPermissions, no userPermissions — and deploy-order.md carries the post-deploy instruction that this permission set is assigned to the integration/automated-process identity only and to no human user, with a named owner for that assignment."
+  ]
+}

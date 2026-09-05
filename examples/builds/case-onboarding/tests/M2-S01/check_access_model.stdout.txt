@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 1 access-model metadata file(s); 0 finding(s) detected."
+}

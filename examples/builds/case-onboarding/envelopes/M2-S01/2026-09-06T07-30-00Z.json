@@ -1,0 +1,355 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-06T07-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S01/2026-09-06T07-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S01/2026-09-06T07-30-00Z.json",
+  "outcome": "completed",
+  "confidence": "HIGH",
+  "summary": "M2-S01 tested: 4 tests ran (2 declared checkers, always-on xml, always-on manifest), 0 failed, 1 manual test deferred to the M2 gate. Both checker commands were run verbatim from the build directory after the § 5 deny-list cleared them; check-outputs returned ok, so both checkers meet the two-part pass condition. Step moved built -> tested.",
+  "confidence_rationale": "Step 7 HIGH: every declared test either ran or was correctly classified as manual, both always-on checks completed over a non-empty artefact set, and every verdict came from an exit code observed in this run. No command test was refused, no coverage-gap exclusion was applied, and check-outputs reported no missing, empty or malformed output.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S01",
+    "step_status_on_entry": "built",
+    "plan_version": 5,
+    "build_mode": "design-only"
+  },
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-two-way-consistency",
+    "declared-checker-exit-codes",
+    "declared-output-existence"
+  ],
+  "dimensions_skipped": [],
+  "extensions": {
+    "step_id": "M2-S01",
+    "step_type": "access",
+    "owning_agent": "metadata-builder",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M2-S01/results.json",
+    "summary_path": ".sfskills/builds/case-onboarding/tests/M2-S01/summary.md",
+    "tests_run": 4,
+    "passed": true,
+    "failed": [],
+    "invocation_cwd": ".sfskills/builds/case-onboarding (build directory; `skills` symlink resolves declared checker paths)",
+    "deny_list_check": {
+      "commands_checked": 3,
+      "hits": 0,
+      "regex_source": "standards/build-orchestration.md § 5 validate constraint 1",
+      "note": "Every command cleared before execution. No command was rewritten: no flag appended, removed or re-ordered, no path substituted."
+    },
+    "results": [
+      {
+        "name": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+        "type": "checker",
+        "declared_scope": "step (absent, default)",
+        "runner": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+        "run_verbatim": true,
+        "exit_code": 0,
+        "verdict": "pass",
+        "output_first_line": "Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0",
+        "capture": "tests/M2-S01/check_custom_permissions.stdout.txt",
+        "substance": "Non-vacuous on the dangling-grant dimension: the checker resolved the grant in Case_Intake_Integration against the CustomPermission file that defines it (coverage row 'Bypass_Case_Intake_Validation 0 permission set Case_Intake_Integration'). Vacuous on the consumer dimension: Consumers=0 because no validation rule is in scope yet, which the plan's own test description states."
+      },
+      {
+        "name": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "type": "checker",
+        "declared_scope": "step (absent, default)",
+        "runner": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
+        "run_verbatim": true,
+        "exit_code": 0,
+        "verdict": "pass",
+        "output_first_line": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 1 access-model metadata file(s); 0 finding(s) detected.\"}",
+        "capture": "tests/M2-S01/check_access_model.stdout.txt",
+        "substance": "Not a discovery no-op: 1 file matched (.permissionset-meta.xml is in the checker's METADATA_SUFFIXES; the .customPermission-meta.xml file is out of its scope by design). The plan's W09 claim that an empty directory exits 1 is confirmed from source (check_access_model.py:400-403 emits a HIGH finding, and emit_result returns 1 whenever findings exist), so the exit 0 stands for a scanned file rather than an unscanned tree."
+      },
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree parse over artefacts/M2-S01/**",
+        "exit_code": 0,
+        "verdict": "pass",
+        "files_parsed": 3,
+        "files_failed": 0,
+        "files": [
+          "artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml",
+          "artefacts/M2-S01/package.xml",
+          "artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml"
+        ],
+        "note": "Non-zero file count, so this is not the zero-files signal Step 2 requires be surfaced. Satisfies both the always-on run and the step's declared xml acceptance test.",
+        "capture": "tests/M2-S01/xml.stdout.txt"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way derivation vs artefacts/M2-S01/package.xml",
+        "exit_code": 0,
+        "verdict": "pass",
+        "manifest_path": "artefacts/M2-S01/package.xml",
+        "declared_in_outputs": true,
+        "derived_from_files": [
+          "CustomPermission:Bypass_Case_Intake_Validation",
+          "PermissionSet:Case_Intake_Integration"
+        ],
+        "declared_in_manifest": [
+          "CustomPermission:Bypass_Case_Intake_Validation",
+          "PermissionSet:Case_Intake_Integration"
+        ],
+        "wildcards": [],
+        "file_to_manifest": "pass",
+        "manifest_to_file": "pass",
+        "excluded": [
+          {
+            "path": "artefacts/M2-S01/package.xml",
+            "reason": "the manifest itself"
+          },
+          {
+            "path": "artefacts/M2-S01/deploy-order.md",
+            "reason": "no source-format metadata suffix; documentation artefact, not a component"
+          }
+        ],
+        "coverage_gap_exclusions": [],
+        "note": "Step type 'access' is a metadata type, so absence of a manifest would have failed rather than skipped. A manifest is present and declared in outputs[], so the check ran in full.",
+        "capture": "tests/M2-S01/manifest.stdout.txt"
+      }
+    ],
+    "check_outputs": {
+      "command": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M2-S01",
+      "cwd": "repo root (build_plan.py is not reachable through the build directory's symlink set)",
+      "exit_code": 0,
+      "result": {
+        "ok": true,
+        "step": "M2-S01",
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      },
+      "note": "The second half of the checker pass condition. Both checkers therefore pass on both counts."
+    },
+    "skipped_manual": [
+      {
+        "text": "B01: rewritten as an assertion over an artefact this design-only build actually produces. PermissionSetAssignment is record data, not metadata, so no artefact here can record who holds the permission. Given the bypass exists to let API-created cases skip the Case validation rules, when permissionsets/Case_Intake_Integration.permissionset-meta.xml is read, then it grants Bypass_Case_Intake_Validation and nothing else — no objectPermissions, no fieldPermissions, no userPermissions — and deploy-order.md carries the post-deploy instruction that this permission set is assigned to the integration/automated-process identity only and to no human user, with a named owner for that assignment.",
+        "gwt_shape": "usable — carries a Given (the bypass exists to let API-created cases skip the Case validation rules), a When (the permission set file is read) and a Then naming observable outcomes (the element set, and the deploy-order.md instruction plus named owner)",
+        "file_checkable_evidence_gathered": true,
+        "evidence": {
+          "permission_set_top_level_elements": [
+            "label",
+            "description",
+            "hasActivationRequired",
+            "customPermissions"
+          ],
+          "grant_bearing_elements_present": [
+            "customPermissions{enabled=true,name=Bypass_Case_Intake_Validation}"
+          ],
+          "grant_bearing_elements_absent": [
+            "objectPermissions",
+            "fieldPermissions",
+            "userPermissions",
+            "classAccesses",
+            "pageAccesses",
+            "recordTypeVisibilities",
+            "tabSettings",
+            "applicationVisibilities",
+            "flowAccesses",
+            "customSettingAccesses",
+            "customMetadataTypeAccesses",
+            "externalDataSourceAccesses",
+            "externalCredentialPrincipalAccesses"
+          ],
+          "assertion_grants_bypass_and_nothing_else": "holds",
+          "deploy_order_post_deploy_instruction": "present",
+          "deploy_order_named_owner": "present (Security architect)",
+          "capture": "tests/M2-S01/manual-evidence.stdout.txt"
+        },
+        "residual_human_judgement": "Whether the assignment was actually made to the integration identity and to no human user. PermissionSetAssignment is record data, not metadata, so no artefact in a design-only build can carry that evidence.",
+        "ticked_by_this_agent": false
+      }
+    ],
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S01 tested --run-agent step-tester --envelope envelopes/M2-S01/2026-09-06T07-30-00Z.json --result \"ran 4, failed 0, manual 1\" --started 2026-09-06T07:30:00Z",
+    "set_status_result": "M2-S01: built -> tested (run appended: step-tester)",
+    "terminal_status": "tested",
+    "next_command_for_the_human": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json   # then run /keep-build-docs for M2-S01 (build-doc-keeper) to move it tested -> documented",
+    "artefacts_mutated": "none — nothing under artefacts/M2-S01/ was read-write; the tester wrote only tests/M2-S01/ and envelopes/M2-S01/",
+    "org_contact": "none — no org probe, no deploy, no sf command executed",
+    "gates_this_agent_did_not_touch": "step:M2-S01 human_gate is true and remains unapproved; the M2 milestone gate is the human's"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-design",
+      "observation": "The step's first checker test description states in advance what its exit code does and does not prove, and the run confirmed both halves exactly.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "plan.json steps[M2-S01].acceptance_tests[0].description predicted 'Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0' and a Consumers=0 coverage row; tests/M2-S01/check_custom_permissions.stdout.txt reproduces that output verbatim at exit 0."
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-model",
+      "observation": "The permission set carries exactly one of the fourteen grant-bearing elements PermissionSet accepts, so the least-privilege claim in its own description is checkable from the file rather than asserted.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml has 4 top-level elements; only <customPermissions> is a grant. tests/M2-S01/manual-evidence.stdout.txt."
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Running the declared checkers from the build directory resolved both the skills/ path and the artefacts/ path exactly as written, so no command needed rewriting to execute.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "The build directory carries skills -> ../../../skills; both checker commands ran verbatim per standards/build-orchestration.md § 5."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "documentation-accuracy",
+      "observation": "artefacts/M2-S01/deploy-order.md states the custom-permissions checker 'reports Consumers: 0 and an INFO, and exits 0', but the checker emitted no INFO on this run — its INFO fires for a defined-but-ungranted permission, which is not this case.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "tests/M2-S01/check_custom_permissions.stdout.txt prints 'Summary: 0 error(s), 0 warning(s), 0 info.'; skills/admin/custom-permissions/scripts/check_custom_permissions.py lines 301-308 raise the INFO only when a permission is defined but ungranted. The plan's own acceptance-test description states the counterfactual correctly; only the deploy-order.md restatement drifts."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "test-coverage",
+      "observation": "Both declared checkers scan disjoint halves of the step, and neither reads the manifest, so package.xml correctness rests entirely on the always-on manifest check rather than on any declared test.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "check_access_model.py METADATA_SUFFIXES matches only profile/permissionset/permissionsetgroup files (1 of 3 XML files); check_custom_permissions.py reads the customPermission and the grant. package.xml is read by neither."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "naming",
+      "observation": "The permission set name Case_Intake_Integration diverges from the Integration_<System>_Bundle form in templates/admin/permission-set-patterns.md; the builder recorded the divergence rather than renaming a declared output path, and no one has adjudicated it.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "artefacts/M2-S01/deploy-order.md section 'Elements this step could NOT ground'; plan.json declares the output path, and templates[] on this step is empty."
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "build-doc-keeper is the next stage for a tested step, and milestone-verifier will collect this step's deferred manual test into the M2 human checklist.",
+      "evidence": {
+        "source": "heuristic",
+        "detail": "standards/build-orchestration.md § 3 lifecycle: built -> tested -> documented."
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "M2-S01 is now tested, so the doc keeper is the next stage of the loop: it records the step in decisions.md, traceability.md and the workbook before the milestone gate."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S01 is now tested, and the doc keeper is the next stage of the loop: it records the step in decisions.md, traceability.md and the workbook before the milestone gate."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "it collects this step's one deferred manual test into the M2 acceptance checklist, and carries the consumer-side cross-reference that this step's checkers could not prove at step scope."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "§ 5 Acceptance tests — runner table, deny-list, checker scope, the run-verbatim rule and the check-outputs pass condition",
+      "used_for": "Dispatching each declared test by type, clearing every command against the deny-list, and requiring both exit 0 and check-outputs ok for a checker to pass"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "§ 4 Steps and step types — access is a metadata step type",
+      "used_for": "Establishing that a missing package.xml would have failed rather than skipped the always-on manifest check on this step"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "§ 2 The plan file is the only shared state — build directory layout and the skills symlink",
+      "used_for": "Running the checkers from the build directory so skills/ and artefacts/ both resolve as declared"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block, and the citation schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule, and the dimensions_skipped discipline"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked against the refusal enum; no refusal condition was met on this run"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "The run-time rules binding this invocation, including the ban on org writes and on auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The acceptanceTest and step shapes read from plan.json, including that scope is declared intent rather than a path source"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest check is judged against — one types block per type, members naming components, and what a wildcard member means"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format directory and suffix mapping that derives CustomPermission and PermissionSet members from the files under artefacts/M2-S01/"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Confirming neither type needs a coverage-gap exclusion, and grounding why PermissionSetAssignment cannot be evidenced by any artefact here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Judging that the deferred manual test is tickable by a human at the gate rather than needing re-interpretation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Checking the manual test against the Given/When/Then shape and confirming it names an observable outcome"
+    },
+    {
+      "type": "probe",
+      "id": "check_custom_permissions",
+      "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+      "used_for": "Declared checker test 1, run verbatim; its source also read to judge whether exit 0 was substantive"
+    },
+    {
+      "type": "probe",
+      "id": "check_access_model",
+      "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+      "used_for": "Declared checker test 2, run verbatim; its source also read to confirm an empty directory would have exited 1"
+    }
+  ]
+}
